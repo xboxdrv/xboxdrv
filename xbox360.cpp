@@ -3,10 +3,9 @@
 #include <usb.h>
 #include <unistd.h>
 #include <iostream>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <linux/uinput.h>
+
+#include "uinput.hpp"
+#include "xbox360.hpp"
 
 /*
 Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
@@ -15,134 +14,6 @@ Unknown data: bytes: 3 Data: 0x03 0x03 0x03
 Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
 
  */
-
-struct XBox360Msg
-{
-  // --------------------------
-  unsigned int dummy1      :8;
-  unsigned int length      :8;
-
-  // data[2] ------------------
-  unsigned int dpad_up     :1;
-  unsigned int dpad_down   :1;
-  unsigned int dpad_left   :1;
-  unsigned int dpad_right  :1;
-
-  unsigned int start       :1;
-  unsigned int select      :1;
-
-  unsigned int stick_left  :1;
-  unsigned int stick_right :1;
-
-  // data[3] ------------------
-  unsigned int lb          :1;
-  unsigned int rb          :1;
-  unsigned int mode        :1;
-  unsigned int dummy3      :1;
-
-  unsigned int a           :1;
-  unsigned int b           :1;
-  unsigned int y           :1;
-  unsigned int x           :1;
-
-  // data[4] ------------------
-  unsigned int lt          :8;
-  unsigned int rt          :8;
-
-  // data[6] ------------------
-  int x1                   :16;
-  int y1                   :16;
-
-  // data[10] -----------------
-  int x2                   :16;
-  int y2                   :16;
-
-  // data[14]; ----------------
-  unsigned int dummy4      :32;
-  unsigned int dummy5      :16;
-} __attribute__((__packed__));
-
-class uInput
-{
-private:
-  int fd;
-
-public:
-  uInput() 
-  {
-    // Open the input device
-    fd = open("/dev/input/uinput", O_WRONLY | O_NDELAY);
-    if (!fd)
-      {
-        printf("Unable to open /dev/uinput\n");
-      }
-    else
-      {
-    ioctl(fd, UI_SET_EVBIT, EV_KEY);
-    ioctl(fd, UI_SET_EVBIT, EV_ABS);
-    
-    ioctl(fd, UI_SET_ABSBIT, ABS_X);
-    ioctl(fd, UI_SET_ABSBIT, ABS_Y);
-
-    ioctl(fd, UI_SET_ABSBIT, ABS_RX);
-    ioctl(fd, UI_SET_ABSBIT, ABS_RY);
-
-    ioctl(fd, UI_SET_ABSBIT, ABS_GAS);
-    ioctl(fd, UI_SET_ABSBIT, ABS_BRAKE);
-
-    ioctl(fd, UI_SET_ABSBIT, ABS_HAT0X);
-    ioctl(fd, UI_SET_ABSBIT, ABS_HAT0Y);
-
-    ioctl(fd, UI_SET_KEYBIT, BTN_START);
-    ioctl(fd, UI_SET_KEYBIT, BTN_MODE);
-    ioctl(fd, UI_SET_KEYBIT, BTN_SELECT);
-
-    ioctl(fd, UI_SET_KEYBIT, BTN_A);
-    ioctl(fd, UI_SET_KEYBIT, BTN_B);
-    ioctl(fd, UI_SET_KEYBIT, BTN_X);
-    ioctl(fd, UI_SET_KEYBIT, BTN_Y);
-
-    ioctl(fd, UI_SET_KEYBIT, BTN_TL);
-    ioctl(fd, UI_SET_KEYBIT, BTN_TR);
-
-    ioctl(fd, UI_SET_KEYBIT, BTN_THUMBL);
-    ioctl(fd, UI_SET_KEYBIT, BTN_THUMBR);
-
-    struct uinput_user_dev uinp;
-    strncpy(uinp.name, "XBOx360 Gamepad", UINPUT_MAX_NAME_SIZE);
-
-    uinp.absmin[ABS_X] = -32768;
-    uinp.absmax[ABS_X] =  32768;
-
-    uinp.id.version = 4;
-    uinp.id.bustype = BUS_USB;
-
-    write(fd, &uinp, sizeof(uinp));
-
-    ioctl(fd, UI_DEV_CREATE);
-
-      }
-  }
-
-  ~uInput()
-  {
-    ioctl(fd, UI_DEV_DESTROY);
-  }
-
-  void send()
-  {
-    struct input_event ev;
-    ev.type = EV_KEY;
-    ev.code = KEY_ENTER;
-    ev.value = 1;
-    write(fd, &ev, sizeof(ev));
-  }
-};
-
-int get_bit(uint8_t data, int bit)
-{
-  return (data & (1 << bit)) >> bit;
-}
 
 struct usb_device* 
 find_xbox360_controller()
@@ -230,6 +101,7 @@ int main(int argc, char** argv)
               usb_bulk_write(handle, 2, ledcmd, 3, 0);
             }
 
+          uInput* uinput = new uInput();
           while(!sigint_recieved)
             {
               uint8_t data[20];
@@ -254,8 +126,8 @@ int main(int argc, char** argv)
                   std::cout << " mode:"    << msg.mode;
                   std::cout << " start:"   << msg.start;
 
-                  std::cout << "  sl:" << msg.stick_left;
-                  std::cout << " sr:"  << msg.stick_right;
+                  std::cout << "  sl:" << msg.thumb_l;
+                  std::cout << " sr:"  << msg.thumb_r;
 
                   std::cout << "  A:" << msg.a;
                   std::cout << " B:"  << msg.b;
@@ -270,7 +142,10 @@ int main(int argc, char** argv)
 
                   // std::cout << " Dummy: " << msg.dummy3 << " " << msg.dummy4 << " " << msg.dummy5 << std::endl;
 
-                  std::cout << "\r" << std::flush;                         
+                  if (0) std::cout << "\r" << std::flush;
+                  else   std::cout << std::endl;
+
+                  uinput->send(msg);
                 }
               else
                 {
