@@ -3,6 +3,10 @@
 #include <usb.h>
 #include <unistd.h>
 #include <iostream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <linux/uinput.h>
 
 /*
 Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
@@ -16,7 +20,7 @@ struct XBox360Msg
 {
   // --------------------------
   unsigned int dummy1      :8;
-  unsigned int dummy2      :8;
+  unsigned int length      :8;
 
   // data[2] ------------------
   unsigned int dpad_up     :1;
@@ -57,6 +61,83 @@ struct XBox360Msg
   unsigned int dummy4      :32;
   unsigned int dummy5      :16;
 } __attribute__((__packed__));
+
+class uInput
+{
+private:
+  int fd;
+
+public:
+  uInput() 
+  {
+    // Open the input device
+    fd = open("/dev/input/uinput", O_WRONLY | O_NDELAY);
+    if (!fd)
+      {
+        printf("Unable to open /dev/uinput\n");
+      }
+    else
+      {
+    ioctl(fd, UI_SET_EVBIT, EV_KEY);
+    ioctl(fd, UI_SET_EVBIT, EV_ABS);
+    
+    ioctl(fd, UI_SET_ABSBIT, ABS_X);
+    ioctl(fd, UI_SET_ABSBIT, ABS_Y);
+
+    ioctl(fd, UI_SET_ABSBIT, ABS_RX);
+    ioctl(fd, UI_SET_ABSBIT, ABS_RY);
+
+    ioctl(fd, UI_SET_ABSBIT, ABS_GAS);
+    ioctl(fd, UI_SET_ABSBIT, ABS_BRAKE);
+
+    ioctl(fd, UI_SET_ABSBIT, ABS_HAT0X);
+    ioctl(fd, UI_SET_ABSBIT, ABS_HAT0Y);
+
+    ioctl(fd, UI_SET_KEYBIT, BTN_START);
+    ioctl(fd, UI_SET_KEYBIT, BTN_MODE);
+    ioctl(fd, UI_SET_KEYBIT, BTN_SELECT);
+
+    ioctl(fd, UI_SET_KEYBIT, BTN_A);
+    ioctl(fd, UI_SET_KEYBIT, BTN_B);
+    ioctl(fd, UI_SET_KEYBIT, BTN_X);
+    ioctl(fd, UI_SET_KEYBIT, BTN_Y);
+
+    ioctl(fd, UI_SET_KEYBIT, BTN_TL);
+    ioctl(fd, UI_SET_KEYBIT, BTN_TR);
+
+    ioctl(fd, UI_SET_KEYBIT, BTN_THUMBL);
+    ioctl(fd, UI_SET_KEYBIT, BTN_THUMBR);
+
+    struct uinput_user_dev uinp;
+    strncpy(uinp.name, "XBOx360 Gamepad", UINPUT_MAX_NAME_SIZE);
+
+    uinp.absmin[ABS_X] = -32768;
+    uinp.absmax[ABS_X] =  32768;
+
+    uinp.id.version = 4;
+    uinp.id.bustype = BUS_USB;
+
+    write(fd, &uinp, sizeof(uinp));
+
+    ioctl(fd, UI_DEV_CREATE);
+
+      }
+  }
+
+  ~uInput()
+  {
+    ioctl(fd, UI_DEV_DESTROY);
+  }
+
+  void send()
+  {
+    struct input_event ev;
+    ev.type = EV_KEY;
+    ev.code = KEY_ENTER;
+    ev.value = 1;
+    write(fd, &ev, sizeof(ev));
+  }
+};
 
 int get_bit(uint8_t data, int bit)
 {
