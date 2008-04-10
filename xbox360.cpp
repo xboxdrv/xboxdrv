@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <boost/format.hpp>
 #include <usb.h>
 #include <unistd.h>
@@ -85,8 +86,26 @@ find_xbox360_controller()
   return 0;
 }
 
+bool sigint_recieved = false;
+
+void sigint_handler(int)
+{
+  if (sigint_recieved)
+    {
+      std::cout << "SIGINT recieved twice, exiting hard" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+  else
+    {
+      std::cout << "SIGINT recieved, shutting down" << std::endl;
+      sigint_recieved = true;
+    }
+}
+
 int main(int argc, char** argv)
 {
+  signal(SIGINT, sigint_handler);
+
   usb_init();
   usb_find_busses();
   usb_find_devices();
@@ -130,7 +149,7 @@ int main(int argc, char** argv)
               usb_bulk_write(handle, 2, ledcmd, 3, 0);
             }
 
-          while(1)
+          while(!sigint_recieved)
             {
               uint8_t data[20];
               int ret = usb_bulk_read(handle, 1,
@@ -168,7 +187,7 @@ int main(int argc, char** argv)
                   std::cout << boost::format("  LT:%3d RT:%3d")
                     % int(msg.lt) % int(msg.rt);
 
-                  std::cout << " Dummy: " << msg.dummy3 << " " << msg.dummy4 << " " << msg.dummy5 << std::endl;
+                  // std::cout << " Dummy: " << msg.dummy3 << " " << msg.dummy4 << " " << msg.dummy5 << std::endl;
 
                   std::cout << "\r" << std::flush;                         
                 }
@@ -189,6 +208,8 @@ int main(int argc, char** argv)
           usb_close(handle);
         }
     }
+
+  std::cout << "Done" << std::endl;
   return 0;
 }
 
