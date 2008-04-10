@@ -1,4 +1,5 @@
 *~
 *.o
 xbox360
-
+.sconsign.dblite
+usb.txt
