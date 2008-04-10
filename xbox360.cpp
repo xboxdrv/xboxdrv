@@ -3,6 +3,14 @@
 #include <unistd.h>
 #include <iostream>
 
+/*
+Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
+Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
+Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
+Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
+
+ */
+
 struct XBox360Msg
 {
   // --------------------------
@@ -37,12 +45,12 @@ struct XBox360Msg
   unsigned int rt          :8;
 
   // data[6] ------------------
-  unsigned int x1          :16;
-  unsigned int y1          :16;
+  int x1                   :16;
+  int y1                   :16;
 
   // data[10] -----------------
-  unsigned int x2          :16;
-  unsigned int y2          :16;
+  int x2                   :16;
+  int y2                   :16;
 
   // data[14]; ----------------
   unsigned int dummy4      :32;
@@ -118,7 +126,7 @@ int main(int argc, char** argv)
               // 13: rotate with two lights
               // 14: blink
               // 15: blink once
-              char ledcmd[] = {1, 3, 0}; 
+              char ledcmd[] = {1, 3, 6}; 
               usb_bulk_write(handle, 2, ledcmd, 3, 0);
             }
 
@@ -127,40 +135,40 @@ int main(int argc, char** argv)
               uint8_t data[20];
               int ret = usb_bulk_read(handle, 1,
                                       (char*)data, 20, 0);
+              XBox360Msg& msg = (XBox360Msg&)data;
               if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
                 {
                   std::cout << boost::format("  S1:(%6d, %6d)") 
-                    % *((int16_t*)(data+6))
-                    % *((int16_t*)(data+8));
+                    % int(msg.x1) % int(msg.y1);
 
                   std::cout << boost::format("  S2:(%6d, %6d)")
-                    % *((int16_t*)(data+10))
-                    % *((int16_t*)(data+12));
+                    % int(msg.x2) % int(msg.y2);
                           
                   std::cout << boost::format(" [u:%d|d:%d|l:%d|r:%d]")
-                    % get_bit(data[2], 0)
-                    % get_bit(data[2], 1)
-                    % get_bit(data[2], 2)
-                    % get_bit(data[2], 3);
+                    % int(msg.dpad_up)
+                    % int(msg.dpad_down)
+                    % int(msg.dpad_left)
+                    % int(msg.dpad_right);
 
-                  std::cout << "  select:" << get_bit(data[2], 5);
-                  std::cout << " mode:"    << get_bit(data[3], 2);
-                  std::cout << " start:"   << get_bit(data[2], 4);
+                  std::cout << "  select:" << msg.select;
+                  std::cout << " mode:"    << msg.mode;
+                  std::cout << " start:"   << msg.start;
 
-                  std::cout << "  sl:" << get_bit(data[2], 6);
-                  std::cout << " sr:"  << get_bit(data[2], 7);
+                  std::cout << "  sl:" << msg.stick_left;
+                  std::cout << " sr:"  << msg.stick_right;
 
-                  std::cout << "  A:" << get_bit(data[3], 4);
-                  std::cout << " B:"  << get_bit(data[3], 5);
-                  std::cout << " X:"  << get_bit(data[3], 7);
-                  std::cout << " Y:"  << get_bit(data[3], 6);
+                  std::cout << "  A:" << msg.a;
+                  std::cout << " B:"  << msg.b;
+                  std::cout << " X:"  << msg.x;
+                  std::cout << " Y:"  << msg.y;
 
-                  std::cout << "  LB:" << get_bit(data[3], 0);
-                  std::cout << " RB:" <<  get_bit(data[3], 1);
+                  std::cout << "  LB:" << msg.lb;
+                  std::cout << " RB:" <<  msg.rb;
 
                   std::cout << boost::format("  LT:%3d RT:%3d")
-                    % int(data[4])
-                    % int(data[5]);
+                    % int(msg.lt) % int(msg.rt);
+
+                  std::cout << " Dummy: " << msg.dummy3 << " " << msg.dummy4 << " " << msg.dummy5 << std::endl;
 
                   std::cout << "\r" << std::flush;                         
                 }
@@ -173,7 +181,8 @@ int main(int argc, char** argv)
                     {
                       std::cout << boost::format("0x%02x ") % int(data[j]);
                     }
-                  std::cout << "\r" << std::flush;
+                  //std::cout << "\r" << std::flush;
+                  std::cout << std::endl;
                 }
             }
 
