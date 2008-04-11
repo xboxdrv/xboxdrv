@@ -31,6 +31,7 @@ public:
   ~uInput();
   
   void send(XBox360Msg& msg);
+  void send(XBoxMsg& msg);
   void send_button(uint16_t code, int32_t value);
   void send_axis(uint16_t code, int32_t value);
 };

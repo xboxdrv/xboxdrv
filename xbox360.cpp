@@ -296,7 +296,7 @@ int main(int argc, char** argv)
           
           std::cout << "Rumble Debugging is " << (rumble ? "on" : "off") << std::endl;
           std::cout << "LED status is " << int(led) << std::endl;
-          //uInput* uinput = new uInput();
+          uInput* uinput = new uInput();
           std::cout << "Your XBox360 controller should now be available as /dev/input/js0" << std::endl;
           std::cout << "Press Ctrl-C twice to quit" << std::endl;
           while(!sigint_recieved)
@@ -329,12 +329,12 @@ int main(int argc, char** argv)
                         { // XBox Classic
                           char l = msg.lt;
                           char b = msg.rt;
-                          char rumblecmd[] = { 0x00, 0x06, 0x00, b, 0x00, l };
-                          usb_bulk_write(handle, 2, rumblecmd, 8, 0);
+                          char rumblecmd[] = { 0x00, 0x06, 0x00, l, 0x00, b };
+                          usb_bulk_write(handle, 2, rumblecmd, 6, 0);
                         }
                     }
-
-                  //uinput->send(msg);
+                  
+                  uinput->send(msg);
                 }
               else
                 {

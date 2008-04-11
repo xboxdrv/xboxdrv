@@ -122,7 +122,7 @@ uInput::send_button(uint16_t code, int32_t value)
   gettimeofday(&ev.time, NULL);
   ev.type  = EV_KEY;
   ev.code  = code;
-  ev.value = value;
+  ev.value = (value>0) ? 1 : 0;
 
  write(fd, &ev, sizeof(ev));
 }
@@ -153,6 +153,59 @@ uInput::send(XBox360Msg& msg)
   send_button(BTN_START,  msg.start);
   send_button(BTN_MODE,   msg.mode);
   send_button(BTN_SELECT, msg.select);
+
+  send_button(BTN_A, msg.a);
+  send_button(BTN_B, msg.b);
+  send_button(BTN_X, msg.x);
+  send_button(BTN_Y, msg.y);
+
+  send_axis(ABS_X, msg.x1);
+  send_axis(ABS_Y, msg.y1);
+
+  send_axis(ABS_RX, msg.x2);
+  send_axis(ABS_RY, msg.y2);
+
+  send_axis(ABS_BRAKE, msg.lt);
+  send_axis(ABS_GAS,   msg.rt);
+
+  if (msg.dpad_up)
+    {
+      send_axis(ABS_HAT0Y, -1);
+    }
+  else if (msg.dpad_down)
+    {
+      send_axis(ABS_HAT0Y, 1);
+    }
+  else
+    {
+      send_axis(ABS_HAT0Y, 0);
+    }
+
+  if (msg.dpad_left)
+    {
+      send_axis(ABS_HAT0X, -1);
+    }
+  else if (msg.dpad_right)
+    {
+      send_axis(ABS_HAT0X, 1);
+    }
+  else
+    {
+      send_axis(ABS_HAT0X, 0);
+    }
+}
+
+void
+uInput::send(XBoxMsg& msg)
+{
+  send_button(BTN_THUMBL,  msg.thumb_l);
+  send_button(BTN_THUMBR,  msg.thumb_r);
+
+  send_button(BTN_TL,  msg.white);
+  send_button(BTN_TR,  msg.black);
+
+  send_button(BTN_START,  msg.start);
+  send_button(BTN_SELECT, msg.back);
 
   send_button(BTN_A, msg.a);
   send_button(BTN_B, msg.b);
