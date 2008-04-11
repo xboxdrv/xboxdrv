@@ -35,5 +35,30 @@ and start the userspace driver:
 This will create a /dev/input/js0 and allow you to access the gamepad
 from any game. To exit the driver press Ctrl-c  twice
 
+[[ LED Commands ]]
+------------------
+
+You can set the LED via:
+
+ % ./xbox360 --led NUM
+
+Valid values for NUM:
+
+   0: off
+   1: all blinking
+   2: 1/top-left blink, then on
+   3: 2/top-right blink, then on
+   4: 3/bottom-left blink, then on
+   5: 4/bottom-right blink, then on
+   6: 1/top-left on
+   7: 2/top-right on
+   8: 3/bottom-left on
+   9: 4/bottom-right on
+  10: rotate
+  11: blink
+  12: blink slower
+  13: rotate with two lights
+  14: blink
+  15: blink once
 
 # EOF #

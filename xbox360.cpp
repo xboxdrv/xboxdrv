@@ -30,7 +30,14 @@
   Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
   Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
   Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
- */
+  -- different session:
+  Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
+  Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
+  Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
+  Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
+  Unknown data: bytes: 3 Data: 0x01 0x03 0x06 
+
+*/
 
 struct usb_device* 
 find_xbox360_controller()
@@ -149,23 +156,6 @@ int main(int argc, char** argv)
           if (1)
             {
               /* The LED-off command for Xbox-360 controllers */
-              // Last byte is LED status:
-              // 0: off
-              // 1: all blinking
-              // 2: top-left blink
-              // 3: top-right blink
-              // 4: bottom-left blink
-              // 5: bottom-right blink
-              // 6: top-left on
-              // 7: top-right on
-              // 8: bottom-left on
-              // 9: bottom-right on
-              // 10: rotate
-              // 11: blink
-              // 12: blink slower
-              // 13: rotate with two lights
-              // 14: blink
-              // 15: blink once
               char ledcmd[] = {1, 3, led}; 
               usb_bulk_write(handle, 2, ledcmd, 3, 0);
             }
@@ -179,6 +169,7 @@ int main(int argc, char** argv)
             }
           
           std::cout << "Rumble Debugging is " << (rumble ? "on" : "off") << std::endl;
+          std::cout << "LED status is " << int(led) << std::endl;
           uInput* uinput = new uInput();
           std::cout << "Your XBox360 controller should now be available as /dev/input/js0" << std::endl;
           std::cout << "Press Ctrl-C twice to quit" << std::endl;
