@@ -26,9 +26,9 @@
 #include "xbox360.hpp"
 
 XPadDevice xpad_devices[] = {
-  // Evil?
-  { GAMEPAD_XBOX,             0x0000, 0x0000, "Generic X-Box pad" },
-  { GAMEPAD_XBOX,             0xffff, 0xffff, "Chinese-made Xbox Controller" },
+  // Evil?!
+  // { GAMEPAD_XBOX,             0x0000, 0x0000, "Generic X-Box pad" },
+  // { GAMEPAD_XBOX,             0xffff, 0xffff, "Chinese-made Xbox Controller" },
 
   // These should work
   { GAMEPAD_XBOX,             0x045e, 0x0202, "Microsoft X-Box pad v1 (US)" },
@@ -187,10 +187,44 @@ std::ostream& operator<<(std::ostream& out, const XBoxMsg& msg)
   return out;
 }
 
-bool find_xbox360_controller(struct usb_device** xbox_device, XPadDevice** type)
+void list_controller()
 {
   struct usb_bus* busses = usb_get_busses();
 
+  int id = 0;
+  std::cout << " id | idVendor | idProduct | Name" << std::endl;
+  std::cout << "----+----------+-----------+---------------------------------" << std::endl;
+  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+    {
+      for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+        {
+          for(int i = 0; i < xpad_devices_count; ++i)
+            {
+              if (dev->descriptor.idVendor  == xpad_devices[i].idVendor &&
+                  dev->descriptor.idProduct == xpad_devices[i].idProduct)
+                {
+                  std::cout << boost::format(" %2d |   0x%04x |    0x%04x | %s")
+                    % id
+                    % int(xpad_devices[i].idVendor)
+                    % int(xpad_devices[i].idProduct)
+                    % xpad_devices[i].name 
+                            << std::endl;
+                  id += 1;
+                  break;
+                }
+            }
+        }
+    }
+
+  if (id == 0)
+    std::cout << "\nNo controller detected" << std::endl; 
+}
+
+bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice** type)
+{
+  struct usb_bus* busses = usb_get_busses();
+
+  int id_count = 0;
   for (struct usb_bus* bus = busses; bus; bus = bus->next)
     {
       for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
@@ -206,9 +240,16 @@ bool find_xbox360_controller(struct usb_device** xbox_device, XPadDevice** type)
               if (dev->descriptor.idVendor  == xpad_devices[i].idVendor &&
                   dev->descriptor.idProduct == xpad_devices[i].idProduct)
                 {
-                  *xbox_device = dev;
-                  *type        = &xpad_devices[i];
-                  return true;
+                  if (id_count == id)
+                    {
+                      *xbox_device = dev;
+                      *type        = &xpad_devices[i];
+                      return true;
+                    }
+                  else
+                    {
+                      id_count += 1;
+                    }
                 }
             }
         }
@@ -221,6 +262,7 @@ int main(int argc, char** argv)
   bool verbose = false;
   bool rumble  = false;
   char led     = 0;
+  int  controller_id = 0;
 
   for(int i = 1; i < argc; ++i)
     {
@@ -235,7 +277,9 @@ int main(int argc, char** argv)
           std::cout << "  -v, --verbose            display controller events" << std::endl;
           std::cout << "  -l, --led NUM            set LED status, see README (default: 0)" << std::endl;
           std::cout << "  -r, --rumble             map rumbling to LT and RT (for testing only)" << std::endl;
+          std::cout << "  -i, --id N               controller number (default: 0)" << std::endl;
           std::cout << "  --list-devices           list supported devices" << std::endl;
+          std::cout << "  --list-controller        list available controllers" << std::endl;
           std::cout << std::endl;
           std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
           return EXIT_SUCCESS;
@@ -250,6 +294,20 @@ int main(int argc, char** argv)
         {
           rumble = true;
         }
+      else if (strcmp(argv[i], "-i") == 0 ||
+               strcmp(argv[i], "--id") == 0)
+        {
+          ++i;
+          if (i < argc)
+            {
+              controller_id = atoi(argv[i]);
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected a argument" << std::endl;
+              return EXIT_FAILURE;
+            }
+        }
       else if (strcmp(argv[i], "-l") == 0 ||
                strcmp(argv[i], "--led") == 0)
         {
@@ -263,6 +321,15 @@ int main(int argc, char** argv)
               std::cout << "Error: " << argv[i-1] << " expected a argument" << std::endl;
               return EXIT_FAILURE;
             }
+        }
+      else if (strcmp(argv[i], "--list-controller") == 0)
+        {
+          usb_init();
+          usb_find_busses();
+          usb_find_devices();
+
+          list_controller();
+          return EXIT_SUCCESS;
         }
       else if (strcmp(argv[i], "--list-devices") == 0)
         {
@@ -291,12 +358,14 @@ int main(int argc, char** argv)
     
   struct usb_device* dev      = 0;
   XPadDevice*        dev_type = 0;
-  if (!find_xbox360_controller(&dev, &dev_type))
+  if (!find_xbox360_controller(controller_id, &dev, &dev_type))
     {
       std::cout << "No XBox360 Controller found" << std::endl;
     }
   else 
     {
+      // Could/should fork here to hande multiple controllers at once
+      
       std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
         % dev_type->name % dev_type->idVendor % dev_type->idProduct << std::endl;
       std::cout << "Controller Type:   " << dev_type->type << std::endl;
@@ -336,7 +405,7 @@ int main(int argc, char** argv)
           
           uInput* uinput = new uInput(dev_type->type == GAMEPAD_XBOX360 ||
                                       dev_type->type == GAMEPAD_XBOX360_WIRELESS);
-          std::cout << "\nYour XBox360 controller should now be available as /dev/input/js0" << std::endl;
+          std::cout << "\nYour XBox360 controller should now be available as /dev/input/jsX" << std::endl;
           std::cout << "Press Ctrl-c to quit" << std::endl;
 
           while(true)

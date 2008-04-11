@@ -35,6 +35,16 @@ and start the userspace driver:
 This will create a /dev/input/js0 and allow you to access the gamepad
 from any game. To exit the driver press Ctrl-c  twice
 
+If you have multiple controllers you need to start multiple instances
+of the xbox360 driver and append the -i argument like this:
+
+ % ./xbox360 -i 1
+
+This will select the second controller, also see:
+
+ % ./xbox360 --list-controller
+
+
 [[ SDL Notes ]]
 ---------------
 
