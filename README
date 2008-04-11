@@ -1,1 +1,39 @@
-XBox360 USB Gamepad Driver for Userspace
+[[ XBox360 USB Gamepad Driver for Userspace ]]
+==============================================
+
+This is a XBox360 gamepad driver for Linux that works in userspace. It
+is a alternative to the xpad kernel driver.
+
+
+[[ Compilation ]]
+-----------------
+
+Required libraries and tools:
+
+ * libusb
+ * boost
+ * scons
+ * uinput
+
+You can compile by typing:
+
+ % scons
+
+
+[[ Running ]]
+--------------
+
+First make sure that the xpad kernel module does not get loaded,
+either by deleting or renaming it. rmmod might not be enough since it
+might be automatically loaded.
+
+Once ensured that xpad is out of the way plug in your XBox360 gamepad
+and start the userspace driver:
+
+ % ./xbox360
+
+This will create a /dev/input/js0 and allow you to access the gamepad
+from any game. To exit the driver press Ctrl-c  twice
+
+
+# EOF #
