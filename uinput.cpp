@@ -65,7 +65,7 @@ uInput::uInput()
 
       struct uinput_user_dev uinp;
       memset(&uinp,0,sizeof(uinp));
-      strncpy(uinp.name, "XBOx360 Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
+      strncpy(uinp.name, "XBox360 Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
       uinp.id.version = 0;
       uinp.id.bustype = BUS_USB;
       uinp.id.vendor  = 0x045e;
@@ -170,11 +170,11 @@ uInput::send(XBox360Msg& msg)
 
   if (msg.dpad_up)
     {
-      send_axis(ABS_HAT0Y, 1);
+      send_axis(ABS_HAT0Y, -1);
     }
   else if (msg.dpad_down)
     {
-      send_axis(ABS_HAT0Y, -1);
+      send_axis(ABS_HAT0Y, 1);
     }
   else
     {
@@ -183,11 +183,11 @@ uInput::send(XBox360Msg& msg)
 
   if (msg.dpad_left)
     {
-      send_axis(ABS_HAT0X, 1);
+      send_axis(ABS_HAT0X, -1);
     }
   else if (msg.dpad_right)
     {
-      send_axis(ABS_HAT0X, -1);
+      send_axis(ABS_HAT0X, 1);
     }
   else
     {

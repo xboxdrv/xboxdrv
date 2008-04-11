@@ -1,6 +1,7 @@
 * add support to remap keys
 * add support to merge LT and RT into Z-axis
 * allow mouse emulation
+* allow swapping of dpad and analog axis, so that dpad is first instead of last
 * ...
 
 # EOF #

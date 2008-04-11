@@ -35,6 +35,19 @@ and start the userspace driver:
 This will create a /dev/input/js0 and allow you to access the gamepad
 from any game. To exit the driver press Ctrl-c  twice
 
+[[ SDL Notes ]]
+---------------
+
+To let SDL know which axis act as a hat and which act as normal axis
+you have to set an environment variable:
+
+ % SDL_LINUX_JOYSTICK="'XBox360 Gamepad (userspace driver)' 6 1 0"
+ % export SDL_LINUX_JOYSTICK
+
+This will let the DPad act as Hat.
+
+See ftp://ptah.lnf.kth.se/pub/misc/sdl-env-vars for more information.
+
 [[ LED Commands ]]
 ------------------
 
