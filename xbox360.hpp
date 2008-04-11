@@ -120,7 +120,7 @@ struct XBoxMsg
   int y2                   :16;
 } __attribute__((__packed__));
 
-enum {
+enum GamepadType {
   GAMEPAD_XBOX,
   GAMEPAD_XBOX_MAT,
   GAMEPAD_XBOX360,
@@ -128,10 +128,10 @@ enum {
 };
 
 struct XPadDevice {
-  uint8_t  type;
-  uint16_t idVendor;
-  uint16_t idProduct;
-  char*    name;
+  GamepadType type;
+  uint16_t    idVendor;
+  uint16_t    idProduct;
+  char*       name;
 };
 
 #endif

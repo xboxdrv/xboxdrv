@@ -25,11 +25,12 @@
 #include "uinput.hpp"
 #include "xbox360.hpp"
 
-XPadDevice xpad_device[] = {
+XPadDevice xpad_devices[] = {
   // Evil?
   { GAMEPAD_XBOX,             0x0000, 0x0000, "Generic X-Box pad" },
   { GAMEPAD_XBOX,             0xffff, 0xffff, "Chinese-made Xbox Controller" },
-  
+
+  // These should work
   { GAMEPAD_XBOX,             0x045e, 0x0202, "Microsoft X-Box pad v1 (US)" },
   { GAMEPAD_XBOX,             0x045e, 0x0285, "Microsoft X-Box pad (Japan)" },
   { GAMEPAD_XBOX,             0x045e, 0x0285, "Microsoft Xbox Controller S" },
@@ -61,14 +62,20 @@ XPadDevice xpad_device[] = {
   { GAMEPAD_XBOX360,          0x045e, 0x028e, "Microsoft Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x0738, 0x4716, "Mad Catz Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x1430, 0x4748, "RedOctane Guitar Hero X-plorer" },
+
+  // Do these work?
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0291, "Microsoft Xbox 360 Wireless Controller" },
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0719, "Microsoft Xbox 360 Wireless Controller (PC)" },
-  { GAMEPAD_XBOX_MAT,         0x0738, 0x4540, "Mad Catz Beat Pad" },
-  { GAMEPAD_XBOX_MAT,         0x0738, 0x6040, "Mad Catz Beat Pad Pro" },
-  { GAMEPAD_XBOX_MAT,         0x0c12, 0x8809, "RedOctane Xbox Dance Pad" },
-  { GAMEPAD_XBOX_MAT,         0x12ab, 0x8809, "Xbox DDR dancepad" },
-  { GAMEPAD_XBOX_MAT,         0x1430, 0x8888, "TX6500+ Dance Pad (first generation)" },
+
+  // Unsupported for now
+  // { GAMEPAD_XBOX_MAT,         0x0738, 0x4540, "Mad Catz Beat Pad" },
+  // { GAMEPAD_XBOX_MAT,         0x0738, 0x6040, "Mad Catz Beat Pad Pro" },
+  // { GAMEPAD_XBOX_MAT,         0x0c12, 0x8809, "RedOctane Xbox Dance Pad" },
+  // { GAMEPAD_XBOX_MAT,         0x12ab, 0x8809, "Xbox DDR dancepad" },
+  // { GAMEPAD_XBOX_MAT,         0x1430, 0x8888, "TX6500+ Dance Pad (first generation)" },
 };
+
+const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
 
 /*
   Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
@@ -84,6 +91,27 @@ XPadDevice xpad_device[] = {
 
 */
 
+std::ostream& operator<<(std::ostream& out, const GamepadType& type) 
+{
+  switch (type)
+    {
+      case GAMEPAD_XBOX360:
+        return out << "XBox360";
+
+      case GAMEPAD_XBOX360_WIRELESS:
+        return out << "XBox360 (wireless)";
+
+      case GAMEPAD_XBOX:
+        return out << "XBox Classic";
+
+      case GAMEPAD_XBOX_MAT:
+        return out << "XBox Dancepad";
+        
+      default:
+        return out << "unknown" << std::endl;
+    }
+}
+
 std::ostream& operator<<(std::ostream& out, const XBox360Msg& msg) 
 {
   out << boost::format("  S1:(%6d, %6d)") 
@@ -98,9 +126,9 @@ std::ostream& operator<<(std::ostream& out, const XBox360Msg& msg)
     % int(msg.dpad_left)
     % int(msg.dpad_right);
 
-  out << "  select:" << msg.select;
-  out << " mode:"    << msg.mode;
-  out << " start:"   << msg.start;
+  out << "  back:" << msg.select;
+  out << " mode:"  << msg.mode;
+  out << " start:" << msg.start;
 
   out << "  sl:" << msg.thumb_l;
   out << " sr:"  << msg.thumb_r;
@@ -159,49 +187,33 @@ std::ostream& operator<<(std::ostream& out, const XBoxMsg& msg)
   return out;
 }
 
-struct usb_device* 
-find_xbox360_controller()
+bool find_xbox360_controller(struct usb_device** xbox_device, XPadDevice** type)
 {
   struct usb_bus* busses = usb_get_busses();
 
-  for (struct usb_bus* bus = busses; bus; bus = bus->next) 
+  for (struct usb_bus* bus = busses; bus; bus = bus->next)
     {
       for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
         {
           if (0)
             std::cout << (boost::format("UsbDevice: idVendor: 0x%04x idProduct: 0x%04x")
-                          % (int)dev->descriptor.idProduct 
-                          % (int)dev->descriptor.idVendor)
+                          % int(dev->descriptor.idProduct)
+                          % int(dev->descriptor.idVendor))
                       << std::endl;
 
-          if (dev->descriptor.idVendor  == 0x045e &&
-              dev->descriptor.idProduct == 0x028e)
-            return dev;
-          else if (dev->descriptor.idVendor  == 0x045e &&
-                   dev->descriptor.idProduct == 0x0289)
-            return dev;
-          else if (dev->descriptor.idVendor  == 0x046d &&
-                   dev->descriptor.idProduct == 0xca88)
-            return dev;
+          for(int i = 0; i < xpad_devices_count; ++i)
+            {
+              if (dev->descriptor.idVendor  == xpad_devices[i].idVendor &&
+                  dev->descriptor.idProduct == xpad_devices[i].idProduct)
+                {
+                  *xbox_device = dev;
+                  *type        = &xpad_devices[i];
+                  return true;
+                }
+            }
         }
     }
   return 0;
-}
-
-bool sigint_recieved = false;
-
-void sigint_handler(int)
-{
-  if (sigint_recieved)
-    {
-      std::cout << "SIGINT recieved twice, exiting hard" << std::endl;
-      exit(EXIT_FAILURE);
-    }
-  else
-    {
-      std::cout << "SIGINT recieved, shutting down" << std::endl;
-      sigint_recieved = true;
-    }
 }
 
 int main(int argc, char** argv)
@@ -223,6 +235,7 @@ int main(int argc, char** argv)
           std::cout << "  -v, --verbose            display controller events" << std::endl;
           std::cout << "  -l, --led NUM            set LED status, see README (default: 0)" << std::endl;
           std::cout << "  -r, --rumble             map rumbling to LT and RT (for testing only)" << std::endl;
+          std::cout << "  --list-devices           list supported devices" << std::endl;
           std::cout << std::endl;
           std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
           return EXIT_SUCCESS;
@@ -251,6 +264,20 @@ int main(int argc, char** argv)
               return EXIT_FAILURE;
             }
         }
+      else if (strcmp(argv[i], "--list-devices") == 0)
+        {
+          std::cout << " idVendor | idProduct | Name" << std::endl;
+          std::cout << "----------+-----------+---------------------------------" << std::endl;
+          for(unsigned int i = 0; i < sizeof(xpad_devices)/sizeof(XPadDevice); ++i)
+            {
+              std::cout << boost::format("   0x%04x |    0x%04x | %s")
+                % int(xpad_devices[i].idVendor)
+                % int(xpad_devices[i].idProduct)
+                % xpad_devices[i].name 
+                        << std::endl;
+            }
+          return EXIT_SUCCESS;
+        }
       else
         {
           std::cout << "Error: unknown command line option: " << argv[i] << std::endl;
@@ -258,20 +285,24 @@ int main(int argc, char** argv)
         }
     }
 
-  signal(SIGINT, sigint_handler);
-
   usb_init();
   usb_find_busses();
   usb_find_devices();
     
-  struct usb_device* dev = find_xbox360_controller();
-  if (!dev)
+  struct usb_device* dev      = 0;
+  XPadDevice*        dev_type = 0;
+  if (!find_xbox360_controller(&dev, &dev_type))
     {
       std::cout << "No XBox360 Controller found" << std::endl;
     }
   else 
     {
-      std::cout << "XBox360 Controller found" << std::endl;
+      std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
+        % dev_type->name % dev_type->idVendor % dev_type->idProduct << std::endl;
+      std::cout << "Controller Type:   " << dev_type->type << std::endl;
+      std::cout << "Rumble Debug:      " << (rumble ? "on" : "off") << std::endl;
+      std::cout << "LED Status:        " << int(led) << std::endl;
+
       struct usb_dev_handle* handle = usb_open(dev);
       if (!handle)
         {
@@ -279,62 +310,78 @@ int main(int argc, char** argv)
         }
       else
         {
-          if (1)
+          // Handle LED on XBox360 Controller
+          if (dev_type->type == GAMEPAD_XBOX360)
             {
-              /* The LED-off command for Xbox-360 controllers */
               char ledcmd[] = {1, 3, led}; 
               usb_bulk_write(handle, 2, ledcmd, 3, 0);
             }
 
-          if (0) // stop rumble
+          // Switch of Rumble
+          if (dev_type->type == GAMEPAD_XBOX360 ||
+              dev_type->type == GAMEPAD_XBOX360_WIRELESS)
             {
               char l = 0; // light weight
               char b = 0; // big weight
               char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
               usb_bulk_write(handle, 2, rumblecmd, 8, 0);
             }
+          else if (dev_type->type == GAMEPAD_XBOX)
+            {
+              char l = 0;
+              char b = 0;
+              char rumblecmd[] = { 0x00, 0x06, 0x00, l, 0x00, b };
+              usb_bulk_write(handle, 2, rumblecmd, 6, 0);              
+            }
           
-          std::cout << "Rumble Debugging is " << (rumble ? "on" : "off") << std::endl;
-          std::cout << "LED status is " << int(led) << std::endl;
-          uInput* uinput = new uInput();
-          std::cout << "Your XBox360 controller should now be available as /dev/input/js0" << std::endl;
-          std::cout << "Press Ctrl-C twice to quit" << std::endl;
-          while(!sigint_recieved)
+          uInput* uinput = new uInput(dev_type->type == GAMEPAD_XBOX360 ||
+                                      dev_type->type == GAMEPAD_XBOX360_WIRELESS);
+          std::cout << "\nYour XBox360 controller should now be available as /dev/input/js0" << std::endl;
+          std::cout << "Press Ctrl-c to quit" << std::endl;
+
+          while(true)
             {
               uint8_t data[20];
               int ret = usb_bulk_read(handle, 1,
                                       (char*)data, 20, 0);
               if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
                 {
-                  //XBox360Msg& msg = (XBox360Msg&)data;
-                  XBoxMsg& msg = (XBoxMsg&)data;
-                  
-                  if (verbose)
+                  if (dev_type->type == GAMEPAD_XBOX360 ||
+                      dev_type->type == GAMEPAD_XBOX360_WIRELESS)  
                     {
-                      std::cout << msg;
-                      if (0) std::cout << "\r" << std::flush;
-                      else   std::cout << std::endl;
-                    }
+                      XBox360Msg& msg = (XBox360Msg&)data;
 
-                  if (rumble)
-                    {
-                      if (0) // XBox360
+                      if (verbose)
+                        std::cout << msg << std::endl;
+
+                      uinput->send(msg);
+                    
+                      if (rumble)
                         {
                           char l = msg.lt;
                           char b = msg.rt;
                           char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
                           usb_bulk_write(handle, 2, rumblecmd, 8, 0);
                         }
-                      else
-                        { // XBox Classic
+
+                    }
+                  else if (dev_type->type == GAMEPAD_XBOX)
+                    { 
+                      XBoxMsg& msg = (XBoxMsg&)data;                
+
+                      if (verbose)
+                        std::cout << msg << std::endl;
+
+                      uinput->send(msg);
+
+                      if (rumble)
+                        {
                           char l = msg.lt;
                           char b = msg.rt;
                           char rumblecmd[] = { 0x00, 0x06, 0x00, l, 0x00, b };
                           usb_bulk_write(handle, 2, rumblecmd, 6, 0);
                         }
-                    }
-                  
-                  uinput->send(msg);
+                    }                      
                 }
               else
                 {
@@ -350,6 +397,7 @@ int main(int argc, char** argv)
                 }
             }
 
+          // Never reached since the user will Ctrl-c
           usb_close(handle);
         }
     }

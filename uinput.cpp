@@ -23,7 +23,7 @@
 #include <linux/uinput.h>
 #include "uinput.hpp"
 
-uInput::uInput() 
+uInput::uInput(bool is_xbox360) 
 {
   // Open the input device
   fd = open("/dev/input/uinput", O_WRONLY | O_NDELAY);
@@ -49,7 +49,8 @@ uInput::uInput()
 
       ioctl(fd, UI_SET_EVBIT,  EV_KEY);
       ioctl(fd, UI_SET_KEYBIT, BTN_START);
-      ioctl(fd, UI_SET_KEYBIT, BTN_MODE);
+      if (is_xbox360)
+        ioctl(fd, UI_SET_KEYBIT, BTN_MODE);
       ioctl(fd, UI_SET_KEYBIT, BTN_SELECT);
 
       ioctl(fd, UI_SET_KEYBIT, BTN_A);

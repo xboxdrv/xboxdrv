@@ -27,7 +27,7 @@ private:
   int fd;
 
 public:
-  uInput();
+  uInput(bool is_xbox360);
   ~uInput();
   
   void send(XBox360Msg& msg);
