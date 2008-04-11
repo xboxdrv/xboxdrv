@@ -25,6 +25,51 @@
 #include "uinput.hpp"
 #include "xbox360.hpp"
 
+XPadDevice xpad_device[] = {
+  // Evil?
+  { GAMEPAD_XBOX,             0x0000, 0x0000, "Generic X-Box pad" },
+  { GAMEPAD_XBOX,             0xffff, 0xffff, "Chinese-made Xbox Controller" },
+  
+  { GAMEPAD_XBOX,             0x045e, 0x0202, "Microsoft X-Box pad v1 (US)" },
+  { GAMEPAD_XBOX,             0x045e, 0x0285, "Microsoft X-Box pad (Japan)" },
+  { GAMEPAD_XBOX,             0x045e, 0x0285, "Microsoft Xbox Controller S" },
+  { GAMEPAD_XBOX,             0x045e, 0x0287, "Microsoft Xbox Controller S" },
+  { GAMEPAD_XBOX,             0x045e, 0x0289, "Microsoft X-Box pad v2 (US)" },
+  { GAMEPAD_XBOX,             0x045e, 0x0289, "Microsoft Xbox Controller S" },
+  { GAMEPAD_XBOX,             0x046d, 0xca84, "Logitech Xbox Cordless Controller" },
+  { GAMEPAD_XBOX,             0x046d, 0xca88, "Logitech Compact Controller for Xbox" },
+  { GAMEPAD_XBOX,             0x05fd, 0x1007, "Mad Catz Controller (unverified)" },
+  { GAMEPAD_XBOX,             0x05fd, 0x107a, "InterAct 'PowerPad Pro' X-Box pad (Germany)" },
+  { GAMEPAD_XBOX,             0x0738, 0x4516, "Mad Catz Control Pad" },
+  { GAMEPAD_XBOX,             0x0738, 0x4522, "Mad Catz LumiCON" },
+  { GAMEPAD_XBOX,             0x0738, 0x4526, "Mad Catz Control Pad Pro" },
+  { GAMEPAD_XBOX,             0x0738, 0x4536, "Mad Catz MicroCON" },
+  { GAMEPAD_XBOX,             0x0738, 0x4556, "Mad Catz Lynx Wireless Controller" },
+  { GAMEPAD_XBOX,             0x0c12, 0x8802, "Zeroplus Xbox Controller" },
+  { GAMEPAD_XBOX,             0x0c12, 0x8810, "Zeroplus Xbox Controller" },
+  { GAMEPAD_XBOX,             0x0c12, 0x9902, "HAMA VibraX - *FAULTY HARDWARE*" },
+  { GAMEPAD_XBOX,             0x0e4c, 0x1097, "Radica Gamester Controller" },
+  { GAMEPAD_XBOX,             0x0e4c, 0x2390, "Radica Games Jtech Controller" },
+  { GAMEPAD_XBOX,             0x0e6f, 0x0003, "Logic3 Freebird wireless Controller" },
+  { GAMEPAD_XBOX,             0x0e6f, 0x0005, "Eclipse wireless Controller" },
+  { GAMEPAD_XBOX,             0x0e6f, 0x0006, "Edge wireless Controller" },
+  { GAMEPAD_XBOX,             0x0e8f, 0x0201, "SmartJoy Frag Xpad/PS2 adaptor" },
+  { GAMEPAD_XBOX,             0x0f30, 0x0202, "Joytech Advanced Controller" },
+  { GAMEPAD_XBOX,             0x0f30, 0x8888, "BigBen XBMiniPad Controller" },
+  { GAMEPAD_XBOX,             0x102c, 0xff0c, "Joytech Wireless Advanced Controller" },
+  { GAMEPAD_XBOX,             0x044f, 0x0f07, "Thrustmaster, Inc. Controller" },
+  { GAMEPAD_XBOX360,          0x045e, 0x028e, "Microsoft Xbox 360 Controller" },
+  { GAMEPAD_XBOX360,          0x0738, 0x4716, "Mad Catz Xbox 360 Controller" },
+  { GAMEPAD_XBOX360,          0x1430, 0x4748, "RedOctane Guitar Hero X-plorer" },
+  { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0291, "Microsoft Xbox 360 Wireless Controller" },
+  { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0719, "Microsoft Xbox 360 Wireless Controller (PC)" },
+  { GAMEPAD_XBOX_MAT,         0x0738, 0x4540, "Mad Catz Beat Pad" },
+  { GAMEPAD_XBOX_MAT,         0x0738, 0x6040, "Mad Catz Beat Pad Pro" },
+  { GAMEPAD_XBOX_MAT,         0x0c12, 0x8809, "RedOctane Xbox Dance Pad" },
+  { GAMEPAD_XBOX_MAT,         0x12ab, 0x8809, "Xbox DDR dancepad" },
+  { GAMEPAD_XBOX_MAT,         0x1430, 0x8888, "TX6500+ Dance Pad (first generation)" },
+};
+
 /*
   Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
   Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
@@ -38,6 +83,81 @@
   Unknown data: bytes: 3 Data: 0x01 0x03 0x06 
 
 */
+
+std::ostream& operator<<(std::ostream& out, const XBox360Msg& msg) 
+{
+  out << boost::format("  S1:(%6d, %6d)") 
+    % int(msg.x1) % int(msg.y1);
+
+  out << boost::format("  S2:(%6d, %6d)")
+    % int(msg.x2) % int(msg.y2);
+                          
+  out << boost::format(" [u:%d|d:%d|l:%d|r:%d]")
+    % int(msg.dpad_up)
+    % int(msg.dpad_down)
+    % int(msg.dpad_left)
+    % int(msg.dpad_right);
+
+  out << "  select:" << msg.select;
+  out << " mode:"    << msg.mode;
+  out << " start:"   << msg.start;
+
+  out << "  sl:" << msg.thumb_l;
+  out << " sr:"  << msg.thumb_r;
+
+  out << "  A:" << msg.a;
+  out << " B:"  << msg.b;
+  out << " X:"  << msg.x;
+  out << " Y:"  << msg.y;
+
+  out << "  LB:" << msg.lb;
+  out << " RB:" <<  msg.rb;
+
+  out << boost::format("  LT:%3d RT:%3d")
+    % int(msg.lt) % int(msg.rt);
+
+  if (0)
+    out << " Dummy: " << msg.dummy3 << " " << msg.dummy4 << " " << msg.dummy5;
+
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const XBoxMsg& msg) 
+{
+  out << boost::format(" S1:(%6d, %6d) S2:(%6d, %6d) "
+                       " [u:%d|d:%d|l:%d|r:%d] "
+                       " start:%d back:%d "
+                       " sl:%d sr:%d "
+                       " A:%3d B:%3d X:%3d Y:%3d "
+                       " black:%3d white:%3d "
+                       " LT:%3d RT:%3d ")
+    % int(msg.x1) % int(msg.y1)
+    % int(msg.x2) % int(msg.y2)
+
+    % int(msg.dpad_up)
+    % int(msg.dpad_down)
+    % int(msg.dpad_left)
+    % int(msg.dpad_right)
+
+    % int(msg.start)
+    % int(msg.back)
+
+    % int(msg.thumb_l)
+    % int(msg.thumb_r)
+
+    % int(msg.a)
+    % int(msg.b)
+    % int(msg.x)
+    % int(msg.y)
+
+    % int(msg.black)
+    % int(msg.white)
+
+    % int(msg.lt) 
+    % int(msg.rt);
+
+  return out;
+}
 
 struct usb_device* 
 find_xbox360_controller()
@@ -56,6 +176,12 @@ find_xbox360_controller()
 
           if (dev->descriptor.idVendor  == 0x045e &&
               dev->descriptor.idProduct == 0x028e)
+            return dev;
+          else if (dev->descriptor.idVendor  == 0x045e &&
+                   dev->descriptor.idProduct == 0x0289)
+            return dev;
+          else if (dev->descriptor.idVendor  == 0x046d &&
+                   dev->descriptor.idProduct == 0xca88)
             return dev;
         }
     }
@@ -160,7 +286,7 @@ int main(int argc, char** argv)
               usb_bulk_write(handle, 2, ledcmd, 3, 0);
             }
 
-          if (1) // stop rumble
+          if (0) // stop rumble
             {
               char l = 0; // light weight
               char b = 0; // big weight
@@ -170,7 +296,7 @@ int main(int argc, char** argv)
           
           std::cout << "Rumble Debugging is " << (rumble ? "on" : "off") << std::endl;
           std::cout << "LED status is " << int(led) << std::endl;
-          uInput* uinput = new uInput();
+          //uInput* uinput = new uInput();
           std::cout << "Your XBox360 controller should now be available as /dev/input/js0" << std::endl;
           std::cout << "Press Ctrl-C twice to quit" << std::endl;
           while(!sigint_recieved)
@@ -180,56 +306,35 @@ int main(int argc, char** argv)
                                       (char*)data, 20, 0);
               if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
                 {
-                  XBox360Msg& msg = (XBox360Msg&)data;
+                  //XBox360Msg& msg = (XBox360Msg&)data;
+                  XBoxMsg& msg = (XBoxMsg&)data;
                   
                   if (verbose)
                     {
-                      std::cout << boost::format("  S1:(%6d, %6d)") 
-                        % int(msg.x1) % int(msg.y1);
-
-                      std::cout << boost::format("  S2:(%6d, %6d)")
-                        % int(msg.x2) % int(msg.y2);
-                          
-                      std::cout << boost::format(" [u:%d|d:%d|l:%d|r:%d]")
-                        % int(msg.dpad_up)
-                        % int(msg.dpad_down)
-                        % int(msg.dpad_left)
-                        % int(msg.dpad_right);
-
-                      std::cout << "  select:" << msg.select;
-                      std::cout << " mode:"    << msg.mode;
-                      std::cout << " start:"   << msg.start;
-
-                      std::cout << "  sl:" << msg.thumb_l;
-                      std::cout << " sr:"  << msg.thumb_r;
-
-                      std::cout << "  A:" << msg.a;
-                      std::cout << " B:"  << msg.b;
-                      std::cout << " X:"  << msg.x;
-                      std::cout << " Y:"  << msg.y;
-
-                      std::cout << "  LB:" << msg.lb;
-                      std::cout << " RB:" <<  msg.rb;
-
-                      std::cout << boost::format("  LT:%3d RT:%3d")
-                        % int(msg.lt) % int(msg.rt);
-
-                      if (0)
-                        std::cout << " Dummy: " << msg.dummy3 << " " << msg.dummy4 << " " << msg.dummy5 << std::endl;
-
+                      std::cout << msg;
                       if (0) std::cout << "\r" << std::flush;
                       else   std::cout << std::endl;
                     }
 
                   if (rumble)
                     {
-                      char l = msg.lt;
-                      char b = msg.rt;
-                      char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
-                      usb_bulk_write(handle, 2, rumblecmd, 8, 0);
+                      if (0) // XBox360
+                        {
+                          char l = msg.lt;
+                          char b = msg.rt;
+                          char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
+                          usb_bulk_write(handle, 2, rumblecmd, 8, 0);
+                        }
+                      else
+                        { // XBox Classic
+                          char l = msg.lt;
+                          char b = msg.rt;
+                          char rumblecmd[] = { 0x00, 0x06, 0x00, b, 0x00, l };
+                          usb_bulk_write(handle, 2, rumblecmd, 8, 0);
+                        }
                     }
 
-                  uinput->send(msg);
+                  //uinput->send(msg);
                 }
               else
                 {

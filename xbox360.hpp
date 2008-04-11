@@ -41,8 +41,7 @@ enum XBox360Buttons {
 struct XBox360Msg
 {
   // --------------------------
-  unsigned int dummy1      :8;
-  unsigned int length      :8;
+  unsigned int length     :16;
 
   // data[2] ------------------
   unsigned int dpad_up     :1;
@@ -83,6 +82,57 @@ struct XBox360Msg
   unsigned int dummy4      :32;
   unsigned int dummy5      :16;
 } __attribute__((__packed__));
+
+struct XBoxMsg
+{
+  // --------------------------
+  unsigned int length     :16;
+
+  // data[2] ------------------
+  unsigned int dpad_up     :1;
+  unsigned int dpad_down   :1;
+  unsigned int dpad_left   :1;
+  unsigned int dpad_right  :1;
+
+  unsigned int start       :1;
+  unsigned int back        :1;
+
+  unsigned int thumb_l     :1;
+  unsigned int thumb_r     :1;
+
+  // data[3] ------------------
+  unsigned int dummy       :8;
+  unsigned int a           :8;
+  unsigned int b           :8;
+  unsigned int x           :8;
+  unsigned int y           :8;
+  unsigned int black       :8;
+  unsigned int white       :8;
+  unsigned int lt          :8;
+  unsigned int rt          :8;
+
+  // data[6] ------------------
+  int x1                   :16;
+  int y1                   :16;
+
+  // data[10] -----------------
+  int x2                   :16;
+  int y2                   :16;
+} __attribute__((__packed__));
+
+enum {
+  GAMEPAD_XBOX,
+  GAMEPAD_XBOX_MAT,
+  GAMEPAD_XBOX360,
+  GAMEPAD_XBOX360_WIRELESS
+};
+
+struct XPadDevice {
+  uint8_t  type;
+  uint16_t idVendor;
+  uint16_t idProduct;
+  char*    name;
+};
 
 #endif
 
