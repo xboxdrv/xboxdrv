@@ -26,7 +26,7 @@
 #include "xbox360.hpp"
 
 XPadDevice xpad_devices[] = {
-  // Evil?!
+  // Evil?! Anymore info we could use to identify the devices?
   // { GAMEPAD_XBOX,             0x0000, 0x0000, "Generic X-Box pad" },
   // { GAMEPAD_XBOX,             0xffff, 0xffff, "Chinese-made Xbox Controller" },
 
@@ -75,20 +75,6 @@ XPadDevice xpad_devices[] = {
 };
 
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
-
-/*
-  Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
-  Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
-  Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
-  Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
-  -- different session:
-  Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
-  Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
-  Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
-  Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
-  Unknown data: bytes: 3 Data: 0x01 0x03 0x06 
-
-*/
 
 std::ostream& operator<<(std::ostream& out, const GamepadType& type) 
 {
@@ -406,12 +392,24 @@ int main(int argc, char** argv)
           std::cout << "\nYour XBox360 controller should now be available as /dev/input/jsX" << std::endl;
           std::cout << "Press Ctrl-c to quit" << std::endl;
 
-          while(true)
+          bool quit = false;
+          while(!quit)
             {
               uint8_t data[20];
               int ret = usb_bulk_read(handle, 1,
                                       (char*)data, 20, 0);
-              if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
+              if (ret < 0)
+                { // Error
+                  std::cout << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
+                  std::cout << "Shutting down" << std::endl;
+                  quit = true;
+                }
+              else if (ret == 0)
+                {
+                  // happen with the XBox360 every now and then, just
+                  // ignore, seems harmless
+                }
+              else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
                 {
                   if (dev_type->type == GAMEPAD_XBOX360 ||
                       dev_type->type == GAMEPAD_XBOX360_WIRELESS)  
@@ -452,6 +450,20 @@ int main(int argc, char** argv)
                 }
               else
                 {
+                  /* Happens with XBox360 Controller sometimes
+                     Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
+                     Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
+                     Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
+                     Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
+                     -- different session:
+                     Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
+                     Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
+                     Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
+                     Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
+                     Unknown data: bytes: 3 Data: 0x01 0x03 0x06 
+
+                  */
+
                   std::cout << "Unknown data: bytes: " << ret 
                             << " Data: ";
                       
@@ -464,7 +476,8 @@ int main(int argc, char** argv)
                 }
             }
 
-          // Never reached since the user will Ctrl-c
+          // Almost never reached since the user will Ctrl-c and we
+          // can't use sigint since we block in usb_bulk_read()
           usb_close(handle);
         }
     }

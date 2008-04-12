@@ -40,8 +40,9 @@ enum XBox360Buttons {
 
 struct XBox360Msg
 {
-  // --------------------------
-  unsigned int length     :16;
+  // -------------------------
+  unsigned int type       :8;
+  unsigned int length     :8;
 
   // data[2] ------------------
   unsigned int dpad_up     :1;
@@ -86,7 +87,8 @@ struct XBox360Msg
 struct XBoxMsg
 {
   // --------------------------
-  unsigned int length     :16;
+  unsigned int type       :8;
+  unsigned int length     :8;
 
   // data[2] ------------------
   unsigned int dpad_up     :1;

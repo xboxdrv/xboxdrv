@@ -2,6 +2,9 @@
 * add support to merge LT and RT into Z-axis
 * allow mouse emulation
 * allow swapping of dpad and analog axis, so that dpad is first instead of last
+* some controllers send data even when nothing has changed (Logitech
+  XBox), while the official ones only send data on events, shall we
+  handle this?
 * ...
 
 # EOF #
