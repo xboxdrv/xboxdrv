@@ -23,7 +23,7 @@
 #include <linux/uinput.h>
 #include "uinput.hpp"
 
-uInput::uInput(bool is_xbox360) 
+uInput::uInput(GamepadType type)
 {
   // Open the input device
   fd = open("/dev/input/uinput", O_WRONLY | O_NDELAY);
@@ -48,10 +48,12 @@ uInput::uInput(bool is_xbox360)
       ioctl(fd, UI_SET_ABSBIT, ABS_HAT0Y);
 
       ioctl(fd, UI_SET_EVBIT,  EV_KEY);
+
       ioctl(fd, UI_SET_KEYBIT, BTN_START);
-      if (is_xbox360)
-        ioctl(fd, UI_SET_KEYBIT, BTN_MODE);
       ioctl(fd, UI_SET_KEYBIT, BTN_SELECT);
+        
+      if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX360_WIRELESS)
+        ioctl(fd, UI_SET_KEYBIT, BTN_MODE);
 
       ioctl(fd, UI_SET_KEYBIT, BTN_A);
       ioctl(fd, UI_SET_KEYBIT, BTN_B);
@@ -66,7 +68,7 @@ uInput::uInput(bool is_xbox360)
 
       struct uinput_user_dev uinp;
       memset(&uinp,0,sizeof(uinp));
-      strncpy(uinp.name, "XBox360 Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
+      strncpy(uinp.name, "XBox Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
       uinp.id.version = 0;
       uinp.id.bustype = BUS_USB;
       uinp.id.vendor  = 0x045e;
@@ -161,10 +163,10 @@ uInput::send(XBox360Msg& msg)
   send_button(BTN_Y, msg.y);
 
   send_axis(ABS_X, msg.x1);
-  send_axis(ABS_Y, msg.y1);
+  send_axis(ABS_Y, -msg.y1);
 
   send_axis(ABS_RX, msg.x2);
-  send_axis(ABS_RY, msg.y2);
+  send_axis(ABS_RY, -msg.y2);
 
   send_axis(ABS_BRAKE, msg.lt);
   send_axis(ABS_GAS,   msg.rt);

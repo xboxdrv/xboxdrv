@@ -40,7 +40,7 @@ of the xbox360 driver and append the -i argument like this:
 
  % ./xbox360 -i 1
 
-This will select the second controller, also see:
+This will then use the second detected controller, also see:
 
  % ./xbox360 --list-controller
 
@@ -54,7 +54,8 @@ you have to set an environment variable:
  % SDL_LINUX_JOYSTICK="'XBox360 Gamepad (userspace driver)' 6 1 0"
  % export SDL_LINUX_JOYSTICK
 
-This will let the DPad act as Hat.
+This will let the DPad act as Hat in case you need that for any
+game. For most games the driver should work as-is.
 
 See ftp://ptah.lnf.kth.se/pub/misc/sdl-env-vars for more information.
 

@@ -27,7 +27,7 @@ private:
   int fd;
 
 public:
-  uInput(bool is_xbox360);
+  uInput(GamepadType type);
   ~uInput();
   
   void send(XBox360Msg& msg);

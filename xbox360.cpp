@@ -67,12 +67,11 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0291, "Microsoft Xbox 360 Wireless Controller" },
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0719, "Microsoft Xbox 360 Wireless Controller (PC)" },
 
-  // Unsupported for now
-  // { GAMEPAD_XBOX_MAT,         0x0738, 0x4540, "Mad Catz Beat Pad" },
-  // { GAMEPAD_XBOX_MAT,         0x0738, 0x6040, "Mad Catz Beat Pad Pro" },
-  // { GAMEPAD_XBOX_MAT,         0x0c12, 0x8809, "RedOctane Xbox Dance Pad" },
-  // { GAMEPAD_XBOX_MAT,         0x12ab, 0x8809, "Xbox DDR dancepad" },
-  // { GAMEPAD_XBOX_MAT,         0x1430, 0x8888, "TX6500+ Dance Pad (first generation)" },
+  { GAMEPAD_XBOX_MAT,         0x0738, 0x4540, "Mad Catz Beat Pad" },
+  { GAMEPAD_XBOX_MAT,         0x0738, 0x6040, "Mad Catz Beat Pad Pro" },
+  { GAMEPAD_XBOX_MAT,         0x0c12, 0x8809, "RedOctane Xbox Dance Pad" },
+  { GAMEPAD_XBOX_MAT,         0x12ab, 0x8809, "Xbox DDR dancepad" },
+  { GAMEPAD_XBOX_MAT,         0x1430, 0x8888, "TX6500+ Dance Pad (first generation)" },
 };
 
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
@@ -403,8 +402,7 @@ int main(int argc, char** argv)
               usb_bulk_write(handle, 2, rumblecmd, 6, 0);              
             }
           
-          uInput* uinput = new uInput(dev_type->type == GAMEPAD_XBOX360 ||
-                                      dev_type->type == GAMEPAD_XBOX360_WIRELESS);
+          uInput* uinput = new uInput(dev_type->type);
           std::cout << "\nYour XBox360 controller should now be available as /dev/input/jsX" << std::endl;
           std::cout << "Press Ctrl-c to quit" << std::endl;
 
@@ -427,8 +425,8 @@ int main(int argc, char** argv)
                     
                       if (rumble)
                         {
-                          char l = msg.lt;
-                          char b = msg.rt;
+                          char l = msg.rt;
+                          char b = msg.lt;
                           char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
                           usb_bulk_write(handle, 2, rumblecmd, 8, 0);
                         }
