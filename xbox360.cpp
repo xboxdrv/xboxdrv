@@ -35,8 +35,8 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX,             0x045e, 0x0285, "Microsoft X-Box pad (Japan)" },
   { GAMEPAD_XBOX,             0x045e, 0x0285, "Microsoft Xbox Controller S" },
   { GAMEPAD_XBOX,             0x045e, 0x0287, "Microsoft Xbox Controller S" },
-  { GAMEPAD_XBOX,             0x045e, 0x0289, "Microsoft X-Box pad v2 (US)" },
-  { GAMEPAD_XBOX,             0x045e, 0x0289, "Microsoft Xbox Controller S" },
+  { GAMEPAD_XBOX,             0x045e, 0x0289, "Microsoft X-Box pad v2 (US)" }, // duplicate
+  { GAMEPAD_XBOX,             0x045e, 0x0289, "Microsoft Xbox Controller S" }, // duplicate
   { GAMEPAD_XBOX,             0x046d, 0xca84, "Logitech Xbox Cordless Controller" },
   { GAMEPAD_XBOX,             0x046d, 0xca88, "Logitech Compact Controller for Xbox" },
   { GAMEPAD_XBOX,             0x05fd, 0x1007, "Mad Catz Controller (unverified)" },
@@ -234,6 +234,7 @@ bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice
                   else
                     {
                       id_count += 1;
+                      break;
                     }
                 }
             }
