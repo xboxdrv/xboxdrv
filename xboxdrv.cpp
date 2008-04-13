@@ -23,7 +23,7 @@
 #include <iostream>
 
 #include "uinput.hpp"
-#include "xbox360.hpp"
+#include "xboxdrv.hpp"
 
 XPadDevice xpad_devices[] = {
   // Evil?! Anymore info we could use to identify the devices?

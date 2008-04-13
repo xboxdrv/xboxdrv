@@ -19,7 +19,7 @@
 #ifndef HEADER_UINPUT_HPP
 #define HEADER_UINPUT_HPP
 
-#include "xbox360.hpp"
+#include "xboxdrv.hpp"
 
 class uInputCfg
 {
