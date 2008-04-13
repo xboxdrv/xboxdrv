@@ -1,6 +1,6 @@
 *~
 *.o
-xbox360
+xboxdrv
 .sconsign.dblite
 usb.txt
 xpad.c
