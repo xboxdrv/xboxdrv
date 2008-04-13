@@ -248,7 +248,10 @@ int main(int argc, char** argv)
   bool verbose = false;
   bool rumble  = false;
   char led     = 0;
+  int  rumble_l = 0;
+  int  rumble_r = 0;
   int  controller_id = 0;
+  bool instant_exit = false;
 
   for(int i = 1; i < argc; ++i)
     {
@@ -262,8 +265,10 @@ int main(int argc, char** argv)
           std::cout << "  -h, --help               display this help and exit" << std::endl;
           std::cout << "  -v, --verbose            display controller events" << std::endl;
           std::cout << "  -l, --led NUM            set LED status, see --list-led-values (default: 0)" << std::endl;
-          std::cout << "  -r, --rumble             map rumbling to LT and RT (for testing only)" << std::endl;
+          std::cout << "  -r, --rumble L,R         set the speed for both rumble motors [0-255] (default: 0,0)" << std::endl;
           std::cout << "  -i, --id N               controller number (default: 0)" << std::endl;
+          std::cout << "  -q, --quit               only set led and rumble status then quit" << std::endl;
+          std::cout << "  --test-rumble            map rumbling to LT and RT (for testing only)" << std::endl;
           std::cout << "  --list-devices           list supported devices" << std::endl;
           std::cout << "  --list-controller        list available controllers" << std::endl;
           std::cout << "  --list-led-values        list possible values for the led" << std::endl;
@@ -277,10 +282,30 @@ int main(int argc, char** argv)
         {
           verbose = true;
         }
+      else if (strcmp(argv[i], "--test-rumble") == 0)
+        {
+          rumble = true;
+        }
       else if (strcmp(argv[i], "-r") == 0 ||
                strcmp(argv[i], "--rumble") == 0)
         {
-          rumble = true;
+          ++i;
+          if (i < argc)
+            {
+              sscanf(argv[i], "%d,%d", &rumble_l, &rumble_r);
+              rumble_l = std::max(0, std::min(255, rumble_l));
+              rumble_r = std::max(0, std::min(255, rumble_r));
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected a argument" << std::endl;
+              return EXIT_FAILURE;
+            }          
+        }
+      else if (strcmp(argv[i], "-q") == 0 ||
+               strcmp(argv[i], "--quit") == 0)
+        {
+          instant_exit = true;
         }
       else if (strcmp(argv[i], "-i") == 0 ||
                strcmp(argv[i], "--id") == 0)
@@ -381,6 +406,7 @@ int main(int argc, char** argv)
         % dev_type->name % dev_type->idVendor % dev_type->idProduct << std::endl;
       std::cout << "Controller Type:   " << dev_type->type << std::endl;
       std::cout << "Rumble Debug:      " << (rumble ? "on" : "off") << std::endl;
+      std::cout << "Rumble Speed:      " << "left: " << rumble_l << " right: " << rumble_r << std::endl;
       std::cout << "LED Status:        " << int(led) << std::endl;
 
       struct usb_dev_handle* handle = usb_open(dev);
@@ -401,115 +427,118 @@ int main(int argc, char** argv)
           if (dev_type->type == GAMEPAD_XBOX360 ||
               dev_type->type == GAMEPAD_XBOX360_WIRELESS)
             {
-              char l = 0; // light weight
-              char b = 0; // big weight
+              char l = rumble_r; // light weight
+              char b = rumble_l; // big weight
               char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
               usb_bulk_write(handle, 2, rumblecmd, 8, 0);
             }
           else if (dev_type->type == GAMEPAD_XBOX)
             {
-              char l = 0;
-              char b = 0;
+              char l = rumble_l;
+              char b = rumble_r;
               char rumblecmd[] = { 0x00, 0x06, 0x00, l, 0x00, b };
               usb_bulk_write(handle, 2, rumblecmd, 6, 0);              
             }
-          
-          uInput* uinput = new uInput(dev_type->type);
-          std::cout << "\nYour XBox360 controller should now be available as /dev/input/jsX" << std::endl;
-          std::cout << "Press Ctrl-c to quit" << std::endl;
 
-          bool quit = false;
-          uint8_t old_data[20];
-          memset(old_data, 0, 20);
-          while(!quit)
-            {
-              uint8_t data[20];
-              int ret = usb_bulk_read(handle, 1,
-                                      (char*)data, 20, 0);
-              if (ret < 0)
-                { // Error
-                  std::cout << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
-                  std::cout << "Shutting down" << std::endl;
-                  quit = true;
-                }
-              else if (ret == 0)
+          if (!instant_exit)
+            {          
+              uInput* uinput = new uInput(dev_type->type);
+              std::cout << "\nYour XBox360 controller should now be available as /dev/input/jsX" << std::endl;
+              std::cout << "Press Ctrl-c to quit" << std::endl;
+
+              bool quit = false;
+              uint8_t old_data[20];
+              memset(old_data, 0, 20);
+              while(!quit)
                 {
-                  // happen with the XBox360 every now and then, just
-                  // ignore, seems harmless
-                }
-              else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
-                {
-                  if (memcmp(data, old_data, 20) == 0)
+                  uint8_t data[20];
+                  int ret = usb_bulk_read(handle, 1,
+                                          (char*)data, 20, 0);
+                  if (ret < 0)
+                    { // Error
+                      std::cout << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
+                      std::cout << "Shutting down" << std::endl;
+                      quit = true;
+                    }
+                  else if (ret == 0)
                     {
-                      // Ignore the data, since nothing has changed
-                    }                
+                      // happen with the XBox360 every now and then, just
+                      // ignore, seems harmless
+                    }
+                  else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
+                    {
+                      if (memcmp(data, old_data, 20) == 0)
+                        {
+                          // Ignore the data, since nothing has changed
+                        }                
+                      else
+                        {
+                          memcpy(old_data, data, 20);
+
+                          if (dev_type->type == GAMEPAD_XBOX360 ||
+                              dev_type->type == GAMEPAD_XBOX360_WIRELESS)  
+                            {
+                              XBox360Msg& msg = (XBox360Msg&)data;
+
+                              if (verbose)
+                                std::cout << msg << std::endl;
+
+                              uinput->send(msg);
+                    
+                              if (rumble)
+                                {
+                                  char l = msg.rt;
+                                  char b = msg.lt;
+                                  char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
+                                  usb_bulk_write(handle, 2, rumblecmd, 8, 0);
+                                }
+
+                            }
+                          else if (dev_type->type == GAMEPAD_XBOX)
+                            { 
+                              XBoxMsg& msg = (XBoxMsg&)data;                
+
+                              if (verbose)
+                                std::cout << msg << std::endl;
+
+                              uinput->send(msg);
+
+                              if (rumble)
+                                {
+                                  char l = msg.lt;
+                                  char b = msg.rt;
+                                  char rumblecmd[] = { 0x00, 0x06, 0x00, l, 0x00, b };
+                                  usb_bulk_write(handle, 2, rumblecmd, 6, 0);
+                                }
+                            }    
+                        }                  
+                    }
                   else
                     {
-                      memcpy(old_data, data, 20);
+                      /* Happens with XBox360 Controller sometimes
+                         Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
+                         Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
+                         Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
+                         Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
+                         -- different session:
+                         Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
+                         Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
+                         Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
+                         Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
+                         Unknown data: bytes: 3 Data: 0x01 0x03 0x06 
 
-                      if (dev_type->type == GAMEPAD_XBOX360 ||
-                          dev_type->type == GAMEPAD_XBOX360_WIRELESS)  
-                        {
-                          XBox360Msg& msg = (XBox360Msg&)data;
+                      */
 
-                          if (verbose)
-                            std::cout << msg << std::endl;
-
-                          uinput->send(msg);
-                    
-                          if (rumble)
-                            {
-                              char l = msg.rt;
-                              char b = msg.lt;
-                              char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
-                              usb_bulk_write(handle, 2, rumblecmd, 8, 0);
-                            }
-
-                        }
-                      else if (dev_type->type == GAMEPAD_XBOX)
-                        { 
-                          XBoxMsg& msg = (XBoxMsg&)data;                
-
-                          if (verbose)
-                            std::cout << msg << std::endl;
-
-                          uinput->send(msg);
-
-                          if (rumble)
-                            {
-                              char l = msg.lt;
-                              char b = msg.rt;
-                              char rumblecmd[] = { 0x00, 0x06, 0x00, l, 0x00, b };
-                              usb_bulk_write(handle, 2, rumblecmd, 6, 0);
-                            }
-                        }    
-                    }                  
-                }
-              else
-                {
-                  /* Happens with XBox360 Controller sometimes
-                     Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
-                     Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
-                     Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
-                     Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
-                     -- different session:
-                     Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
-                     Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
-                     Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
-                     Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
-                     Unknown data: bytes: 3 Data: 0x01 0x03 0x06 
-
-                  */
-
-                  std::cout << "Unknown data: bytes: " << ret 
-                            << " Data: ";
+                      std::cout << "Unknown data: bytes: " << ret 
+                                << " Data: ";
                       
-                  for(int j = 0; j < ret; ++j)
-                    {
-                      std::cout << boost::format("0x%02x ") % int(data[j]);
+                      for(int j = 0; j < ret; ++j)
+                        {
+                          std::cout << boost::format("0x%02x ") % int(data[j]);
+                        }
+                      //std::cout << "\r" << std::flush;
+                      std::cout << std::endl;
                     }
-                  //std::cout << "\r" << std::flush;
-                  std::cout << std::endl;
                 }
             }
 

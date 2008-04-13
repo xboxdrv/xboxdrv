@@ -74,32 +74,29 @@ uInput::uInput(GamepadType type)
       uinp.id.vendor  = 0x045e;
       uinp.id.product = 0x028e;
 
-      if (1)
-        {
-          uinp.absmin[ABS_X] = -32768;
-          uinp.absmax[ABS_X] =  32767;
+      uinp.absmin[ABS_X] = -32768;
+      uinp.absmax[ABS_X] =  32767;
 
-          uinp.absmin[ABS_Y] = -32768;
-          uinp.absmax[ABS_Y] =  32767;
+      uinp.absmin[ABS_Y] = -32768;
+      uinp.absmax[ABS_Y] =  32767;
 
-          uinp.absmin[ABS_RX] = -32768;
-          uinp.absmax[ABS_RX] =  32767;
+      uinp.absmin[ABS_RX] = -32768;
+      uinp.absmax[ABS_RX] =  32767;
 
-          uinp.absmin[ABS_RY] = -32768;
-          uinp.absmax[ABS_RY] =  32767;
+      uinp.absmin[ABS_RY] = -32768;
+      uinp.absmax[ABS_RY] =  32767;
 
-          uinp.absmin[ABS_GAS] = 0;
-          uinp.absmax[ABS_GAS] = 255;
+      uinp.absmin[ABS_GAS] = 0;
+      uinp.absmax[ABS_GAS] = 255;
     
-          uinp.absmin[ABS_BRAKE] = 0;
-          uinp.absmax[ABS_BRAKE] = 255;
+      uinp.absmin[ABS_BRAKE] = 0;
+      uinp.absmax[ABS_BRAKE] = 255;
 
-          uinp.absmin[ABS_HAT0X] = -1;
-          uinp.absmax[ABS_HAT0X] =  1;
+      uinp.absmin[ABS_HAT0X] = -1;
+      uinp.absmax[ABS_HAT0X] =  1;
 
-          uinp.absmin[ABS_HAT0Y] = -1;
-          uinp.absmax[ABS_HAT0Y] =  1;
-        }
+      uinp.absmin[ABS_HAT0Y] = -1;
+      uinp.absmax[ABS_HAT0Y] =  1;
 
       write(fd, &uinp, sizeof(uinp));
 
