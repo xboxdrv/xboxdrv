@@ -278,6 +278,7 @@ int main(int argc, char** argv)
           std::cout << std::endl;
           std::cout << "Configuration Options: " << std::endl;
           std::cout << "  --trigger-as-button      LT and RT send button instead of axis events" << std::endl;
+          std::cout << "  --trigger-as-zaxis       Combine LT and RT to form a zaxis instead" << std::endl;
           std::cout << "  --dpad-as-button         DPad sends button instead of axis events" << std::endl;
           std::cout << std::endl;
           std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
@@ -347,7 +348,27 @@ int main(int argc, char** argv)
         }
       else if (strcmp("--trigger-as-button", argv[i]) == 0)
         {
-          uinput_config.trigger_as_button = true;
+          if (uinput_config.trigger_as_zaxis)
+            {
+              std::cout << "Error: Can't combine --trigger-as-button and --trigger-as-zaxis" << std::endl;
+              return EXIT_FAILURE;
+            }
+          else
+            {
+              uinput_config.trigger_as_button = true;
+            }
+        }
+      else if (strcmp("--trigger-as-zaxis", argv[i]) == 0)
+        {
+          if (uinput_config.trigger_as_button)
+            {
+              std::cout << "Error: Can't combine --trigger-as-button and --trigger-as-zaxis" << std::endl;
+              return EXIT_FAILURE;
+            }
+          else
+            {
+              uinput_config.trigger_as_zaxis = true;
+            }
         }
       else if (strcmp("--help-led", argv[i]) == 0)
         {

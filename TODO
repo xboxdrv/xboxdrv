@@ -28,10 +28,6 @@ New Command Line Options:
   Dpad becomes first and second axis, instead of last, useful for 2D
   jump'n run
 
---dpad-as-buttons
-  Report Dpad motion as regular buttons instead of as axis (conflicts
-  with dpad-first)
-
 --trigger-as-zaxis
   Turn LT,RT into the Z-axis
 

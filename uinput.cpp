@@ -44,15 +44,19 @@ uInput::uInput(GamepadType type, uInputCfg config_)
       ioctl(fd, UI_SET_ABSBIT, ABS_RX);
       ioctl(fd, UI_SET_ABSBIT, ABS_RY);
 
-      if (!config.trigger_as_button)
-        {
-          ioctl(fd, UI_SET_ABSBIT, ABS_GAS);
-          ioctl(fd, UI_SET_ABSBIT, ABS_BRAKE);
-        }
-      else
+      if (config.trigger_as_button)
         {
           ioctl(fd, UI_SET_KEYBIT, BTN_TL2);
           ioctl(fd, UI_SET_KEYBIT, BTN_TR2);
+        }
+      else if (config.trigger_as_zaxis)
+        {
+          ioctl(fd, UI_SET_ABSBIT, ABS_Z);
+        }
+      else
+        {
+          ioctl(fd, UI_SET_ABSBIT, ABS_GAS);
+          ioctl(fd, UI_SET_ABSBIT, ABS_BRAKE);
         }
 
       if (!config.dpad_as_button)
@@ -105,7 +109,12 @@ uInput::uInput(GamepadType type, uInputCfg config_)
       uinp.absmin[ABS_RY] = -32768;
       uinp.absmax[ABS_RY] =  32767;
 
-      if (!config.trigger_as_button)
+      if (config.trigger_as_zaxis)
+        {
+          uinp.absmin[ABS_Z] = -255;
+          uinp.absmax[ABS_Z] =  255;         
+        }
+      else if (!config.trigger_as_button)
         {
           uinp.absmin[ABS_GAS] = 0;
           uinp.absmax[ABS_GAS] = 255;
@@ -113,7 +122,7 @@ uInput::uInput(GamepadType type, uInputCfg config_)
           uinp.absmin[ABS_BRAKE] = 0;
           uinp.absmax[ABS_BRAKE] = 255;
         }
-
+      
       if (!config.dpad_as_button)
         {
           uinp.absmin[ABS_HAT0X] = -1;
@@ -190,17 +199,21 @@ uInput::send(XBox360Msg& msg)
   send_axis(ABS_RX, msg.x2);
   send_axis(ABS_RY, -msg.y2);
 
-  if (!config.trigger_as_button)
+  if (config.trigger_as_zaxis)
+    {
+      send_axis(ABS_Z, (int(msg.rt) - int(msg.lt)));
+    }
+  else if (config.trigger_as_button)
+    {
+      send_button(BTN_TL2, msg.lt);
+      send_button(BTN_TR2, msg.rt);    
+    }
+  else
     {
       send_axis(ABS_BRAKE, msg.lt);
       send_axis(ABS_GAS,   msg.rt);
     }
-  else
-    {
-      send_button(BTN_TL2, msg.lt);
-      send_button(BTN_TR2, msg.rt);
-    }
-
+  
   if (config.dpad_as_button)
     {
       send_button(BTN_BASE,  msg.dpad_up);
@@ -261,15 +274,19 @@ uInput::send(XBoxMsg& msg)
   send_axis(ABS_RX, msg.x2);
   send_axis(ABS_RY, msg.y2);
 
-  if (!config.trigger_as_button)
+  if (config.trigger_as_zaxis)
     {
-      send_axis(ABS_BRAKE, msg.lt);
-      send_axis(ABS_GAS,   msg.rt);
+      send_axis(ABS_Z, (int(msg.rt) - int(msg.lt)));
     }
-  else
+  else if (config.trigger_as_button)
     {
       send_button(BTN_TL2, msg.lt);
       send_button(BTN_TR2, msg.rt);
+    }
+  else
+    {
+      send_axis(ABS_BRAKE, msg.lt);
+      send_axis(ABS_GAS,   msg.rt);
     }
 
   if (config.dpad_as_button)
