@@ -440,7 +440,11 @@ int main(int argc, char** argv)
               usb_bulk_write(handle, 2, rumblecmd, 6, 0);              
             }
 
-          if (!instant_exit)
+          if (instant_exit)
+            {
+
+            }
+          else 
             {          
               uInput* uinput = new uInput(dev_type->type);
               std::cout << "\nYour XBox360 controller should now be available as /dev/input/jsX" << std::endl;

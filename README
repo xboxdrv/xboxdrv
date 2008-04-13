@@ -40,9 +40,20 @@ of the xbox360 driver and append the -i argument like this:
 
  % ./xbox360 -i 1
 
-This will then use the second detected controller, also see:
+This will then use the second detected controller, see to see which id
+your controller has:
 
  % ./xbox360 --list-controller
+
+If you want to abuse the led or rumble of the gamepad for notification
+in scripts you can do see via:
+
+ % ./xbox360 --led 10 --rumble 30,30 --quit
+
+This will cause a mild rumble and the led to rotate, you can stop it
+again via:
+
+ % ./xbox360 -q
 
 
 [[ SDL Notes ]]
