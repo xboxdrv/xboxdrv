@@ -1,3 +1,45 @@
+New Command Line Options:
+
+--button-map BTN
+
+  BTN is a list of integers, where each integer corresponds to the
+  event that gets send
+
+  A,B,X,Y,LB,RB,SL,SR,LT,RT,Start,Mode,Back,DPAD-UP,DPAD-DOWN,DPAD-LEFT,DPAD-RIGHT
+  A,B,X,Y,TL2,TR2,TL,TR,
+
+#define BTN_A			0x130
+#define BTN_B			0x131
+#define BTN_C			0x132
+#define BTN_X			0x133
+#define BTN_Y			0x134
+#define BTN_Z			0x135
+#define BTN_TL			0x136
+#define BTN_TR			0x137
+#define BTN_TL2			0x138
+#define BTN_TR2			0x139
+#define BTN_SELECT		0x13a
+#define BTN_START		0x13b
+#define BTN_MODE		0x13c
+#define BTN_THUMBL		0x13d
+#define BTN_THUMBR		0x13e
+
+--dpad-first 
+  Dpad becomes first and second axis, instead of last, useful for 2D
+  jump'n run
+
+--dpad-as-buttons
+  Report Dpad motion as regular buttons instead of as axis (conflicts
+  with dpad-first)
+
+--trigger-as-button
+
+--trigger-as-axis
+  Turn LT,RT into the Z-axis
+
+--stick2-as-throttle
+  Makes the second stick act as throttle control
+
 * add support to remap keys
 
 * add support to merge LT and RT into Z-axis
@@ -19,6 +61,9 @@ Use cases:
 * FPS:
    expects:  Mouse-X/Y   Walk-X/Y  Trigger
    XBox:    Left-Stick   RickStick Trigger(btn)
+
+* 2D Jump Run
+   needs dpad first
 
 Needed features:
 ================

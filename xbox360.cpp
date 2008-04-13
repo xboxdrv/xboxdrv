@@ -261,11 +261,12 @@ int main(int argc, char** argv)
           std::cout << "Options: " << std::endl;
           std::cout << "  -h, --help               display this help and exit" << std::endl;
           std::cout << "  -v, --verbose            display controller events" << std::endl;
-          std::cout << "  -l, --led NUM            set LED status, see README (default: 0)" << std::endl;
+          std::cout << "  -l, --led NUM            set LED status, see --list-led-values (default: 0)" << std::endl;
           std::cout << "  -r, --rumble             map rumbling to LT and RT (for testing only)" << std::endl;
           std::cout << "  -i, --id N               controller number (default: 0)" << std::endl;
           std::cout << "  --list-devices           list supported devices" << std::endl;
           std::cout << "  --list-controller        list available controllers" << std::endl;
+          std::cout << "  --list-led-values        list possible values for the led" << std::endl;
           // std::cout << "  --merge-trigger          merge both trigger to form a Z axis" << std::endl;
           std::cout << std::endl;
           std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
@@ -308,6 +309,29 @@ int main(int argc, char** argv)
               std::cout << "Error: " << argv[i-1] << " expected a argument" << std::endl;
               return EXIT_FAILURE;
             }
+        }
+      else if (strcmp("--list-led-values", argv[i]) == 0)
+        {
+          std::cout << 
+            "Possible values for '--led VALUE' are:\n\n"
+            "   0: off\n"
+            "   1: all blinking\n"
+            "   2: 1/top-left blink, then on\n"
+            "   3: 2/top-right blink, then on\n"
+            "   4: 3/bottom-left blink, then on\n"
+            "   5: 4/bottom-right blink, then on\n"
+            "   6: 1/top-left on\n"
+            "   7: 2/top-right on\n"
+            "   8: 3/bottom-left on\n"
+            "   9: 4/bottom-right on\n"
+            "  10: rotate\n"
+            "  11: blink\n"
+            "  12: blink slower\n"
+            "  13: rotate with two lights\n"
+            "  14: blink\n"
+            "  15: blink once\n"
+                    << std::endl;
+          return EXIT_SUCCESS;
         }
       else if (strcmp(argv[i], "--list-controller") == 0)
         {
