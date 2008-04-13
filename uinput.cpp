@@ -17,6 +17,7 @@
 */
 
 #include <iostream>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -24,13 +25,25 @@
 #include "uinput.hpp"
 
 uInput::uInput(GamepadType type, uInputCfg config_)
-  : config(config_)
+  : fd(-1), config(config_)
 {
   // Open the input device
-  fd = open("/dev/input/uinput", O_WRONLY | O_NDELAY);
-  if (!fd)
+  char* uinput_filename[] = {"/dev/uinput", "/dev/input/uinput",
+                             "/dev/misc/uinput"};
+  const int uinput_filename_count = (sizeof(uinput_filename)/sizeof(char*));
+
+  for (int i = 0; i < uinput_filename_count; ++i) 
     {
-      std::cout << "Unable to open /dev/input/uinput" << std::endl;
+      if ((fd = open(uinput_filename[i], O_WRONLY | O_NDELAY)) >= 0)
+        {
+          break;
+        }
+    }
+
+  if (fd < 0)
+    {
+      std::cout << "Error: " << strerror(errno) << std::endl;
+      exit(EXIT_FAILURE);
     }
   else
     {

@@ -28,15 +28,10 @@ New Command Line Options:
   Dpad becomes first and second axis, instead of last, useful for 2D
   jump'n run
 
---trigger-as-zaxis
-  Turn LT,RT into the Z-axis
-
 --stick2-as-throttle
   Makes the second stick act as throttle control
 
 * add support to remap keys
-
-* add support to merge LT and RT into Z-axis
 
 * allow mouse emulation
 
