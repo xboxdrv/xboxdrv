@@ -1,10 +1,79 @@
 * add support to remap keys
+
 * add support to merge LT and RT into Z-axis
+
 * allow mouse emulation
+
 * allow swapping of dpad and analog axis, so that dpad is first instead of last
-* some controllers send data even when nothing has changed (Logitech
-  XBox), while the official ones only send data on events, shall we
-  handle this?
+
+* merge this thing with Pingus Input handling to get a very flexible framework?
+
 * ...
+
+Use cases:
+==========
+* flightsim:
+   expects:     X/Y      Rudder   Throttle
+   XBox:    Left-Stick   LT+RT    Right-Stick(rel)
+
+* FPS:
+   expects:  Mouse-X/Y   Walk-X/Y  Trigger
+   XBox:    Left-Stick   RickStick Trigger(btn)
+
+Needed features:
+================
+* stick to mouse
+* relative-axis (throttle doesn't flip back, a stick does, need to handle that)
+* trigger to button
+* dpad to axis
+* dpad to button
+* inversal of axis
+* soft-axis for dpad
+
+(controller 
+  (button (name   "BTN_X") ;; X and Y send out BTN_X events
+          (device (xbox360-button "Y")
+                  (xbox360-button "X")))
+  (button (name   "BTN_A") 
+          (device (inverse (xbox360-button "Y"))))
+  (axis   (name "ABS_X")
+          ...
+)
+
+;; -- Pingus Input Configuration --
+(pingus-controller
+ (standard-pointer
+  (usbmouse:pointer (device "/dev/input/mx500")))
+
+ (standard-scroller
+  (usbmouse:scroller (device "/dev/input/marblemouse")))
+
+ (primary-button
+  (usbmouse:button (device "/dev/input/mx500") (button 0)))
+
+ (secondary-button
+  (usbmouse:button (device "/dev/input/mx500") (button 1)))
+
+ (pause-button
+  (usbmouse:button (device "/dev/input/mx500") (button 4)))
+
+ (fast-forward-button
+  (usbmouse:button (device "/dev/input/mx500") (button 3)))
+
+;; (armageddon-button
+;;  (usbmouse:button (device "/dev/input/mx500") (button 4)))
+
+ (escape-button
+  (sdl:keyboard-button (key "escape")))
+
+ (action-up-button
+  (usbmouse:button (device "/dev/input/mx500") (button 6))) 
+
+ (action-down-button
+  (usbmouse:button (device "/dev/input/mx500") (button 5)))
+ )
+
+;; EOF ;;
+ 
 
 # EOF #

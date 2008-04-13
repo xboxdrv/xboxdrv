@@ -266,6 +266,7 @@ int main(int argc, char** argv)
           std::cout << "  -i, --id N               controller number (default: 0)" << std::endl;
           std::cout << "  --list-devices           list supported devices" << std::endl;
           std::cout << "  --list-controller        list available controllers" << std::endl;
+          // std::cout << "  --merge-trigger          merge both trigger to form a Z axis" << std::endl;
           std::cout << std::endl;
           std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
           return EXIT_SUCCESS;
@@ -394,6 +395,8 @@ int main(int argc, char** argv)
           std::cout << "Press Ctrl-c to quit" << std::endl;
 
           bool quit = false;
+          uint8_t old_data[20];
+          memset(old_data, 0, 20);
           while(!quit)
             {
               uint8_t data[20];
@@ -412,42 +415,51 @@ int main(int argc, char** argv)
                 }
               else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
                 {
-                  if (dev_type->type == GAMEPAD_XBOX360 ||
-                      dev_type->type == GAMEPAD_XBOX360_WIRELESS)  
+                  if (memcmp(data, old_data, 20) == 0)
                     {
-                      XBox360Msg& msg = (XBox360Msg&)data;
+                      // Ignore the data, since nothing has changed
+                    }                
+                  else
+                    {
+                      memcpy(old_data, data, 20);
 
-                      if (verbose)
-                        std::cout << msg << std::endl;
+                      if (dev_type->type == GAMEPAD_XBOX360 ||
+                          dev_type->type == GAMEPAD_XBOX360_WIRELESS)  
+                        {
+                          XBox360Msg& msg = (XBox360Msg&)data;
 
-                      uinput->send(msg);
+                          if (verbose)
+                            std::cout << msg << std::endl;
+
+                          uinput->send(msg);
                     
-                      if (rumble)
-                        {
-                          char l = msg.rt;
-                          char b = msg.lt;
-                          char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
-                          usb_bulk_write(handle, 2, rumblecmd, 8, 0);
+                          if (rumble)
+                            {
+                              char l = msg.rt;
+                              char b = msg.lt;
+                              char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
+                              usb_bulk_write(handle, 2, rumblecmd, 8, 0);
+                            }
+
                         }
+                      else if (dev_type->type == GAMEPAD_XBOX)
+                        { 
+                          XBoxMsg& msg = (XBoxMsg&)data;                
 
-                    }
-                  else if (dev_type->type == GAMEPAD_XBOX)
-                    { 
-                      XBoxMsg& msg = (XBoxMsg&)data;                
+                          if (verbose)
+                            std::cout << msg << std::endl;
 
-                      if (verbose)
-                        std::cout << msg << std::endl;
+                          uinput->send(msg);
 
-                      uinput->send(msg);
-
-                      if (rumble)
-                        {
-                          char l = msg.lt;
-                          char b = msg.rt;
-                          char rumblecmd[] = { 0x00, 0x06, 0x00, l, 0x00, b };
-                          usb_bulk_write(handle, 2, rumblecmd, 6, 0);
-                        }
-                    }                      
+                          if (rumble)
+                            {
+                              char l = msg.lt;
+                              char b = msg.rt;
+                              char rumblecmd[] = { 0x00, 0x06, 0x00, l, 0x00, b };
+                              usb_bulk_write(handle, 2, rumblecmd, 6, 0);
+                            }
+                        }    
+                    }                  
                 }
               else
                 {
