@@ -35,6 +35,8 @@ uInput::uInput(GamepadType type, uInputCfg config_)
   else
     {
       ioctl(fd, UI_SET_EVBIT, EV_ABS);
+      ioctl(fd, UI_SET_EVBIT,  EV_KEY);
+
         
       ioctl(fd, UI_SET_ABSBIT, ABS_X);
       ioctl(fd, UI_SET_ABSBIT, ABS_Y);
@@ -47,11 +49,24 @@ uInput::uInput(GamepadType type, uInputCfg config_)
           ioctl(fd, UI_SET_ABSBIT, ABS_GAS);
           ioctl(fd, UI_SET_ABSBIT, ABS_BRAKE);
         }
+      else
+        {
+          ioctl(fd, UI_SET_KEYBIT, BTN_TL2);
+          ioctl(fd, UI_SET_KEYBIT, BTN_TR2);
+        }
 
-      ioctl(fd, UI_SET_ABSBIT, ABS_HAT0X);
-      ioctl(fd, UI_SET_ABSBIT, ABS_HAT0Y);
-
-      ioctl(fd, UI_SET_EVBIT,  EV_KEY);
+      if (!config.dpad_as_button)
+        {
+          ioctl(fd, UI_SET_ABSBIT, ABS_HAT0X);
+          ioctl(fd, UI_SET_ABSBIT, ABS_HAT0Y);
+        }
+      else
+        {
+          ioctl(fd, UI_SET_KEYBIT, BTN_BASE);
+          ioctl(fd, UI_SET_KEYBIT, BTN_BASE2);
+          ioctl(fd, UI_SET_KEYBIT, BTN_BASE3);
+          ioctl(fd, UI_SET_KEYBIT, BTN_BASE4);
+        }
 
       ioctl(fd, UI_SET_KEYBIT, BTN_START);
       ioctl(fd, UI_SET_KEYBIT, BTN_SELECT);
@@ -66,12 +81,6 @@ uInput::uInput(GamepadType type, uInputCfg config_)
 
       ioctl(fd, UI_SET_KEYBIT, BTN_TL);
       ioctl(fd, UI_SET_KEYBIT, BTN_TR);
-
-      if (config.trigger_as_button)
-        {
-          ioctl(fd, UI_SET_KEYBIT, BTN_TL2);
-          ioctl(fd, UI_SET_KEYBIT, BTN_TR2);
-        }
 
       ioctl(fd, UI_SET_KEYBIT, BTN_THUMBL);
       ioctl(fd, UI_SET_KEYBIT, BTN_THUMBR);
@@ -105,11 +114,14 @@ uInput::uInput(GamepadType type, uInputCfg config_)
           uinp.absmax[ABS_BRAKE] = 255;
         }
 
-      uinp.absmin[ABS_HAT0X] = -1;
-      uinp.absmax[ABS_HAT0X] =  1;
+      if (!config.dpad_as_button)
+        {
+          uinp.absmin[ABS_HAT0X] = -1;
+          uinp.absmax[ABS_HAT0X] =  1;
 
-      uinp.absmin[ABS_HAT0Y] = -1;
-      uinp.absmax[ABS_HAT0Y] =  1;
+          uinp.absmin[ABS_HAT0Y] = -1;
+          uinp.absmax[ABS_HAT0Y] =  1;
+        }
 
       write(fd, &uinp, sizeof(uinp));
 
@@ -189,30 +201,40 @@ uInput::send(XBox360Msg& msg)
       send_button(BTN_TR2, msg.rt);
     }
 
-  if (msg.dpad_up)
+  if (config.dpad_as_button)
     {
-      send_axis(ABS_HAT0Y, -1);
-    }
-  else if (msg.dpad_down)
-    {
-      send_axis(ABS_HAT0Y, 1);
+      send_button(BTN_BASE,  msg.dpad_up);
+      send_button(BTN_BASE2, msg.dpad_down);
+      send_button(BTN_BASE3, msg.dpad_left);
+      send_button(BTN_BASE4, msg.dpad_right);
     }
   else
     {
-      send_axis(ABS_HAT0Y, 0);
-    }
+      if (msg.dpad_up)
+        {
+          send_axis(ABS_HAT0Y, -1);
+        }
+      else if (msg.dpad_down)
+        {
+          send_axis(ABS_HAT0Y, 1);
+        }
+      else
+        {
+          send_axis(ABS_HAT0Y, 0);
+        }
 
-  if (msg.dpad_left)
-    {
-      send_axis(ABS_HAT0X, -1);
-    }
-  else if (msg.dpad_right)
-    {
-      send_axis(ABS_HAT0X, 1);
-    }
-  else
-    {
-      send_axis(ABS_HAT0X, 0);
+      if (msg.dpad_left)
+        {
+          send_axis(ABS_HAT0X, -1);
+        }
+      else if (msg.dpad_right)
+        {
+          send_axis(ABS_HAT0X, 1);
+        }
+      else
+        {
+          send_axis(ABS_HAT0X, 0);
+        }
     }
 }
 
@@ -250,30 +272,40 @@ uInput::send(XBoxMsg& msg)
       send_button(BTN_TR2, msg.rt);
     }
 
-  if (msg.dpad_up)
+  if (config.dpad_as_button)
     {
-      send_axis(ABS_HAT0Y, -1);
-    }
-  else if (msg.dpad_down)
-    {
-      send_axis(ABS_HAT0Y, 1);
+      send_button(BTN_BASE,  msg.dpad_up);
+      send_button(BTN_BASE2, msg.dpad_down);
+      send_button(BTN_BASE3, msg.dpad_left);
+      send_button(BTN_BASE4, msg.dpad_right);
     }
   else
     {
-      send_axis(ABS_HAT0Y, 0);
-    }
+      if (msg.dpad_up)
+        {
+          send_axis(ABS_HAT0Y, -1);
+        }
+      else if (msg.dpad_down)
+        {
+          send_axis(ABS_HAT0Y, 1);
+        }
+      else
+        {
+          send_axis(ABS_HAT0Y, 0);
+        }
 
-  if (msg.dpad_left)
-    {
-      send_axis(ABS_HAT0X, -1);
-    }
-  else if (msg.dpad_right)
-    {
-      send_axis(ABS_HAT0X, 1);
-    }
-  else
-    {
-      send_axis(ABS_HAT0X, 0);
+      if (msg.dpad_left)
+        {
+          send_axis(ABS_HAT0X, -1);
+        }
+      else if (msg.dpad_right)
+        {
+          send_axis(ABS_HAT0X, 1);
+        }
+      else
+        {
+          send_axis(ABS_HAT0X, 0);
+        }
     }
 }
 

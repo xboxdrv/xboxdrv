@@ -262,19 +262,23 @@ int main(int argc, char** argv)
           std::cout << "Usage: " << argv[0] << " [OPTION]..." << std::endl;
           std::cout << "XBox360 USB Gamepad Userspace Driver" << std::endl;
           std::cout << std::endl;
-          std::cout << "Options: " << std::endl;
+          std::cout << "General Options: " << std::endl;
           std::cout << "  -h, --help               display this help and exit" << std::endl;
+          std::cout << "  --help-led               list possible values for the led" << std::endl;
+          std::cout << "  --help-devices           list supported devices" << std::endl;
           std::cout << "  -v, --verbose            display controller events" << std::endl;
+          std::cout << "  -i, --id N               use controller number (default: 0)" << std::endl;
+          std::cout << "  --list-controller        list available controllers" << std::endl;
+          std::cout << "  --test-rumble            map rumbling to LT and RT (for testing only)" << std::endl;
+          std::cout << std::endl;
+          std::cout << "Status Options: " << std::endl;
           std::cout << "  -l, --led NUM            set LED status, see --list-led-values (default: 0)" << std::endl;
           std::cout << "  -r, --rumble L,R         set the speed for both rumble motors [0-255] (default: 0,0)" << std::endl;
-          std::cout << "  -i, --id N               controller number (default: 0)" << std::endl;
           std::cout << "  -q, --quit               only set led and rumble status then quit" << std::endl;
+          std::cout << std::endl;
+          std::cout << "Configuration Options: " << std::endl;
           std::cout << "  --trigger-as-button      LT and RT send button instead of axis events" << std::endl;
-          std::cout << "  --test-rumble            map rumbling to LT and RT (for testing only)" << std::endl;
-          std::cout << "  --list-devices           list supported devices" << std::endl;
-          std::cout << "  --list-controller        list available controllers" << std::endl;
-          std::cout << "  --list-led-values        list possible values for the led" << std::endl;
-
+          std::cout << "  --dpad-as-button         DPad sends button instead of axis events" << std::endl;
           std::cout << std::endl;
           std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
           return EXIT_SUCCESS;
@@ -337,11 +341,15 @@ int main(int argc, char** argv)
               return EXIT_FAILURE;
             }
         }
+      else if (strcmp("--dpad-as-button", argv[i]) == 0)
+        {
+          uinput_config.dpad_as_button = true;
+        }
       else if (strcmp("--trigger-as-button", argv[i]) == 0)
         {
           uinput_config.trigger_as_button = true;
         }
-      else if (strcmp("--list-led-values", argv[i]) == 0)
+      else if (strcmp("--help-led", argv[i]) == 0)
         {
           std::cout << 
             "Possible values for '--led VALUE' are:\n\n"
@@ -373,7 +381,7 @@ int main(int argc, char** argv)
           list_controller();
           return EXIT_SUCCESS;
         }
-      else if (strcmp(argv[i], "--list-devices") == 0)
+      else if (strcmp(argv[i], "--help-devices") == 0)
         {
           std::cout << " idVendor | idProduct | Name" << std::endl;
           std::cout << "----------+-----------+---------------------------------" << std::endl;

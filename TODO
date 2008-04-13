@@ -32,9 +32,7 @@ New Command Line Options:
   Report Dpad motion as regular buttons instead of as axis (conflicts
   with dpad-first)
 
---trigger-as-button
-
---trigger-as-axis
+--trigger-as-zaxis
   Turn LT,RT into the Z-axis
 
 --stick2-as-throttle
