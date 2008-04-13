@@ -3,3 +3,5 @@
 xbox360
 .sconsign.dblite
 usb.txt
+xpad.c
+xpad.h
