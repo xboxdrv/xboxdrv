@@ -252,6 +252,7 @@ int main(int argc, char** argv)
   int  rumble_r = 0;
   int  controller_id = 0;
   bool instant_exit = false;
+  uInputCfg uinput_config;
 
   for(int i = 1; i < argc; ++i)
     {
@@ -268,11 +269,12 @@ int main(int argc, char** argv)
           std::cout << "  -r, --rumble L,R         set the speed for both rumble motors [0-255] (default: 0,0)" << std::endl;
           std::cout << "  -i, --id N               controller number (default: 0)" << std::endl;
           std::cout << "  -q, --quit               only set led and rumble status then quit" << std::endl;
+          std::cout << "  --trigger-as-button      LT and RT send button instead of axis events" << std::endl;
           std::cout << "  --test-rumble            map rumbling to LT and RT (for testing only)" << std::endl;
           std::cout << "  --list-devices           list supported devices" << std::endl;
           std::cout << "  --list-controller        list available controllers" << std::endl;
           std::cout << "  --list-led-values        list possible values for the led" << std::endl;
-          // std::cout << "  --merge-trigger          merge both trigger to form a Z axis" << std::endl;
+
           std::cout << std::endl;
           std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
           return EXIT_SUCCESS;
@@ -334,6 +336,10 @@ int main(int argc, char** argv)
               std::cout << "Error: " << argv[i-1] << " expected a argument" << std::endl;
               return EXIT_FAILURE;
             }
+        }
+      else if (strcmp("--trigger-as-button", argv[i]) == 0)
+        {
+          uinput_config.trigger_as_button = true;
         }
       else if (strcmp("--list-led-values", argv[i]) == 0)
         {
@@ -446,7 +452,7 @@ int main(int argc, char** argv)
             }
           else 
             {          
-              uInput* uinput = new uInput(dev_type->type);
+              uInput* uinput = new uInput(dev_type->type, uinput_config);
               std::cout << "\nYour XBox360 controller should now be available as /dev/input/jsX" << std::endl;
               std::cout << "Press Ctrl-c to quit" << std::endl;
 

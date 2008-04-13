@@ -21,13 +21,24 @@
 
 #include "xbox360.hpp"
 
+class uInputCfg
+{
+public:
+  bool trigger_as_button;
+
+  uInputCfg() {
+    trigger_as_button = false;
+  }
+};
+
 class uInput
 {
 private:
   int fd;
+  uInputCfg config;
 
 public:
-  uInput(GamepadType type);
+  uInput(GamepadType type, uInputCfg cfg = uInputCfg());
   ~uInput();
   
   void send(XBox360Msg& msg);
