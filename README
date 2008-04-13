@@ -1,7 +1,7 @@
 [[ XBox/XBox360 USB Gamepad Driver for Userspace ]]
 ===================================================
 
-This is a XBox360 gamepad driver for Linux that works in userspace. It
+This is a XBox/XBox360 gamepad driver for Linux that works in userspace. It
 is a alternative to the xpad kernel driver.
 
 
@@ -34,35 +34,35 @@ programms to create input devices, via:
 
 You also have to make sure that you have access rights to
 /dev/input/uinput, either add yourself to the appropriate group,
-adjust the permissions or run xbox360 as root.
+adjust the permissions or run xboxdrv as root.
 
 Once ensured that xpad is out of the way and everything is in palce
 plug in your XBox360 gamepad and start the userspace driver with:
 
- % ./xbox360
+ % ./xboxdrv
 
 This will create a /dev/input/js0 and allow you to access the gamepad
 from any game. To exit the driver press Ctrl-c.
 
 If you have multiple controllers you need to start multiple instances
-of the xbox360 driver and append the -i argument like this:
+of the xboxdrv driver and append the -i argument like this:
 
- % ./xbox360 -i 1
+ % ./xboxdrv -i 1
 
 This will then use the second detected controller, see to see which id
 your controller has:
 
- % ./xbox360 --list-controller
+ % ./xboxdrv --list-controller
 
 If you want to abuse the led or rumble of the gamepad for notification
 in scripts you can do see via:
 
- % ./xbox360 --led 10 --rumble 30,30 --quit
+ % ./xboxdrv --led 10 --rumble 30,30 --quit
 
 This will cause a mild rumble and the led to rotate, you can stop it
 again via:
 
- % ./xbox360 -q
+ % ./xboxdrv -q
 
 
 [[ SDL Notes ]]

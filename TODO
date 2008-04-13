@@ -1,3 +1,6 @@
+* Add support for dancepad/mats (should just mean cleanup up the
+  buttons/axis not provided by the dancepad/mat)
+
 New Command Line Options:
 
 --button-map BTN
