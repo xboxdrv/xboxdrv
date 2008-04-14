@@ -1,3 +1,8 @@
+* disconnecting the pad in use will just let the driver wait forever
+  for new data, any way we can catch a disconnect?
+
+* a way to configure the deadzone for axis (might be needed for some games)
+
 * Add support for dancepad/mats (should just mean cleanup up the
   buttons/axis not provided by the dancepad/mat)
 

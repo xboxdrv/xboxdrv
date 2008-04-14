@@ -504,6 +504,18 @@ int main(int argc, char** argv)
                       // happen with the XBox360 every now and then, just
                       // ignore, seems harmless
                     }
+#if 0
+                  else if (ret == 2 && data[1] == 0x80) 
+                    { // wireless connect
+                    }
+                  else if (ret == 2 && data[1] == 0x80) 
+                    { // wireless disconnect
+                    }
+                  else if (ret == 29 && data[1] == 0x01)
+                    {
+                      xpad_process_packet(xpad, 0, (char*) ((unsigned long)xpad->idata + 4));
+                    }
+#endif
                   else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
                     {
                       if (memcmp(data, old_data, 20) == 0)
