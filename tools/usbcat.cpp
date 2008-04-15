@@ -65,7 +65,7 @@ find_usb_device(uint16_t idVendor, uint16_t idProduct)
  }
 
 void
-cat_usb_device(struct usb_device* dev)
+cat_usb_device(struct usb_device* dev, int ep)
 {
   struct usb_dev_handle* handle = usb_open(dev);
   if (!handle)
@@ -78,7 +78,7 @@ cat_usb_device(struct usb_device* dev)
       while(!quit)
         {
           uint8_t data[1024];
-          int ret = usb_bulk_read(handle, 1, (char*)data, sizeof(data), 0);
+          int ret = usb_bulk_read(handle, ep, (char*)data, sizeof(data), 0);
           if (ret < 0)
             {
               std::cout << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
@@ -127,14 +127,18 @@ int main(int argc, char** argv)
 
       list_usb_devices();
     }
-  else if (argc == 4 && strcmp("cat", argv[1]) == 0)
+  else if ((argc == 4 || argc == 5) && strcmp("cat", argv[1]) == 0)
     {
       uint16_t idVendor;
       uint16_t idProduct;
+      int endpoint = 1;
 
       if (sscanf(argv[2], "0x%hx", &idVendor) == 1 &&
           sscanf(argv[3], "0x%hx", &idProduct) == 1)
         {
+          if (argc == 5)
+            endpoint = atoi(argv[4]);
+
           usb_init();
           usb_find_busses();
           usb_find_devices();
@@ -147,10 +151,8 @@ int main(int argc, char** argv)
             }
           else
             {
-              
-
-              std::cout << "Reading data from: " << dev << std::endl; 
-              cat_usb_device(dev);
+              std::cout << "Reading data from: " << dev << " Endpoint: " << endpoint << std::endl; 
+              cat_usb_device(dev, endpoint);
             }
         }
       else
