@@ -27,10 +27,12 @@ First make sure that the xpad kernel module does not get loaded,
 either by deleting or renaming it. rmmod might not be enough since it
 might be automatically loaded.
 
-Next you have to load the uinput kernel module, which allows userspace
-programms to create input devices, via:
+Next you have to load the uinput kernel module which allows userspace
+programms to create input devices and the joydev module which gives
+you the /dev/input/jsX device:
 
  % modprobe uinput
+ % modprobe joydev
 
 You also have to make sure that you have access rights to
 /dev/input/uinput, either add yourself to the appropriate group,
@@ -78,6 +80,52 @@ This will let the DPad act as Hat in case you need that for any
 game. For most games the driver should work as-is.
 
 See ftp://ptah.lnf.kth.se/pub/misc/sdl-env-vars for more information.
+
+
+[[ Troubleshooting ]]
+---------------------
+
+1) "Error opening XBox360 controller"
+-------------------------------------
+This means that either your controller isn't plugged in or not
+recognized by the driver. To fix this you need to know the idVendor
+and the idProduct numbers, which you can find out via:
+
+ % lsusb -v
+
+Once done you can try to add them to the array:
+
+XPadDevice xpad_devices[] = { ... } in xboxdrv.c. 
+
+If you have success with that, send a patch to grumbel@gmx.de
+
+2) "Unknown data: bytes: 3 Data: ..."
+-------------------------------------
+This means that your controller is sending data that isn't understood
+by the driver. If your controller still works, you can just ignore it,
+the XBox360 controller seems to send out useless data every now and
+then. If your controller does not work and you get plenty of those
+lines when you move the sticks or press buttons it means that your
+controller talks an un-understood protocol and some reverse
+enginiering is required. Contact grumbel@gmx.de and include the output
+of:
+
+ % lsusb -v
+
+Along with all the "Unknown data" lines you get.
+
+3) Program starts and then just does nothing
+--------------------------------------------
+This is what the program is supposed to do. After you started it will
+give you basically two devices, a new /dev/input/eventX and a
+/dev/input/jsX. You can access and test your controller with jstest
+and evtest applications. Or in case you want just see if your driver
+is working correctly you can pass the -v option:
+
+ %  ./xboxdrv -v 
+
+This will cause the driver to output all the events that it received
+from the controller.
 
 
 # EOF #

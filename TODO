@@ -1,3 +1,10 @@
+* document /dev/input/eventX device
+
+* document "modprobe joydev"
+
+* add jstest, evtest into the source
+
+
 * disconnecting the pad in use will just let the driver wait forever
   for new data, any way we can catch a disconnect?
 
