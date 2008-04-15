@@ -5,6 +5,9 @@ This directory contains jstest and evtest. You can sometimes find
 these tools in your distribution, but especially evtest can sometimes
 be hard to come by, so I have included them here for convenience.
 
+usbcat is a little tool to dump content from a usb device, it is just
+for debugging and reverse engineering.
+
 You can compile them via:
 
  % scons
