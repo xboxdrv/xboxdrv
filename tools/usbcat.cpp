@@ -163,7 +163,7 @@ int main(int argc, char** argv)
   else
     {
       std::cout << "Usage: " << argv[0] << " list\n"
-                << "       " << argv[0] << " cat IDVENDOR IDPRODUCT"
+                << "       " << argv[0] << " cat IDVENDOR IDPRODUCT [ENDPOINT]"
                 << std::endl;
     }
 }
