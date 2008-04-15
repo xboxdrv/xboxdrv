@@ -116,13 +116,15 @@ Along with all the "Unknown data" lines you get.
 
 3) Program starts and then just does nothing
 --------------------------------------------
+
 This is what the program is supposed to do. After you started it will
 give you basically two devices, a new /dev/input/eventX and a
 /dev/input/jsX. You can access and test your controller with jstest
-and evtest applications. Or in case you want just see if your driver
-is working correctly you can pass the -v option:
+and evtest applications (available from your distribution or in the
+tools/ subdirectory). Or in case you want just see if your driver is
+working correctly you can pass the -v option:
 
- %  ./xboxdrv -v 
+ % ./xboxdrv -v 
 
 This will cause the driver to output all the events that it received
 from the controller.
