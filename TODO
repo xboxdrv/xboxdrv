@@ -1,3 +1,8 @@
+* Guitar Hero Controller:
+  - lsusb -v output looks like a XBox360 controller
+  - usbcat looks like an XBox360 controller
+  - it doesn't report events  
+
 http://forums.gentoo.org/viewtopic-p-5061825.html
 http://gentoo-wiki.com/HOWTO_Xbox_360_controller_on_Linux
 http://happypenguin.org/show?xboxdrv

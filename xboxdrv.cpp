@@ -459,6 +459,9 @@ int main(int argc, char** argv)
         }
       else
         {
+          if (usb_claim_interface(handle, 0) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
+            std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
+
           // Handle LED on XBox360 Controller
           if (dev_type->type == GAMEPAD_XBOX360)
             {
@@ -609,6 +612,7 @@ int main(int argc, char** argv)
                     }
                 }
             }
+          usb_release_interface(handle, 0); // FIXME: bInterfaceNumber shouldn't be hardcoded
 
           // Almost never reached since the user will Ctrl-c and we
           // can't use sigint since we block in usb_bulk_read()
