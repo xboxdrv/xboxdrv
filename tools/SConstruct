@@ -1,0 +1,7 @@
+# -*- python -*-
+
+env = Environment(CPPFLAGS=["-g", "-O2", "-Wall"])
+env.Program("jstest", ["jstest.c"])
+env.Program("evtest", ["evtest.c"])
+
+# EOF #
