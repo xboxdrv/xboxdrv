@@ -28,8 +28,7 @@ uInput::uInput(GamepadType type, uInputCfg config_)
   : fd(-1), config(config_)
 {
   // Open the input device
-  char* uinput_filename[] = {"/dev/uinput", "/dev/input/uinput",
-                             "/dev/misc/uinput"};
+  char* uinput_filename[] = { "/dev/input/uinput", "/dev/uinput", "/dev/misc/uinput" };
   const int uinput_filename_count = (sizeof(uinput_filename)/sizeof(char*));
 
   for (int i = 0; i < uinput_filename_count; ++i) 
@@ -38,11 +37,22 @@ uInput::uInput(GamepadType type, uInputCfg config_)
         {
           break;
         }
+      else
+        {
+          std::cout << "Error: " << uinput_filename[i] << ": " << strerror(errno) << std::endl;
+        }
     }
 
   if (fd < 0)
     {
-      std::cout << "Error: " << strerror(errno) << std::endl;
+      std::cout << "Error: No stuitable uinput device found" << std::endl;
+      std::cout << "" << std::endl;
+      std::cout << "Troubleshooting:" << std::endl;
+      std::cout << "  * make sure uinput kernel module is loaded " << std::endl;
+      std::cout << "  * make sure joydev kernel module is loaded " << std::endl;
+      std::cout << "  * make sure you have permissions to access the uinput device" << std::endl;
+      std::cout << "  * start the driver with ./xboxdrv -v --no-uinput to see if the driver itself works" << std::endl;
+      std::cout << "" << std::endl;
       exit(EXIT_FAILURE);
     }
   else

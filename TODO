@@ -1,3 +1,8 @@
+http://forums.gentoo.org/viewtopic-p-5061825.html
+http://gentoo-wiki.com/HOWTO_Xbox_360_controller_on_Linux
+http://happypenguin.org/show?xboxdrv
+http://ubuntuforums.org/showthread.php?t=404577&page=16
+
 * add jstest, evtest into the source
 
 * disconnecting the pad in use will just let the driver wait forever

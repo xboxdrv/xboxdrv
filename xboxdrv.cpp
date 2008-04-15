@@ -253,6 +253,7 @@ int main(int argc, char** argv)
   int  controller_id = 0;
   bool instant_exit = false;
   uInputCfg uinput_config;
+  bool no_uinput = false;
 
   for(int i = 1; i < argc; ++i)
     {
@@ -268,8 +269,9 @@ int main(int argc, char** argv)
           std::cout << "  --help-devices           list supported devices" << std::endl;
           std::cout << "  -v, --verbose            display controller events" << std::endl;
           std::cout << "  -i, --id N               use controller number (default: 0)" << std::endl;
-          std::cout << "  --list-controller        list available controllers" << std::endl;
+          std::cout << "  -L, --list-controller        list available controllers" << std::endl;
           std::cout << "  --test-rumble            map rumbling to LT and RT (for testing only)" << std::endl;
+          std::cout << "  --no-uinput              do not try to start uinput event dispatching" << std::endl;
           std::cout << std::endl;
           std::cout << "Status Options: " << std::endl;
           std::cout << "  -l, --led NUM            set LED status, see --list-led-values (default: 0)" << std::endl;
@@ -313,6 +315,11 @@ int main(int argc, char** argv)
                strcmp(argv[i], "--quit") == 0)
         {
           instant_exit = true;
+        }
+      else if (strcmp(argv[i], "--no-uinput") == 0)
+        {
+          verbose   = true;
+          no_uinput = true;
         }
       else if (strcmp(argv[i], "-i") == 0 ||
                strcmp(argv[i], "--id") == 0)
@@ -393,7 +400,8 @@ int main(int argc, char** argv)
                     << std::endl;
           return EXIT_SUCCESS;
         }
-      else if (strcmp(argv[i], "--list-controller") == 0)
+      else if (strcmp(argv[i], "--list-controller") == 0 &&
+               strcmp(argv[i], "-L") == 0)
         {
           usb_init();
           usb_find_busses();
@@ -481,8 +489,17 @@ int main(int argc, char** argv)
             }
           else 
             {          
-              uInput* uinput = new uInput(dev_type->type, uinput_config);
-              std::cout << "\nYour XBox360 controller should now be available as /dev/input/jsX" << std::endl;
+              uInput* uinput = 0;
+              if (!no_uinput)
+                {
+                  std::cout << "Starting uinput" << std::endl;
+                  uinput = new uInput(dev_type->type, uinput_config);
+                }
+              else
+                {
+                  std::cout << "Starting without uinput" << std::endl;
+                }
+              std::cout << "\nYour XBox360 controller should now be available as /dev/input/jsX and /dev/input/eventX" << std::endl;
               std::cout << "Press Ctrl-c to quit" << std::endl;
 
               bool quit = false;
@@ -534,7 +551,7 @@ int main(int argc, char** argv)
                               if (verbose)
                                 std::cout << msg << std::endl;
 
-                              uinput->send(msg);
+                              if (uinput) uinput->send(msg);
                     
                               if (rumble)
                                 {
@@ -552,7 +569,7 @@ int main(int argc, char** argv)
                               if (verbose)
                                 std::cout << msg << std::endl;
 
-                              uinput->send(msg);
+                              if (uinput) uinput->send(msg);
 
                               if (rumble)
                                 {
