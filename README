@@ -62,7 +62,8 @@ in scripts you can do see via:
  % ./xboxdrv --led 10 --rumble 30,30 --quit
 
 This will cause a mild rumble and the led to rotate, you can stop it
-again via:
+again via, which also happens to be the command you can use to stop
+your XBox360 controller from blinking:
 
  % ./xboxdrv -q
 
@@ -129,5 +130,16 @@ working correctly you can pass the -v option:
 This will cause the driver to output all the events that it received
 from the controller.
 
+4) "Error: No stuitable uinput device found"
+--------------------------------------------
+
+Make sure that uinput and joydev kernel modules are loaded. Make sure
+that you have a /dev/input/uinput, /dev/uinput or /dev/misc/uinput and
+permissions to access it.
+
+Before reporting this as a bug make sure you have tested if the driver
+itself works with:
+
+ % ./xboxdrv --no-uinput -v
 
 # EOF #
