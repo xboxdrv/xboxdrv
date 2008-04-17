@@ -25,6 +25,7 @@
 #include "uinput.hpp"
 #include "xboxdrv.hpp"
 
+
 XPadDevice xpad_devices[] = {
   // Evil?! Anymore info we could use to identify the devices?
   // { GAMEPAD_XBOX,             0x0000, 0x0000, "Generic X-Box pad" },
@@ -75,7 +76,7 @@ XPadDevice xpad_devices[] = {
 };
 
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
-
+
 std::ostream& operator<<(std::ostream& out, const GamepadType& type) 
 {
   switch (type)
@@ -96,7 +97,7 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
         return out << "unknown" << std::endl;
     }
 }
-
+
 std::ostream& operator<<(std::ostream& out, const XBox360Msg& msg) 
 {
   out << boost::format("  S1:(%6d, %6d)") 
@@ -134,7 +135,7 @@ std::ostream& operator<<(std::ostream& out, const XBox360Msg& msg)
 
   return out;
 }
-
+
 std::ostream& operator<<(std::ostream& out, const XBoxMsg& msg) 
 {
   out << boost::format(" S1:(%6d, %6d) S2:(%6d, %6d) "
@@ -171,7 +172,7 @@ std::ostream& operator<<(std::ostream& out, const XBoxMsg& msg)
 
   return out;
 }
-
+
 void list_controller()
 {
   struct usb_bus* busses = usb_get_busses();
@@ -204,7 +205,7 @@ void list_controller()
   if (id == 0)
     std::cout << "\nNo controller detected" << std::endl; 
 }
-
+
 bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice** type)
 {
   struct usb_bus* busses = usb_get_busses();
@@ -242,7 +243,7 @@ bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice
     }
   return 0;
 }
-
+
 int main(int argc, char** argv)
 {
   bool verbose = false;
@@ -466,7 +467,7 @@ int main(int argc, char** argv)
           if (dev_type->type == GAMEPAD_XBOX360)
             {
               char ledcmd[] = {1, 3, led}; 
-              usb_bulk_write(handle, 2, ledcmd, 3, 0);
+              usb_interrupt_write(handle, 2, ledcmd, 3, 0);
             }
 
           // Switch of Rumble
@@ -476,14 +477,14 @@ int main(int argc, char** argv)
               char l = rumble_r; // light weight
               char b = rumble_l; // big weight
               char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
-              usb_bulk_write(handle, 2, rumblecmd, 8, 0);
+              usb_interrupt_write(handle, 2, rumblecmd, 8, 0);
             }
           else if (dev_type->type == GAMEPAD_XBOX)
             {
               char l = rumble_l;
               char b = rumble_r;
               char rumblecmd[] = { 0x00, 0x06, 0x00, l, 0x00, b };
-              usb_bulk_write(handle, 2, rumblecmd, 6, 0);              
+              usb_interrupt_write(handle, 2, rumblecmd, 6, 0);              
             }
 
           if (instant_exit)
@@ -511,8 +512,7 @@ int main(int argc, char** argv)
               while(!quit)
                 {
                   uint8_t data[20];
-                  int ret = usb_bulk_read(handle, 1,
-                                          (char*)data, 20, 0);
+                  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, 20, 0 /*Timeout*/);
                   if (ret < 0)
                     { // Error
                       std::cout << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
@@ -561,7 +561,7 @@ int main(int argc, char** argv)
                                   char l = msg.rt;
                                   char b = msg.lt;
                                   char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
-                                  usb_bulk_write(handle, 2, rumblecmd, 8, 0);
+                                  usb_interrupt_write(handle, 2, rumblecmd, 8, 0);
                                 }
 
                             }
@@ -579,7 +579,7 @@ int main(int argc, char** argv)
                                   char l = msg.lt;
                                   char b = msg.rt;
                                   char rumblecmd[] = { 0x00, 0x06, 0x00, l, 0x00, b };
-                                  usb_bulk_write(handle, 2, rumblecmd, 6, 0);
+                                  usb_interrupt_write(handle, 2, rumblecmd, 6, 0);
                                 }
                             }    
                         }                  
@@ -615,7 +615,7 @@ int main(int argc, char** argv)
           usb_release_interface(handle, 0); // FIXME: bInterfaceNumber shouldn't be hardcoded
 
           // Almost never reached since the user will Ctrl-c and we
-          // can't use sigint since we block in usb_bulk_read()
+          // can't use sigint since we block in usb_interrupt_read()
           usb_close(handle);
         }
     }
@@ -623,5 +623,5 @@ int main(int argc, char** argv)
   std::cout << "Done" << std::endl;
   return 0;
 }
-
+
 /* EOF */
