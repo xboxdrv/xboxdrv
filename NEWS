@@ -1,5 +1,12 @@
-Apr 13 2008
-===========
+xboxdrv 0.2 -
+=========================
+
+ * switched from usb_bulk_read() to usb_interrupt_read(), this fixes
+   the Guitar Hero controller
+
+
+xboxdrv 0.1 - Apr 13 2008
+=========================
   * initial release
 
 # EOF #

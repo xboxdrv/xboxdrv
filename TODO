@@ -1,3 +1,7 @@
+* Question: Firestorm Dual Power: How to get rumble to work when there is no endpoint to send data to?
+
+* allow selection of controller by usb path busNr,deviceNr
+
 * Guitar Hero Controller:
   - lsusb -v output looks like a XBox360 controller
   - usbcat looks like an XBox360 controller
@@ -7,6 +11,7 @@ http://forums.gentoo.org/viewtopic-p-5061825.html
 http://gentoo-wiki.com/HOWTO_Xbox_360_controller_on_Linux
 http://happypenguin.org/show?xboxdrv
 http://ubuntuforums.org/showthread.php?t=404577&page=16
+http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver
 
 * add jstest, evtest into the source
 

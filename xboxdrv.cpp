@@ -62,7 +62,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX,             0x044f, 0x0f07, "Thrustmaster, Inc. Controller" },
   { GAMEPAD_XBOX360,          0x045e, 0x028e, "Microsoft Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x0738, 0x4716, "Mad Catz Xbox 360 Controller" },
-  { GAMEPAD_XBOX360,          0x1430, 0x4748, "RedOctane Guitar Hero X-plorer" },
+  { GAMEPAD_XBOX360_GUITAR,   0x1430, 0x4748, "RedOctane Guitar Hero X-plorer" },
 
   // Do these work?
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0291, "Microsoft Xbox 360 Wireless Controller" },
@@ -98,6 +98,43 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
     }
 }
 
+std::ostream& operator<<(std::ostream& out, const XBox360GuitarMsg& msg) 
+{
+  out << boost::format(" whammy:%6d tilt:%6d | up:%d down:%d left:%d right:%d | back:%d mode:%d start:%d | green:%d red:%d yellow:%d blue:%d orange:%d ")
+    % int(msg.whammy)
+    % int(msg.tilt)
+    % int(msg.dpad_up)
+    % int(msg.dpad_down)
+    % int(msg.dpad_left)
+    % int(msg.dpad_right)
+    % int(msg.select)
+    % int(msg.mode)
+    % int(msg.start)
+    % int(msg.green)
+    % int(msg.red)
+    % int(msg.yellow)
+    % int(msg.blue)
+    % int(msg.orange);
+
+  if (1)
+    out << boost::format("| dummy: %d %d %d %d %02hhx %02hhx %04hx %04hx %02x %02x")
+      % int(msg.thumb_l)
+      % int(msg.thumb_r)
+      % int(msg.rb)
+      % int(msg.dummy1)
+
+      % int(msg.lt)
+      % int(msg.rt)
+
+      % int16_t(msg.x1)
+      % int16_t(msg.y1)
+
+      % int(msg.dummy2)
+      % int(msg.dummy3);
+ 
+  return out;
+}
+
 std::ostream& operator<<(std::ostream& out, const XBox360Msg& msg) 
 {
   out << boost::format("  S1:(%6d, %6d)") 
@@ -130,8 +167,8 @@ std::ostream& operator<<(std::ostream& out, const XBox360Msg& msg)
   out << boost::format("  LT:%3d RT:%3d")
     % int(msg.lt) % int(msg.rt);
 
-  if (0)
-    out << " Dummy: " << msg.dummy3 << " " << msg.dummy4 << " " << msg.dummy5;
+  if (2)
+    out << " Dummy: " << msg.dummy1 << " " << msg.dummy2 << " " << msg.dummy3;
 
   return out;
 }
@@ -546,8 +583,14 @@ int main(int argc, char** argv)
                         {
                           memcpy(old_data, data, 20);
 
-                          if (dev_type->type == GAMEPAD_XBOX360 ||
-                              dev_type->type == GAMEPAD_XBOX360_WIRELESS)  
+                          if (dev_type->type == GAMEPAD_XBOX360_GUITAR)
+                            {
+                              XBox360GuitarMsg& msg = (XBox360GuitarMsg&)data;
+                              if (verbose)
+                                std::cout << msg << std::endl;
+                            }
+                          else if (dev_type->type == GAMEPAD_XBOX360 ||
+                                   dev_type->type == GAMEPAD_XBOX360_WIRELESS)  
                             {
                               XBox360Msg& msg = (XBox360Msg&)data;
 

@@ -60,7 +60,7 @@ struct XBox360Msg
   unsigned int lb          :1;
   unsigned int rb          :1;
   unsigned int mode        :1;
-  unsigned int dummy3      :1;
+  unsigned int dummy1      :1;
 
   unsigned int a           :1;
   unsigned int b           :1;
@@ -80,9 +80,57 @@ struct XBox360Msg
   int y2                   :16;
 
   // data[14]; ----------------
-  unsigned int dummy4      :32;
-  unsigned int dummy5      :16;
+  unsigned int dummy2      :32;
+  unsigned int dummy3      :16;
 } __attribute__((__packed__));
+
+
+struct XBox360GuitarMsg
+{
+  // -------------------------
+  unsigned int type       :8;
+  unsigned int length     :8;
+
+  // data[2] ------------------
+  unsigned int dpad_up     :1; // also strum-up
+  unsigned int dpad_down   :1; // also strum-down
+  unsigned int dpad_left   :1;
+  unsigned int dpad_right  :1;
+
+  unsigned int start       :1;
+  unsigned int select      :1;
+
+  unsigned int thumb_l     :1; // unused
+  unsigned int thumb_r     :1; // unused
+
+  // data[3] ------------------
+  unsigned int orange      :1; // 5
+  unsigned int rb          :1; // unused
+  unsigned int mode        :1; 
+  unsigned int dummy1      :1; // unused
+
+  unsigned int green       :1; // 1
+  unsigned int red         :1; // 2
+  unsigned int blue        :1; // 4
+  unsigned int yellow      :1; // 3
+
+  // data[4] ------------------
+  unsigned int lt          :8; // unknown
+  unsigned int rt          :8; // unknown
+
+  // data[6] ------------------
+  int x1                   :16; // unused
+  int y1                   :16; // unused
+
+  // data[10] -----------------
+  int whammy               :16;
+  int tilt                 :16;
+
+  // data[14]; ----------------
+  unsigned int dummy2      :32; // unused
+  unsigned int dummy3      :16; // unused
+} __attribute__((__packed__));
+
 
 struct XBoxMsg
 {
@@ -126,7 +174,8 @@ enum GamepadType {
   GAMEPAD_XBOX,
   GAMEPAD_XBOX_MAT,
   GAMEPAD_XBOX360,
-  GAMEPAD_XBOX360_WIRELESS
+  GAMEPAD_XBOX360_WIRELESS,
+  GAMEPAD_XBOX360_GUITAR
 };
 
 struct XPadDevice {

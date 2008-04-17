@@ -62,7 +62,7 @@ find_usb_device(uint16_t idVendor, uint16_t idProduct)
         }
     }
   return 0;
- }
+}
 
 void
 cat_usb_device(struct usb_device* dev, int ep)
@@ -74,10 +74,28 @@ cat_usb_device(struct usb_device* dev, int ep)
     }
   else
     {
+      if (usb_claim_interface(handle, 0) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
+        {
+          std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
+          if (usb_detach_kernel_driver_np(handle, 0) < 0)
+            {
+              std::cout << "Failure to kick kernel driver: " << usb_strerror() << std::endl;
+              exit(EXIT_FAILURE);              
+            }
+
+          if (usb_claim_interface(handle, 0) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
+            {
+              std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
+              exit(EXIT_FAILURE);
+            }
+        }
+
+
       bool quit = false;
+
       while(!quit)
         {
-          uint8_t data[1024];
+          uint8_t data[32];
           int ret = usb_bulk_read(handle, ep, (char*)data, sizeof(data), 0);
           if (ret < 0)
             {
@@ -98,6 +116,21 @@ cat_usb_device(struct usb_device* dev, int ep)
               std::cout << std::endl;
             }
 
+          if (0)
+            {
+              int len = rand() % 10;
+              char rumblecmd[len];
+              for (int i = 0; i < len; ++i)
+                {
+                  rumblecmd[i] = rand() % 255;
+                }
+
+              std::cout << "Writing random data" << std::endl;
+              if (usb_bulk_write(handle, 0, rumblecmd, len, 0) < 0)
+                {
+                  std::cout << "Write Error: " << usb_strerror() << std::endl;
+                }
+            }
         }
       usb_close(handle);
     }
@@ -108,17 +141,22 @@ list_usb_devices()
 {
   struct usb_bus* busses = usb_get_busses();
 
+  int bus_idx = 0;
   for (struct usb_bus* bus = busses; bus; bus = bus->next)
     {
       for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
         {
-          std::cout << dev << std::endl;
+          std::cout << boost::format("Bus %s Device %s ") % bus->dirname % dev->filename
+                    << " " << dev << std::endl;
         }
+      bus_idx += 1;
     }
 }
 
 int main(int argc, char** argv)
 {
+  srand(time(NULL));
+
   if (argc == 2 && strcmp("list", argv[1]) == 0)
     {
       usb_init();
