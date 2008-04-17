@@ -1,3 +1,5 @@
+* add -type option to enforce controller type
+
 * Question: Firestorm Dual Power: How to get rumble to work when there is no endpoint to send data to?
 
 * allow selection of controller by usb path busNr,deviceNr

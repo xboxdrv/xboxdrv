@@ -109,10 +109,10 @@ struct XBox360GuitarMsg
   unsigned int mode        :1; 
   unsigned int dummy1      :1; // unused
 
-  unsigned int green       :1; // 1
-  unsigned int red         :1; // 2
-  unsigned int blue        :1; // 4
-  unsigned int yellow      :1; // 3
+  unsigned int green       :1; // 1, A 
+  unsigned int red         :1; // 2, B
+  unsigned int blue        :1; // 4, X
+  unsigned int yellow      :1; // 3, Y
 
   // data[4] ------------------
   unsigned int lt          :8; // unknown

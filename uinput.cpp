@@ -349,4 +349,44 @@ uInput::send(XBoxMsg& msg)
     }
 }
 
+void
+uInput::send(XBox360GuitarMsg& msg)
+{
+  if (config.dpad_as_button)
+    {
+      send_button(BTN_BASE,  msg.dpad_up);
+      send_button(BTN_BASE2, msg.dpad_down);
+      send_button(BTN_BASE3, msg.dpad_left);
+      send_button(BTN_BASE4, msg.dpad_right);
+    }
+  else
+    {
+      if (msg.dpad_up)
+        {
+          send_axis(ABS_HAT0Y, -1);
+        }
+      else if (msg.dpad_down)
+        {
+          send_axis(ABS_HAT0Y, 1);
+        }
+      else
+        {
+          send_axis(ABS_HAT0Y, 0);
+        }
+
+      if (msg.dpad_left)
+        {
+          send_axis(ABS_HAT0X, -1);
+        }
+      else if (msg.dpad_right)
+        {
+          send_axis(ABS_HAT0X, 1);
+        }
+      else
+        {
+          send_axis(ABS_HAT0X, 0);
+        }
+    }
+}
+
 /* EOF */

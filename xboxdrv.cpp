@@ -93,6 +93,9 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
       case GAMEPAD_XBOX_MAT:
         return out << "XBox Dancepad";
         
+      case GAMEPAD_XBOX360_GUITAR:
+        return out << "XBox360 Guitar";
+
       default:
         return out << "unknown" << std::endl;
     }
@@ -116,7 +119,7 @@ std::ostream& operator<<(std::ostream& out, const XBox360GuitarMsg& msg)
     % int(msg.blue)
     % int(msg.orange);
 
-  if (1)
+  if (0)
     out << boost::format("| dummy: %d %d %d %d %02hhx %02hhx %04hx %04hx %02x %02x")
       % int(msg.thumb_l)
       % int(msg.thumb_r)
@@ -137,7 +140,7 @@ std::ostream& operator<<(std::ostream& out, const XBox360GuitarMsg& msg)
 
 std::ostream& operator<<(std::ostream& out, const XBox360Msg& msg) 
 {
-  out << boost::format("  S1:(%6d, %6d)") 
+  out << boost::format("S1:(%6d, %6d)") 
     % int(msg.x1) % int(msg.y1);
 
   out << boost::format("  S2:(%6d, %6d)")
@@ -167,7 +170,7 @@ std::ostream& operator<<(std::ostream& out, const XBox360Msg& msg)
   out << boost::format("  LT:%3d RT:%3d")
     % int(msg.lt) % int(msg.rt);
 
-  if (2)
+  if (0)
     out << " Dummy: " << msg.dummy1 << " " << msg.dummy2 << " " << msg.dummy3;
 
   return out;
@@ -292,6 +295,7 @@ int main(int argc, char** argv)
   bool instant_exit = false;
   uInputCfg uinput_config;
   bool no_uinput = false;
+  int  forced_type = -1;
 
   for(int i = 1; i < argc; ++i)
     {
@@ -320,6 +324,8 @@ int main(int argc, char** argv)
           std::cout << "  --trigger-as-button      LT and RT send button instead of axis events" << std::endl;
           std::cout << "  --trigger-as-zaxis       Combine LT and RT to form a zaxis instead" << std::endl;
           std::cout << "  --dpad-as-button         DPad sends button instead of axis events" << std::endl;
+          std::cout << "  --type TYPE              Ignore autodetection and enforce controller type\n"
+                    << "                           (xbox, xbox360, xbox360-wireless, xbox360-guitar)" << std::endl;
           std::cout << std::endl;
           std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
           return EXIT_SUCCESS;
@@ -358,6 +364,44 @@ int main(int argc, char** argv)
         {
           verbose   = true;
           no_uinput = true;
+        }
+      else if (strcmp(argv[i], "-t") == 0 ||
+               strcmp(argv[i], "--type") == 0)
+        {
+          ++i;
+          if (i < argc)
+            {
+              if (strcmp(argv[i], "xbox") == 0)
+                {
+                  forced_type = GAMEPAD_XBOX;
+                }
+              else if (strcmp(argv[i], "xbox360") == 0)
+                {
+                  forced_type = GAMEPAD_XBOX360;
+                }
+              else if (strcmp(argv[i], "xbox360-guitar") == 0)
+                {
+                  forced_type = GAMEPAD_XBOX360_GUITAR;
+                }
+              else if (strcmp(argv[i], "xbox360-wireless") == 0)
+                {
+                  forced_type = GAMEPAD_XBOX360_WIRELESS;
+                }
+              else if (strcmp(argv[i], "xbox-dancemat") == 0)
+                {
+                  forced_type = GAMEPAD_XBOX_MAT;
+                }
+              else
+                {
+                  std::cout << "Error: Unknown type: " << argv[i] << std::endl;
+                  return EXIT_FAILURE;                  
+                }
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected a argument" << std::endl;
+              return EXIT_FAILURE;
+            }
         }
       else if (strcmp(argv[i], "-i") == 0 ||
                strcmp(argv[i], "--id") == 0)
@@ -482,7 +526,9 @@ int main(int argc, char** argv)
   else 
     {
       // Could/should fork here to hande multiple controllers at once
-      
+      if (forced_type != -1)
+        dev_type->type = static_cast<GamepadType>(forced_type);
+ 
       std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
         % dev_type->name % dev_type->idVendor % dev_type->idProduct << std::endl;
       std::cout << "Controller Type:   " << dev_type->type << std::endl;
@@ -501,15 +547,15 @@ int main(int argc, char** argv)
             std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
 
           // Handle LED on XBox360 Controller
-          if (dev_type->type == GAMEPAD_XBOX360)
+          if (dev_type->type == GAMEPAD_XBOX360 ||
+              dev_type->type == GAMEPAD_XBOX360_GUITAR)
             {
               char ledcmd[] = {1, 3, led}; 
               usb_interrupt_write(handle, 2, ledcmd, 3, 0);
             }
 
           // Switch of Rumble
-          if (dev_type->type == GAMEPAD_XBOX360 ||
-              dev_type->type == GAMEPAD_XBOX360_WIRELESS)
+          if (dev_type->type == GAMEPAD_XBOX360)
             {
               char l = rumble_r; // light weight
               char b = rumble_l; // big weight
@@ -589,8 +635,7 @@ int main(int argc, char** argv)
                               if (verbose)
                                 std::cout << msg << std::endl;
                             }
-                          else if (dev_type->type == GAMEPAD_XBOX360 ||
-                                   dev_type->type == GAMEPAD_XBOX360_WIRELESS)  
+                          else if (dev_type->type == GAMEPAD_XBOX360)
                             {
                               XBox360Msg& msg = (XBox360Msg&)data;
 
