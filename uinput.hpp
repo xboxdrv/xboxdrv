@@ -44,6 +44,9 @@ private:
 public:
   uInput(GamepadType type, uInputCfg cfg = uInputCfg());
   ~uInput();
+
+  void setup_xbox360_gamepad(GamepadType type);
+  void setup_xbox360_guitar();
   
   void send(XBox360Msg& msg);
   void send(XBox360GuitarMsg& msg);

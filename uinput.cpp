@@ -57,111 +57,173 @@ uInput::uInput(GamepadType type, uInputCfg config_)
     }
   else
     {
-      ioctl(fd, UI_SET_EVBIT, EV_ABS);
-      ioctl(fd, UI_SET_EVBIT,  EV_KEY);
-
-        
-      ioctl(fd, UI_SET_ABSBIT, ABS_X);
-      ioctl(fd, UI_SET_ABSBIT, ABS_Y);
-
-      ioctl(fd, UI_SET_ABSBIT, ABS_RX);
-      ioctl(fd, UI_SET_ABSBIT, ABS_RY);
-
-      if (config.trigger_as_button)
+      if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX)
         {
-          ioctl(fd, UI_SET_KEYBIT, BTN_TL2);
-          ioctl(fd, UI_SET_KEYBIT, BTN_TR2);
+          setup_xbox360_gamepad(type);
         }
-      else if (config.trigger_as_zaxis)
+      else if (type == GAMEPAD_XBOX360_GUITAR) 
         {
-          ioctl(fd, UI_SET_ABSBIT, ABS_Z);
+          setup_xbox360_guitar();
         }
       else
         {
-          ioctl(fd, UI_SET_ABSBIT, ABS_GAS);
-          ioctl(fd, UI_SET_ABSBIT, ABS_BRAKE);
+          std::cout << "Unhandled type: " << type << std::endl;
+          exit(EXIT_FAILURE);
         }
-
-      if (!config.dpad_as_button)
-        {
-          ioctl(fd, UI_SET_ABSBIT, ABS_HAT0X);
-          ioctl(fd, UI_SET_ABSBIT, ABS_HAT0Y);
-        }
-      else
-        {
-          ioctl(fd, UI_SET_KEYBIT, BTN_BASE);
-          ioctl(fd, UI_SET_KEYBIT, BTN_BASE2);
-          ioctl(fd, UI_SET_KEYBIT, BTN_BASE3);
-          ioctl(fd, UI_SET_KEYBIT, BTN_BASE4);
-        }
-
-      ioctl(fd, UI_SET_KEYBIT, BTN_START);
-      ioctl(fd, UI_SET_KEYBIT, BTN_SELECT);
-        
-      if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX360_WIRELESS)
-        ioctl(fd, UI_SET_KEYBIT, BTN_MODE);
-
-      ioctl(fd, UI_SET_KEYBIT, BTN_A);
-      ioctl(fd, UI_SET_KEYBIT, BTN_B);
-      ioctl(fd, UI_SET_KEYBIT, BTN_X);
-      ioctl(fd, UI_SET_KEYBIT, BTN_Y);
-
-      ioctl(fd, UI_SET_KEYBIT, BTN_TL);
-      ioctl(fd, UI_SET_KEYBIT, BTN_TR);
-
-      ioctl(fd, UI_SET_KEYBIT, BTN_THUMBL);
-      ioctl(fd, UI_SET_KEYBIT, BTN_THUMBR);
-
-      struct uinput_user_dev uinp;
-      memset(&uinp,0,sizeof(uinp));
-      strncpy(uinp.name, "XBox Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
-      uinp.id.version = 0;
-      uinp.id.bustype = BUS_USB;
-      uinp.id.vendor  = 0x045e;
-      uinp.id.product = 0x028e;
-
-      uinp.absmin[ABS_X] = -32768;
-      uinp.absmax[ABS_X] =  32767;
-
-      uinp.absmin[ABS_Y] = -32768;
-      uinp.absmax[ABS_Y] =  32767;
-
-      uinp.absmin[ABS_RX] = -32768;
-      uinp.absmax[ABS_RX] =  32767;
-
-      uinp.absmin[ABS_RY] = -32768;
-      uinp.absmax[ABS_RY] =  32767;
-
-      if (config.trigger_as_zaxis)
-        {
-          uinp.absmin[ABS_Z] = -255;
-          uinp.absmax[ABS_Z] =  255;         
-        }
-      else if (!config.trigger_as_button)
-        {
-          uinp.absmin[ABS_GAS] = 0;
-          uinp.absmax[ABS_GAS] = 255;
-
-          uinp.absmin[ABS_BRAKE] = 0;
-          uinp.absmax[ABS_BRAKE] = 255;
-        }
-      
-      if (!config.dpad_as_button)
-        {
-          uinp.absmin[ABS_HAT0X] = -1;
-          uinp.absmax[ABS_HAT0X] =  1;
-
-          uinp.absmin[ABS_HAT0Y] = -1;
-          uinp.absmax[ABS_HAT0Y] =  1;
-        }
-
-      write(fd, &uinp, sizeof(uinp));
 
       if (ioctl(fd, UI_DEV_CREATE))
         {
           std::cout << "Unable to create UINPUT device." << std::endl;
         }
     }
+}
+
+void
+uInput::setup_xbox360_gamepad(GamepadType type)
+{
+  ioctl(fd, UI_SET_EVBIT, EV_ABS);
+  ioctl(fd, UI_SET_EVBIT,  EV_KEY);
+        
+  ioctl(fd, UI_SET_ABSBIT, ABS_X);
+  ioctl(fd, UI_SET_ABSBIT, ABS_Y);
+
+  ioctl(fd, UI_SET_ABSBIT, ABS_RX);
+  ioctl(fd, UI_SET_ABSBIT, ABS_RY);
+
+  if (config.trigger_as_button)
+    {
+      ioctl(fd, UI_SET_KEYBIT, BTN_TL2);
+      ioctl(fd, UI_SET_KEYBIT, BTN_TR2);
+    }
+  else if (config.trigger_as_zaxis)
+    {
+      ioctl(fd, UI_SET_ABSBIT, ABS_Z);
+    }
+  else
+    {
+      ioctl(fd, UI_SET_ABSBIT, ABS_GAS);
+      ioctl(fd, UI_SET_ABSBIT, ABS_BRAKE);
+    }
+
+  if (!config.dpad_as_button)
+    {
+      ioctl(fd, UI_SET_ABSBIT, ABS_HAT0X);
+      ioctl(fd, UI_SET_ABSBIT, ABS_HAT0Y);
+    }
+  else
+    {
+      ioctl(fd, UI_SET_KEYBIT, BTN_BASE);
+      ioctl(fd, UI_SET_KEYBIT, BTN_BASE2);
+      ioctl(fd, UI_SET_KEYBIT, BTN_BASE3);
+      ioctl(fd, UI_SET_KEYBIT, BTN_BASE4);
+    }
+
+  ioctl(fd, UI_SET_KEYBIT, BTN_START);
+  ioctl(fd, UI_SET_KEYBIT, BTN_SELECT);
+        
+  if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX360_WIRELESS)
+    ioctl(fd, UI_SET_KEYBIT, BTN_MODE);
+
+  ioctl(fd, UI_SET_KEYBIT, BTN_A);
+  ioctl(fd, UI_SET_KEYBIT, BTN_B);
+  ioctl(fd, UI_SET_KEYBIT, BTN_X);
+  ioctl(fd, UI_SET_KEYBIT, BTN_Y);
+
+  ioctl(fd, UI_SET_KEYBIT, BTN_TL);
+  ioctl(fd, UI_SET_KEYBIT, BTN_TR);
+
+  ioctl(fd, UI_SET_KEYBIT, BTN_THUMBL);
+  ioctl(fd, UI_SET_KEYBIT, BTN_THUMBR);
+
+  struct uinput_user_dev uinp;
+  memset(&uinp,0,sizeof(uinp));
+  strncpy(uinp.name, "XBox Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
+  uinp.id.version = 0;
+  uinp.id.bustype = BUS_USB;
+  uinp.id.vendor  = 0x045e;
+  uinp.id.product = 0x028e;
+
+  uinp.absmin[ABS_X] = -32768;
+  uinp.absmax[ABS_X] =  32767;
+
+  uinp.absmin[ABS_Y] = -32768;
+  uinp.absmax[ABS_Y] =  32767;
+
+  uinp.absmin[ABS_RX] = -32768;
+  uinp.absmax[ABS_RX] =  32767;
+
+  uinp.absmin[ABS_RY] = -32768;
+  uinp.absmax[ABS_RY] =  32767;
+
+  if (config.trigger_as_zaxis)
+    {
+      uinp.absmin[ABS_Z] = -255;
+      uinp.absmax[ABS_Z] =  255;         
+    }
+  else if (!config.trigger_as_button)
+    {
+      uinp.absmin[ABS_GAS] = 0;
+      uinp.absmax[ABS_GAS] = 255;
+
+      uinp.absmin[ABS_BRAKE] = 0;
+      uinp.absmax[ABS_BRAKE] = 255;
+    }
+      
+  if (!config.dpad_as_button)
+    {
+      uinp.absmin[ABS_HAT0X] = -1;
+      uinp.absmax[ABS_HAT0X] =  1;
+
+      uinp.absmin[ABS_HAT0Y] = -1;
+      uinp.absmax[ABS_HAT0Y] =  1;
+    }
+
+  write(fd, &uinp, sizeof(uinp));
+}
+
+void
+uInput::setup_xbox360_guitar()
+{
+  ioctl(fd, UI_SET_EVBIT, EV_ABS);
+  ioctl(fd, UI_SET_EVBIT, EV_KEY);
+        
+  // Whammy and Tilt
+  ioctl(fd, UI_SET_ABSBIT, ABS_X);
+  ioctl(fd, UI_SET_ABSBIT, ABS_Y);
+
+  // Dpad
+  ioctl(fd, UI_SET_KEYBIT, BTN_BASE);
+  ioctl(fd, UI_SET_KEYBIT, BTN_BASE2);
+  ioctl(fd, UI_SET_KEYBIT, BTN_BASE3);
+  ioctl(fd, UI_SET_KEYBIT, BTN_BASE4);
+
+  // Base
+  ioctl(fd, UI_SET_KEYBIT, BTN_START);
+  ioctl(fd, UI_SET_KEYBIT, BTN_SELECT);
+  ioctl(fd, UI_SET_KEYBIT, BTN_MODE);
+
+  // Fret button
+  ioctl(fd, UI_SET_KEYBIT, BTN_1);
+  ioctl(fd, UI_SET_KEYBIT, BTN_2);
+  ioctl(fd, UI_SET_KEYBIT, BTN_3);
+  ioctl(fd, UI_SET_KEYBIT, BTN_4);
+  ioctl(fd, UI_SET_KEYBIT, BTN_5);
+
+  struct uinput_user_dev uinp;
+  memset(&uinp,0,sizeof(uinp));
+  strncpy(uinp.name, "XBox360 Guitar (userspace driver)", UINPUT_MAX_NAME_SIZE);
+  uinp.id.version = 0;
+  uinp.id.bustype = BUS_USB;
+  uinp.id.vendor  = 0x045e; // FIXME: Shouldn't be hardcoded
+  uinp.id.product = 0x028e;
+
+  uinp.absmin[ABS_X] = -32768;
+  uinp.absmax[ABS_X] =  32767;
+
+  uinp.absmin[ABS_Y] = -32768;
+  uinp.absmax[ABS_Y] =  32767;
+
+  write(fd, &uinp, sizeof(uinp));  
 }
 
 uInput::~uInput()
@@ -352,41 +414,23 @@ uInput::send(XBoxMsg& msg)
 void
 uInput::send(XBox360GuitarMsg& msg)
 {
-  if (config.dpad_as_button)
-    {
-      send_button(BTN_BASE,  msg.dpad_up);
-      send_button(BTN_BASE2, msg.dpad_down);
-      send_button(BTN_BASE3, msg.dpad_left);
-      send_button(BTN_BASE4, msg.dpad_right);
-    }
-  else
-    {
-      if (msg.dpad_up)
-        {
-          send_axis(ABS_HAT0Y, -1);
-        }
-      else if (msg.dpad_down)
-        {
-          send_axis(ABS_HAT0Y, 1);
-        }
-      else
-        {
-          send_axis(ABS_HAT0Y, 0);
-        }
+  send_button(BTN_BASE,  msg.dpad_up);
+  send_button(BTN_BASE2, msg.dpad_down);
+  send_button(BTN_BASE3, msg.dpad_left);
+  send_button(BTN_BASE4, msg.dpad_right);
 
-      if (msg.dpad_left)
-        {
-          send_axis(ABS_HAT0X, -1);
-        }
-      else if (msg.dpad_right)
-        {
-          send_axis(ABS_HAT0X, 1);
-        }
-      else
-        {
-          send_axis(ABS_HAT0X, 0);
-        }
-    }
+  send_button(BTN_START,  msg.start);
+  send_button(BTN_MODE,   msg.mode);
+  send_button(BTN_SELECT, msg.select);
+
+  send_button(BTN_1, msg.green);
+  send_button(BTN_2, msg.red);
+  send_button(BTN_3, msg.yellow);
+  send_button(BTN_4, msg.blue);
+  send_button(BTN_5, msg.orange);
+
+  send_axis(ABS_X, msg.whammy);
+  send_axis(ABS_Y, msg.tilt);
 }
 
 /* EOF */

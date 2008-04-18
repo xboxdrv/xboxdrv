@@ -634,6 +634,8 @@ int main(int argc, char** argv)
                               XBox360GuitarMsg& msg = (XBox360GuitarMsg&)data;
                               if (verbose)
                                 std::cout << msg << std::endl;
+
+                              uinput->send(msg);
                             }
                           else if (dev_type->type == GAMEPAD_XBOX360)
                             {
