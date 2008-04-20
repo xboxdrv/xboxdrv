@@ -96,7 +96,7 @@ cat_usb_device(struct usb_device* dev, int ep)
       while(!quit)
         {
           uint8_t data[32];
-          int ret = usb_bulk_read(handle, ep, (char*)data, sizeof(data), 0);
+          int ret = usb_interrupt_read(handle, ep, (char*)data, sizeof(data), 0);
           if (ret < 0)
             {
               std::cout << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
@@ -126,7 +126,7 @@ cat_usb_device(struct usb_device* dev, int ep)
                 }
 
               std::cout << "Writing random data" << std::endl;
-              if (usb_bulk_write(handle, 0, rumblecmd, len, 0) < 0)
+              if (usb_interrupt_write(handle, 0, rumblecmd, len, 0) < 0)
                 {
                   std::cout << "Write Error: " << usb_strerror() << std::endl;
                 }

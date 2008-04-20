@@ -1,3 +1,32 @@
+// wire:                 { 0x00, 0x08, 0x00, large, small, 0x00, 0x00, 0x00 };
+// wireless: { 0x00, 0x01, 0x0f, 0xc0, 0x00, large, small, 0x00, 0x00, 0x00, 0x00, 0x00};
+                                 ^^^^ typo?
+void Wireless360Controller::SetRumbleMotors(unsigned char large, unsigned char small)
+{
+    char buf[] = {0x00, 0x01, 0x0f, 0xc0, 0x00, large, small, 0x00, 0x00, 0x00, 0x00, 0x00};
+    WirelessDevice *device;
+    
+    device = OSDynamicCast(WirelessDevice, getProvider());
+    if (device != NULL)
+        device->SendPacket(buf, sizeof(buf));
+}
+    
+
+-----
+
+Tilt Sensor: is mapped to the second axis of S2, to LT and RT (three parts)
+- Range for 2nd axis of S2 : -32768 when guitar is straight down and 32767 when she is straight up.
+- Range for LT : ~200 not very precise and ~60 at min.
+- Range for RT : ~190 not very precise and ~55 at min.
+
+    dummy should stay mostly 0, except the position five and six, which
+    are the LT/RT trigger. We can either just ignore them or you can try
+    to find out if they have any meaning.
+     
+
+They control guitar rotation, hmm hard to explain, it's when I rotate the guitar in front of me, it detects if the guitar is in the correct position.
+-----
+
 * add -type option to enforce controller type
 
 * Question: Firestorm Dual Power: How to get rumble to work when there is no endpoint to send data to?

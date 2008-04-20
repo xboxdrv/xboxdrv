@@ -3,6 +3,11 @@ XBox Gamepad Userspace Driver:
   * Ingo Ruhnke <grumbel@gmx>
 
 
+XBox Gamepad Userspace Driver Testing:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  * Julien <julroy67@gmail.com> (XBox360 Guitar)
+
+
 Parts of the code are based on XBox Kernel driver (xpad.c/xpad.h) by:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   * Marko Friedemann <mfr@bmx-chemnitz.de>

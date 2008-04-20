@@ -246,6 +246,28 @@ void list_controller()
     std::cout << "\nNo controller detected" << std::endl; 
 }
 
+bool find_controller_by_path(char* busid, char* devid,struct usb_device** xbox_device)
+{
+  struct usb_bus* busses = usb_get_busses();
+
+  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+    {
+      if (strcmp(bus->dirname, busid) == 0)
+        {
+          for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+            {
+              if (strcmp(dev->filename, devid) == 0)
+                {
+                  *xbox_device = dev;
+                  return true;
+                }
+            }
+        }
+    }
+  return 0;
+}
+
+
 bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice** type)
 {
   struct usb_bus* busses = usb_get_busses();
@@ -293,9 +315,11 @@ int main(int argc, char** argv)
   int  rumble_r = 0;
   int  controller_id = 0;
   bool instant_exit = false;
-  uInputCfg uinput_config;
   bool no_uinput = false;
-  int  forced_type = -1;
+  int  gamepad_type = -1;
+  char busid[4] = "\0";
+  char devid[4] = "\0";
+  uInputCfg uinput_config;
 
   for(int i = 1; i < argc; ++i)
     {
@@ -311,9 +335,12 @@ int main(int argc, char** argv)
           std::cout << "  --help-devices           list supported devices" << std::endl;
           std::cout << "  -v, --verbose            display controller events" << std::endl;
           std::cout << "  -i, --id N               use controller number (default: 0)" << std::endl;
-          std::cout << "  -L, --list-controller        list available controllers" << std::endl;
-          std::cout << "  --test-rumble            map rumbling to LT and RT (for testing only)" << std::endl;
+          std::cout << "  -L, --list-controller    list available controllers" << std::endl;
+          std::cout << "  -R, --test-rumble        map rumbling to LT and RT (for testing only)" << std::endl;
           std::cout << "  --no-uinput              do not try to start uinput event dispatching" << std::endl;
+          std::cout << std::endl;
+          std::cout << "Device Options: " << std::endl;
+          std::cout << "  -d, --device BUS:DEV         Use device BUS:DEV, do not do any scanning" << std::endl;
           std::cout << std::endl;
           std::cout << "Status Options: " << std::endl;
           std::cout << "  -l, --led NUM            set LED status, see --list-led-values (default: 0)" << std::endl;
@@ -335,7 +362,8 @@ int main(int argc, char** argv)
         {
           verbose = true;
         }
-      else if (strcmp(argv[i], "--test-rumble") == 0)
+      else if (strcmp(argv[i], "--test-rumble") == 0 ||
+               strcmp(argv[i], "-R") == 0)
         {
           rumble = true;
         }
@@ -345,9 +373,16 @@ int main(int argc, char** argv)
           ++i;
           if (i < argc)
             {
-              sscanf(argv[i], "%d,%d", &rumble_l, &rumble_r);
-              rumble_l = std::max(0, std::min(255, rumble_l));
-              rumble_r = std::max(0, std::min(255, rumble_r));
+              if (sscanf(argv[i], "%d,%d", &rumble_l, &rumble_r) == 2)
+                {
+                  rumble_l = std::max(0, std::min(255, rumble_l));
+                  rumble_r = std::max(0, std::min(255, rumble_r));
+                }
+              else
+                {
+                  std::cout << "Error: " << argv[i-1] << " expected a argument in form INT,INT" << std::endl;
+                  return EXIT_FAILURE;
+                }
             }
           else
             {
@@ -373,27 +408,33 @@ int main(int argc, char** argv)
             {
               if (strcmp(argv[i], "xbox") == 0)
                 {
-                  forced_type = GAMEPAD_XBOX;
+                  gamepad_type = GAMEPAD_XBOX;
                 }
               else if (strcmp(argv[i], "xbox360") == 0)
                 {
-                  forced_type = GAMEPAD_XBOX360;
+                  gamepad_type = GAMEPAD_XBOX360;
                 }
               else if (strcmp(argv[i], "xbox360-guitar") == 0)
                 {
-                  forced_type = GAMEPAD_XBOX360_GUITAR;
+                  gamepad_type = GAMEPAD_XBOX360_GUITAR;
                 }
               else if (strcmp(argv[i], "xbox360-wireless") == 0)
                 {
-                  forced_type = GAMEPAD_XBOX360_WIRELESS;
+                  gamepad_type = GAMEPAD_XBOX360_WIRELESS;
                 }
               else if (strcmp(argv[i], "xbox-dancemat") == 0)
                 {
-                  forced_type = GAMEPAD_XBOX_MAT;
+                  gamepad_type = GAMEPAD_XBOX_MAT;
                 }
               else
                 {
-                  std::cout << "Error: Unknown type: " << argv[i] << std::endl;
+                  std::cout << "Error: unknown type: " << argv[i] << std::endl;
+                  std::cout << "Possible types are:" << std::endl;
+                  std::cout << " * xbox" << std::endl;
+                  std::cout << " * xbox360" << std::endl;
+                  std::cout << " * xbox360-guitar" << std::endl;
+                  std::cout << " * xbox360-wireless" << std::endl;
+                  std::cout << " * xbox360-dancemat" << std::endl;
                   return EXIT_FAILURE;                  
                 }
             }
@@ -482,7 +523,39 @@ int main(int argc, char** argv)
                     << std::endl;
           return EXIT_SUCCESS;
         }
-      else if (strcmp(argv[i], "--list-controller") == 0 &&
+      else if (strcmp(argv[i], "--device") == 0 ||
+               strcmp(argv[i], "-d") == 0)
+        {
+          ++i;
+          if (i < argc)
+            {
+              if (sscanf(argv[i], "%3s:%3s", busid, devid) == 2)
+                {
+                  std::cout << "     ***************************************" << std::endl;
+                  std::cout << "     *** WARNING *** WARNING *** WARNING ***" << std::endl;
+                  std::cout << "     ***************************************" << std::endl;
+                  std::cout << "The '--device DEV' option should not be needed for normal use" << std::endl;
+                  std::cout << "and might potentially be harmful when used on devices that" << std::endl;
+                  std::cout << "are not a gamepad, use at your own risk and ensure that you" << std::endl;
+                  std::cout << "are accessing the right device.\n"  << std::endl;
+                  std::cout << "If you have multiple gamepads and want to select a differnt" << std::endl;
+                  std::cout << "one use the '-id N' option instead.\n" << std::endl;
+                  std::cout << "Press Ctrl-c to exit and Enter to continue." << std::endl;
+                  getchar();
+                }
+              else
+                {
+                  std::cout << "Error: " << argv[i-1] << " expected a argument in form BUS:DEV (i.e. 006:003)" << std::endl;
+                  return EXIT_FAILURE;
+                }
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
+              return EXIT_FAILURE;
+            }          
+        }
+      else if (strcmp(argv[i], "--list-controller") == 0 ||
                strcmp(argv[i], "-L") == 0)
         {
           usb_init();
@@ -519,19 +592,50 @@ int main(int argc, char** argv)
     
   struct usb_device* dev      = 0;
   XPadDevice*        dev_type = 0;
-  if (!find_xbox360_controller(controller_id, &dev, &dev_type))
+  
+  if (busid[0] != '\0' && devid[0] != '\0')
     {
-      std::cout << "No XBox360 Controller found" << std::endl;
+      if (gamepad_type == -1)
+        {
+          std::cout << "Error: --device BUS:DEV option must be used in combination with --type TYPE option" << std::endl;
+          exit(EXIT_FAILURE);
+        }
+      else
+        {
+          if (!find_controller_by_path(busid, devid, &dev))
+            {
+              std::cout << "Error: couldn't find device " << busid << ":" << devid << std::endl;
+              exit(EXIT_FAILURE);
+            }
+        }
+    }
+  else
+    {
+      if (!find_xbox360_controller(controller_id, &dev, &dev_type))
+        {
+          std::cout << "No XBox or XBox360 controller found" << std::endl;
+          exit(EXIT_FAILURE);
+        }
+    }
+
+  if (!dev)
+    {
+      std::cout << "No suitable USB device found, abort" << std::endl;
+      exit(EXIT_FAILURE);
     }
   else 
     {
       // Could/should fork here to hande multiple controllers at once
-      if (forced_type != -1)
-        dev_type->type = static_cast<GamepadType>(forced_type);
+      if (gamepad_type == -1)
+        {
+          assert(dev_type);
+          gamepad_type = dev_type->type;
+        }
  
+      std::cout << "USB Device:        " << dev->bus->dirname << ":" << dev->filename << std::endl;
       std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
-        % dev_type->name % dev_type->idVendor % dev_type->idProduct << std::endl;
-      std::cout << "Controller Type:   " << dev_type->type << std::endl;
+        % (dev_type ? dev_type->name : "unknown") % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct) << std::endl;
+      std::cout << "Controller Type:   " << gamepad_type << std::endl;
       std::cout << "Rumble Debug:      " << (rumble ? "on" : "off") << std::endl;
       std::cout << "Rumble Speed:      " << "left: " << rumble_l << " right: " << rumble_r << std::endl;
       std::cout << "LED Status:        " << int(led) << std::endl;
@@ -547,22 +651,22 @@ int main(int argc, char** argv)
             std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
 
           // Handle LED on XBox360 Controller
-          if (dev_type->type == GAMEPAD_XBOX360 ||
-              dev_type->type == GAMEPAD_XBOX360_GUITAR)
+          if (gamepad_type == GAMEPAD_XBOX360 ||
+              gamepad_type == GAMEPAD_XBOX360_GUITAR)
             {
               char ledcmd[] = {1, 3, led}; 
               usb_interrupt_write(handle, 2, ledcmd, 3, 0);
             }
 
           // Switch of Rumble
-          if (dev_type->type == GAMEPAD_XBOX360)
+          if (gamepad_type == GAMEPAD_XBOX360)
             {
               char l = rumble_r; // light weight
               char b = rumble_l; // big weight
               char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
               usb_interrupt_write(handle, 2, rumblecmd, 8, 0);
             }
-          else if (dev_type->type == GAMEPAD_XBOX)
+          else if (gamepad_type == GAMEPAD_XBOX)
             {
               char l = rumble_l;
               char b = rumble_r;
@@ -580,7 +684,7 @@ int main(int argc, char** argv)
               if (!no_uinput)
                 {
                   std::cout << "Starting uinput" << std::endl;
-                  uinput = new uInput(dev_type->type, uinput_config);
+                  uinput = new uInput(static_cast<GamepadType>(gamepad_type), uinput_config);
                 }
               else
                 {
@@ -629,7 +733,7 @@ int main(int argc, char** argv)
                         {
                           memcpy(old_data, data, 20);
 
-                          if (dev_type->type == GAMEPAD_XBOX360_GUITAR)
+                          if (gamepad_type == GAMEPAD_XBOX360_GUITAR)
                             {
                               XBox360GuitarMsg& msg = (XBox360GuitarMsg&)data;
                               if (verbose)
@@ -637,7 +741,7 @@ int main(int argc, char** argv)
 
                               uinput->send(msg);
                             }
-                          else if (dev_type->type == GAMEPAD_XBOX360)
+                          else if (gamepad_type == GAMEPAD_XBOX360)
                             {
                               XBox360Msg& msg = (XBox360Msg&)data;
 
@@ -655,7 +759,7 @@ int main(int argc, char** argv)
                                 }
 
                             }
-                          else if (dev_type->type == GAMEPAD_XBOX)
+                          else if (gamepad_type == GAMEPAD_XBOX)
                             { 
                               XBoxMsg& msg = (XBoxMsg&)data;                
 
@@ -710,7 +814,6 @@ int main(int argc, char** argv)
         }
     }
 
-  std::cout << "Done" << std::endl;
   return 0;
 }
 
