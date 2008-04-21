@@ -316,23 +316,25 @@ struct CommandLineOptions
   int  controller_id;
   bool instant_exit;
   bool no_uinput;
-  int  gamepad_type;
+  GamepadType gamepad_type;
   char busid[4];
   char devid[4];
   uInputCfg uinput_config;
-
+  int deadzone;
+  
   CommandLineOptions() {
-    verbose = false;
-    rumble  = false;
-    led     = 0;
+    verbose  = false;
+    rumble   = false;
+    led      = 0;
     rumble_l = 0;
     rumble_r = 0;
     controller_id = 0;
     instant_exit = false;
     no_uinput = false;
-    gamepad_type = -1;
+    gamepad_type = GAMEPAD_UNKNOWN;
     busid[0] = '\0';
     devid[0] = '\0';
+    deadzone = 0;
   }
 };
 
@@ -360,6 +362,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  -q, --quit               only set led and rumble status then quit" << std::endl;
   std::cout << std::endl;
   std::cout << "Configuration Options: " << std::endl;
+  std::cout << "  --deadzone INT           Threshold under which axis events are ignored (default: 0)" << std::endl;
   std::cout << "  --trigger-as-button      LT and RT send button instead of axis events" << std::endl;
   std::cout << "  --trigger-as-zaxis       Combine LT and RT to form a zaxis instead" << std::endl;
   std::cout << "  --dpad-as-button         DPad sends button instead of axis events" << std::endl;
@@ -529,6 +532,19 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
         {
           opts.uinput_config.dpad_as_button = true;
         }
+      else if (strcmp("--deadzone", argv[i]) == 0)
+        {
+          ++i;
+          if (i < argc)
+            {
+              opts.deadzone = atoi(argv[i]);
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected an INT argument" << std::endl;
+              exit(EXIT_FAILURE);
+            }          
+        }
       else if (strcmp("--trigger-as-button", argv[i]) == 0)
         {
           if (opts.uinput_config.trigger_as_zaxis)
@@ -639,7 +655,7 @@ int main(int argc, char** argv)
   
   if (opts.busid[0] != '\0' && opts.devid[0] != '\0')
     {
-      if (opts.gamepad_type == -1)
+      if (opts.gamepad_type == GAMEPAD_UNKNOWN)
         {
           std::cout << "Error: --device BUS:DEV option must be used in combination with --type TYPE option" << std::endl;
           exit(EXIT_FAILURE);
@@ -670,7 +686,7 @@ int main(int argc, char** argv)
   else 
     {
       // Could/should fork here to hande multiple controllers at once
-      if (opts.gamepad_type == -1)
+      if (opts.gamepad_type == GAMEPAD_UNKNOWN)
         {
           assert(dev_type);
           opts.gamepad_type = dev_type->type;
@@ -680,6 +696,7 @@ int main(int argc, char** argv)
       std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
         % (dev_type ? dev_type->name : "unknown") % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct) << std::endl;
       std::cout << "Controller Type:   " << opts.gamepad_type << std::endl;
+      std::cout << "Deadzone:          " << opts.deadzone << std::endl;
       std::cout << "Rumble Debug:      " << (opts.rumble ? "on" : "off") << std::endl;
       std::cout << "Rumble Speed:      " << "left: " << opts.rumble_l << " right: " << opts.rumble_r << std::endl;
       std::cout << "LED Status:        " << int(opts.led) << std::endl;
@@ -728,7 +745,7 @@ int main(int argc, char** argv)
               if (!opts.no_uinput)
                 {
                   std::cout << "Starting uinput" << std::endl;
-                  uinput = new uInput(static_cast<GamepadType>(opts.gamepad_type), opts.uinput_config);
+                  uinput = new uInput(opts.gamepad_type, opts.uinput_config);
                 }
               else
                 {
@@ -789,34 +806,30 @@ int main(int argc, char** argv)
                             {
                               XBox360Msg& msg = (XBox360Msg&)data;
 
+                              if (abs(msg.x1) < opts.deadzone)
+                                msg.x1 = 0;
+
+                              if (abs(msg.y1) < opts.deadzone)
+                                msg.y1 = 0;
+
+                              if (abs(msg.x2) < opts.deadzone)
+                                msg.x2 = 0;
+
+                              if (abs(msg.y2) < opts.deadzone)
+                                msg.y2 = 0;
+
                               if (opts.verbose)
                                 std::cout << msg << std::endl;
 
                               if (uinput) uinput->send(msg);
                     
-                              if (0)
-                                { // Send random junk to the controller
-                                  char rumblecmd[] = { 0x00, 0x08, rand()%255, rand()%255, rand()%255, rand()%255, rand()%255, rand()%255 };
-                                  usb_interrupt_write(handle, 2, rumblecmd, 8, 0);
-
-                                  std::cout << "Send: " << ret 
-                                            << " Data: ";
-                                  
-                                  for(int j = 0; j < 8; ++j)
-                                    std::cout << boost::format("0x%02x ") % int(rumblecmd[j]);
-                                  std::cout << std::endl;
-                                }
-                              else
+                              if (opts.rumble)
                                 {
-                                  if (opts.rumble)
-                                    {
-                                      char l = msg.rt;
-                                      char b = msg.lt;
-                                      char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
-                                      usb_interrupt_write(handle, 2, rumblecmd, 8, 0);
-                                    }
+                                  char l = msg.rt;
+                                  char b = msg.lt;
+                                  char rumblecmd[] = { 0x00, 0x08, 0x00, b, l, 0x00, 0x00, 0x00 };
+                                  usb_interrupt_write(handle, 2, rumblecmd, 8, 0);
                                 }
-
                             }
                           else if (opts.gamepad_type == GAMEPAD_XBOX)
                             { 

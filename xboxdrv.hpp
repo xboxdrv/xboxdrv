@@ -170,6 +170,7 @@ struct XBoxMsg
 } __attribute__((__packed__));
 
 enum GamepadType {
+  GAMEPAD_UNKNOWN,
   GAMEPAD_XBOX,
   GAMEPAD_XBOX_MAT,
   GAMEPAD_XBOX360,
