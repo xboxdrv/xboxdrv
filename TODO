@@ -1,3 +1,33 @@
+Figure out:
+===========
+Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
+Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
+Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
+Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
+Unknown data: bytes: 3 Data: 0x01 0x03 0x00 
+
+Different Computer/Pad:
+Unknown data: bytes: 3 Data: 0x01 0x03 0x0e
+Unknown data: bytes: 3 Data: 0x02 0x03 0x00
+Unknown data: bytes: 3 Data: 0x03 0x03 0x03
+Unknown data: bytes: 3 Data: 0x08 0x03 0x00
+Unknown data: bytes: 3 Data: 0x01 0x03 0x00
+
+                      /* Happens with XBox360 Controller sometimes
+                         Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
+                         Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
+                         Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
+                         Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
+                         -- different session:
+                         Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
+                         Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
+                         Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
+                         Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
+                         Unknown data: bytes: 3 Data: 0x01 0x03 0x06 
+
+                      */
+
+
 // wire:                 { 0x00, 0x08, 0x00, large, small, 0x00, 0x00, 0x00 };
 // wireless: { 0x00, 0x01, 0x0f, 0xc0, 0x00, large, small, 0x00, 0x00, 0x00, 0x00, 0x00};
                                  ^^^^ typo?
@@ -45,6 +75,11 @@ http://ubuntuforums.org/showthread.php?t=404577&page=16
 http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver
 
 * add jstest, evtest into the source
+
+
+ WirelessHIDDevice::receivedMessage(IOMemoryDescriptor *data)
+
+* wireless reports battery level
 
 * disconnecting the pad in use will just let the driver wait forever
   for new data, any way we can catch a disconnect?

@@ -19,6 +19,7 @@
 #ifndef HEADER_XBOX360_HPP
 #define HEADER_XBOX360_HPP
 
+// Unused, could be used to allow button remapping
 enum XBox360Buttons {
   XBOX360_DPAD_UP    = (1<< 0),
   XBOX360_DPAD_DOWN  = (1<< 1),
@@ -37,7 +38,7 @@ enum XBox360Buttons {
   XBOX360_X          = (1<<14),
   XBOX360_Y          = (1<<15),
 };
-
+
 struct XBox360Msg
 {
   // -------------------------
@@ -83,8 +84,7 @@ struct XBox360Msg
   unsigned int dummy2      :32;
   unsigned int dummy3      :16;
 } __attribute__((__packed__));
-
-
+
 struct XBox360GuitarMsg
 {
   // -------------------------
@@ -130,8 +130,7 @@ struct XBox360GuitarMsg
   unsigned int dummy2      :32; // unused
   unsigned int dummy3      :16; // unused
 } __attribute__((__packed__));
-
-
+
 struct XBoxMsg
 {
   // --------------------------
@@ -169,7 +168,7 @@ struct XBoxMsg
   int x2                   :16;
   int y2                   :16;
 } __attribute__((__packed__));
-
+
 enum GamepadType {
   GAMEPAD_XBOX,
   GAMEPAD_XBOX_MAT,
@@ -177,14 +176,14 @@ enum GamepadType {
   GAMEPAD_XBOX360_WIRELESS,
   GAMEPAD_XBOX360_GUITAR
 };
-
+
 struct XPadDevice {
   GamepadType type;
   uint16_t    idVendor;
   uint16_t    idProduct;
   char*       name;
 };
-
+
 #endif
 
 /* EOF */
