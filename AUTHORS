@@ -11,15 +11,15 @@ XBox Gamepad Userspace Driver Testing:
 Parts of the code are based on XBox Kernel driver (xpad.c/xpad.h) by:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   * Marko Friedemann <mfr@bmx-chemnitz.de>
-  * Vojtech Pavlik <vojtech@suse.sz>,
-  * Oliver Schwartz <Oliver.Schwartz@gmx.de>,
-  * Thomas Pedley <gentoox@shallax.com>,
-  * Steven Toth <steve@toth.demon.co.uk>,
-  * Franz Lehner <franz@caos.at>,
-  * Ivan Hawkes <blackhawk@ivanhawkes.com>,
-  * Edgar Hucek <hostmaster@ed-soft.at>,
-  * Niklas Lundberg <niklas@jahej.com>,
-  * Pyry Haulos <pyry.haulos@gmail.com>,
+  * Vojtech Pavlik <vojtech@suse.sz>
+  * Oliver Schwartz <Oliver.Schwartz@gmx.de>
+  * Thomas Pedley <gentoox@shallax.com>
+  * Steven Toth <steve@toth.demon.co.uk>
+  * Franz Lehner <franz@caos.at>
+  * Ivan Hawkes <blackhawk@ivanhawkes.com>
+  * Edgar Hucek <hostmaster@ed-soft.at>
+  * Niklas Lundberg <niklas@jahej.com>
+  * Pyry Haulos <pyry.haulos@gmail.com>
   * Jiri Kosina <jkosina@suse.cz>
 
 
