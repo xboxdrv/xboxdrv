@@ -39,8 +39,14 @@ XBox360Driver::init()
 {
   dev    = 0;
   handle = 0;
+
   for(int i = 0; i < XBOX360_BTN_LENGTH; ++i)
-    buttons.push_back(new Button(NULL));
+    btn_port_out.push_back(new ButtonPortOut((boost::format("XBox360Driver Button %d") % i).str()));
+
+  // This should really be abs ports so that one can select different
+  // rumble strength an LED status
+  btn_port_in.(new ButtonPortIn("XBox360Driver LED",    boost::bind()));
+  btn_port_in.(new ButtonPortIn("XBox360Driver Rumble", boost::bind()));
 }
 
 Xbox360Driver::Xbox360Driver(const std::string& busid, const std::string& devid)

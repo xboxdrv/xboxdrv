@@ -1,4 +1,4 @@
-
+/*
 **   __      __ __             ___        __   __ __   __
 **  /  \    /  \__| ____    __| _/_______/  |_|__|  | |  |   ____
 **  \   \/\/   /  |/    \  / __ |/  ___/\   __\  |  | |  | _/ __ \
@@ -29,31 +29,61 @@
 #include <boost/signal.hpp>
 
 
-class Button
+struct ButtonPortIn
 {
-protected:
-  bool down;
+  std::string label;
+  boost::function<void(ButtonPortOut*)> on_change;
+  ButtonPortOut* out_port;
 
-public:
-  Button()
-    : down(true)
-  {}
-
-  bool get_state() const { return down; }
-
-  void set_state(bool new_state)
-  {
-    if (new_state != down) 
-      {
-        down = new_state;
-        sig_on_change(this);
-      }
-  }
-
-  boost::signal<Button*> sig_on_change;
+  ButtonPortIn(const std::string& label, const boost::function<void(void)>& on_change)
+    : label(label), on_change(on_change), out_port(0) {}
 };
 
-class UInputButton : public Button 
+class ButtonPortOut
+{
+public:
+  std::string label;
+
+  boost::signal<void(ButtonPortOut*)> sig_change;
+
+  // true if pressed, false otherwise
+  bool state;
+
+  ButtonPortOut(const std::string& label) 
+    : label(label) {}
+
+
+  std::string get_label() { return label; }
+  bool get_state() { return state; }
+};
+
+class Control
+{
+protected:
+  std::vector<ButtonPortIn*>  btn_port_in;
+  std::vector<ButtonPortOut*> btn_port_out;
+
+public:
+  Control() {
+  }
+
+  ~Control() 
+  {
+    for(std::vector<ButtonPortIn*>::iterator i = btn_port_in.begin(); i != btn_port_in.end(); ++i)
+      delete *i;
+
+    for(std::vector<ButtonPortOut*>::iterator i = btn_port_out.begin(); i != btn_port_out.end(); ++i)
+      delete *i;
+  }
+
+  int get_btn_port_in_count()  { return btn_port_in;  }
+  int get_btn_port_out_count() { return btn_port_out; }
+
+  BtnPortIn*  get_btn_port_in(int idx)  { return btn_port_in[idx];  }
+  BtnPortOut* get_btn_port_out(int idx) { return btn_port_out[idx]; }
+};
+
+class UInputButton : public Control 
 {
 protected:
   UInput*  uinput;
@@ -63,12 +93,14 @@ public:
   UInputButton(UInput* uinput, uint16_t code) 
   : uinput(uinput), 
     code(code)
-  {}  
-
-  void on_child_change(Button* button)
   {
-    state = button->get_state();
-    uinput->send_button(code, state);
+    btn_port_in.push_back(new BtnPortIn((boost::format("UInput-Button %hd") % code).str(), 
+                                        boost::bind(this, &UInputButton::on_button)));
+  }
+
+  void on_button(ButtonPortOut* btn)
+  {
+    uinput->send_button(code, btn->get_state());
   }
 };
 

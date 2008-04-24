@@ -29,7 +29,7 @@
 #include <vector>
 
 /** */
-class Xbox360Driver
+class Xbox360Driver : public Control
 {
 private:
   enum { 
@@ -60,8 +60,6 @@ public:
   Xbox360Driver(int idx);
   Xbox360Driver(const std::string& busid, const std::string& devid);
   ~Xbox360Driver();
-
-  Button* get_button(const std::string& name);
 
   void set_led(uint8_t led_status);
   void set_rumble(uint8_t big, uint8_t small);
