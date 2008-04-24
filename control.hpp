@@ -27,8 +27,9 @@
 #define HEADER_CONTROL_HPP
 
 #include <boost/signal.hpp>
-
 
+class BtnPortIn;
+
 class BtnPortOut
 {
 public:
@@ -45,7 +46,10 @@ public:
 
   std::string get_label() { return label; }
   bool get_state() { return state; }
-  void set_state(bool s) { state = s; sig_change(this); }
+  void set_state(bool s) { if (state != s) { state = s; sig_change(this); } }
+
+  void connect(BtnPortIn* in);
+  void connect(boost::function<void(BtnPortOut*)> func);
 };
 
 struct BtnPortIn
@@ -93,8 +97,8 @@ protected:
 
 public:
   UInputButton(UInput* uinput, uint16_t code) 
-  : uinput(uinput), 
-    code(code)
+    : uinput(uinput), 
+      code(code)
   {
     btn_port_in.push_back(new BtnPortIn((boost::format("UInput-Button %hd") % code).str(), 
                                         boost::bind(this, &UInputButton::on_button)));

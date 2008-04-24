@@ -65,6 +65,9 @@ public:
   void set_led(uint8_t led_status);
   void set_rumble(uint8_t big, uint8_t small);
   
+  void on_led_btn(BtnPortOut* btn);
+  void on_rumble_btn(BtnPortOut* btn);
+
   void run();
 
 private:

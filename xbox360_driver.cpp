@@ -29,8 +29,51 @@
 #include <boost/bind.hpp>
 #include "xbox360_driver.hpp"
 
-struct usb_device* find_usb_device_by_path(const std::string& busid, const std::string& devid) { return 0; }
-struct usb_device* find_usb_device_by_ids(uint16_t idVendor, uint16_t idProduct) { return 0; }
+struct usb_device* find_usb_device_by_path(const std::string& busid, const std::string& devid) 
+{
+  struct usb_bus* busses = usb_get_busses();
+
+  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+    {
+      if (bus->dirname == busid)
+        {
+          for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+            {
+              if (dev->filename == devid)
+                {
+                  return dev;
+                }
+            }
+        }
+    }
+  return 0;
+}
+
+struct usb_device* find_usb_device_by_ids(int id, uint16_t idVendor, uint16_t idProduct) 
+{
+  struct usb_bus* busses = usb_get_busses();
+
+  int id_count = 0;
+  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+    {
+      for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+        {
+          if (dev->descriptor.idVendor  == idVendor &&
+              dev->descriptor.idProduct == idProduct)
+            {
+              if (id_count == id)
+                {
+                  return dev;
+                }
+              else
+                {
+                  id_count += 1;
+                }
+            }
+        }
+    }
+  return 0; 
+}
 
 XPadDevice xbox360_devices[] = {
   { GAMEPAD_XBOX360,          0x045e, 0x028e, "Microsoft Xbox 360 Controller" },
@@ -51,8 +94,10 @@ Xbox360Driver::init()
 
   // This should really be abs ports so that one can select different
   // rumble strength an LED status
-  btn_port_in.push_back(new BtnPortIn("Xbox360Driver LED",    boost::function<void(BtnPortOut*)>()));
-  btn_port_in.push_back(new BtnPortIn("Xbox360Driver Rumble", boost::function<void(BtnPortOut*)>()));
+  btn_port_in.push_back(new BtnPortIn("Xbox360Driver LED",    
+                                      boost::bind(&Xbox360Driver::on_led_btn, this, _1)));
+  btn_port_in.push_back(new BtnPortIn("Xbox360Driver Rumble", 
+                                      boost::bind(&Xbox360Driver::on_rumble_btn, this, _1)));
 }
 
 Xbox360Driver::Xbox360Driver(const std::string& busid, const std::string& devid)
@@ -67,12 +112,14 @@ Xbox360Driver::Xbox360Driver(int id)
 {
   init();
 
+  // FIXME: This loop can't work
   for(int i = 0; i < xbox360_devices_count && !dev; ++i)
     {
       if (xbox360_devices[i].type == GAMEPAD_XBOX360 ||
           xbox360_devices[i].type == GAMEPAD_XBOX360_GUITAR)
         {
-          dev = find_usb_device_by_ids(xbox360_devices[i].idVendor,
+          dev = find_usb_device_by_ids(id, 
+                                       xbox360_devices[i].idVendor,
                                        xbox360_devices[i].idProduct);
         }
     }
@@ -194,8 +241,34 @@ Xbox360Driver::set_led(uint8_t led_status)
 void
 Xbox360Driver::set_rumble(uint8_t big, uint8_t small)
 {
-  char rumblecmd[] = { 0x00, 0x06, 0x00, small/*right*/, 0x00, big/*left*/};
-  usb_interrupt_write(handle, 2, rumblecmd, 6, 0);    
+  char rumblecmd[] = { 0x00, 0x08, 0x00, big, small, 0x00, 0x00, 0x00 };
+  usb_interrupt_write(handle, 2, rumblecmd, 8, 0);
+}
+
+void
+Xbox360Driver::on_led_btn(BtnPortOut* btn)
+{
+  if (btn->get_state())
+    {
+      set_led(10);
+    }
+  else
+    {
+      set_led(0);
+    }
+}
+
+void
+Xbox360Driver::on_rumble_btn(BtnPortOut* btn)
+{
+  if (btn->get_state())
+    {
+      set_rumble(155, 155);
+    }
+  else
+    {
+      set_rumble(0, 0);
+    }
 }
 
 /* EOF */

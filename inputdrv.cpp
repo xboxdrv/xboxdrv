@@ -24,9 +24,16 @@
 */
 
 #include <usb.h>
-//#include "xbox360_driver.hpp"
+#include <iostream>
+#include <boost/bind.hpp>
+#include "xbox360_driver.hpp"
 #include "control.hpp"
 #include "inputdrv.hpp"
+
+void btn_change(BtnPortOut* port)
+{
+  std::cout << "Button" << port->get_label() << ": " << port->get_state() << std::endl;
+}
 
 int main()
 {
@@ -35,7 +42,18 @@ int main()
   usb_find_busses();
   usb_find_devices();
   
-  
+  Xbox360Driver xbox360(0);
+
+  BtnPortOut* btn_a = xbox360.get_btn_port_out(0);
+  BtnPortOut* btn_b = xbox360.get_btn_port_out(1);
+
+  btn_a->connect(btn_change);
+  btn_b->connect(btn_change);
+
+  btn_a->connect(xbox360.get_btn_port_in(0));
+  btn_b->connect(xbox360.get_btn_port_in(1));
+
+  xbox360.run();
 
   return 0;
 }
