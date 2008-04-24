@@ -33,7 +33,7 @@
 /** */
 class Xbox360Driver : public Control
 {
-private:
+public:
   enum { 
     XBOX360_DPAD_UP, 
     XBOX360_DPAD_DOWN, 
@@ -54,6 +54,13 @@ private:
     XBOX360_BTN_LENGTH, 
   };
 
+  enum {
+    PORT_IN_LED,
+    PORT_IN_RUMBLE,
+    PORT_IN_MAX,
+  };
+
+private:
   struct usb_device*     dev;
   struct usb_dev_handle* handle;
   

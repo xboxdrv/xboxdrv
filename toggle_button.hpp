@@ -23,43 +23,28 @@
 **  02111-1307, USA.
 */
 
-#include <usb.h>
-#include <iostream>
-#include <boost/bind.hpp>
-#include "xbox360_driver.hpp"
-#include "toggle_button.hpp"
+#ifndef HEADER_TOGGLE_BUTTON_HPP
+#define HEADER_TOGGLE_BUTTON_HPP
+
 #include "control.hpp"
-#include "inputdrv.hpp"
 
-void btn_change(BtnPortOut* port)
+/** */
+class ToggleButton : public Control
 {
-  std::cout << "Button" << port->get_label() << ": " << port->get_state() << std::endl;
-}
+private:
+  bool state;
 
-int main()
-{
-  // Init USB
-  usb_init();
-  usb_find_busses();
-  usb_find_devices();
+public:
+  ToggleButton();
+  virtual ~ToggleButton();
+
+  void on_btn(BtnPortOut* out);
   
-  Xbox360Driver xbox360(0);
-  ToggleButton  toggle;
+private:
+  ToggleButton (const ToggleButton&);
+  ToggleButton& operator= (const ToggleButton&);
+};
 
-  BtnPortOut* btn_a = xbox360.get_btn_port_out(Xbox360Driver::XBOX360_BTN_A);
-  BtnPortOut* btn_b = xbox360.get_btn_port_out(Xbox360Driver::XBOX360_BTN_B);
-  BtnPortIn*  toggle_in  = toggle.get_btn_port_in(0);
-  BtnPortOut* toggle_out = toggle.get_btn_port_out(0);
-
-  btn_a->connect(btn_change);
-  btn_b->connect(toggle_in);
-
-  btn_a->connect(xbox360.get_btn_port_in(0));
-  toggle_out->connect(xbox360.get_btn_port_in(1));
-
-  xbox360.run();
-
-  return 0;
-}
+#endif
 
 /* EOF */
