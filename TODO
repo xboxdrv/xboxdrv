@@ -1,4 +1,16 @@
-* examples for --dpad as buttons and other options
+Controls:
+=========
+ * invert button
+ * toggle button
+ * autofire button
+
+ * invert axis
+ * deadzone axis
+ * split axis (gas/break)
+ * join axis (trigger -> zaxis)
+ * non-linear axis (gamma or so)
+
+* examples in doc for --dpad as buttons and other options
 
 Figure out:
 ===========

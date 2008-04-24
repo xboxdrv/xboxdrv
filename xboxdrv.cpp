@@ -1,5 +1,5 @@
 /* 
-**  XBox360 USB Gamepad Userspace Driver
+**  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
@@ -82,36 +82,36 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
   switch (type)
     {
       case GAMEPAD_XBOX360:
-        return out << "XBox360";
+        return out << "Xbox360";
 
       case GAMEPAD_XBOX360_WIRELESS:
-        return out << "XBox360 (wireless)";
+        return out << "Xbox360 (wireless)";
 
       case GAMEPAD_XBOX:
-        return out << "XBox Classic";
+        return out << "Xbox Classic";
 
       case GAMEPAD_XBOX_MAT:
-        return out << "XBox Dancepad";
+        return out << "Xbox Dancepad";
         
       case GAMEPAD_XBOX360_GUITAR:
-        return out << "XBox360 Guitar";
+        return out << "Xbox360 Guitar";
 
       default:
         return out << "unknown" << std::endl;
     }
 }
 
-std::ostream& operator<<(std::ostream& out, const XBox360GuitarMsg& msg) 
+std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg) 
 {
-  out << boost::format(" whammy:%6d tilt:%6d | up:%d down:%d left:%d right:%d | back:%d mode:%d start:%d | green:%d red:%d yellow:%d blue:%d orange:%d ")
+  out << boost::format(" whammy:%6d tilt:%6d | up:%d down:%d left:%d right:%d | back:%d guide:%d start:%d | green:%d red:%d yellow:%d blue:%d orange:%d ")
     % int(msg.whammy)
     % int(msg.tilt)
     % int(msg.dpad_up)
     % int(msg.dpad_down)
     % int(msg.dpad_left)
     % int(msg.dpad_right)
-    % int(msg.select)
-    % int(msg.mode)
+    % int(msg.back)
+    % int(msg.guide)
     % int(msg.start)
     % int(msg.green)
     % int(msg.red)
@@ -138,7 +138,7 @@ std::ostream& operator<<(std::ostream& out, const XBox360GuitarMsg& msg)
   return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const XBox360Msg& msg) 
+std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg) 
 {
   out << boost::format("S1:(%6d, %6d)") 
     % int(msg.x1) % int(msg.y1);
@@ -152,8 +152,8 @@ std::ostream& operator<<(std::ostream& out, const XBox360Msg& msg)
     % int(msg.dpad_left)
     % int(msg.dpad_right);
 
-  out << "  back:" << msg.select;
-  out << " mode:"  << msg.mode;
+  out << "  back:" << msg.back;
+  out << " guide:" << msg.guide;
   out << " start:" << msg.start;
 
   out << "  sl:" << msg.thumb_l;
@@ -176,7 +176,7 @@ std::ostream& operator<<(std::ostream& out, const XBox360Msg& msg)
   return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const XBoxMsg& msg) 
+std::ostream& operator<<(std::ostream& out, const XboxMsg& msg) 
 {
   out << boost::format(" S1:(%6d, %6d) S2:(%6d, %6d) "
                        " [u:%d|d:%d|l:%d|r:%d] "
@@ -341,7 +341,7 @@ struct CommandLineOptions
 void print_command_line_help(int argc, char** argv)
 {
   std::cout << "Usage: " << argv[0] << " [OPTION]..." << std::endl;
-  std::cout << "XBox360 USB Gamepad Userspace Driver" << std::endl;
+  std::cout << "Xbox360 USB Gamepad Userspace Driver" << std::endl;
   std::cout << std::endl;
   std::cout << "General Options: " << std::endl;
   std::cout << "  -h, --help               display this help and exit" << std::endl;
@@ -673,7 +673,7 @@ int main(int argc, char** argv)
     {
       if (!find_xbox360_controller(opts.controller_id, &dev, &dev_type))
         {
-          std::cout << "No XBox or XBox360 controller found" << std::endl;
+          std::cout << "No Xbox or Xbox360 controller found" << std::endl;
           exit(EXIT_FAILURE);
         }
     }
@@ -704,14 +704,14 @@ int main(int argc, char** argv)
       struct usb_dev_handle* handle = usb_open(dev);
       if (!handle)
         {
-          std::cout << "Error opening XBox360 controller" << std::endl;
+          std::cout << "Error opening Xbox360 controller" << std::endl;
         }
       else
         {
           if (usb_claim_interface(handle, 0) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
             std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
 
-          // Handle LED on XBox360 Controller
+          // Handle LED on Xbox360 Controller
           if (opts.gamepad_type == GAMEPAD_XBOX360 ||
               opts.gamepad_type == GAMEPAD_XBOX360_GUITAR)
             {
@@ -751,7 +751,7 @@ int main(int argc, char** argv)
                 {
                   std::cout << "Starting without uinput" << std::endl;
                 }
-              std::cout << "\nYour XBox360 controller should now be available as /dev/input/jsX and /dev/input/eventX" << std::endl;
+              std::cout << "\nYour Xbox360 controller should now be available as /dev/input/jsX and /dev/input/eventX" << std::endl;
               std::cout << "Press Ctrl-c to quit" << std::endl;
 
               bool quit = false;
@@ -769,7 +769,7 @@ int main(int argc, char** argv)
                     }
                   else if (ret == 0)
                     {
-                      // happen with the XBox360 every now and then, just
+                      // happen with the Xbox360 every now and then, just
                       // ignore, seems harmless
                     }
 #if 0
@@ -796,7 +796,7 @@ int main(int argc, char** argv)
 
                           if (opts.gamepad_type == GAMEPAD_XBOX360_GUITAR)
                             {
-                              XBox360GuitarMsg& msg = (XBox360GuitarMsg&)data;
+                              Xbox360GuitarMsg& msg = (Xbox360GuitarMsg&)data;
                               if (opts.verbose)
                                 std::cout << msg << std::endl;
 
@@ -804,7 +804,7 @@ int main(int argc, char** argv)
                             }
                           else if (opts.gamepad_type == GAMEPAD_XBOX360)
                             {
-                              XBox360Msg& msg = (XBox360Msg&)data;
+                              Xbox360Msg& msg = (Xbox360Msg&)data;
 
                               if (abs(msg.x1) < opts.deadzone)
                                 msg.x1 = 0;
@@ -833,7 +833,7 @@ int main(int argc, char** argv)
                             }
                           else if (opts.gamepad_type == GAMEPAD_XBOX)
                             { 
-                              XBoxMsg& msg = (XBoxMsg&)data;                
+                              XboxMsg& msg = (XboxMsg&)data;                
 
                               if (opts.verbose)
                                 std::cout << msg << std::endl;
