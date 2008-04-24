@@ -27,6 +27,7 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include "xbox360_driver.hpp"
+#include "uinput_driver.hpp"
 #include "toggle_button.hpp"
 #include "control.hpp"
 #include "inputdrv.hpp"
@@ -43,11 +44,28 @@ void abs_change(AbsPortOut* port)
 
 int main()
 {
+  UInputDriver uinput1;
+  uinput1.add_abs(ABS_X, -32768, 32767);
+  uinput1.add_abs(ABS_Y, -32768, 32767);
+  uinput1.add_btn(BTN_A);
+  uinput1.add_btn(BTN_B);
+  uinput1.add_btn(BTN_C);
+  uinput1.finish();
+
+  UInputDriver uinput2;
+  uinput2.add_abs(ABS_X, -32768, 32767);
+  uinput2.add_abs(ABS_Y, -32768, 32767);
+  uinput2.add_btn(BTN_A);
+  uinput2.add_btn(BTN_B);
+  uinput2.add_btn(BTN_C);
+  uinput2.finish();
+
+
   // Init USB
   usb_init();
   usb_find_busses();
   usb_find_devices();
-  
+
   Xbox360Driver xbox360(0);
   ToggleButton  toggle;
 
@@ -61,13 +79,44 @@ int main()
 
   toggle_out->connect(xbox360.get_btn_port_in(0));
 
+  // ----------------------------
+
+  xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_X1) 
+    ->connect(uinput1.get_abs_port_in(0));
+  xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_Y1) 
+    ->connect(uinput1.get_abs_port_in(1));
+
+  xbox360.get_btn_port_out(Xbox360Driver::XBOX360_BTN_A) 
+    ->connect(uinput1.get_btn_port_in(0));
+  xbox360.get_btn_port_out(Xbox360Driver::XBOX360_BTN_B) 
+    ->connect(uinput1.get_btn_port_in(1));
+  xbox360.get_btn_port_out(Xbox360Driver::XBOX360_BTN_X) 
+    ->connect(uinput1.get_btn_port_in(2));
+  
+  // ----------------------------
+  // ----------------------------
+
+  xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_X2) 
+    ->connect(uinput2.get_abs_port_in(0));
+  xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_Y2) 
+    ->connect(uinput2.get_abs_port_in(1));
+
+  xbox360.get_btn_port_out(Xbox360Driver::XBOX360_DPAD_DOWN) 
+    ->connect(uinput2.get_btn_port_in(0));
+  xbox360.get_btn_port_out(Xbox360Driver::XBOX360_DPAD_LEFT) 
+    ->connect(uinput2.get_btn_port_in(1));
+  xbox360.get_btn_port_out(Xbox360Driver::XBOX360_DPAD_RIGHT) 
+    ->connect(uinput2.get_btn_port_in(2));
+  
+  // ----------------------------
+
   xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_LT) 
     ->connect(xbox360.get_abs_port_in(Xbox360Driver::ABS_PORT_IN_RUMBLE_L));
 
   xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_RT)
     ->connect(xbox360.get_abs_port_in(Xbox360Driver::ABS_PORT_IN_RUMBLE_R));
 
-  xbox360.get_btn_port_out(Xbox360Driver::XBOX360_BTN_B)->connect(btn_change);
+  xbox360.get_btn_port_out(Xbox360Driver::XBOX360_BTN_Y)->connect(btn_change);
 
   xbox360.run();
 

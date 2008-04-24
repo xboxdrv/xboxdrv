@@ -36,10 +36,16 @@ UInputDriver::UInputDriver()
     key_bit(false),
     fd(-1)
 {
+  std::cout << "UInputDriver" << std::endl;
   memset(&user_dev, 0, sizeof(user_dev));
-  
+  strncpy(user_dev.name, "Custom UInput Driver", UINPUT_MAX_NAME_SIZE);
+  user_dev.id.version = 0;
+  user_dev.id.bustype = BUS_USB; // And neither that
+  user_dev.id.vendor  = 0x045e; // FIXME: Don't hardcode this
+  user_dev.id.product = 0x028e;
+ 
   // Open the input device
-  char* uinput_filename[] = { "/dev/input/uinput", "/dev/uinput", "/dev/misc/uinput" };
+  const char* uinput_filename[] = { "/dev/input/uinput", "/dev/uinput", "/dev/misc/uinput" };
   const int uinput_filename_count = (sizeof(uinput_filename)/sizeof(char*));
 
   for (int i = 0; i < uinput_filename_count; ++i) 
@@ -68,6 +74,12 @@ UInputDriver::UInputDriver()
     }
 }
 
+UInputDriver::~UInputDriver()
+{
+  ioctl(fd, UI_DEV_DESTROY);
+  close(fd);
+}
+
 void
 UInputDriver::add_abs(uint16_t code, int min, int max)
 {
@@ -81,7 +93,6 @@ UInputDriver::add_abs(uint16_t code, int min, int max)
 
   user_dev.absmin[code] = min;
   user_dev.absmax[code] = max; 
-
 
   abs_port_in.push_back(new AbsPortIn("UInput", min, max,
                                       boost::bind(&UInputDriver::on_abs, this, _1, code)));
@@ -125,12 +136,20 @@ UInputDriver::add_btn(uint16_t code)
     }
 
   ioctl(fd, UI_SET_KEYBIT, code);
+
+  btn_port_in.push_back(new BtnPortIn("UInput", 
+                                      boost::bind(&UInputDriver::on_btn, this, _1, code)));
 }
 
 void
 UInputDriver::finish()
 {
+  std::cout << "Finalizing UInput" << std::endl;
   write(fd, &user_dev, sizeof(user_dev));
+  if (ioctl(fd, UI_DEV_CREATE))
+    {
+      std::cout << "Unable to create UINPUT device." << std::endl;
+    }
 }
 
 /* EOF */

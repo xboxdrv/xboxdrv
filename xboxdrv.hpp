@@ -182,7 +182,7 @@ struct XPadDevice {
   GamepadType type;
   uint16_t    idVendor;
   uint16_t    idProduct;
-  char*       name;
+  const char* name;
 };
 
 #endif

@@ -76,8 +76,8 @@ struct usb_device* find_usb_device_by_ids(int id, uint16_t idVendor, uint16_t id
 }
 
 XPadDevice xbox360_devices[] = {
-  { GAMEPAD_XBOX360,          0x045e, 0x028e, "Microsoft Xbox 360 Controller" },
-  { GAMEPAD_XBOX360,          0x0738, 0x4716, "Mad Catz Xbox 360 Controller"  },
+  { GAMEPAD_XBOX360,          0x045e, 0x028e, "Microsoft Xbox 360 Controller"  },
+  { GAMEPAD_XBOX360,          0x0738, 0x4716, "Mad Catz Xbox 360 Controller"   },
   { GAMEPAD_XBOX360_GUITAR,   0x1430, 0x4748, "RedOctane Guitar Hero X-plorer" },
 };
 
@@ -154,6 +154,8 @@ Xbox360Driver::open_dev()
   else
     {
       handle = usb_open(dev);
+      if (usb_claim_interface(handle, 0) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
+        std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
     }
 }
 
@@ -265,7 +267,7 @@ Xbox360Driver::set_led(uint8_t led_status)
 void
 Xbox360Driver::set_rumble(uint8_t big, uint8_t small)
 {
-  std::cout << int(big) << " " << int(small) << std::endl;
+  //std::cout << int(big) << " " << int(small) << std::endl;
   char rumblecmd[] = { 0x00, 0x08, 0x00, big, small, 0x00, 0x00, 0x00 };
   usb_interrupt_write(handle, 2, rumblecmd, 8, 0);
 }

@@ -40,6 +40,7 @@ private:
 
 public:
   UInputDriver();
+  ~UInputDriver();
 
   void add_abs(uint16_t code, int min, int max);
   void add_btn(uint16_t code);
@@ -47,6 +48,7 @@ public:
 
   void on_abs(AbsPortOut* port, uint16_t code);
   void on_btn(BtnPortOut* port, uint16_t code);
+
 private:
   UInputDriver (const UInputDriver&);
   UInputDriver& operator= (const UInputDriver&);
