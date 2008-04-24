@@ -1,5 +1,5 @@
 /* 
-**  XBox360 USB Gamepad Userspace Driver
+**  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
@@ -48,9 +48,9 @@ public:
   void setup_xbox360_gamepad(GamepadType type);
   void setup_xbox360_guitar();
   
-  void send(XBox360Msg& msg);
-  void send(XBox360GuitarMsg& msg);
-  void send(XBoxMsg& msg);
+  void send(Xbox360Msg& msg);
+  void send(Xbox360GuitarMsg& msg);
+  void send(XboxMsg& msg);
 
   void send_button(uint16_t code, int32_t value);
   void send_axis(uint16_t code, int32_t value);

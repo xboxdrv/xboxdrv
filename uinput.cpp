@@ -1,5 +1,5 @@
 /* 
-**  XBox360 USB Gamepad Userspace Driver
+**  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
@@ -137,7 +137,7 @@ uInput::setup_xbox360_gamepad(GamepadType type)
 
   struct uinput_user_dev uinp;
   memset(&uinp,0,sizeof(uinp));
-  strncpy(uinp.name, "XBox Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
+  strncpy(uinp.name, "Xbox Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
   uinp.id.version = 0;
   uinp.id.bustype = BUS_USB;
   uinp.id.vendor  = 0x045e;
@@ -211,7 +211,7 @@ uInput::setup_xbox360_guitar()
 
   struct uinput_user_dev uinp;
   memset(&uinp,0,sizeof(uinp));
-  strncpy(uinp.name, "XBox360 Guitar (userspace driver)", UINPUT_MAX_NAME_SIZE);
+  strncpy(uinp.name, "Xbox360 Guitar (userspace driver)", UINPUT_MAX_NAME_SIZE);
   uinp.id.version = 0;
   uinp.id.bustype = BUS_USB;
   uinp.id.vendor  = 0x045e; // FIXME: Shouldn't be hardcoded
@@ -261,7 +261,7 @@ uInput::send_axis(uint16_t code, int32_t value)
 }
 
 void
-uInput::send(XBox360Msg& msg)
+uInput::send(Xbox360Msg& msg)
 {
   send_button(BTN_THUMBL,  msg.thumb_l);
   send_button(BTN_THUMBR,  msg.thumb_r);
@@ -271,7 +271,7 @@ uInput::send(XBox360Msg& msg)
 
   send_button(BTN_START,  msg.start);
   send_button(BTN_MODE,   msg.mode);
-  send_button(BTN_SELECT, msg.select);
+  send_button(BTN_SELECT, msg.back);
 
   send_button(BTN_A, msg.a);
   send_button(BTN_B, msg.b);
@@ -337,7 +337,7 @@ uInput::send(XBox360Msg& msg)
 }
 
 void
-uInput::send(XBoxMsg& msg)
+uInput::send(XboxMsg& msg)
 {
   send_button(BTN_THUMBL,  msg.thumb_l);
   send_button(BTN_THUMBR,  msg.thumb_r);
@@ -412,7 +412,7 @@ uInput::send(XBoxMsg& msg)
 }
 
 void
-uInput::send(XBox360GuitarMsg& msg)
+uInput::send(Xbox360GuitarMsg& msg)
 {
   send_button(BTN_BASE,  msg.dpad_up);
   send_button(BTN_BASE2, msg.dpad_down);
@@ -421,7 +421,7 @@ uInput::send(XBox360GuitarMsg& msg)
 
   send_button(BTN_START,  msg.start);
   send_button(BTN_MODE,   msg.mode);
-  send_button(BTN_SELECT, msg.select);
+  send_button(BTN_SELECT, msg.back);
 
   send_button(BTN_1, msg.green);
   send_button(BTN_2, msg.red);

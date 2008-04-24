@@ -24,36 +24,42 @@
 */
 
 #include <usb.h>
+#include <iostream>
+#include <boost/format.hpp>
+#include <boost/bind.hpp>
 #include "xbox360_driver.hpp"
+
+struct usb_device* find_usb_device_by_path(const std::string& busid, const std::string& devid) { return 0; }
+struct usb_device* find_usb_device_by_ids(uint16_t idVendor, uint16_t idProduct) { return 0; }
 
 XPadDevice xbox360_devices[] = {
   { GAMEPAD_XBOX360,          0x045e, 0x028e, "Microsoft Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x0738, 0x4716, "Mad Catz Xbox 360 Controller"  },
   { GAMEPAD_XBOX360_GUITAR,   0x1430, 0x4748, "RedOctane Guitar Hero X-plorer" },
-}
+};
 
-const int xbox360_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
+const int xbox360_devices_count = sizeof(xbox360_devices)/sizeof(XPadDevice);
 
 void
-XBox360Driver::init()
+Xbox360Driver::init()
 {
   dev    = 0;
   handle = 0;
 
   for(int i = 0; i < XBOX360_BTN_LENGTH; ++i)
-    btn_port_out.push_back(new ButtonPortOut((boost::format("XBox360Driver Button %d") % i).str()));
+    btn_port_out.push_back(new BtnPortOut((boost::format("Xbox360Driver Button %d") % i).str()));
 
   // This should really be abs ports so that one can select different
   // rumble strength an LED status
-  btn_port_in.(new ButtonPortIn("XBox360Driver LED",    boost::bind()));
-  btn_port_in.(new ButtonPortIn("XBox360Driver Rumble", boost::bind()));
+  btn_port_in.push_back(new BtnPortIn("Xbox360Driver LED",    boost::function<void(BtnPortOut*)>()));
+  btn_port_in.push_back(new BtnPortIn("Xbox360Driver Rumble", boost::function<void(BtnPortOut*)>()));
 }
 
 Xbox360Driver::Xbox360Driver(const std::string& busid, const std::string& devid)
 {
   init();
 
-  dev = find_usb_device_by_path(opts.busid, opts.devid);
+  dev = find_usb_device_by_path(busid, devid);
   open_dev();
 }
 
@@ -84,7 +90,7 @@ Xbox360Driver::open_dev()
 {
   if (!dev)
     {
-      throw std::runtime_error("XBox360Driver: Couldn't find device " + busid + " " + devid);
+      throw std::runtime_error("Xbox360Driver: Couldn't find suitable USB device");
     }
   else
     {
@@ -98,53 +104,8 @@ Xbox360Driver::close_dev()
   usb_close(handle);
 }
 
-Button*
-XBox360Driver::create_button(const std::string& name)
-{
-  if      (name == "X")
-    {
-      return buttons[XBOX360_BTN_X];
-    }
-  else if (name == "Y")
-    {
-      return buttons[XBOX360_BTN_Y];
-    }
-  else if (name == "A")
-    {
-      return buttons[XBOX360_BTN_A];
-    }
-  else if (name == "B")
-    {
-      return buttons[XBOX360_BTN_B];
-    }
-  else if (name == "LB")
-    {
-      return buttons[XBOX360_BTN_LB];
-    }
-  else if (name == "RB")
-    {
-      return buttons[XBOX360_BTN_RB];
-    }
-  else if (name == "Start")
-    {
-      return buttons[XBOX360_BTN_START];
-    }
-  else if (name == "Back")
-    {
-      return buttons[XBOX360_BTN_BACK];
-    }
-  else if (name == "Mode" || name == "XBox360")
-    {
-      return buttons[XBOX360_BTN_MODE];
-    }
-  else
-    {
-      throw std::runtime_error("Unknown button: " + name);
-    }
-}
-
 void
-XBox360Driver::run()
+Xbox360Driver::run()
 { // Run this in a seperate Thread
   bool quit = false;
   uint8_t old_data[20];
@@ -163,7 +124,7 @@ XBox360Driver::run()
         }
       else if (ret == 0) // ignore
         {
-          // happen with the XBox360 every now and then, just
+          // happen with the Xbox360 every now and then, just
           // ignore, seems harmless
         }
       else if (ret == 3) // ignore
@@ -188,7 +149,7 @@ XBox360Driver::run()
           else
             {
               memcpy(old_data, data, 20);
-              XBox360Msg& msg = (XBox360Msg&)data;
+              Xbox360Msg& msg = (Xbox360Msg&)data;
               update(msg);
             }                  
         }
@@ -203,35 +164,35 @@ XBox360Driver::run()
 }
 
 void
-XBox360Driver::update(const XBox360Msg& msg)
+Xbox360Driver::update(const Xbox360Msg& msg)
 {
-  buttons[XBOX360_DPAD_UP]   ->set_state(msg.dpad_up);
-  buttons[XBOX360_DPAD_DOWN] ->set_state(msg.dpad_down);
-  buttons[XBOX360_DPAD_LEFT] ->set_state(msg.dpad_left);
-  buttons[XBOX360_DPAD_RIGHT]->set_state(msg.dpad_right);
+  btn_port_out[XBOX360_DPAD_UP]   ->set_state(msg.dpad_up);
+  btn_port_out[XBOX360_DPAD_DOWN] ->set_state(msg.dpad_down);
+  btn_port_out[XBOX360_DPAD_LEFT] ->set_state(msg.dpad_left);
+  btn_port_out[XBOX360_DPAD_RIGHT]->set_state(msg.dpad_right);
 
-  buttons[XBOX360_BTN_A]->set_state(msg.a);
-  buttons[XBOX360_BTN_B]->set_state(msg.b);
-  buttons[XBOX360_BTN_X]->set_state(msg.x);
-  buttons[XBOX360_BTN_Y]->set_state(msg.y);
+  btn_port_out[XBOX360_BTN_A]->set_state(msg.a);
+  btn_port_out[XBOX360_BTN_B]->set_state(msg.b);
+  btn_port_out[XBOX360_BTN_X]->set_state(msg.x);
+  btn_port_out[XBOX360_BTN_Y]->set_state(msg.y);
 
-  buttons[XBOX360_BTN_LB]->set_state(msg.lb);
-  buttons[XBOX360_BTN_RB]->set_state(msg.rb);
+  btn_port_out[XBOX360_BTN_LB]->set_state(msg.lb);
+  btn_port_out[XBOX360_BTN_RB]->set_state(msg.rb);
 
-  buttons[XBOX360_BTN_START]->set_state(msg.start);
-  buttons[XBOX360_BTN_BACK]->set_state(msg.back);
-  buttons[XBOX360_BTN_MODE]->set_state(msg.mode);
+  btn_port_out[XBOX360_BTN_START]->set_state(msg.start);
+  btn_port_out[XBOX360_BTN_BACK]->set_state(msg.back);
+  btn_port_out[XBOX360_BTN_MODE]->set_state(msg.mode);
 }
 
 void
-XBox360Driver::set_led(int led_status)
+Xbox360Driver::set_led(uint8_t led_status)
 {
   char ledcmd[] = { 1, 3, led_status }; 
   usb_interrupt_write(handle, 2, ledcmd, 3, 0);
 }
 
 void
-XBox360Driver::set_rumble(uint8_t big, uint8_t small)
+Xbox360Driver::set_rumble(uint8_t big, uint8_t small)
 {
   char rumblecmd[] = { 0x00, 0x06, 0x00, small/*right*/, 0x00, big/*left*/};
   usb_interrupt_write(handle, 2, rumblecmd, 6, 0);    

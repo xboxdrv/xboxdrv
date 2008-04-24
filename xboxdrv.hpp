@@ -1,5 +1,5 @@
 /* 
-**  XBox360 USB Gamepad Userspace Driver
+**  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 #define HEADER_XBOX360_HPP
 
 // Unused, could be used to allow button remapping
-enum XBox360Buttons {
+enum Xbox360Buttons {
   XBOX360_DPAD_UP    = (1<< 0),
   XBOX360_DPAD_DOWN  = (1<< 1),
   XBOX360_DPAD_LEFT  = (1<< 2),
@@ -39,7 +39,7 @@ enum XBox360Buttons {
   XBOX360_Y          = (1<<15),
 };
 
-struct XBox360Msg
+struct Xbox360Msg
 {
   // -------------------------
   unsigned int type       :8;
@@ -52,7 +52,7 @@ struct XBox360Msg
   unsigned int dpad_right  :1;
 
   unsigned int start       :1;
-  unsigned int select      :1;
+  unsigned int back        :1;
 
   unsigned int thumb_l     :1;
   unsigned int thumb_r     :1;
@@ -85,7 +85,7 @@ struct XBox360Msg
   unsigned int dummy3      :16;
 } __attribute__((__packed__));
 
-struct XBox360GuitarMsg
+struct Xbox360GuitarMsg
 {
   // -------------------------
   unsigned int type       :8;
@@ -98,7 +98,7 @@ struct XBox360GuitarMsg
   unsigned int dpad_right  :1;
 
   unsigned int start       :1;
-  unsigned int select      :1;
+  unsigned int back        :1;
 
   unsigned int thumb_l     :1; // unused
   unsigned int thumb_r     :1; // unused
@@ -131,7 +131,7 @@ struct XBox360GuitarMsg
   unsigned int dummy3      :16; // unused
 } __attribute__((__packed__));
 
-struct XBoxMsg
+struct XboxMsg
 {
   // --------------------------
   unsigned int type       :8;
