@@ -33,7 +33,12 @@
 
 void btn_change(BtnPortOut* port)
 {
-  std::cout << "Button" << port->get_label() << ": " << port->get_state() << std::endl;
+  std::cout << "Button: " << port->get_label() << ": " << port->get_state() << std::endl;
+}
+
+void abs_change(AbsPortOut* port)
+{
+  std::cout << "Axis:   " << port->get_label() << ": " << port->get_state() << std::endl;
 }
 
 int main()
@@ -54,8 +59,15 @@ int main()
   btn_a->connect(btn_change);
   btn_b->connect(toggle_in);
 
-  btn_a->connect(xbox360.get_btn_port_in(0));
-  toggle_out->connect(xbox360.get_btn_port_in(1));
+  toggle_out->connect(xbox360.get_btn_port_in(0));
+
+  xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_Y1) 
+    ->connect(xbox360.get_abs_port_in(Xbox360Driver::ABS_PORT_IN_RUMBLE_L));
+
+  xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_Y2)
+    ->connect(xbox360.get_abs_port_in(Xbox360Driver::ABS_PORT_IN_RUMBLE_R));
+
+  xbox360.get_btn_port_out(Xbox360Driver::XBOX360_BTN_B)->connect(btn_change);
 
   xbox360.run();
 

@@ -88,6 +88,8 @@ Xbox360Driver::init()
 {
   dev    = 0;
   handle = 0;
+  rumble_l = 0;
+  rumble_r = 0;
 
   for(int i = 0; i < XBOX360_BTN_LENGTH; ++i)
     btn_port_out.push_back(new BtnPortOut((boost::format("Xbox360Driver Button %d") % i).str()));
@@ -96,8 +98,18 @@ Xbox360Driver::init()
   // rumble strength an LED status
   btn_port_in.push_back(new BtnPortIn("Xbox360Driver LED",    
                                       boost::bind(&Xbox360Driver::on_led_btn, this, _1)));
-  btn_port_in.push_back(new BtnPortIn("Xbox360Driver Rumble", 
-                                      boost::bind(&Xbox360Driver::on_rumble_btn, this, _1)));
+
+  abs_port_in.push_back(new AbsPortIn("Xbox360Driver Rumble Left", 0, 255,
+                                      boost::bind(&Xbox360Driver::on_rumble_left_abs, this, _1)));
+  abs_port_in.push_back(new AbsPortIn("Xbox360Driver Rumble Right", 0, 255,
+                                      boost::bind(&Xbox360Driver::on_rumble_right_abs, this, _1)));
+
+  abs_port_out.push_back(new AbsPortOut("Xbox360Driver X1-Axis", -32768, 32767));
+  abs_port_out.push_back(new AbsPortOut("Xbox360Driver Y1-Axis", -32768, 32767));
+  abs_port_out.push_back(new AbsPortOut("Xbox360Driver X2-Axis", -32768, 32767));
+  abs_port_out.push_back(new AbsPortOut("Xbox360Driver Y2-Axis", -32768, 32767));
+  abs_port_out.push_back(new AbsPortOut("Xbox360Driver LT-Axis", 0, 255));
+  abs_port_out.push_back(new AbsPortOut("Xbox360Driver RT-Axis", 0, 255));
 }
 
 Xbox360Driver::Xbox360Driver(const std::string& busid, const std::string& devid)
@@ -226,9 +238,21 @@ Xbox360Driver::update(const Xbox360Msg& msg)
   btn_port_out[XBOX360_BTN_LB]->set_state(msg.lb);
   btn_port_out[XBOX360_BTN_RB]->set_state(msg.rb);
 
+  btn_port_out[XBOX360_BTN_THUMB_L]->set_state(msg.thumb_l);
+  btn_port_out[XBOX360_BTN_THUMB_R]->set_state(msg.thumb_r);
+
   btn_port_out[XBOX360_BTN_START]->set_state(msg.start);
   btn_port_out[XBOX360_BTN_BACK]->set_state(msg.back);
-  btn_port_out[XBOX360_BTN_MODE]->set_state(msg.mode);
+  btn_port_out[XBOX360_BTN_GUIDE]->set_state(msg.guide);
+
+  abs_port_out[XBOX360_AXIS_X1]->set_state(msg.x1);
+  abs_port_out[XBOX360_AXIS_Y1]->set_state(msg.y1);
+
+  abs_port_out[XBOX360_AXIS_X2]->set_state(msg.x2);
+  abs_port_out[XBOX360_AXIS_Y2]->set_state(msg.y2);
+
+  abs_port_out[XBOX360_AXIS_LT]->set_state(msg.lt);
+  abs_port_out[XBOX360_AXIS_RT]->set_state(msg.rt);
 }
 
 void
@@ -241,6 +265,7 @@ Xbox360Driver::set_led(uint8_t led_status)
 void
 Xbox360Driver::set_rumble(uint8_t big, uint8_t small)
 {
+  std::cout << int(big) << " " << int(small) << std::endl;
   char rumblecmd[] = { 0x00, 0x08, 0x00, big, small, 0x00, 0x00, 0x00 };
   usb_interrupt_write(handle, 2, rumblecmd, 8, 0);
 }
@@ -259,16 +284,17 @@ Xbox360Driver::on_led_btn(BtnPortOut* btn)
 }
 
 void
-Xbox360Driver::on_rumble_btn(BtnPortOut* btn)
+Xbox360Driver::on_rumble_left_abs(AbsPortOut* abs)
 {
-  if (btn->get_state())
-    {
-      set_rumble(155, 155);
-    }
-  else
-    {
-      set_rumble(0, 0);
-    }
+  rumble_l = 255 * (abs->get_state() - abs->min_value) / (abs->max_value - abs->min_value);
+  set_rumble(rumble_l, rumble_r);
+}
+
+void
+Xbox360Driver::on_rumble_right_abs(AbsPortOut* abs)
+{
+  rumble_r = 255 * (abs->get_state() - abs->min_value) / (abs->max_value - abs->min_value);
+  set_rumble(rumble_l, rumble_r);
 }
 
 /* EOF */

@@ -27,6 +27,7 @@
 #define HEADER_CONTROL_HPP
 
 #include <boost/signal.hpp>
+#include "log.hpp"
 
 class BtnPortIn;
 
@@ -62,11 +63,60 @@ struct BtnPortIn
     : label(label), on_change(on_change), out_port(0) {}
 };
 
+class AbsPortIn;
+
+class AbsPortOut
+{
+public:
+  std::string label;
+
+  boost::signal<void(AbsPortOut*)> sig_change;
+
+  // true if pressed, false otherwise
+  int state;
+  int min_value;
+  int max_value;
+
+  AbsPortOut(const std::string& label, int min_value, int max_value) 
+    : label(label), 
+      min_value(min_value),
+      max_value(max_value)
+  {}
+
+
+  std::string get_label() { return label; }
+  int  get_state() { return state; }
+  void set_state(int s) { if (state != s) { state = s; sig_change(this); } }
+
+  void connect(AbsPortIn* in);
+  void connect(boost::function<void(AbsPortOut*)> func);
+};
+
+class AbsPortIn
+{
+public:
+  std::string label;
+  int min_value;
+  int max_value;
+
+  boost::function<void(AbsPortOut*)> on_change;
+  AbsPortOut* out_port;
+
+  AbsPortIn(const std::string& label, int min_value, int max_value, const boost::function<void(AbsPortOut*)>& on_change)
+    : label(label), 
+      min_value(min_value),
+      max_value(max_value),
+      on_change(on_change), out_port(0) {}
+};
+
 class Control
 {
 protected:
   std::vector<BtnPortIn*>  btn_port_in;
   std::vector<BtnPortOut*> btn_port_out;
+
+  std::vector<AbsPortIn*>  abs_port_in;
+  std::vector<AbsPortOut*> abs_port_out;
 
 public:
   Control() {
@@ -79,37 +129,27 @@ public:
 
     for(std::vector<BtnPortOut*>::iterator i = btn_port_out.begin(); i != btn_port_out.end(); ++i)
       delete *i;
+
+    for(std::vector<AbsPortIn*>::iterator i = abs_port_in.begin(); i != abs_port_in.end(); ++i)
+      delete *i;
+
+    for(std::vector<AbsPortOut*>::iterator i = abs_port_out.begin(); i != abs_port_out.end(); ++i)
+      delete *i;
   }
 
   int get_btn_port_in_count()  { return btn_port_in.size();  }
   int get_btn_port_out_count() { return btn_port_out.size(); }
 
-  BtnPortIn*  get_btn_port_in(int idx)  { return btn_port_in[idx];  }
-  BtnPortOut* get_btn_port_out(int idx) { return btn_port_out[idx]; }
-};
-
-#if 0
-class UInputButton : public Control 
-{
-protected:
-  UInput*  uinput;
-  uint16_t code;
+  BtnPortIn*  get_btn_port_in(int idx);
+  BtnPortOut* get_btn_port_out(int idx);
 
-public:
-  UInputButton(UInput* uinput, uint16_t code) 
-    : uinput(uinput), 
-      code(code)
-  {
-    btn_port_in.push_back(new BtnPortIn((boost::format("UInput-Button %hd") % code).str(), 
-                                        boost::bind(this, &UInputButton::on_button)));
-  }
 
-  void on_button(ButtonPortOut* btn)
-  {
-    uinput->send_button(code, btn->get_state());
-  }
+  int get_abs_port_in_count()  { return abs_port_in.size();  }
+  int get_abs_port_out_count() { return abs_port_out.size(); }
+
+  AbsPortIn*  get_abs_port_in(int idx);
+  AbsPortOut* get_abs_port_out(int idx);
 };
-#endif
 
 #endif
 

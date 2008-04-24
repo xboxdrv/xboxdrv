@@ -103,7 +103,7 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
 
 std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg) 
 {
-  out << boost::format(" whammy:%6d tilt:%6d | up:%d down:%d left:%d right:%d | back:%d mode:%d start:%d | green:%d red:%d yellow:%d blue:%d orange:%d ")
+  out << boost::format(" whammy:%6d tilt:%6d | up:%d down:%d left:%d right:%d | back:%d guide:%d start:%d | green:%d red:%d yellow:%d blue:%d orange:%d ")
     % int(msg.whammy)
     % int(msg.tilt)
     % int(msg.dpad_up)
@@ -111,7 +111,7 @@ std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg)
     % int(msg.dpad_left)
     % int(msg.dpad_right)
     % int(msg.back)
-    % int(msg.mode)
+    % int(msg.guide)
     % int(msg.start)
     % int(msg.green)
     % int(msg.red)
@@ -153,7 +153,7 @@ std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg)
     % int(msg.dpad_right);
 
   out << "  back:" << msg.back;
-  out << " mode:"  << msg.mode;
+  out << " guide:" << msg.guide;
   out << " start:" << msg.start;
 
   out << "  sl:" << msg.thumb_l;

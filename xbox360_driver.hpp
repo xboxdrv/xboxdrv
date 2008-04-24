@@ -46,24 +46,47 @@ public:
     XBOX360_BTN_Y, 
     XBOX360_BTN_LB, 
     XBOX360_BTN_RB, 
+    XBOX360_BTN_THUMB_L, 
+    XBOX360_BTN_THUMB_R,
 
     XBOX360_BTN_START, 
     XBOX360_BTN_BACK, 
-    XBOX360_BTN_MODE, 
+    XBOX360_BTN_GUIDE, 
 
     XBOX360_BTN_LENGTH, 
   };
 
   enum {
-    PORT_IN_LED,
-    PORT_IN_RUMBLE,
-    PORT_IN_MAX,
+    XBOX360_AXIS_X1,
+    XBOX360_AXIS_Y1,
+
+    XBOX360_AXIS_X2,
+    XBOX360_AXIS_Y2,
+
+    XBOX360_AXIS_LT,
+    XBOX360_AXIS_RT,
+
+    XBOX360_ABS_MAX
+  };
+
+  enum {
+    BTN_PORT_IN_LED,
+    BTN_PORT_IN_MAX
+  };
+
+  enum {
+    ABS_PORT_IN_RUMBLE_L,
+    ABS_PORT_IN_RUMBLE_R,
+    ABS_PORT_IN_MAX,
   };
 
 private:
   struct usb_device*     dev;
   struct usb_dev_handle* handle;
   
+  uint8_t rumble_l;
+  uint8_t rumble_r;
+
 public:
   Xbox360Driver(int idx);
   Xbox360Driver(const std::string& busid, const std::string& devid);
@@ -73,7 +96,9 @@ public:
   void set_rumble(uint8_t big, uint8_t small);
   
   void on_led_btn(BtnPortOut* btn);
-  void on_rumble_btn(BtnPortOut* btn);
+
+  void on_rumble_left_abs(AbsPortOut* abs);
+  void on_rumble_right_abs(AbsPortOut* abs);
 
   void run();
 

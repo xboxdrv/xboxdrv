@@ -60,7 +60,7 @@ struct Xbox360Msg
   // data[3] ------------------
   unsigned int lb          :1;
   unsigned int rb          :1;
-  unsigned int mode        :1;
+  unsigned int guide       :1;
   unsigned int dummy1      :1;
 
   unsigned int a           :1;
@@ -106,7 +106,7 @@ struct Xbox360GuitarMsg
   // data[3] ------------------
   unsigned int orange      :1; // 5
   unsigned int rb          :1; // unused
-  unsigned int mode        :1; 
+  unsigned int guide       :1; 
   unsigned int dummy1      :1; // unused
 
   unsigned int green       :1; // 1, A 

@@ -270,7 +270,7 @@ uInput::send(Xbox360Msg& msg)
   send_button(BTN_TR,  msg.rb);
 
   send_button(BTN_START,  msg.start);
-  send_button(BTN_MODE,   msg.mode);
+  send_button(BTN_MODE,   msg.guide);
   send_button(BTN_SELECT, msg.back);
 
   send_button(BTN_A, msg.a);
@@ -420,7 +420,7 @@ uInput::send(Xbox360GuitarMsg& msg)
   send_button(BTN_BASE4, msg.dpad_right);
 
   send_button(BTN_START,  msg.start);
-  send_button(BTN_MODE,   msg.mode);
+  send_button(BTN_MODE,   msg.guide);
   send_button(BTN_SELECT, msg.back);
 
   send_button(BTN_1, msg.green);
