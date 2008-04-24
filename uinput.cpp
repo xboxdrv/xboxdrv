@@ -82,7 +82,7 @@ void
 uInput::setup_xbox360_gamepad(GamepadType type)
 {
   ioctl(fd, UI_SET_EVBIT, EV_ABS);
-  ioctl(fd, UI_SET_EVBIT,  EV_KEY);
+  ioctl(fd, UI_SET_EVBIT, EV_KEY);
         
   ioctl(fd, UI_SET_ABSBIT, ABS_X);
   ioctl(fd, UI_SET_ABSBIT, ABS_Y);

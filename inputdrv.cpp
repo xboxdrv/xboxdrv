@@ -61,10 +61,10 @@ int main()
 
   toggle_out->connect(xbox360.get_btn_port_in(0));
 
-  xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_Y1) 
+  xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_LT) 
     ->connect(xbox360.get_abs_port_in(Xbox360Driver::ABS_PORT_IN_RUMBLE_L));
 
-  xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_Y2)
+  xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_RT)
     ->connect(xbox360.get_abs_port_in(Xbox360Driver::ABS_PORT_IN_RUMBLE_R));
 
   xbox360.get_btn_port_out(Xbox360Driver::XBOX360_BTN_B)->connect(btn_change);
