@@ -102,10 +102,49 @@ public:
   boost::function<void(AbsPortOut*)> on_change;
   AbsPortOut* out_port;
 
-  AbsPortIn(const std::string& label, int min_value, int max_value, const boost::function<void(AbsPortOut*)>& on_change)
+  AbsPortIn(const std::string& label, int min_value, int max_value, 
+            const boost::function<void(AbsPortOut*)>& on_change)
     : label(label), 
       min_value(min_value),
       max_value(max_value),
+      on_change(on_change), out_port(0) {}
+};
+
+class RelPortIn;
+
+class RelPortOut
+{
+public:
+  std::string label;
+
+  boost::signal<void(RelPortOut*)> sig_change;
+
+  // true if pressed, false otherwise
+  int state;
+
+  RelPortOut(const std::string& label)
+    : label(label)
+  {}
+
+
+  std::string get_label() { return label; }
+  int  get_state() { return state; }
+  void set_state(int s) { if (state != s) { state = s; sig_change(this); } }
+
+  void connect(RelPortIn* in);
+  void connect(boost::function<void(RelPortOut*)> func);
+};
+
+class RelPortIn
+{
+public:
+  std::string label;
+
+  boost::function<void(RelPortOut*)> on_change;
+  RelPortOut* out_port;
+
+  RelPortIn(const std::string& label, const boost::function<void(RelPortOut*)>& on_change)
+    : label(label), 
       on_change(on_change), out_port(0) {}
 };
 
@@ -118,6 +157,9 @@ protected:
   std::vector<AbsPortIn*>  abs_port_in;
   std::vector<AbsPortOut*> abs_port_out;
 
+  std::vector<RelPortIn*>  rel_port_in;
+  std::vector<RelPortOut*> rel_port_out;
+
 public:
   Control() {
   }
@@ -126,14 +168,17 @@ public:
   {
     for(std::vector<BtnPortIn*>::iterator i = btn_port_in.begin(); i != btn_port_in.end(); ++i)
       delete *i;
-
     for(std::vector<BtnPortOut*>::iterator i = btn_port_out.begin(); i != btn_port_out.end(); ++i)
       delete *i;
 
     for(std::vector<AbsPortIn*>::iterator i = abs_port_in.begin(); i != abs_port_in.end(); ++i)
       delete *i;
-
     for(std::vector<AbsPortOut*>::iterator i = abs_port_out.begin(); i != abs_port_out.end(); ++i)
+      delete *i;
+
+    for(std::vector<RelPortIn*>::iterator i = rel_port_in.begin(); i != rel_port_in.end(); ++i)
+      delete *i;
+    for(std::vector<RelPortOut*>::iterator i = rel_port_out.begin(); i != rel_port_out.end(); ++i)
       delete *i;
   }
 
@@ -149,6 +194,13 @@ public:
 
   AbsPortIn*  get_abs_port_in(int idx);
   AbsPortOut* get_abs_port_out(int idx);
+
+
+  int get_rel_port_in_count()  { return rel_port_in.size();  }
+  int get_rel_port_out_count() { return rel_port_out.size(); }
+
+  RelPortIn*  get_rel_port_in(int idx);
+  RelPortOut* get_rel_port_out(int idx);
 };
 
 #endif

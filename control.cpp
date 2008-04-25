@@ -99,4 +99,44 @@ Control::get_abs_port_out(int idx)
     }
 }
 
+void
+RelPortOut::connect(RelPortIn* in)
+{
+  if (in)
+    {
+      in->out_port = this;
+      sig_change.connect(in->on_change);
+    }
+}
+
+void
+RelPortOut::connect(boost::function<void(RelPortOut*)> func)
+{
+  sig_change.connect(func);
+}
+
+RelPortIn*
+Control::get_rel_port_in(int idx) 
+{
+  if (idx >= 0 && idx < (int)rel_port_in.size())
+    return rel_port_in[idx];  
+  else 
+    {
+      LOG("Couldn't find rel-in port " << idx);
+      return 0;
+    }
+}
+
+RelPortOut*
+Control::get_rel_port_out(int idx) 
+{
+  if (idx >= 0 && idx < (int)rel_port_out.size())
+    return rel_port_out[idx]; 
+  else
+    {
+      LOG("Couldn't find rel-out port " << idx);
+      return 0;
+    }
+}
+
 /* EOF */

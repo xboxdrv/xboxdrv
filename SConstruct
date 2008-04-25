@@ -6,6 +6,7 @@ env.Program("inputdrv",
             ["inputdrv.cpp",
              "xbox360_driver.cpp",
              "control.cpp",
+             "abs_to_rel.cpp",
              "uinput_driver.cpp",
              "toggle_button.cpp"],
             LIBS=['boost_signals', 'usb'])

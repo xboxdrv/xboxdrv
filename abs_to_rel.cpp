@@ -23,40 +23,20 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_UINPUT_DRIVER_HPP
-#define HEADER_UINPUT_DRIVER_HPP
+#include <boost/bind.hpp>
+#include "abs_to_rel.hpp"
 
-#include <linux/uinput.h>
-#include "control.hpp"
-
-/** */
-class UInputDriver : public Control
+AbsToRel::AbsToRel()
 {
-private:
-  uinput_user_dev user_dev;
-  bool abs_bit;
-  bool rel_bit;
-  bool key_bit;
-  int  fd;
+  abs_port_in.push_back(new AbsPortIn("AbsToRel-In", 0, 0, 
+                                      boost::bind(&AbsToRel::on_abs, this, _1)));
+  rel_port_out.push_back(new RelPortOut("AbsToRel-Out"));
+}
 
-public:
-  UInputDriver();
-  ~UInputDriver();
-
-  void add_abs(uint16_t code, int min, int max);
-  void add_btn(uint16_t code);
-  void add_rel(uint16_t code);
-  void finish();
-
-  void on_abs(AbsPortOut* port, uint16_t code);
-  void on_rel(RelPortOut* port, uint16_t code);
-  void on_btn(BtnPortOut* port, uint16_t code);
-
-private:
-  UInputDriver (const UInputDriver&);
-  UInputDriver& operator= (const UInputDriver&);
-};
-
-#endif
+void
+AbsToRel::on_abs(AbsPortOut* port)
+{
+  rel_port_out[0]->set_state(port->get_state());
+}
 
 /* EOF */

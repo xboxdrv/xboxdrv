@@ -45,6 +45,8 @@ void abs_change(AbsPortOut* port)
 int main()
 {
   UInputDriver uinput1;
+  uinput1.add_rel(REL_X);
+  uinput1.add_rel(REL_Y);
   uinput1.add_abs(ABS_X, -32768, 32767);
   uinput1.add_abs(ABS_Y, -32768, 32767);
   uinput1.add_btn(BTN_A);
@@ -59,7 +61,6 @@ int main()
   uinput2.add_btn(BTN_B);
   uinput2.add_btn(BTN_C);
   uinput2.finish();
-
 
   // Init USB
   usb_init();
@@ -93,7 +94,6 @@ int main()
   xbox360.get_btn_port_out(Xbox360Driver::XBOX360_BTN_X) 
     ->connect(uinput1.get_btn_port_in(2));
   
-  // ----------------------------
   // ----------------------------
 
   xbox360.get_abs_port_out(Xbox360Driver::XBOX360_AXIS_X2) 

@@ -33,6 +33,7 @@
 
 UInputDriver::UInputDriver()
   : abs_bit(false),
+    rel_bit(false),
     key_bit(false),
     fd(-1)
 {
@@ -79,7 +80,7 @@ UInputDriver::~UInputDriver()
   ioctl(fd, UI_DEV_DESTROY);
   close(fd);
 }
-
+
 void
 UInputDriver::add_abs(uint16_t code, int min, int max)
 {
@@ -99,17 +100,47 @@ UInputDriver::add_abs(uint16_t code, int min, int max)
 }
 
 void
-UInputDriver::on_btn(BtnPortOut* port, uint16_t code)
+UInputDriver::add_rel(uint16_t code)
+{
+  if (!rel_bit)
+    {
+      ioctl(fd, UI_SET_EVBIT, EV_REL);
+      rel_bit = true;
+    }
+
+  ioctl(fd, UI_SET_RELBIT, code);
+
+  rel_port_in.push_back(new RelPortIn("UInput",
+                                      boost::bind(&UInputDriver::on_rel, this, _1, code)));
+}
+
+void
+UInputDriver::add_btn(uint16_t code)
+{
+  if (!key_bit)
+    {
+      ioctl(fd, UI_SET_EVBIT, EV_KEY);
+      key_bit = true;
+    }
+
+  ioctl(fd, UI_SET_KEYBIT, code);
+
+  btn_port_in.push_back(new BtnPortIn("UInput", 
+                                      boost::bind(&UInputDriver::on_btn, this, _1, code)));
+}
+
+void
+UInputDriver::on_rel(RelPortOut* port, uint16_t code)
 {
   struct input_event ev;      
   memset(&ev, 0, sizeof(ev));
 
   gettimeofday(&ev.time, NULL);
-  ev.type  = EV_KEY;
+  ev.type  = EV_REL;
   ev.code  = code;
   ev.value = port->get_state();
 
- write(fd, &ev, sizeof(ev)); 
+ write(fd, &ev, sizeof(ev));  
 }
 
 void
@@ -127,20 +158,19 @@ UInputDriver::on_abs(AbsPortOut* port, uint16_t code)
 }
 
 void
-UInputDriver::add_btn(uint16_t code)
+UInputDriver::on_btn(BtnPortOut* port, uint16_t code)
 {
-  if (!key_bit)
-    {
-      ioctl(fd, UI_SET_EVBIT, EV_KEY);
-      key_bit = true;
-    }
+  struct input_event ev;      
+  memset(&ev, 0, sizeof(ev));
 
-  ioctl(fd, UI_SET_KEYBIT, code);
+  gettimeofday(&ev.time, NULL);
+  ev.type  = EV_KEY;
+  ev.code  = code;
+  ev.value = port->get_state();
 
-  btn_port_in.push_back(new BtnPortIn("UInput", 
-                                      boost::bind(&UInputDriver::on_btn, this, _1, code)));
+ write(fd, &ev, sizeof(ev)); 
 }
-
+
 void
 UInputDriver::finish()
 {
