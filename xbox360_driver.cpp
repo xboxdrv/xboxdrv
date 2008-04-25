@@ -24,6 +24,8 @@
 */
 
 #include <usb.h>
+#include <errno.h>
+#include <sstream>
 #include <iostream>
 #include <boost/format.hpp>
 #include <boost/bind.hpp>
@@ -166,66 +168,60 @@ Xbox360Driver::close_dev()
 }
 
 void
-Xbox360Driver::run()
-{ // Run this in a seperate Thread
-  bool quit = false;
-  uint8_t old_data[20];
-  memset(old_data, 0, 20);
-  while(!quit)
-    {
-      uint8_t data[20];
+Xbox360Driver::update(float delta)
+{ // Run this in a seperate Thread 
+  
+  uint8_t data[20];
 
-      int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, 20, 0 /*Timeout*/);
+  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, 20, 5 /*Timeout*/);
 
-      if (ret < 0)
-        { // Error
-          std::cout << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
-          std::cout << "Shutting down" << std::endl;
-          quit = true;
-        }
-      else if (ret == 0) // ignore
-        {
-          // happen with the Xbox360 every now and then, just
-          // ignore, seems harmless
-        }
-      else if (ret == 3) // ignore
-        {
-          // This data gets send when the controller is accessed the
-          // first time after being connected to the USB bus, no idea
-          // what it means, it seems to be identical for different
-          // controllers, we just ignore it
-          //
-          // len: 3 Data: 0x01 0x03 0x0e
-          // len: 3 Data: 0x02 0x03 0x00
-          // len: 3 Data: 0x03 0x03 0x03
-          // len: 3 Data: 0x08 0x03 0x00
-          // len: 3 Data: 0x01 0x03 0x00
-        }
-      else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
-        {
-          if (memcmp(data, old_data, 20) == 0)
-            {
-              // Ignore the data, since nothing has changed
-            }                
-          else
-            {
-              memcpy(old_data, data, 20);
-              Xbox360Msg& msg = (Xbox360Msg&)data;
-              update(msg);
-            }                  
+  if (ret < 0)
+    { 
+      if (ret == -ETIMEDOUT)
+        { // ok
         }
       else
-        {
-          std::cout << "Unknown data: bytes: " << ret << " Data: ";
-          for(int j = 0; j < ret; ++j)
-            std::cout << boost::format("0x%02x ") % int(data[j]);
-          std::cout << std::endl;
-        } 
+        { // Error
+          std::ostringstream str;
+          str << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
+          str << "Shutting down" << std::endl;
+          throw std::runtime_error(str.str());
+        }
     }
+  else if (ret == 0) // ignore
+    {
+      // happen with the Xbox360 every now and then, just
+      // ignore, seems harmless
+    }
+  else if (ret == 3) // ignore
+    {
+      // This data gets send when the controller is accessed the
+      // first time after being connected to the USB bus, no idea
+      // what it means, it seems to be identical for different
+      // controllers, we just ignore it
+      //
+      // len: 3 Data: 0x01 0x03 0x0e
+      // len: 3 Data: 0x02 0x03 0x00
+      // len: 3 Data: 0x03 0x03 0x03
+      // len: 3 Data: 0x08 0x03 0x00
+      // len: 3 Data: 0x01 0x03 0x00
+    }
+  else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
+    {
+      Xbox360Msg& msg = (Xbox360Msg&)data;
+      process_msg(msg);
+    }
+  else
+    {
+      std::cout << "Unknown data: bytes: " << ret << " Data: ";
+      for(int j = 0; j < ret; ++j)
+        std::cout << boost::format("0x%02x ") % int(data[j]);
+      std::cout << std::endl;
+    } 
 }
 
 void
-Xbox360Driver::update(const Xbox360Msg& msg)
+Xbox360Driver::process_msg(const Xbox360Msg& msg)
 {
   btn_port_out[XBOX360_DPAD_UP]   ->set_state(msg.dpad_up);
   btn_port_out[XBOX360_DPAD_DOWN] ->set_state(msg.dpad_down);
@@ -248,10 +244,10 @@ Xbox360Driver::update(const Xbox360Msg& msg)
   btn_port_out[XBOX360_BTN_GUIDE]->set_state(msg.guide);
 
   abs_port_out[XBOX360_AXIS_X1]->set_state(msg.x1);
-  abs_port_out[XBOX360_AXIS_Y1]->set_state(msg.y1);
+  abs_port_out[XBOX360_AXIS_Y1]->set_state(-msg.y1);
 
   abs_port_out[XBOX360_AXIS_X2]->set_state(msg.x2);
-  abs_port_out[XBOX360_AXIS_Y2]->set_state(msg.y2);
+  abs_port_out[XBOX360_AXIS_Y2]->set_state(-msg.y2);
 
   abs_port_out[XBOX360_AXIS_LT]->set_state(msg.lt);
   abs_port_out[XBOX360_AXIS_RT]->set_state(msg.rt);

@@ -129,7 +129,7 @@ public:
 
   std::string get_label() { return label; }
   int  get_state() { return state; }
-  void set_state(int s) { if (state != s) { state = s; sig_change(this); } }
+  void set_state(int s) { state = s; sig_change(this); }
 
   void connect(RelPortIn* in);
   void connect(boost::function<void(RelPortOut*)> func);
@@ -201,6 +201,9 @@ public:
 
   RelPortIn*  get_rel_port_in(int idx);
   RelPortOut* get_rel_port_out(int idx);
+
+
+  virtual void update(float delta) {}
 };
 
 #endif

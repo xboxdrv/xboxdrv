@@ -100,13 +100,13 @@ public:
   void on_rumble_left_abs(AbsPortOut* abs);
   void on_rumble_right_abs(AbsPortOut* abs);
 
-  void run();
+  void update(float delta);
 
 private:
   void init();
   void open_dev();
   void close_dev();
-  void update(const Xbox360Msg& msg);
+  void process_msg(const Xbox360Msg& msg);
 
   Xbox360Driver (const Xbox360Driver&);
   Xbox360Driver& operator= (const Xbox360Driver&);

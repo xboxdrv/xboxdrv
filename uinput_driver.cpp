@@ -132,15 +132,27 @@ UInputDriver::add_btn(uint16_t code)
 void
 UInputDriver::on_rel(RelPortOut* port, uint16_t code)
 {
-  struct input_event ev;      
-  memset(&ev, 0, sizeof(ev));
+  if (port->get_state() != 0)
+    {
+      struct input_event ev;      
+      memset(&ev, 0, sizeof(ev));
 
-  gettimeofday(&ev.time, NULL);
-  ev.type  = EV_REL;
-  ev.code  = code;
-  ev.value = port->get_state();
+      gettimeofday(&ev.time, NULL);
+      ev.type  = EV_REL;
+      ev.code  = code;
+      ev.value = port->get_state();
 
- write(fd, &ev, sizeof(ev));  
+      write(fd, &ev, sizeof(ev));  
+
+      // Mouse Dev need these to send out events
+      memset(&ev, 0, sizeof(ev));
+
+      gettimeofday(&ev.time, NULL);
+      ev.type  = EV_SYN;
+      ev.code  = SYN_REPORT;
+
+      write(fd, &ev, sizeof(ev));  
+    }
 }
 
 void
@@ -154,7 +166,7 @@ UInputDriver::on_abs(AbsPortOut* port, uint16_t code)
   ev.code  = code;
   ev.value = port->get_state();
 
- write(fd, &ev, sizeof(ev)); 
+  write(fd, &ev, sizeof(ev)); 
 }
 
 void
@@ -168,7 +180,16 @@ UInputDriver::on_btn(BtnPortOut* port, uint16_t code)
   ev.code  = code;
   ev.value = port->get_state();
 
- write(fd, &ev, sizeof(ev)); 
+  write(fd, &ev, sizeof(ev)); 
+
+  // Mouse Dev need these to send out events
+  memset(&ev, 0, sizeof(ev));
+
+  gettimeofday(&ev.time, NULL);
+  ev.type  = EV_SYN;
+  ev.code  = SYN_REPORT;
+
+  write(fd, &ev, sizeof(ev));  
 }
 
 void

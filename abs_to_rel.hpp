@@ -36,7 +36,7 @@ public:
   AbsToRel();
 
   void on_abs(AbsPortOut* port);
-
+  void update(float delta);
 private:
   AbsToRel (const AbsToRel&);
   AbsToRel& operator= (const AbsToRel&);

@@ -36,7 +36,15 @@ AbsToRel::AbsToRel()
 void
 AbsToRel::on_abs(AbsPortOut* port)
 {
-  rel_port_out[0]->set_state(port->get_state());
+  // Nothing do to, since everything is handled in update
+  //rel_port_out[0]->set_state(port->get_state());
+}
+
+void
+AbsToRel::update(float delta)
+{
+  int s = int(abs_port_in[0]->out_port->get_state() * delta * 0.2f);
+  rel_port_out[0]->set_state(s);
 }
 
 /* EOF */
