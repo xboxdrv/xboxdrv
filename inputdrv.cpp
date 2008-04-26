@@ -30,6 +30,7 @@
 #include "uinput_driver.hpp"
 #include "abs_to_rel.hpp"
 #include "toggle_button.hpp"
+#include "autofire_button.hpp"
 #include "control.hpp"
 #include "inputdrv.hpp"
 
@@ -51,24 +52,28 @@ int main()
   usb_find_devices();
 
   UInputDriver* uinput = new UInputDriver("UInputMouseEmulation");
+
   uinput->add_rel(REL_X);
   uinput->add_rel(REL_Y);
   uinput->add_rel(REL_HWHEEL);
   uinput->add_rel(REL_WHEEL);
+
   uinput->add_btn(BTN_LEFT);
   uinput->add_btn(BTN_RIGHT);
   uinput->add_btn(BTN_MIDDLE);
-  uinput->add_btn(KEY_Y);
+  uinput->add_btn(BTN_Y);
+
   uinput->finish();
 
   std::vector<Control*> controls;
 
-  Xbox360Driver* xbox360       = new Xbox360Driver(0);
-  ToggleButton*  toggle        = new ToggleButton();
-  AbsToRel*      abs_to_rel_x  = new AbsToRel();
-  AbsToRel*      abs_to_rel_y  = new AbsToRel();
-  AbsToRel*      abs_to_rel_x2 = new AbsToRel();
-  AbsToRel*      abs_to_rel_y2 = new AbsToRel();
+  Xbox360Driver*  xbox360       = new Xbox360Driver(0);
+  ToggleButton*   toggle        = new ToggleButton();
+  AbsToRel*       abs_to_rel_x  = new AbsToRel();
+  AbsToRel*       abs_to_rel_y  = new AbsToRel();
+  AbsToRel*       abs_to_rel_x2 = new AbsToRel();
+  AbsToRel*       abs_to_rel_y2 = new AbsToRel();
+  AutofireButton* autofire      = new AutofireButton(100);
 
   controls.push_back(xbox360);
   controls.push_back(toggle);
@@ -76,6 +81,7 @@ int main()
   controls.push_back(abs_to_rel_y);
   controls.push_back(abs_to_rel_x2);
   controls.push_back(abs_to_rel_y2);
+  controls.push_back(autofire);
 
   // ----------------------------
 
@@ -106,6 +112,8 @@ int main()
     ->connect(uinput->get_btn_port_in(2));
 
   xbox360->get_btn_port_out(Xbox360Driver::XBOX360_BTN_Y) 
+    ->connect(autofire->get_btn_port_in(0));
+  autofire->get_btn_port_out(0)
     ->connect(uinput->get_btn_port_in(3));
   
   // ----------------------------

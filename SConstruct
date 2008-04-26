@@ -9,6 +9,7 @@ env.Program("inputdrv",
              "control.cpp",
              "abs_to_rel.cpp",
              "abs_to_btn.cpp",
+             "autofire_button.cpp",
              "uinput_driver.cpp",
              "toggle_button.cpp"],
             LIBS=['boost_signals', 'usb', 'pthread'])

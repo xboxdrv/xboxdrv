@@ -36,14 +36,15 @@ class BtnPortOut
 public:
   std::string label;
 
-  boost::signal<void(BtnPortOut*)> sig_change;
-
   // true if pressed, false otherwise
   bool state;
 
-  BtnPortOut(const std::string& label) 
-    : label(label) {}
+  boost::signal<void(BtnPortOut*)> sig_change;
 
+  BtnPortOut(const std::string& label) 
+    : label(label),
+      state(false)
+  {}
 
   std::string get_label() { return label; }
   bool get_state() { return state; }
@@ -79,6 +80,7 @@ public:
 
   AbsPortOut(const std::string& label, int min_value, int max_value) 
     : label(label), 
+      state(0),
       min_value(min_value),
       max_value(max_value)
   {}
