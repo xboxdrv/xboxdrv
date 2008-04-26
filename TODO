@@ -1,3 +1,37 @@
+sending rumble is slow and delayed, gets buffered up
+
+d-feet
+
+dbus-send --system --type=method_call --print-reply --dest=org.x.config.display0 /org/x/config/0 org.x.config.input.remove uint32:5
+Error org.freedesktop.DBus.Error.ServiceUnknown: The name org.x.config.display0 was not provi
+
+Doing polling seems to lose some events
+
+dbus-send --dest=org.gnome.ScreenSaver
+  /
+
+dbus-send --dest=org.freedesktop.ExampleName               \
+ /org/freedesktop/sample/object/name
+ org.freedesktop.ExampleInterface.ExampleMethod   \
+                   int32:47 string:'hello world' double:65.32       \
+                   array:string:"1st item","next item","last item"  \
+                   dict:string:int32:"one",1,"two",2,"three",3      \
+                   variant:int32:-8                                 \
+                   objpath:/org/freedesktop/sample/object/name
+
+
+dbus-send --dest=org.x.config.display0 \
+ /org/x/config/0 
+ org.x.config.input.add
+
+
+dbus-send --dest=org.x.config.display0  /org/x/config/0 org.x.config.input.remove int32:5
+ 
+dbus-send \
+  --dest=org.x.config.display0 \
+  org.freedesktop.DBus.Introspectable \
+org.freedesktop.DBus.Introspectable.Introspect \
+
 Controls:
 =========
  * invert button

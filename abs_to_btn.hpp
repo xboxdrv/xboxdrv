@@ -23,24 +23,26 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_ABS_TO_REL_HPP
-#define HEADER_ABS_TO_REL_HPP
+#ifndef HEADER_ABS_TO_BTN_HPP
+#define HEADER_ABS_TO_BTN_HPP
 
 #include "control.hpp"
 
 /** */
-class AbsToRel : public Control
+class AbsToBtn : public Control
 {
 private:
+  int threshold;
+  
 public:
-  AbsToRel();
+  AbsToBtn(int threshold);
 
   void on_abs(AbsPortOut* port);
   void update(float delta);
 
 private:
-  AbsToRel (const AbsToRel&);
-  AbsToRel& operator= (const AbsToRel&);
+  AbsToBtn (const AbsToBtn&);
+  AbsToBtn& operator= (const AbsToBtn&);
 };
 
 #endif

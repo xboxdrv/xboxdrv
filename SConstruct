@@ -5,10 +5,12 @@ env.Program("xboxdrv", ["xboxdrv.cpp", "uinput.cpp"])
 env.Program("inputdrv",
             ["inputdrv.cpp",
              "xbox360_driver.cpp",
+             "xbox360_usb_thread.cpp",
              "control.cpp",
              "abs_to_rel.cpp",
+             "abs_to_btn.cpp",
              "uinput_driver.cpp",
              "toggle_button.cpp"],
-            LIBS=['boost_signals', 'usb'])
+            LIBS=['boost_signals', 'usb', 'pthread'])
 
 # EOF #

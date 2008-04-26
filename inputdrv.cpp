@@ -45,7 +45,12 @@ void abs_change(AbsPortOut* port)
 
 int main()
 {
-  UInputDriver* uinput = new UInputDriver();
+  // Init USB
+  usb_init();
+  usb_find_busses();
+  usb_find_devices();
+
+  UInputDriver* uinput = new UInputDriver("UInputMouseEmulation");
   uinput->add_rel(REL_X);
   uinput->add_rel(REL_Y);
   uinput->add_rel(REL_HWHEEL);
@@ -53,19 +58,15 @@ int main()
   uinput->add_btn(BTN_LEFT);
   uinput->add_btn(BTN_RIGHT);
   uinput->add_btn(BTN_MIDDLE);
+  uinput->add_btn(KEY_Y);
   uinput->finish();
-
-  // Init USB
-  usb_init();
-  usb_find_busses();
-  usb_find_devices();
 
   std::vector<Control*> controls;
 
-  Xbox360Driver* xbox360 = new Xbox360Driver(0);
-  ToggleButton*  toggle  = new ToggleButton();
-  AbsToRel*      abs_to_rel_x = new AbsToRel();
-  AbsToRel*      abs_to_rel_y = new AbsToRel();
+  Xbox360Driver* xbox360       = new Xbox360Driver(0);
+  ToggleButton*  toggle        = new ToggleButton();
+  AbsToRel*      abs_to_rel_x  = new AbsToRel();
+  AbsToRel*      abs_to_rel_y  = new AbsToRel();
   AbsToRel*      abs_to_rel_x2 = new AbsToRel();
   AbsToRel*      abs_to_rel_y2 = new AbsToRel();
 
@@ -103,6 +104,9 @@ int main()
     ->connect(uinput->get_btn_port_in(1));
   xbox360->get_btn_port_out(Xbox360Driver::XBOX360_BTN_X) 
     ->connect(uinput->get_btn_port_in(2));
+
+  xbox360->get_btn_port_out(Xbox360Driver::XBOX360_BTN_Y) 
+    ->connect(uinput->get_btn_port_in(3));
   
   // ----------------------------
 
@@ -122,7 +126,7 @@ int main()
           (*i)->update(0.001f);
         }
       //std::cout << "." << std::flush;
-      //usleep(1000); // 0.001sec or 1msec
+      usleep(1000); // 0.001sec or 1msec
     }
 
   return 0;

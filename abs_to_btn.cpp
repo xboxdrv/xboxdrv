@@ -23,26 +23,45 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_ABS_TO_REL_HPP
-#define HEADER_ABS_TO_REL_HPP
-
-#include "control.hpp"
+#include <boost/bind.hpp>
+#include "abs_to_btn.hpp"
 
-/** */
-class AbsToRel : public Control
+AbsToBtn::AbsToBtn(int threshold)
+  : threshold(threshold)
 {
-private:
-public:
-  AbsToRel();
+  abs_port_in.push_back(new AbsPortIn("AbsToBtn-In", 0, 0, 
+                                      boost::bind(&AbsToBtn::on_abs, this, _1)));
 
-  void on_abs(AbsPortOut* port);
-  void update(float delta);
+  btn_port_out.push_back(new BtnPortOut("AbsToBtn-Out-0"));
+  btn_port_out.push_back(new BtnPortOut("AbsToBtn-Out-1"));
+}
 
-private:
-  AbsToRel (const AbsToRel&);
-  AbsToRel& operator= (const AbsToRel&);
-};
+void
+AbsToBtn::on_abs(AbsPortOut* port)
+{
+  if (abs(port->get_state() > threshold))
+    {
+      if (port->get_state() > 0)
+        {
+          btn_port_out[0]->set_state(true);
+          btn_port_out[1]->set_state(false);
+        }
+      else
+        {
+          btn_port_out[0]->set_state(false);
+          btn_port_out[1]->set_state(true);
+        }
+    }
+  else
+    {
+      btn_port_out[0]->set_state(false);
+      btn_port_out[1]->set_state(false);
+    }
+}
+
+void
+AbsToBtn::update(float delta)
+{
+}
 
-#endif
-
 /* EOF */

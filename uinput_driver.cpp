@@ -31,7 +31,7 @@
 #include <boost/bind.hpp>
 #include "uinput_driver.hpp"
 
-UInputDriver::UInputDriver()
+UInputDriver::UInputDriver(const std::string& name)
   : abs_bit(false),
     rel_bit(false),
     key_bit(false),
@@ -39,7 +39,7 @@ UInputDriver::UInputDriver()
 {
   std::cout << "UInputDriver" << std::endl;
   memset(&user_dev, 0, sizeof(user_dev));
-  strncpy(user_dev.name, "Custom UInput Driver", UINPUT_MAX_NAME_SIZE);
+  strncpy(user_dev.name, name.c_str(), UINPUT_MAX_NAME_SIZE);
   user_dev.id.version = 0;
   user_dev.id.bustype = BUS_USB; // And neither that
   user_dev.id.vendor  = 0x045e; // FIXME: Don't hardcode this

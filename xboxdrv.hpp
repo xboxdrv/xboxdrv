@@ -19,26 +19,6 @@
 #ifndef HEADER_XBOX360_HPP
 #define HEADER_XBOX360_HPP
 
-// Unused, could be used to allow button remapping
-enum Xbox360Buttons {
-  XBOX360_DPAD_UP    = (1<< 0),
-  XBOX360_DPAD_DOWN  = (1<< 1),
-  XBOX360_DPAD_LEFT  = (1<< 2),
-  XBOX360_DPAD_RIGHT = (1<< 3),
-  XBOX360_START      = (1<< 4),
-  XBOX360_SELECT     = (1<< 5),
-  XBOX360_THUMB_L    = (1<< 6),
-  XBOX360_THUMB_R    = (1<< 7),
-  XBOX360_LB         = (1<< 8),
-  XBOX360_RB         = (1<< 9),
-  XBOX360_MODE       = (1<<10),
-  // unused          = (1<<11),
-  XBOX360_A          = (1<<12),
-  XBOX360_B          = (1<<13),
-  XBOX360_X          = (1<<14),
-  XBOX360_Y          = (1<<15),
-};
-
 struct Xbox360Msg
 {
   // -------------------------

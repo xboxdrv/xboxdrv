@@ -30,6 +30,8 @@
 #include "xboxdrv.hpp"
 #include "control.hpp"
 
+class Xbox360UsbThread;
+
 /** */
 class Xbox360Driver : public Control
 {
@@ -80,10 +82,9 @@ public:
     ABS_PORT_IN_MAX,
   };
 
-private:
-  struct usb_device*     dev;
-  struct usb_dev_handle* handle;
-  
+private:  
+  Xbox360UsbThread* thread;
+
   uint8_t rumble_l;
   uint8_t rumble_r;
 
@@ -91,9 +92,6 @@ public:
   Xbox360Driver(int idx);
   Xbox360Driver(const std::string& busid, const std::string& devid);
   ~Xbox360Driver();
-
-  void set_led(uint8_t led_status);
-  void set_rumble(uint8_t big, uint8_t small);
   
   void on_led_btn(BtnPortOut* btn);
 
@@ -104,8 +102,6 @@ public:
 
 private:
   void init();
-  void open_dev();
-  void close_dev();
   void process_msg(const Xbox360Msg& msg);
 
   Xbox360Driver (const Xbox360Driver&);

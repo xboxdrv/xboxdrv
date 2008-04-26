@@ -29,6 +29,8 @@
 #include <iostream>
 #include <boost/format.hpp>
 #include <boost/bind.hpp>
+#include "log.hpp"
+#include "xbox360_usb_thread.hpp"
 #include "xbox360_driver.hpp"
 
 struct usb_device* find_usb_device_by_path(const std::string& busid, const std::string& devid) 
@@ -88,8 +90,6 @@ const int xbox360_devices_count = sizeof(xbox360_devices)/sizeof(XPadDevice);
 void
 Xbox360Driver::init()
 {
-  dev    = 0;
-  handle = 0;
   rumble_l = 0;
   rumble_r = 0;
 
@@ -118,14 +118,23 @@ Xbox360Driver::Xbox360Driver(const std::string& busid, const std::string& devid)
 {
   init();
 
-  dev = find_usb_device_by_path(busid, devid);
-  open_dev();
+  struct usb_device* dev = find_usb_device_by_path(busid, devid);
+  if (!dev)
+    {
+      throw std::runtime_error("Xbox360Driver: Couldn't find suitable USB device");
+    }
+  else
+    {
+      thread = new Xbox360UsbThread(dev);
+      thread->start();
+    }
 }
 
 Xbox360Driver::Xbox360Driver(int id)
 {
   init();
 
+  struct usb_device* dev = NULL;
   // FIXME: This loop can't work
   for(int i = 0; i < xbox360_devices_count && !dev; ++i)
     {
@@ -138,86 +147,30 @@ Xbox360Driver::Xbox360Driver(int id)
         }
     }
 
-  open_dev();
-}
-
-Xbox360Driver::~Xbox360Driver()
-{
-  close_dev();
-}
-
-void
-Xbox360Driver::open_dev()
-{
   if (!dev)
     {
       throw std::runtime_error("Xbox360Driver: Couldn't find suitable USB device");
     }
   else
     {
-      handle = usb_open(dev);
-      if (usb_claim_interface(handle, 0) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
-        std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
+      thread = new Xbox360UsbThread(dev);
+      thread->start();
     }
 }
 
-void
-Xbox360Driver::close_dev()
+Xbox360Driver::~Xbox360Driver()
 {
-  usb_close(handle);
+  thread->stop();
+  delete thread;
 }
 
 void
 Xbox360Driver::update(float delta)
-{ // Run this in a seperate Thread 
-  
-  uint8_t data[20];
-
-  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, 20, 5 /*Timeout*/);
-
-  if (ret < 0)
-    { 
-      if (ret == -ETIMEDOUT)
-        { // ok
-        }
-      else
-        { // Error
-          std::ostringstream str;
-          str << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
-          str << "Shutting down" << std::endl;
-          throw std::runtime_error(str.str());
-        }
-    }
-  else if (ret == 0) // ignore
+{
+  while(thread->has_msg())
     {
-      // happen with the Xbox360 every now and then, just
-      // ignore, seems harmless
+      process_msg(thread->pop_msg());
     }
-  else if (ret == 3) // ignore
-    {
-      // This data gets send when the controller is accessed the
-      // first time after being connected to the USB bus, no idea
-      // what it means, it seems to be identical for different
-      // controllers, we just ignore it
-      //
-      // len: 3 Data: 0x01 0x03 0x0e
-      // len: 3 Data: 0x02 0x03 0x00
-      // len: 3 Data: 0x03 0x03 0x03
-      // len: 3 Data: 0x08 0x03 0x00
-      // len: 3 Data: 0x01 0x03 0x00
-    }
-  else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
-    {
-      Xbox360Msg& msg = (Xbox360Msg&)data;
-      process_msg(msg);
-    }
-  else
-    {
-      std::cout << "Unknown data: bytes: " << ret << " Data: ";
-      for(int j = 0; j < ret; ++j)
-        std::cout << boost::format("0x%02x ") % int(data[j]);
-      std::cout << std::endl;
-    } 
 }
 
 void
@@ -254,30 +207,15 @@ Xbox360Driver::process_msg(const Xbox360Msg& msg)
 }
 
 void
-Xbox360Driver::set_led(uint8_t led_status)
-{
-  char ledcmd[] = { 1, 3, led_status }; 
-  usb_interrupt_write(handle, 2, ledcmd, 3, 0);
-}
-
-void
-Xbox360Driver::set_rumble(uint8_t big, uint8_t small)
-{
-  //std::cout << int(big) << " " << int(small) << std::endl;
-  char rumblecmd[] = { 0x00, 0x08, 0x00, big, small, 0x00, 0x00, 0x00 };
-  usb_interrupt_write(handle, 2, rumblecmd, 8, 0);
-}
-
-void
 Xbox360Driver::on_led_btn(BtnPortOut* btn)
 {
   if (btn->get_state())
     {
-      set_led(10);
+      thread->set_led(10);
     }
   else
     {
-      set_led(0);
+      thread->set_led(0);
     }
 }
 
@@ -285,14 +223,14 @@ void
 Xbox360Driver::on_rumble_left_abs(AbsPortOut* abs)
 {
   rumble_l = 255 * (abs->get_state() - abs->min_value) / (abs->max_value - abs->min_value);
-  set_rumble(rumble_l, rumble_r);
+  thread->set_rumble(rumble_l, rumble_r);
 }
 
 void
 Xbox360Driver::on_rumble_right_abs(AbsPortOut* abs)
 {
   rumble_r = 255 * (abs->get_state() - abs->min_value) / (abs->max_value - abs->min_value);
-  set_rumble(rumble_l, rumble_r);
+  thread->set_rumble(rumble_l, rumble_r);
 }
 
 /* EOF */

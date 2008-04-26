@@ -40,7 +40,7 @@ private:
   int  fd;
 
 public:
-  UInputDriver();
+  UInputDriver(const std::string& name);
   ~UInputDriver();
 
   void add_abs(uint16_t code, int min, int max);

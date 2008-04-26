@@ -23,24 +23,42 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_ABS_TO_REL_HPP
-#define HEADER_ABS_TO_REL_HPP
+#ifndef HEADER_XBOX360_USB_THREAD_HPP
+#define HEADER_XBOX360_USB_THREAD_HPP
 
-#include "control.hpp"
+#include <inttypes.h>
+#include <pthread.h>
+#include <queue>
+#include "xboxdrv.hpp"
 
 /** */
-class AbsToRel : public Control
+class Xbox360UsbThread
 {
 private:
-public:
-  AbsToRel();
+  struct usb_device*     dev;
+  struct usb_dev_handle* handle;
+  bool thread_quit;
+  std::queue<Xbox360Msg> mailbox;
 
-  void on_abs(AbsPortOut* port);
-  void update(float delta);
+public:
+  Xbox360UsbThread(struct usb_device* dev);
+  ~Xbox360UsbThread();
+  
+  void start();
+  void stop();
+
+  void set_led(uint8_t led_status);
+  void set_rumble(uint8_t big, uint8_t small);
+
+  bool has_msg() const;
+  Xbox360Msg pop_msg();
 
 private:
-  AbsToRel (const AbsToRel&);
-  AbsToRel& operator= (const AbsToRel&);
+  static void* thread_loop_wrap(void* userdata);
+  void* thread_loop();
+
+  Xbox360UsbThread (const Xbox360UsbThread&);
+  Xbox360UsbThread& operator= (const Xbox360UsbThread&);
 };
 
 #endif
