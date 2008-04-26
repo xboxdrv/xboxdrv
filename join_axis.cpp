@@ -24,39 +24,33 @@
 */
 
 #include <boost/bind.hpp>
-#include "autofire_button.hpp"
-
-AutofireButton::AutofireButton(int rate)
-  : rate(rate),
-    rate_counter(0)
+#include "join_axis.hpp"
+
+JoinAxis::JoinAxis()
 {
-  btn_port_in.push_back(new BtnPortIn("AutofireButton-In", 
-                                     boost::bind(&AutofireButton::on_btn, this, _1)));
-  btn_port_out.push_back(new BtnPortOut("AutofireButton-Out-0")); 
+  abs_port_in.push_back(new AbsPortIn("JoinAxis-1", 0, 0, 
+                                      boost::bind(&JoinAxis::on_abs, this, _1)));
+  abs_port_in.push_back(new AbsPortIn("JoinAxis-2", 0, 0, 
+                                      boost::bind(&JoinAxis::on_abs, this, _1)));
+
+  // FIXME: Abs handling must do something proper with the min/max values
+  abs_port_out.push_back(new AbsPortOut("JoinAxis-Out-1", -255, 255));
 }
 
 void
-AutofireButton::on_btn(BtnPortOut* port)
+JoinAxis::on_abs(AbsPortOut* port)
 {
-  btn_port_out[0]->set_state(port->get_state());
+  int value = 0;
+
+  value -= abs_port_in[0]->out_port->get_state();
+  value += abs_port_in[1]->out_port->get_state();
+  
+  // clamp
+  value = std::max(abs_port_out[0]->min_value, 
+                   std::min(value,
+                            abs_port_out[0]->max_value));
+  
+  abs_port_out[0]->set_state(value);
 }
 
-void
-AutofireButton::update(float delta)
-{
-  if (btn_port_in[0]->out_port->get_state())
-    {
-      rate_counter += int(1000 * delta);
-      if (rate_counter >= rate)
-        {
-          rate_counter = rate_counter % rate;
-          btn_port_out[0]->set_state(!btn_port_out[0]->get_state());
-        }
-    }
-  else
-    {
-      rate_counter = 0;
-    }
-}
-
 /* EOF */

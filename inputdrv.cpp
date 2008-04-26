@@ -31,6 +31,8 @@
 #include "abs_to_rel.hpp"
 #include "toggle_button.hpp"
 #include "autofire_button.hpp"
+#include "join_axis.hpp"
+#include "btn_to_abs.hpp"
 #include "control.hpp"
 #include "inputdrv.hpp"
 
@@ -63,6 +65,10 @@ int main()
   uinput->add_btn(BTN_MIDDLE);
   uinput->add_btn(BTN_Y);
 
+  uinput->add_abs(ABS_X, -32767, 32767);
+  uinput->add_abs(ABS_Y, -32767, 32767);
+  uinput->add_abs(ABS_Z, -255, 255);
+
   uinput->finish();
 
   std::vector<Control*> controls;
@@ -73,7 +79,10 @@ int main()
   AbsToRel*       abs_to_rel_y  = new AbsToRel();
   AbsToRel*       abs_to_rel_x2 = new AbsToRel();
   AbsToRel*       abs_to_rel_y2 = new AbsToRel();
-  AutofireButton* autofire      = new AutofireButton(100);
+  AutofireButton* autofire      = new AutofireButton(50);
+  JoinAxis*       join_axis     = new JoinAxis();
+  BtnToAbs*       btn_to_abs_x  = new BtnToAbs();
+  BtnToAbs*       btn_to_abs_y  = new BtnToAbs();
 
   controls.push_back(xbox360);
   controls.push_back(toggle);
@@ -82,6 +91,9 @@ int main()
   controls.push_back(abs_to_rel_x2);
   controls.push_back(abs_to_rel_y2);
   controls.push_back(autofire);
+  controls.push_back(join_axis);
+  controls.push_back(btn_to_abs_x);
+  controls.push_back(btn_to_abs_y);
 
   // ----------------------------
 
@@ -116,15 +128,41 @@ int main()
   autofire->get_btn_port_out(0)
     ->connect(uinput->get_btn_port_in(3));
   
+  xbox360->get_abs_port_out(Xbox360Driver::XBOX360_AXIS_LT)
+    ->connect(join_axis->get_abs_port_in(0));
+  xbox360->get_abs_port_out(Xbox360Driver::XBOX360_AXIS_RT)
+    ->connect(join_axis->get_abs_port_in(1));
+
+  join_axis->get_abs_port_out(0)
+    ->connect(uinput->get_abs_port_in(2));
+
+
+  xbox360->get_btn_port_out(Xbox360Driver::XBOX360_DPAD_LEFT)
+    ->connect(btn_to_abs_x->get_btn_port_in(0));
+  xbox360->get_btn_port_out(Xbox360Driver::XBOX360_DPAD_RIGHT)
+    ->connect(btn_to_abs_x->get_btn_port_in(1));
+  btn_to_abs_x->get_abs_port_out(0)
+    ->connect(uinput->get_abs_port_in(0));
+
+  xbox360->get_btn_port_out(Xbox360Driver::XBOX360_DPAD_UP)
+    ->connect(btn_to_abs_y->get_btn_port_in(0));
+  xbox360->get_btn_port_out(Xbox360Driver::XBOX360_DPAD_DOWN)
+    ->connect(btn_to_abs_y->get_btn_port_in(1));  
+  btn_to_abs_y->get_abs_port_out(0)
+    ->connect(uinput->get_abs_port_in(1));
+
   // ----------------------------
 
-  xbox360->get_abs_port_out(Xbox360Driver::XBOX360_AXIS_LT) 
-    ->connect(xbox360->get_abs_port_in(Xbox360Driver::ABS_PORT_IN_RUMBLE_L));
+  if (0)
+    { // rumble stuff
+      xbox360->get_abs_port_out(Xbox360Driver::XBOX360_AXIS_LT) 
+        ->connect(xbox360->get_abs_port_in(Xbox360Driver::ABS_PORT_IN_RUMBLE_L));
 
-  xbox360->get_abs_port_out(Xbox360Driver::XBOX360_AXIS_RT)
-    ->connect(xbox360->get_abs_port_in(Xbox360Driver::ABS_PORT_IN_RUMBLE_R));
+      xbox360->get_abs_port_out(Xbox360Driver::XBOX360_AXIS_RT)
+        ->connect(xbox360->get_abs_port_in(Xbox360Driver::ABS_PORT_IN_RUMBLE_R));
 
-  xbox360->get_btn_port_out(Xbox360Driver::XBOX360_BTN_Y)->connect(btn_change);
+      xbox360->get_btn_port_out(Xbox360Driver::XBOX360_BTN_Y)->connect(btn_change);
+    }
 
   bool quit = false;
   while(!quit)

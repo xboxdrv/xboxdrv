@@ -23,40 +23,25 @@
 **  02111-1307, USA.
 */
 
-#include <boost/bind.hpp>
-#include "autofire_button.hpp"
-
-AutofireButton::AutofireButton(int rate)
-  : rate(rate),
-    rate_counter(0)
-{
-  btn_port_in.push_back(new BtnPortIn("AutofireButton-In", 
-                                     boost::bind(&AutofireButton::on_btn, this, _1)));
-  btn_port_out.push_back(new BtnPortOut("AutofireButton-Out-0")); 
-}
+#ifndef HEADER_JOIN_AXIS_HPP
+#define HEADER_JOIN_AXIS_HPP
 
-void
-AutofireButton::on_btn(BtnPortOut* port)
-{
-  btn_port_out[0]->set_state(port->get_state());
-}
+#include "control.hpp"
 
-void
-AutofireButton::update(float delta)
+/** */
+class JoinAxis : public Control
 {
-  if (btn_port_in[0]->out_port->get_state())
-    {
-      rate_counter += int(1000 * delta);
-      if (rate_counter >= rate)
-        {
-          rate_counter = rate_counter % rate;
-          btn_port_out[0]->set_state(!btn_port_out[0]->get_state());
-        }
-    }
-  else
-    {
-      rate_counter = 0;
-    }
-}
-
+private:
+public:
+  JoinAxis();
+
+  void on_abs(AbsPortOut* port);
+  
+private:
+  JoinAxis (const JoinAxis&);
+  JoinAxis& operator= (const JoinAxis&);
+};
+
+#endif
+
 /* EOF */

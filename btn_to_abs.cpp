@@ -24,39 +24,45 @@
 */
 
 #include <boost/bind.hpp>
-#include "autofire_button.hpp"
-
-AutofireButton::AutofireButton(int rate)
-  : rate(rate),
-    rate_counter(0)
+#include "btn_to_abs.hpp"
+
+BtnToAbs::BtnToAbs()
+  : target_value(0)
 {
-  btn_port_in.push_back(new BtnPortIn("AutofireButton-In", 
-                                     boost::bind(&AutofireButton::on_btn, this, _1)));
-  btn_port_out.push_back(new BtnPortOut("AutofireButton-Out-0")); 
+  btn_port_in.push_back(new BtnPortIn("BtnToAbs-Out-0",
+                                      boost::bind(&BtnToAbs::on_btn, this, _1)));
+  btn_port_in.push_back(new BtnPortIn("BtnToAbs-Out-1",
+                                      boost::bind(&BtnToAbs::on_btn, this, _1)));
+
+  abs_port_out.push_back(new AbsPortOut("BtnToAbs-In", -32767, 32767));
 }
 
 void
-AutofireButton::on_btn(BtnPortOut* port)
+BtnToAbs::update(float delta)
 {
-  btn_port_out[0]->set_state(port->get_state());
+  // make this configurable
+  float relax = 0.05f;
+  abs_port_out[0]->set_state(int(abs_port_out[0]->get_state() + 
+                                 relax * (target_value - abs_port_out[0]->get_state())));
 }
 
 void
-AutofireButton::update(float delta)
+BtnToAbs::on_btn(BtnPortOut* port)
 {
-  if (btn_port_in[0]->out_port->get_state())
+  if (btn_port_in[0]->out_port->get_state() &&
+      !btn_port_in[1]->out_port->get_state())
     {
-      rate_counter += int(1000 * delta);
-      if (rate_counter >= rate)
-        {
-          rate_counter = rate_counter % rate;
-          btn_port_out[0]->set_state(!btn_port_out[0]->get_state());
-        }
+      target_value = abs_port_out[0]->min_value;
+    } 
+  else if (!btn_port_in[0]->out_port->get_state() &&
+           btn_port_in[1]->out_port->get_state())
+    {
+      target_value = abs_port_out[0]->max_value;
     }
   else
     {
-      rate_counter = 0;
+      target_value = 0;
     }
 }
-
+
 /* EOF */
