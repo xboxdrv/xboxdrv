@@ -23,14 +23,32 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_LOG_HPP
-#define HEADER_LOG_HPP
+#ifndef HEADER_EVDEV_DRIVER_HPP
+#define HEADER_EVDEV_DRIVER_HPP
 
-#include <iostream>
+#include <linux/input.h>
+#include "control.hpp"
+
+/** */
+class EvdevDriver : public Control
+{
+private:
+  int fd;
+  int version;
+  std::string name;
+  int abs2idx[ABS_MAX];
+  int rel2idx[REL_MAX];
+  int key2idx[KEY_MAX];
+  
+public:
+  EvdevDriver(const std::string& filename);
+  void update(float delta);
 
-#define LOG(s)       { std::cerr << "[Info]:  " << __FILE__ << ":" << __LINE__ << ":" << s << std::endl; }
-#define LOG_ERROR(s) { std::cerr << "[Error]: " << __FILE__ << ":" << __LINE__ << ":" << s << std::endl; }
-
+private:
+  EvdevDriver (const EvdevDriver&);
+  EvdevDriver& operator= (const EvdevDriver&);
+};
+
 #endif
 
 /* EOF */

@@ -23,13 +23,26 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_LOG_HPP
-#define HEADER_LOG_HPP
+#ifndef HEADER_CONTROL_FACTORY_HPP
+#define HEADER_CONTROL_FACTORY_HPP
 
-#include <iostream>
+#include <string>
 
-#define LOG(s)       { std::cerr << "[Info]:  " << __FILE__ << ":" << __LINE__ << ":" << s << std::endl; }
-#define LOG_ERROR(s) { std::cerr << "[Error]: " << __FILE__ << ":" << __LINE__ << ":" << s << std::endl; }
+class Control;
+
+/** */
+class ControlFactory
+{
+private:
+public:
+  ControlFactory();
+  
+  Control* create(const std::string& name);
+
+private:
+  ControlFactory (const ControlFactory&);
+  ControlFactory& operator= (const ControlFactory&);
+};
 
 #endif
 

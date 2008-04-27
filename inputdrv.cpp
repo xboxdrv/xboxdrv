@@ -33,6 +33,7 @@
 #include "autofire_button.hpp"
 #include "join_axis.hpp"
 #include "btn_to_abs.hpp"
+#include "evdev_driver.hpp"
 #include "control.hpp"
 #include "inputdrv.hpp"
 
@@ -52,6 +53,8 @@ int main()
   usb_init();
   usb_find_busses();
   usb_find_devices();
+
+  EvdevDriver* evdev = new EvdevDriver("/dev/input/event10");
 
   UInputDriver* uinput = new UInputDriver("UInputMouseEmulation");
 

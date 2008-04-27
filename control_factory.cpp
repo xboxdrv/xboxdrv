@@ -23,14 +23,43 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_LOG_HPP
-#define HEADER_LOG_HPP
+#include "xbox360_driver.hpp"
+#include "uinput_driver.hpp"
+#include "abs_to_rel.hpp"
+#include "toggle_button.hpp"
+#include "autofire_button.hpp"
+#include "join_axis.hpp"
+#include "btn_to_abs.hpp"
+#include "file_reader.hpp"
+#include "control_factory.hpp"
 
-#include <iostream>
+ControlFactory::ControlFactory()
+{
 
-#define LOG(s)       { std::cerr << "[Info]:  " << __FILE__ << ":" << __LINE__ << ":" << s << std::endl; }
-#define LOG_ERROR(s) { std::cerr << "[Error]: " << __FILE__ << ":" << __LINE__ << ":" << s << std::endl; }
+}
 
-#endif
+Control*
+ControlFactory::create(const std::string& name, FileReader reader)
+{
+  if (name == "join-abs")
+    {
+      return new JoinAxis();
+    }
+  else if (name == "btn-to-abs")
+    {
+      return new BtnToAbs();
+    }
+  else if (name == "abs-to-btn")
+    {
+      int threshold = 0;
+      reader.get("threshold", threshold);      
+      return new AbsToBtn(threshold);
+    }
+  else
+    {
+      LOG_ERROR("ControlFactory: unknown control: '" << name << "'");
+      return 0;
+    }
+}
 
 /* EOF */

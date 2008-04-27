@@ -31,7 +31,13 @@
 #include <queue>
 #include "xboxdrv.hpp"
 
-/** */
+/** A worker thread that reads from the USB device in a blocking
+    fashion, so that the Xbox360Driver can stay non blocking. 
+    
+    Using the timeout value of usb_interrupt_read() should in theory
+    allow that too, but it didn't work for some reason, events got
+    lost, thus this seperate thread.
+*/
 class Xbox360UsbThread
 {
 private:

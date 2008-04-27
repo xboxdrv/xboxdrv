@@ -23,13 +23,21 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_LOG_HPP
-#define HEADER_LOG_HPP
+#ifndef HEADER_FILE_READER_HPP
+#define HEADER_FILE_READER_HPP
 
-#include <iostream>
-
-#define LOG(s)       { std::cerr << "[Info]:  " << __FILE__ << ":" << __LINE__ << ":" << s << std::endl; }
-#define LOG_ERROR(s) { std::cerr << "[Error]: " << __FILE__ << ":" << __LINE__ << ":" << s << std::endl; }
+/** */
+class FileReader
+{
+private:
+public:
+  bool get(const char* name, int&);
+  bool get(const char* name, float&);
+  
+private:
+  FileReader (const FileReader&);
+  FileReader& operator= (const FileReader&);
+};
 
 #endif
 
