@@ -1,0 +1,38 @@
+digraph structs {
+node [shape=Mrecord];
+rankdir=LR;
+  ctrl134828120 [style="filled", fillcolor="lightgray", label="{{<btnin0> btn0 | <absin0> abs0 | <absin1> abs1} | Xbox360Controller | {<btnout0> btn0 | <btnout1> btn1 | <btnout2> btn2 | <btnout3> btn3 | <btnout4> btn4 | <btnout5> btn5 | <btnout6> btn6 | <btnout7> btn7 | <btnout8> btn8 | <btnout9> btn9 | <btnout10> btn10 | <btnout11> btn11 | <btnout12> btn12 | <btnout13> btn13 | <btnout14> btn14 | <absout0> abs0 | <absout1> abs1 | <absout2> abs2 | <absout3> abs3 | <absout4> abs4 | <absout5> abs5}}"];
+  ctrl134771112 [style="filled", fillcolor="lightgray", label="{ | Evdev | {<btnout0> btn0 | <btnout1> btn1 | <btnout2> btn2 | <btnout3> btn3 | <btnout4> btn4 | <btnout5> btn5 | <btnout6> btn6 | <btnout7> btn7 | <btnout8> btn8 | <btnout9> btn9 | <btnout10> btn10 | <btnout11> btn11 | <absout0> abs0 | <absout1> abs1 | <absout2> abs2 | <absout3> abs3 | <absout4> abs4 | <absout5> abs5}}"];
+  ctrl134825720 [style="filled", fillcolor="lightgray", label="{{<btnin0> btn0 | <btnin1> btn1 | <btnin2> btn2 | <btnin3> btn3 | <rel0> rel0 | <rel1> rel1 | <rel2> rel2 | <rel3> rel3 | <absin0> abs0 | <absin1> abs1 | <absin2> abs2 | <absin3> abs3 | <absin4> abs4} | Uinput | }"];
+  ctrl134834072 [style="filled", fillcolor="lightgray", label="{{<absin0> abs0} | AbsToRel | {<relout0> rel0}}"];
+  ctrl134835000 [style="filled", fillcolor="lightgray", label="{{<absin0> abs0} | AbsToRel | {<relout0> rel0}}"];
+  ctrl134835408 [style="filled", fillcolor="lightgray", label="{{<absin0> abs0} | AbsToRel | {<relout0> rel0}}"];
+  ctrl134835832 [style="filled", fillcolor="lightgray", label="{{<absin0> abs0} | AbsToRel | {<relout0> rel0}}"];
+  ctrl134836256 [style="filled", fillcolor="lightgray", label="{{<btnin0> btn0} | AutofireButton | {<btnout0> btn0}}"];
+  ctrl134836696 [style="filled", fillcolor="lightgray", label="{{<absin0> abs0 | <absin1> abs1} | JoinAbs | {<absout0> abs0}}"];
+  ctrl134837200 [style="filled", fillcolor="lightgray", label="{{<btnin0> btn0 | <btnin1> btn1} | BtnToAbs | {<absout0> abs0}}"];
+  ctrl134837696 [style="filled", fillcolor="lightgray", label="{{<btnin0> btn0 | <btnin1> btn1} | BtnToAbs | {<absout0> abs0}}"];
+  ctrl134828120:btnout4 -> ctrl134825720:btnin0;
+  ctrl134828120:btnout5 -> ctrl134825720:btnin1;
+  ctrl134828120:btnout6 -> ctrl134825720:btnin2;
+  ctrl134836256:btnout0 -> ctrl134825720:btnin3;
+  ctrl134837200:absout0 -> ctrl134825720:absin0;
+  ctrl134837696:absout0 -> ctrl134825720:absin1;
+  ctrl134836696:absout0 -> ctrl134825720:absin2;
+  ctrl134771112:absout0 -> ctrl134825720:absin4;
+  ctrl134834072:relout0 -> ctrl134825720:relin0;
+  ctrl134835000:relout0 -> ctrl134825720:relin1;
+  ctrl134835408:relout0 -> ctrl134825720:relin2;
+  ctrl134835832:relout0 -> ctrl134825720:relin3;
+  ctrl134828120:absout0 -> ctrl134834072:absin0;
+  ctrl134828120:absout1 -> ctrl134835000:absin0;
+  ctrl134828120:absout2 -> ctrl134835408:absin0;
+  ctrl134828120:absout3 -> ctrl134835832:absin0;
+  ctrl134828120:btnout7 -> ctrl134836256:btnin0;
+  ctrl134828120:absout4 -> ctrl134836696:absin0;
+  ctrl134828120:absout5 -> ctrl134836696:absin1;
+  ctrl134828120:btnout2 -> ctrl134837200:btnin0;
+  ctrl134828120:btnout3 -> ctrl134837200:btnin1;
+  ctrl134828120:btnout0 -> ctrl134837696:btnin0;
+  ctrl134828120:btnout1 -> ctrl134837696:btnin1;
+}
