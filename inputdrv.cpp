@@ -70,6 +70,8 @@ int main()
 
   uinput->add_abs(ABS_X, -32767, 32767);
   uinput->add_abs(ABS_Y, -32767, 32767);
+  uinput->add_abs(ABS_RX, -32767, 32767);
+  uinput->add_abs(ABS_RY, -32767, 32767);
   uinput->add_abs(ABS_Z, -255, 255);
 
   uinput->finish();
@@ -88,6 +90,7 @@ int main()
   BtnToAbs*       btn_to_abs_y  = new BtnToAbs();
 
   controls.push_back(xbox360);
+  controls.push_back(evdev);
   controls.push_back(toggle);
   controls.push_back(abs_to_rel_x);
   controls.push_back(abs_to_rel_y);
@@ -118,6 +121,12 @@ int main()
     ->connect(uinput->get_rel_port_in(2));
   abs_to_rel_y2->get_rel_port_out(0)
     ->connect(uinput->get_rel_port_in(3));
+
+
+  evdev->get_abs_port_out(0)
+    ->connect(uinput->get_abs_port_in(4));
+  evdev->get_abs_port_out(0)
+    ->connect(uinput->get_abs_port_in(5));
 
   xbox360->get_btn_port_out(Xbox360Driver::XBOX360_BTN_A) 
     ->connect(uinput->get_btn_port_in(0));
