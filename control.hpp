@@ -184,6 +184,8 @@ public:
       delete *i;
   }
 
+  virtual std::string get_name() const =0;
+
   int get_btn_port_in_count()  { return btn_port_in.size();  }
   int get_btn_port_out_count() { return btn_port_out.size(); }
 

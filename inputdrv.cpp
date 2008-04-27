@@ -25,7 +25,10 @@
 
 #include <usb.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <boost/bind.hpp>
+#include <boost/format.hpp>
 #include "xbox360_driver.hpp"
 #include "uinput_driver.hpp"
 #include "abs_to_rel.hpp"
@@ -79,7 +82,7 @@ int main()
   std::vector<Control*> controls;
 
   Xbox360Driver*  xbox360       = new Xbox360Driver(0);
-  ToggleButton*   toggle        = new ToggleButton();
+  //ToggleButton*   toggle        = new ToggleButton();
   AbsToRel*       abs_to_rel_x  = new AbsToRel();
   AbsToRel*       abs_to_rel_y  = new AbsToRel();
   AbsToRel*       abs_to_rel_x2 = new AbsToRel();
@@ -91,7 +94,8 @@ int main()
 
   controls.push_back(xbox360);
   controls.push_back(evdev);
-  controls.push_back(toggle);
+  controls.push_back(uinput);
+  //  controls.push_back(toggle);
   controls.push_back(abs_to_rel_x);
   controls.push_back(abs_to_rel_y);
   controls.push_back(abs_to_rel_x2);
@@ -175,6 +179,12 @@ int main()
 
       xbox360->get_btn_port_out(Xbox360Driver::XBOX360_BTN_Y)->connect(btn_change);
     }
+
+  { 
+    //std::cout << "Printing graph to graph.dot" << std::endl;
+    //std::ofstream out("graph.dot");
+    //print_graph(controls, out);
+  }
 
   bool quit = false;
   while(!quit)

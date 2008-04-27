@@ -36,7 +36,8 @@
     
     Using the timeout value of usb_interrupt_read() should in theory
     allow that too, but it didn't work for some reason, events got
-    lost, thus this seperate thread.
+    lost, thus this seperate thread. A libusb alternative/fork called
+    openusb might fix this propblem by providing asynchronous io.
 */
 class Xbox360UsbThread
 {

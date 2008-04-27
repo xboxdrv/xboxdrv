@@ -92,6 +92,8 @@ public:
   Xbox360Driver(int idx);
   Xbox360Driver(const std::string& busid, const std::string& devid);
   ~Xbox360Driver();
+
+  std::string get_name() const { return "Xbox360Controller"; }
   
   void on_led_btn(BtnPortOut* btn);
 

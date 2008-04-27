@@ -36,6 +36,8 @@ private:
   int rate_counter;
 public:
   AutofireButton(int rate);
+  std::string get_name() const { return "AutofireButton"; }
+
   void update(float delta);
   void on_btn(BtnPortOut* port);
 

@@ -1,3 +1,5 @@
+* abs input must be normalized to min/max
+* rel input must be scaleable
 * Cleanup naming conventions
 
 sending rumble is slow and delayed, gets buffered up

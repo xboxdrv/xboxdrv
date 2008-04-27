@@ -43,6 +43,8 @@ public:
   UInputDriver(const std::string& name);
   ~UInputDriver();
 
+  std::string get_name() const { return "Uinput"; }
+
   void add_abs(uint16_t code, int min, int max);
   void add_btn(uint16_t code);
   void add_rel(uint16_t code);

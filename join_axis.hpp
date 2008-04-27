@@ -34,7 +34,7 @@ class JoinAxis : public Control
 private:
 public:
   JoinAxis();
-
+  std::string get_name() const { return "JoinAbs"; }
   void on_abs(AbsPortOut* port);
   
 private:

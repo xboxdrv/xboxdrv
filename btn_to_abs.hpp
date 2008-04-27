@@ -36,7 +36,7 @@ private:
 
 public:
   BtnToAbs();
-
+  std::string get_name() const { return "BtnToAbs"; }
   void on_btn(BtnPortOut* port);
   void update(float delta);
 private:

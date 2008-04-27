@@ -14,6 +14,7 @@ env.Program("inputdrv",
              "autofire_button.cpp",
              "uinput_driver.cpp",
              "join_axis.cpp",
+             "throttle.cpp",
              "toggle_button.cpp"],
             LIBS=['boost_signals', 'usb', 'pthread'])
 

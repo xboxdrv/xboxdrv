@@ -37,6 +37,7 @@ private:
 public:
   ToggleButton();
   virtual ~ToggleButton();
+  std::string get_name() const { return "ToggleButton"; }
 
   void on_btn(BtnPortOut* out);
   

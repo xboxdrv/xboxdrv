@@ -42,6 +42,9 @@ private:
   
 public:
   EvdevDriver(const std::string& filename);
+
+  std::string get_name() const { return "Evdev"; }
+
   void update(float delta);
 
 private:

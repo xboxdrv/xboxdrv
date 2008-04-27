@@ -34,6 +34,7 @@ class AbsToRel : public Control
 private:
 public:
   AbsToRel();
+  std::string get_name() const { return "AbsToRel"; }
 
   void on_abs(AbsPortOut* port);
   void update(float delta);
