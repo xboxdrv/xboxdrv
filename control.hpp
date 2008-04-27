@@ -210,6 +210,10 @@ public:
   virtual void update(float delta) {}
 };
 
+void connect_btn(Control* lhs_ctrl, int lhs_i, Control* rhs, int rhs_i);
+void connect_abs(Control* lhs_ctrl, int lhs_i, Control* rhs, int rhs_i);
+void connect_rel(Control* lhs_ctrl, int lhs_i, Control* rhs, int rhs_i);
+
 #endif
 
 /* EOF */

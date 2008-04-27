@@ -36,6 +36,7 @@
 #include "autofire_button.hpp"
 #include "join_axis.hpp"
 #include "btn_to_abs.hpp"
+#include "throttle.hpp"
 #include "evdev_driver.hpp"
 #include "control.hpp"
 #include "inputdrv.hpp"
@@ -76,6 +77,7 @@ int main()
   uinput->add_abs(ABS_RX, -32767, 32767);
   uinput->add_abs(ABS_RY, -32767, 32767);
   uinput->add_abs(ABS_Z, -255, 255);
+  uinput->add_abs(ABS_THROTTLE, 0, 32767);
 
   uinput->finish();
 
@@ -91,6 +93,7 @@ int main()
   JoinAxis*       join_axis     = new JoinAxis();
   BtnToAbs*       btn_to_abs_x  = new BtnToAbs();
   BtnToAbs*       btn_to_abs_y  = new BtnToAbs();
+  Throttle*       throttle      = new Throttle();
 
   controls.push_back(xbox360);
   controls.push_back(evdev);
@@ -104,36 +107,31 @@ int main()
   controls.push_back(join_axis);
   controls.push_back(btn_to_abs_x);
   controls.push_back(btn_to_abs_y);
+  controls.push_back(throttle);
 
   // ----------------------------
 
-  xbox360->get_abs_port_out(Xbox360Driver::XBOX360_AXIS_X1) 
-    ->connect(abs_to_rel_x->get_abs_port_in(0));
-  xbox360->get_abs_port_out(Xbox360Driver::XBOX360_AXIS_Y1) 
-    ->connect(abs_to_rel_y->get_abs_port_in(0));
+  connect_abs(xbox360, Xbox360Driver::XBOX360_AXIS_X1, abs_to_rel_x, 0);
+  connect_abs(xbox360, Xbox360Driver::XBOX360_AXIS_Y1, abs_to_rel_y, 0);
 
-  xbox360->get_abs_port_out(Xbox360Driver::XBOX360_AXIS_X2) 
-    ->connect(abs_to_rel_x2->get_abs_port_in(0));
-  xbox360->get_abs_port_out(Xbox360Driver::XBOX360_AXIS_Y2) 
-    ->connect(abs_to_rel_y2->get_abs_port_in(0));
+  connect_abs(xbox360, Xbox360Driver::XBOX360_AXIS_X2, abs_to_rel_x2, 0);
+  connect_abs(xbox360, Xbox360Driver::XBOX360_AXIS_Y2, abs_to_rel_y2, 0);
 
-  abs_to_rel_x->get_rel_port_out(0)
-    ->connect(uinput->get_rel_port_in(0));
-  abs_to_rel_y->get_rel_port_out(0)
-    ->connect(uinput->get_rel_port_in(1));
-  abs_to_rel_x2->get_rel_port_out(0)
-    ->connect(uinput->get_rel_port_in(2));
-  abs_to_rel_y2->get_rel_port_out(0)
-    ->connect(uinput->get_rel_port_in(3));
+  connect_rel(abs_to_rel_x,  0, uinput, 0);
+  connect_rel(abs_to_rel_y,  0, uinput, 1);
+  connect_rel(abs_to_rel_x2, 0, uinput, 2);
+  connect_rel(abs_to_rel_y2, 0, uinput, 3);
 
+  connect_abs(evdev, 0, uinput, 3);
+  connect_abs(evdev, 1, uinput, 4);
 
-  evdev->get_abs_port_out(0)
-    ->connect(uinput->get_abs_port_in(4));
-  evdev->get_abs_port_out(0)
+  evdev->get_abs_port_out(3)
+    ->connect(throttle->get_abs_port_in(0));
+  throttle->get_abs_port_out(0)
     ->connect(uinput->get_abs_port_in(5));
 
-  xbox360->get_btn_port_out(Xbox360Driver::XBOX360_BTN_A) 
-    ->connect(uinput->get_btn_port_in(0));
+  connect_btn(xbox360, Xbox360Driver::XBOX360_BTN_A,
+              uinput, 0);
   xbox360->get_btn_port_out(Xbox360Driver::XBOX360_BTN_B) 
     ->connect(uinput->get_btn_port_in(1));
   xbox360->get_btn_port_out(Xbox360Driver::XBOX360_BTN_X) 
@@ -153,19 +151,19 @@ int main()
     ->connect(uinput->get_abs_port_in(2));
 
 
-  xbox360->get_btn_port_out(Xbox360Driver::XBOX360_DPAD_LEFT)
-    ->connect(btn_to_abs_x->get_btn_port_in(0));
-  xbox360->get_btn_port_out(Xbox360Driver::XBOX360_DPAD_RIGHT)
-    ->connect(btn_to_abs_x->get_btn_port_in(1));
-  btn_to_abs_x->get_abs_port_out(0)
-    ->connect(uinput->get_abs_port_in(0));
+  connect_btn(xbox360,      Xbox360Driver::XBOX360_DPAD_LEFT,  
+              btn_to_abs_x, 0);
+  connect_btn(xbox360,      Xbox360Driver::XBOX360_DPAD_RIGHT, 
+              btn_to_abs_x, 1);
+  connect_abs(btn_to_abs_x, 0, uinput, 0);
 
-  xbox360->get_btn_port_out(Xbox360Driver::XBOX360_DPAD_UP)
-    ->connect(btn_to_abs_y->get_btn_port_in(0));
-  xbox360->get_btn_port_out(Xbox360Driver::XBOX360_DPAD_DOWN)
-    ->connect(btn_to_abs_y->get_btn_port_in(1));  
-  btn_to_abs_y->get_abs_port_out(0)
-    ->connect(uinput->get_abs_port_in(1));
+  connect_btn(xbox360,      Xbox360Driver::XBOX360_DPAD_UP, 
+              btn_to_abs_y, 0);
+
+  connect_btn(xbox360, Xbox360Driver::XBOX360_DPAD_DOWN,
+              btn_to_abs_y, 1);
+  connect_btn(btn_to_abs_y, 0,
+              uinput, 1);
 
   // ----------------------------
 

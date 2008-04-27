@@ -42,13 +42,15 @@ Throttle::on_abs(AbsPortOut* port)
 
 void
 Throttle::update(float delta)
-{
-  value += abs_port_in[0]->out_port->get_state() * delta;
+{ // FIXME: crashes when nothing is connected
+  value += abs_port_in[0]->out_port->get_state() * delta * 100.0f;
 
-  if (value < 0)
-    value = 0;
+  if (value < abs_port_out[0]->min_value)
+    value = abs_port_out[0]->min_value;
   else if (value > abs_port_out[0]->max_value)
     value = abs_port_out[0]->max_value;
+
+  std::cout << "value: " << value << " -> " << abs_port_in[0]->out_port->get_state() << std::endl;
 }
 
 /* EOF */

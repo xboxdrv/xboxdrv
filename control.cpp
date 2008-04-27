@@ -139,4 +139,37 @@ Control::get_rel_port_out(int idx)
     }
 }
 
+void connect_btn(Control* lhs_ctrl, int lhs_i, Control* rhs_ctrl, int rhs_i)
+{
+  BtnPortOut* out = lhs_ctrl->get_btn_port_out(lhs_i);
+  BtnPortIn*  in  = rhs_ctrl->get_btn_port_in(rhs_i);
+
+  if (in && out)
+    out->connect(in);
+  else
+    LOG("Couldn't establish connection between " << lhs_ctrl << " and " << rhs_ctrl);
+}
+
+void connect_abs(Control* lhs_ctrl, int lhs_i, Control* rhs_ctrl, int rhs_i)
+{
+  AbsPortOut* out = lhs_ctrl->get_abs_port_out(lhs_i);
+  AbsPortIn*  in  = rhs_ctrl->get_abs_port_in(rhs_i);
+
+  if (in && out)
+    out->connect(in);
+  else
+    LOG("Couldn't establish connection between " << lhs_ctrl << " and " << rhs_ctrl);
+}
+
+void connect_rel(Control* lhs_ctrl, int lhs_i, Control* rhs_ctrl, int rhs_i)
+{
+  RelPortOut* out = lhs_ctrl->get_rel_port_out(lhs_i);
+  RelPortIn*  in  = rhs_ctrl->get_rel_port_in(rhs_i);
+
+  if (in && out)
+    out->connect(in);
+  else
+    LOG("Couldn't establish connection between " << lhs_ctrl << " and " << rhs_ctrl);
+}
+
 /* EOF */

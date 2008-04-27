@@ -36,6 +36,7 @@ private:
   
 public:
   Throttle();
+  std::string get_name() const { return "Throttle"; } 
 
   void update(float delta);
   void on_abs(AbsPortOut* port);
