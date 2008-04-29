@@ -65,12 +65,19 @@ class Port:
         else:
             self.ellipse.set_properties(fill_color="green")
 
+    def get_pos(self):
+        return (self.x, self.y)
+
     def set_pos(self, x, y):
+        self.y = y
+
         if self.isInPort:
+            self.x = x
             self.ellipse.set_properties(center_x=x, center_y=y)
             self.text.set_properties(x=x+10, y=y)
             self.rect.set_properties(x=x-10, y=y-9)
         else:
+            self.x = x+self.control.get_width()
             self.ellipse.set_properties(center_x=x+self.control.get_width(), center_y=y)
             self.text.set_properties(x=x+self.control.get_width()-10, y=y)
             self.rect.set_properties(x=x-50+self.control.get_width(), y=y-9)
@@ -177,6 +184,25 @@ class Control:
         self.layout()
 
 
+class Connection:
+    def __init__(self, portIn, portOut, root):
+        self.portIn  = portIn
+        self.portOut = portOut
+
+        self.path = goocanvas.Path(parent=root,
+                                   line_width=2, stroke_color="black")
+
+        self.layout()
+
+    def layout(self):
+        str = "M %(x1)d,%(y1)d C %(midx)d,%(y1)d %(midx)d,%(y2)d %(x2)d,%(y2)d" % \
+        { 'x1'   : self.portIn.get_pos()[0],
+          'y1'   : self.portIn.get_pos()[1],
+          'midx' : (self.portIn.get_pos()[0] + self.portOut.get_pos()[0])/2,
+          'x2'   : self.portOut.get_pos()[0],
+          'y2'   : self.portOut.get_pos()[1] }
+        self.path.set_properties(data=str)
+
 class InputCfg:
     def delete_event(self, widget, event, data=None):
         return False
@@ -184,21 +210,10 @@ class InputCfg:
     def destroy(self, widget, data=None):
         gtk.main_quit()
 
-    def button_down(self, item, event):
-        self.drag = True
-        self.motion(item, event)
-
-    def button_up(self, item, event):
-        self.drag = False
-
     def motion(self, item, event):
-        self.path.set_properties(data="M 100,100 C %d,100 %d,%d %d,%d" % ((100+event.x)/2,
-                                                                          (100+event.x)/2,
-                                                                          event.y,
-                                                                          event.x,
-                                                                          event.y))
-        if self.drag:
-            self.control1.set_pos(event.x, event.y)
+        self.connection1.layout() # FIXME: Fugly
+        self.connection2.layout() # FIXME: Fugly
+        self.connection3.layout() # FIXME: Fugly
 
     def __init__(self):
         self.drag = False
@@ -222,12 +237,7 @@ class InputCfg:
 
         root = self.canvas.get_root_item()
 
-        # self.canvas.connect("button-press-event", self.button_down)
-        # self.canvas.connect("button-release-event", self.button_up)
         self.canvas.connect("motion-notify-event", self.motion)
-
-        self.path = goocanvas.Path(parent=root, data="M 100,100 C 200,100 200,200 300,200",
-                                   line_width=2, stroke_color="black")
 
         self.control1 = Control("EvDev", root)
         self.control1.add_out_port("abs1")
@@ -236,14 +246,34 @@ class InputCfg:
         self.control1.add_out_port("abs4")
         self.control1.add_out_port("abs5")
         self.control1.add_out_port("abs6")
-        self.control1.set_pos(250, 10)
+        self.control1.set_pos(10, 10)
 
         self.control2 = Control("UInput", root)
         self.control2.add_in_port("btn0")
         self.control2.add_in_port("btn1")
+        self.control2.add_in_port("btn2")
         self.control2.add_out_port("abs5")
         self.control2.add_out_port("abs6")
-        self.control2.set_pos(10, 10)
+        self.control2.set_pos(250, 10)
+
+
+        self.control3 = Control("Xbox360 Gamepad", root)
+        self.control3.add_in_port("btn0")
+        self.control3.add_in_port("btn1")
+        self.control3.add_out_port("abs5")
+        self.control3.add_out_port("abs6")
+        self.control3.set_pos(10, 200)
+
+        self.connection1 = Connection(self.control1.out_ports[0],
+                                     self.control2.in_ports[0],
+                                     root)
+        self.connection2 = Connection(self.control1.out_ports[4],
+                                     self.control2.in_ports[1],
+                                     root)
+        self.connection3 = Connection(self.control3.out_ports[1],
+                                      self.control2.in_ports[2],
+                                      root)
+
 
     def main(self):
         gtk.main()
