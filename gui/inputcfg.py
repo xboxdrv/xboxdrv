@@ -12,13 +12,21 @@ class Port:
         self.control  = control
         self.name     = name
         self.isInPort = isInPort
-        self.ellipse = goocanvas.Ellipse(parent=control.get_port_parent(),
-                                         center_y=40,
+        self.group = goocanvas.Group(parent=control.get_port_parent())
+
+        self.rect = goocanvas.Rect(parent=self.group,
+                                   width=60,
+                                   height=18,
+                                   radius_x=5, radius_y=5,
+                                   line_width=1,
+                                   fill_color="darkgrey")
+
+        self.ellipse = goocanvas.Ellipse(parent=self.group,
                                          radius_x=5, radius_y=5,
                                          stroke_color="black",
                                          line_width=1)
         
-        self.text = goocanvas.Text(parent=control.get_port_parent(),
+        self.text = goocanvas.Text(parent=self.group,
                                    antialias=cairo.ANTIALIAS_SUBPIXEL,
                                    text=name,
                                    font="sans 9",
@@ -34,17 +42,24 @@ class Port:
             self.text.set_properties(anchor=gtk.ANCHOR_EAST,
                                      alignment=pango.ALIGN_RIGHT)
 
-        self.ellipse.connect("enter-notify-event", self.on_enter)
-        self.ellipse.connect("leave-notify-event", self.on_leave)
+        self.group.connect("button-press-event", self.on_button_press)
+        self.group.connect("enter-notify-event", self.on_enter)
+        self.group.connect("leave-notify-event", self.on_leave)
+
+    def on_button_press(self, item, target_item, event):
+        pass
 
     def on_enter(self, *rest):
+        self.is_active = True
+        self.rect.set_properties(fill_color="lightgrey")
         if self.isInPort:
             self.ellipse.set_properties(fill_color="white")
         else:
             self.ellipse.set_properties(fill_color="white")
 
     def on_leave(self, *rest):
-        pass
+        self.is_active = False
+        self.rect.set_properties(fill_color="darkgrey")
         if self.isInPort:
             self.ellipse.set_properties(fill_color="red")
         else:
@@ -54,9 +69,11 @@ class Port:
         if self.isInPort:
             self.ellipse.set_properties(center_x=x, center_y=y)
             self.text.set_properties(x=x+10, y=y)
+            self.rect.set_properties(x=x-10, y=y-9)
         else:
             self.ellipse.set_properties(center_x=x+self.control.get_width(), center_y=y)
             self.text.set_properties(x=x+self.control.get_width()-10, y=y)
+            self.rect.set_properties(x=x-50+self.control.get_width(), y=y-9)
 
 class InPort(Port):
     def __init__(self, name, control):
@@ -77,6 +94,8 @@ class Control:
         self.width  = 200
         self.height = 200
 
+        self.drag = None
+
         self.group = goocanvas.Group(parent=root)
 
         self.mainbox = goocanvas.Rect(parent=self.group,
@@ -88,8 +107,9 @@ class Control:
         self.titlebox = goocanvas.Rect(parent=self.group,
                                        width=200-10, height=30-10,
                                        radius_x=5, radius_y=5,
-                                       stroke_color="black",
-                                       fill_color="black")
+                                       stroke_color=None,
+                                       line_width = 0,
+                                       fill_color="darkgray")
         self.title = goocanvas.Text(parent=root,
                                     antialias=cairo.ANTIALIAS_SUBPIXEL,
                                     text=self.title,
@@ -102,8 +122,30 @@ class Control:
         self.layout()
         self.set_pos(100, 100)
 
+        self.group.connect("button-press-event", self.button_press)
+        self.group.connect("button-release-event", self.button_release)
+        self.group.connect("motion-notify-event", self.motion)
+        # self.group.connect("enter-notify-event", self.on_enter)
+        # self.group.connect("leave-notify-event", self.on_leave)
+
+    def button_press(self, item, target_item, event):
+        self.drag = (self.x - event.x, self.y - event.y)
+
+    def motion(self, item, target_item, event):
+        if self.drag:
+            self.set_pos(event.x + self.drag[0], event.y + self.drag[1])
+
+    def on_enter(self, *rest):
+        self.titlebox.set_properties(fill_color="black")
+        
+    def on_leave(self, *rest):
+        self.titlebox.set_properties(fill_color="darkgrey")
+
+    def button_release(self, *rest):
+        self.drag = None
+
     def get_port_parent(self):
-        return self.group
+        return self.group.get_parent()
 
     def get_width(self):
         return self.width
@@ -180,11 +222,12 @@ class InputCfg:
 
         root = self.canvas.get_root_item()
 
-        self.canvas.connect("button-press-event", self.button_down)
-        self.canvas.connect("button-release-event", self.button_up)
+        # self.canvas.connect("button-press-event", self.button_down)
+        # self.canvas.connect("button-release-event", self.button_up)
         self.canvas.connect("motion-notify-event", self.motion)
 
-        self.path = goocanvas.Path(parent=root, data="M 100,100 C 200,100 200,200 300,200")
+        self.path = goocanvas.Path(parent=root, data="M 100,100 C 200,100 200,200 300,200",
+                                   line_width=2, stroke_color="black")
 
         self.control1 = Control("EvDev", root)
         self.control1.add_out_port("abs1")
