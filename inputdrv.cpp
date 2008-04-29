@@ -58,46 +58,53 @@ int main()
   usb_find_busses();
   usb_find_devices();
 
-  //EvdevDriver* evdev = new EvdevDriver("/dev/input/event10");
-
-  UInputDriver* uinput = new UInputDriver("UInputMouseEmulation");
-
-  uinput->add_abs(ABS_X, -32767, 32767);
-  uinput->add_abs(ABS_Y, -32767, 32767);
-  uinput->add_abs(ABS_THROTTLE, 0, 32767);
-
-  uinput->finish();
-
-  std::vector<Control*> controls;
-
-  Xbox360Driver*  xbox360       = new Xbox360Driver(0);
-  Throttle*       throttle      = new Throttle();
-
-  controls.push_back(xbox360);
-  controls.push_back(uinput);
-  controls.push_back(throttle);
-
-  // ----------------------------
-
-  connect_abs(xbox360, Xbox360Driver::XBOX360_AXIS_X1, uinput, 0);
-  connect_abs(xbox360, Xbox360Driver::XBOX360_AXIS_Y1, uinput, 1);
-
-  connect_abs(xbox360,  Xbox360Driver::XBOX360_AXIS_Y2, throttle, 0);
-  connect_abs(throttle, 0, uinput,   2);
-  
-  // ----------------------------
-
-  bool quit = false;
-  while(!quit)
+  try 
     {
-      for(std::vector<Control*>::iterator i = controls.begin(); i != controls.end(); ++i)
-        {
-          (*i)->update(0.001f);
-        }
-      //std::cout << "." << std::flush;
-      usleep(1000); // 0.001sec or 1msec
-    }
+      //EvdevDriver* evdev = new EvdevDriver("/dev/input/event10");
 
+      UInputDriver* uinput = new UInputDriver("UInputMouseEmulation");
+
+      uinput->add_abs(ABS_X, -32767, 32767);
+      uinput->add_abs(ABS_Y, -32767, 32767);
+      uinput->add_abs(ABS_THROTTLE, 0, 32767);
+
+      uinput->finish();
+
+      std::vector<Control*> controls;
+
+      Xbox360Driver*  xbox360       = new Xbox360Driver(0);
+      Throttle*       throttle      = new Throttle();
+
+      controls.push_back(xbox360);
+      controls.push_back(uinput);
+      controls.push_back(throttle);
+
+      // ----------------------------
+
+      connect_abs(xbox360, Xbox360Driver::XBOX360_AXIS_X1, uinput, 0);
+      connect_abs(xbox360, Xbox360Driver::XBOX360_AXIS_Y1, uinput, 1);
+
+      connect_abs(xbox360,  Xbox360Driver::XBOX360_AXIS_Y2, throttle, 0);
+      connect_abs(throttle, 0, uinput,   2);
+  
+      // ----------------------------
+
+      bool quit = false;
+      while(!quit)
+        {
+          for(std::vector<Control*>::iterator i = controls.begin(); i != controls.end(); ++i)
+            {
+              (*i)->update(0.001f);
+            }
+          //std::cout << "." << std::flush;
+          usleep(1000); // 0.001sec or 1msec
+        }
+    }
+  catch(std::runtime_error& err)
+    {
+      std::cerr << "Error: " << err.what() << std::endl;
+    }
+  
   return 0;
 }
 

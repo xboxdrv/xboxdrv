@@ -42,11 +42,11 @@ Throttle::on_abs(AbsPortOut* port)
 
 void
 Throttle::update(float delta)
-{ // FIXME: crashes when nothing is connected
+{ 
   if (abs_port_in[0]->out_port)
     {
       int v = abs_port_in[0]->out_port->get_state();
-      if (abs(v) > 5000)
+      if (abs(v) > 5000) // FIXME: Deadzone handling must be different
         {
           value -= v * delta * 2.0f;
 

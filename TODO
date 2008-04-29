@@ -1,3 +1,4 @@
+* a way to send keyboard combination sequences or more general event sequences
 * abs input must be normalized to min/max
 * rel input must be scaleable
 * Cleanup naming conventions
