@@ -7,12 +7,76 @@ import cairo
 import goocanvas
 import pango
 
+class Port:
+    def __init__(self, isInPort, name, control):
+        self.control  = control
+        self.name     = name
+        self.isInPort = isInPort
+        self.ellipse = goocanvas.Ellipse(parent=control.get_port_parent(),
+                                         center_y=40,
+                                         radius_x=5, radius_y=5,
+                                         stroke_color="black",
+                                         line_width=1)
+        
+        self.text = goocanvas.Text(parent=control.get_port_parent(),
+                                   antialias=cairo.ANTIALIAS_SUBPIXEL,
+                                   text=name,
+                                   font="sans 9",
+                                   x=10,y=0,
+                                   fill_color="black")
+
+        if isInPort:
+            self.ellipse.set_properties(fill_color="red")
+            self.text.set_properties(anchor=gtk.ANCHOR_WEST,
+                                     alignment=pango.ALIGN_LEFT)
+        else:
+            self.ellipse.set_properties(fill_color="green")
+            self.text.set_properties(anchor=gtk.ANCHOR_EAST,
+                                     alignment=pango.ALIGN_RIGHT)
+
+        self.ellipse.connect("enter-notify-event", self.on_enter)
+        self.ellipse.connect("leave-notify-event", self.on_leave)
+
+    def on_enter(self, *rest):
+        if self.isInPort:
+            self.ellipse.set_properties(fill_color="white")
+        else:
+            self.ellipse.set_properties(fill_color="white")
+
+    def on_leave(self, *rest):
+        pass
+        if self.isInPort:
+            self.ellipse.set_properties(fill_color="red")
+        else:
+            self.ellipse.set_properties(fill_color="green")
+
+    def set_pos(self, x, y):
+        if self.isInPort:
+            self.ellipse.set_properties(center_x=x, center_y=y)
+            self.text.set_properties(x=x+10, y=y)
+        else:
+            self.ellipse.set_properties(center_x=x+self.control.get_width(), center_y=y)
+            self.text.set_properties(x=x+self.control.get_width()-10, y=y)
+
+class InPort(Port):
+    def __init__(self, name, control):
+        Port.__init__(self, True, name, control)
+
+class OutPort(Port):
+    def __init__(self, name, control):
+        Port.__init__(self, False, name, control)
+
 class Control:
-    def __init__(self, root):
-        self.title = "EvDev"
+    def __init__(self, name, root):
+        self.title = name
         self.in_ports = []
         self.out_ports = []
         
+        self.x = 0
+        self.y = 0
+        self.width  = 200
+        self.height = 200
+
         self.group = goocanvas.Group(parent=root)
 
         self.mainbox = goocanvas.Rect(parent=self.group,
@@ -28,75 +92,47 @@ class Control:
                                        fill_color="black")
         self.title = goocanvas.Text(parent=root,
                                     antialias=cairo.ANTIALIAS_SUBPIXEL,
-                                    text="EvDev",
+                                    text=self.title,
                                     width=180,
                                     font="sans bold 12",
                                     x=100,y=5,
                                     anchor=gtk.ANCHOR_NORTH,
                                     alignment=pango.ALIGN_CENTER,
                                     fill_color="white")
-
-        self.add_in_port("btn0")
-        self.add_in_port("btn1")
-
-        self.add_out_port("abs1")
-        self.add_out_port("abs2")
-        self.add_out_port("abs3")
-        self.add_out_port("abs4")
-        self.add_out_port("abs5")
-        self.add_out_port("abs6")
+        self.layout()
         self.set_pos(100, 100)
+
+    def get_port_parent(self):
+        return self.group
+
+    def get_width(self):
+        return self.width
 
     def layout(self):
         height = 40 + max(len(self.in_ports), len(self.out_ports)) * 20
         self.mainbox.set_properties(height=height)
 
+        self.mainbox.set_properties(x=self.x, y=self.y)
+        self.titlebox.set_properties(x=self.x+5, y=self.y+5)
+        self.title.set_properties(x=self.x+100, y=self.y+5)
+
+        for i in range(len(self.in_ports)):
+            self.in_ports[i].set_pos(self.x, self.y+40+20*i)
+        for i in range(len(self.out_ports)):
+            self.out_ports[i].set_pos(self.x, self.y+40+20*i)
+
     def add_in_port(self, name):
-        in_port = goocanvas.Ellipse(parent=self.group,
-                                    center_x=0, center_y=40,
-                                    radius_x=5, radius_y=5,
-                                    stroke_color="black",
-                                    line_width=1,
-                                    fill_color="red")
-        in_port_title = goocanvas.Text(parent=self.group,
-                                    antialias=cairo.ANTIALIAS_SUBPIXEL,
-                                    text=name,
-                                    font="sans 9",
-                                    x=10,y=0,
-                                    anchor=gtk.ANCHOR_WEST,
-                                    alignment=pango.ALIGN_LEFT,
-                                    fill_color="black")
-        self.in_ports.append((in_port, in_port_title))
+        self.in_ports.append(InPort(name, self))
         self.layout()
 
     def add_out_port(self, name):
-        out_port = goocanvas.Ellipse(parent=self.group,
-                                    center_x=0, center_y=40,
-                                    radius_x=5, radius_y=5,
-                                    stroke_color="black",
-                                    line_width=1,
-                                    fill_color="green")
-        out_port_title = goocanvas.Text(parent=self.group,
-                                    antialias=cairo.ANTIALIAS_SUBPIXEL,
-                                    text=name,
-                                    font="sans 9",
-                                    x=190,y=0,
-                                    anchor=gtk.ANCHOR_EAST,
-                                    alignment=pango.ALIGN_RIGHT,
-                                    fill_color="black")
-        self.out_ports.append((out_port, out_port_title))
+        self.out_ports.append(OutPort(name, self))
         self.layout()
 
     def set_pos(self, x, y):
-        self.mainbox.set_properties(x=x, y=y)
-        self.titlebox.set_properties(x=x+5, y=y+5)
-        self.title.set_properties(x=x+100, y=y+5)
-        for i in range(len(self.in_ports)):
-            self.in_ports[i][0].set_properties(center_x=x, center_y=y+40+20*i)
-            self.in_ports[i][1].set_properties(x=x+10, y=y+40+20*i)
-        for i in range(len(self.out_ports)):
-            self.out_ports[i][0].set_properties(center_x=x+200, center_y=y+40+20*i)
-            self.out_ports[i][1].set_properties(x=x+190, y=y+40+20*i)
+        self.x = x
+        self.y = y
+        self.layout()
 
 
 class InputCfg:
@@ -114,8 +150,13 @@ class InputCfg:
         self.drag = False
 
     def motion(self, item, event):
+        self.path.set_properties(data="M 100,100 C %d,100 %d,%d %d,%d" % ((100+event.x)/2,
+                                                                          (100+event.x)/2,
+                                                                          event.y,
+                                                                          event.x,
+                                                                          event.y))
         if self.drag:
-            self.control.set_pos(event.x, event.y)
+            self.control1.set_pos(event.x, event.y)
 
     def __init__(self):
         self.drag = False
@@ -137,14 +178,29 @@ class InputCfg:
 
         self.window.show()
 
-
         root = self.canvas.get_root_item()
 
         self.canvas.connect("button-press-event", self.button_down)
         self.canvas.connect("button-release-event", self.button_up)
         self.canvas.connect("motion-notify-event", self.motion)
 
-        self.control = Control(root)
+        self.path = goocanvas.Path(parent=root, data="M 100,100 C 200,100 200,200 300,200")
+
+        self.control1 = Control("EvDev", root)
+        self.control1.add_out_port("abs1")
+        self.control1.add_out_port("abs2")
+        self.control1.add_out_port("abs3")
+        self.control1.add_out_port("abs4")
+        self.control1.add_out_port("abs5")
+        self.control1.add_out_port("abs6")
+        self.control1.set_pos(250, 10)
+
+        self.control2 = Control("UInput", root)
+        self.control2.add_in_port("btn0")
+        self.control2.add_in_port("btn1")
+        self.control2.add_out_port("abs5")
+        self.control2.add_out_port("abs6")
+        self.control2.set_pos(10, 10)
 
     def main(self):
         gtk.main()
