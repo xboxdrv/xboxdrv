@@ -34,6 +34,7 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+#include <unistd.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <sys/types.h>

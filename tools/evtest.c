@@ -134,11 +134,45 @@ void evtest_info(const char* filename)
     }
   else
     {
-      ioctl(fd, EVIOCGID, id);
-      ioctl(fd, EVIOCGNAME(sizeof(name)), name);
+      int version;
+      if (ioctl(fd, EVIOCGVERSION, &version)) {
+        perror("evtest: can't get version");
+        exit(1);
+      }
 
-      printf("Device:    %s\nName:      %s\nDevice ID: bus 0x%x vendor 0x04%x product 0x04%x version 0x%x\n\n",
-             filename, name, id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT], id[ID_VERSION]);
+      printf("Input driver version is %d.%d.%d\n",
+             version >> 16, (version >> 8) & 0xff, version & 0xff);
+
+      ioctl(fd, EVIOCGID, id);
+      printf("Input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
+             id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT], id[ID_VERSION]);
+
+      ioctl(fd, EVIOCGNAME(sizeof(name)), name);
+      printf("Input device name: \"%s\"\n", name);
+
+      unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
+
+      memset(bit, 0, sizeof(bit));
+      ioctl(fd, EVIOCGBIT(0, EV_MAX), bit[0]);
+      printf("Supported events:\n");
+
+      for (int i = 0; i < EV_MAX; i++)
+        if (test_bit(i, bit[0])) {
+          printf("  Event type %d (%s)\n", i, events[i] ? events[i] : "?");
+          ioctl(fd, EVIOCGBIT(i, KEY_MAX), bit[i]);
+          for (int j = 0; j < KEY_MAX; j++) 
+            if (test_bit(j, bit[i])) {
+              printf("    Event code %d (%s)\n", j, names[i] ? (names[i][j] ? names[i][j] : "?") : "?");
+              if (i == EV_ABS) {
+                int abs[5];
+                ioctl(fd, EVIOCGABS(j), abs);
+                for (int k = 0; k < 5; k++)
+                  if ((k < 3) || abs[k])
+                    printf("      %s %6d\n", absval[k], abs[k]);
+              }
+            }
+        }
+      putchar('\n');
     }
 }
 
