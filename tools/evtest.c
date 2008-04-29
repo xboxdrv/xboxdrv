@@ -28,6 +28,8 @@
 
 #include <linux/input.h>
 
+#include <sys/types.h>
+#include <dirent.h>
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -96,82 +98,151 @@ NULL, NULL, leds, sounds, NULL, repeats, NULL, NULL, NULL };
 #define LONG(x) ((x)/BITS_PER_LONG)
 #define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
 
+void evtest_list();
+void evtest_info(const char* filename);
+void evtest_test(const char* filename);
+
 int main (int argc, char **argv)
 {
-	int fd, rd, i, j, k;
-	struct input_event ev[64];
-	int version;
-	unsigned short id[4];
-	unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
-	char name[256] = "Unknown";
-	int abs[5];
+  if (argc != 2)
+    {
+      printf("Usage: evtest FILE\n");
+      printf("       evtest --list\n");
+      exit(1);
+    }
+  else if (strcmp(argv[1], "--list") == 0)
+    {
+      evtest_list();
+      return 0;
+    }
+  else
+    {
+      evtest_test(argv[1]);
+      return 0;
+    }
+}
 
-	if (argc < 2) {
-		printf("Usage: evtest /dev/input/eventX\n");
-		printf("Where X = input device number\n");
-		exit(1);
-	}
+void evtest_info(const char* filename)
+{
+  int fd;
+  unsigned short id[4];
+  char name[256] = "Unknown";
 
-	if ((fd = open(argv[argc - 1], O_RDONLY)) < 0) {
-		perror("evtest");
-		exit(1);
-	}
+  if ((fd = open(filename, O_RDONLY)) < 0) 
+    {
+      perror(filename);
+    }
+  else
+    {
+      ioctl(fd, EVIOCGID, id);
+      ioctl(fd, EVIOCGNAME(sizeof(name)), name);
 
-	if (ioctl(fd, EVIOCGVERSION, &version)) {
-		perror("evtest: can't get version");
-		exit(1);
-	}
+      printf("Device:    %s\nName:      %s\nDevice ID: bus 0x%x vendor 0x04%x product 0x04%x version 0x%x\n\n",
+             filename, name, id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT], id[ID_VERSION]);
+    }
+}
 
-	printf("Input driver version is %d.%d.%d\n",
-		version >> 16, (version >> 8) & 0xff, version & 0xff);
+void evtest_list()
+{
+  char* pathname = "/dev/input";
+  DIR* dir = opendir(pathname);
+  if (!dir)
+    {
+      perror(pathname);
+    }
+  else
+    {
+      struct dirent* el = 0;
+      
+      while ((el = readdir(dir)) != 0)
+        {
+          if (strncmp("event", el->d_name, 5) == 0)
+            { // FIXME: This doesn't lead to alphabetic order
+              int len = strlen(pathname) + 1 + strlen(el->d_name) + 1;
+              char filename[len];
+              filename[0] = '\0';
+              strcat(filename, pathname);
+              strcat(filename, "/");
+              strcat(filename, el->d_name);
 
-	ioctl(fd, EVIOCGID, id);
-	printf("Input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
-		id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT], id[ID_VERSION]);
+              evtest_info(filename);
+            }
+        }
 
-	ioctl(fd, EVIOCGNAME(sizeof(name)), name);
-	printf("Input device name: \"%s\"\n", name);
+      closedir(dir);
+    }  
+}
 
-	memset(bit, 0, sizeof(bit));
-	ioctl(fd, EVIOCGBIT(0, EV_MAX), bit[0]);
-	printf("Supported events:\n");
+void evtest_test(const char* filename)
+{
+  int fd, rd, i, j, k;
+  struct input_event ev[64];
+  int version;
+  unsigned short id[4];
+  unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
+  char name[256] = "Unknown";
+  int abs[5];
 
-	for (i = 0; i < EV_MAX; i++)
-		if (test_bit(i, bit[0])) {
-			printf("  Event type %d (%s)\n", i, events[i] ? events[i] : "?");
-			ioctl(fd, EVIOCGBIT(i, KEY_MAX), bit[i]);
-			for (j = 0; j < KEY_MAX; j++) 
-				if (test_bit(j, bit[i])) {
-					printf("    Event code %d (%s)\n", j, names[i] ? (names[i][j] ? names[i][j] : "?") : "?");
-					if (i == EV_ABS) {
-						ioctl(fd, EVIOCGABS(j), abs);
-						for (k = 0; k < 5; k++)
-							if ((k < 3) || abs[k])
-								printf("      %s %6d\n", absval[k], abs[k]);
-					}
-				}
-		}
+  if ((fd = open(filename, O_RDONLY)) < 0) {
+    perror("evtest");
+    exit(1);
+  }
+
+  if (ioctl(fd, EVIOCGVERSION, &version)) {
+    perror("evtest: can't get version");
+    exit(1);
+  }
+
+  printf("Input driver version is %d.%d.%d\n",
+         version >> 16, (version >> 8) & 0xff, version & 0xff);
+
+  ioctl(fd, EVIOCGID, id);
+  printf("Input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
+         id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT], id[ID_VERSION]);
+
+  ioctl(fd, EVIOCGNAME(sizeof(name)), name);
+  printf("Input device name: \"%s\"\n", name);
+
+  memset(bit, 0, sizeof(bit));
+  ioctl(fd, EVIOCGBIT(0, EV_MAX), bit[0]);
+  printf("Supported events:\n");
+
+  for (i = 0; i < EV_MAX; i++)
+    if (test_bit(i, bit[0])) {
+      printf("  Event type %d (%s)\n", i, events[i] ? events[i] : "?");
+      ioctl(fd, EVIOCGBIT(i, KEY_MAX), bit[i]);
+      for (j = 0; j < KEY_MAX; j++) 
+        if (test_bit(j, bit[i])) {
+          printf("    Event code %d (%s)\n", j, names[i] ? (names[i][j] ? names[i][j] : "?") : "?");
+          if (i == EV_ABS) {
+            ioctl(fd, EVIOCGABS(j), abs);
+            for (k = 0; k < 5; k++)
+              if ((k < 3) || abs[k])
+                printf("      %s %6d\n", absval[k], abs[k]);
+          }
+        }
+    }
 		
 
-	printf("Testing ... (interrupt to exit)\n");
+  printf("Testing ... (interrupt to exit)\n");
 
-	while (1) {
-		rd = read(fd, ev, sizeof(struct input_event) * 64);
+  while (1) {
+    rd = read(fd, ev, sizeof(struct input_event) * 64);
 
-		if (rd < (int) sizeof(struct input_event)) {
-			printf("yyy\n");
-			perror("\nevtest: error reading");
-			exit (1);
-		}
+    if (rd < (int) sizeof(struct input_event)) {
+      printf("yyy\n");
+      perror("\nevtest: error reading");
+      exit (1);
+    }
 
-		for (i = 0; i < rd / sizeof(struct input_event); i++)
-			printf("Event: time %ld.%06ld, type %d (%s), code %d (%s), value %d\n",
-				ev[i].time.tv_sec, ev[i].time.tv_usec, ev[i].type,
-				events[ev[i].type] ? events[ev[i].type] : "?",
-				ev[i].code,
-				names[ev[i].type] ? (names[ev[i].type][ev[i].code] ? names[ev[i].type][ev[i].code] : "?") : "?",
-				ev[i].value);
+    for (i = 0; i < rd / sizeof(struct input_event); i++)
+      printf("Event: time %ld.%06ld, type %d (%s), code %d (%s), value %d\n",
+             ev[i].time.tv_sec, ev[i].time.tv_usec, ev[i].type,
+             events[ev[i].type] ? events[ev[i].type] : "?",
+             ev[i].code,
+             names[ev[i].type] ? (names[ev[i].type][ev[i].code] ? names[ev[i].type][ev[i].code] : "?") : "?",
+             ev[i].value);
 
-	}
+  }
 }
 
