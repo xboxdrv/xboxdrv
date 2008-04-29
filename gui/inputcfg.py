@@ -192,7 +192,15 @@ class Connection:
 
         self.path = goocanvas.Path(parent=root,
                                    line_width=2, stroke_color="black")
-
+        self.ellipse_in = goocanvas.Ellipse(parent=root,
+                                            radius_x=3, radius_y=3,
+                                            fill_color="black",
+                                            line_width=0)
+        self.ellipse_out = goocanvas.Ellipse(parent=root,
+                                            radius_x=3, radius_y=3,
+                                            fill_color="black",
+                                            line_width=0)
+        
         self.layout()
 
     def layout(self):
@@ -203,6 +211,11 @@ class Connection:
           'x2'   : self.portOut.get_pos()[0],
           'y2'   : self.portOut.get_pos()[1] }
         self.path.set_properties(data=str)
+
+        self.ellipse_in.set_properties(center_x = self.portIn.get_pos()[0], 
+                                       center_y = self.portIn.get_pos()[1])
+        self.ellipse_out.set_properties(center_x = self.portOut.get_pos()[0], 
+                                        center_y = self.portOut.get_pos()[1])
 
 class InputCfg:
     def delete_event(self, widget, event, data=None):
@@ -212,28 +225,54 @@ class InputCfg:
         gtk.main_quit()
 
     def motion(self, item, event):
-        for i in self.connections:
+        for i in self.connections: # FIXME: Fugly, wrong place for this
             i.layout()
+        self.layout(event.x, event.y)
+
+    def on_button_press(self, item, event):
+         if event.button == 3: # right click
+             popupMenu = gtk.Menu()
+             menuPopup1 = gtk.ImageMenuItem (gtk.STOCK_OPEN)
+             popupMenu.add(menuPopup1)
+             menuPopup2 = gtk.ImageMenuItem (gtk.STOCK_OK)
+             popupMenu.add(menuPopup2)
+             popupMenu.show_all()
+             popupMenu.popup(None, None, None, 1, 0)
+#         else:
+#             if self.start_port:
+#                 self.path.set_properties(data="")
+#                 self.start_port = None             
 
     def drag_start(self, port):
-        print port, self.start_port
         if self.start_port:
             if (isinstance(port, InPort) and isinstance(self.start_port, InPort)) or \
                     (isinstance(port, OutPort) and isinstance(self.start_port, OutPort)):
-                print "can't connect ports of the same type"
+                print "Error: Can't connect ports of the same type"
+                self.path.set_properties(data="")
                 self.start_port = None
             elif port.control == self.start_port.control:
-                print "Can't connect ports of the same control"
+                print "Error: Can't connect ports of the same control"
+                self.path.set_properties(data="")
                 self.start_port = None
             else:
                 self.connections.append(Connection(self.start_port, port, self.root))
+                self.path.set_properties(data="")
                 self.start_port = None
         else:
             self.start_port = port
 
+    def layout(self, x, y):
+        if self.start_port:
+            str = "M %(x1)d,%(y1)d C %(midx)d,%(y1)d %(midx)d,%(y2)d %(x2)d,%(y2)d" % \
+                { 'x1'   : self.start_port.get_pos()[0],
+                  'y1'   : self.start_port.get_pos()[1],
+                  'midx' : (self.start_port.get_pos()[0] + x)/2,
+                  'x2'   : x,
+                  'y2'   : y }
+            self.path.set_properties(data=str)
+
     def __init__(self):
-        self.drag = False
-        self.start_port = None
+        self.start_port  = None
         self.connections = []
 
         # create a new window
@@ -241,13 +280,8 @@ class InputCfg:
         self.window.connect("delete_event", self.delete_event)
         self.window.connect("destroy", self.destroy)
     
-        # self.drawing_area = gtk.DrawingArea()
-        # self.drawing_area.set_size_request(512, 512)
-        # self.window.add(self.drawing_area)
-        # self.drawing_area.show()
-
         self.canvas = goocanvas.Canvas()
-        self.canvas.set_size_request(512, 512)
+        self.canvas.set_size_request(800, 600)
         self.window.add(self.canvas)
         self.canvas.show()
 
@@ -256,6 +290,7 @@ class InputCfg:
         self.root = self.canvas.get_root_item()
 
         self.canvas.connect("motion-notify-event", self.motion)
+        self.canvas.connect("button-press-event", self.on_button_press)
 
         self.control3 = Control("Xbox360 Gamepad", self.root)
         self.control3.add_in_port("btn0")
@@ -279,7 +314,12 @@ class InputCfg:
         self.control2.add_in_port("btn2")
         self.control2.add_out_port("abs5")
         self.control2.add_out_port("abs6")
-        self.control2.set_pos(300, 10)
+        self.control2.set_pos(500, 200)
+
+        self.path = goocanvas.Path(parent=self.root,
+                                   pointer_events=0,
+                                   line_width=2, 
+                                   stroke_color_rgba=0x00000060)
 
     def main(self):
         gtk.main()
