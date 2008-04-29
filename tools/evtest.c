@@ -4,6 +4,8 @@
  *  Copyright (c) 1999-2000 Vojtech Pavlik
  *
  *  Event device test program
+ *
+ *  29.Apr 2008: --list option added by Ingo Ruhnke <grumbel@gmx.de>
  */
 
 /*
