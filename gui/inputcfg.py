@@ -47,7 +47,7 @@ class Port:
         self.group.connect("leave-notify-event", self.on_leave)
 
     def on_button_press(self, item, target_item, event):
-        pass
+        inputcfg.drag_start(self)
 
     def on_enter(self, *rest):
         self.is_active = True
@@ -158,7 +158,8 @@ class Control:
         return self.width
 
     def layout(self):
-        height = 40 + max(len(self.in_ports), len(self.out_ports)) * 20
+        spacing = 26
+        height = 45 + max(len(self.in_ports), len(self.out_ports)) * spacing
         self.mainbox.set_properties(height=height)
 
         self.mainbox.set_properties(x=self.x, y=self.y)
@@ -166,9 +167,9 @@ class Control:
         self.title.set_properties(x=self.x+100, y=self.y+5)
 
         for i in range(len(self.in_ports)):
-            self.in_ports[i].set_pos(self.x, self.y+40+20*i)
+            self.in_ports[i].set_pos(self.x, self.y+45+spacing*i)
         for i in range(len(self.out_ports)):
-            self.out_ports[i].set_pos(self.x, self.y+40+20*i)
+            self.out_ports[i].set_pos(self.x, self.y+45+spacing*i)
 
     def add_in_port(self, name):
         self.in_ports.append(InPort(name, self))
@@ -187,7 +188,7 @@ class Control:
 class Connection:
     def __init__(self, portIn, portOut, root):
         self.portIn  = portIn
-        self.portOut = portOut
+        self.portOut = portOut       
 
         self.path = goocanvas.Path(parent=root,
                                    line_width=2, stroke_color="black")
@@ -211,12 +212,29 @@ class InputCfg:
         gtk.main_quit()
 
     def motion(self, item, event):
-        self.connection1.layout() # FIXME: Fugly
-        self.connection2.layout() # FIXME: Fugly
-        self.connection3.layout() # FIXME: Fugly
+        for i in self.connections:
+            i.layout()
+
+    def drag_start(self, port):
+        print port, self.start_port
+        if self.start_port:
+            if (isinstance(port, InPort) and isinstance(self.start_port, InPort)) or \
+                    (isinstance(port, OutPort) and isinstance(self.start_port, OutPort)):
+                print "can't connect ports of the same type"
+                self.start_port = None
+            elif port.control == self.start_port.control:
+                print "Can't connect ports of the same control"
+                self.start_port = None
+            else:
+                self.connections.append(Connection(self.start_port, port, self.root))
+                self.start_port = None
+        else:
+            self.start_port = port
 
     def __init__(self):
         self.drag = False
+        self.start_port = None
+        self.connections = []
 
         # create a new window
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -235,11 +253,18 @@ class InputCfg:
 
         self.window.show()
 
-        root = self.canvas.get_root_item()
+        self.root = self.canvas.get_root_item()
 
         self.canvas.connect("motion-notify-event", self.motion)
 
-        self.control1 = Control("EvDev", root)
+        self.control3 = Control("Xbox360 Gamepad", self.root)
+        self.control3.add_in_port("btn0")
+        self.control3.add_in_port("btn1")
+        self.control3.add_out_port("abs5")
+        self.control3.add_out_port("abs6")
+        self.control3.set_pos(10, 300)
+
+        self.control1 = Control("EvDev", self.root)
         self.control1.add_out_port("abs1")
         self.control1.add_out_port("abs2")
         self.control1.add_out_port("abs3")
@@ -248,32 +273,13 @@ class InputCfg:
         self.control1.add_out_port("abs6")
         self.control1.set_pos(10, 10)
 
-        self.control2 = Control("UInput", root)
+        self.control2 = Control("UInput", self.root)
         self.control2.add_in_port("btn0")
         self.control2.add_in_port("btn1")
         self.control2.add_in_port("btn2")
         self.control2.add_out_port("abs5")
         self.control2.add_out_port("abs6")
-        self.control2.set_pos(250, 10)
-
-
-        self.control3 = Control("Xbox360 Gamepad", root)
-        self.control3.add_in_port("btn0")
-        self.control3.add_in_port("btn1")
-        self.control3.add_out_port("abs5")
-        self.control3.add_out_port("abs6")
-        self.control3.set_pos(10, 200)
-
-        self.connection1 = Connection(self.control1.out_ports[0],
-                                     self.control2.in_ports[0],
-                                     root)
-        self.connection2 = Connection(self.control1.out_ports[4],
-                                     self.control2.in_ports[1],
-                                     root)
-        self.connection3 = Connection(self.control3.out_ports[1],
-                                      self.control2.in_ports[2],
-                                      root)
-
+        self.control2.set_pos(300, 10)
 
     def main(self):
         gtk.main()
