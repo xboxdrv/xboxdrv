@@ -36,6 +36,7 @@ private:
   int rate_counter;
 public:
   AutofireButton(int rate);
+  virtual ~AutofireButton() {}
   std::string get_name() const { return "AutofireButton"; }
 
   void update(float delta);

@@ -166,7 +166,7 @@ public:
   Control() {
   }
 
-  ~Control() 
+  virtual ~Control() 
   {
     for(std::vector<BtnPortIn*>::iterator i = btn_port_in.begin(); i != btn_port_in.end(); ++i)
       delete *i;

@@ -36,6 +36,7 @@ private:
   
 public:
   AbsToBtn(int threshold);
+  ~AbsToBtn() {}
   std::string get_name() const { return "AbsToBtn"; }
 
   void on_abs(AbsPortOut* port);

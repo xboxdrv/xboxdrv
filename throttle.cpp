@@ -48,7 +48,7 @@ Throttle::update(float delta)
       int v = abs_port_in[0]->out_port->get_state();
       if (abs(v) > 5000) // FIXME: Deadzone handling must be different
         {
-          value -= v * delta * 2.0f;
+          value -= int(v * delta * 2.0f);
 
           if (value < abs_port_out[0]->min_value)
             value = abs_port_out[0]->min_value;
