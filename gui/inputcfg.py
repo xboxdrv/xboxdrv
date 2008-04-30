@@ -25,12 +25,18 @@ menu_xml = """
       <menuitem name="Left"   action="about"/>
     </menu>
   </menubar>
+
   <toolbar action="Toolbar">
       <toolitem name="New" action="new" />
       <separator/>
       <toolitem name="Quit" action="quit" />
       <toolitem name="About" action="about" />
   </toolbar>
+
+  <popup>
+      <menuitem name="AbsToBtn"  action="AbsToBtn" />
+      <menuitem name="BtnToAbs"  action="BtnToAbs" />      
+  </popup>
 </ui>
 """
 
@@ -42,7 +48,7 @@ class Port:
         self.group = goocanvas.Group(parent=control.get_port_parent())
 
         self.rect = goocanvas.Rect(parent=self.group,
-                                   width=60,
+                                   width=50,
                                    height=18,
                                    radius_x=5, radius_y=5,
                                    line_width=1,
@@ -102,7 +108,7 @@ class Port:
             self.x = x
             self.ellipse.set_properties(center_x=x, center_y=y)
             self.text.set_properties(x=x+10, y=y)
-            self.rect.set_properties(x=x-10, y=y-9)
+            self.rect.set_properties(x=x, y=y-9)
         else:
             self.x = x+self.control.get_width()
             self.ellipse.set_properties(center_x=x+self.control.get_width(), center_y=y)
@@ -144,7 +150,7 @@ class Control:
                                        stroke_color=None,
                                        line_width = 0,
                                        fill_color="darkgray")
-        self.title = goocanvas.Text(parent=root,
+        self.title = goocanvas.Text(parent=self.group,
                                     antialias=cairo.ANTIALIAS_SUBPIXEL,
                                     text=self.title,
                                     width=180,
@@ -168,6 +174,7 @@ class Control:
     def motion(self, item, target_item, event):
         if self.drag:
             self.set_pos(event.x + self.drag[0], event.y + self.drag[1])
+            inputcfg.layout()
 
     def on_enter(self, *rest):
         self.titlebox.set_properties(fill_color="black")
@@ -216,18 +223,19 @@ class Connection:
     def __init__(self, portIn, portOut, root):
         self.portIn  = portIn
         self.portOut = portOut       
-
-        self.path = goocanvas.Path(parent=root,
+        
+        self.group = goocanvas.Group(parent=root)
+        self.path = goocanvas.Path(parent=self.group,
                                    line_width=2, stroke_color="black")
-        self.ellipse_in = goocanvas.Ellipse(parent=root,
+        self.ellipse_in = goocanvas.Ellipse(parent=self.group,
                                             radius_x=3, radius_y=3,
                                             fill_color="black",
                                             line_width=0)
-        self.ellipse_out = goocanvas.Ellipse(parent=root,
+        self.ellipse_out = goocanvas.Ellipse(parent=self.group,
                                              radius_x=3, radius_y=3,
                                              fill_color="black",
                                              line_width=0)
-        
+        # self.group.lower(None)
         self.layout()
 
     def layout(self):
@@ -252,23 +260,36 @@ class InputCfg:
         gtk.main_quit()
 
     def motion(self, item, event):
+        if self.start_port:
+            self.layout_with_mouse(event.x, event.y)
+
+    def layout(self):
         for i in self.connections: # FIXME: Fugly, wrong place for this
             i.layout()
-        self.layout(event.x, event.y)
 
     def on_button_press(self, item, event):
-        if event.button == 3: # right click
-            uimanager = gtk.UIManager()
-            uimanager.add_ui_from_string(menu_xml)
-            popupMenu = uimanager.get_ui()
+        if event.button == 1:
+            obj = self.canvas.get_item_at(event.x, event.y, False)
+            if obj:
+                print "Left Click:", obj
+            else:
+                print "Left Click: None"
 
-#             popupMenu = gtk.Menu()
-#             menuPopup1 = gtk.ImageMenuItem (gtk.STOCK_OPEN)
-#             popupMenu.add(menuPopup1)
-#             menuPopup2 = gtk.ImageMenuItem (gtk.STOCK_OK)
-#             popupMenu.add(menuPopup2)
-#             popupMenu.show_all()
-#             popupMenu.popup(None, None, None, 1, 0)
+        elif event.button == 3: # right click
+            popup = self.uimanager.get_widget("/popup")
+            popup.show_all()
+            popup.popup(None, None, None, 3, 0)
+
+            # popupMenu = gtk.Menu()
+            # menuPopup1 = gtk.ImageMenuItem (gtk.STOCK_OPEN)
+            # popupMenu.add(menuPopup1)
+            # menuPopup2 = gtk.ImageMenuItem (gtk.STOCK_OK)
+            # popupMenu.add(menuPopup2)
+            # popupMenu.show_all()
+            # popupMenu.popup(None, None, None, 1, 0)
+
+    def on_button_release(self, item, event):
+        pass
 
     def drag_start(self, port):
         if self.start_port:
@@ -288,7 +309,7 @@ class InputCfg:
         else:
             self.start_port = port
 
-    def layout(self, x, y):
+    def layout_with_mouse(self, x, y):
         if self.start_port:
             str = "M %(x1)d,%(y1)d C %(midx)d,%(y1)d %(midx)d,%(y2)d %(x2)d,%(y2)d" % \
                 { 'x1'   : self.start_port.get_pos()[0],
@@ -347,16 +368,17 @@ class InputCfg:
         actiongroup.add_actions([('about',       gtk.STOCK_ABOUT, '_About',    None, 'About this Program', None)])
         actiongroup.add_actions([('new',         gtk.STOCK_NEW,   '_New',      None, 'New Configuration',  None)])
         actiongroup.add_actions([('quit',        gtk.STOCK_QUIT,  '_Quit me!', None, 'Quit the Program',   None)])
-        actiongroup.add_actions([('AbsToBtn',       None, 'Insert AbsToBtn',    None, '', None)])
-        actiongroup.add_actions([('BtnToAbs',       None, 'insert BtnToAbs',    None, '', None)])
-        actiongroup.add_actions([('InvertButton',   None, 'insert InvertButton',    None, '', None)])
 
-        uimanager = gtk.UIManager()
-        uimanager.insert_action_group(actiongroup, 0)
-        uimanager.add_ui_from_string(menu_xml)
+        actiongroup.add_actions([('AbsToBtn',       None, 'Insert AbsToBtn',     None, '', None)])
+        actiongroup.add_actions([('BtnToAbs',       None, 'insert BtnToAbs',     None, '', None)])
+        actiongroup.add_actions([('InvertButton',   None, 'insert InvertButton', None, '', None)])
 
-        self.menubar = uimanager.get_widget("/Menubar")
-        self.toolbar = uimanager.get_widget("/Toolbar")
+        self.uimanager = gtk.UIManager()
+        self.uimanager.insert_action_group(actiongroup, 0)
+        self.uimanager.add_ui_from_string(menu_xml)
+
+        self.menubar = self.uimanager.get_widget("/Menubar")
+        self.toolbar = self.uimanager.get_widget("/Toolbar")
 
         self.statusbar = gtk.Statusbar()
 
@@ -392,7 +414,8 @@ class InputCfg:
         self.root = self.canvas.get_root_item()
 
         self.canvas.connect("motion-notify-event", self.motion)
-        self.canvas.connect("button-press-event", self.on_button_press)
+        self.canvas.connect("button-press-event",   self.on_button_press)
+        self.canvas.connect("button-release-event", self.on_button_release)
 
         self.path = goocanvas.Path(parent=self.root,
                                    pointer_events=0,
