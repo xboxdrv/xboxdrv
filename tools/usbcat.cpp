@@ -95,7 +95,7 @@ cat_usb_device(struct usb_device* dev, int ep)
 
       while(!quit)
         {
-          uint8_t data[32];
+          uint8_t data[1024];
           int ret = usb_interrupt_read(handle, ep, (char*)data, sizeof(data), 0);
           if (ret < 0)
             {
