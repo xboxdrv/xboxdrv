@@ -197,19 +197,19 @@ class Connection:
                                             fill_color="black",
                                             line_width=0)
         self.ellipse_out = goocanvas.Ellipse(parent=root,
-                                            radius_x=3, radius_y=3,
-                                            fill_color="black",
-                                            line_width=0)
+                                             radius_x=3, radius_y=3,
+                                             fill_color="black",
+                                             line_width=0)
         
         self.layout()
 
     def layout(self):
         str = "M %(x1)d,%(y1)d C %(midx)d,%(y1)d %(midx)d,%(y2)d %(x2)d,%(y2)d" % \
-        { 'x1'   : self.portIn.get_pos()[0],
-          'y1'   : self.portIn.get_pos()[1],
-          'midx' : (self.portIn.get_pos()[0] + self.portOut.get_pos()[0])/2,
-          'x2'   : self.portOut.get_pos()[0],
-          'y2'   : self.portOut.get_pos()[1] }
+            { 'x1'   : self.portIn.get_pos()[0],
+              'y1'   : self.portIn.get_pos()[1],
+              'midx' : (self.portIn.get_pos()[0] + self.portOut.get_pos()[0])/2,
+              'x2'   : self.portOut.get_pos()[0],
+              'y2'   : self.portOut.get_pos()[1] }
         self.path.set_properties(data=str)
 
         self.ellipse_in.set_properties(center_x = self.portIn.get_pos()[0], 
@@ -230,14 +230,14 @@ class InputCfg:
         self.layout(event.x, event.y)
 
     def on_button_press(self, item, event):
-         if event.button == 3: # right click
-             popupMenu = gtk.Menu()
-             menuPopup1 = gtk.ImageMenuItem (gtk.STOCK_OPEN)
-             popupMenu.add(menuPopup1)
-             menuPopup2 = gtk.ImageMenuItem (gtk.STOCK_OK)
-             popupMenu.add(menuPopup2)
-             popupMenu.show_all()
-             popupMenu.popup(None, None, None, 1, 0)
+        if event.button == 3: # right click
+            popupMenu = gtk.Menu()
+            menuPopup1 = gtk.ImageMenuItem (gtk.STOCK_OPEN)
+            popupMenu.add(menuPopup1)
+            menuPopup2 = gtk.ImageMenuItem (gtk.STOCK_OK)
+            popupMenu.add(menuPopup2)
+            popupMenu.show_all()
+            popupMenu.popup(None, None, None, 1, 0)
 #         else:
 #             if self.start_port:
 #                 self.path.set_properties(data="")
@@ -271,6 +271,33 @@ class InputCfg:
                   'y2'   : y }
             self.path.set_properties(data=str)
 
+    def get_main_menu(self, window):
+        accel_group = gtk.AccelGroup()
+	
+        # This function initializes the item factory.
+        # Param 1: The type of menu - can be MenuBar, Menu,
+        #          or OptionMenu.
+        # Param 2: The path of the menu.
+        # Param 3: A reference to an AccelGroup. The item factory sets up
+        #          the accelerator table while generating menus.
+        item_factory = gtk.ItemFactory(gtk.MenuBar, "<main>", accel_group)
+	
+        # This method generates the menu items. Pass to the item factory
+        #  the list of menu items
+        item_factory.create_items(self.menu_items)
+	
+        # Attach the new accelerator group to the window.
+        window.add_accel_group(accel_group)
+	
+        # need to keep a reference to item_factory to prevent its destruction
+        self.item_factory = item_factory
+        # Finally, return the actual menu bar created by the item factory.
+        return item_factory.get_widget("<main>")
+
+
+    def print_hello(self, *rest):
+        print "Hello:", rest
+
     def __init__(self):
         self.start_port  = None
         self.connections = []
@@ -279,12 +306,61 @@ class InputCfg:
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.connect("delete_event", self.delete_event)
         self.window.connect("destroy", self.destroy)
-    
-        self.canvas = goocanvas.Canvas()
-        self.canvas.set_size_request(800, 600)
-        self.window.add(self.canvas)
-        self.canvas.show()
 
+        self.window.set_title("InputDrv - Event Rerouter")
+        self.window.set_size_request(800, 600)
+
+        self.menu_items = (
+            ( "/_File",         None,         None, 0, "<Branch>" ),
+            ( "/File/_New",     "<control>N", self.print_hello, 0, None ),
+            ( "/File/_Open",    "<control>O", self.print_hello, 0, None ),
+            ( "/File/_Save",    "<control>S", self.print_hello, 0, None ),
+            ( "/File/Save _As", None,         None, 0, None ),
+            ( "/File/sep1",     None,         None, 0, "<Separator>" ),
+            ( "/File/Quit",     "<control>Q", gtk.main_quit, 0, None ),
+            ( "/_Options",      None,         None, 0, "<Branch>" ),
+            ( "/Options/Test",  None,         None, 0, None ),
+            ( "/_Help",         None,         None, 0, "<LastBranch>" ),
+            ( "/_Help/About",   None,         None, 0, None ),
+            )
+
+
+        self.canvas = goocanvas.Canvas()
+        # self.canvas.set_size_request(800, 600)
+
+        self.main_vbox = gtk.VBox(False, 1)
+
+
+        self.toolbar = gtk.Toolbar()
+
+        iconw = gtk.Image() # icon widget
+        iconw.set_from_file("button.xpm")
+
+        self.toolbar.append_item(None, "tooltip_text", "tooltip_private_text", iconw, None)
+        self.toolbar.set_orientation(gtk.ORIENTATION_HORIZONTAL)
+        self.toolbar.set_style(gtk.TOOLBAR_BOTH)
+
+        self.main_vbox.set_border_width(1)
+
+        self.menubar = self.get_main_menu(self.window)
+
+        self.statusbar = gtk.Statusbar()
+
+        self.main_vbox.pack_start(self.menubar, False, True, 0)
+        self.main_vbox.pack_start(self.toolbar, False, True, 0)
+        self.main_vbox.add(self.canvas)
+        self.main_vbox.pack_start(self.statusbar, False, True, 0)
+
+        self.statusbar.push(0, "Hello World")
+
+        self.window.add(self.main_vbox)
+
+        self.toolbar.show()
+        self.menubar.show()
+        self.statusbar.show()
+        self.canvas.show()
+        self.statusbar.show()
+        self.main_vbox.show()
         self.window.show()
 
         self.root = self.canvas.get_root_item()
@@ -292,6 +368,13 @@ class InputCfg:
         self.canvas.connect("motion-notify-event", self.motion)
         self.canvas.connect("button-press-event", self.on_button_press)
 
+        self.path = goocanvas.Path(parent=self.root,
+                                   pointer_events=0,
+                                   line_width=2, 
+                                   stroke_color_rgba=0x00000060)
+        self.init_test_elements()
+
+    def init_test_elements(self):
         self.control3 = Control("Xbox360 Gamepad", self.root)
         self.control3.add_in_port("btn0")
         self.control3.add_in_port("btn1")
@@ -315,11 +398,6 @@ class InputCfg:
         self.control2.add_out_port("abs5")
         self.control2.add_out_port("abs6")
         self.control2.set_pos(500, 200)
-
-        self.path = goocanvas.Path(parent=self.root,
-                                   pointer_events=0,
-                                   line_width=2, 
-                                   stroke_color_rgba=0x00000060)
 
     def main(self):
         gtk.main()
