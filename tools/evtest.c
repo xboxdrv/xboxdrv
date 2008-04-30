@@ -136,6 +136,8 @@ void evtest_info(const char* filename)
     }
   else
     {
+      printf("Input device file: \"%s\"\n", filename);
+
       int version;
       if (ioctl(fd, EVIOCGVERSION, &version)) {
         perror("evtest: can't get version");
