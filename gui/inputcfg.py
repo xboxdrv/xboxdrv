@@ -7,6 +7,33 @@ import cairo
 import goocanvas
 import pango
 
+menu_xml = """
+<ui>
+  <menubar name="Menubar">
+    <menu name="FileMenu" action="FileMenuAction">
+      <menuitem name="New" action="new" />
+      <separator/>
+      <menuitem name="Quit" action="quit" />
+    </menu>
+
+    <menu name="Controls" action="ControlsMenuAction"> 
+      <menuitem name="AbsToBtn"  action="AbsToBtn" />
+      <menuitem name="BtnToAbs"  action="BtnToAbs" />
+    </menu>
+
+    <menu name="Help"  action="HelpMenuAction">
+      <menuitem name="Left"   action="about"/>
+    </menu>
+  </menubar>
+  <toolbar action="Toolbar">
+      <toolitem name="New" action="new" />
+      <separator/>
+      <toolitem name="Quit" action="quit" />
+      <toolitem name="About" action="about" />
+  </toolbar>
+</ui>
+"""
+
 class Port:
     def __init__(self, isInPort, name, control):
         self.control  = control
@@ -231,17 +258,17 @@ class InputCfg:
 
     def on_button_press(self, item, event):
         if event.button == 3: # right click
-            popupMenu = gtk.Menu()
-            menuPopup1 = gtk.ImageMenuItem (gtk.STOCK_OPEN)
-            popupMenu.add(menuPopup1)
-            menuPopup2 = gtk.ImageMenuItem (gtk.STOCK_OK)
-            popupMenu.add(menuPopup2)
-            popupMenu.show_all()
-            popupMenu.popup(None, None, None, 1, 0)
-#         else:
-#             if self.start_port:
-#                 self.path.set_properties(data="")
-#                 self.start_port = None             
+            uimanager = gtk.UIManager()
+            uimanager.add_ui_from_string(menu_xml)
+            popupMenu = uimanager.get_ui()
+
+#             popupMenu = gtk.Menu()
+#             menuPopup1 = gtk.ImageMenuItem (gtk.STOCK_OPEN)
+#             popupMenu.add(menuPopup1)
+#             menuPopup2 = gtk.ImageMenuItem (gtk.STOCK_OK)
+#             popupMenu.add(menuPopup2)
+#             popupMenu.show_all()
+#             popupMenu.popup(None, None, None, 1, 0)
 
     def drag_start(self, port):
         if self.start_port:
@@ -271,35 +298,25 @@ class InputCfg:
                   'y2'   : y }
             self.path.set_properties(data=str)
 
-    def get_main_menu(self, window):
-        accel_group = gtk.AccelGroup()
-	
-        # This function initializes the item factory.
-        # Param 1: The type of menu - can be MenuBar, Menu,
-        #          or OptionMenu.
-        # Param 2: The path of the menu.
-        # Param 3: A reference to an AccelGroup. The item factory sets up
-        #          the accelerator table while generating menus.
-        item_factory = gtk.ItemFactory(gtk.MenuBar, "<main>", accel_group)
-	
-        # This method generates the menu items. Pass to the item factory
-        #  the list of menu items
-        item_factory.create_items(self.menu_items)
-	
-        # Attach the new accelerator group to the window.
-        window.add_accel_group(accel_group)
-	
-        # need to keep a reference to item_factory to prevent its destruction
-        self.item_factory = item_factory
-        # Finally, return the actual menu bar created by the item factory.
-        return item_factory.get_widget("<main>")
-
-
     def print_hello(self, *rest):
         print "Hello:", rest
 
+    def on_scroll_motion(self, obj, event):
+        if self.scrolling:
+            print (self.scrolling[0] - event.x), \
+                (self.scrolling[1] - event.y)
+
+    def on_scroll_press(self, obj, event):
+        if event.button == 2:
+            self.scrolling = (event.x, event.y)
+
+    def on_scroll_release(self, obj, event):
+        if event.button == 2:
+            self.scrolling = None
+
     def __init__(self):
         self.start_port  = None
+        self.scrolling   = False
         self.connections = []
 
         # create a new window
@@ -310,20 +327,6 @@ class InputCfg:
         self.window.set_title("InputDrv - Event Rerouter")
         self.window.set_size_request(800, 600)
 
-        self.menu_items = (
-            ( "/_File",         None,         None, 0, "<Branch>" ),
-            ( "/File/_New",     "<control>N", self.print_hello, 0, None ),
-            ( "/File/_Open",    "<control>O", self.print_hello, 0, None ),
-            ( "/File/_Save",    "<control>S", self.print_hello, 0, None ),
-            ( "/File/Save _As", None,         None, 0, None ),
-            ( "/File/sep1",     None,         None, 0, "<Separator>" ),
-            ( "/File/Quit",     "<control>Q", gtk.main_quit, 0, None ),
-            ( "/_Options",      None,         None, 0, "<Branch>" ),
-            ( "/Options/Test",  None,         None, 0, None ),
-            ( "/_Help",         None,         None, 0, "<LastBranch>" ),
-            ( "/_Help/About",   None,         None, 0, None ),
-            )
-
         self.scrolled_win = gtk.ScrolledWindow()
         self.scrolled_win.set_shadow_type(gtk.SHADOW_IN)
         self.scrolled_win.show()
@@ -332,22 +335,28 @@ class InputCfg:
         # self.canvas.set_size_request(256, 256)
         self.canvas.set_bounds(0, 0, 2048, 2048) # FIXME: Hook this up to resize thing
 
-
+        
         self.main_vbox = gtk.VBox(False, 1)
-
-
-        self.toolbar = gtk.Toolbar()
-
-        iconw = gtk.Image() # icon widget
-        iconw.set_from_file("button.xpm")
-
-        self.toolbar.append_item(None, "tooltip_text", "tooltip_private_text", iconw, None)
-        self.toolbar.set_orientation(gtk.ORIENTATION_HORIZONTAL)
-        self.toolbar.set_style(gtk.TOOLBAR_BOTH)
 
         self.main_vbox.set_border_width(1)
 
-        self.menubar = self.get_main_menu(self.window)
+        actiongroup = gtk.ActionGroup("name")
+        actiongroup.add_actions([('FileMenuAction',     None, '_File',     None, '', None)])
+        actiongroup.add_actions([('ControlsMenuAction', None, '_Controls', None, '', None)])
+        actiongroup.add_actions([('HelpMenuAction',     None, '_Help',     None, '', None)])
+        actiongroup.add_actions([('about',       gtk.STOCK_ABOUT, '_About',    None, 'About this Program', None)])
+        actiongroup.add_actions([('new',         gtk.STOCK_NEW,   '_New',      None, 'New Configuration',  None)])
+        actiongroup.add_actions([('quit',        gtk.STOCK_QUIT,  '_Quit me!', None, 'Quit the Program',   None)])
+        actiongroup.add_actions([('AbsToBtn',       None, 'Insert AbsToBtn',    None, '', None)])
+        actiongroup.add_actions([('BtnToAbs',       None, 'insert BtnToAbs',    None, '', None)])
+        actiongroup.add_actions([('InvertButton',   None, 'insert InvertButton',    None, '', None)])
+
+        uimanager = gtk.UIManager()
+        uimanager.insert_action_group(actiongroup, 0)
+        uimanager.add_ui_from_string(menu_xml)
+
+        self.menubar = uimanager.get_widget("/Menubar")
+        self.toolbar = uimanager.get_widget("/Toolbar")
 
         self.statusbar = gtk.Statusbar()
 
@@ -355,6 +364,10 @@ class InputCfg:
         self.main_vbox.pack_start(self.toolbar, False, True, 0)
         self.main_vbox.add(self.scrolled_win)
         self.main_vbox.pack_start(self.statusbar, False, True, 0)
+
+        self.scrolled_win.connect("button-press-event",   self.on_scroll_press)
+        self.scrolled_win.connect("button-release-event", self.on_scroll_release)
+        self.scrolled_win.connect("motion-notify-event",  self.on_scroll_motion)
 
         self.statusbar.push(0, "Hello World")
 
@@ -366,6 +379,10 @@ class InputCfg:
 
         self.scrolled_win.add(self.canvas)
         self.scrolled_win.show()
+
+        vadj = self.scrolled_win.get_vadjustment()
+        hadj = self.scrolled_win.get_hadjustment()
+        
         self.canvas.show()
 
         self.statusbar.show()
