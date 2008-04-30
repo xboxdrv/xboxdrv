@@ -324,9 +324,14 @@ class InputCfg:
             ( "/_Help/About",   None,         None, 0, None ),
             )
 
+        self.scrolled_win = gtk.ScrolledWindow()
+        self.scrolled_win.set_shadow_type(gtk.SHADOW_IN)
+        self.scrolled_win.show()
 
         self.canvas = goocanvas.Canvas()
-        # self.canvas.set_size_request(800, 600)
+        # self.canvas.set_size_request(256, 256)
+        self.canvas.set_bounds(0, 0, 2048, 2048) # FIXME: Hook this up to resize thing
+
 
         self.main_vbox = gtk.VBox(False, 1)
 
@@ -348,7 +353,7 @@ class InputCfg:
 
         self.main_vbox.pack_start(self.menubar, False, True, 0)
         self.main_vbox.pack_start(self.toolbar, False, True, 0)
-        self.main_vbox.add(self.canvas)
+        self.main_vbox.add(self.scrolled_win)
         self.main_vbox.pack_start(self.statusbar, False, True, 0)
 
         self.statusbar.push(0, "Hello World")
@@ -358,7 +363,11 @@ class InputCfg:
         self.toolbar.show()
         self.menubar.show()
         self.statusbar.show()
+
+        self.scrolled_win.add(self.canvas)
+        self.scrolled_win.show()
         self.canvas.show()
+
         self.statusbar.show()
         self.main_vbox.show()
         self.window.show()
