@@ -74,7 +74,7 @@ cat_usb_device(struct usb_device* dev, int ep)
     }
   else
     {
-      if (usb_claim_interface(handle, 0) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
+      if (usb_claim_interface(handle, ep-1) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
         {
           std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
           if (usb_detach_kernel_driver_np(handle, 0) < 0)
