@@ -1,11 +1,13 @@
-XBox Gamepad Userspace Driver:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+XBox Gamepad Userspace Driver Programming:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   * Ingo Ruhnke <grumbel@gmx>
 
 
 XBox Gamepad Userspace Driver Testing:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  * Julien <julroy67@gmail.com> (XBox360 Guitar)
+  * Julien <julroy67@gmail.com> (Xbox360 Guitar)
+  * Axel Norstedt <djhg2000@gmail.com> (Wireless Controller)
+  * Jeff Davidson <supermonkey@gmail.com> (Wireless Controller)
 
 
 Parts of the code are based on XBox Kernel driver (xpad.c/xpad.h) by:

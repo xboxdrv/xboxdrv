@@ -1,10 +1,12 @@
-Test:
+FIX:
 =====
-  --wid
+  be verbose by default, add a quiet option
   controller type enforcment is broken
   deadzone is broken
-  Rumble 
-  LED
+  add magic to detect which jsX device we are going to get
+
+
+Battery warning: LEDs 1,4 then 2,3 over and over ~10 times rapidly
 
 Easy interface:
 ===============
