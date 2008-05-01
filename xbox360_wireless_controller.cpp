@@ -114,8 +114,14 @@ Xbox360WirelessController::read(XboxGenericMsg& msg)
     {
       if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
         { // Initial Announc Message
-          serial = (boost::format("%2x:%2x:%2x:%2x:%2x:%2x:%2x") 
-                    % data[7] % data[8] % data[9] % data[10] % data[11] % data[12] % data[13]).str();
+          serial = (boost::format("%2x:%2x:%2x:%2x:%2x:%2x:%2x")
+                    % int(data[7])
+                    % int(data[8])
+                    % int(data[9])
+                    % int(data[10])
+                    % int(data[11])
+                    % int(data[12])
+                    % int(data[13])).str();
           battery_status = data[17];
           std::cout << "Serial: " << serial << std::endl;
           std::cout << "Battery Status: " << battery_status << std::endl;
@@ -123,7 +129,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg)
       else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
         {
           msg.type    = GAMEPAD_XBOX360_WIRELESS;
-          msg.xbox360 = *reinterpret_cast<Xbox360Msg*>(&data[6]);
+          msg.xbox360 = *reinterpret_cast<Xbox360Msg*>(&data[5]);
           return true;
         }
       else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)

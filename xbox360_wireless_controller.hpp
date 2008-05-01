@@ -32,7 +32,7 @@ private:
   struct usb_dev_handle* handle;
   int endpoint;
   int interface;
-  uint8_t battery_status;
+  int battery_status;
   std::string serial;
   
 public:
