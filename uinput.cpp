@@ -59,7 +59,7 @@ uInput::uInput(GamepadType type, uInputCfg config_)
     }
   else
     {
-      if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX)
+      if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX || type == GAMEPAD_XBOX360_WIRELESS)
         {
           setup_xbox360_gamepad(type);
         }
@@ -265,18 +265,25 @@ uInput::send_axis(uint16_t code, int32_t value)
 void
 uInput::send(XboxGenericMsg& msg)
 {
-  if (msg.type == GAMEPAD_XBOX)
-    send(msg.xbox);
-  else if (msg.type == GAMEPAD_XBOX_MAT)
-    send(msg.xbox);
-  else if (msg.type == GAMEPAD_XBOX360)
-    send(msg.xbox360);
-  else if (msg.type == GAMEPAD_XBOX360_WIRELESS)
-    send(msg.xbox360);
-  else if (msg.type == GAMEPAD_XBOX360_GUITAR)
-    send(msg.guitar);
-  else
-    assert(!"Unknown XboxGenericMsg type");
+  switch(msg.type)
+    {
+      case GAMEPAD_XBOX:
+      case GAMEPAD_XBOX_MAT:
+        send(msg.xbox);
+        break;
+
+      case GAMEPAD_XBOX360:
+      case GAMEPAD_XBOX360_WIRELESS:
+        send(msg.xbox360);
+        break;
+
+      case GAMEPAD_XBOX360_GUITAR:
+        send(msg.guitar);
+        break;
+        
+      default:
+          assert(!"uInput: Unknown XboxGenericMsg type");
+    }
 }
 
 void
