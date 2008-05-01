@@ -282,7 +282,8 @@ uInput::send(XboxGenericMsg& msg)
         break;
         
       default:
-          assert(!"uInput: Unknown XboxGenericMsg type");
+        std::cout << "XboxGenericMsg type: " << msg.type << std::endl;
+        assert(!"uInput: Unknown XboxGenericMsg type");
     }
 }
 
