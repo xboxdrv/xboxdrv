@@ -57,7 +57,7 @@ XboxController::set_led(uint8_t status)
   // Controller doesn't have a LED
 }
 
-void
+bool
 XboxController::read(XboxGenericMsg& msg)
 {
   // FIXME: Add tracking for duplicate data packages (send by logitech controller)
@@ -74,7 +74,9 @@ XboxController::read(XboxGenericMsg& msg)
     {
       msg.type = GAMEPAD_XBOX;
       msg.xbox = *reinterpret_cast<XboxMsg*>(data);
+      return true;
     }
+  return false;
 }
 
 /* EOF */

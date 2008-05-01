@@ -74,7 +74,7 @@ Xbox360WirelessController::set_led(uint8_t status)
   usb_interrupt_write(handle, endpoint, ledcmd, sizeof(ledcmd), 0);
 }
 
-void
+bool
 Xbox360WirelessController::read(XboxGenericMsg& msg)
 {
   uint8_t data[32];
@@ -122,6 +122,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg)
         {
           msg.type    = GAMEPAD_XBOX360_WIRELESS;
           msg.xbox360 = *reinterpret_cast<Xbox360Msg*>(&data[6]);
+          return true;
         }
       else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
         { // Battery status
@@ -136,6 +137,8 @@ Xbox360WirelessController::read(XboxGenericMsg& msg)
     {
       // unknown/junk
     }
+
+  return false;
 }
 
 /* EOF */

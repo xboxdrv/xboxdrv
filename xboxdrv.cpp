@@ -601,21 +601,24 @@ void controller_loop(XboxGenericController* controller, CommandLineOptions& opts
   while(!quit)
     {
       XboxGenericMsg msg;
-      controller->read(msg);
-      if (opts.verbose)
-        std::cout << msg << std::endl;
-      if (uinput) uinput->send(msg);
-                    
-      if (opts.rumble)
+
+      if (controller->read(msg))
         {
-          if (opts.gamepad_type == GAMEPAD_XBOX)
+          if (opts.verbose)
+            std::cout << msg << std::endl;
+          if (uinput) uinput->send(msg);
+                    
+          if (opts.rumble)
             {
-              controller->set_rumble(msg.xbox.lt, msg.xbox.rt);
-            }
-          else if (opts.gamepad_type == GAMEPAD_XBOX360 ||
-                   opts.gamepad_type == GAMEPAD_XBOX360_WIRELESS)
-            {
-              controller->set_rumble(msg.xbox360.lt, msg.xbox360.rt);                      
+              if (opts.gamepad_type == GAMEPAD_XBOX)
+                {
+                  controller->set_rumble(msg.xbox.lt, msg.xbox.rt);
+                }
+              else if (opts.gamepad_type == GAMEPAD_XBOX360 ||
+                       opts.gamepad_type == GAMEPAD_XBOX360_WIRELESS)
+                {
+                  controller->set_rumble(msg.xbox360.lt, msg.xbox360.rt);                      
+                }
             }
         }
     }

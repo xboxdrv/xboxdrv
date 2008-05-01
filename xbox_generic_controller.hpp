@@ -29,7 +29,7 @@ public:
 
   virtual void set_rumble(uint8_t left, uint8_t right) =0;
   virtual void set_led(uint8_t status)   =0;
-  virtual void read(XboxGenericMsg& msg) =0;
+  virtual bool read(XboxGenericMsg& msg) =0;
 
 private:
   XboxGenericController (const XboxGenericController&);

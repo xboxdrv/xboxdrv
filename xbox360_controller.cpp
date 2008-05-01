@@ -60,7 +60,7 @@ Xbox360Controller::set_led(uint8_t status)
   usb_interrupt_write(handle, 2, ledcmd, sizeof(ledcmd), 0);
 }
 
-void
+bool
 Xbox360Controller::read(XboxGenericMsg& msg)
 {
   uint8_t data[32];
@@ -81,6 +81,7 @@ Xbox360Controller::read(XboxGenericMsg& msg)
     {
       msg.type    = GAMEPAD_XBOX360;
       msg.xbox360 = *reinterpret_cast<Xbox360Msg*>(data);
+      return true;
     }
   else
     {
@@ -92,6 +93,8 @@ Xbox360Controller::read(XboxGenericMsg& msg)
 
       std::cout << std::endl;
     }
+
+  return false;
 }
 
 /* EOF */
