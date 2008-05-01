@@ -1,3 +1,11 @@
+Test:
+=====
+  --wid
+  controller type enforcment is broken
+  deadzone is broken
+  Rumble 
+  LED
+
 Easy interface:
 ===============
 --trigger-as-zaxis

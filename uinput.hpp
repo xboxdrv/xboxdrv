@@ -51,7 +51,8 @@ public:
 
   void setup_xbox360_gamepad(GamepadType type);
   void setup_xbox360_guitar();
-  
+
+  void send(XboxGenericMsg& msg); 
   void send(Xbox360Msg& msg);
   void send(Xbox360GuitarMsg& msg);
   void send(XboxMsg& msg);

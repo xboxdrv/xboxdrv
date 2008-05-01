@@ -19,10 +19,12 @@
 #ifndef HEADER_XBOX360_WIRELESS_CONTROLLER_HPP
 #define HEADER_XBOX360_WIRELESS_CONTROLLER_HPP
 
+#include "xbox_generic_controller.hpp"
+
 struct XPadDevice;
 
 /** */
-class Xbox360WirelessController
+class Xbox360WirelessController : public XboxGenericController
 {
 private:
   struct usb_device* dev;
@@ -37,10 +39,11 @@ public:
   Xbox360WirelessController(struct usb_device* dev,
                             XPadDevice*        dev_type,
                             int controller_id);
+  virtual ~Xbox360WirelessController();
 
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
-  void read(Xbox360Msg& msg);
+  void read(XboxGenericMsg& msg);
   uint8_t get_battery_status() const;
 private:
   Xbox360WirelessController (const Xbox360WirelessController&);

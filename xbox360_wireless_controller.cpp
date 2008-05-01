@@ -34,7 +34,7 @@ Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev,
   endpoint  = controller_id*2 + 1;
   interface = controller_id*2;
 
-  struct usb_dev_handle* handle = usb_open(dev);
+  handle = usb_open(dev);
   if (!handle)
     {
       throw std::runtime_error("Xbox360WirelessController: Error opening Xbox360 controller");
@@ -46,6 +46,12 @@ Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev,
           throw std::runtime_error("Xbox360WirelessController: Error couldn't claim the USB interface");
         }
     }
+}
+
+Xbox360WirelessController::~Xbox360WirelessController()
+{
+  usb_release_interface(handle, interface); 
+  usb_close(handle);
 }
 
 void
@@ -67,7 +73,7 @@ Xbox360WirelessController::set_led(uint8_t status)
 }
 
 void
-Xbox360WirelessController::read(Xbox360Msg& msg)
+Xbox360WirelessController::read(XboxGenericMsg& msg)
 {
   uint8_t data[32];
   int ret = usb_interrupt_read(handle, endpoint, (char*)data, sizeof(data), 0 /*Timeout*/);
@@ -112,7 +118,8 @@ Xbox360WirelessController::read(Xbox360Msg& msg)
         }
       else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
         {
-          msg = *reinterpret_cast<Xbox360Msg*>(&data[6]);
+          msg.type    = GAMEPAD_XBOX360_WIRELESS;
+          msg.xbox360 = *reinterpret_cast<Xbox360Msg*>(&data[6]);
         }
       else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
         { // Battery status

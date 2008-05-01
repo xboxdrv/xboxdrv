@@ -16,34 +16,24 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOX360_CONTROLLER_HPP
-#define HEADER_XBOX360_CONTROLLER_HPP
-
-#include <usb.h>
-#include "xbox_generic_controller.hpp"
-
-struct XPadDevice;
+#ifndef HEADER_XBOX_GENERIC_CONTROLLER_HPP
+#define HEADER_XBOX_GENERIC_CONTROLLER_HPP
 
 /** */
-class Xbox360Controller : public XboxGenericController
+class XboxGenericController
 {
 private:
-  struct usb_device* dev;
-  XPadDevice*        dev_type;
-  struct usb_dev_handle* handle;
-  
 public:
-  Xbox360Controller(struct usb_device* dev,
-                    XPadDevice*        dev_type);
-  ~Xbox360Controller();
+  XboxGenericController() {}
+  virtual ~XboxGenericController() {}
 
-  void set_rumble(uint8_t left, uint8_t right);
-  void set_led(uint8_t status);
-  void read(XboxGenericMsg& msg);
+  virtual void set_rumble(uint8_t left, uint8_t right) =0;
+  virtual void set_led(uint8_t status)   =0;
+  virtual void read(XboxGenericMsg& msg) =0;
 
 private:
-  Xbox360Controller (const Xbox360Controller&);
-  Xbox360Controller& operator= (const Xbox360Controller&);
+  XboxGenericController (const XboxGenericController&);
+  XboxGenericController& operator= (const XboxGenericController&);
 };
 
 #endif

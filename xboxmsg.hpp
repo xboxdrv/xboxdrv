@@ -21,6 +21,15 @@
 
 #include <iosfwd>
 
+enum GamepadType {
+  GAMEPAD_UNKNOWN,
+  GAMEPAD_XBOX,
+  GAMEPAD_XBOX_MAT,
+  GAMEPAD_XBOX360,
+  GAMEPAD_XBOX360_WIRELESS,
+  GAMEPAD_XBOX360_GUITAR
+};
+
 struct Xbox360Msg
 {
   // -------------------------
@@ -150,10 +159,22 @@ struct XboxMsg
   int x2                   :16;
   int y2                   :16;
 } __attribute__((__packed__));
+
+
+struct XboxGenericMsg
+{
+  GamepadType type;
+  union {
+    struct Xbox360GuitarMsg guitar;
+    struct Xbox360Msg       xbox360;
+    struct XboxMsg          xbox;
+  };
+};
 
 std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg);
 std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg);
 std::ostream& operator<<(std::ostream& out, const XboxMsg& msg);
+std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg);
 
 #endif
 

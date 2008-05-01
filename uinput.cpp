@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <assert.h>
 #include <iostream>
 #include <errno.h>
 #include <sys/types.h>
@@ -259,6 +260,23 @@ uInput::send_axis(uint16_t code, int32_t value)
   ev.value = value;
 
  write(fd, &ev, sizeof(ev));  
+}
+
+void
+uInput::send(XboxGenericMsg& msg)
+{
+  if (msg.type == GAMEPAD_XBOX)
+    send(msg.xbox);
+  else if (msg.type == GAMEPAD_XBOX_MAT)
+    send(msg.xbox);
+  else if (msg.type == GAMEPAD_XBOX360)
+    send(msg.xbox360);
+  else if (msg.type == GAMEPAD_XBOX360_WIRELESS)
+    send(msg.xbox360);
+  else if (msg.type == GAMEPAD_XBOX360_GUITAR)
+    send(msg.guitar);
+  else
+    assert(!"Unknown XboxGenericMsg type");
 }
 
 void

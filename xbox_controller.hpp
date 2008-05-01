@@ -20,11 +20,12 @@
 #define HEADER_XBOX_CONTROLLER_HPP
 
 #include <usb.h>
+#include "xbox_generic_controller.hpp"
 
 struct XPadDevice;
 
 /** */
-class XboxController
+class XboxController : public XboxGenericController
 {
 private:
   struct usb_device* dev;
@@ -33,7 +34,8 @@ private:
   
 public:
   XboxController(struct usb_device* dev,
-                    XPadDevice*        dev_type);
+                 XPadDevice*        dev_type);
+  virtual ~XboxController();
 
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);

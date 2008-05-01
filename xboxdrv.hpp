@@ -18,15 +18,8 @@
 
 #ifndef HEADER_XBOX360_HPP
 #define HEADER_XBOX360_HPP
-
-enum GamepadType {
-  GAMEPAD_UNKNOWN,
-  GAMEPAD_XBOX,
-  GAMEPAD_XBOX_MAT,
-  GAMEPAD_XBOX360,
-  GAMEPAD_XBOX360_WIRELESS,
-  GAMEPAD_XBOX360_GUITAR
-};
+
+#include "xboxmsg.hpp"
 
 struct XPadDevice {
   GamepadType type;

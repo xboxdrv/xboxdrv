@@ -20,6 +20,22 @@
 #include <iostream>
 #include "xboxmsg.hpp"
 
+std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg)
+{
+  if (msg.type == GAMEPAD_XBOX)
+    return out << msg.xbox;
+  else if (msg.type == GAMEPAD_XBOX_MAT)
+    return out << msg.xbox;
+  else if (msg.type == GAMEPAD_XBOX360)
+    return out << msg.xbox360;
+  else if (msg.type == GAMEPAD_XBOX360_WIRELESS)
+    return out << msg.xbox360;
+  else if (msg.type == GAMEPAD_XBOX360_GUITAR)
+    return out << msg.guitar;
+  else
+    return out << "Error: Unhandled XboxGenericMsg type: " << msg.type;
+}
+
 std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg) 
 {
   out << boost::format(" whammy:%6d tilt:%6d | up:%d down:%d left:%d right:%d | back:%d guide:%d start:%d | green:%d red:%d yellow:%d blue:%d orange:%d ")
