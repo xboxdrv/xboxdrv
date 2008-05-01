@@ -74,10 +74,11 @@ cat_usb_device(struct usb_device* dev, int ep)
     }
   else
     {
+      // FIXME: ep-1 is hack for Xbox360 wireless
       if (usb_claim_interface(handle, ep-1) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
         {
           std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
-          if (usb_detach_kernel_driver_np(handle, 0) < 0)
+          if (usb_detach_kernel_driver_np(handle, ep-1) < 0)
             {
               std::cout << "Failure to kick kernel driver: " << usb_strerror() << std::endl;
               exit(EXIT_FAILURE);              

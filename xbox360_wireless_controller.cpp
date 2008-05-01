@@ -91,23 +91,23 @@ Xbox360WirelessController::read(XboxGenericMsg& msg)
     { // Connection Status Message
       if (data[1] == 0x00) 
         {
-          // nothing connected
+          std::cout << "Connection status: nothing" << std::endl;
         } 
       else if (data[1] == 0x80) 
         {
-          // controller connected
+          std::cout << "Connection status: controller connected" << std::endl;
         } 
       else if (data[1] == 0x40) 
         {
-          // headset connected
+          std::cout << "Connection status: headset connected" << std::endl;
         }
       else if (data[1] == 0xc0) 
         {
-          // headset and controller connected
+          std::cout << "Connection status: controller and headset connected" << std::endl;
         }
       else
         {
-          // unknown
+          std::cout << "Connection status: unknown" << std::endl;
         }
     }
   else if (ret == 29) // Event Message
