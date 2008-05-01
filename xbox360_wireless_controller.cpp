@@ -43,7 +43,9 @@ Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev,
     {
       if (usb_claim_interface(handle, interface) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
         {
-          throw std::runtime_error("Xbox360WirelessController: Error couldn't claim the USB interface");
+          std::ostringstream str;
+          str << "Xbox360WirelessController: Error couldn't claim the USB interface " << interface;
+          throw std::runtime_error(str.str());
         }
     }
 }

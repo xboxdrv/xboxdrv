@@ -124,7 +124,7 @@ void list_controller()
                 {
                   if (xpad_devices[i].type == GAMEPAD_XBOX360_WIRELESS)
                     {
-                      for(int wid = 0; wid < 3; ++wid)
+                      for(int wid = 0; wid < 4; ++wid)
                         {
                           std::cout << boost::format(" %2d |  %2d |   0x%04x |    0x%04x | %s (Port: %s)")
                             % id
