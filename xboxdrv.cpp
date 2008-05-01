@@ -21,8 +21,8 @@
 #include <usb.h>
 #include <unistd.h>
 #include <iostream>
-
 #include "uinput.hpp"
+#include "xboxmsg.hpp"
 #include "xboxdrv.hpp"
 
 
@@ -99,118 +99,6 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
       default:
         return out << "unknown" << std::endl;
     }
-}
-
-std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg) 
-{
-  out << boost::format(" whammy:%6d tilt:%6d | up:%d down:%d left:%d right:%d | back:%d guide:%d start:%d | green:%d red:%d yellow:%d blue:%d orange:%d ")
-    % int(msg.whammy)
-    % int(msg.tilt)
-    % int(msg.dpad_up)
-    % int(msg.dpad_down)
-    % int(msg.dpad_left)
-    % int(msg.dpad_right)
-    % int(msg.back)
-    % int(msg.guide)
-    % int(msg.start)
-    % int(msg.green)
-    % int(msg.red)
-    % int(msg.yellow)
-    % int(msg.blue)
-    % int(msg.orange);
-
-  if (0)
-    out << boost::format("| dummy: %d %d %d %d %02hhx %02hhx %04hx %04hx %02x %02x")
-      % int(msg.thumb_l)
-      % int(msg.thumb_r)
-      % int(msg.rb)
-      % int(msg.dummy1)
-
-      % int(msg.lt)
-      % int(msg.rt)
-
-      % int16_t(msg.x1)
-      % int16_t(msg.y1)
-
-      % int(msg.dummy2)
-      % int(msg.dummy3);
- 
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg) 
-{
-  out << boost::format("S1:(%6d, %6d)") 
-    % int(msg.x1) % int(msg.y1);
-
-  out << boost::format("  S2:(%6d, %6d)")
-    % int(msg.x2) % int(msg.y2);
-                          
-  out << boost::format(" [u:%d|d:%d|l:%d|r:%d]")
-    % int(msg.dpad_up)
-    % int(msg.dpad_down)
-    % int(msg.dpad_left)
-    % int(msg.dpad_right);
-
-  out << "  back:" << msg.back;
-  out << " guide:" << msg.guide;
-  out << " start:" << msg.start;
-
-  out << "  sl:" << msg.thumb_l;
-  out << " sr:"  << msg.thumb_r;
-
-  out << "  A:" << msg.a;
-  out << " B:"  << msg.b;
-  out << " X:"  << msg.x;
-  out << " Y:"  << msg.y;
-
-  out << "  LB:" << msg.lb;
-  out << " RB:" <<  msg.rb;
-
-  out << boost::format("  LT:%3d RT:%3d")
-    % int(msg.lt) % int(msg.rt);
-
-  if (0)
-    out << " Dummy: " << msg.dummy1 << " " << msg.dummy2 << " " << msg.dummy3;
-
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const XboxMsg& msg) 
-{
-  out << boost::format(" S1:(%6d, %6d) S2:(%6d, %6d) "
-                       " [u:%d|d:%d|l:%d|r:%d] "
-                       " start:%d back:%d "
-                       " sl:%d sr:%d "
-                       " A:%3d B:%3d X:%3d Y:%3d "
-                       " black:%3d white:%3d "
-                       " LT:%3d RT:%3d ")
-    % int(msg.x1) % int(msg.y1)
-    % int(msg.x2) % int(msg.y2)
-
-    % int(msg.dpad_up)
-    % int(msg.dpad_down)
-    % int(msg.dpad_left)
-    % int(msg.dpad_right)
-
-    % int(msg.start)
-    % int(msg.back)
-
-    % int(msg.thumb_l)
-    % int(msg.thumb_r)
-
-    % int(msg.a)
-    % int(msg.b)
-    % int(msg.x)
-    % int(msg.y)
-
-    % int(msg.black)
-    % int(msg.white)
-
-    % int(msg.lt) 
-    % int(msg.rt);
-
-  return out;
 }
 
 void list_controller()
@@ -638,6 +526,20 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
     }
 }
 
+void print_info(struct usb_device* dev,
+                XPadDevice*        dev_type,
+                const CommandLineOptions& opts)
+{
+  std::cout << "USB Device:        " << dev->bus->dirname << ":" << dev->filename << std::endl;
+  std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
+    % (dev_type ? dev_type->name : "unknown") % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct) << std::endl;
+  std::cout << "Controller Type:   " << opts.gamepad_type << std::endl;
+  std::cout << "Deadzone:          " << opts.deadzone << std::endl;
+  std::cout << "Rumble Debug:      " << (opts.rumble ? "on" : "off") << std::endl;
+  std::cout << "Rumble Speed:      " << "left: " << opts.rumble_l << " right: " << opts.rumble_r << std::endl;
+  std::cout << "LED Status:        " << int(opts.led) << std::endl;
+}
+
 int main(int argc, char** argv)
 {
   srand(time(0));
@@ -685,21 +587,13 @@ int main(int argc, char** argv)
     }
   else 
     {
-      // Could/should fork here to hande multiple controllers at once
       if (opts.gamepad_type == GAMEPAD_UNKNOWN)
         {
           assert(dev_type);
           opts.gamepad_type = dev_type->type;
         }
  
-      std::cout << "USB Device:        " << dev->bus->dirname << ":" << dev->filename << std::endl;
-      std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
-        % (dev_type ? dev_type->name : "unknown") % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct) << std::endl;
-      std::cout << "Controller Type:   " << opts.gamepad_type << std::endl;
-      std::cout << "Deadzone:          " << opts.deadzone << std::endl;
-      std::cout << "Rumble Debug:      " << (opts.rumble ? "on" : "off") << std::endl;
-      std::cout << "Rumble Speed:      " << "left: " << opts.rumble_l << " right: " << opts.rumble_r << std::endl;
-      std::cout << "LED Status:        " << int(opts.led) << std::endl;
+      print_info(dev, dev_type, opts);
 
       struct usb_dev_handle* handle = usb_open(dev);
       if (!handle)
@@ -759,8 +653,9 @@ int main(int argc, char** argv)
               memset(old_data, 0, 20);
               while(!quit)
                 {
-                  uint8_t data[20];
-                  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, 20, 0 /*Timeout*/);
+                  uint8_t data[32];
+                  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, sizeof(data), 0 /*Timeout*/);
+
                   if (ret < 0)
                     { // Error
                       std::cout << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
@@ -769,21 +664,9 @@ int main(int argc, char** argv)
                     }
                   else if (ret == 0)
                     {
-                      // happen with the Xbox360 every now and then, just
-                      // ignore, seems harmless
+                      // happen with the Xbox360 controller every now
+                      // and then, just ignore, seems harmless
                     }
-#if 0
-                  else if (ret == 2 && data[1] == 0x80) 
-                    { // wireless connect
-                    }
-                  else if (ret == 2 && data[1] == 0x80) 
-                    { // wireless disconnect
-                    }
-                  else if (ret == 29 && data[1] == 0x01)
-                    {
-                      xpad_process_packet(xpad, 0, (char*) ((unsigned long)xpad->idata + 4));
-                    }
-#endif
                   else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
                     {
                       if (memcmp(data, old_data, 20) == 0)

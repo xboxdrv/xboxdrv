@@ -22,13 +22,14 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <linux/uinput.h>
+#include "xboxmsg.hpp"
 #include "uinput.hpp"
 
 uInput::uInput(GamepadType type, uInputCfg config_)
   : fd(-1), config(config_)
 {
   // Open the input device
-  char* uinput_filename[] = { "/dev/input/uinput", "/dev/uinput", "/dev/misc/uinput" };
+  const char* uinput_filename[] = { "/dev/input/uinput", "/dev/uinput", "/dev/misc/uinput" };
   const int uinput_filename_count = (sizeof(uinput_filename)/sizeof(char*));
 
   for (int i = 0; i < uinput_filename_count; ++i) 

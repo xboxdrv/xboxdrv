@@ -29,6 +29,7 @@
 #include <iostream>
 #include <boost/format.hpp>
 #include <boost/bind.hpp>
+#include "xboxmsg.hpp"
 #include "log.hpp"
 #include "xbox360_usb_thread.hpp"
 #include "xbox360_driver.hpp"

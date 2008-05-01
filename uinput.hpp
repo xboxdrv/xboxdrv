@@ -21,6 +21,10 @@
 
 #include "xboxdrv.hpp"
 
+class Xbox360Msg;
+class Xbox360GuitarMsg;
+class XboxMsg;
+
 class uInputCfg
 {
 public:

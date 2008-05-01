@@ -1,3 +1,16 @@
+Easy interface:
+===============
+--trigger-as-zaxis
+--
+--buttonmap A:B,B:B,X:X
+
+Controller 1:
+Data 2: 0x08 0x80
+
+Controller 2:
+Data 2: 0x08 0xc0
+
+
 * a way to send keyboard combination sequences or more general event sequences
 * abs input must be normalized to min/max
 * rel input must be scaleable
@@ -82,7 +95,7 @@ Unknown data: bytes: 3 Data: 0x01 0x03 0x00
 
 
 // wire:                 { 0x00, 0x08, 0x00, large, small, 0x00, 0x00, 0x00 };
-// wireless: { 0x00, 0x01, 0x0f, 0xc0, 0x00, large, small, 0x00, 0x00, 0x00, 0x00, 0x00};
+// wireless: { 0x00, 0x01, 0x0f, 0xc0, 0x00, large, small, 0x00, 0x00, 0x00, 0x00, 0x00 };
                                  ^^^^ typo?
 void Wireless360Controller::SetRumbleMotors(unsigned char large, unsigned char small)
 {

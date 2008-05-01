@@ -31,6 +31,7 @@
 #include "control.hpp"
 
 class Xbox360UsbThread;
+class Xbox360Msg;
 
 /** */
 class Xbox360Driver : public Control
