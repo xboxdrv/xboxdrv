@@ -19,6 +19,7 @@
 #include <usb.h>
 #include <assert.h>
 #include <sstream>
+#include <iostream>
 #include <boost/format.hpp>
 #include <stdexcept>
 #include "xboxmsg.hpp"
@@ -113,10 +114,11 @@ Xbox360WirelessController::read(XboxGenericMsg& msg)
     {
       if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
         { // Initial Announc Message
-          std::string serial = (boost::format("%x:%x:%x:%x:%x:%x") 
-                                % data[7] % data[8] % data[9] % data[10] % data[11] % data[12] % data[13]).str();
-            
+          serial = (boost::format("%2x:%2x:%2x:%2x:%2x:%2x:%2x") 
+                    % data[7] % data[8] % data[9] % data[10] % data[11] % data[12] % data[13]).str();
           battery_status = data[17];
+          std::cout << "Serial: " << serial << std::endl;
+          std::cout << "Battery Status: " << battery_status << std::endl;
         }
       else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
         {
@@ -127,6 +129,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg)
       else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
         { // Battery status
           battery_status = data[4];
+          std::cout << "Battery Status: " << battery_status << std::endl;
         }
       else
         {
