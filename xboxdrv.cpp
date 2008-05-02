@@ -219,7 +219,7 @@ bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice
 
 struct CommandLineOptions 
 {
-  bool verbose;
+  bool silent;
   bool rumble;
   char led;
   int  rumble_l;
@@ -235,7 +235,7 @@ struct CommandLineOptions
   int deadzone;
   
   CommandLineOptions() {
-    verbose  = false;
+    silent   = false;
     rumble   = false;
     led      = 0;
     rumble_l = 0;
@@ -260,7 +260,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  -h, --help               display this help and exit" << std::endl;
   std::cout << "  --help-led               list possible values for the led" << std::endl;
   std::cout << "  --help-devices           list supported devices" << std::endl;
-  std::cout << "  -v, --verbose            display controller events" << std::endl;
+  std::cout << "  -s, --silent             do not display events on console" << std::endl;
   std::cout << "  -i, --id N               use controller with id N (default: 0)" << std::endl;
   std::cout << "  -w, --wid N              use wireless controller with wid N (default: 0)" << std::endl;
   std::cout << "  -L, --list-controller    list available controllers" << std::endl;
@@ -319,10 +319,10 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           print_command_line_help(argc, argv);
           exit(EXIT_SUCCESS);
         }
-      else if (strcmp(argv[i], "-v") == 0 ||
-               strcmp(argv[i], "--verbose") == 0)
+      else if (strcmp(argv[i], "-s") == 0 ||
+               strcmp(argv[i], "--silent") == 0)
         {
-          opts.verbose = true;
+          opts.silent = true;
         }
       else if (strcmp(argv[i], "--test-rumble") == 0 ||
                strcmp(argv[i], "-R") == 0)
@@ -359,7 +359,6 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
         }
       else if (strcmp(argv[i], "--no-uinput") == 0)
         {
-          opts.verbose   = true;
           opts.no_uinput = true;
         }
       else if (strcmp(argv[i], "-t") == 0 ||
@@ -604,7 +603,7 @@ void controller_loop(XboxGenericController* controller, CommandLineOptions& opts
 
       if (controller->read(msg))
         {
-          if (opts.verbose)
+          if (!opts.silent)
             std::cout << msg << std::endl;
           if (uinput) uinput->send(msg);
                     
