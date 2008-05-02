@@ -1,10 +1,14 @@
+Pictures of Xbox360 and controller:
+http://g-prime.net/x360/
+
 FIX:
 =====
-  be verbose by default, add a quiet option
-  controller type enforcment is broken
-  deadzone is broken
-  add magic to detect which jsX device we are going to get
+  filter auto known unknown messages
+  usbcat contains ugly endpoint hack
+  add magic to detect which jsX device we are going to get (opendir, fmmatch, etc.)
+  fix guitar support
 
+sigint doesn't work properly
 
 Battery warning: LEDs 1,4 then 2,3 over and over ~10 times rapidly
 
@@ -13,12 +17,6 @@ Easy interface:
 --trigger-as-zaxis
 --
 --buttonmap A:B,B:B,X:X
-
-Controller 1:
-Data 2: 0x08 0x80
-
-Controller 2:
-Data 2: 0x08 0xc0
 
 
 * a way to send keyboard combination sequences or more general event sequences
@@ -101,22 +99,7 @@ Unknown data: bytes: 3 Data: 0x01 0x03 0x00
                          Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
                          Unknown data: bytes: 3 Data: 0x01 0x03 0x06 
 
-                      */
-
-
-// wire:                 { 0x00, 0x08, 0x00, large, small, 0x00, 0x00, 0x00 };
-// wireless: { 0x00, 0x01, 0x0f, 0xc0, 0x00, large, small, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                                 ^^^^ typo?
-void Wireless360Controller::SetRumbleMotors(unsigned char large, unsigned char small)
-{
-    char buf[] = {0x00, 0x01, 0x0f, 0xc0, 0x00, large, small, 0x00, 0x00, 0x00, 0x00, 0x00};
-    WirelessDevice *device;
-    
-    device = OSDynamicCast(WirelessDevice, getProvider());
-    if (device != NULL)
-        device->SendPacket(buf, sizeof(buf));
-}
-    
+                      */    
 
 -----
 
@@ -149,8 +132,6 @@ http://gentoo-wiki.com/HOWTO_Xbox_360_controller_on_Linux
 http://happypenguin.org/show?xboxdrv
 http://ubuntuforums.org/showthread.php?t=404577&page=16
 http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver
-
-* add jstest, evtest into the source
 
 
  WirelessHIDDevice::receivedMessage(IOMemoryDescriptor *data)

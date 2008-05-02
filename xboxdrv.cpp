@@ -30,6 +30,9 @@
 
 #include "xboxdrv.hpp"
 
+// Some ugly global variables, needed for sigint catching
+bool global_exit_xboxdrv = false;
+XboxGenericController* global_controller = 0;
 
 XPadDevice xpad_devices[] = {
   // Evil?! Anymore info we could use to identify the devices?
@@ -67,9 +70,9 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX,             0x044f, 0x0f07, "Thrustmaster, Inc. Controller" },
   { GAMEPAD_XBOX360,          0x045e, 0x028e, "Microsoft Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x0738, 0x4716, "Mad Catz Xbox 360 Controller" },
+  { GAMEPAD_XBOX360,          0x162e, 0xbeef, "Joytech Neo-Se Take2" },
   { GAMEPAD_XBOX360_GUITAR,   0x1430, 0x4748, "RedOctane Guitar Hero X-plorer" },
 
-  // Do these work?
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0291, "Microsoft Xbox 360 Wireless Controller" },
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0719, "Microsoft Xbox 360 Wireless Controller (PC)" },
 
@@ -157,7 +160,7 @@ void list_controller()
     std::cout << "\nNo controller detected" << std::endl; 
 }
 
-bool find_controller_by_path(char* busid, char* devid,struct usb_device** xbox_device)
+bool find_controller_by_path(const char* busid, const char* devid,struct usb_device** xbox_device)
 {
   struct usb_bus* busses = usb_get_busses();
 
@@ -178,8 +181,38 @@ bool find_controller_by_path(char* busid, char* devid,struct usb_device** xbox_d
   return 0;
 }
 
+/** find the number of the next unused /dev/input/jsX device */
+int find_jsdev_number()
+{
+  for(int i = 0; ; ++i)
+    {
+      char filename1[32];
+      char filename2[32];
 
-bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice** type)
+      sprintf(filename1, "/dev/input/js%d", i);
+      sprintf(filename2, "/dev/js%d", i);
+
+      if (access(filename1, F_OK) != 0 && access(filename2, F_OK) != 0)
+        return i;
+    }
+}
+
+/** find the number of the next unused /dev/input/eventX device */
+int find_evdev_number()
+{
+  for(int i = 0; ; ++i)
+    {
+      char filename[32];
+
+      sprintf(filename, "/dev/input/event%d", i);
+
+      if (access(filename, F_OK) != 0)
+        return i;
+    }
+}
+
+
+bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice* type)
 {
   struct usb_bus* busses = usb_get_busses();
 
@@ -202,7 +235,7 @@ bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice
                   if (id_count == id)
                     {
                       *xbox_device = dev;
-                      *type        = &xpad_devices[i];
+                      *type        = xpad_devices[i];
                       return true;
                     }
                   else
@@ -221,7 +254,7 @@ struct CommandLineOptions
 {
   bool silent;
   bool rumble;
-  char led;
+  int  led;
   int  rumble_l;
   int  rumble_r;
   int  controller_id;
@@ -237,7 +270,7 @@ struct CommandLineOptions
   CommandLineOptions() {
     silent   = false;
     rumble   = false;
-    led      = 0;
+    led      = -1;
     rumble_l = 0;
     rumble_r = 0;
     controller_id = 0;
@@ -268,7 +301,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  --no-uinput              do not try to start uinput event dispatching" << std::endl;
   std::cout << std::endl;
   std::cout << "Device Options: " << std::endl;
-  std::cout << "  -d, --device BUS:DEV         Use device BUS:DEV, do not do any scanning" << std::endl;
+  std::cout << "  -d, --device BUS:DEV     Use device BUS:DEV, do not do any scanning" << std::endl;
   std::cout << std::endl;
   std::cout << "Status Options: " << std::endl;
   std::cout << "  -l, --led NUM            set LED status, see --list-led-values (default: 0)" << std::endl;
@@ -281,7 +314,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  --trigger-as-zaxis       Combine LT and RT to form a zaxis instead" << std::endl;
   std::cout << "  --dpad-as-button         DPad sends button instead of axis events" << std::endl;
   std::cout << "  --type TYPE              Ignore autodetection and enforce controller type\n"
-            << "                           (xbox, xbox360, xbox360-wireless, xbox360-guitar)" << std::endl;
+            << "                           (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)" << std::endl;
   std::cout << std::endl;
   std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
 }
@@ -371,6 +404,10 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
                 {
                   opts.gamepad_type = GAMEPAD_XBOX;
                 }
+              else if (strcmp(argv[i], "xbox-mat") == 0)
+                {
+                  opts.gamepad_type = GAMEPAD_XBOX_MAT;
+                }
               else if (strcmp(argv[i], "xbox360") == 0)
                 {
                   opts.gamepad_type = GAMEPAD_XBOX360;
@@ -383,19 +420,15 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
                 {
                   opts.gamepad_type = GAMEPAD_XBOX360_WIRELESS;
                 }
-              else if (strcmp(argv[i], "xbox-dancemat") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_XBOX_MAT;
-                }
               else
                 {
                   std::cout << "Error: unknown type: " << argv[i] << std::endl;
                   std::cout << "Possible types are:" << std::endl;
                   std::cout << " * xbox" << std::endl;
+                  std::cout << " * xbox-emat" << std::endl;
                   std::cout << " * xbox360" << std::endl;
                   std::cout << " * xbox360-guitar" << std::endl;
                   std::cout << " * xbox360-wireless" << std::endl;
-                  std::cout << " * xbox360-dancemat" << std::endl;
                   exit(EXIT_FAILURE); 
                 }
             }
@@ -566,78 +599,107 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
 }
 
 void print_info(struct usb_device* dev,
-                XPadDevice*        dev_type,
+                const XPadDevice& dev_type,
                 const CommandLineOptions& opts)
 {
   std::cout << "USB Device:        " << dev->bus->dirname << ":" << dev->filename << std::endl;
   std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
-    % (dev_type ? dev_type->name : "unknown") % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct) << std::endl;
-  if (dev_type->type == GAMEPAD_XBOX360_WIRELESS)
+    % dev_type.name % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct) << std::endl;
+  if (dev_type.type == GAMEPAD_XBOX360_WIRELESS)
     std::cout << "Wireless Port:     " << opts.wireless_id << std::endl;
   std::cout << "Controller Type:   " << opts.gamepad_type << std::endl;
   std::cout << "Deadzone:          " << opts.deadzone << std::endl;
   std::cout << "Rumble Debug:      " << (opts.rumble ? "on" : "off") << std::endl;
   std::cout << "Rumble Speed:      " << "left: " << opts.rumble_l << " right: " << opts.rumble_r << std::endl;
-  std::cout << "LED Status:        " << int(opts.led) << std::endl;
+  if (opts.led == -1)
+    std::cout << "LED Status:        " << "auto" << std::endl;
+  else
+    std::cout << "LED Status:        " << opts.led << std::endl;
 }
 
-void controller_loop(XboxGenericController* controller, CommandLineOptions& opts)
+void apply_deadzone(XboxGenericMsg& msg, int deadzone)
 {
-  uInput* uinput = 0;
-  if (!opts.no_uinput)
+  switch (msg.type)
     {
-      std::cout << "Starting uinput" << std::endl;
-      uinput = new uInput(opts.gamepad_type, opts.uinput_config);
-    }
-  else
-    {
-      std::cout << "Starting without uinput" << std::endl;
-    }
-  std::cout << "\nYour Xbox360 controller should now be available as /dev/input/jsX and /dev/input/eventX" << std::endl;
-  std::cout << "Press Ctrl-c to quit" << std::endl;
+      case GAMEPAD_XBOX:
+      case GAMEPAD_XBOX_MAT:
+        if (abs(msg.xbox.x1) < deadzone)
+          msg.xbox.x1 = 0;
+        if (abs(msg.xbox.y1) < deadzone)
+          msg.xbox.y1 = 0;
+        if (abs(msg.xbox.x2) < deadzone)
+          msg.xbox.x2 = 0;
+        if (abs(msg.xbox.y2) < deadzone)
+          msg.xbox.y2 = 0;
+        break;
 
-  bool quit = false;
-  while(!quit)
+      case GAMEPAD_XBOX360:
+      case GAMEPAD_XBOX360_WIRELESS:
+        if (abs(msg.xbox360.x1) < deadzone)
+          msg.xbox360.x1 = 0;
+        if (abs(msg.xbox360.y1) < deadzone)
+          msg.xbox360.y1 = 0;
+        if (abs(msg.xbox360.x2) < deadzone)
+          msg.xbox360.x2 = 0;
+        if (abs(msg.xbox360.y2) < deadzone)
+          msg.xbox360.y2 = 0;      
+        break;
+
+      case GAMEPAD_XBOX360_GUITAR:
+        // FIXME: any use for deadzone here?
+        break;
+
+      default:
+        assert(!"apply_deadzone(): Unknown gamepad type");
+    }
+}
+
+void controller_loop(uInput* uinput, XboxGenericController* controller, CommandLineOptions& opts)
+{
+  XboxGenericMsg oldmsg;
+  memset(&oldmsg, 0, sizeof(oldmsg));
+  while(!global_exit_xboxdrv)
     {
       XboxGenericMsg msg;
 
       if (controller->read(msg))
         {
-          if (!opts.silent)
-            std::cout << msg << std::endl;
-          if (uinput) uinput->send(msg);
+          apply_deadzone(msg, opts.deadzone);
+
+          if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)))
+            { // Only send a new event out if something has changed,
+              // this is useful since some controllers send events
+              // even if nothing has changed, deadzone can cause this
+              // too
+              oldmsg = msg;
+
+              if (!opts.silent)
+                std::cout << msg << std::endl;
+
+              if (uinput) 
+                uinput->send(msg);
                     
-          if (opts.rumble)
-            {
-              if (opts.gamepad_type == GAMEPAD_XBOX)
+              if (opts.rumble)
                 {
-                  controller->set_rumble(msg.xbox.lt, msg.xbox.rt);
-                }
-              else if (opts.gamepad_type == GAMEPAD_XBOX360 ||
-                       opts.gamepad_type == GAMEPAD_XBOX360_WIRELESS)
-                {
-                  controller->set_rumble(msg.xbox360.lt, msg.xbox360.rt);                      
+                  if (opts.gamepad_type == GAMEPAD_XBOX)
+                    {
+                      controller->set_rumble(msg.xbox.lt, msg.xbox.rt);
+                    }
+                  else if (opts.gamepad_type == GAMEPAD_XBOX360 ||
+                           opts.gamepad_type == GAMEPAD_XBOX360_WIRELESS)
+                    {
+                      controller->set_rumble(msg.xbox360.lt, msg.xbox360.rt);                      
+                    }
                 }
             }
         }
     }
 }
 
-int main(int argc, char** argv)
+void find_controller(struct usb_device*& dev,
+                     XPadDevice&         dev_type,
+                     const CommandLineOptions& opts)
 {
-  srand(time(0));
-
-  CommandLineOptions opts;
-
-  parse_command_line(argc, argv, opts);
-
-  usb_init();
-  usb_find_busses();
-  usb_find_devices();
-    
-  struct usb_device* dev      = 0;
-  XPadDevice*        dev_type = 0;
-  
   if (opts.busid[0] != '\0' && opts.devid[0] != '\0')
     {
       if (opts.gamepad_type == GAMEPAD_UNKNOWN)
@@ -662,6 +724,42 @@ int main(int argc, char** argv)
           exit(EXIT_FAILURE);
         }
     }
+}
+
+int led_count = 0;
+
+void on_sigint(int)
+{
+  if (global_exit_xboxdrv)
+    {
+      std::cout << "Ctrl-c pressed twice, exting hard" << std::endl;
+      exit(EXIT_SUCCESS);
+    }
+  else
+    {
+      std::cout << "Shutdown initiated" << std::endl;
+      global_exit_xboxdrv = true; 
+      if (global_controller)
+        global_controller->set_led(0);
+    }
+}
+
+int main(int argc, char** argv)
+{
+  signal(SIGINT, on_sigint);
+
+  CommandLineOptions opts;
+
+  parse_command_line(argc, argv, opts);
+
+  usb_init();
+  usb_find_busses();
+  usb_find_devices();
+    
+  struct usb_device* dev      = 0;
+  XPadDevice         dev_type;
+  
+  find_controller(dev, dev_type, opts);
 
   if (!dev)
     {
@@ -670,37 +768,53 @@ int main(int argc, char** argv)
     }
   else 
     {
-      if (opts.gamepad_type == GAMEPAD_UNKNOWN)
+      if (opts.gamepad_type != GAMEPAD_UNKNOWN)
+        { // Override the default gamepad type when given
+          dev_type.type = opts.gamepad_type;
+        }
+      else
         {
-          assert(dev_type);
-          opts.gamepad_type = dev_type->type;
+          opts.gamepad_type = dev_type.type;
         }
  
       print_info(dev, dev_type, opts);
 
       XboxGenericController* controller = 0;
 
-      switch (dev_type->type)
+      switch (dev_type.type)
         {
           case GAMEPAD_XBOX:
           case GAMEPAD_XBOX_MAT:
-            controller = new XboxController(dev, dev_type);
+            controller = new XboxController(dev);
             break;
 
           case GAMEPAD_XBOX360_GUITAR:
+            controller = new Xbox360Controller(dev, true);
+            break;
+
           case GAMEPAD_XBOX360:
-            controller = new Xbox360Controller(dev, dev_type);
+            controller = new Xbox360Controller(dev, false);
             break;
 
           case GAMEPAD_XBOX360_WIRELESS:
-            controller = new Xbox360WirelessController(dev, dev_type, opts.wireless_id);
+            controller = new Xbox360WirelessController(dev, opts.wireless_id);
             break;
 
           default:
             assert(!"Unknown gamepad type");
         }
 
-      controller->set_led(opts.led);
+      global_controller = controller;
+
+      int jsdev_number = find_jsdev_number();
+      int evdev_number = find_evdev_number();
+
+      // FIXME: insert /dev/input/jsX detection magic here
+      if (opts.led == -1)
+        controller->set_led(2 + jsdev_number % 4);
+      else
+        controller->set_led(opts.led);
+
       controller->set_rumble(opts.rumble_l, opts.rumble_r);
       
       if (opts.instant_exit)
@@ -709,10 +823,33 @@ int main(int argc, char** argv)
         }
       else
         {          
-          controller_loop(controller, opts);
+          uInput* uinput = 0;
+          if (!opts.no_uinput)
+            {
+              std::cout << "Starting with uinput" << std::endl;
+              uinput = new uInput(opts.gamepad_type, opts.uinput_config);
+            }
+          else
+            {
+              std::cout << "Starting without uinput" << std::endl;
+            }
+          std::cout << "\nYour Xbox/Xbox360 controller should now be available as:" << std::endl
+                    << "  /dev/input/js" << jsdev_number << std::endl
+                    << "  /dev/input/event" << evdev_number << std::endl;
+          
+          std::cout << "\nPress Ctrl-c to quit\n" << std::endl;
+          
+          global_exit_xboxdrv = false;
+          controller_loop(uinput, controller, opts);
+          
           delete controller;
+          delete uinput;
+          
+          std::cout << "Shutdown complete" << std::endl;
         }
     }
+
+  return 0;
 }
 
 /* EOF */

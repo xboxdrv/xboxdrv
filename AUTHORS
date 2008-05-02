@@ -10,7 +10,7 @@ XBox Gamepad Userspace Driver Testing:
   * Jeff Davidson <supermonkey@gmail.com> (Wireless Controller)
 
 
-Parts of the code are based on XBox Kernel driver (xpad.c/xpad.h) by:
+Parts of the code are based on Xpad Kernel driver (xpad.c/xpad.h) by:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   * Marko Friedemann <mfr@bmx-chemnitz.de>
   * Vojtech Pavlik <vojtech@suse.sz>

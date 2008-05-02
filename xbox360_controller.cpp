@@ -23,8 +23,8 @@
 #include "xboxmsg.hpp"
 #include "xbox360_controller.hpp"
 
-Xbox360Controller::Xbox360Controller(struct usb_device* dev,
-                                     XPadDevice*        dev_type)
+Xbox360Controller::Xbox360Controller(struct usb_device* dev, bool is_guitar)
+  : is_guitar(is_guitar)
 {
   handle = usb_open(dev);
   if (!handle)
@@ -47,6 +47,12 @@ Xbox360Controller::~Xbox360Controller()
 }
 
 void
+Xbox360Controller::send_raw(char* buffer, int len)
+{
+  usb_interrupt_write(handle, 2, buffer, len, 0);  
+}
+
+void
 Xbox360Controller::set_rumble(uint8_t left, uint8_t right)
 {
   char rumblecmd[] = { 0x00, 0x08, 0x00, left, right, 0x00, 0x00, 0x00 };
@@ -56,7 +62,7 @@ Xbox360Controller::set_rumble(uint8_t left, uint8_t right)
 void
 Xbox360Controller::set_led(uint8_t status)
 {
-  char ledcmd[] = { 1, 3, status }; 
+  char ledcmd[] = { 0x01, 0x03, status }; 
   usb_interrupt_write(handle, 2, ledcmd, sizeof(ledcmd), 0);
 }
 
@@ -65,7 +71,7 @@ Xbox360Controller::read(XboxGenericMsg& msg)
 {
   uint8_t data[32];
   int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, sizeof(data), 0 /*Timeout*/);
-  
+
   if (ret < 0)
     { // Error
       std::ostringstream str;
@@ -77,10 +83,30 @@ Xbox360Controller::read(XboxGenericMsg& msg)
       // happens with the Xbox360 controller every now and then, just
       // ignore, seems harmless, so just ignore
     }
+  else if (ret == 3 && data[0] == 0x01 && data[1] == 0x03)
+    { 
+      // std::cout << "Xbox360Controller: LED Status: " << int(data[2]) << std::endl;
+    }
+  else if (ret == 3 && data[0] == 0x03 && data[1] == 0x03)
+    { 
+      // data[2] == 0x00 means that rumble is disabled
+      // data[2] == 0x01 unknown, but rumble works
+      // data[2] == 0x02 unknown, but rumble works
+      // data[2] == 0x03 is default with rumble enabled
+      // std::cout << "Xbox360Controller: Rumble Status: " << int(data[2]) << std::endl;
+    }
   else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
     {
-      msg.type    = GAMEPAD_XBOX360;
-      msg.xbox360 = *reinterpret_cast<Xbox360Msg*>(data);
+      if (is_guitar)
+        {
+          msg.type   = GAMEPAD_XBOX360_GUITAR;
+          msg.guitar = *reinterpret_cast<Xbox360GuitarMsg*>(data);
+        }
+      else
+        {
+          msg.type    = GAMEPAD_XBOX360;
+          msg.xbox360 = *reinterpret_cast<Xbox360Msg*>(data);
+        }
       return true;
     }
   else

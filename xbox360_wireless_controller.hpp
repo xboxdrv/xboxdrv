@@ -28,7 +28,6 @@ class Xbox360WirelessController : public XboxGenericController
 {
 private:
   struct usb_device* dev;
-  XPadDevice*        dev_type;
   struct usb_dev_handle* handle;
   int endpoint;
   int interface;
@@ -37,7 +36,6 @@ private:
   
 public:
   Xbox360WirelessController(struct usb_device* dev,
-                            XPadDevice*        dev_type,
                             int controller_id);
   virtual ~Xbox360WirelessController();
 

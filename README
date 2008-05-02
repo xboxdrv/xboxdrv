@@ -1,9 +1,12 @@
-[[ XBox/XBox360 USB Gamepad Driver for Userspace ]]
+[[ Xbox/Xbox360 USB Gamepad Driver for Userspace ]]
 ===================================================
 
-This is a XBox/XBox360 gamepad driver for Linux that works in userspace. It
-is a alternative to the xpad kernel driver.
+This is a Xbox/Xbox360 gamepad driver for Linux that works in
+userspace. It is a alternative to the xpad kernel driver and has
+support for Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless
+gamepads. The Xbox360 guitar and some Xbox1 dancemats might work too.
 
+
 
 [[ Compilation ]]
 -----------------
@@ -19,13 +22,13 @@ You can compile by typing:
 
  % scons
 
-
+
 [[ Running ]]
 --------------
 
 First make sure that the xpad kernel module does not get loaded,
 either by deleting or renaming it. rmmod might not be enough since it
-might be automatically loaded.
+might be automatically loaded again.
 
 Next you have to load the uinput kernel module which allows userspace
 programms to create input devices and the joydev module which gives
@@ -39,22 +42,38 @@ You also have to make sure that you have access rights to
 adjust the permissions or run xboxdrv as root.
 
 Once ensured that xpad is out of the way and everything is in palce
-plug in your XBox360 gamepad and start the userspace driver with:
+plug in your Xbox360 gamepad and start the userspace driver with:
 
  % ./xboxdrv
 
-This will create a /dev/input/js0 and allow you to access the gamepad
+This will create /dev/input/js0 and allow you to access the gamepad
 from any game. To exit the driver press Ctrl-c.
 
-If you have multiple controllers you need to start multiple instances
+If you have multiple wired controllers you need to start multiple instances
 of the xboxdrv driver and append the -i argument like this:
 
  % ./xboxdrv -i 1
+
+If you have multiple wireless controller you need to start multiple
+instances of the xboxdrv driver and append the --wid argument like
+this:
+
+ % ./xboxdrv --wid 1
+
+You have to sync the wireless controller as usual.
 
 This will then use the second detected controller, see to see which id
 your controller has:
 
  % ./xboxdrv --list-controller
+
+When everything works as expected it is recomment that you run xboxdrv
+with the silent option:
+
+ % ./xboxdrv --silent
+
+This will suppress the logging of events to the console and will
+gurantee that no uneccesarry CPU cycles are wasted.
 
 If you want to abuse the led or rumble of the gamepad for notification
 in scripts you can do see via:
@@ -63,18 +82,22 @@ in scripts you can do see via:
 
 This will cause a mild rumble and the led to rotate, you can stop it
 again via, which also happens to be the command you can use to stop
-your XBox360 controller from blinking:
+your Xbox360 controller from blinking:
 
  % ./xboxdrv -q
 
+For rumble to work make sure you have connected the controller to a
+USB port that has enough power, i.e. an unpowered USB hub might not
+work.
 
+
 [[ SDL Notes ]]
 ---------------
 
 To let SDL know which axis act as a hat and which act as normal axis
 you have to set an environment variable:
 
- % SDL_LINUX_JOYSTICK="'XBox360 Gamepad (userspace driver)' 6 1 0"
+ % SDL_LINUX_JOYSTICK="'Xbox360 Gamepad (userspace driver)' 6 1 0"
  % export SDL_LINUX_JOYSTICK
 
 This will let the DPad act as Hat in case you need that for any
@@ -82,12 +105,13 @@ game. For most games the driver should work as-is.
 
 See ftp://ptah.lnf.kth.se/pub/misc/sdl-env-vars for more information.
 
-
+
 [[ Troubleshooting ]]
 ---------------------
 
-1) "Error opening XBox360 controller"
--------------------------------------
+1) "No Xbox or Xbox360 controller found"
+----------------------------------------
+
 This means that either your controller isn't plugged in or not
 recognized by the driver. To fix this you need to know the idVendor
 and the idProduct numbers, which you can find out via:
@@ -98,13 +122,20 @@ Once done you can try to add them to the array:
 
 XPadDevice xpad_devices[] = { ... } in xboxdrv.c. 
 
-If you have success with that, send a patch to grumbel@gmx.de
+If you have success with that, send a patch to grumbel@gmx.de, if not,
+contact me too, I might be able to provide additional help.
+
+As an alternative you can also use the --device and --type option to
+enforce a USB device as well as a controller type an bypass any auto
+detection.
+
 
 2) "Unknown data: bytes: 3 Data: ..."
 -------------------------------------
+
 This means that your controller is sending data that isn't understood
 by the driver. If your controller still works, you can just ignore it,
-the XBox360 controller seems to send out useless data every now and
+the Xbox360 controller seems to send out useless data every now and
 then. If your controller does not work and you get plenty of those
 lines when you move the sticks or press buttons it means that your
 controller talks an un-understood protocol and some reverse
@@ -114,6 +145,7 @@ of:
  % lsusb -v
 
 Along with all the "Unknown data" lines you get.
+
 
 3) Program starts and then just does nothing
 --------------------------------------------
@@ -130,6 +162,7 @@ working correctly you can pass the -v option:
 This will cause the driver to output all the events that it received
 from the controller.
 
+
 4) "Error: No stuitable uinput device found"
 --------------------------------------------
 
@@ -143,4 +176,12 @@ itself works with:
  % ./xboxdrv --no-uinput -v
 
 
+5) The wireless controller doesn't work
+----------------------------------------
+
+You have to sync the controller befor it can be used, restart of the
+driver isn't needed and the driver should let you now when it recieves
+a connection after you sync the controller.
+
+
 # EOF #

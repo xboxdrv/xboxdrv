@@ -18,7 +18,9 @@ Xbox:
 The A, B, X, Y, black and white buttons on the Xbox pad are 8bit pressure sensitive.
 
 Led: doesn't have LEDs
-Rumble: { 0x00, 0x06, 0x00, l, 0x00, b };
+                            +----------- small weight (right side), 0-255
+                            v        v-- large weight (left side), 0-255
+Rumble: { 0x00, 0x06, 0x00, s, 0x00, large };
                    ^-- length of the message
 
 struct XboxMsg
@@ -68,26 +70,39 @@ buttons like the Xbox controller, only LT and RT are analog.
 
 On first connect the controller sends:
 
-len: 3 data: 0x01 0x03 0x0e 
+len: 3 data: 0x01 0x03 0x0e // current LED status
 len: 3 data: 0x02 0x03 0x00 
-len: 3 data: 0x03 0x03 0x03 
+len: 3 data: 0x03 0x03 0x03 // Rumble Status (0x00 in the last pos means rumble is disabled, 0x03 is default)
 len: 3 data: 0x08 0x03 0x00 
 len: 20 data: 0x00 0x14 0x00 0x00 0x00 0x00 0x69 0xed 0x23 0xff 0x6b 0x00 0x15 0x03 0x00 0x00 0x00 0x00 0x00 0x00 
 len: 20 data: 0x00 0x14 0x00 0x00 0x00 0x00 0xfc 0xec 0x23 0xff 0x6b 0x00 0x15 0x03 0x00 0x00 0x00 0x00 0x00 0x00 
 
-The first four lines are unknown (guess: calibration data, serial
-number, version number?), but seem to be always the same, the "len: 20" ones are event
-data of the following form. The controller sends them two times on
-each button press and also two times on first connect.
+The first four lines are unknown, but seem to be always the same, the
+"len: 20" ones are event data of the following form. The controller
+sends them two times on each button press and also two times on first
+connect.
 
 Commands send to the controller:
 --------------------------------
             ,--------- type of message
             v      v-- length of message
 LED:    { 0x01, 0x03, LED_STATUS }; 
+
+LED Status Update Message, send out after one has changed the led status:
+
+ { 0x01 0x03 LED_STATUS } (blinking states are reported as non-blinking)
+
+                              +-------- large weight (left side), 0-255
+                              v     v-- small weight (right side), 0-255
 Rumble: { 0x00, 0x08, 0x00, large, small, 0x00, 0x00, 0x00 };
             ^      ^-- length of the message
             `--------- type of message
+
+Unknown:
+sending { 0x02, 0x03, INT } causes a reply of { 0x03, 0x03, INT }  (values of 0-3 are supported)
+sending { 0x02, 0x03, 0x00 } causes future rumble update messages to be ignored, this seems to be permanent, even disconnecting the controller doesn't reset it
+
+Event Messages:
 
 struct Xbox360Msg
 {
@@ -191,14 +206,22 @@ struct Xbox360GuitarMsg
 Xbox360 Wireless
 ================
 
-Endpoint 1: Controller 1
-Endpoint 2: Headset 1
-Endpoint 3: Controller 1
-Endpoint 4: Headset 1
-Endpoint 5: Controller 1
-Endpoint 6: Headset 1
-Endpoint 7: Controller 4
-Endpoint 8: Headset 1
+The wireless reciever acts as a single USB device, each of the four
+controller is on a seperate Interface together with the headset port:
+
+Interface 0:
+  Endpoint 1: Controller 1
+  Endpoint 2: Headset 1
+Interface 1:
+  Endpoint 3: Controller 1
+  Endpoint 4: Headset 1
+Interface 2:
+  Endpoint 5: Controller 1
+  Endpoint 6: Headset 1
+Interface 3:
+  Endpoint 7: Controller 4
+  Endpoint 8: Headset 1
+
                               v-- typo? might be 0x0c, i.e. length
 Rumble: { 0x00, 0x01, 0x0f, 0xc0, 0x00, large, small, 0x00, 0x00, 0x00, 0x00, 0x00 }
                  ^     ^--- ???
@@ -309,4 +332,5 @@ len: 29 data: 0x00 0xf8 0x02 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0
 29 data: 0x00 0x00 0x00 0x40 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
 29 data: 0x00 0x00 0x00 0xf0 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
 
+
 # EOF #

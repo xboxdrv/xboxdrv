@@ -28,17 +28,18 @@ struct XPadDevice;
 class Xbox360Controller : public XboxGenericController
 {
 private:
+  bool is_guitar;
   struct usb_device* dev;
   XPadDevice*        dev_type;
   struct usb_dev_handle* handle;
   
 public:
-  Xbox360Controller(struct usb_device* dev,
-                    XPadDevice*        dev_type);
+  Xbox360Controller(struct usb_device* dev, bool is_guitar);
   ~Xbox360Controller();
 
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
+  void send_raw(char* buffer, int len);
   bool read(XboxGenericMsg& msg);
 
 private:

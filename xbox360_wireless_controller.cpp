@@ -26,7 +26,6 @@
 #include "xbox360_wireless_controller.hpp"
 
 Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev,
-                                                     XPadDevice*        dev_type,
                                                      int controller_id)
 {
   assert(controller_id >= 0 && controller_id < 4);

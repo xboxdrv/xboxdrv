@@ -21,8 +21,7 @@
 #include "xboxmsg.hpp"
 #include "xbox_controller.hpp"
 
-XboxController::XboxController(struct usb_device* dev,
-                               XPadDevice*  dev_type)
+XboxController::XboxController(struct usb_device* dev)
 {
   handle = usb_open(dev);
   if (!handle)

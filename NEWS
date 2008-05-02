@@ -1,12 +1,18 @@
-xboxdrv 0.2 -
-=========================
+xboxdrv 0.2 - (??/May/2008)
+===========================
 
- * switched from usb_bulk_read() to usb_interrupt_read(), this fixes
-   the Guitar Hero controller
+* added option to specify the USB path to use, instead of using
+  automatic detection
+* added option to enforce the controller type
+* added deadzone configuration support
+* added support for Xbox360 wireless gamepads
+* added support for the Xbox360 guitar controller
+* switched from usb_bulk_read() to usb_interrupt_read(), this fixes
+  problems with some controller
 
 
-xboxdrv 0.1 - Apr 13 2008
-=========================
+xboxdrv 0.1 - (13/Apr/2008)
+===========================
   * initial release
 
 # EOF #

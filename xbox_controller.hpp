@@ -29,12 +29,10 @@ class XboxController : public XboxGenericController
 {
 private:
   struct usb_device* dev;
-  XPadDevice*        dev_type;
   struct usb_dev_handle* handle;
   
 public:
-  XboxController(struct usb_device* dev,
-                 XPadDevice*        dev_type);
+  XboxController(struct usb_device* dev);
   virtual ~XboxController();
 
   void set_rumble(uint8_t left, uint8_t right);
