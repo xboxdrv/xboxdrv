@@ -22,6 +22,7 @@
 #include <iostream>
 #include <boost/format.hpp>
 #include <stdexcept>
+#include "helper.hpp"
 #include "xboxmsg.hpp"
 #include "xbox360_wireless_controller.hpp"
 
@@ -109,7 +110,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg)
           std::cout << "Connection status: unknown" << std::endl;
         }
     }
-  else if (ret == 29) // Event Message
+  else if (ret == 29)
     {
       if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
         { // Initial Announc Message
@@ -126,7 +127,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg)
           std::cout << "Battery Status: " << battery_status << std::endl;
         }
       else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
-        {
+        { // Event message
           msg.type    = GAMEPAD_XBOX360_WIRELESS;
           msg.xbox360 = *reinterpret_cast<Xbox360Msg*>(&data[4]);
           return true;
@@ -136,14 +137,21 @@ Xbox360WirelessController::read(XboxGenericMsg& msg)
           battery_status = data[4];
           std::cout << "Battery Status: " << battery_status << std::endl;
         }
+      else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0xf0)
+        {
+          // 0x00 0x00 0x00 0xf0 0x00 ... is send after each button
+          // press, doesn't seem to contain any information
+        }
       else
         {
-          // unknown/junk
+          std::cout << "Unknown: ";
+          print_raw_data(std::cout, data, ret);
         }
     }
   else
     {
-      // unknown/junk
+      std::cout << "Unknown: ";
+      print_raw_data(std::cout, data, ret);
     }
 
   return false;

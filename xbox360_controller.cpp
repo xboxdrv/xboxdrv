@@ -21,6 +21,7 @@
 #include <iostream>
 #include <boost/format.hpp>
 #include "xboxmsg.hpp"
+#include "helper.hpp"
 #include "xbox360_controller.hpp"
 
 Xbox360Controller::Xbox360Controller(struct usb_device* dev, bool is_guitar)
@@ -111,13 +112,8 @@ Xbox360Controller::read(XboxGenericMsg& msg)
     }
   else
     {
-      std::cout << "Unknown data: bytes: " << ret 
-                << " Data: ";
-                      
-      for(int j = 0; j < ret; ++j)
-        std::cout << boost::format("0x%02x ") % int(data[j]);
-
-      std::cout << std::endl;
+      std::cout << "Unknown: ";
+      print_raw_data(std::cout, data, ret);
     }
 
   return false;

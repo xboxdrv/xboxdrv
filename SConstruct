@@ -4,6 +4,7 @@ env = Environment(CPPFLAGS=["-g", "-O0", "-Wall"], LIBS=["usb"])
 env.Program("xboxdrv", ["xboxdrv.cpp", 
                         "xboxmsg.cpp",
                         "uinput.cpp",
+                        "helper.cpp",
                         "xbox_controller.cpp",
                         "xbox360_controller.cpp",
                         "xbox360_wireless_controller.cpp",

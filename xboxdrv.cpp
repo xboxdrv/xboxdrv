@@ -26,6 +26,7 @@
 #include "xbox_controller.hpp"
 #include "xbox360_controller.hpp"
 #include "xbox360_wireless_controller.hpp"
+#include "helper.hpp"
 #include "xbox_generic_controller.hpp"
 
 #include "xboxdrv.hpp"
@@ -85,6 +86,9 @@ XPadDevice xpad_devices[] = {
 
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
 
+XboxButton string2btn(const std::string& str_);
+XboxAxis string2axis(const std::string& str_);
+
 std::ostream& operator<<(std::ostream& out, const GamepadType& type) 
 {
   switch (type)
@@ -107,6 +111,482 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
       default:
         return out << "unknown" << std::endl;
     }
+}
+
+int get_button(XboxGenericMsg& msg, XboxButton button)
+{
+  switch(msg.type)
+    {
+      case GAMEPAD_XBOX360_GUITAR:
+      case GAMEPAD_XBOX360:
+      case GAMEPAD_XBOX360_WIRELESS:
+        switch(button)
+          {
+            case XBOX_BTN_START:
+              return msg.xbox360.start;
+            case XBOX_BTN_GUIDE:
+              return msg.xbox360.guide;
+            case XBOX_BTN_BACK:
+              return msg.xbox360.back;
+
+            case XBOX_BTN_A:
+              return msg.xbox360.a;
+            case XBOX_BTN_B:
+              return msg.xbox360.b;
+            case XBOX_BTN_X:
+              return msg.xbox360.x;
+            case XBOX_BTN_Y:
+              return msg.xbox360.y;
+
+            case XBOX_BTN_LB:
+            case XBOX_BTN_WHITE:
+              return msg.xbox360.lb;
+            case XBOX_BTN_RB:
+            case XBOX_BTN_BLACK:
+              return msg.xbox360.rb;
+
+            case XBOX_BTN_LT:
+              return msg.xbox360.lt;
+            case XBOX_BTN_RT:
+              return msg.xbox360.rt;
+
+            case XBOX_BTN_THUMB_L:
+              return msg.xbox360.thumb_l;
+            case XBOX_BTN_THUMB_R:
+              return msg.xbox360.thumb_r;
+
+            case XBOX_DPAD_UP:
+              return msg.xbox360.dpad_up;
+            case XBOX_DPAD_DOWN:
+              return msg.xbox360.dpad_down;
+            case XBOX_DPAD_LEFT:
+              return msg.xbox360.dpad_left;
+            case XBOX_DPAD_RIGHT:
+              return msg.xbox360.dpad_right;
+
+            case XBOX_BTN_UNKNOWN:
+              return 0;
+          }
+        break;
+        
+      case GAMEPAD_XBOX:
+      case GAMEPAD_XBOX_MAT:
+        switch(button)
+          {
+            case XBOX_BTN_START:
+              return msg.xbox.start;
+            case XBOX_BTN_GUIDE:
+              return 0;
+            case XBOX_BTN_BACK:
+              return msg.xbox.back;
+
+            case XBOX_BTN_A:
+              return msg.xbox.a;
+            case XBOX_BTN_B:
+              return msg.xbox.b;
+            case XBOX_BTN_X:
+              return msg.xbox.x;
+            case XBOX_BTN_Y:
+              return msg.xbox.y;
+
+            case XBOX_BTN_LB:
+            case XBOX_BTN_WHITE:
+              return msg.xbox.white;
+            case XBOX_BTN_RB:
+            case XBOX_BTN_BLACK:
+              return msg.xbox.black;
+
+            case XBOX_BTN_LT:
+              return msg.xbox.lt;
+            case XBOX_BTN_RT:
+              return msg.xbox.rt;
+
+            case XBOX_BTN_THUMB_L:
+              return msg.xbox.thumb_l;
+            case XBOX_BTN_THUMB_R:
+              return msg.xbox.thumb_r;
+
+            case XBOX_DPAD_UP:
+              return msg.xbox.dpad_up;
+            case XBOX_DPAD_DOWN:
+              return msg.xbox.dpad_down;
+            case XBOX_DPAD_LEFT:
+              return msg.xbox.dpad_left;
+            case XBOX_DPAD_RIGHT:
+              return msg.xbox.dpad_right;
+
+            case XBOX_BTN_UNKNOWN:
+              return 0;
+          }
+        break;
+
+      case GAMEPAD_UNKNOWN:
+        break;
+    }
+  return 0;
+}
+
+void set_button(XboxGenericMsg& msg, XboxButton button, int v)
+{
+  switch(msg.type)
+    {
+      case GAMEPAD_XBOX360_GUITAR:
+      case GAMEPAD_XBOX360:
+      case GAMEPAD_XBOX360_WIRELESS:
+        switch(button)
+          {
+            case XBOX_BTN_START:
+              msg.xbox360.start = v; break;
+            case XBOX_BTN_GUIDE:
+              msg.xbox360.guide = v; break;
+            case XBOX_BTN_BACK:
+              msg.xbox360.back = v; break;
+
+            case XBOX_BTN_A:
+              msg.xbox360.a = v; break;
+            case XBOX_BTN_B:
+              msg.xbox360.b = v; break;
+            case XBOX_BTN_X:
+              msg.xbox360.x = v; break;
+            case XBOX_BTN_Y:
+              msg.xbox360.y = v; break;
+
+            case XBOX_BTN_LB:
+            case XBOX_BTN_WHITE:
+              msg.xbox360.lb = v; break;
+            case XBOX_BTN_RB:
+            case XBOX_BTN_BLACK:
+              msg.xbox360.rb = v; break;
+
+            case XBOX_BTN_LT:
+              msg.xbox360.lt = v; break;
+            case XBOX_BTN_RT:
+              msg.xbox360.rt = v; break;
+
+            case XBOX_BTN_THUMB_L:
+              msg.xbox360.thumb_l = v; break;
+            case XBOX_BTN_THUMB_R:
+              msg.xbox360.thumb_r = v; break;
+
+            case XBOX_DPAD_UP:
+              msg.xbox360.dpad_up = v; break;
+            case XBOX_DPAD_DOWN:
+              msg.xbox360.dpad_down = v; break;
+            case XBOX_DPAD_LEFT:
+              msg.xbox360.dpad_left = v; break;
+            case XBOX_DPAD_RIGHT:
+              msg.xbox360.dpad_right = v; break;
+
+            case XBOX_BTN_UNKNOWN:
+              break;
+          }
+        break;
+        
+      case GAMEPAD_XBOX:
+      case GAMEPAD_XBOX_MAT:
+        switch(button)
+          {
+            case XBOX_BTN_START:
+              msg.xbox.start = v; break;
+            case XBOX_BTN_GUIDE:
+              break;
+            case XBOX_BTN_BACK:
+              msg.xbox.back = v; break;
+
+            case XBOX_BTN_A:
+              msg.xbox.a = v; break;
+            case XBOX_BTN_B:
+              msg.xbox.b = v; break;
+            case XBOX_BTN_X:
+              msg.xbox.x = v; break;
+            case XBOX_BTN_Y:
+              msg.xbox.y = v; break;
+
+            case XBOX_BTN_LB:
+            case XBOX_BTN_WHITE:
+              msg.xbox.white = v; break;
+            case XBOX_BTN_RB:
+            case XBOX_BTN_BLACK:
+              msg.xbox.black = v; break;
+
+            case XBOX_BTN_LT:
+              msg.xbox.lt = v; break;
+            case XBOX_BTN_RT:
+              msg.xbox.rt = v; break;
+
+            case XBOX_BTN_THUMB_L:
+              msg.xbox.thumb_l = v; break;
+            case XBOX_BTN_THUMB_R:
+              msg.xbox.thumb_r = v; break;
+
+            case XBOX_DPAD_UP:
+              msg.xbox.dpad_up = v; break;
+            case XBOX_DPAD_DOWN:
+              msg.xbox.dpad_down = v; break;
+            case XBOX_DPAD_LEFT:
+              msg.xbox.dpad_left = v; break;
+            case XBOX_DPAD_RIGHT:
+              msg.xbox.dpad_right = v; break;
+
+            case XBOX_BTN_UNKNOWN:
+              break;
+          }
+        break;
+
+      case GAMEPAD_UNKNOWN:
+        break;
+    }
+}
+
+int get_axis(XboxGenericMsg& msg, XboxAxis axis)
+{
+  switch(msg.type)
+    {
+      case GAMEPAD_XBOX360_GUITAR:
+      case GAMEPAD_XBOX360:
+      case GAMEPAD_XBOX360_WIRELESS:
+        switch(axis)
+          {
+            case XBOX_AXIS_UNKNOWN:
+              return 0;
+            case XBOX_AXIS_X1:
+              return msg.xbox360.x1;
+            case XBOX_AXIS_Y1:
+              return msg.xbox360.y1;
+            case XBOX_AXIS_X2:
+              return msg.xbox360.x2;
+            case XBOX_AXIS_Y2:
+              return msg.xbox360.y2;
+            case XBOX_AXIS_LT:
+              return msg.xbox360.lt;
+            case XBOX_AXIS_RT:
+              return msg.xbox360.rt;
+          }
+        break;
+
+      case GAMEPAD_XBOX:
+      case GAMEPAD_XBOX_MAT:
+        switch(axis)
+          {
+            case XBOX_AXIS_UNKNOWN:
+              return 0;
+            case XBOX_AXIS_X1:
+              return msg.xbox.x1;
+            case XBOX_AXIS_Y1:
+              return msg.xbox.y1;
+            case XBOX_AXIS_X2:
+              return msg.xbox.x2;
+            case XBOX_AXIS_Y2:
+              return msg.xbox.y2;
+            case XBOX_AXIS_LT:
+              return msg.xbox.lt;
+            case XBOX_AXIS_RT:
+              return msg.xbox.rt;
+          }
+        break;
+
+      case GAMEPAD_UNKNOWN:
+        break;
+    }
+  return 0;
+}
+
+void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
+{
+  switch(msg.type)
+    {
+      case GAMEPAD_XBOX360_GUITAR:
+      case GAMEPAD_XBOX360:
+      case GAMEPAD_XBOX360_WIRELESS:
+        switch(axis)
+          {
+            case XBOX_AXIS_UNKNOWN:
+              break;
+            case XBOX_AXIS_X1:
+              msg.xbox360.x1 = v; break;
+            case XBOX_AXIS_Y1:
+              msg.xbox360.y1 = v; break;
+            case XBOX_AXIS_X2:
+              msg.xbox360.x2 = v; break;
+            case XBOX_AXIS_Y2:
+              msg.xbox360.y2 = v; break;
+            case XBOX_AXIS_LT:
+              msg.xbox360.lt = v; break;
+            case XBOX_AXIS_RT:
+              msg.xbox360.rt = v; break;
+          }
+        break;
+
+      case GAMEPAD_XBOX:
+      case GAMEPAD_XBOX_MAT:
+        switch(axis)
+          {
+            case XBOX_AXIS_UNKNOWN:
+              break;
+            case XBOX_AXIS_X1:
+              msg.xbox.x1 = v; break;
+            case XBOX_AXIS_Y1:
+              msg.xbox.y1 = v; break;
+            case XBOX_AXIS_X2:
+              msg.xbox.x2 = v; break;
+            case XBOX_AXIS_Y2:
+              msg.xbox.y2 = v; break;
+            case XBOX_AXIS_LT:
+              msg.xbox.lt = v; break;
+            case XBOX_AXIS_RT:
+              msg.xbox.rt = v; break;
+          }
+        break;
+
+      case GAMEPAD_UNKNOWN:
+        break;
+    }
+}
+
+void apply_button_map(XboxGenericMsg& msg, std::vector<ButtonMapping>& lst)
+{
+  XboxGenericMsg newmsg = msg;
+
+  for(std::vector<ButtonMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
+    set_button(newmsg, i->lhs, 0);
+
+  for(std::vector<ButtonMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
+    set_button(newmsg, i->rhs, get_button(msg, i->lhs) || get_button(newmsg, i->rhs));
+
+  msg = newmsg;  
+}
+
+void apply_axis_map(XboxGenericMsg& msg, std::vector<AxisMapping>& lst)
+{
+  XboxGenericMsg& newmsg = msg;
+  for(std::vector<AxisMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
+    {
+      if (i->invert)
+        set_axis(newmsg, i->lhs, get_axis(msg, i->rhs));
+      else
+        set_axis(newmsg, i->lhs, -get_axis(msg, i->rhs));
+    }
+  msg = newmsg;
+}
+
+ButtonMapping string2buttonmapping(const std::string& str)
+{
+  std::cout << str << std::endl;
+  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+    {
+      if (*i == '=')
+        {
+          ButtonMapping mapping;
+          mapping.lhs = string2btn(std::string(str.begin(), i));
+          mapping.rhs = string2btn(std::string(i+1, str.end()));
+          
+          if (mapping.lhs == XBOX_BTN_UNKNOWN ||
+              mapping.rhs == XBOX_BTN_UNKNOWN)
+            throw std::runtime_error("Couldn't convert string \"" + str + "\" to button mapping");
+
+          return mapping;
+        }
+    }
+  throw std::runtime_error("Couldn't convert string \"" + str + "\" to button mapping");
+}
+
+void string2buttonmap(const std::string& str, std::vector<ButtonMapping>& lst)
+{
+  std::string::const_iterator start = str.begin();
+  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+    {
+      if (*i == ',')
+        {
+          if (i != start)
+            {
+              ButtonMapping mapping = string2buttonmapping(std::string(start, i));
+              lst.push_back(mapping);
+            }
+          start = i+1;
+        }
+    }
+  if (start != str.end())
+    {
+      ButtonMapping mapping = string2buttonmapping(std::string(start, str.end()));
+      lst.push_back(mapping);
+    }
+}
+
+void string2axismap(const std::string& str, std::vector<AxisMapping>& lst)
+{
+  
+}
+
+XboxButton string2btn(const std::string& str_)
+{
+  std::string str = to_lower(str_);
+
+  if (str == "start")
+    return XBOX_BTN_START;
+  else if (str == "guide")
+    return XBOX_BTN_GUIDE;
+  else if (str == "back")
+    return XBOX_BTN_BACK;
+
+  else if (str == "a")
+    return XBOX_BTN_A;
+  else if (str == "b")
+    return XBOX_BTN_B;
+  else if (str == "x")
+    return XBOX_BTN_X;
+  else if (str == "y")
+    return XBOX_BTN_Y;
+
+  else if (str == "black")
+    return XBOX_BTN_BLACK;
+  else if (str == "white")
+    return XBOX_BTN_WHITE;
+
+  else if (str == "lb")
+    return XBOX_BTN_LB;
+  else if (str == "rb")
+    return XBOX_BTN_RB;
+
+  else if (str == "lt")
+    return XBOX_BTN_LT;
+  else if (str == "rt")
+    return XBOX_BTN_RT;
+
+  else if (str == "tl")
+    return XBOX_BTN_THUMB_L;
+  else if (str == "tr")
+    return XBOX_BTN_THUMB_R;
+
+  else if (str == "du")
+    return XBOX_DPAD_UP;
+  else if (str == "dd")
+    return XBOX_DPAD_DOWN;
+  else if (str == "dl")
+    return XBOX_DPAD_LEFT;
+  else if (str == "dr")
+    return XBOX_DPAD_RIGHT;
+
+  else
+    return XBOX_BTN_UNKNOWN;
+}
+
+XboxAxis string2axis(const std::string& str_)
+{
+  std::string str = to_lower(str_);
+  if (str == "x1")
+    return XBOX_AXIS_X1;
+  else if (str == "y1")
+    return XBOX_AXIS_Y2;
+  else if (str == "x2")
+    return XBOX_AXIS_X2;
+  else if (str == "y2")
+    return XBOX_AXIS_Y2;
+  else if (str == "lt")
+    return XBOX_AXIS_LT;
+  else if (str == "rt")
+    return XBOX_AXIS_RT;
+  else
+    return XBOX_AXIS_UNKNOWN;
 }
 
 void list_controller()
@@ -266,7 +746,9 @@ struct CommandLineOptions
   char devid[4];
   uInputCfg uinput_config;
   int deadzone;
-  
+  std::vector<ButtonMapping> button_map;
+  std::vector<AxisMapping>   axis_map;
+
   CommandLineOptions() {
     silent   = false;
     rumble   = false;
@@ -315,6 +797,8 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  --dpad-as-button         DPad sends button instead of axis events" << std::endl;
   std::cout << "  --type TYPE              Ignore autodetection and enforce controller type\n"
             << "                           (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)" << std::endl;
+  std::cout << "  -b, --buttonmap MAP      Remap the buttons as specified by MAP" << std::endl;
+  std::cout << "  -a, --axismap MAP        Remap the axis as specified by MAP" << std::endl;
   std::cout << std::endl;
   std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
 }
@@ -375,13 +859,13 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
                 }
               else
                 {
-                  std::cout << "Error: " << argv[i-1] << " expected a argument in form INT,INT" << std::endl;
+                  std::cout << "Error: " << argv[i-1] << " expected an argument in form INT,INT" << std::endl;
                   exit(EXIT_FAILURE);
                 }
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected a argument" << std::endl;
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
               exit(EXIT_FAILURE);
             }          
         }
@@ -434,9 +918,37 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected a argument" << std::endl;
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
               exit(EXIT_FAILURE);
             }
+        }
+      else if (strcmp(argv[i], "-b") == 0 ||
+               strcmp(argv[i], "--buttonmap") == 0)
+        {
+          ++i;
+          if (i < argc)
+            {
+              string2buttonmap(argv[i], opts.button_map);
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
+              exit(EXIT_FAILURE);
+            }
+        }
+      else if (strcmp(argv[i], "-a") == 0 ||
+               strcmp(argv[i], "--axismap") == 0)
+        {
+          ++i;
+          if (i < argc)
+            {
+              string2axismap(argv[i], opts.axis_map);
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
+              exit(EXIT_FAILURE);
+            }          
         }
       else if (strcmp(argv[i], "-i") == 0 ||
                strcmp(argv[i], "--id") == 0)
@@ -448,7 +960,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected a argument" << std::endl;
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
               exit(EXIT_FAILURE);
             }
         }
@@ -462,7 +974,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected a argument" << std::endl;
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
               exit(EXIT_FAILURE);
             }
         }
@@ -484,7 +996,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected a argument" << std::endl;
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
               exit(EXIT_FAILURE);
             }
         }
@@ -556,7 +1068,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
                 }
               else
                 {
-                  std::cout << "Error: " << argv[i-1] << " expected a argument in form BUS:DEV (i.e. 006:003)" << std::endl;
+                  std::cout << "Error: " << argv[i-1] << " expected an argument in form BUS:DEV (i.e. 006:003)" << std::endl;
                   exit(EXIT_FAILURE);
                 }
             }
@@ -615,6 +1127,32 @@ void print_info(struct usb_device* dev,
     std::cout << "LED Status:        " << "auto" << std::endl;
   else
     std::cout << "LED Status:        " << opts.led << std::endl;
+  std::cout << "ButtonMap:         ";
+  if (opts.button_map.empty())
+    {
+      std::cout << "none" << std::endl;
+    }
+  else
+    {
+      for(std::vector<ButtonMapping>::const_iterator i = opts.button_map.begin(); i != opts.button_map.end(); ++i)
+        {
+          std::cout << i->lhs << "->" << i->rhs << " ";
+        }
+      std::cout << std::endl;
+    }
+
+  if (opts.axis_map.empty())
+    {
+      std::cout << "none" << std::endl;
+    }
+  else
+    {
+      for(std::vector<AxisMapping>::const_iterator i = opts.axis_map.begin(); i != opts.axis_map.end(); ++i)
+        {
+          std::cout << i->lhs << "->" << i->rhs << " ";
+        }
+      std::cout << std::endl;
+    }
 }
 
 void apply_deadzone(XboxGenericMsg& msg, int deadzone)
@@ -665,6 +1203,12 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
       if (controller->read(msg))
         {
           apply_deadzone(msg, opts.deadzone);
+
+          if (!opts.button_map.empty())
+            apply_button_map(msg, opts.button_map);
+
+          if (!opts.axis_map.empty())
+            apply_axis_map(msg,   opts.axis_map);
 
           if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)))
             { // Only send a new event out if something has changed,
@@ -746,107 +1290,114 @@ void on_sigint(int)
 
 int main(int argc, char** argv)
 {
-  signal(SIGINT, on_sigint);
+  try 
+    {
+      signal(SIGINT, on_sigint);
 
-  CommandLineOptions opts;
+      CommandLineOptions opts;
 
-  parse_command_line(argc, argv, opts);
+      parse_command_line(argc, argv, opts);
 
-  usb_init();
-  usb_find_busses();
-  usb_find_devices();
+      usb_init();
+      usb_find_busses();
+      usb_find_devices();
     
-  struct usb_device* dev      = 0;
-  XPadDevice         dev_type;
+      struct usb_device* dev      = 0;
+      XPadDevice         dev_type;
   
-  find_controller(dev, dev_type, opts);
+      find_controller(dev, dev_type, opts);
 
-  if (!dev)
-    {
-      std::cout << "No suitable USB device found, abort" << std::endl;
-      exit(EXIT_FAILURE);
-    }
-  else 
-    {
-      if (opts.gamepad_type != GAMEPAD_UNKNOWN)
-        { // Override the default gamepad type when given
-          dev_type.type = opts.gamepad_type;
-        }
-      else
+      if (!dev)
         {
-          opts.gamepad_type = dev_type.type;
+          std::cout << "No suitable USB device found, abort" << std::endl;
+          exit(EXIT_FAILURE);
         }
- 
-      print_info(dev, dev_type, opts);
-
-      XboxGenericController* controller = 0;
-
-      switch (dev_type.type)
+      else 
         {
-          case GAMEPAD_XBOX:
-          case GAMEPAD_XBOX_MAT:
-            controller = new XboxController(dev);
-            break;
-
-          case GAMEPAD_XBOX360_GUITAR:
-            controller = new Xbox360Controller(dev, true);
-            break;
-
-          case GAMEPAD_XBOX360:
-            controller = new Xbox360Controller(dev, false);
-            break;
-
-          case GAMEPAD_XBOX360_WIRELESS:
-            controller = new Xbox360WirelessController(dev, opts.wireless_id);
-            break;
-
-          default:
-            assert(!"Unknown gamepad type");
-        }
-
-      global_controller = controller;
-
-      int jsdev_number = find_jsdev_number();
-      int evdev_number = find_evdev_number();
-
-      // FIXME: insert /dev/input/jsX detection magic here
-      if (opts.led == -1)
-        controller->set_led(2 + jsdev_number % 4);
-      else
-        controller->set_led(opts.led);
-
-      controller->set_rumble(opts.rumble_l, opts.rumble_r);
-      
-      if (opts.instant_exit)
-        {
-          usleep(1000);
-        }
-      else
-        {          
-          uInput* uinput = 0;
-          if (!opts.no_uinput)
-            {
-              std::cout << "Starting with uinput" << std::endl;
-              uinput = new uInput(opts.gamepad_type, opts.uinput_config);
+          if (opts.gamepad_type != GAMEPAD_UNKNOWN)
+            { // Override the default gamepad type when given
+              dev_type.type = opts.gamepad_type;
             }
           else
             {
-              std::cout << "Starting without uinput" << std::endl;
+              opts.gamepad_type = dev_type.type;
             }
-          std::cout << "\nYour Xbox/Xbox360 controller should now be available as:" << std::endl
-                    << "  /dev/input/js" << jsdev_number << std::endl
-                    << "  /dev/input/event" << evdev_number << std::endl;
+ 
+          print_info(dev, dev_type, opts);
+
+          XboxGenericController* controller = 0;
+
+          switch (dev_type.type)
+            {
+              case GAMEPAD_XBOX:
+              case GAMEPAD_XBOX_MAT:
+                controller = new XboxController(dev);
+                break;
+
+              case GAMEPAD_XBOX360_GUITAR:
+                controller = new Xbox360Controller(dev, true);
+                break;
+
+              case GAMEPAD_XBOX360:
+                controller = new Xbox360Controller(dev, false);
+                break;
+
+              case GAMEPAD_XBOX360_WIRELESS:
+                controller = new Xbox360WirelessController(dev, opts.wireless_id);
+                break;
+
+              default:
+                assert(!"Unknown gamepad type");
+            }
+
+          global_controller = controller;
+
+          int jsdev_number = find_jsdev_number();
+          int evdev_number = find_evdev_number();
+
+          // FIXME: insert /dev/input/jsX detection magic here
+          if (opts.led == -1)
+            controller->set_led(2 + jsdev_number % 4);
+          else
+            controller->set_led(opts.led);
+
+          controller->set_rumble(opts.rumble_l, opts.rumble_r);
+      
+          if (opts.instant_exit)
+            {
+              usleep(1000);
+            }
+          else
+            {          
+              uInput* uinput = 0;
+              if (!opts.no_uinput)
+                {
+                  std::cout << "Starting with uinput" << std::endl;
+                  uinput = new uInput(opts.gamepad_type, opts.uinput_config);
+                }
+              else
+                {
+                  std::cout << "Starting without uinput" << std::endl;
+                }
+              std::cout << "\nYour Xbox/Xbox360 controller should now be available as:" << std::endl
+                        << "  /dev/input/js" << jsdev_number << std::endl
+                        << "  /dev/input/event" << evdev_number << std::endl;
           
-          std::cout << "\nPress Ctrl-c to quit\n" << std::endl;
+              std::cout << "\nPress Ctrl-c to quit\n" << std::endl;
           
-          global_exit_xboxdrv = false;
-          controller_loop(uinput, controller, opts);
+              global_exit_xboxdrv = false;
+              controller_loop(uinput, controller, opts);
           
-          delete controller;
-          delete uinput;
+              delete controller;
+              delete uinput;
           
-          std::cout << "Shutdown complete" << std::endl;
+              std::cout << "Shutdown complete" << std::endl;
+            }
         }
+    }
+  catch(std::exception& err)
+    {
+      std::cout << "Exception: " << err.what() << std::endl;
     }
 
   return 0;

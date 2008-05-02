@@ -1,3 +1,6 @@
+--buttonmap a=b,c=d,e=f
+--axismap x1=x2,x2=
+
 Pictures of Xbox360 and controller:
 http://g-prime.net/x360/
 
@@ -5,10 +8,6 @@ FIX:
 =====
   filter auto known unknown messages
   usbcat contains ugly endpoint hack
-  add magic to detect which jsX device we are going to get (opendir, fmmatch, etc.)
-  fix guitar support
-
-sigint doesn't work properly
 
 Battery warning: LEDs 1,4 then 2,3 over and over ~10 times rapidly
 
