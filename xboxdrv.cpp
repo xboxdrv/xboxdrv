@@ -458,13 +458,32 @@ void apply_button_map(XboxGenericMsg& msg, std::vector<ButtonMapping>& lst)
 
 void apply_axis_map(XboxGenericMsg& msg, std::vector<AxisMapping>& lst)
 {
-  XboxGenericMsg& newmsg = msg;
+  XboxGenericMsg newmsg = msg;
+
   for(std::vector<AxisMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
     {
+      set_axis(newmsg, i->lhs, 0);
+    }
+
+  for(std::vector<AxisMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
+    {
+      int lhs  = get_axis(msg,    i->lhs);
+      int nrhs = get_axis(newmsg, i->rhs);
+
       if (i->invert)
-        set_axis(newmsg, i->lhs, get_axis(msg, i->rhs));
-      else
-        set_axis(newmsg, i->lhs, -get_axis(msg, i->rhs));
+        {
+          if (i->lhs == XBOX_AXIS_LT ||
+              i->lhs == XBOX_AXIS_RT)
+            {
+              lhs = 255 - lhs;
+            }
+          else
+            {
+              lhs = -lhs;
+            }
+        }
+
+      set_axis(newmsg, i->rhs, std::max(std::min(nrhs + lhs, 32767), -32768));
     }
   msg = newmsg;
 }
@@ -512,9 +531,64 @@ void string2buttonmap(const std::string& str, std::vector<ButtonMapping>& lst)
     }
 }
 
+AxisMapping string2axismapping(const std::string& str)
+{
+  std::cout << str << std::endl;
+  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+    {
+      if (*i == '=')
+        {
+          AxisMapping mapping;
+
+          std::string lhs(str.begin(), i);
+          std::string rhs(i+1, str.end());
+
+          if (lhs.empty() || rhs.empty())
+            throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
+
+          if (lhs[0] == '-')
+            {
+              mapping.invert = true;
+              mapping.lhs = string2axis(lhs.substr(1));
+            }
+          else
+            {
+              mapping.invert = false;
+              mapping.lhs = string2axis(lhs);
+            }
+
+          mapping.rhs = string2axis(rhs);
+
+          if (mapping.lhs == XBOX_AXIS_UNKNOWN ||
+              mapping.rhs == XBOX_AXIS_UNKNOWN)
+            throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
+
+          return mapping;
+        }
+    }
+  throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
+}
+
 void string2axismap(const std::string& str, std::vector<AxisMapping>& lst)
 {
-  
+  std::string::const_iterator start = str.begin();
+  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+    {
+      if (*i == ',')
+        {
+          if (i != start)
+            {
+              AxisMapping mapping = string2axismapping(std::string(start, i));
+              lst.push_back(mapping);
+            }
+          start = i+1;
+        }
+    }
+  if (start != str.end())
+    {
+      AxisMapping mapping = string2axismapping(std::string(start, str.end()));
+      lst.push_back(mapping);
+    }
 }
 
 XboxButton string2btn(const std::string& str_)
@@ -576,7 +650,7 @@ XboxAxis string2axis(const std::string& str_)
   if (str == "x1")
     return XBOX_AXIS_X1;
   else if (str == "y1")
-    return XBOX_AXIS_Y2;
+    return XBOX_AXIS_Y1;
   else if (str == "x2")
     return XBOX_AXIS_X2;
   else if (str == "y2")
