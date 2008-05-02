@@ -87,7 +87,7 @@ XPadDevice xpad_devices[] = {
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
 
 XboxButton string2btn(const std::string& str_);
-XboxAxis string2axis(const std::string& str_);
+XboxAxis  string2axis(const std::string& str_);
 
 std::ostream& operator<<(std::ostream& out, const GamepadType& type) 
 {
@@ -490,7 +490,6 @@ void apply_axis_map(XboxGenericMsg& msg, std::vector<AxisMapping>& lst)
 
 ButtonMapping string2buttonmapping(const std::string& str)
 {
-  std::cout << str << std::endl;
   for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
     {
       if (*i == '=')
@@ -533,7 +532,6 @@ void string2buttonmap(const std::string& str, std::vector<ButtonMapping>& lst)
 
 AxisMapping string2axismapping(const std::string& str)
 {
-  std::cout << str << std::endl;
   for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
     {
       if (*i == '=')
@@ -1215,6 +1213,7 @@ void print_info(struct usb_device* dev,
       std::cout << std::endl;
     }
 
+  std::cout << "AxisMap:           ";
   if (opts.axis_map.empty())
     {
       std::cout << "none" << std::endl;

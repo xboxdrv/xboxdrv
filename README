@@ -89,6 +89,34 @@ your Xbox360 controller from blinking:
 For rumble to work make sure you have connected the controller to a
 USB port that has enough power, i.e. an unpowered USB hub might not
 work.
+
+[[Button Remapping]]
+
+Button remapping is available via the --buttonmap option. If you want
+to swap button A and B start with:
+
+ % ./xboxdrv --buttonmap A=B,B=A
+
+If you want all face buttons send out A button events:
+
+ % ./xboxdrv --buttonmap B=A,X=A,Y=A
+
+Possible button names are: start, guide, back, a, b, x, y, black,
+white, lb, rb, lt, rt, tl, tr, du, dd, dl, dr
+
+[[Axis Remapping]]
+
+Axis remapping is available via --axismap and works the same as button
+mapping. In addition you can supply a sign to indicate that an axis
+should be inverted. So if you want to invert the y1 axis start with:
+
+ % ./xboxdrv --buttonmap -Y1=Y1
+
+If you want to swap the left and right stick start with:
+
+ % ./xboxdrv --buttonmap X2=X1,Y2=Y1,X1=X2,Y1=Y2
+
+Possible axis names are: x1,y1,x2,y2,lt,rt
 
 
 [[ SDL Notes ]]

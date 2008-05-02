@@ -1,6 +1,8 @@
 xboxdrv 0.2 - (??/May/2008)
 ===========================
 
+* added option to remap the axes
+* added option to remap the buttons
 * added option to specify the USB path to use, instead of using
   automatic detection
 * added option to enforce the controller type
