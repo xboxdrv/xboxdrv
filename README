@@ -118,6 +118,8 @@ If you want to swap the left and right stick start with:
 
 Possible axis names are: x1,y1,x2,y2,lt,rt
 
+Swaping lt or rt with x1,y1,x2,y2 will not work properly.
+
 
 [[ SDL Notes ]]
 ---------------
