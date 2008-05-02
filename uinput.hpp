@@ -31,11 +31,13 @@ public:
   bool trigger_as_button;
   bool dpad_as_button;
   bool trigger_as_zaxis;
+  bool dpad_only;
 
   uInputCfg() {
     trigger_as_button = false;
     dpad_as_button    = false;
     trigger_as_zaxis  = false;
+    dpad_only         = false;
   }
 };
 

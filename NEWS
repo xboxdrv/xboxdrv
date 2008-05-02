@@ -1,6 +1,7 @@
 xboxdrv 0.2 - (03/May/2008)
 ===========================
 
+* added --dpad-only option
 * added option to remap the axes
 * added option to remap the buttons
 * added option to specify the USB path to use, instead of using

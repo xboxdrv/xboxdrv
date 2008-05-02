@@ -17,6 +17,7 @@
 */
 
 #include <assert.h>
+#include <stdexcept>
 #include <iostream>
 #include <errno.h>
 #include <sys/types.h>
@@ -75,7 +76,7 @@ uInput::uInput(GamepadType type, uInputCfg config_)
 
       if (ioctl(fd, UI_DEV_CREATE))
         {
-          std::cout << "Unable to create UINPUT device." << std::endl;
+          throw std::runtime_error("Unable to create UINPUT device.");
         }
     }
 }
@@ -85,12 +86,15 @@ uInput::setup_xbox360_gamepad(GamepadType type)
 {
   ioctl(fd, UI_SET_EVBIT, EV_ABS);
   ioctl(fd, UI_SET_EVBIT, EV_KEY);
-        
+
   ioctl(fd, UI_SET_ABSBIT, ABS_X);
   ioctl(fd, UI_SET_ABSBIT, ABS_Y);
 
-  ioctl(fd, UI_SET_ABSBIT, ABS_RX);
-  ioctl(fd, UI_SET_ABSBIT, ABS_RY);
+  if (!config.dpad_only)
+    {  
+      ioctl(fd, UI_SET_ABSBIT, ABS_RX);
+      ioctl(fd, UI_SET_ABSBIT, ABS_RY);
+    }
 
   if (config.trigger_as_button)
     {
@@ -107,17 +111,20 @@ uInput::setup_xbox360_gamepad(GamepadType type)
       ioctl(fd, UI_SET_ABSBIT, ABS_BRAKE);
     }
 
-  if (!config.dpad_as_button)
+  if (!config.dpad_only)
     {
-      ioctl(fd, UI_SET_ABSBIT, ABS_HAT0X);
-      ioctl(fd, UI_SET_ABSBIT, ABS_HAT0Y);
-    }
-  else
-    {
-      ioctl(fd, UI_SET_KEYBIT, BTN_BASE);
-      ioctl(fd, UI_SET_KEYBIT, BTN_BASE2);
-      ioctl(fd, UI_SET_KEYBIT, BTN_BASE3);
-      ioctl(fd, UI_SET_KEYBIT, BTN_BASE4);
+      if (!config.dpad_as_button)
+        {
+          ioctl(fd, UI_SET_ABSBIT, ABS_HAT0X);
+          ioctl(fd, UI_SET_ABSBIT, ABS_HAT0Y);
+        }
+      else
+        {
+          ioctl(fd, UI_SET_KEYBIT, BTN_BASE);
+          ioctl(fd, UI_SET_KEYBIT, BTN_BASE2);
+          ioctl(fd, UI_SET_KEYBIT, BTN_BASE3);
+          ioctl(fd, UI_SET_KEYBIT, BTN_BASE4);
+        }
     }
 
   ioctl(fd, UI_SET_KEYBIT, BTN_START);
@@ -142,20 +149,31 @@ uInput::setup_xbox360_gamepad(GamepadType type)
   strncpy(uinp.name, "Xbox Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
   uinp.id.version = 0;
   uinp.id.bustype = BUS_USB;
-  uinp.id.vendor  = 0x045e;
+  uinp.id.vendor  = 0x045e; // FIXME: this shouldn't be hardcoded
   uinp.id.product = 0x028e;
 
-  uinp.absmin[ABS_X] = -32768;
-  uinp.absmax[ABS_X] =  32767;
+  if (config.dpad_only)
+    {
+      uinp.absmin[ABS_X] = -1;
+      uinp.absmax[ABS_X] =  1;
+      
+      uinp.absmin[ABS_Y] = -1;
+      uinp.absmax[ABS_Y] =  1;
+    }
+  else
+    {
+      uinp.absmin[ABS_X] = -32768;
+      uinp.absmax[ABS_X] =  32767;
 
-  uinp.absmin[ABS_Y] = -32768;
-  uinp.absmax[ABS_Y] =  32767;
-
-  uinp.absmin[ABS_RX] = -32768;
-  uinp.absmax[ABS_RX] =  32767;
-
-  uinp.absmin[ABS_RY] = -32768;
-  uinp.absmax[ABS_RY] =  32767;
+      uinp.absmin[ABS_Y] = -32768;
+      uinp.absmax[ABS_Y] =  32767;
+    
+      uinp.absmin[ABS_RX] = -32768;
+      uinp.absmax[ABS_RX] =  32767;
+      
+      uinp.absmin[ABS_RY] = -32768;
+      uinp.absmax[ABS_RY] =  32767;
+    }
 
   if (config.trigger_as_zaxis)
     {
@@ -171,7 +189,7 @@ uInput::setup_xbox360_gamepad(GamepadType type)
       uinp.absmax[ABS_BRAKE] = 255;
     }
       
-  if (!config.dpad_as_button)
+  if (!config.dpad_as_button && !config.dpad_only)
     {
       uinp.absmin[ABS_HAT0X] = -1;
       uinp.absmax[ABS_HAT0X] =  1;
@@ -225,6 +243,7 @@ uInput::setup_xbox360_guitar()
   uinp.absmin[ABS_Y] = -32768;
   uinp.absmax[ABS_Y] =  32767;
 
+  
   write(fd, &uinp, sizeof(uinp));  
 }
 
@@ -326,7 +345,7 @@ uInput::send(Xbox360Msg& msg)
       send_axis(ABS_GAS,   msg.rt);
     }
   
-  if (config.dpad_as_button)
+  if (config.dpad_as_button && !config.dpad_only)
     {
       send_button(BTN_BASE,  msg.dpad_up);
       send_button(BTN_BASE2, msg.dpad_down);
@@ -335,30 +354,39 @@ uInput::send(Xbox360Msg& msg)
     }
   else
     {
+      uint16_t dpad_x = ABS_HAT0X;
+      uint16_t dpad_y = ABS_HAT0Y;
+      
+      if (config.dpad_only)
+        {
+          dpad_x = ABS_X;
+          dpad_y = ABS_Y;
+        }
+
       if (msg.dpad_up)
         {
-          send_axis(ABS_HAT0Y, -1);
+          send_axis(dpad_y, -1);
         }
       else if (msg.dpad_down)
         {
-          send_axis(ABS_HAT0Y, 1);
+          send_axis(dpad_y, 1);
         }
       else
         {
-          send_axis(ABS_HAT0Y, 0);
+          send_axis(dpad_y, 0);
         }
 
       if (msg.dpad_left)
         {
-          send_axis(ABS_HAT0X, -1);
+          send_axis(dpad_x, -1);
         }
       else if (msg.dpad_right)
         {
-          send_axis(ABS_HAT0X, 1);
+          send_axis(dpad_x, 1);
         }
       else
         {
-          send_axis(ABS_HAT0X, 0);
+          send_axis(dpad_x, 0);
         }
     }
 }

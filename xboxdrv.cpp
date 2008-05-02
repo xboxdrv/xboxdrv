@@ -867,6 +867,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  --trigger-as-button      LT and RT send button instead of axis events" << std::endl;
   std::cout << "  --trigger-as-zaxis       Combine LT and RT to form a zaxis instead" << std::endl;
   std::cout << "  --dpad-as-button         DPad sends button instead of axis events" << std::endl;
+  std::cout << "  --dpad-only              Both sticks are ignored, only DPad sends out axis events" << std::endl;
   std::cout << "  --type TYPE              Ignore autodetection and enforce controller type\n"
             << "                           (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)" << std::endl;
   std::cout << "  -b, --buttonmap MAP      Remap the buttons as specified by MAP" << std::endl;
@@ -1071,6 +1072,10 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
               std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
               exit(EXIT_FAILURE);
             }
+        }
+      else if (strcmp("--dpad-only", argv[i]) == 0)
+        {
+          opts.uinput_config.dpad_only = true;
         }
       else if (strcmp("--dpad-as-button", argv[i]) == 0)
         {
