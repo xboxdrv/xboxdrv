@@ -90,7 +90,8 @@ For rumble to work make sure you have connected the controller to a
 USB port that has enough power, i.e. an unpowered USB hub might not
 work.
 
-[[Button Remapping]]
+[[ Button Remapping ]]
+----------------------
 
 Button remapping is available via the --buttonmap option. If you want
 to swap button A and B start with:
@@ -104,7 +105,8 @@ If you want all face buttons send out A button events:
 Possible button names are: start, guide, back, a, b, x, y, black,
 white, lb, rb, lt, rt, tl, tr, du, dd, dl, dr
 
-[[Axis Remapping]]
+[[ Axis Remapping ]]
+--------------------
 
 Axis remapping is available via --axismap and works the same as button
 mapping. In addition you can supply a sign to indicate that an axis
