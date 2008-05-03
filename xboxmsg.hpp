@@ -176,6 +176,55 @@ std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg);
 std::ostream& operator<<(std::ostream& out, const XboxMsg& msg);
 std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg);
 
+enum XboxButton {
+  XBOX_BTN_UNKNOWN,
+  XBOX_BTN_START,
+  XBOX_BTN_GUIDE,
+  XBOX_BTN_BACK,
+
+  XBOX_BTN_A,
+  XBOX_BTN_B,
+  XBOX_BTN_X,
+  XBOX_BTN_Y,
+
+  XBOX_BTN_WHITE,
+  XBOX_BTN_BLACK,
+
+  XBOX_BTN_LB,
+  XBOX_BTN_RB,
+
+  XBOX_BTN_LT,
+  XBOX_BTN_RT,
+
+  XBOX_BTN_THUMB_L,
+  XBOX_BTN_THUMB_R,
+
+  XBOX_DPAD_UP,
+  XBOX_DPAD_DOWN,
+  XBOX_DPAD_LEFT,
+  XBOX_DPAD_RIGHT,
+};
+
+enum XboxAxis {
+  XBOX_AXIS_UNKNOWN,
+  XBOX_AXIS_X1,
+  XBOX_AXIS_Y1,
+  XBOX_AXIS_X2,
+  XBOX_AXIS_Y2,
+  XBOX_AXIS_LT,
+  XBOX_AXIS_RT,
+};
+
+int  get_button(XboxGenericMsg& msg, XboxButton button);
+void set_button(XboxGenericMsg& msg, XboxButton button, int v);
+int  get_axis(XboxGenericMsg& msg, XboxAxis axis);
+void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v);
+
+XboxButton string2btn(const std::string& str_);
+XboxAxis   string2axis(const std::string& str_);
+std::string btn2string(XboxButton btn);
+std::string axis2string(XboxAxis axis);
+
 #endif
 
 /* EOF */

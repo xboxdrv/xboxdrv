@@ -125,7 +125,8 @@ Swaping lt or rt with x1,y1,x2,y2 will not work properly.
 
 The programs inputdrv and gui/inputcfg.py are part of an experiment to
 create a very flexible input configuration framework. They are still
-in development and not of any use unless you want to hack the source.
+in development and not of any use unless you want to hack the
+source. Their compilation is disabled by default.
 
 [[ SDL Notes ]]
 ---------------

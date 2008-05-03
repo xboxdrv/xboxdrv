@@ -3,6 +3,23 @@ use bInterfaceProtocol or so to detect the gamepad, not idVendor/idProduct
 Pictures of Xbox360 and controller:
 http://g-prime.net/x360/
 
+--stick2-as-throttle
+  Makes the second stick act as throttle control
+
+Use cases:
+==========
+* flightsim:
+   expects:     X/Y      Rudder   Throttle
+   XBox:    Left-Stick   LT+RT    Right-Stick(rel)
+
+* FPS:
+   expects:  Mouse-X/Y   Walk-X/Y  Trigger
+   XBox:    Left-Stick   RickStick Trigger(btn)
+
+* 2D Jump Run (done)
+   needs dpad first
+
+
 FIX:
 =====
   filter auto known unknown messages
@@ -94,6 +111,7 @@ Unknown data: bytes: 3 Data: 0x01 0x03 0x00
                       */    
 
 -----
+Guitar: 
 
 Tilt Sensor: is mapped to the second axis of S2, to LT and RT (three parts)
 - Range for 2nd axis of S2 : -32768 when guitar is straight down and 32767 when she is straight up.
@@ -164,13 +182,6 @@ New Command Line Options:
 #define BTN_THUMBL		0x13d
 #define BTN_THUMBR		0x13e
 
---dpad-first 
-  Dpad becomes first and second axis, instead of last, useful for 2D
-  jump'n run
-
---stick2-as-throttle
-  Makes the second stick act as throttle control
-
 * add support to remap keys
 
 * allow mouse emulation
@@ -180,19 +191,9 @@ New Command Line Options:
 * merge this thing with Pingus Input handling to get a very flexible framework?
 
 * ...
-
-Use cases:
-==========
-* flightsim:
-   expects:     X/Y      Rudder   Throttle
-   XBox:    Left-Stick   LT+RT    Right-Stick(rel)
-
-* FPS:
-   expects:  Mouse-X/Y   Walk-X/Y  Trigger
-   XBox:    Left-Stick   RickStick Trigger(btn)
-
-* 2D Jump Run
-   needs dpad first
+
+[[ InputDrv ]]
+==============
 
 Needed features:
 ================
@@ -212,42 +213,6 @@ Needed features:
           (device (inverse (xbox360-button "Y"))))
   (axis   (name "ABS_X")
           ...
-)
-
-;; -- Pingus Input Configuration --
-(pingus-controller
- (standard-pointer
-  (usbmouse:pointer (device "/dev/input/mx500")))
-
- (standard-scroller
-  (usbmouse:scroller (device "/dev/input/marblemouse")))
-
- (primary-button
-  (usbmouse:button (device "/dev/input/mx500") (button 0)))
-
- (secondary-button
-  (usbmouse:button (device "/dev/input/mx500") (button 1)))
-
- (pause-button
-  (usbmouse:button (device "/dev/input/mx500") (button 4)))
-
- (fast-forward-button
-  (usbmouse:button (device "/dev/input/mx500") (button 3)))
-
-;; (armageddon-button
-;;  (usbmouse:button (device "/dev/input/mx500") (button 4)))
-
- (escape-button
-  (sdl:keyboard-button (key "escape")))
-
- (action-up-button
-  (usbmouse:button (device "/dev/input/mx500") (button 6))) 
-
- (action-down-button
-  (usbmouse:button (device "/dev/input/mx500") (button 5)))
- )
-
-;; EOF ;;
- 
+) 
 
 # EOF #

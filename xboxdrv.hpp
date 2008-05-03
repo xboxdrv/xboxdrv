@@ -28,45 +28,6 @@ struct XPadDevice {
   const char* name;
 };
 
-enum XboxButton {
-  XBOX_BTN_UNKNOWN,
-  XBOX_BTN_START,
-  XBOX_BTN_GUIDE,
-  XBOX_BTN_BACK,
-
-  XBOX_BTN_A,
-  XBOX_BTN_B,
-  XBOX_BTN_X,
-  XBOX_BTN_Y,
-
-  XBOX_BTN_WHITE,
-  XBOX_BTN_BLACK,
-
-  XBOX_BTN_LB,
-  XBOX_BTN_RB,
-
-  XBOX_BTN_LT,
-  XBOX_BTN_RT,
-
-  XBOX_BTN_THUMB_L,
-  XBOX_BTN_THUMB_R,
-
-  XBOX_DPAD_UP,
-  XBOX_DPAD_DOWN,
-  XBOX_DPAD_LEFT,
-  XBOX_DPAD_RIGHT,
-};
-
-enum XboxAxis {
-  XBOX_AXIS_UNKNOWN,
-  XBOX_AXIS_X1,
-  XBOX_AXIS_Y1,
-  XBOX_AXIS_X2,
-  XBOX_AXIS_Y2,
-  XBOX_AXIS_LT,
-  XBOX_AXIS_RT,
-};
-
 struct ButtonMapping {
   XboxButton lhs;
   XboxButton rhs;
