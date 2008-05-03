@@ -65,7 +65,7 @@ find_usb_device(uint16_t idVendor, uint16_t idProduct)
 }
 
 void
-cat_usb_device(struct usb_device* dev, int ep)
+cat_usb_device(struct usb_device* dev, int interface, int endpoint)
 {
   struct usb_dev_handle* handle = usb_open(dev);
   if (!handle)
@@ -74,17 +74,16 @@ cat_usb_device(struct usb_device* dev, int ep)
     }
   else
     {
-      // FIXME: ep-1 is hack for Xbox360 wireless
-      if (usb_claim_interface(handle, ep-1) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
+      if (usb_claim_interface(handle, interface) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
         {
           std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
-          if (usb_detach_kernel_driver_np(handle, ep-1) < 0)
+          if (usb_detach_kernel_driver_np(handle, interface) < 0)
             {
               std::cout << "Failure to kick kernel driver: " << usb_strerror() << std::endl;
               exit(EXIT_FAILURE);              
             }
 
-          if (usb_claim_interface(handle, 0) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
+          if (usb_claim_interface(handle, interface) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
             {
               std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
               exit(EXIT_FAILURE);
@@ -97,7 +96,7 @@ cat_usb_device(struct usb_device* dev, int ep)
       while(!quit)
         {
           uint8_t data[1024];
-          int ret = usb_interrupt_read(handle, ep, (char*)data, sizeof(data), 0);
+          int ret = usb_interrupt_read(handle, endpoint, (char*)data, sizeof(data), 0);
           if (ret < 0)
             {
               std::cout << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
@@ -133,6 +132,7 @@ cat_usb_device(struct usb_device* dev, int ep)
                 }
             }
         }
+      usb_release_interface(handle, interface);
       usb_close(handle);
     }
 }
@@ -170,13 +170,17 @@ int main(int argc, char** argv)
     {
       uint16_t idVendor;
       uint16_t idProduct;
-      int endpoint = 1;
+      int interface = 0;
+      int endpoint  = 1;
 
       if (sscanf(argv[2], "0x%hx", &idVendor) == 1 &&
           sscanf(argv[3], "0x%hx", &idProduct) == 1)
         {
           if (argc == 5)
-            endpoint = atoi(argv[4]);
+            interface = atoi(argv[4]);
+          
+          if (argc == 6)
+            endpoint  = atoi(argv[5]);
 
           usb_init();
           usb_find_busses();
@@ -190,8 +194,8 @@ int main(int argc, char** argv)
             }
           else
             {
-              std::cout << "Reading data from: " << dev << " Endpoint: " << endpoint << std::endl; 
-              cat_usb_device(dev, endpoint);
+              std::cout << "Reading data from: " << dev << " Interface: " << interface << " Endpoint: " << endpoint << std::endl; 
+              cat_usb_device(dev, interface, endpoint);
             }
         }
       else
@@ -202,10 +206,9 @@ int main(int argc, char** argv)
   else
     {
       std::cout << "Usage: " << argv[0] << " list\n"
-                << "       " << argv[0] << " cat IDVENDOR IDPRODUCT [ENDPOINT]"
+                << "       " << argv[0] << " cat IDVENDOR IDPRODUCT [INTERFACE] [ENDPOINT]"
                 << std::endl;
     }
 }
 
 /* EOF */
-
