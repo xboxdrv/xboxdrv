@@ -11,10 +11,6 @@ FIX:
 
 Battery warning: LEDs 1,4 then 2,3 over and over ~10 times rapidly
 
-Easy interface:
-===============
---trigger-as-zaxis
-
 * a way to send keyboard combination sequences or more general event sequences
 * abs input must be normalized to min/max
 * rel input must be scaleable

@@ -23,8 +23,8 @@ You can compile by typing:
  % scons
 
 
-[[ Running ]]
---------------
+[[ Running XboxDrv ]]
+---------------------
 
 First make sure that the xpad kernel module does not get loaded,
 either by deleting or renaming it. rmmod might not be enough since it
@@ -119,7 +119,13 @@ If you want to swap the left and right stick start with:
 Possible axis names are: x1,y1,x2,y2,lt,rt
 
 Swaping lt or rt with x1,y1,x2,y2 will not work properly.
+
+[[Running InputDrv]]
+--------------------
 
+The programs inputdrv and gui/inputcfg.py are part of an experiment to
+create a very flexible input configuration framework. They are still
+in development and not of any use unless you want to hack the source.
 
 [[ SDL Notes ]]
 ---------------
