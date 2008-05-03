@@ -1,15 +1,15 @@
 xboxdrv 0.2 - (03/May/2008)
 ===========================
 
-* added --dpad-only option
-* added option to remap the axes
-* added option to remap the buttons
+* added support for Xbox360 wireless gamepads
+* added support for the Xbox360 guitar controller
+* added --dpad-only option for apps that don't need analogsticks
+* added --axismap option to remap the axes
+* added --buttonmap option to remap the buttons
 * added option to specify the USB path to use, instead of using
   automatic detection
 * added option to enforce the controller type
 * added deadzone configuration support
-* added support for Xbox360 wireless gamepads
-* added support for the Xbox360 guitar controller
 * switched from usb_bulk_read() to usb_interrupt_read(), this fixes
   problems with some controller
 
