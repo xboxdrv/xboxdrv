@@ -6,6 +6,8 @@ http://g-prime.net/x360/
 --stick2-as-throttle
   Makes the second stick act as throttle control
 
+Add examples to Readme for specific games
+
 Use cases:
 ==========
 * flightsim:
@@ -34,50 +36,6 @@ Battery warning: LEDs 1,4 then 2,3 over and over ~10 times rapidly
 * Cleanup naming conventions
 
 sending rumble is slow and delayed, gets buffered up
-
-d-feet
-
-dbus-send --system --type=method_call --print-reply --dest=org.x.config.display0 /org/x/config/0 org.x.config.input.remove uint32:5
-Error org.freedesktop.DBus.Error.ServiceUnknown: The name org.x.config.display0 was not provi
-
-Doing polling seems to lose some events
-
-dbus-send --dest=org.gnome.ScreenSaver
-  /
-
-dbus-send --dest=org.freedesktop.ExampleName               \
- /org/freedesktop/sample/object/name
- org.freedesktop.ExampleInterface.ExampleMethod   \
-                   int32:47 string:'hello world' double:65.32       \
-                   array:string:"1st item","next item","last item"  \
-                   dict:string:int32:"one",1,"two",2,"three",3      \
-                   variant:int32:-8                                 \
-                   objpath:/org/freedesktop/sample/object/name
-
-
-dbus-send --dest=org.x.config.display0 \
- /org/x/config/0 
- org.x.config.input.add
-
-
-dbus-send --dest=org.x.config.display0  /org/x/config/0 org.x.config.input.remove int32:5
- 
-dbus-send \
-  --dest=org.x.config.display0 \
-  org.freedesktop.DBus.Introspectable \
-org.freedesktop.DBus.Introspectable.Introspect \
-
-Controls:
-=========
- * invert button
- * toggle button
- * autofire button
-
- * invert axis
- * deadzone axis
- * split axis (gas/break)
- * join axis (trigger -> zaxis)
- * non-linear axis (gamma or so)
 
 * examples in doc for --dpad as buttons and other options
 
@@ -126,11 +84,7 @@ Tilt Sensor: is mapped to the second axis of S2, to LT and RT (three parts)
 They control guitar rotation, hmm hard to explain, it's when I rotate the guitar in front of me, it detects if the guitar is in the correct position.
 -----
 
-* add -type option to enforce controller type
-
 * Question: Firestorm Dual Power: How to get rumble to work when there is no endpoint to send data to?
-
-* allow selection of controller by usb path busNr,deviceNr
 
 * Guitar Hero Controller:
   - lsusb -v output looks like a XBox360 controller
@@ -215,4 +169,61 @@ Needed features:
           ...
 ) 
 
+
+Controls:
+=========
+ * invert button
+ * toggle button
+ * autofire button
+
+ * invert axis
+ * deadzone axis
+ * split axis (gas/break)
+ * join axis (trigger -> zaxis)
+ * non-linear axis (gamma or so)
+
+
+[[ Xorg Input Hotplug ]]
+========================
+
+Not available in Ubuntu and still rough, would work via Dbus, see:
+
+http://www.x.org/wiki/XInputHotplug
+
+d-feet is a Dbus debuging/viewing tool.
+
+Example Dbus stuff:
+-------------------
+
+dbus-send --system --type=method_call --print-reply --dest=org.x.config.display0 /org/x/config/0 org.x.config.input.remove uint32:5
+Error org.freedesktop.DBus.Error.ServiceUnknown: The name org.x.config.display0 was not provi
+
+Doing polling seems to lose some events
+
+dbus-send --dest=org.gnome.ScreenSaver
+  /
+
+dbus-send --dest=org.freedesktop.ExampleName               \
+ /org/freedesktop/sample/object/name
+ org.freedesktop.ExampleInterface.ExampleMethod   \
+                   int32:47 string:'hello world' double:65.32       \
+                   array:string:"1st item","next item","last item"  \
+                   dict:string:int32:"one",1,"two",2,"three",3      \
+                   variant:int32:-8                                 \
+                   objpath:/org/freedesktop/sample/object/name
+
+
+dbus-send --dest=org.x.config.display0 \
+ /org/x/config/0 
+ org.x.config.input.add
+
+
+dbus-send --dest=org.x.config.display0  /org/x/config/0 org.x.config.input.remove int32:5
+ 
+dbus-send \
+  --dest=org.x.config.display0 \
+  org.freedesktop.DBus.Introspectable \
+org.freedesktop.DBus.Introspectable.Introspect \
+
+
 # EOF #
