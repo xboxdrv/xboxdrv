@@ -1,10 +1,13 @@
+use bInterfaceProtocol or so to detect the gamepad, not idVendor/idProduct
+
 Pictures of Xbox360 and controller:
 http://g-prime.net/x360/
 
 FIX:
 =====
   filter auto known unknown messages
-  usbcat contains ugly endpoint hack
+  uinput name should be configurable
+  uinput busid/devid shouldn't be hardcoded
 
 Battery warning: LEDs 1,4 then 2,3 over and over ~10 times rapidly
 

@@ -74,8 +74,11 @@ cat_usb_device(struct usb_device* dev, int interface, int endpoint)
     }
   else
     {
-      if (usb_claim_interface(handle, interface) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
+      std::cout << "Claming interface " << interface << std::endl;
+      if (usb_claim_interface(handle, interface) != 0)
         {
+          std::cout << "Claming interface " << interface << " success" << std::endl;
+
           std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
           if (usb_detach_kernel_driver_np(handle, interface) < 0)
             {
@@ -83,7 +86,7 @@ cat_usb_device(struct usb_device* dev, int interface, int endpoint)
               exit(EXIT_FAILURE);              
             }
 
-          if (usb_claim_interface(handle, interface) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
+          if (usb_claim_interface(handle, interface) != 0)
             {
               std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
               exit(EXIT_FAILURE);
@@ -166,7 +169,7 @@ int main(int argc, char** argv)
 
       list_usb_devices();
     }
-  else if ((argc == 4 || argc == 5) && strcmp("cat", argv[1]) == 0)
+  else if ((argc == 4 || argc == 5 || argc == 6) && strcmp("cat", argv[1]) == 0)
     {
       uint16_t idVendor;
       uint16_t idProduct;
@@ -176,7 +179,7 @@ int main(int argc, char** argv)
       if (sscanf(argv[2], "0x%hx", &idVendor) == 1 &&
           sscanf(argv[3], "0x%hx", &idProduct) == 1)
         {
-          if (argc == 5)
+          if (argc >= 5)
             interface = atoi(argv[4]);
           
           if (argc == 6)
