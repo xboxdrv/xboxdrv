@@ -19,6 +19,7 @@
 #include <usb.h>
 #include <boost/format.hpp>
 #include <iostream>
+#include <string.h>
 
 std::ostream& operator<<(std::ostream& out, struct usb_device* dev)
 {
