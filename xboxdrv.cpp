@@ -21,6 +21,7 @@
 #include <usb.h>
 #include <unistd.h>
 #include <iostream>
+#include <string.h>
 #include "uinput.hpp"
 #include "xboxmsg.hpp"
 #include "xbox_controller.hpp"

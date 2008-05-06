@@ -1,5 +1,9 @@
-use bInterfaceProtocol or so to detect the gamepad, not idVendor/idProduct
+
+Daemon Mode:
+SYSFS{idVendor}=="045e", SYSFS{idProduct}=="028e", RUN+="/home/ingo/projects/xboxdrv/trunk/xboxdrv --daemon"
 
+Unpluging doesn't work and causes xboxdrv processing running amok
+
 Pictures of Xbox360 and controller:
 http://g-prime.net/x360/
 
