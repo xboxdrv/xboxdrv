@@ -3,6 +3,11 @@ XBox Gamepad Userspace Driver Programming:
   * Ingo Ruhnke <grumbel@gmx>
 
 
+DirectInputQuery Util:
+^^^^^^^^^^^^^^^^^^^^^^
+ * Magnus Norddahl <mbn@clanlib.org>
+
+
 XBox Gamepad Userspace Driver Testing:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   * Julien <julroy67@gmail.com> (Xbox360 Guitar)
