@@ -1,6 +1,6 @@
 # -*- python -*-
 
-env = Environment(CPPFLAGS=["-g", "-O2", "-Wall"], CFLAGS=["-std=c99"])
+env = Environment(CPPFLAGS=["-g", "-O2", "-Wall"])
 env.Program("jstest", ["jstest.c"])
 env.Program("evtest", ["evtest.c"])
 env.Program("usbcat", ["usbcat.cpp"], LIBS = ["usb"])

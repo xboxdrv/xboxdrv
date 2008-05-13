@@ -136,6 +136,7 @@ void evtest_info(const char* filename)
     }
   else
     {
+      int i, j, k;
       printf("Input device file: \"%s\"\n", filename);
 
       int version;
@@ -160,17 +161,17 @@ void evtest_info(const char* filename)
       ioctl(fd, EVIOCGBIT(0, EV_MAX), bit[0]);
       printf("Supported events:\n");
 
-      for (int i = 0; i < EV_MAX; i++)
+      for (i = 0; i < EV_MAX; i++)
         if (test_bit(i, bit[0])) {
           printf("  Event type %d (%s)\n", i, events[i] ? events[i] : "?");
           ioctl(fd, EVIOCGBIT(i, KEY_MAX), bit[i]);
-          for (int j = 0; j < KEY_MAX; j++) 
+          for (j = 0; j < KEY_MAX; j++) 
             if (test_bit(j, bit[i])) {
               printf("    Event code %d (%s)\n", j, names[i] ? (names[i][j] ? names[i][j] : "?") : "?");
               if (i == EV_ABS) {
                 int abs[5];
                 ioctl(fd, EVIOCGABS(j), abs);
-                for (int k = 0; k < 5; k++)
+                for (k = 0; k < 5; k++)
                   if ((k < 3) || abs[k])
                     printf("      %s %6d\n", absval[k], abs[k]);
               }
