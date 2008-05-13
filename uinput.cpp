@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <linux/input.h>
 #include <linux/uinput.h>
 #include "xboxmsg.hpp"
 #include "uinput.hpp"
