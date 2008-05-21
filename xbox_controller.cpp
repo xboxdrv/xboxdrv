@@ -32,7 +32,8 @@ XboxController::XboxController(struct usb_device* dev)
     {
       if (usb_claim_interface(handle, 0) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
         {
-          throw std::runtime_error("Error couldn't claim the USB interface");
+          throw std::runtime_error("Error couldn't claim the USB interface\n"
+                                   "Try to run 'rmmod xpad' and start xboxdrv again");
         }
     }
 }
