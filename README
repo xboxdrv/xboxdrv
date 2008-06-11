@@ -6,6 +6,10 @@ userspace. It is a alternative to the xpad kernel driver and has
 support for Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless
 gamepads. The Xbox360 guitar and some Xbox1 dancemats might work too.
 
+This driver is only of interest if the xpad kernel driver doesn't work
+for you or if you want some more configurabity, if the xpad kernel
+driver works for you there is no need to try this driver.
+
 
 
 [[ Compilation ]]
@@ -41,10 +45,15 @@ You also have to make sure that you have access rights to
 /dev/input/uinput, either add yourself to the appropriate group,
 adjust the permissions or run xboxdrv as root.
 
-Once ensured that xpad is out of the way and everything is in palce
+Once ensured that xpad is out of the way and everything is in place
 plug in your Xbox360 gamepad and start the userspace driver with:
 
  % ./xboxdrv
+
+Or in case you don't have the neccesary rights (being in group root
+should often be enough) start the driver as root via:
+
+ % sudo ./xboxdrv
 
 This will create /dev/input/js0 and allow you to access the gamepad
 from any game. To exit the driver press Ctrl-c.
