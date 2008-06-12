@@ -19,6 +19,7 @@
 #include <boost/format.hpp>
 #include <iostream>
 #include "helper.hpp"
+#include "command_line_options.hpp"
 #include "xboxmsg.hpp"
 
 std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg)
@@ -55,21 +56,23 @@ std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg)
     % int(msg.blue)
     % int(msg.orange);
 
-  if (0)
-    out << boost::format("| dummy: %d %d %d %d %02hhx %02hhx %04hx %04hx %02x %02x")
-      % int(msg.thumb_l)
-      % int(msg.thumb_r)
-      % int(msg.rb)
-      % int(msg.dummy1)
+  if (command_line_options->verbose)
+    {
+      out << boost::format("| dummy: %d %d %d %d %02hhx %02hhx %04hx %04hx %02x %02x")
+        % int(msg.thumb_l)
+        % int(msg.thumb_r)
+        % int(msg.rb)
+        % int(msg.dummy1)
 
-      % int(msg.lt)
-      % int(msg.rt)
+        % int(msg.lt)
+        % int(msg.rt)
 
-      % int16_t(msg.x1)
-      % int16_t(msg.y1)
+        % int16_t(msg.x1)
+        % int16_t(msg.y1)
 
-      % int(msg.dummy2)
-      % int(msg.dummy3);
+        % int(msg.dummy2)
+        % int(msg.dummy3);
+    }
  
   return out;
 }
@@ -106,7 +109,7 @@ std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg)
   out << boost::format("  LT:%3d RT:%3d")
     % int(msg.lt) % int(msg.rt);
 
-  if (0)
+  if (command_line_options->verbose)
     out << " Dummy: " << msg.dummy1 << " " << msg.dummy2 << " " << msg.dummy3;
 
   return out;

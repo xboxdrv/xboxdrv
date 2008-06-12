@@ -28,6 +28,7 @@
 #include "xbox360_controller.hpp"
 #include "xbox360_wireless_controller.hpp"
 #include "helper.hpp"
+#include "command_line_options.hpp"
 #include "xbox_generic_controller.hpp"
 
 #include "xboxdrv.hpp"
@@ -396,46 +397,6 @@ bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice
     }
   return 0;
 }
-
-struct CommandLineOptions 
-{
-  bool daemon;
-  bool verbose;
-  bool silent;
-  bool rumble;
-  int  led;
-  int  rumble_l;
-  int  rumble_r;
-  int  controller_id;
-  int  wireless_id;
-  bool instant_exit;
-  bool no_uinput;
-  GamepadType gamepad_type;
-  char busid[4];
-  char devid[4];
-  uInputCfg uinput_config;
-  int deadzone;
-  std::vector<ButtonMapping> button_map;
-  std::vector<AxisMapping>   axis_map;
-
-  CommandLineOptions() {
-    daemon   = false;
-    verbose  = false;
-    silent   = false;
-    rumble   = false;
-    led      = -1;
-    rumble_l = 0;
-    rumble_r = 0;
-    controller_id = 0;
-    wireless_id   = 0;
-    instant_exit = false;
-    no_uinput = false;
-    gamepad_type = GAMEPAD_UNKNOWN;
-    busid[0] = '\0';
-    devid[0] = '\0';
-    deadzone = 0;
-  }
-};
 
 void print_command_line_help(int argc, char** argv)
 {
@@ -1101,6 +1062,7 @@ int main(int argc, char** argv)
       signal(SIGINT, on_sigint);
 
       CommandLineOptions opts;
+      command_line_options = &opts;
 
       parse_command_line(argc, argv, opts);
 
