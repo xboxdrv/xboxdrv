@@ -1,4 +1,8 @@
-env = Environment(CXX='i586-mingw32msvc-g++', PROGSUFFIX=".exe", LIBS="gdi32")
+env = Environment(CXX='i586-mingw32msvc-g++', 
+                  PROGSUFFIX=".exe", 
+                  LIBS=["gdi32", "ole32", "dinput", "dxguid"],
+                  CPPPATH="include",
+                  LIBPATH="lib")
 env.Program('hello_world', 'hello_world.cpp')
 
 # EOF #

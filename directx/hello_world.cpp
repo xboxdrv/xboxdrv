@@ -1,6 +1,8 @@
+#include <dinput.h>
+#include <iostream>
 #include <windows.h>
 #include <winuser.h>
-
+
 HWND MainWindowHandle = 0;
 
 LRESULT CALLBACK WndProc(HWND windowHandle,
@@ -26,7 +28,7 @@ LRESULT CALLBACK WndProc(HWND windowHandle,
 
   return ::DefWindowProc(windowHandle, msg, wParam, lParam);
 }
-
+
 bool InitWindowsApp(HINSTANCE instanceHandle, int show)
 {
   WNDCLASS wc;
@@ -72,7 +74,7 @@ bool InitWindowsApp(HINSTANCE instanceHandle, int show)
   return true;
   
 }
-
+
 int Run()
 {
   MSG msg;
@@ -86,12 +88,31 @@ int Run()
 
   return msg.wParam;
 }
-
+
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    PSTR      pCmdLine,
                    int       nShowCmd)
 {
+  HRESULT result = CoInitialize(0);
+  LPDIRECTINPUT directinput;
+
+  if (FAILED(result))
+    {
+      std::cerr << "CL_DisplayWindow_Win32: Damn murphy must hate you. CoInitialize failed!" << std::endl;
+    }
+
+  result = CoCreateInstance(CLSID_DirectInput, 0, CLSCTX_INPROC_SERVER, IID_IDirectInput, (LPVOID *) &directinput);
+  if (FAILED(result))
+    {
+      std::cerr << "FAILURE" << std::endl;
+    }
+  else
+    {
+      std::cerr << "SUCCESS" << std::endl;
+      result = directinput->Initialize(GetModuleHandle(0), DIRECTINPUT_VERSION);
+    }
+
   if (!InitWindowsApp(hInstance, nShowCmd))
     {
       ::MessageBox(0, "Init - Failed", "Error", MB_OK);
