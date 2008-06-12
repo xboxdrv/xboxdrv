@@ -76,7 +76,7 @@ Xbox360WirelessController::set_led(uint8_t status)
 }
 
 bool
-Xbox360WirelessController::read(XboxGenericMsg& msg)
+Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose)
 {
   uint8_t data[32];
   int ret = usb_interrupt_read(handle, endpoint, (char*)data, sizeof(data), 0 /*Timeout*/);

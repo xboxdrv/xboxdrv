@@ -1,3 +1,11 @@
+xboxdrv 0.2.1 - (??/Jun/2008)
+=============================
+
+* added short note when USB device is busy
+* added note to README about running it via sudo
+* added some missing header files
+
+
 xboxdrv 0.2 - (03/May/2008)
 ===========================
 

@@ -41,7 +41,7 @@ public:
 
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
-  bool read(XboxGenericMsg& msg);
+  bool read(XboxGenericMsg& msg, bool verbose);
   uint8_t get_battery_status() const;
 private:
   Xbox360WirelessController (const Xbox360WirelessController&);

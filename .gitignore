@@ -1,6 +1,5 @@
 *~
 *.o
-.gitignore
 xboxdrv
 .sconsign.dblite
 usb.txt

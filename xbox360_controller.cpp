@@ -69,7 +69,7 @@ Xbox360Controller::set_led(uint8_t status)
 }
 
 bool
-Xbox360Controller::read(XboxGenericMsg& msg)
+Xbox360Controller::read(XboxGenericMsg& msg, bool verbose)
 {
   uint8_t data[32];
   int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, sizeof(data), 0 /*Timeout*/);
@@ -82,20 +82,30 @@ Xbox360Controller::read(XboxGenericMsg& msg)
     }
   else if (ret == 0)
     {
-      // happens with the Xbox360 controller every now and then, just
-      // ignore, seems harmless, so just ignore
+      if (verbose)
+        {
+          std::cout << "zero length read" << std::endl;
+          // happens with the Xbox360 controller every now and then, just
+          // ignore, seems harmless, so just ignore
+        }
     }
   else if (ret == 3 && data[0] == 0x01 && data[1] == 0x03)
     { 
-      // std::cout << "Xbox360Controller: LED Status: " << int(data[2]) << std::endl;
+      if (verbose)
+        {
+          std::cout << "Xbox360Controller: LED Status: " << int(data[2]) << std::endl;
+        }
     }
   else if (ret == 3 && data[0] == 0x03 && data[1] == 0x03)
     { 
-      // data[2] == 0x00 means that rumble is disabled
-      // data[2] == 0x01 unknown, but rumble works
-      // data[2] == 0x02 unknown, but rumble works
-      // data[2] == 0x03 is default with rumble enabled
-      // std::cout << "Xbox360Controller: Rumble Status: " << int(data[2]) << std::endl;
+      if (verbose)
+        {
+          // data[2] == 0x00 means that rumble is disabled
+          // data[2] == 0x01 unknown, but rumble works
+          // data[2] == 0x02 unknown, but rumble works
+          // data[2] == 0x03 is default with rumble enabled
+          std::cout << "Xbox360Controller: Rumble Status: " << int(data[2]) << std::endl;
+        }
     }
   else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
     {

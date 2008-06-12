@@ -1,3 +1,8 @@
+More general button map support:
+
+ % ./xboxdrv --buttonmap B=BTN_A,X=BTN_A,Y=KEY_B
+
+So pressing B sends out BTN_A uinput event
 
 Daemon Mode:
 SYSFS{idVendor}=="045e", SYSFS{idProduct}=="028e", RUN+="/home/ingo/projects/xboxdrv/trunk/xboxdrv --daemon"

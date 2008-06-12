@@ -400,6 +400,7 @@ bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice
 struct CommandLineOptions 
 {
   bool daemon;
+  bool verbose;
   bool silent;
   bool rumble;
   int  led;
@@ -419,6 +420,7 @@ struct CommandLineOptions
 
   CommandLineOptions() {
     daemon   = false;
+    verbose  = false;
     silent   = false;
     rumble   = false;
     led      = -1;
@@ -442,6 +444,8 @@ void print_command_line_help(int argc, char** argv)
   std::cout << std::endl;
   std::cout << "General Options: " << std::endl;
   std::cout << "  -h, --help               display this help and exit" << std::endl;
+  std::cout << "  -V, --version            print the version number and exit" << std::endl;
+  std::cout << "  -v, --verbose            print verbose messages" << std::endl;
   std::cout << "  --help-led               list possible values for the led" << std::endl;
   std::cout << "  --help-devices           list supported devices" << std::endl;
   std::cout << "  -s, --silent             do not display events on console" << std::endl;
@@ -505,6 +509,23 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           strcmp(argv[i], "--help") == 0)
         {
           print_command_line_help(argc, argv);
+          exit(EXIT_SUCCESS);
+        }
+      else if (strcmp(argv[i], "-v") == 0 ||
+          strcmp(argv[i], "--verbose") == 0)
+        {
+          opts.verbose = true;
+        }
+      else if (strcmp(argv[i], "-V") == 0 ||
+          strcmp(argv[i], "--version") == 0)
+        {
+          std::cout
+            << "xboxdrv 0.3\n"
+            << "Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>\n"
+            << "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
+            << "This is free software: you are free to change and redistribute it.\n"
+            << "There is NO WARRANTY, to the extent permitted by law."
+            << std::endl;
           exit(EXIT_SUCCESS);
         }
       else if (strcmp(argv[i], "-s") == 0 ||
@@ -885,7 +906,7 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
     {
       XboxGenericMsg msg;
 
-      if (controller->read(msg))
+      if (controller->read(msg, opts.verbose))
         {
           apply_deadzone(msg, opts.deadzone);
 
