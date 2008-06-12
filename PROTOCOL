@@ -231,14 +231,14 @@ Interface 0:
   Endpoint 1(in/out): Controller 1
   Endpoint 2(in/out): Headset 1
 Interface 1:
-  Endpoint 3(in/out): Controller 1
-  Endpoint 4(in/out): Headset 1
+  Endpoint 3(in/out): Controller 2
+  Endpoint 4(in/out): Headset 2
 Interface 2:
-  Endpoint 5(in/out): Controller 1
-  Endpoint 6(in/out): Headset 1
+  Endpoint 5(in/out): Controller 3
+  Endpoint 6(in/out): Headset 3
 Interface 3:
   Endpoint 7(in/out): Controller 4
-  Endpoint 8(in/out): Headset 1
+  Endpoint 8(in/out): Headset 4
 
                               v-- typo? might be 0x0c, i.e. length
 Rumble: { 0x00, 0x01, 0x0f, 0xc0, 0x00, large, small, 0x00, 0x00, 0x00, 0x00, 0x00 }
