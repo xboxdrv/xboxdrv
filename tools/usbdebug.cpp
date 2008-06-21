@@ -61,6 +61,16 @@ public:
     usb_close(handle);
   }
 
+  void detach_kernel_driver(int iface)
+  {
+    if (usb_detach_kernel_driver_np(handle, iface) < 0)
+      {
+        std::ostringstream str;
+        str << "Couldn't detcach interface " << iface;
+        throw std::runtime_error(str.str());
+      }
+  }
+
   void claim_interface(int iface)
   {
     if (usb_claim_interface(handle, iface) != 0)
@@ -269,9 +279,250 @@ void console_claim_cmd(const std::vector<std::string>& args)
     }
 }
 
+void console_detach_cmd(const std::vector<std::string>& args)
+{
+  if (args.size() < 2)
+    {
+      std::cout << "Usage: detach [INTERFACE]..." << std::endl;
+    }
+  else
+    {
+      for(size_t i = 1; i < args.size(); ++i)
+        {
+          int interface = atoi(args[i].c_str());
+          try {
+            USBDevice::current()->detach_kernel_driver(interface);
+          } catch (std::exception& err) {
+            std::cout << "Error: " << err.what() << std::endl;
+            goto end;
+          }
+          std::cout << "Interface " << interface << " successfully detached" << std::endl;
+        end:;
+        }
+    }
+}
+
 void console_info_cmd(const std::vector<std::string>& args)
 {
   USBDevice::current()->print_info();
+}
+
+class Sequence 
+{
+private:
+  int   start;
+  int   end;
+  int   idx;
+
+public:
+  Sequence(int start_, int end_) 
+    : start(start_), end(end_), idx(start_)
+  {}
+
+  Sequence(int start_)
+    : start(start_), end(start_), idx(start_)
+  {}
+
+  int get() {
+    if (eol())
+      return end;
+    else
+      return idx;
+  }
+
+  void next() {
+    if (!eol())
+      {
+        if (start <= end)
+          idx += 1;
+        else
+          idx -= 1;
+      }
+  }
+    
+  bool eol() {
+    if (start <= end)
+      return idx > end;
+    else
+      return idx < end;
+  }
+
+  void reset() {
+    idx = start;
+  }
+
+  std::string to_string() const
+  {
+    std::ostringstream str;
+    if (start == end)
+      {
+        str << start;
+      }
+    else
+      {
+        str << start << "-" << end;
+      }
+    return str.str();
+  }
+};
+
+class SequenceGenerator
+{
+private:
+  std::vector<Sequence> sequences;
+  std::vector<Sequence>::size_type idx;
+
+public:
+  /** spec: NUM or [NUM, NUM, NUM-NUM]*/
+  SequenceGenerator(const std::string& spec)
+  {
+    std::vector<std::string> tokens = tokenize(spec, ",");
+
+    for(std::vector<std::string>::iterator i = tokens.begin(); i != tokens.end(); ++i)
+      {
+        int start, end;
+        if (sscanf(i->c_str(), "%x-%x", &start, &end) == 2)
+          {
+            sequences.push_back(Sequence(start, end)); 
+          }
+        else if (sscanf(i->c_str(), "%x", &start) == 1)
+          {
+            sequences.push_back(Sequence(start));      
+          }
+        else
+          {
+            throw std::runtime_error("Syntax Error in sequence, couldn't convert: " + *i);
+          }
+      }
+
+    idx = 0;
+  }
+
+  bool eol() {
+    return (idx == sequences.size() || (sequences[idx].eol() && (idx+1) == sequences.size()));
+  }
+  
+  void reset() {
+    for(std::vector<Sequence>::iterator i = sequences.begin(); i != sequences.end(); ++i)
+      i->reset();
+  }
+
+  int get() {
+    if (eol())
+      return sequences.back().get();
+    else
+      return sequences[idx].get();
+  }
+
+  void next() {
+    if (!eol())
+      {
+        if (sequences[idx].eol())
+          {
+            ++idx;
+            if (idx < sequences.size())
+              sequences[idx].next();
+          } 
+        else 
+          {
+            return sequences[idx].next();
+          }
+      }
+  }
+
+  std::string to_string() const 
+  {
+    std::ostringstream str;
+    std::vector<Sequence>::const_iterator i = sequences.begin();
+
+    str << "{ ";
+    while (i != sequences.end())
+      {
+        const Sequence& seq = *i;
+        
+        str << seq.to_string();
+
+        ++i;
+        if (i != sequences.end())
+          str << ", ";
+      }
+    str << " }";
+    
+    return str.str();
+  }
+};
+
+bool eol(std::vector<SequenceGenerator>& sequences)
+{
+  if (sequences.empty())
+    return true;
+  else
+    return sequences.back().eol();
+}
+
+void next(std::vector<SequenceGenerator>& sequences, int idx)
+{
+  if (idx < int(sequences.size()))
+    {
+      if (!sequences[idx].eol())
+        {
+          sequences[idx].next();
+          if (sequences[idx].eol())
+            {
+              if (idx+1 < int(sequences.size()))
+                {
+                  sequences[idx].reset();
+                  next(sequences, idx+1);
+                }
+            }
+        }
+    }
+}
+
+void next(std::vector<SequenceGenerator>& sequences)
+{
+  if (!sequences.empty())
+    {
+      next(sequences, 0);
+    }
+}
+
+void console_probe_cmd(const std::vector<std::string>& args)
+{
+  if (args.size() < 3)
+    {
+      std::cout << "Usage: send [EP] [DATA]..." << std::endl;
+    }
+  else
+    {
+      std::vector<uint8_t> data;
+      std::vector<SequenceGenerator> sequences;
+
+      int endpoint = atoi(args[1].c_str());
+      for(int i = 2; i < int(args.size()); ++i)
+        {
+          SequenceGenerator gen(args[i]);
+          sequences.push_back(gen);
+          std::cout << gen.to_string() << std::endl;
+        }
+
+      data.resize(sequences.size());
+      while(!eol(sequences))
+        {
+          for(int i = 0; i < int(sequences.size()); ++i)
+            data[i] = sequences[i].get();
+          
+          std::cout << "Data Ep: " << endpoint << ": ";
+          print_raw_data(std::cout, &*data.begin(), data.size());
+          int ret = USBDevice::current()->write(endpoint, &*data.begin(), data.size());
+          std::cout << " -> " << ret;
+          std::cout << std::endl;
+          
+          next(sequences);
+          
+          usleep(500 * 1000);
+        }
+    }
 }
 
 void console_send_cmd(const std::vector<std::string>& args)
@@ -336,6 +587,7 @@ void eval_console_cmd(const std::string& line_)
           std::cout << "help:\n   Print this help\n" << std::endl;
           std::cout << "quit:\n   Exit usbdebug\n" << std::endl;
           std::cout << "claim [INTERFACE]...\n   Claim the given interfaces\n" << std::endl;
+          std::cout << "detach [INTERFACE]...\n   Detach kernel driver from interfaces\n" << std::endl;
           std::cout << "listen [ENDPOINT]...\n   On the given endpoints\n" << std::endl;
           std::cout << "info\n   Print some info on the current device\n" << std::endl;
           std::cout << "send [ENDPOINT] [DATA]...\n   Send data to an USB Endpoint\n" << std::endl;
@@ -351,6 +603,14 @@ void eval_console_cmd(const std::string& line_)
       else if (args[0] == "claim")
         {
           console_claim_cmd(args);
+        }
+      else if (args[0] == "probe")
+        {
+          console_probe_cmd(args);
+        }
+      else if (args[0] == "detach")
+        {
+          console_detach_cmd(args);
         }
       else if (args[0] == "send")
         {
