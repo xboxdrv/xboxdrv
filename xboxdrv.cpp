@@ -37,6 +37,8 @@
 bool global_exit_xboxdrv = false;
 XboxGenericController* global_controller = 0;
 
+// FIXME: We shouldn't check device-ids, but device class or so, to
+// automatically catch all third party stuff
 XPadDevice xpad_devices[] = {
   // Evil?! Anymore info we could use to identify the devices?
   // { GAMEPAD_XBOX,             0x0000, 0x0000, "Generic X-Box pad" },
@@ -73,6 +75,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX,             0x044f, 0x0f07, "Thrustmaster, Inc. Controller" },
   { GAMEPAD_XBOX360,          0x045e, 0x028e, "Microsoft Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x0738, 0x4716, "Mad Catz Xbox 360 Controller" },
+  { GAMEPAD_XBOX360,          0x0738, 0x4726, "Mad Catz Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x162e, 0xbeef, "Joytech Neo-Se Take2" },
   { GAMEPAD_XBOX360_GUITAR,   0x1430, 0x4748, "RedOctane Guitar Hero X-plorer" },
 
