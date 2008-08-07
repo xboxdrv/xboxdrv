@@ -40,6 +40,28 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev, bool is_guitar)
                                    "Try to run 'rmmod xpad' and start xboxdrv again");
         }
     }
+
+  if (0)
+    {
+      char arr[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128, 255 };
+      for (int len = 3; len <= 8; ++len)
+        {
+          // Sending random data:
+          for (int front = 0; front < 256; ++front)
+            {
+              for (size_t i = 0; i < sizeof(arr); ++i)
+                {
+                  char ledcmd[] = { front, len, arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i] }; 
+                  printf("%d %d %d\n", len, front, arr[i]);
+                  usb_interrupt_write(handle, 2, ledcmd, len, 0);
+
+                  uint8_t data[32];
+                  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, sizeof(data), 20);
+                  print_raw_data(std::cout, data, ret);
+                }
+            }
+        }
+    }
 }
 
 Xbox360Controller::~Xbox360Controller()
@@ -106,6 +128,13 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose)
           // data[2] == 0x03 is default with rumble enabled
           std::cout << "Xbox360Controller: Rumble Status: " << int(data[2]) << std::endl;
         }
+    }
+  else if (ret == 3 && data[0] == 0x08 && data[1] == 0x03)
+    {
+      if (data[2] == 0x00)
+        std::cout << "Headset: none";
+      else if (data[2] == 0x02)
+        std::cout << "Headset: none";
     }
   else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
     {

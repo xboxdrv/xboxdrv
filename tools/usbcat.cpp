@@ -19,6 +19,7 @@
 #include <usb.h>
 #include <boost/format.hpp>
 #include <iostream>
+#include <math.h>
 #include <string.h>
 
 std::ostream& operator<<(std::ostream& out, struct usb_device* dev)
@@ -66,6 +67,106 @@ find_usb_device(uint16_t idVendor, uint16_t idProduct)
 }
 
 void
+write_usb_device(struct usb_device* dev, int interface, int endpoint)
+{
+  struct usb_dev_handle* handle = usb_open(dev);
+  if (!handle)
+    {
+      std::cout << "Error opening usb device" << std::endl;
+    }
+  else
+    {
+      if (usb_claim_interface(handle, interface) != 0)
+        {
+          std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
+          if (usb_detach_kernel_driver_np(handle, interface) < 0)
+            {
+              std::cout << "Failure to kick kernel driver: " << usb_strerror() << std::endl;
+              exit(EXIT_FAILURE);              
+            }
+
+          if (usb_claim_interface(handle, interface) != 0)
+            {
+              std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
+              exit(EXIT_FAILURE);
+            }
+        }
+
+      bool quit = false;
+
+      while(!quit)
+        {
+          uint8_t data[32];
+          
+          if (1)
+            {
+              int ret = fread(data, sizeof(char), sizeof(data), stdin);
+
+              std::cout << ret << std::endl;
+              usb_interrupt_write(handle, endpoint, (char*)data, ret, 0);
+
+            }
+          else
+            {
+              int ret = sizeof(data);
+              for(int i = 0; i < ret ; ++i)
+                {
+                  data[i] = int(127 * sin(float(i) / ret * M_PI*2)) + 127;
+                  std::cout << ret << std::endl;
+                }
+              std::cout << ret << std::endl;
+              usb_interrupt_write(handle, endpoint, (char*)data, ret, 0);
+
+            }
+        }
+    }   
+}
+
+void
+read_usb_device(struct usb_device* dev, int interface, int endpoint)
+{
+  struct usb_dev_handle* handle = usb_open(dev);
+  if (!handle)
+    {
+      std::cout << "Error opening usb device" << std::endl;
+    }
+  else
+    {
+      if (usb_claim_interface(handle, interface) != 0)
+        {
+          std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
+          if (usb_detach_kernel_driver_np(handle, interface) < 0)
+            {
+              std::cout << "Failure to kick kernel driver: " << usb_strerror() << std::endl;
+              exit(EXIT_FAILURE);              
+            }
+
+          if (usb_claim_interface(handle, interface) != 0)
+            {
+              std::cout << "Error claiming the interface: " << usb_strerror() << std::endl;
+              exit(EXIT_FAILURE);
+            }
+        }
+
+      bool quit = false;
+
+      while(!quit)
+        {
+          uint8_t data[8192];
+          int ret = usb_interrupt_read(handle, endpoint, (char*)data, sizeof(data), 0);
+          if (ret < 0)
+            {
+              std::cerr << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
+              std::cerr << "Shutting down" << std::endl;
+              quit = true;
+            }
+
+          fwrite(data, sizeof(char), ret, stdout);
+        }
+    }  
+}
+
+void
 cat_usb_device(struct usb_device* dev, int interface, int endpoint)
 {
   struct usb_dev_handle* handle = usb_open(dev);
@@ -99,7 +200,7 @@ cat_usb_device(struct usb_device* dev, int interface, int endpoint)
 
       while(!quit)
         {
-          uint8_t data[1024];
+          uint8_t data[32];
           int ret = usb_interrupt_read(handle, endpoint, (char*)data, sizeof(data), 0);
           if (ret < 0)
             {
@@ -118,6 +219,58 @@ cat_usb_device(struct usb_device* dev, int interface, int endpoint)
                 }
               //std::cout << "\r" << std::flush;
               std::cout << std::endl;
+            }
+
+          if (0)
+            {
+          for(int i = 0; i < ret; ++i)
+            data[i] = 255;
+          int ret2 = usb_interrupt_write(handle, 4, (char*)data, ret, 0);
+          printf("Ret2: %d\n", ret2);
+            }
+          
+          if (0)
+            {
+              char arr[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128, 255 };
+              for (int len = 3; len <= 8; ++len)
+                {
+                  // Sending random data:
+                  for (int front = 0; front < 256; ++front)
+                    {
+                      for (size_t i = 0; i < sizeof(arr); ++i)
+                        {
+                          char ledcmd[] = { front, len, arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i] }; 
+                          printf("%d %d %d\n", len, front, arr[i]);
+                          usb_interrupt_write(handle, 5, ledcmd, len, 0);
+
+                          uint8_t data[32];
+                          int ret = usb_interrupt_read(handle, endpoint, (char*)data, sizeof(data), 10);
+                          if (ret == -110)
+                            {
+                              
+                            }
+                          else if (ret < 0)
+                            {
+                              std::cout << "USBError: " << ret << "\n" << usb_strerror() << std::endl;
+                              std::cout << "Shutting down" << std::endl;
+                              quit = true;
+                            }
+                          else
+                            {
+                              std::cout << "len: " << ret 
+                                        << " data: ";
+                      
+                              for(int j = 0; j < ret; ++j)
+                                {
+                                  std::cout << boost::format("0x%02x ") % int(data[j]);
+                                }
+                              //std::cout << "\r" << std::flush;
+                              std::cout << std::endl;
+                            }
+
+                        }
+                    }
+                }
             }
 
           if (0)
@@ -170,7 +323,10 @@ int main(int argc, char** argv)
 
       list_usb_devices();
     }
-  else if ((argc == 4 || argc == 5 || argc == 6) && strcmp("cat", argv[1]) == 0)
+  else if ((argc == 4 || argc == 5 || argc == 6) && 
+           (strcmp("cat", argv[1]) == 0 ||
+            strcmp("read", argv[1]) == 0 ||
+            strcmp("write", argv[1]) == 0))
     {
       uint16_t idVendor;
       uint16_t idProduct;
@@ -198,8 +354,19 @@ int main(int argc, char** argv)
             }
           else
             {
-              std::cout << "Reading data from: " << dev << " Interface: " << interface << " Endpoint: " << endpoint << std::endl; 
-              cat_usb_device(dev, interface, endpoint);
+              if (strcmp("cat", argv[1]) == 0)
+                {
+                  std::cout << "Reading data from: " << dev << " Interface: " << interface << " Endpoint: " << endpoint << std::endl; 
+                  cat_usb_device(dev, interface, endpoint);
+                }
+              else if (strcmp("read", argv[1]) == 0)
+                {
+                  read_usb_device(dev, interface, endpoint);
+                }
+              else if (strcmp("write", argv[1]) == 0)
+                {
+                  write_usb_device(dev, interface, endpoint);
+                }
             }
         }
       else

@@ -1,4 +1,5 @@
 #include <boost/format.hpp>
+#include <signal.h>
 #include <usb.h>
 #include <sstream>
 #include <pthread.h>
@@ -11,6 +12,7 @@ class USBDevice;
 class EndpointListenerThread;
 
 void print_raw_data(std::ostream& out, uint8_t* data, int len);
+bool global_interrupt = false;
 
 struct usb_device*
 find_usb_device(uint16_t idVendor, uint16_t idProduct)
@@ -89,6 +91,17 @@ public:
   int write(int endpoint, uint8_t* data, int len)
   {
     return usb_interrupt_write(handle, endpoint, (char*)data, len, 0);
+  }
+
+  int ctrl_msg(int requesttype, int request, 
+               int value, int index,
+               uint8_t* data, int size) 
+  {
+    return usb_control_msg(handle, 
+                           requesttype,  request, 
+                           value,  index,
+                           (char*)data, size, 
+                           0 /* timeout */);
   }
   
   void print_info()
@@ -399,12 +412,13 @@ public:
   }
 
   bool eol() {
-    return (idx == sequences.size() || (sequences[idx].eol() && (idx+1) == sequences.size()));
+    return (idx == sequences.size());
   }
   
   void reset() {
     for(std::vector<Sequence>::iterator i = sequences.begin(); i != sequences.end(); ++i)
       i->reset();
+    idx = 0;
   }
 
   int get() {
@@ -507,7 +521,7 @@ void console_probe_cmd(const std::vector<std::string>& args)
         }
 
       data.resize(sequences.size());
-      while(!eol(sequences))
+      while(!eol(sequences) && !global_interrupt)
         {
           for(int i = 0; i < int(sequences.size()); ++i)
             data[i] = sequences[i].get();
@@ -520,7 +534,8 @@ void console_probe_cmd(const std::vector<std::string>& args)
           
           next(sequences);
           
-          usleep(500 * 1000);
+          //usleep(100 * 1000);
+          usleep(10 * 1000);
         }
     }
 }
@@ -544,6 +559,41 @@ void console_send_cmd(const std::vector<std::string>& args)
       print_raw_data(std::cout, &*data.begin(), data.size());
       int ret = USBDevice::current()->write(endpoint, &*data.begin(), data.size());
       std::cout << " -> " << ret << std::endl;
+    }
+}
+
+void console_ctrl_cmd(const std::vector<std::string>& args)
+{
+  if (args.size() < 5)
+    {
+      std::cout << "Usage: ctrl REQUESTTYPE REQUEST VALUE INDEX [DATA]..." << std::endl;
+    }
+  else
+    { // See USB Specification (usb_20.pdf) page 248
+      int requesttype = strtol(args[1].c_str(), NULL, 16);
+      int request     = strtol(args[2].c_str(), NULL, 16);
+      int value       = strtol(args[3].c_str(), NULL, 16);
+      int index       = strtol(args[4].c_str(), NULL, 16);
+
+      std::vector<uint8_t> data;
+      for(int i = 5; i < int(args.size()); ++i)
+        data.push_back(strtol(args[i].c_str(), NULL, 16));
+
+      std::cout << "Sending to ctrl: "
+                << requesttype << " "
+                << request << " "
+                << value << " "
+                << index << ": ";
+      if (data.empty())
+        std::cout << "no data";
+      else
+        print_raw_data(std::cout, &*data.begin(), data.size());
+      
+      int ret = USBDevice::current()->ctrl_msg(requesttype, request,
+                                               value, index,
+                                               data.empty() ? NULL : &*data.begin(),
+                                               data.size());
+      std::cout << " -> " << ret << " '" << strerror(-ret) << "'" << std::endl;
     }
 }
 
@@ -612,6 +662,10 @@ void eval_console_cmd(const std::string& line_)
         {
           console_detach_cmd(args);
         }
+      else if (args[0] == "ctrl")
+        {
+          console_ctrl_cmd(args);
+        }
       else if (args[0] == "send")
         {
           console_send_cmd(args);
@@ -639,8 +693,24 @@ void run_console()
       std::vector<std::string> cmds = tokenize(line, ";");
       for(std::vector<std::string>::iterator i = cmds.begin(); i != cmds.end(); ++i)
         eval_console_cmd(*i);
+      global_interrupt = false;
     }
   std::cout << std::endl; 
+}
+
+
+
+void signal_callback(int)
+{
+  if (global_interrupt)
+    {
+      exit(EXIT_FAILURE);
+    }
+  else
+    {
+      global_interrupt = true;
+      std::cout << "INTERRUPT" << std::endl;
+    }
 }
 
 int main(int argc, char** argv)
@@ -665,6 +735,7 @@ int main(int argc, char** argv)
             {
               std::cout << boost::format("Opening device with idVendor: 0x%h04x, idProduct: 0x%h04x") % idVendor % idProduct << std::endl;
               USBDevice* usbdev = new USBDevice(dev);
+              signal(SIGINT, signal_callback);
               run_console();
               delete usbdev;
             }
