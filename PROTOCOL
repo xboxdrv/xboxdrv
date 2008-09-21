@@ -79,10 +79,10 @@ Interface 0:
 Interface 1:
   Endpoint 3(in):  Headset mic
   Endpoint 4(out): Headset phone
-  Endpoint 5(in):  Headset control port(?)
+  Endpoint 5(in):  Information comes in when Headset gets plugged in
   Endpoint 5(out): UNKNOWN (maybe headset)
 Interface 2:
-  Endpoint 6(in):  UNKNOWN (maybe headset)
+  Endpoint 6(in):  Chatpad
 Interface 3:
   None: 
 
@@ -204,6 +204,30 @@ Pulling out a headset (interface 0, endpoint 1): len: 3 data: 0x08 0x03 0x02
 
 Headset sends with 8192 bytes per second
 The headset might be using isochronous transfer, neither bulk nor interrupt, libusb doesn't support that yet I think
+
+Chatpad on Xbox360 wired USB controller
+=======================================
+
+usb_control_msg()'s
+  ,----------------- requesttype 
+ |    '------------ request 
+ |    |   ,-------- value
+ v    v   v     v-- index
+0x41 0x0 0x8 0x02 # light capslock
+0x41 0x0 0x9 0x02 # light square
+0x41 0x0 0xa 0x02 # light circle
+0x41 0x0 0xb 0x02 # light people
+0x41 0x0 0xc 0x02 # light backlight leds
+0x41 0x0 0x11 0x02 # light capslock
+0x41 0x0 0x12 0x02 # light square
+0x41 0x0 0x13 0x02 # light square and capslock
+0x41 0x0 0x14 0x02 # light circle
+0x41 0x0 0x15 0x02 # light capslock and circle
+0x41 0x0 0x16 0x02 # light circle and square
+0x41 0x0 0x17 0x02 # light circle, square and capslock
+0x41 0x0 0x1b 0x02 # makes led go on on a keypress
+0x41 0x0 0x1e 0x02 # Init part 2, not needed but log shows it
+0x41 0x0 0x1f 0x02 # Init (without this, no led will work, so send before anything else)
 
 
 Xbox360 Guitar
