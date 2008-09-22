@@ -93,6 +93,12 @@ public:
     return usb_interrupt_write(handle, endpoint, (char*)data, len, 0);
   }
 
+  /* uint8_t  requesttype
+     uint8_t  request
+     uint16_t value;
+     uint16_t index;
+     uint16_t length;
+   */
   int ctrl_msg(int requesttype, int request, 
                int value, int index,
                uint8_t* data, int size) 
@@ -540,6 +546,21 @@ void console_probe_cmd(const std::vector<std::string>& args)
     }
 }
 
+void console_wait_cmd(const std::vector<std::string>& args)
+{
+  if (args.size() != 2)
+    {
+      std::cout << "Usage: wait [SECONDS]" << std::endl;
+    }
+  else
+    {
+      float seconds = atof(args[1].c_str());
+      std::cout << "Waiting for " << seconds << " seconds... " << std::flush;
+      usleep(static_cast<useconds_t>(1000 * 1000 * seconds));
+      std::cout << "done" << std::endl;
+    }
+}
+
 void console_send_cmd(const std::vector<std::string>& args)
 {
   if (args.size() < 3)
@@ -612,72 +633,81 @@ std::string strip_comment(const std::string& line)
 
 bool quit = false;
 
+void dispatch_command(const std::vector<std::string>& args)
+{
+  if (0)
+    {
+      for(int i = 0; i < int(args.size()); ++i)
+        {
+          std::cout << i << ":'" << args[i] << "' ";
+        }
+      std::cout << std::endl;
+    }
+
+  if (args[0] == "help")
+    {
+      std::cout << "help:\n   Print this help\n" << std::endl;
+      std::cout << "quit:\n   Exit usbdebug\n" << std::endl;
+      std::cout << "claim [INTERFACE]...\n   Claim the given interfaces\n" << std::endl;
+      std::cout << "detach [INTERFACE]...\n   Detach kernel driver from interfaces\n" << std::endl;
+      std::cout << "listen [ENDPOINT]...\n   On the given endpoints\n" << std::endl;
+      std::cout << "info\n   Print some info on the current device\n" << std::endl;
+      std::cout << "send [ENDPOINT] [DATA]...\n   Send data to an USB Endpoint\n" << std::endl;
+    }
+  else if (args[0] == "listen")
+    {
+      console_listen_cmd(args);
+    }
+  else if (args[0] == "info")
+    {
+      console_info_cmd(args);
+    }
+  else if (args[0] == "claim")
+    {
+      console_claim_cmd(args);
+    }
+  else if (args[0] == "probe")
+    {
+      console_probe_cmd(args);
+    }
+  else if (args[0] == "detach")
+    {
+      console_detach_cmd(args);
+    }
+  else if (args[0] == "ctrl")
+    {
+      console_ctrl_cmd(args);
+    }
+  else if (args[0] == "wait")
+    {
+      console_wait_cmd(args);
+    }
+  else if (args[0] == "send")
+    {
+      console_send_cmd(args);
+    }
+  else if (args[0] == "quit")
+    {
+      std::cout << "Exiting" << std::endl;
+      quit = true;
+    }
+  else
+    {
+      std::cout << "Unknown command '" << args[0] << "', type 'help' to list all available commands" << std::endl;
+    }
+}
+
 void eval_console_cmd(const std::string& line_)
 {
   std::string line = strip_comment(line_);
 
-  std::vector<std::string> args = tokenize(line);
-  if (args.empty())
+  std::vector<std::string> lines = tokenize(line, ";");
+  for(std::vector<std::string>::iterator i = lines.begin(); i != lines.end(); ++i)
     {
-      
-    }
-  else
-    {
-      if (0)
+      std::vector<std::string> args = tokenize(*i);
+      if (!args.empty())
         {
-          for(int i = 0; i < int(args.size()); ++i)
-            {
-              std::cout << i << ":'" << args[i] << "' ";
-            }
-          std::cout << std::endl;
-        }
-
-      if (args[0] == "help")
-        {
-          std::cout << "help:\n   Print this help\n" << std::endl;
-          std::cout << "quit:\n   Exit usbdebug\n" << std::endl;
-          std::cout << "claim [INTERFACE]...\n   Claim the given interfaces\n" << std::endl;
-          std::cout << "detach [INTERFACE]...\n   Detach kernel driver from interfaces\n" << std::endl;
-          std::cout << "listen [ENDPOINT]...\n   On the given endpoints\n" << std::endl;
-          std::cout << "info\n   Print some info on the current device\n" << std::endl;
-          std::cout << "send [ENDPOINT] [DATA]...\n   Send data to an USB Endpoint\n" << std::endl;
-        }
-      else if (args[0] == "listen")
-        {
-          console_listen_cmd(args);
-        }
-      else if (args[0] == "info")
-        {
-          console_info_cmd(args);
-        }
-      else if (args[0] == "claim")
-        {
-          console_claim_cmd(args);
-        }
-      else if (args[0] == "probe")
-        {
-          console_probe_cmd(args);
-        }
-      else if (args[0] == "detach")
-        {
-          console_detach_cmd(args);
-        }
-      else if (args[0] == "ctrl")
-        {
-          console_ctrl_cmd(args);
-        }
-      else if (args[0] == "send")
-        {
-          console_send_cmd(args);
-        }
-      else if (args[0] == "quit")
-        {
-          std::cout << "Exiting" << std::endl;
-          quit = true;
-        }
-      else
-        {
-          std::cout << "Unknown command '" << args[0] << "', type 'help' to list all available commands" << std::endl;
+          dispatch_command(args);
         }
     }
 }
