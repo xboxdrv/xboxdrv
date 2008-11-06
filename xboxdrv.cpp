@@ -17,6 +17,7 @@
 */
 
 #include <signal.h>
+#include <errno.h>
 #include <boost/format.hpp>
 #include <usb.h>
 #include <unistd.h>
@@ -1079,7 +1080,10 @@ int main(int argc, char** argv)
 
           pid_t sid = setsid();
           std::cout << "Sid: " << sid << std::endl;
-          chdir("/");
+          if (chdir("/") != 0)
+            {
+              throw std::runtime_error(strerror(errno));
+            }
 
           run_main(opts);
         }

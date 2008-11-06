@@ -201,7 +201,8 @@ uInput::setup_xbox360_gamepad(GamepadType type)
       uinp.absmax[ABS_HAT0Y] =  1;
     }
 
-  write(fd, &uinp, sizeof(uinp));
+  if (write(fd, &uinp, sizeof(uinp)) < 0)
+    throw std::runtime_error(strerror(errno));
 }
 
 void
@@ -247,7 +248,8 @@ uInput::setup_xbox360_guitar()
   uinp.absmax[ABS_Y] =  32767;
 
   
-  write(fd, &uinp, sizeof(uinp));  
+  if (write(fd, &uinp, sizeof(uinp)) < 0)
+    throw std::runtime_error(strerror(errno));
 }
 
 uInput::~uInput()
@@ -267,7 +269,8 @@ uInput::send_button(uint16_t code, int32_t value)
   ev.code  = code;
   ev.value = (value>0) ? 1 : 0;
 
- write(fd, &ev, sizeof(ev));
+  if (write(fd, &ev, sizeof(ev)) < 0)
+    throw std::runtime_error(strerror(errno));
 }
 
 void
@@ -281,7 +284,8 @@ uInput::send_axis(uint16_t code, int32_t value)
   ev.code  = code;
   ev.value = value;
 
- write(fd, &ev, sizeof(ev));  
+  if (write(fd, &ev, sizeof(ev)) < 0)
+    throw std::runtime_error(strerror(errno));
 }
 
 void
