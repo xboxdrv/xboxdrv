@@ -73,7 +73,7 @@ public:
   unsigned int dummy6      :120; // always: 0x00, 0x00, 0x00, 0x06, 0xee, 0x10, 0x00, 0x00, 0x00, 0x00, 0x06, 0x83, 0x77, 0x01, 0x81
   // --------------------------
   unsigned int xacl_sign   :8; // 0x02 or 0x01
-  unsigned int xacl_value  :8 
+  unsigned int xacl_value  :8;
 
   unsigned int y_acl_sign   :8; // 0x02 or 0x01
   unsigned int y_acl_value  :8 

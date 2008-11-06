@@ -1,8 +1,11 @@
+- using rumble in scripts doesn't work, since you can't reset rumble back to 0,0
 - locate a USB device with a string or two
 - thread away on all endpoints
 - read from stdin on the main thread
 - send output to file or so
 usb -d 005:006 -c 5:in,5:out,6:in,7:in,8:out -o /tmp/out, else stdin
+
+ - print version number on normal use
 
 More general button map support:
 

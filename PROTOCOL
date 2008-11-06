@@ -79,8 +79,8 @@ Interface 0:
 Interface 1:
   Endpoint 3(in):  Headset mic
   Endpoint 4(out): Headset phone
-  Endpoint 5(in):  Information comes in when Headset gets plugged in
-  Endpoint 5(out): UNKNOWN (maybe headset)
+  Endpoint 5(in):  UNKNOWN (maybe headset)
+  Endpoint 5(out): Information comes in when Headset gets plugged in
 Interface 2:
   Endpoint 6(in):  Chatpad
 Interface 3:
@@ -228,6 +228,10 @@ usb_control_msg()'s
 0x41 0x0 0x1b 0x02 # makes led go on on a keypress
 0x41 0x0 0x1e 0x02 # Init part 2, not needed but log shows it
 0x41 0x0 0x1f 0x02 # Init (without this, no led will work, so send before anything else)
+
+
+Sending "0x41 0x0 0x1f 0x02" gives a reply of "0x08, 0x03, 0x01"
+(chatpad) or "0x08, 0x03, 0x03" (chatpad + headset)
 
 
 Xbox360 Guitar
