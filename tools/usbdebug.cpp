@@ -1,3 +1,4 @@
+#include <string.h>
 #include <boost/format.hpp>
 #include <signal.h>
 #include <usb.h>
@@ -583,6 +584,47 @@ void console_send_cmd(const std::vector<std::string>& args)
     }
 }
 
+void console_ctrlreq_cmd(const std::vector<std::string>& args)
+{
+  if (args.size() < 5)
+    {
+      std::cout << "Usage: ctrlreq REQUESTTYPE REQUEST VALUE INDEX LEN" << std::endl;
+    }
+  else
+    { // See USB Specification (usb_20.pdf) page 248
+      int requesttype = strtol(args[1].c_str(), NULL, 16);
+      int request     = strtol(args[2].c_str(), NULL, 16);
+      int value       = strtol(args[3].c_str(), NULL, 16);
+      int index       = strtol(args[4].c_str(), NULL, 16);
+      int len         = strtol(args[5].c_str(), NULL, 16);
+
+      std::cout << "Sending to ctrl: "
+                << requesttype << " "
+                << request << " "
+                << value << " "
+                << index << " "
+                << len << ": ";
+
+      uint8_t* data = (len == 0) ? NULL : new uint8_t[len];
+      memset(data, 0, len*sizeof(uint8_t));
+      
+      int ret = USBDevice::current()->ctrl_msg(requesttype, request,
+                                               value, index,
+                                               data,
+                                               len);
+      std::cout << " -> " << ret << " '" << strerror(-ret) << "'" << std::endl;
+
+      if (!data)
+        std::cout << "no data";
+      else
+        print_raw_data(std::cout, data, len);
+      
+      std::cout << std::endl;
+
+      delete[] data;
+    }
+}
+
 void console_ctrl_cmd(const std::vector<std::string>& args)
 {
   if (args.size() < 5)
@@ -677,6 +719,10 @@ void dispatch_command(const std::vector<std::string>& args)
   else if (args[0] == "ctrl")
     {
       console_ctrl_cmd(args);
+    }
+  else if (args[0] == "ctrlreq")
+    {
+      console_ctrlreq_cmd(args);
     }
   else if (args[0] == "wait")
     {
