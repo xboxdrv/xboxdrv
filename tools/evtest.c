@@ -39,59 +39,59 @@
 #include <stdlib.h>
 
 char *events[EV_MAX + 1] = { "Reset", "Key", "Relative", "Absolute", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-NULL, NULL, NULL, "LED", "Sound", NULL, "Repeat", "ForceFeedback", NULL, "ForceFeedbackStatus"};
+                             NULL, NULL, NULL, "LED", "Sound", NULL, "Repeat", "ForceFeedback", NULL, "ForceFeedbackStatus"};
 char *keys[KEY_MAX + 1] = { "Reserved", "Esc", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "Minus", "Equal", "Backspace",
-"Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "LeftBrace", "RightBrace", "Enter", "LeftControl", "A", "S", "D", "F", "G",
-"H", "J", "K", "L", "Semicolon", "Apostrophe", "Grave", "LeftShift", "BackSlash", "Z", "X", "C", "V", "B", "N", "M", "Comma", "Dot",
-"Slash", "RightShift", "KPAsterisk", "LeftAlt", "Space", "CapsLock", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10",
-"NumLock", "ScrollLock", "KP7", "KP8", "KP9", "KPMinus", "KP4", "KP5", "KP6", "KPPlus", "KP1", "KP2", "KP3", "KP0", "KPDot", "103rd",
-"F13", "102nd", "F11", "F12", "F14", "F15", "F16", "F17", "F18", "F19", "F20", "KPEnter", "RightCtrl", "KPSlash", "SysRq",
-"RightAlt", "LineFeed", "Home", "Up", "PageUp", "Left", "Right", "End", "Down", "PageDown", "Insert", "Delete", "Macro", "Mute",
-"VolumeDown", "VolumeUp", "Power", "KPEqual", "KPPlusMinus", "Pause", "F21", "F22", "F23", "F24", "KPComma", "LeftMeta", "RightMeta",
-"Compose", "Stop", "Again", "Props", "Undo", "Front", "Copy", "Open", "Paste", "Find", "Cut", "Help", "Menu", "Calc", "Setup",
-"Sleep", "WakeUp", "File", "SendFile", "DeleteFile", "X-fer", "Prog1", "Prog2", "WWW", "MSDOS", "Coffee", "Direction",
-"CycleWindows", "Mail", "Bookmarks", "Computer", "Back", "Forward", "CloseCD", "EjectCD", "EjectCloseCD", "NextSong", "PlayPause",
-"PreviousSong", "StopCD", "Record", "Rewind", "Phone", "ISOKey", "Config", "HomePage", "Refresh", "Exit", "Move", "Edit", "ScrollUp",
-"ScrollDown", "KPLeftParenthesis", "KPRightParenthesis",
-"International1", "International2", "International3", "International4", "International5",
-"International6", "International7", "International8", "International9",
-"Language1", "Language2", "Language3", "Language4", "Language5", "Language6", "Language7", "Language8", "Language9",
-NULL, 
-"PlayCD", "PauseCD", "Prog3", "Prog4", "Suspend", "Close",
-NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-"Btn0", "Btn1", "Btn2", "Btn3", "Btn4", "Btn5", "Btn6", "Btn7", "Btn8", "Btn9",
-NULL, NULL,  NULL, NULL, NULL, NULL,
-"LeftBtn", "RightBtn", "MiddleBtn", "SideBtn", "ExtraBtn", "ForwardBtn", "BackBtn",
-NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-"Trigger", "ThumbBtn", "ThumbBtn2", "TopBtn", "TopBtn2", "PinkieBtn",
-"BaseBtn", "BaseBtn2", "BaseBtn3", "BaseBtn4", "BaseBtn5", "BaseBtn6",
-NULL, NULL, NULL, "BtnDead",
-"BtnA", "BtnB", "BtnC", "BtnX", "BtnY", "BtnZ", "BtnTL", "BtnTR", "BtnTL2", "BtnTR2", "BtnSelect", "BtnStart", "BtnMode",
-"BtnThumbL", "BtnThumbR", NULL,
-"ToolPen", "ToolRubber", "ToolBrush", "ToolPencil", "ToolAirbrush", "ToolFinger", "ToolMouse", "ToolLens", NULL, NULL,
-"Touch", "Stylus", "Stylus2", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
-"Ok", "Select", "Goto", "Clear", "Power2", "Option", "Info", "Time", "Vendor",
-"Archive", "Program", "Channel", "Favorites", "EPG", "PVR", "MHP", "Language",
-"Title", "Subtitle", "Angle", "Zoom", "Mode", "Keyboard", "Screen", "PC", "TV",
-"TV2", "VCR", "VCR2", "Sat", "Sat2", "CD", "Tape", "Radio", "Tuner", "Player", 
-"Text", "DVD", "Aux", "MP3", "Audio", "Video", "Directory", "List", "Memo",
-"Calendar", "Red", "Green", "Yellow", "Blue", "ChannelUp", "ChannelDown", 
-"First", "Last", "AB", "Play", "Restart", "Slow", "Shuffle", "FastForward", 
-"Previous", "Next", "Digits", "Teen", "Twen", "Break" };
+                            "Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "LeftBrace", "RightBrace", "Enter", "LeftControl", "A", "S", "D", "F", "G",
+                            "H", "J", "K", "L", "Semicolon", "Apostrophe", "Grave", "LeftShift", "BackSlash", "Z", "X", "C", "V", "B", "N", "M", "Comma", "Dot",
+                            "Slash", "RightShift", "KPAsterisk", "LeftAlt", "Space", "CapsLock", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10",
+                            "NumLock", "ScrollLock", "KP7", "KP8", "KP9", "KPMinus", "KP4", "KP5", "KP6", "KPPlus", "KP1", "KP2", "KP3", "KP0", "KPDot", "103rd",
+                            "F13", "102nd", "F11", "F12", "F14", "F15", "F16", "F17", "F18", "F19", "F20", "KPEnter", "RightCtrl", "KPSlash", "SysRq",
+                            "RightAlt", "LineFeed", "Home", "Up", "PageUp", "Left", "Right", "End", "Down", "PageDown", "Insert", "Delete", "Macro", "Mute",
+                            "VolumeDown", "VolumeUp", "Power", "KPEqual", "KPPlusMinus", "Pause", "F21", "F22", "F23", "F24", "KPComma", "LeftMeta", "RightMeta",
+                            "Compose", "Stop", "Again", "Props", "Undo", "Front", "Copy", "Open", "Paste", "Find", "Cut", "Help", "Menu", "Calc", "Setup",
+                            "Sleep", "WakeUp", "File", "SendFile", "DeleteFile", "X-fer", "Prog1", "Prog2", "WWW", "MSDOS", "Coffee", "Direction",
+                            "CycleWindows", "Mail", "Bookmarks", "Computer", "Back", "Forward", "CloseCD", "EjectCD", "EjectCloseCD", "NextSong", "PlayPause",
+                            "PreviousSong", "StopCD", "Record", "Rewind", "Phone", "ISOKey", "Config", "HomePage", "Refresh", "Exit", "Move", "Edit", "ScrollUp",
+                            "ScrollDown", "KPLeftParenthesis", "KPRightParenthesis",
+                            "International1", "International2", "International3", "International4", "International5",
+                            "International6", "International7", "International8", "International9",
+                            "Language1", "Language2", "Language3", "Language4", "Language5", "Language6", "Language7", "Language8", "Language9",
+                            NULL, 
+                            "PlayCD", "PauseCD", "Prog3", "Prog4", "Suspend", "Close",
+                            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+                            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+                            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+                            "Btn0", "Btn1", "Btn2", "Btn3", "Btn4", "Btn5", "Btn6", "Btn7", "Btn8", "Btn9",
+                            NULL, NULL,  NULL, NULL, NULL, NULL,
+                            "LeftBtn", "RightBtn", "MiddleBtn", "SideBtn", "ExtraBtn", "ForwardBtn", "BackBtn",
+                            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+                            "Trigger", "ThumbBtn", "ThumbBtn2", "TopBtn", "TopBtn2", "PinkieBtn",
+                            "BaseBtn", "BaseBtn2", "BaseBtn3", "BaseBtn4", "BaseBtn5", "BaseBtn6",
+                            NULL, NULL, NULL, "BtnDead",
+                            "BtnA", "BtnB", "BtnC", "BtnX", "BtnY", "BtnZ", "BtnTL", "BtnTR", "BtnTL2", "BtnTR2", "BtnSelect", "BtnStart", "BtnMode",
+                            "BtnThumbL", "BtnThumbR", NULL,
+                            "ToolPen", "ToolRubber", "ToolBrush", "ToolPencil", "ToolAirbrush", "ToolFinger", "ToolMouse", "ToolLens", NULL, NULL,
+                            "Touch", "Stylus", "Stylus2", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
+                            "Ok", "Select", "Goto", "Clear", "Power2", "Option", "Info", "Time", "Vendor",
+                            "Archive", "Program", "Channel", "Favorites", "EPG", "PVR", "MHP", "Language",
+                            "Title", "Subtitle", "Angle", "Zoom", "Mode", "Keyboard", "Screen", "PC", "TV",
+                            "TV2", "VCR", "VCR2", "Sat", "Sat2", "CD", "Tape", "Radio", "Tuner", "Player", 
+                            "Text", "DVD", "Aux", "MP3", "Audio", "Video", "Directory", "List", "Memo",
+                            "Calendar", "Red", "Green", "Yellow", "Blue", "ChannelUp", "ChannelDown", 
+                            "First", "Last", "AB", "Play", "Restart", "Slow", "Shuffle", "FastForward", 
+                            "Previous", "Next", "Digits", "Teen", "Twen", "Break" };
 
 char *absval[5] = { "Value", "Min  ", "Max  ", "Fuzz ", "Flat " };
 char *relatives[REL_MAX + 1] = { "X", "Y", "Z", NULL, NULL, NULL, "HWheel", "Dial", "Wheel" };
 char *absolutes[ABS_MAX + 1] = { "X", "Y", "Z", "Rx", "Ry", "Rz", "Throttle", "Rudder", "Wheel", "Gas", "Brake",
-NULL, NULL, NULL, NULL, NULL,
-"Hat0X", "Hat0Y", "Hat1X", "Hat1Y", "Hat2X", "Hat2Y", "Hat3X", "Hat 3Y", "Pressure", "Distance", "XTilt", "YTilt"};
+                                 NULL, NULL, NULL, NULL, NULL,
+                                 "Hat0X", "Hat0Y", "Hat1X", "Hat1Y", "Hat2X", "Hat2Y", "Hat3X", "Hat 3Y", "Pressure", "Distance", "XTilt", "YTilt"};
 char *leds[LED_MAX + 1] = { "NumLock", "CapsLock", "ScrollLock", "Compose", "Kana", "Sleep", "Suspend", "Mute" };
 char *repeats[REP_MAX + 1] = { "Delay", "Period" };
 char *sounds[SND_MAX + 1] = { "Bell", "Click" };
 
 char **names[EV_MAX + 1] = { events, keys, relatives, absolutes, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-NULL, NULL, leds, sounds, NULL, repeats, NULL, NULL, NULL };
+                             NULL, NULL, leds, sounds, NULL, repeats, NULL, NULL, NULL };
 
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
@@ -100,8 +100,8 @@ NULL, NULL, leds, sounds, NULL, repeats, NULL, NULL, NULL };
 #define LONG(x) ((x)/BITS_PER_LONG)
 #define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
 
-void evtest_list();
-void evtest_info(const char* filename);
+void evtest_list(int verbose);
+void evtest_info(const char* filename, int verbose);
 void evtest_test(const char* filename);
 
 int main (int argc, char **argv)
@@ -110,11 +110,18 @@ int main (int argc, char **argv)
     {
       printf("Usage: evtest FILE\n");
       printf("       evtest --list\n");
+      printf("       evtest --list-verbose\n");
       exit(1);
     }
-  else if (strcmp(argv[1], "--list") == 0)
+  else if (strcmp(argv[1], "--list-verbose") == 0)
     {
-      evtest_list();
+      evtest_list(1);
+      return 0;
+    }
+  else if (strcmp(argv[1], "--list") == 0 ||
+           strcmp(argv[1], "-l") == 0)
+    {
+      evtest_list(0);
       return 0;
     }
   else
@@ -124,7 +131,7 @@ int main (int argc, char **argv)
     }
 }
 
-void evtest_info(const char* filename)
+void evtest_info(const char* filename, int verbose)
 {
   int fd;
   unsigned short id[4];
@@ -137,7 +144,6 @@ void evtest_info(const char* filename)
   else
     {
       int i, j, k;
-      printf("Input device file: \"%s\"\n", filename);
 
       int version;
       if (ioctl(fd, EVIOCGVERSION, &version)) {
@@ -145,43 +151,53 @@ void evtest_info(const char* filename)
         exit(1);
       }
 
-      printf("Input driver version is %d.%d.%d\n",
-             version >> 16, (version >> 8) & 0xff, version & 0xff);
-
-      ioctl(fd, EVIOCGID, id);
-      printf("Input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
-             id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT], id[ID_VERSION]);
-
-      ioctl(fd, EVIOCGNAME(sizeof(name)), name);
-      printf("Input device name: \"%s\"\n", name);
-
+      
       unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
-
+      ioctl(fd, EVIOCGID, id);
+      ioctl(fd, EVIOCGNAME(sizeof(name)), name);
       memset(bit, 0, sizeof(bit));
       ioctl(fd, EVIOCGBIT(0, EV_MAX), bit[0]);
-      printf("Supported events:\n");
 
-      for (i = 0; i < EV_MAX; i++)
-        if (test_bit(i, bit[0])) {
-          printf("  Event type %d (%s)\n", i, events[i] ? events[i] : "?");
-          ioctl(fd, EVIOCGBIT(i, KEY_MAX), bit[i]);
-          for (j = 0; j < KEY_MAX; j++) 
-            if (test_bit(j, bit[i])) {
-              printf("    Event code %d (%s)\n", j, names[i] ? (names[i][j] ? names[i][j] : "?") : "?");
-              if (i == EV_ABS) {
-                int abs[5];
-                ioctl(fd, EVIOCGABS(j), abs);
-                for (k = 0; k < 5; k++)
-                  if ((k < 3) || abs[k])
-                    printf("      %s %6d\n", absval[k], abs[k]);
-              }
-            }
+      if (!verbose)
+        {
+          printf("%s\t\"%s\"\n", filename, name);
         }
-      putchar('\n');
+      else
+        {
+          printf("Input device file: %s\n", filename);
+          printf("Input device name: \"%s\"\n", name);
+
+          printf("Input driver version is %d.%d.%d\n",
+                 version >> 16, (version >> 8) & 0xff, version & 0xff);
+
+          printf("Input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
+                 id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT], id[ID_VERSION]);
+          
+          printf("Supported events:\n");
+
+          for (i = 0; i < EV_MAX; i++)
+            if (test_bit(i, bit[0])) {
+              printf("  Event type %d (%s)\n", i, events[i] ? events[i] : "?");
+              ioctl(fd, EVIOCGBIT(i, KEY_MAX), bit[i]);
+              for (j = 0; j < KEY_MAX; j++) 
+                if (test_bit(j, bit[i])) {
+                  printf("    Event code %d (%s)\n", j, names[i] ? (names[i][j] ? names[i][j] : "?") : "?");
+                  if (i == EV_ABS) {
+                    int abs[5];
+                    ioctl(fd, EVIOCGABS(j), abs);
+                    for (k = 0; k < 5; k++)
+                      if ((k < 3) || abs[k])
+                        printf("      %s %6d\n", absval[k], abs[k]);
+                  }
+                }
+            }
+          
+          putchar('\n');
+        }
     }
 }
 
-void evtest_list()
+void evtest_list(int verbose)
 {
   char* pathname = "/dev/input";
   DIR* dir = opendir(pathname);
@@ -204,7 +220,7 @@ void evtest_list()
               strcat(filename, "/");
               strcat(filename, el->d_name);
 
-              evtest_info(filename);
+              evtest_info(filename, verbose);
             }
         }
 
