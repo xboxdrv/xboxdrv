@@ -131,8 +131,8 @@ Possible axis names are: x1,y1,x2,y2,lt,rt
 
 Swaping lt or rt with x1,y1,x2,y2 will not work properly.
 
-[[Running InputDrv]]
---------------------
+[[ Running InputDrv ]]
+----------------------
 
 The programs inputdrv and gui/inputcfg.py are part of an experiment to
 create a very flexible input configuration framework. They are still
