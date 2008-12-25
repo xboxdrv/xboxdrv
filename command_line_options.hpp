@@ -50,6 +50,7 @@ struct CommandLineOptions
   int deadzone;
   std::vector<ButtonMapping> button_map;
   std::vector<AxisMapping>   axis_map;
+  bool square_axis;
 
   CommandLineOptions();
 };

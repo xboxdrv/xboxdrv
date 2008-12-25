@@ -42,6 +42,7 @@ CommandLineOptions::CommandLineOptions()
   busid[0] = '\0';
   devid[0] = '\0';
   deadzone = 0;
+  square_axis  = false;
 }
 
 CommandLineOptions* command_line_options = 0;

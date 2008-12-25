@@ -1,3 +1,5 @@
+- add autofire with variable range, make it so that you can have one button mapped to A and one to A with autofire
+  --autofire A=50,B=10
 - using rumble in scripts doesn't work, since you can't reset rumble back to 0,0
 - locate a USB device with a string or two
 - thread away on all endpoints

@@ -99,6 +99,22 @@ For rumble to work make sure you have connected the controller to a
 USB port that has enough power, i.e. an unpowered USB hub might not
 work.
 
+[[ Square Axis ]]
+-----------------
+
+The Xbox360 gamepad, as most other current day gamepads, features a
+circular movment range, which restricts the movement of x relative to
+so that the distance to the center never gets beyond 1. This means
+that when you have the controller at the top/left the value reported
+is (0.7, 0.7) (i.e. length 1, angle 45) instead of (1,1). This
+behaviour is different then most classic joysticks, which had a square
+range and allowed x and y to be handled completly indepened.
+
+Some old games (i.e. DOS stuff) require a square movement range and
+will thus not function properly with the Xbox360 gamepad. Via the
+--square-axis option you can work around this issue and diagonals will
+be reported as (1,1).
+
 [[ Button Remapping ]]
 ----------------------
 

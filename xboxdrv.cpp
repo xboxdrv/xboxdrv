@@ -18,6 +18,7 @@
 
 #include <signal.h>
 #include <errno.h>
+#include <math.h>
 #include <boost/format.hpp>
 #include <usb.h>
 #include <unistd.h>
@@ -440,6 +441,7 @@ void print_command_line_help(int argc, char** argv)
             << "                           (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)" << std::endl;
   std::cout << "  -b, --buttonmap MAP      Remap the buttons as specified by MAP" << std::endl;
   std::cout << "  -a, --axismap MAP        Remap the axis as specified by MAP" << std::endl;
+  std::cout << "  --square-axis            Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)\n" << std::endl;
   std::cout << std::endl;
   std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
 }
@@ -697,6 +699,10 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
               opts.uinput_config.trigger_as_button = true;
             }
         }
+      else if (strcmp("--square-axis", argv[i]) == 0)
+        {
+          opts.square_axis = true;
+        }
       else if (strcmp("--trigger-as-zaxis", argv[i]) == 0)
         {
           if (opts.uinput_config.trigger_as_button)
@@ -825,6 +831,70 @@ void print_info(struct usb_device* dev,
         }
       std::cout << std::endl;
     }
+  std::cout << "Square Axis:       ";
+  if (opts.square_axis)
+    std::cout << "yes" << std::endl;
+  else
+    std::cout << "no" << std::endl;
+}
+
+namespace Math {
+template<class T>
+T clamp (const T& low, const T& v, const T& high)
+{
+  assert(low <= high);
+  return std::max((low), std::min((v), (high)));
+}
+} // namespace Math
+
+void squarify_axis_(int16_t& x_inout, int16_t& y_inout)
+{
+  if (x_inout != 0 || y_inout != 0)
+    {
+      float x = (x_inout < 0) ? x_inout / 32768.0f : x_inout / 32767.0f;
+      float y = (y_inout < 0) ? y_inout / 32768.0f : y_inout / 32767.0f;
+
+      float l = sqrtf(x*x + y*y);
+      float v = fabs((fabsf(x) > fabsf(y)) ? l/x : l/y);
+
+      x *= v;
+      y *= v;
+
+      x_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((x < 0) ? x * 32768 : x * 32767), 32767));
+      y_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((y < 0) ? y * 32768 : y * 32767), 32767));
+    }
+}
+
+// Little hack to allow access to bitfield via reference
+#define squarify_axis(x, y) \
+{ \
+  int16_t x_ = x;         \
+  int16_t y_ = y;         \
+  squarify_axis_(x_, y_); \
+  x = x_;                 \
+  y = y_;                 \
+}
+
+void apply_square_axis(XboxGenericMsg& msg)
+{
+  switch (msg.type)
+    {
+      case GAMEPAD_XBOX:
+      case GAMEPAD_XBOX_MAT:
+        squarify_axis(msg.xbox.x1, msg.xbox.y1);
+        squarify_axis(msg.xbox.x2, msg.xbox.y2);
+        break;
+
+      case GAMEPAD_XBOX360:
+      case GAMEPAD_XBOX360_WIRELESS:
+        squarify_axis(msg.xbox360.x1, msg.xbox360.y1);
+        squarify_axis(msg.xbox360.x2, msg.xbox360.y2);
+        break;
+        
+      case GAMEPAD_XBOX360_GUITAR:
+      case GAMEPAD_UNKNOWN:
+        break;
+    }  
 }
 
 void apply_deadzone(XboxGenericMsg& msg, int deadzone)
@@ -856,11 +926,9 @@ void apply_deadzone(XboxGenericMsg& msg, int deadzone)
         break;
 
       case GAMEPAD_XBOX360_GUITAR:
+      case GAMEPAD_UNKNOWN:
         // FIXME: any use for deadzone here?
         break;
-
-      default:
-        assert(!"apply_deadzone(): Unknown gamepad type");
     }
 }
 
@@ -875,6 +943,9 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
       if (controller->read(msg, opts.verbose))
         {
           apply_deadzone(msg, opts.deadzone);
+
+          if (opts.square_axis)
+            apply_square_axis(msg);
 
           if (!opts.button_map.empty())
             apply_button_map(msg, opts.button_map);
