@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <errno.h>
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
@@ -91,12 +92,16 @@ Xbox360Controller::set_led(uint8_t status)
 }
 
 bool
-Xbox360Controller::read(XboxGenericMsg& msg, bool verbose)
+Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   uint8_t data[32];
-  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, sizeof(data), 0 /*Timeout*/);
+  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, sizeof(data), timeout);
 
-  if (ret < 0)
+  if (ret == -ETIMEDOUT)
+    {
+      return false;
+    }
+  else if (ret < 0)
     { // Error
       std::ostringstream str;
       str << "USBError: " << ret << "\n" << usb_strerror();

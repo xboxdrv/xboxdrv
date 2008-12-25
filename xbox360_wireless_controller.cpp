@@ -76,12 +76,16 @@ Xbox360WirelessController::set_led(uint8_t status)
 }
 
 bool
-Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose)
+Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   uint8_t data[32];
-  int ret = usb_interrupt_read(handle, endpoint, (char*)data, sizeof(data), 0 /*Timeout*/);
-  
-  if (ret < 0)
+  int ret = usb_interrupt_read(handle, endpoint, (char*)data, sizeof(data), timeout);
+
+  if (ret == -ETIMEDOUT)
+    {
+      return false;
+    }
+  else  if (ret < 0)
     { // Error
       std::ostringstream str;
       str << "USBError: " << ret << "\n" << usb_strerror();

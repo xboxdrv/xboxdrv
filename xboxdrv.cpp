@@ -851,15 +851,17 @@ void squarify_axis_(int16_t& x_inout, int16_t& y_inout)
 {
   if (x_inout != 0 || y_inout != 0)
     {
+      // Convert values to float
       float x = (x_inout < 0) ? x_inout / 32768.0f : x_inout / 32767.0f;
       float y = (y_inout < 0) ? y_inout / 32768.0f : y_inout / 32767.0f;
 
+      // Transform values to square range
       float l = sqrtf(x*x + y*y);
       float v = fabs((fabsf(x) > fabsf(y)) ? l/x : l/y);
-
       x *= v;
       y *= v;
 
+      // Convert values to int16_t
       x_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((x < 0) ? x * 32768 : x * 32767), 32767));
       y_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((y < 0) ? y * 32768 : y * 32767), 32767));
     }
@@ -934,13 +936,16 @@ void apply_deadzone(XboxGenericMsg& msg, int deadzone)
 
 void controller_loop(uInput* uinput, XboxGenericController* controller, CommandLineOptions& opts)
 {
+  int timeout = 0; // 0 == no timeout
   XboxGenericMsg oldmsg;
+
   memset(&oldmsg, 0, sizeof(oldmsg));
+
   while(!global_exit_xboxdrv)
     {
       XboxGenericMsg msg;
 
-      if (controller->read(msg, opts.verbose))
+      if (controller->read(msg, opts.verbose, timeout))
         {
           apply_deadzone(msg, opts.deadzone);
 

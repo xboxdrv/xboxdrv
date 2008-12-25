@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <errno.h>
 #include <stdexcept>
 #include <sstream>
 #include "xboxmsg.hpp"
@@ -58,13 +59,17 @@ XboxController::set_led(uint8_t status)
 }
 
 bool
-XboxController::read(XboxGenericMsg& msg, bool verbose)
+XboxController::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   // FIXME: Add tracking for duplicate data packages (send by logitech controller)
   uint8_t data[32];
-  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, sizeof(data), 0 /*Timeout*/);
-  
-  if (ret < 0)
+  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, sizeof(data), timeout);
+
+  if (ret == -ETIMEDOUT)
+    {
+      return false;
+    }
+  else if (ret < 0)
     { // Error
       std::ostringstream str;
       str << "USBError: " << ret << "\n" << usb_strerror();
