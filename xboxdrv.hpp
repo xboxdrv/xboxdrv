@@ -40,11 +40,15 @@ struct AxisMapping {
 };
 
 struct AutoFireMapping {
+  static AutoFireMapping from_string(const std::string&);
+
   XboxButton button;
   int        frequency;
 };
 
 struct RelativeAxisMapping {
+  static RelativeAxisMapping from_string(const std::string&);
+
   XboxAxis axis;
   int      speed;
 };

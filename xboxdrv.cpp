@@ -239,16 +239,46 @@ AxisMapping string2axismapping(const std::string& str)
   throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
 }
 
-void  string2relative_axis_map(const std::string& str, std::vector<RelativeAxisMapping>& lst)
+RelativeAxisMapping
+RelativeAxisMapping::from_string(const std::string& str)
 {
-  // Abstract string iteration a bit
+  /* Format of str: A={SPEED} */
+  std::string::size_type i = str.find('=');
+  if (i == std::string::npos)
+    {
+      throw std::runtime_error("Couldn't convert string \"" + str + "\" to RelativeAxisMapping");
+    }
+  else
+    {
+      RelativeAxisMapping mapping;
+      mapping.axis  = string2axis(str.substr(0, i));
+      mapping.speed = atoi(str.substr(i+1, str.size()-i).c_str());
+      // FIXME: insert some error checking here
+      return mapping;
+    }
 }
 
-void string2autofire_map(const std::string& str, std::vector<AutoFireMapping>& lst)
+
+AutoFireMapping 
+AutoFireMapping::from_string(const std::string& str)
 {
-  
+  /* Format of str: A={ON-DELAY}[:{OFF-DELAY}]
+     Examples: A=10 or A=10:50 
+     if OFF-DELAY == nil then ON-DELAY = OFF-DELAY 
+  */
+  std::string::size_type i = str.find_first_of('=');
+  if (i == std::string::npos)
+    {
+      throw std::runtime_error("Couldn't convert string \"" + str + "\" to AutoFireMapping");
+    }
+  else
+    {
+      AutoFireMapping mapping; 
+      mapping.button    = string2btn(str.substr(0, i));
+      mapping.frequency = atoi(str.substr(i+1, str.size()-i).c_str());
+      return mapping;
+    }
 }
-
 
 void list_controller()
 {
@@ -427,7 +457,7 @@ void print_command_line_help(int argc, char** argv)
             << "                           (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)" << std::endl;
   std::cout << "  -b, --buttonmap MAP      Remap the buttons as specified by MAP" << std::endl;
   std::cout << "  -a, --axismap MAP        Remap the axis as specified by MAP" << std::endl;
-  std::cout << "  --square-axis            Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)\n" << std::endl;
+  std::cout << "  --square-axis            Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)" << std::endl;
   std::cout << "  --relative-axis MAP      Make an axis emulate a joystick throttle" << std::endl;
   std::cout << "  --autofire MAP           Cause the given buttons to act as autofire" << std::endl;
   std::cout << std::endl;
@@ -692,7 +722,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           ++i;
           if (i < argc)
             {
-              string2autofire_map(argv[i], opts.autofire_map);
+              arg2vector(argv[i], opts.autofire_map, &AutoFireMapping::from_string);
             }
           else
             {
@@ -705,7 +735,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           ++i;
           if (i < argc)
             {
-              string2relative_axis_map(argv[i], opts.relative_axis_map);
+              arg2vector(argv[i], opts.relative_axis_map, &RelativeAxisMapping::from_string);
             }
           else
             {
@@ -845,11 +875,40 @@ void print_info(struct usb_device* dev,
         }
       std::cout << std::endl;
     }
+
   std::cout << "Square Axis:       ";
   if (opts.square_axis)
     std::cout << "yes" << std::endl;
   else
     std::cout << "no" << std::endl;
+
+  std::cout << "RelativeAxisMap:   ";
+  if (opts.relative_axis_map.empty())
+    {
+      std::cout << "none" << std::endl;
+    }
+  else
+    {
+      for(std::vector<RelativeAxisMapping>::const_iterator i = opts.relative_axis_map.begin(); i != opts.relative_axis_map.end(); ++i)
+        {
+          std::cout << axis2string(i->axis) << "=" << i->speed << " ";
+        }
+      std::cout << std::endl;
+    }
+
+  std::cout << "AutoFireMap:       ";
+  if (opts.autofire_map.empty())
+    {
+      std::cout << "none" << std::endl;
+    }
+  else
+    {
+      for(std::vector<AutoFireMapping>::const_iterator i = opts.autofire_map.begin(); i != opts.autofire_map.end(); ++i)
+        {
+          std::cout << btn2string(i->button) << "=" << i->frequency << " ";
+        }
+      std::cout << std::endl;
+    }
 }
 
 namespace Math {
