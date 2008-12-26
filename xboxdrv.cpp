@@ -183,7 +183,8 @@ ButtonMapping string2buttonmapping(const std::string& str)
   throw std::runtime_error("Couldn't convert string \"" + str + "\" to button mapping");
 }
 
-void string2buttonmap(const std::string& str, std::vector<ButtonMapping>& lst)
+template<class C, class Func>
+void arg2vector(const std::string& str, typename std::vector<C>& lst, Func func)
 {
   std::string::const_iterator start = str.begin();
   for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
@@ -191,18 +192,14 @@ void string2buttonmap(const std::string& str, std::vector<ButtonMapping>& lst)
       if (*i == ',')
         {
           if (i != start)
-            {
-              ButtonMapping mapping = string2buttonmapping(std::string(start, i));
-              lst.push_back(mapping);
-            }
+            lst.push_back(func(std::string(start, i)));
+          
           start = i+1;
         }
     }
+  
   if (start != str.end())
-    {
-      ButtonMapping mapping = string2buttonmapping(std::string(start, str.end()));
-      lst.push_back(mapping);
-    }
+    lst.push_back(func(std::string(start, str.end())));
 }
 
 AxisMapping string2axismapping(const std::string& str)
@@ -242,31 +239,9 @@ AxisMapping string2axismapping(const std::string& str)
   throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
 }
 
-void string2axismap(const std::string& str, std::vector<AxisMapping>& lst)
-{
-  std::string::const_iterator start = str.begin();
-  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
-    {
-      if (*i == ',')
-        {
-          if (i != start)
-            {
-              AxisMapping mapping = string2axismapping(std::string(start, i));
-              lst.push_back(mapping);
-            }
-          start = i+1;
-        }
-    }
-  if (start != str.end())
-    {
-      AxisMapping mapping = string2axismapping(std::string(start, str.end()));
-      lst.push_back(mapping);
-    }
-}
-
 void  string2relative_axis_map(const std::string& str, std::vector<RelativeAxisMapping>& lst)
 {
-  
+  // Abstract string iteration a bit
 }
 
 void string2autofire_map(const std::string& str, std::vector<AutoFireMapping>& lst)
@@ -607,7 +582,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           ++i;
           if (i < argc)
             {
-              string2buttonmap(argv[i], opts.button_map);
+              arg2vector(argv[i], opts.button_map, string2buttonmapping);
             }
           else
             {
@@ -621,7 +596,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           ++i;
           if (i < argc)
             {
-              string2axismap(argv[i], opts.axis_map);
+              arg2vector(argv[i], opts.axis_map, string2axismapping);
             }
           else
             {
