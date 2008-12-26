@@ -16,6 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <sys/time.h>
+#include <time.h>
 #include <signal.h>
 #include <errno.h>
 #include <math.h>
@@ -275,7 +277,7 @@ AutoFireMapping::from_string(const std::string& str)
     {
       AutoFireMapping mapping; 
       mapping.button    = string2btn(str.substr(0, i));
-      mapping.frequency = atoi(str.substr(i+1, str.size()-i).c_str());
+      mapping.frequency = atoi(str.substr(i+1, str.size()-i).c_str())/1000.0f;
       return mapping;
     }
 }
@@ -1009,44 +1011,105 @@ void apply_deadzone(XboxGenericMsg& msg, int deadzone)
 
 class RelativeAxisModifier
 {
+private:
+  std::vector<RelativeAxisMapping> relative_axis_map;
+
 public:
   RelativeAxisModifier(const std::vector<RelativeAxisMapping>& relative_axis_map) 
+    : relative_axis_map(relative_axis_map)
   {
   }
 
-  void update(XboxGenericMsg& msg)
+  void update(float delta, XboxGenericMsg& msg)
   {
+    
   }
 };
 
 class AutoFireModifier
 {
 private:
+  std::vector<AutoFireMapping> autofire_map;
+  std::vector<float> button_timer;
 
 public:
   AutoFireModifier(const std::vector<AutoFireMapping>& autofire_map)
+    : autofire_map(autofire_map)
   {
-    
+    for(std::vector<AutoFireMapping>::const_iterator i = autofire_map.begin(); i != autofire_map.end(); ++i)
+      {
+        button_timer.push_back(0.0f);
+      }
   }
 
-  void update(XboxGenericMsg& msg)
+  void update(float delta, XboxGenericMsg& msg)
   {
+    for(size_t i = 0; i < autofire_map.size(); ++i)
+      {
+        if (get_button(msg, autofire_map[i].button))
+          {
+            button_timer[i] += delta;
+
+            if (button_timer[i] > autofire_map[i].frequency)
+              {
+                set_button(msg, autofire_map[i].button, 1);
+                button_timer[i] = 0.0f; // FIXME: we ignoring the passed time
+              }
+            else if (button_timer[i] > autofire_map[i].frequency/2)
+              {
+                set_button(msg, autofire_map[i].button, 0);
+              }
+            else
+              {
+                set_button(msg, autofire_map[i].button, 1);
+              }
+          }
+        else
+          {
+            button_timer[i] = 0;
+          }
+      }
   }
 };
+
+uint32_t get_time()
+{
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  return tv.tv_sec * 1000 + tv.tv_usec/1000;
+}
 
 void controller_loop(uInput* uinput, XboxGenericController* controller, CommandLineOptions& opts)
 {
   int timeout = 0; // 0 == no timeout
-  XboxGenericMsg oldmsg;
+  XboxGenericMsg oldmsg; // last data send to uinput
+  XboxGenericMsg oldrealmsg; // last data read from the device
+
+  std::auto_ptr<AutoFireModifier>      autofire_modifier;
+  std::auto_ptr<RelativeAxisModifier> relative_axis_modifier;
+
+  if (!opts.autofire_map.empty())
+    autofire_modifier.reset(new AutoFireModifier(opts.autofire_map)); 
+
+  if (!opts.relative_axis_map.empty())
+    relative_axis_modifier.reset(new RelativeAxisModifier(opts.relative_axis_map)); 
+
+  if (autofire_modifier.get() ||
+      relative_axis_modifier.get())
+    timeout = 30;
 
   memset(&oldmsg, 0, sizeof(oldmsg));
+  memset(&oldrealmsg, 0, sizeof(oldrealmsg));
 
+  uint32_t last_time = get_time();
   while(!global_exit_xboxdrv)
     {
       XboxGenericMsg msg;
 
       if (controller->read(msg, opts.verbose, timeout))
         {
+          oldrealmsg = msg;
+
           apply_deadzone(msg, opts.deadzone);
 
           if (opts.square_axis)
@@ -1060,10 +1123,20 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
         }
       else
         {
-          memcpy(&msg, &oldmsg, sizeof(oldmsg));
+          // no new data read, so copy the last read data
+          msg = oldrealmsg;
         }
 
+      uint32_t this_time = get_time();
+      float delta = (this_time - last_time)/1000.0f;
+      last_time = this_time;
+
       // Apply modifier
+      if (autofire_modifier.get())
+        autofire_modifier->update(delta, msg);
+      
+      if (relative_axis_modifier.get())
+        relative_axis_modifier->update(delta, msg);
 
       if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)))
         { // Only send a new event out if something has changed,

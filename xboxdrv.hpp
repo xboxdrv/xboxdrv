@@ -43,7 +43,7 @@ struct AutoFireMapping {
   static AutoFireMapping from_string(const std::string&);
 
   XboxButton button;
-  int        frequency;
+  float      frequency;
 };
 
 struct RelativeAxisMapping {
