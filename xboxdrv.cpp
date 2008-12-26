@@ -1149,17 +1149,17 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
       if (opts.square_axis)
         apply_square_axis(msg);
 
-      if (!opts.button_map.empty())
-        apply_button_map(msg, opts.button_map);
-
-      if (!opts.axis_map.empty())
-        apply_axis_map(msg,   opts.axis_map);
-
       if (autofire_modifier.get())
         autofire_modifier->update(delta, msg);
       
       if (relative_axis_modifier.get())
         relative_axis_modifier->update(delta, msg);
+
+      if (!opts.button_map.empty())
+        apply_button_map(msg, opts.button_map);
+
+      if (!opts.axis_map.empty())
+        apply_axis_map(msg,   opts.axis_map);
 
       if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)))
         { // Only send a new event out if something has changed,
