@@ -264,6 +264,17 @@ void string2axismap(const std::string& str, std::vector<AxisMapping>& lst)
     }
 }
 
+void  string2relative_axis_map(const std::string& str, std::vector<RelativeAxisMapping>& lst)
+{
+  
+}
+
+void string2autofire_map(const std::string& str, std::vector<AutoFireMapping>& lst)
+{
+  
+}
+
+
 void list_controller()
 {
   struct usb_bus* busses = usb_get_busses();
@@ -442,6 +453,8 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  -b, --buttonmap MAP      Remap the buttons as specified by MAP" << std::endl;
   std::cout << "  -a, --axismap MAP        Remap the axis as specified by MAP" << std::endl;
   std::cout << "  --square-axis            Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)\n" << std::endl;
+  std::cout << "  --relative-axis MAP      Make an axis emulate a joystick throttle" << std::endl;
+  std::cout << "  --autofire MAP           Cause the given buttons to act as autofire" << std::endl;
   std::cout << std::endl;
   std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
 }
@@ -699,6 +712,32 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
               opts.uinput_config.trigger_as_button = true;
             }
         }
+      else if (strcmp("--autofire", argv[i]) == 0)
+        {
+          ++i;
+          if (i < argc)
+            {
+              string2autofire_map(argv[i], opts.autofire_map);
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
+              exit(EXIT_FAILURE);
+            }          
+        }
+      else if (strcmp("--relative-axis", argv[i]) == 0)
+        {
+          ++i;
+          if (i < argc)
+            {
+              string2relative_axis_map(argv[i], opts.relative_axis_map);
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
+              exit(EXIT_FAILURE);
+            }          
+        }
       else if (strcmp("--square-axis", argv[i]) == 0)
         {
           opts.square_axis = true;
@@ -934,6 +973,33 @@ void apply_deadzone(XboxGenericMsg& msg, int deadzone)
     }
 }
 
+class RelativeAxisModifier
+{
+public:
+  RelativeAxisModifier(const std::vector<RelativeAxisMapping>& relative_axis_map) 
+  {
+  }
+
+  void update(XboxGenericMsg& msg)
+  {
+  }
+};
+
+class AutoFireModifier
+{
+private:
+
+public:
+  AutoFireModifier(const std::vector<AutoFireMapping>& autofire_map)
+  {
+    
+  }
+
+  void update(XboxGenericMsg& msg)
+  {
+  }
+};
+
 void controller_loop(uInput* uinput, XboxGenericController* controller, CommandLineOptions& opts)
 {
   int timeout = 0; // 0 == no timeout
@@ -957,31 +1023,37 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
 
           if (!opts.axis_map.empty())
             apply_axis_map(msg,   opts.axis_map);
+        }
+      else
+        {
+          memcpy(&msg, &oldmsg, sizeof(oldmsg));
+        }
 
-          if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)))
-            { // Only send a new event out if something has changed,
-              // this is useful since some controllers send events
-              // even if nothing has changed, deadzone can cause this
-              // too
-              oldmsg = msg;
+      // Apply modifier
 
-              if (!opts.silent)
-                std::cout << msg << std::endl;
+      if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)))
+        { // Only send a new event out if something has changed,
+          // this is useful since some controllers send events
+          // even if nothing has changed, deadzone can cause this
+          // too
+          oldmsg = msg;
 
-              if (uinput) 
-                uinput->send(msg);
+          if (!opts.silent)
+            std::cout << msg << std::endl;
+
+          if (uinput) 
+            uinput->send(msg);
                     
-              if (opts.rumble)
+          if (opts.rumble)
+            {
+              if (opts.gamepad_type == GAMEPAD_XBOX)
                 {
-                  if (opts.gamepad_type == GAMEPAD_XBOX)
-                    {
-                      controller->set_rumble(msg.xbox.lt, msg.xbox.rt);
-                    }
-                  else if (opts.gamepad_type == GAMEPAD_XBOX360 ||
-                           opts.gamepad_type == GAMEPAD_XBOX360_WIRELESS)
-                    {
-                      controller->set_rumble(msg.xbox360.lt, msg.xbox360.rt);                      
-                    }
+                  controller->set_rumble(msg.xbox.lt, msg.xbox.rt);
+                }
+              else if (opts.gamepad_type == GAMEPAD_XBOX360 ||
+                       opts.gamepad_type == GAMEPAD_XBOX360_WIRELESS)
+                {
+                  controller->set_rumble(msg.xbox360.lt, msg.xbox360.rt);                      
                 }
             }
         }

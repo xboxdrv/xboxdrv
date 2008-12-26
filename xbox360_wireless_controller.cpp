@@ -17,6 +17,7 @@
 */
 
 #include <usb.h>
+#include <errno.h>
 #include <assert.h>
 #include <sstream>
 #include <iostream>

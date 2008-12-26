@@ -38,6 +38,16 @@ struct AxisMapping {
   XboxAxis rhs;
   bool     invert;
 };
+
+struct AutoFireMapping {
+  XboxButton button;
+  int        frequency;
+};
+
+struct RelativeAxisMapping {
+  XboxAxis axis;
+  int      speed;
+};
 
 #endif
 
