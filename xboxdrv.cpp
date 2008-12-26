@@ -1013,16 +1013,38 @@ class RelativeAxisModifier
 {
 private:
   std::vector<RelativeAxisMapping> relative_axis_map;
+  std::vector<int> axis_state;
 
 public:
   RelativeAxisModifier(const std::vector<RelativeAxisMapping>& relative_axis_map) 
     : relative_axis_map(relative_axis_map)
   {
+    for(size_t i = 0; i < relative_axis_map.size(); ++i)
+      {
+        axis_state.push_back(0);
+      }
   }
 
   void update(float delta, XboxGenericMsg& msg)
   {
-    
+    for(size_t i = 0; i < relative_axis_map.size(); ++i)
+      {
+        int value = get_axis(msg, relative_axis_map[i].axis);
+        if (abs(value) > 4000 ) // FIXME: add proper deadzone handling
+          {
+            axis_state[i] += static_cast<int>(relative_axis_map[i].speed * delta * (value/32768.0f));
+            if (axis_state[i] < -32768)
+              axis_state[i] = -32768;
+            else if (axis_state[i] > 32767)
+              axis_state[i] = 32767;
+
+            set_axis(msg, relative_axis_map[i].axis, axis_state[i]);
+          }
+        else
+          {
+            set_axis(msg, relative_axis_map[i].axis, axis_state[i]);
+          }
+      }
   }
 };
 
@@ -1109,17 +1131,6 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
       if (controller->read(msg, opts.verbose, timeout))
         {
           oldrealmsg = msg;
-
-          apply_deadzone(msg, opts.deadzone);
-
-          if (opts.square_axis)
-            apply_square_axis(msg);
-
-          if (!opts.button_map.empty())
-            apply_button_map(msg, opts.button_map);
-
-          if (!opts.axis_map.empty())
-            apply_axis_map(msg,   opts.axis_map);
         }
       else
         {
@@ -1127,11 +1138,23 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
           msg = oldrealmsg;
         }
 
+      // Calc changes in time
       uint32_t this_time = get_time();
       float delta = (this_time - last_time)/1000.0f;
       last_time = this_time;
 
       // Apply modifier
+      apply_deadzone(msg, opts.deadzone);
+
+      if (opts.square_axis)
+        apply_square_axis(msg);
+
+      if (!opts.button_map.empty())
+        apply_button_map(msg, opts.button_map);
+
+      if (!opts.axis_map.empty())
+        apply_axis_map(msg,   opts.axis_map);
+
       if (autofire_modifier.get())
         autofire_modifier->update(delta, msg);
       
