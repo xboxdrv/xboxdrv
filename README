@@ -103,17 +103,38 @@ work.
 -----------------
 
 The Xbox360 gamepad, as most other current day gamepads, features a
-circular movment range, which restricts the movement of x relative to
-so that the distance to the center never gets beyond 1. This means
-that when you have the controller at the top/left the value reported
-is (0.7, 0.7) (i.e. length 1, angle 45) instead of (1,1). This
-behaviour is different then most classic joysticks, which had a square
-range and allowed x and y to be handled completly indepened.
+circular movment range, which restricts the movement so that the
+distance to the center never gets beyond 1. This means that when you
+have the controller at the top/left the value reported is (0.7, 0.7)
+(i.e. length 1, angle 45) instead of (1,1). This behaviour is
+different then most classic joysticks, which had a square range and
+allowed x and y to be handled completly indepened.
 
 Some old games (i.e. DOS stuff) require a square movement range and
 will thus not function properly with the Xbox360 gamepad. Via the
 --square-axis option you can work around this issue and diagonals will
 be reported as (1,1).
+
+[[ AutoFire Mapping ]]
+
+Autofire mapping allows you to let a button automatically fire with a
+given frequency in miliseconds:
+
+ % ./xboxdrv --autofire A=250
+
+Combining --autofire with button map allows you to have one button act
+as autofire while another one, emitting the same signal, acts normally.
+
+[[ Relative Axis Mapping ]]
+
+The function --relative-axis allows you to change the behaviour of an
+axis so that your movement of it moves its value up or down instead of
+applying it instantly.  This is mostly useful for flightsim games that
+make use of a throttle control, which you can emulate by using the
+relative axis mapping. Since the axis might be upside down, you might want
+to use the --axismap function to reverse it.
+
+ % ./xboxdrv --relative-axis y2=64000
 
 [[ Button Remapping ]]
 ----------------------
@@ -161,14 +182,24 @@ source. Their compilation is disabled by default.
 To let SDL know which axis act as a hat and which act as normal axis
 you have to set an environment variable:
 
- % SDL_LINUX_JOYSTICK="'Xbox360 Gamepad (userspace driver)' 6 1 0"
+ % SDL_LINUX_JOYSTICK="'Xbox Gamepad (userspace driver)' 6 1 0"
  % export SDL_LINUX_JOYSTICK
 
-This will let the DPad act as Hat in case you need that for any
-game. For most games the driver should work as-is.
+This will let the DPad act as Hat in SDL based application. For many
+games the driver will work without this, but especially in Dosbox this
+variable is very important.
 
-See ftp://ptah.lnf.kth.se/pub/misc/sdl-env-vars for more information.
+If you use options in xboxdrv that change the number of axis you have
+to adjust the variable accordingly, see:
 
+ * ftp://ptah.lnf.kth.se/pub/misc/sdl-env-vars
+
+SDL_LINUX_JOYSTICK
+	Special joystick configuration string for linux. The format is
+	"name numaxes numhats numballs"
+	where name is the name string of the joystick (possibly in single
+	quotes), and the rest are the number of axes, hats and balls
+	respectively.
 
 [[ Troubleshooting ]]
 ---------------------
