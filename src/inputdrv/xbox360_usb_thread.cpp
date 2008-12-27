@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include <boost/format.hpp>
 #include "log.hpp"
-#include "../../xboxmsg.hpp"
+#include "../xboxmsg.hpp"
 #include "xbox360_usb_thread.hpp"
 
 Xbox360UsbThread::Xbox360UsbThread(struct usb_device* dev)

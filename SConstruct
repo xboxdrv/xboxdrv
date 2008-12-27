@@ -1,17 +1,17 @@
 # -*- python -*-
 
 env = Environment(CPPFLAGS=["-g", "-O2", "-Wall"], LIBS=["usb"])
-env.Program("xboxdrv", ["xboxdrv.cpp", 
-                        "xboxmsg.cpp",
-                        "uinput.cpp",
-                        "helper.cpp",
-                        "command_line_options.cpp",
-                        "xbox_controller.cpp",
-                        "xbox360_controller.cpp",
-                        "xbox360_wireless_controller.cpp",
+env.Program("xboxdrv", ["src/xboxdrv.cpp", 
+                        "src/xboxmsg.cpp",
+                        "src/uinput.cpp",
+                        "src/helper.cpp",
+                        "src/command_line_options.cpp",
+                        "src/xbox_controller.cpp",
+                        "src/xbox360_controller.cpp",
+                        "src/xbox360_wireless_controller.cpp",
                         ])
 
-if False:
+if True:
     env.Program("inputdrv",
                 ["src/inputdrv/inputdrv.cpp",
                  "src/inputdrv/xbox360_driver.cpp",

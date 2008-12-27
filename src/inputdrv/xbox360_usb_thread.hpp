@@ -22,7 +22,7 @@
 #include <inttypes.h>
 #include <pthread.h>
 #include <queue>
-#include "../../xboxdrv.hpp"
+#include "../xboxdrv.hpp"
 
 /** A worker thread that reads from the USB device in a blocking
     fashion, so that the Xbox360Driver can stay non blocking. 

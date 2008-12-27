@@ -135,7 +135,8 @@ UInputDriver::on_rel(RelPortOut* port, uint16_t code)
       ev.code  = code;
       ev.value = port->get_state();
 
-      write(fd, &ev, sizeof(ev));  
+      if (write(fd, &ev, sizeof(ev)) < 0)
+        throw std::runtime_error(strerror(errno));
 
       // Mouse Dev need these to send out events
       memset(&ev, 0, sizeof(ev));
@@ -144,7 +145,8 @@ UInputDriver::on_rel(RelPortOut* port, uint16_t code)
       ev.type  = EV_SYN;
       ev.code  = SYN_REPORT;
 
-      write(fd, &ev, sizeof(ev));  
+      if (write(fd, &ev, sizeof(ev)) < 0)
+        throw std::runtime_error(strerror(errno));
     }
 }
 
@@ -159,7 +161,8 @@ UInputDriver::on_abs(AbsPortOut* port, uint16_t code)
   ev.code  = code;
   ev.value = port->get_state();
 
-  write(fd, &ev, sizeof(ev)); 
+  if (write(fd, &ev, sizeof(ev)) < 0)
+    throw std::runtime_error(strerror(errno));
 }
 
 void
@@ -173,7 +176,8 @@ UInputDriver::on_btn(BtnPortOut* port, uint16_t code)
   ev.code  = code;
   ev.value = port->get_state();
 
-  write(fd, &ev, sizeof(ev)); 
+  if (write(fd, &ev, sizeof(ev)) < 0)
+    throw std::runtime_error(strerror(errno));
 
   // Mouse Dev need these to send out events
   memset(&ev, 0, sizeof(ev));
@@ -182,14 +186,18 @@ UInputDriver::on_btn(BtnPortOut* port, uint16_t code)
   ev.type  = EV_SYN;
   ev.code  = SYN_REPORT;
 
-  write(fd, &ev, sizeof(ev));  
+  if (write(fd, &ev, sizeof(ev)) < 0)
+    throw std::runtime_error(strerror(errno));
 }
 
 void
 UInputDriver::finish()
 {
   std::cout << "Finalizing UInput" << std::endl;
-  write(fd, &user_dev, sizeof(user_dev));
+
+  if (write(fd, &user_dev, sizeof(user_dev)) < 0)
+    throw std::runtime_error(strerror(errno));
+
   if (ioctl(fd, UI_DEV_CREATE))
     {
       std::cout << "Unable to create UINPUT device." << std::endl;
