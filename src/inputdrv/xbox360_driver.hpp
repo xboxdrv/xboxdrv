@@ -20,7 +20,7 @@
 #define HEADER_XBOX360_DRIVER_HPP
 
 #include <vector>
-#include "xboxdrv.hpp"
+#include "../../xboxdrv.hpp"
 #include "control.hpp"
 
 class Xbox360UsbThread;

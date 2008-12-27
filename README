@@ -2,9 +2,13 @@
 ===================================================
 
 This is a Xbox/Xbox360 gamepad driver for Linux that works in
-userspace. It is a alternative to the xpad kernel driver and has
+userspace. It is an alternative to the xpad kernel driver and has
 support for Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless
 gamepads. The Xbox360 guitar and some Xbox1 dancemats might work too.
+
+The Xbox360 chatpad does currently not work and the headset does
+neither. There has been some work on reverse enginiering, but no
+usable results.
 
 This driver is only of interest if the xpad kernel driver doesn't work
 for you or if you want some more configurabity, if the xpad kernel

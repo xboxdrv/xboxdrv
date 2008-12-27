@@ -10,20 +10,22 @@ env.Program("xboxdrv", ["xboxdrv.cpp",
                         "xbox360_controller.cpp",
                         "xbox360_wireless_controller.cpp",
                         ])
-# env.Program("inputdrv",
-#             ["inputdrv.cpp",
-#              "xbox360_driver.cpp",
-#              "evdev_driver.cpp",
-#              "xbox360_usb_thread.cpp",
-#              "control.cpp",
-#              "abs_to_rel.cpp",
-#              "abs_to_btn.cpp",
-#              "btn_to_abs.cpp",
-#              "autofire_button.cpp",
-#              "uinput_driver.cpp",
-#              "join_axis.cpp",
-#              "throttle.cpp",
-#              "toggle_button.cpp"],
-#             LIBS=['boost_signals', 'usb', 'pthread'])
+
+if False:
+    env.Program("inputdrv",
+                ["src/inputdrv/inputdrv.cpp",
+                 "src/inputdrv/xbox360_driver.cpp",
+                 "src/inputdrv/evdev_driver.cpp",
+                 "src/inputdrv/xbox360_usb_thread.cpp",
+                 "src/inputdrv/control.cpp",
+                 "src/inputdrv/abs_to_rel.cpp",
+                 "src/inputdrv/abs_to_btn.cpp",
+                 "src/inputdrv/btn_to_abs.cpp",
+                 "src/inputdrv/autofire_button.cpp",
+                 "src/inputdrv/uinput_driver.cpp",
+                 "src/inputdrv/join_axis.cpp",
+                 "src/inputdrv/throttle.cpp",
+                 "src/inputdrv/toggle_button.cpp"],
+                LIBS=['boost_signals', 'usb', 'pthread'])
 
 # EOF #
