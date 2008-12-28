@@ -204,16 +204,21 @@ enum XboxButton {
   XBOX_DPAD_DOWN,
   XBOX_DPAD_LEFT,
   XBOX_DPAD_RIGHT,
+
+  XBOX_BTN_MAX
 };
 
 enum XboxAxis {
   XBOX_AXIS_UNKNOWN,
+
   XBOX_AXIS_X1,
   XBOX_AXIS_Y1,
   XBOX_AXIS_X2,
   XBOX_AXIS_Y2,
   XBOX_AXIS_LT,
   XBOX_AXIS_RT,
+
+  XBOX_AXIS_MAX
 };
 
 int  get_button(XboxGenericMsg& msg, XboxButton button);

@@ -33,14 +33,12 @@ public:
   bool trigger_as_zaxis;
   bool dpad_only;
 
-  uInputCfg() {
-    trigger_as_button = false;
-    dpad_as_button    = false;
-    trigger_as_zaxis  = false;
-    dpad_only         = false;
-  }
-};
+  int  btn_map[XBOX_BTN_MAX];
+  int  axis_map[XBOX_AXIS_MAX];
 
+  uInputCfg();
+};
+
 class uInput
 {
 private:

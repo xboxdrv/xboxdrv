@@ -227,6 +227,7 @@ int get_button(XboxGenericMsg& msg, XboxButton button)
             case XBOX_DPAD_RIGHT:
               return msg.xbox360.dpad_right;
 
+            case XBOX_BTN_MAX:
             case XBOX_BTN_UNKNOWN:
               return 0;
           }
@@ -278,6 +279,7 @@ int get_button(XboxGenericMsg& msg, XboxButton button)
             case XBOX_DPAD_RIGHT:
               return msg.xbox.dpad_right;
 
+            case XBOX_BTN_MAX:
             case XBOX_BTN_UNKNOWN:
               return 0;
           }
@@ -340,6 +342,7 @@ void set_button(XboxGenericMsg& msg, XboxButton button, int v)
             case XBOX_DPAD_RIGHT:
               msg.xbox360.dpad_right = v; break;
 
+            case XBOX_BTN_MAX:
             case XBOX_BTN_UNKNOWN:
               break;
           }
@@ -391,6 +394,7 @@ void set_button(XboxGenericMsg& msg, XboxButton button, int v)
             case XBOX_DPAD_RIGHT:
               msg.xbox.dpad_right = v; break;
 
+            case XBOX_BTN_MAX:
             case XBOX_BTN_UNKNOWN:
               break;
           }
@@ -410,6 +414,7 @@ int get_axis(XboxGenericMsg& msg, XboxAxis axis)
       case GAMEPAD_XBOX360_WIRELESS:
         switch(axis)
           {
+            case XBOX_AXIS_MAX:
             case XBOX_AXIS_UNKNOWN:
               return 0;
             case XBOX_AXIS_X1:
@@ -431,6 +436,7 @@ int get_axis(XboxGenericMsg& msg, XboxAxis axis)
       case GAMEPAD_XBOX_MAT:
         switch(axis)
           {
+            case XBOX_AXIS_MAX:
             case XBOX_AXIS_UNKNOWN:
               return 0;
             case XBOX_AXIS_X1:
@@ -463,6 +469,7 @@ void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
       case GAMEPAD_XBOX360_WIRELESS:
         switch(axis)
           {
+            case XBOX_AXIS_MAX:
             case XBOX_AXIS_UNKNOWN:
               break;
             case XBOX_AXIS_X1:
@@ -484,6 +491,7 @@ void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
       case GAMEPAD_XBOX_MAT:
         switch(axis)
           {
+            case XBOX_AXIS_MAX:
             case XBOX_AXIS_UNKNOWN:
               break;
             case XBOX_AXIS_X1:
@@ -582,6 +590,7 @@ std::string axis2string(XboxAxis axis)
 {
   switch(axis)
     {
+      case XBOX_AXIS_MAX:
       case XBOX_AXIS_UNKNOWN: return "unknown";
       case XBOX_AXIS_X1: return "X1";
       case XBOX_AXIS_Y1: return "Y1";
@@ -597,6 +606,7 @@ std::string btn2string(XboxButton btn)
 {
   switch (btn)
     {
+      case XBOX_BTN_MAX:
       case XBOX_BTN_UNKNOWN: return "unknown";
       case XBOX_BTN_START: return "Start";
       case XBOX_BTN_GUIDE: return "Guide";

@@ -274,6 +274,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  -L, --list-controller    list available controllers" << std::endl;
   std::cout << "  -R, --test-rumble        map rumbling to LT and RT (for testing only)" << std::endl;
   std::cout << "  --no-uinput              do not try to start uinput event dispatching" << std::endl;
+  std::cout << "  --mimic-xpad             Causes xboxdrv to use the same axis and button names as the xpad kernel driver" << std::endl;
   std::cout << "  -D, --daemon             run as daemon" << std::endl;
   std::cout << std::endl;
   std::cout << "Device Options: " << std::endl;
@@ -399,6 +400,10 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
       else if (strcmp(argv[i], "--no-uinput") == 0)
         {
           opts.no_uinput = true;
+        }
+      else if (strcmp(argv[i], "--mimic-xpad") == 0)
+        {
+          //opts.mimic_xpad = true;
         }
       else if (strcmp(argv[i], "-t") == 0 ||
                strcmp(argv[i], "--type") == 0)
