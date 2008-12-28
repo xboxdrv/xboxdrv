@@ -57,10 +57,10 @@ int main()
 
       UInputDriver* uinput = new UInputDriver("UInputMouseEmulation");
 
+      // Create the Uinput device
       uinput->add_abs(ABS_X, -32767, 32767);
       uinput->add_abs(ABS_Y, -32767, 32767);
       uinput->add_abs(ABS_THROTTLE, 0, 32767);
-
       uinput->finish();
 
       std::vector<Control*> controls;
