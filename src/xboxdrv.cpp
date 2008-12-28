@@ -295,6 +295,10 @@ void print_command_line_help(int argc, char** argv)
             << "                           (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)" << std::endl;
   std::cout << "  -b, --buttonmap MAP      Remap the buttons as specified by MAP (example: B=A,X=A,Y=A)" << std::endl;
   std::cout << "  -a, --axismap MAP        Remap the axis as specified by MAP (example: -Y1=Y1,X1=X2)" << std::endl;
+
+  std::cout << "  --ui-buttonmap MAP       Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)" << std::endl;
+  std::cout << "  --ui-axismap MAP         Changes the uinput events send when moving a axis (example: X1=ABS_X2)" << std::endl;
+
   std::cout << "  --square-axis            Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)" << std::endl;
   std::cout << "  --relative-axis MAP      Make an axis emulate a joystick throttle (example: y2=64000)" << std::endl;
   std::cout << "  --autofire MAP           Cause the given buttons to act as autofire (example: A=250)" << std::endl;
@@ -476,6 +480,32 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
               std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
               exit(EXIT_FAILURE);
             }          
+        }
+      else if ((strcmp(argv[i], "--ui-axismap") == 0))
+        {
+          ++i;
+          if (i < argc)
+            {
+              //arg2vector(argv[i], opts.axis_map, &AxisMapping::from_string);
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
+              exit(EXIT_FAILURE);
+            }                  
+        }
+      else if ((strcmp(argv[i], "--ui-buttonmap") == 0))
+        {
+          ++i;
+          if (i < argc)
+            {
+              //arg2vector(argv[i], opts.axis_map, &AxisMapping::from_string);
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
+              exit(EXIT_FAILURE);
+            }         
         }
       else if (strcmp(argv[i], "-i") == 0 ||
                strcmp(argv[i], "--id") == 0)

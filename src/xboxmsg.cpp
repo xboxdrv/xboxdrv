@@ -416,6 +416,9 @@ int get_axis(XboxGenericMsg& msg, XboxAxis axis)
           {
             case XBOX_AXIS_MAX:
             case XBOX_AXIS_UNKNOWN:
+            case XBOX_AXIS_DPAD_X:
+            case XBOX_AXIS_DPAD_Y:
+            case XBOX_AXIS_TRIGGER:
               return 0;
             case XBOX_AXIS_X1:
               return msg.xbox360.x1;
@@ -438,6 +441,9 @@ int get_axis(XboxGenericMsg& msg, XboxAxis axis)
           {
             case XBOX_AXIS_MAX:
             case XBOX_AXIS_UNKNOWN:
+            case XBOX_AXIS_DPAD_X:
+            case XBOX_AXIS_DPAD_Y:
+            case XBOX_AXIS_TRIGGER:
               return 0;
             case XBOX_AXIS_X1:
               return msg.xbox.x1;
@@ -471,6 +477,9 @@ void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
           {
             case XBOX_AXIS_MAX:
             case XBOX_AXIS_UNKNOWN:
+            case XBOX_AXIS_DPAD_X:
+            case XBOX_AXIS_DPAD_Y:
+            case XBOX_AXIS_TRIGGER:
               break;
             case XBOX_AXIS_X1:
               msg.xbox360.x1 = v; break;
@@ -493,6 +502,9 @@ void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
           {
             case XBOX_AXIS_MAX:
             case XBOX_AXIS_UNKNOWN:
+            case XBOX_AXIS_DPAD_X:
+            case XBOX_AXIS_DPAD_Y:
+            case XBOX_AXIS_TRIGGER:
               break;
             case XBOX_AXIS_X1:
               msg.xbox.x1 = v; break;
@@ -574,14 +586,25 @@ XboxAxis string2axis(const std::string& str_)
     return XBOX_AXIS_X1;
   else if (str == "y1")
     return XBOX_AXIS_Y1;
+  
   else if (str == "x2")
     return XBOX_AXIS_X2;
   else if (str == "y2")
     return XBOX_AXIS_Y2;
+  
   else if (str == "lt")
     return XBOX_AXIS_LT;
   else if (str == "rt")
     return XBOX_AXIS_RT;
+
+  else if (str == "dpad_x")
+    return XBOX_AXIS_DPAD_X;
+  else if (str == "dpad_y")
+    return XBOX_AXIS_DPAD_Y;
+
+  else if (str == "trigger")
+    return XBOX_AXIS_TRIGGER;
+
   else
     return XBOX_AXIS_UNKNOWN;
 }
@@ -592,10 +615,18 @@ std::string axis2string(XboxAxis axis)
     {
       case XBOX_AXIS_MAX:
       case XBOX_AXIS_UNKNOWN: return "unknown";
+
+      case XBOX_AXIS_TRIGGER: return "TRIGGER";
+
+      case XBOX_AXIS_DPAD_X: return "DPAD_X";
+      case XBOX_AXIS_DPAD_Y: return "DPAD_Y";
+
       case XBOX_AXIS_X1: return "X1";
       case XBOX_AXIS_Y1: return "Y1";
+
       case XBOX_AXIS_X2: return "X2";
       case XBOX_AXIS_Y2: return "Y2";
+
       case XBOX_AXIS_LT: return "LT";
       case XBOX_AXIS_RT: return "RT";
     }
@@ -629,10 +660,10 @@ std::string btn2string(XboxButton btn)
       case XBOX_BTN_THUMB_L: return "TL";
       case XBOX_BTN_THUMB_R: return "TR";
 
-      case XBOX_DPAD_UP: return "DPAD_Up";
-      case XBOX_DPAD_DOWN: return "DPAD_Down";
-      case XBOX_DPAD_LEFT: return "Dpad_left";
-      case XBOX_DPAD_RIGHT: return "Dpad_right";
+      case XBOX_DPAD_UP:    return "DPAD_UP";
+      case XBOX_DPAD_DOWN:  return "DPAD_DOWN";
+      case XBOX_DPAD_LEFT:  return "DPAD_LEFT";
+      case XBOX_DPAD_RIGHT: return "DPAD_RIGHT";
     }
   return "unknown";
 }
