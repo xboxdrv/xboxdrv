@@ -182,6 +182,27 @@ Possible axis names are: x1, y1, x2, y2, lt, rt
 
 Swaping lt or rt with x1, y1, x2, y2 will not work properly.
 
+[[ UInput Mapping ]]
+--------------------
+
+Another more low level form to remap buttons and axis comes in the
+form of --ui-buttonmap and --ui-axismap, these allow you to change the
+event code that is send to the kernel for a given button or
+axis. Usage is similar to the normal button mapping:
+
+ % ./xboxdrv -s --ui-buttonmap X=KEY_A
+
+Except that the right hand side is an event name from
+/usr/include/linux/input.h. You can use all KEY_ or BTN_ codes for
+--ui-buttonmap and all ABS_ ones for --ui-axismap.
+
+When you try to let a gamepad key send a keyboard event you might run
+into trouble with Xorg, for possible fixes see the section further down.
+
+Note that you can't have two keys sending out the same event code, so
+you have to be careful with remappings not causing conflicts or you
+will get undesirable sideeffects.
+
 [[ Running InputDrv ]]
 ----------------------
 
@@ -232,11 +253,14 @@ might also be fixable by "rmmod xpad" or via:
  % xinput list
  % xinput set-int-prop THATDEVICENUMBER 'Device Enabled' 32 0
 
-You can also try to edit:
+If you are trying to generate keyboard events via --ui-buttonmap,
+neither of these will help you, since removing the device, will also
+remove the keyboard handling. You can also try to edit:
 
- % /etc/hal/fdi/policy/preferences.fdi
+ /etc/hal/fdi/policy/preferences.fdi
 
-Which when done right, would be a permanent fix
+Which when done right, should allow you to use the gamepad as
+intended.
 
 [[ Wacom Trouble ]]
 -------------------
