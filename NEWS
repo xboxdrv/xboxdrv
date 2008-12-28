@@ -3,7 +3,7 @@ xboxdrv 0.4 - (25/Dec/2008)
 
 * added --square-axis option
 * added --autofire option
-* added --relative-axis option
+* added --relative-axis option (i.e. emulate emulthrottle control)
 
 
 xboxdrv 0.3 - (06/Nov/2008)

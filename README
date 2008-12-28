@@ -152,8 +152,18 @@ If you want all face buttons send out A button events:
 
  % ./xboxdrv --buttonmap B=A,X=A,Y=A
 
-Possible button names are: start, guide, back, a, b, x, y, black,
-white, lb, rb, lt, rt, tl, tr, du, dd, dl, dr
+Possible button names are: 
+
+Name           | Description
+---------------+------------------------------------------------------------------
+start, back    | start, back buttons
+guide          | big X-button in the middle (Xbox360 only)
+a, b, x, y     | face buttons
+black, white   | black, white buttons (Xbox1 only, mapped to lb, rb on Xbox360)
+lb, rb         | shoulder buttons (Xbox360 only, mapped to black, white on Xbox1)
+lt, rt         | analog trigger (needs --trigger-as-button option)
+tl, tr         | pressing the left or right analog stick
+du, dd, dl, dr | dpad directions (needs --dpad-as-button option)
 
 [[ Axis Remapping ]]
 --------------------
@@ -168,9 +178,9 @@ If you want to swap the left and right stick start with:
 
  % ./xboxdrv --buttonmap X2=X1,Y2=Y1,X1=X2,Y1=Y2
 
-Possible axis names are: x1,y1,x2,y2,lt,rt
+Possible axis names are: x1, y1, x2, y2, lt, rt
 
-Swaping lt or rt with x1,y1,x2,y2 will not work properly.
+Swaping lt or rt with x1, y1, x2, y2 will not work properly.
 
 [[ Running InputDrv ]]
 ----------------------
@@ -221,6 +231,29 @@ might also be fixable by "rmmod xpad" or via:
 
  % xinput list
  % xinput set-int-prop THATDEVICENUMBER 'Device Enabled' 32 0
+
+[[ Examples ]]
+--------------
+
+Prince of Persia: Sands of Time
+Prince of Persia: Warrior Within
+Prince of Persia: The Two Thrones
+Tomb Raider Anniversary
+Tomb Raider Legend
+
+ % xboxdrv --trigger-as-button -s 
+
+
+CH Flightstick emulation in Dosbox:
+
+In dosbox.conf set:
+
+[joystick]
+joysticktype = ch
+
+Start xboxdrv with:
+
+ % xboxdrv -s --trigger-as-zaxis --square-axis --relative-axis y2=64000 --axismap -y2=x2,x2=y2
 
 
 [[ Troubleshooting ]]
