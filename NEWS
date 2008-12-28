@@ -3,7 +3,8 @@ xboxdrv 0.4 - (25/Dec/2008)
 
 * added --square-axis option
 * added --autofire option
-* added --relative-axis option (i.e. emulate emulthrottle control)
+* added --relative-axis option (i.e. emulate joystick throttle)
+* added --ui-buttonmap and --ui-axismap to change uinput events
 
 
 xboxdrv 0.3 - (06/Nov/2008)

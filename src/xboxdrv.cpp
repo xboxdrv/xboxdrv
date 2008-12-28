@@ -20,6 +20,7 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <sys/time.h>
+#include <ctype.h>
 #include <time.h>
 #include <signal.h>
 #include <errno.h>
@@ -35,6 +36,7 @@
 #include "xbox360_controller.hpp"
 #include "xbox360_wireless_controller.hpp"
 #include "helper.hpp"
+#include "evdev_helper.hpp"
 #include "command_line_options.hpp"
 #include "xbox_generic_controller.hpp"
 
@@ -137,6 +139,14 @@ void arg2vector(const std::string& str, typename std::vector<C>& lst, Func func)
     lst.push_back(func(std::string(start, str.end())));
 }
 
+bool is_number(const std::string& str)
+{
+  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+    if (!isdigit(*i))
+      return false;
+  return true;
+}
+
 void set_ui_button_map(int* ui_button_map, const std::string& str)
 {
   std::string::size_type i = str.find_first_of('=');
@@ -147,7 +157,9 @@ void set_ui_button_map(int* ui_button_map, const std::string& str)
   else
     {
       XboxButton btn = string2btn(str.substr(0, i));
-      int code       = boost::lexical_cast<int>(str.substr(i+1, str.size()-i));
+      std::string rhs = str.substr(i+1, str.size()-i);
+      int code = is_number(rhs) ? boost::lexical_cast<int>(rhs) : str2evbtn(rhs);
+
       if (btn != XBOX_BTN_UNKNOWN)
         {
           ui_button_map[btn] = code;
@@ -168,8 +180,10 @@ void set_ui_axis_map(int* ui_axis_map, const std::string& str)
     }
   else
     {
-      XboxAxis axis = string2axis(str.substr(0, i));
-      int code       = boost::lexical_cast<int>(str.substr(i+1, str.size()-i));
+      XboxAxis axis   = string2axis(str.substr(0, i));
+      std::string rhs = str.substr(i+1, str.size()-i);
+      int code = is_number(rhs) ? boost::lexical_cast<int>(rhs) : str2evabs(rhs);
+      
       if (axis != XBOX_AXIS_UNKNOWN)
         {
           ui_axis_map[axis] = code;
