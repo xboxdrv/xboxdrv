@@ -292,12 +292,13 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  --dpad-only              Both sticks are ignored, only DPad sends out axis events" << std::endl;
   std::cout << "  --type TYPE              Ignore autodetection and enforce controller type\n"
             << "                           (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)" << std::endl;
-  std::cout << "  -b, --buttonmap MAP      Remap the buttons as specified by MAP" << std::endl;
-  std::cout << "  -a, --axismap MAP        Remap the axis as specified by MAP" << std::endl;
+  std::cout << "  -b, --buttonmap MAP      Remap the buttons as specified by MAP (example: B=A,X=A,Y=A)" << std::endl;
+  std::cout << "  -a, --axismap MAP        Remap the axis as specified by MAP (example: -Y1=Y1,X1=X2)" << std::endl;
   std::cout << "  --square-axis            Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)" << std::endl;
-  std::cout << "  --relative-axis MAP      Make an axis emulate a joystick throttle" << std::endl;
-  std::cout << "  --autofire MAP           Cause the given buttons to act as autofire" << std::endl;
+  std::cout << "  --relative-axis MAP      Make an axis emulate a joystick throttle (example: y2=64000)" << std::endl;
+  std::cout << "  --autofire MAP           Cause the given buttons to act as autofire (example: A=250)" << std::endl;
   std::cout << std::endl;
+  std::cout << "See README for more documentation and examples." << std::endl;
   std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
 }
 
