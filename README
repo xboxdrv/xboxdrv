@@ -231,6 +231,12 @@ might also be fixable by "rmmod xpad" or via:
 
  % xinput list
  % xinput set-int-prop THATDEVICENUMBER 'Device Enabled' 32 0
+
+You can also try to edit:
+
+ % /etc/hal/fdi/policy/preferences.fdi
+
+Which when done right, would be a permanent fix
 
 [[ Wacom Trouble ]]
 -------------------

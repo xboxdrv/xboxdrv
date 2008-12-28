@@ -16,6 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <boost/lexical_cast.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 #include <sys/time.h>
 #include <time.h>
 #include <signal.h>
@@ -97,6 +100,23 @@ XPadDevice xpad_devices[] = {
 
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
 
+void arg2apply(const std::string& str, const boost::function<void (const std::string&)>& func)
+{
+  std::string::const_iterator start = str.begin();
+  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+    {
+      if (*i == ',')
+        {
+          if (i != start)
+            func(std::string(start, i));
+          
+          start = i+1;
+        }
+    }
+  
+  if (start != str.end())
+    func(std::string(start, str.end()));
+}
 
 template<class C, class Func>
 void arg2vector(const std::string& str, typename std::vector<C>& lst, Func func)
@@ -115,6 +135,50 @@ void arg2vector(const std::string& str, typename std::vector<C>& lst, Func func)
   
   if (start != str.end())
     lst.push_back(func(std::string(start, str.end())));
+}
+
+void set_ui_button_map(int* ui_button_map, const std::string& str)
+{
+  std::string::size_type i = str.find_first_of('=');
+  if (i == std::string::npos)
+    {
+      throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, '=' missing");
+    }
+  else
+    {
+      XboxButton btn = string2btn(str.substr(0, i));
+      int code       = boost::lexical_cast<int>(str.substr(i+1, str.size()-i));
+      if (btn != XBOX_BTN_UNKNOWN)
+        {
+          ui_button_map[btn] = code;
+        }
+      else
+        {
+          throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, Xbox button name not valid");
+        }      
+    }
+}
+
+void set_ui_axis_map(int* ui_axis_map, const std::string& str)
+{
+  std::string::size_type i = str.find_first_of('=');
+  if (i == std::string::npos)
+    {
+      throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-axis-mapping");
+    }
+  else
+    {
+      XboxAxis axis = string2axis(str.substr(0, i));
+      int code       = boost::lexical_cast<int>(str.substr(i+1, str.size()-i));
+      if (axis != XBOX_AXIS_UNKNOWN)
+        {
+          ui_axis_map[axis] = code;
+        }
+      else
+        {
+          throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, Xbox axis name not valid");
+        }      
+    }  
 }
 
 void list_controller()
@@ -486,7 +550,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           ++i;
           if (i < argc)
             {
-              //arg2vector(argv[i], opts.axis_map, &AxisMapping::from_string);
+              arg2apply(argv[i], boost::bind(&set_ui_axis_map, opts.uinput_config.axis_map, _1));
             }
           else
             {
@@ -499,7 +563,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           ++i;
           if (i < argc)
             {
-              //arg2vector(argv[i], opts.axis_map, &AxisMapping::from_string);
+              arg2apply(argv[i], boost::bind(&set_ui_button_map, opts.uinput_config.btn_map, _1));
             }
           else
             {
