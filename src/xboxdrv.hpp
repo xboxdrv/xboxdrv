@@ -27,31 +27,6 @@ struct XPadDevice {
   uint16_t    idProduct;
   const char* name;
 };
-
-struct ButtonMapping {
-  XboxButton lhs;
-  XboxButton rhs;
-};
-
-struct AxisMapping {
-  XboxAxis lhs;
-  XboxAxis rhs;
-  bool     invert;
-};
-
-struct AutoFireMapping {
-  static AutoFireMapping from_string(const std::string&);
-
-  XboxButton button;
-  float      frequency;
-};
-
-struct RelativeAxisMapping {
-  static RelativeAxisMapping from_string(const std::string&);
-
-  XboxAxis axis;
-  int      speed;
-};
 
 #endif
 

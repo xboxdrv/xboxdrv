@@ -97,94 +97,6 @@ XPadDevice xpad_devices[] = {
 
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
 
-std::ostream& operator<<(std::ostream& out, const GamepadType& type) 
-{
-  switch (type)
-    {
-      case GAMEPAD_XBOX360:
-        return out << "Xbox360";
-
-      case GAMEPAD_XBOX360_WIRELESS:
-        return out << "Xbox360 (wireless)";
-
-      case GAMEPAD_XBOX:
-        return out << "Xbox Classic";
-
-      case GAMEPAD_XBOX_MAT:
-        return out << "Xbox Dancepad";
-        
-      case GAMEPAD_XBOX360_GUITAR:
-        return out << "Xbox360 Guitar";
-
-      default:
-        return out << "unknown" << std::endl;
-    }
-}
-
-void apply_button_map(XboxGenericMsg& msg, std::vector<ButtonMapping>& lst)
-{
-  XboxGenericMsg newmsg = msg;
-
-  for(std::vector<ButtonMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
-    set_button(newmsg, i->lhs, 0);
-
-  for(std::vector<ButtonMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
-    set_button(newmsg, i->rhs, get_button(msg, i->lhs) || get_button(newmsg, i->rhs));
-
-  msg = newmsg;  
-}
-
-void apply_axis_map(XboxGenericMsg& msg, std::vector<AxisMapping>& lst)
-{
-  XboxGenericMsg newmsg = msg;
-
-  for(std::vector<AxisMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
-    {
-      set_axis(newmsg, i->lhs, 0);
-    }
-
-  for(std::vector<AxisMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
-    {
-      int lhs  = get_axis(msg,    i->lhs);
-      int nrhs = get_axis(newmsg, i->rhs);
-
-      if (i->invert)
-        {
-          if (i->lhs == XBOX_AXIS_LT ||
-              i->lhs == XBOX_AXIS_RT)
-            {
-              lhs = 255 - lhs;
-            }
-          else
-            {
-              lhs = -lhs;
-            }
-        }
-
-      set_axis(newmsg, i->rhs, std::max(std::min(nrhs + lhs, 32767), -32768));
-    }
-  msg = newmsg;
-}
-
-ButtonMapping string2buttonmapping(const std::string& str)
-{
-  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
-    {
-      if (*i == '=')
-        {
-          ButtonMapping mapping;
-          mapping.lhs = string2btn(std::string(str.begin(), i));
-          mapping.rhs = string2btn(std::string(i+1, str.end()));
-          
-          if (mapping.lhs == XBOX_BTN_UNKNOWN ||
-              mapping.rhs == XBOX_BTN_UNKNOWN)
-            throw std::runtime_error("Couldn't convert string \"" + str + "\" to button mapping");
-
-          return mapping;
-        }
-    }
-  throw std::runtime_error("Couldn't convert string \"" + str + "\" to button mapping");
-}
 
 template<class C, class Func>
 void arg2vector(const std::string& str, typename std::vector<C>& lst, Func func)
@@ -203,84 +115,6 @@ void arg2vector(const std::string& str, typename std::vector<C>& lst, Func func)
   
   if (start != str.end())
     lst.push_back(func(std::string(start, str.end())));
-}
-
-AxisMapping string2axismapping(const std::string& str)
-{
-  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
-    {
-      if (*i == '=')
-        {
-          AxisMapping mapping;
-
-          std::string lhs(str.begin(), i);
-          std::string rhs(i+1, str.end());
-
-          if (lhs.empty() || rhs.empty())
-            throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
-
-          if (lhs[0] == '-')
-            {
-              mapping.invert = true;
-              mapping.lhs = string2axis(lhs.substr(1));
-            }
-          else
-            {
-              mapping.invert = false;
-              mapping.lhs = string2axis(lhs);
-            }
-
-          mapping.rhs = string2axis(rhs);
-
-          if (mapping.lhs == XBOX_AXIS_UNKNOWN ||
-              mapping.rhs == XBOX_AXIS_UNKNOWN)
-            throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
-
-          return mapping;
-        }
-    }
-  throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
-}
-
-RelativeAxisMapping
-RelativeAxisMapping::from_string(const std::string& str)
-{
-  /* Format of str: A={SPEED} */
-  std::string::size_type i = str.find('=');
-  if (i == std::string::npos)
-    {
-      throw std::runtime_error("Couldn't convert string \"" + str + "\" to RelativeAxisMapping");
-    }
-  else
-    {
-      RelativeAxisMapping mapping;
-      mapping.axis  = string2axis(str.substr(0, i));
-      mapping.speed = atoi(str.substr(i+1, str.size()-i).c_str());
-      // FIXME: insert some error checking here
-      return mapping;
-    }
-}
-
-
-AutoFireMapping 
-AutoFireMapping::from_string(const std::string& str)
-{
-  /* Format of str: A={ON-DELAY}[:{OFF-DELAY}]
-     Examples: A=10 or A=10:50 
-     if OFF-DELAY == nil then ON-DELAY = OFF-DELAY 
-  */
-  std::string::size_type i = str.find_first_of('=');
-  if (i == std::string::npos)
-    {
-      throw std::runtime_error("Couldn't convert string \"" + str + "\" to AutoFireMapping");
-    }
-  else
-    {
-      AutoFireMapping mapping; 
-      mapping.button    = string2btn(str.substr(0, i));
-      mapping.frequency = atoi(str.substr(i+1, str.size()-i).c_str())/1000.0f;
-      return mapping;
-    }
 }
 
 void list_controller()
@@ -615,7 +449,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           ++i;
           if (i < argc)
             {
-              arg2vector(argv[i], opts.button_map, string2buttonmapping);
+              arg2vector(argv[i], opts.button_map, &ButtonMapping::from_string);
             }
           else
             {
@@ -629,7 +463,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           ++i;
           if (i < argc)
             {
-              arg2vector(argv[i], opts.axis_map, string2axismapping);
+              arg2vector(argv[i], opts.axis_map, &AxisMapping::from_string);
             }
           else
             {

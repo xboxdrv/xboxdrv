@@ -22,6 +22,30 @@
 #include "command_line_options.hpp"
 #include "xboxmsg.hpp"
 
+std::ostream& operator<<(std::ostream& out, const GamepadType& type) 
+{
+  switch (type)
+    {
+      case GAMEPAD_XBOX360:
+        return out << "Xbox360";
+
+      case GAMEPAD_XBOX360_WIRELESS:
+        return out << "Xbox360 (wireless)";
+
+      case GAMEPAD_XBOX:
+        return out << "Xbox Classic";
+
+      case GAMEPAD_XBOX_MAT:
+        return out << "Xbox Dancepad";
+        
+      case GAMEPAD_XBOX360_GUITAR:
+        return out << "Xbox360 Guitar";
+
+      default:
+        return out << "unknown" << std::endl;
+    }
+}
+
 std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg)
 {
   if (msg.type == GAMEPAD_XBOX)

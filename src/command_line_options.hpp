@@ -27,6 +27,7 @@
 #define HEADER_COMMAND_LINE_OPTIONS_HPP
 
 #include <vector>
+#include "modifier.hpp"
 #include "xboxmsg.hpp"
 #include "uinput.hpp"
 

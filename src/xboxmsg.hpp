@@ -171,6 +171,7 @@ struct XboxGenericMsg
   };
 };
 
+std::ostream& operator<<(std::ostream& out, const GamepadType& type);
 std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg);
 std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg);
 std::ostream& operator<<(std::ostream& out, const XboxMsg& msg);
