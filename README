@@ -232,6 +232,36 @@ might also be fixable by "rmmod xpad" or via:
  % xinput list
  % xinput set-int-prop THATDEVICENUMBER 'Device Enabled' 32 0
 
+[[ Wacom Trouble ]]
+-------------------
+
+In recent kernels a Wacom graphic tablet creates a joystick device, so
+xboxdrv or any other real joysticks ends up as /dev/input/js1 instead
+of /dev/input/js0. In many games this causes the joystick to not
+function any more.
+
+A temporary workaround for this is to simply delete the joystick
+device js0 and replace it with a symbolic link js1 via:
+
+ % sudo ln -sf /dev/input/js1 /dev/input/js0
+
+This workaround will only last till the next reboot, since the device
+names are dynamically created, but for the time being there doesn't
+seem to any other way to easily work around this issue. 
+
+[[ Wine Trouble ]]
+------------------
+
+When using the Xbox360 gamepad in Wine it is not specially handled as
+Xbox360 gamepad, this means games will not display the proper button
+labels, but just numbers (i.e. 'Btn1' instead of 'A' for example). It
+will still work otherwise.
+
+Xinput support might also not work properly. 
+
+Its currently unknown if this can be fixed by xboxdrv or if it
+requires patches to Wine.
+
 [[ Examples ]]
 --------------
 
