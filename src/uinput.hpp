@@ -43,7 +43,7 @@ class uInput
 {
 private:
   int fd;
-  uInputCfg config;
+  uInputCfg cfg;
 
 public:
   uInput(GamepadType type, uInputCfg cfg = uInputCfg());

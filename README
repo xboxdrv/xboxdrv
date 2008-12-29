@@ -202,6 +202,9 @@ into trouble with Xorg, for possible fixes see the section further down.
 Note that you can't have two keys sending out the same event code, so
 you have to be careful with remappings not causing conflicts or you
 will get undesirable sideeffects.
+
+In most cases this option is not useful, use the normal --buttonmap
+instead.
 
 [[ Running InputDrv ]]
 ----------------------

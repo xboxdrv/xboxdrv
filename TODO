@@ -1,4 +1,6 @@
 - make guitar button configurable  
+- --mimic-xpad
+
 - using rumble in scripts doesn't work, since you can't reset rumble back to 0,0
 - locate a USB device with a string or two
 - thread away on all endpoints

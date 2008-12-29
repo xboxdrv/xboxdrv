@@ -957,93 +957,7 @@ void apply_deadzone(XboxGenericMsg& msg, int deadzone)
         break;
     }
 }
-
-class RelativeAxisModifier
-{
-private:
-  std::vector<RelativeAxisMapping> relative_axis_map;
-  std::vector<int> axis_state;
-
-public:
-  RelativeAxisModifier(const std::vector<RelativeAxisMapping>& relative_axis_map) 
-    : relative_axis_map(relative_axis_map)
-  {
-    for(size_t i = 0; i < relative_axis_map.size(); ++i)
-      {
-        axis_state.push_back(0);
-      }
-  }
-
-  void update(float delta, XboxGenericMsg& msg)
-  {
-    for(size_t i = 0; i < relative_axis_map.size(); ++i)
-      {
-        int value = get_axis(msg, relative_axis_map[i].axis);
-        if (abs(value) > 4000 ) // FIXME: add proper deadzone handling
-          {
-            axis_state[i] += static_cast<int>(relative_axis_map[i].speed * delta * (value/32768.0f));
-            if (axis_state[i] < -32768)
-              axis_state[i] = -32768;
-            else if (axis_state[i] > 32767)
-              axis_state[i] = 32767;
-
-            set_axis(msg, relative_axis_map[i].axis, axis_state[i]);
-          }
-        else
-          {
-            set_axis(msg, relative_axis_map[i].axis, axis_state[i]);
-          }
-      }
-  }
-};
-
-class AutoFireModifier
-{
-private:
-  std::vector<AutoFireMapping> autofire_map;
-  std::vector<float> button_timer;
-
-public:
-  AutoFireModifier(const std::vector<AutoFireMapping>& autofire_map)
-    : autofire_map(autofire_map)
-  {
-    for(std::vector<AutoFireMapping>::const_iterator i = autofire_map.begin(); i != autofire_map.end(); ++i)
-      {
-        button_timer.push_back(0.0f);
-      }
-  }
-
-  void update(float delta, XboxGenericMsg& msg)
-  {
-    for(size_t i = 0; i < autofire_map.size(); ++i)
-      {
-        if (get_button(msg, autofire_map[i].button))
-          {
-            button_timer[i] += delta;
-
-            if (button_timer[i] > autofire_map[i].frequency)
-              {
-                set_button(msg, autofire_map[i].button, 1);
-                button_timer[i] = 0.0f; // FIXME: we ignoring the passed time
-              }
-            else if (button_timer[i] > autofire_map[i].frequency/2)
-              {
-                set_button(msg, autofire_map[i].button, 0);
-              }
-            else
-              {
-                set_button(msg, autofire_map[i].button, 1);
-              }
-          }
-        else
-          {
-            button_timer[i] = 0;
-          }
-      }
-  }
-};
-
-uint32_t get_time()
+uint32_t get_time()
 {
   struct timeval tv;
   gettimeofday(&tv, NULL);
