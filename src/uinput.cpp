@@ -262,19 +262,19 @@ uInput::setup_xbox360_guitar()
   ioctl(fd, UI_SET_EVBIT, EV_KEY);
         
   // Whammy and Tilt
-  ioctl(fd, UI_SET_ABSBIT, ABS_X);
-  ioctl(fd, UI_SET_ABSBIT, ABS_Y);
+  ioctl(fd, UI_SET_ABSBIT, config.axis_map[XBOX_AXIS_X1]);
+  ioctl(fd, UI_SET_ABSBIT, config.axis_map[XBOX_AXIS_Y1]);
 
   // Dpad
-  ioctl(fd, UI_SET_KEYBIT, BTN_BASE);
-  ioctl(fd, UI_SET_KEYBIT, BTN_BASE2);
-  ioctl(fd, UI_SET_KEYBIT, BTN_BASE3);
-  ioctl(fd, UI_SET_KEYBIT, BTN_BASE4);
+  ioctl(fd, UI_SET_KEYBIT, config.btn_map[XBOX_DPAD_UP]);
+  ioctl(fd, UI_SET_KEYBIT, config.btn_map[XBOX_DPAD_DOWN]);
+  ioctl(fd, UI_SET_KEYBIT, config.btn_map[XBOX_DPAD_LEFT]);
+  ioctl(fd, UI_SET_KEYBIT, config.btn_map[XBOX_DPAD_RIGHT]);
 
   // Base
-  ioctl(fd, UI_SET_KEYBIT, BTN_START);
-  ioctl(fd, UI_SET_KEYBIT, BTN_SELECT);
-  ioctl(fd, UI_SET_KEYBIT, BTN_MODE);
+  ioctl(fd, UI_SET_KEYBIT, config.btn_map[XBOX_BTN_START]);
+  ioctl(fd, UI_SET_KEYBIT, config.btn_map[XBOX_BTN_BACK]);
+  ioctl(fd, UI_SET_KEYBIT, config.btn_map[XBOX_BTN_GUIDE]);
 
   // Fret button
   ioctl(fd, UI_SET_KEYBIT, BTN_1);
@@ -291,11 +291,11 @@ uInput::setup_xbox360_guitar()
   uinp.id.vendor  = 0x045e; // FIXME: Shouldn't be hardcoded
   uinp.id.product = 0x028e;
 
-  uinp.absmin[ABS_X] = -32768;
-  uinp.absmax[ABS_X] =  32767;
+  uinp.absmin[config.btn_map[XBOX_BTN_X]] = -32768;
+  uinp.absmax[config.btn_map[XBOX_BTN_X]] =  32767;
 
-  uinp.absmin[ABS_Y] = -32768;
-  uinp.absmax[ABS_Y] =  32767;
+  uinp.absmin[config.btn_map[XBOX_BTN_Y]] = -32768;
+  uinp.absmax[config.btn_map[XBOX_BTN_Y]] =  32767;
 
   
   if (write(fd, &uinp, sizeof(uinp)) < 0)
@@ -526,14 +526,14 @@ uInput::send(XboxMsg& msg)
 void
 uInput::send(Xbox360GuitarMsg& msg)
 {
-  send_button(BTN_BASE,  msg.dpad_up);
-  send_button(BTN_BASE2, msg.dpad_down);
-  send_button(BTN_BASE3, msg.dpad_left);
-  send_button(BTN_BASE4, msg.dpad_right);
+  send_button(config.btn_map[XBOX_DPAD_UP],    msg.dpad_up);
+  send_button(config.btn_map[XBOX_DPAD_DOWN],  msg.dpad_down);
+  send_button(config.btn_map[XBOX_DPAD_LEFT],  msg.dpad_left);
+  send_button(config.btn_map[XBOX_DPAD_RIGHT], msg.dpad_right);
 
-  send_button(BTN_START,  msg.start);
-  send_button(BTN_MODE,   msg.guide);
-  send_button(BTN_SELECT, msg.back);
+  send_button(config.btn_map[XBOX_BTN_START], msg.start);
+  send_button(config.btn_map[XBOX_BTN_GUIDE], msg.guide);
+  send_button(config.btn_map[XBOX_BTN_BACK],  msg.back);
 
   send_button(BTN_1, msg.green);
   send_button(BTN_2, msg.red);
@@ -541,8 +541,8 @@ uInput::send(Xbox360GuitarMsg& msg)
   send_button(BTN_4, msg.blue);
   send_button(BTN_5, msg.orange);
 
-  send_axis(ABS_X, msg.whammy);
-  send_axis(ABS_Y, msg.tilt);
+  send_axis(config.axis_map[XBOX_AXIS_X1], msg.whammy);
+  send_axis(config.axis_map[XBOX_AXIS_Y1], msg.tilt);
 }
 
 /* EOF */

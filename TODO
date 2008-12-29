@@ -1,5 +1,4 @@
-- add autofire with variable range, make it so that you can have one button mapped to A and one to A with autofire
-  --autofire A=50,B=10
+- make guitar button configurable  
 - using rumble in scripts doesn't work, since you can't reset rumble back to 0,0
 - locate a USB device with a string or two
 - thread away on all endpoints
@@ -9,12 +8,6 @@ usb -d 005:006 -c 5:in,5:out,6:in,7:in,8:out -o /tmp/out, else stdin
 
  - print version number on normal use
 
-More general button map support:
-
- % ./xboxdrv --buttonmap B=BTN_A,X=BTN_A,Y=KEY_B
-
-So pressing B sends out BTN_A uinput event
-
 Daemon Mode:
 SYSFS{idVendor}=="045e", SYSFS{idProduct}=="028e", RUN+="/home/ingo/projects/xboxdrv/trunk/xboxdrv --daemon"
 
@@ -22,9 +15,6 @@ Unpluging doesn't work and causes xboxdrv processing running amok
 
 Pictures of Xbox360 and controller:
 http://g-prime.net/x360/
-
---stick2-as-throttle
-  Makes the second stick act as throttle control
 
 Add examples to Readme for specific games
 
