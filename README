@@ -242,25 +242,44 @@ SDL_LINUX_JOYSTICK
 
 If you start xboxdrv and instead of having a fully working joystick,
 you end up controllering the mouse that might be due to recent changes
-in Xorg, which seem to handle all input devices as mice, no matter if
-they actually are or not. To work around this, first find the device with:
+in Xorg and its device hotplug handling. There are three workarounds:
 
- % hal-device
+Get the device id from hal:
 
-Then do a 'hal-device -r' followed by the devices uid. This problem
-might also be fixable by "rmmod xpad" or via:
+ % hal-find-by-property --key 'info.product' --string 'Xbox Gamepad (userspace driver)'
+
+Then remove the device from hal with:
+
+ % hal-device -r $DEVICEID
+
+Second workaround works with xinput:
 
  % xinput list
- % xinput set-int-prop THATDEVICENUMBER 'Device Enabled' 32 0
+ % xinput set-int-prop $DEVICEID 'Device Enabled' 32 0
 
-If you are trying to generate keyboard events via --ui-buttonmap,
-neither of these will help you, since removing the device, will also
-remove the keyboard handling. You can also try to edit:
+The former two workarounds are just temporary and have to be redone
+after each start of xboxdrv, the last workaround is a permanent one:
+
+You have to edit:
 
  /etc/hal/fdi/policy/preferences.fdi
 
-Which when done right, should allow you to use the gamepad as
-intended.
+And insert the following lines:
+
+    <match key="input.product" string="Xbox Gamepad (userspace driver)">
+      <remove key="input.x11_driver" />
+    </match>
+
+[[ Mouse Emulation ]]
+---------------------
+
+xboxdrv does not support mouse emulation, however due to Xorg
+brokeness and ugly hackery, the following gives you mouse emulation:
+
+  % ./xboxdrv --ui-buttonmap A=BTN_LEFT,B=BTN_RIGHT -s  --relative-axis X1=64000,Y1=64000 --deadzone 4192
+
+This assumed that you have not applied any of the Xorg workarounds and
+are using a version of Xorg that will handle your gamepad as mouse.
 
 [[ Wacom Trouble ]]
 -------------------
@@ -284,24 +303,28 @@ seem to any other way to easily work around this issue.
 
 When using the Xbox360 gamepad in Wine it is not specially handled as
 Xbox360 gamepad, this means games will not display the proper button
-labels, but just numbers (i.e. 'Btn1' instead of 'A' for example). It
-will still work otherwise.
+labels, but just numbers (i.e. 'Btn1' instead of 'A' for
+example). Asside from that it should work fine.
 
-Xinput support might also not work properly. 
+Xinput support (the DirectInput replacment, not the Xorg xinput) might
+not work properly or not at all.
 
-Its currently unknown if this can be fixed by xboxdrv or if it
+It is currently unknown if this can be fixed by xboxdrv or if it
 requires patches to Wine.
 
 [[ Examples ]]
 --------------
 
-Prince of Persia: Sands of Time
-Prince of Persia: Warrior Within
-Prince of Persia: The Two Thrones
-Tomb Raider Anniversary
-Tomb Raider Legend
+Prince of Persia: Sands of Time (in Wine)
+Prince of Persia: Warrior Within (in Wine)
+Prince of Persia: The Two Thrones (in Wine)
+Tomb Raider Anniversary (in Wine)
+Tomb Raider Legend (in Wine)
 
  % xboxdrv --trigger-as-button -s 
+
+The triggers are not regonized in these games when they are analog, so
+we have to handle them as buttons.
 
 
 CH Flightstick emulation in Dosbox:
@@ -315,6 +338,8 @@ Start xboxdrv with:
 
  % xboxdrv -s --trigger-as-zaxis --square-axis --relative-axis y2=64000 --axismap -y2=x2,x2=y2
 
+Your right analog stick will act as trottle control, the trigger as
+rudder.
 
 [[ Troubleshooting ]]
 ---------------------
