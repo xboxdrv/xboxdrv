@@ -32,6 +32,7 @@ public:
   bool dpad_as_button;
   bool trigger_as_zaxis;
   bool dpad_only;
+  bool force_feedback;
 
   int  btn_map[XBOX_BTN_MAX];
   int  axis_map[XBOX_AXIS_MAX];
@@ -59,6 +60,8 @@ public:
 
   void send_button(uint16_t code, int32_t value);
   void send_axis(uint16_t code, int32_t value);
+
+  void update();
 };
 
 #endif

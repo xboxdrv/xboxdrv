@@ -380,6 +380,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  --square-axis            Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)" << std::endl;
   std::cout << "  --relative-axis MAP      Make an axis emulate a joystick throttle (example: y2=64000)" << std::endl;
   std::cout << "  --autofire MAP           Cause the given buttons to act as autofire (example: A=250)" << std::endl;
+  std::cout << "  --force-feedback         Enable force feedback support" << std::endl;
   std::cout << std::endl;
   std::cout << "See README for more documentation and examples." << std::endl;
   std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
@@ -530,6 +531,10 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
               std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
               exit(EXIT_FAILURE);
             }
+        }
+      else if (strcmp(argv[i], "--force-feedback") == 0)
+        {
+          opts.uinput_config.force_feedback = true;
         }
       else if (strcmp(argv[i], "-b") == 0 ||
                strcmp(argv[i], "--buttonmap") == 0)
@@ -860,6 +865,8 @@ void print_info(struct usb_device* dev,
         }
       std::cout << std::endl;
     }
+
+  std::cout << "ForceFeedback:     " << ((opts.uinput_config.force_feedback) ? "enabled" : "disabled") << std::endl;
 }
 
 namespace Math {
@@ -980,7 +987,8 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
     relative_axis_modifier.reset(new RelativeAxisModifier(opts.relative_axis_map)); 
 
   if (autofire_modifier.get() ||
-      relative_axis_modifier.get())
+      relative_axis_modifier.get() ||
+      opts.uinput_config.force_feedback)
     timeout = 30;
 
   memset(&oldmsg, 0, sizeof(oldmsg));
@@ -1050,6 +1058,8 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
                 }
             }
         }
+
+      uinput->update();
     }
 }
 
@@ -1177,8 +1187,9 @@ void run_main(CommandLineOptions& opts)
           uInput* uinput = 0;
           if (!opts.no_uinput)
             {
-              std::cout << "Starting with uinput" << std::endl;
+              std::cout << "Starting with uinput... " << std::flush;
               uinput = new uInput(opts.gamepad_type, opts.uinput_config);
+              std::cout << "done" << std::endl;
             }
           else
             {

@@ -1,3 +1,5 @@
+- fix http://userweb.kernel.org/~dtor/eviocgbit-bug.html in evtest
+- cleanup evtest some more, add more features
 - make guitar button configurable  
 - --mimic-xpad
 

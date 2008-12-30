@@ -37,7 +37,8 @@ uInputCfg::uInputCfg()
   dpad_as_button    = false;
   trigger_as_zaxis  = false;
   dpad_only         = false;
-    
+  force_feedback    = false;
+
   // Button Mapping
   btn_map[XBOX_BTN_START] = BTN_START;
   btn_map[XBOX_BTN_GUIDE] = BTN_MODE;
@@ -86,7 +87,7 @@ uInput::uInput(GamepadType type, uInputCfg config_)
 
   for (int i = 0; i < uinput_filename_count; ++i) 
     {
-      if ((fd = open(uinput_filename[i], O_WRONLY | O_NDELAY)) >= 0)
+      if ((fd = open(uinput_filename[i], O_RDWR | O_NDELAY)) >= 0)
         {
           break;
         }
@@ -136,6 +137,13 @@ uInput::setup_xbox360_gamepad(GamepadType type)
 {
   ioctl(fd, UI_SET_EVBIT, EV_ABS);
   ioctl(fd, UI_SET_EVBIT, EV_KEY);
+
+  if (cfg.force_feedback)
+    {
+      ioctl(fd, UI_SET_EVBIT, EV_FF);
+      ioctl(fd, UI_SET_FFBIT, FF_PERIODIC);
+      ioctl(fd, UI_SET_FFBIT, FF_RUMBLE);
+    }
 
   ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_X1]);
   ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_Y1]);
@@ -198,6 +206,9 @@ uInput::setup_xbox360_gamepad(GamepadType type)
   memset(&uinp,0,sizeof(uinp));
   
   strncpy(uinp.name, "Xbox Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
+
+  if (cfg.force_feedback)
+    uinp.ff_effects_max = 16; 
 
   uinp.id.version = 0;
   uinp.id.bustype = BUS_USB;
@@ -543,6 +554,75 @@ uInput::send(Xbox360GuitarMsg& msg)
 
   send_axis(cfg.axis_map[XBOX_AXIS_X1], msg.whammy);
   send_axis(cfg.axis_map[XBOX_AXIS_Y1], msg.tilt);
+}
+
+void
+uInput::update()
+{
+  if (cfg.force_feedback)
+    {
+      struct input_event ev;
+
+      int ret;
+      if ((ret = read(fd, &ev, sizeof(ev))) == sizeof(ev))
+        {
+          std::cout << "type: " << ev.type << " code: " << ev.code << " value: " << ev.value << std::endl;
+
+          switch(ev.type)
+            {
+              case EV_FF:
+                std::cout << "EV_FF: playing effect: effect_id = " << ev.code << " value: " << ev.value << std::endl;
+                break;
+
+              case EV_UINPUT:
+                switch (ev.code)
+                  {
+                    case UI_FF_UPLOAD:
+                      {
+                        struct uinput_ff_upload upload;
+                        memset(&upload, 0, sizeof(upload));
+
+                        // *VERY* important, without this you
+                        // break the kernel and have to reboot due
+                        // to dead hanging process
+                        upload.request_id = ev.value;
+
+                        ioctl(fd, UI_BEGIN_FF_UPLOAD, &upload);
+
+                        std::cout << "FF_UPLOAD: rumble upload: effect_id = " << upload.effect.id << std::endl;
+
+                        upload.retval = 0;
+                            
+                        ioctl(fd, UI_END_FF_UPLOAD, &upload);
+                      }
+                      break;
+
+                    case UI_FF_ERASE:
+                      {
+                        struct uinput_ff_erase erase;
+                        memset(&erase, 0, sizeof(erase));
+
+                        // *VERY* important, without this you
+                        // break the kernel and have to reboot due
+                        // to dead hanging process
+                        erase.request_id = ev.value;
+
+                        ioctl(fd, UI_BEGIN_FF_ERASE, &erase);
+
+                        std::cout << "FF_ERASE: rumble erase: effect_id = " << erase.effect_id << std::endl;
+                        erase.retval = 0; // FIXME: is this used?
+                            
+                        ioctl(fd, UI_END_FF_ERASE, &erase);
+                      }
+                      break;
+                  }
+                break;
+            }
+          std::cout << "--------------------------------" << std::endl;
+        }
+      if (ret < 0)
+        std::cout << "Error: " << strerror(errno) << " " << ret << std::endl;
+    }
 }
 
 /* EOF */
