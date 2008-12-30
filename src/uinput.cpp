@@ -563,9 +563,14 @@ uInput::update()
     {
       struct input_event ev;
 
-      int ret;
-      if ((ret = read(fd, &ev, sizeof(ev))) == sizeof(ev))
+      int ret = read(fd, &ev, sizeof(ev));
+      if (ret < 0)
         {
+          if (errno != EAGAIN)
+            std::cout << "Error: " << strerror(errno) << " " << ret << std::endl;
+        }
+      else if (ret == sizeof(ev))
+        { // successful read
           std::cout << "type: " << ev.type << " code: " << ev.code << " value: " << ev.value << std::endl;
 
           switch(ev.type)
@@ -620,8 +625,10 @@ uInput::update()
             }
           std::cout << "--------------------------------" << std::endl;
         }
-      if (ret < 0)
-        std::cout << "Error: " << strerror(errno) << " " << ret << std::endl;
+      else
+        {
+          std::cout << "uInput::update: short read: " << ret << std::endl;
+        }
     }
 }
 
