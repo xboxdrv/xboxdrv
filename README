@@ -14,8 +14,15 @@ This driver is only of interest if the xpad kernel driver doesn't work
 for you or if you want some more configurabity, if the xpad kernel
 driver works for you there is no need to try this driver.
 
-
+Newest version of the driver can be found at:
 
+ * http://pingus.seul.org/~grumbel/xboxdrv/
+
+The development version can be optained via:
+
+ * git clone http://pingus.seul.org/~grumbel/xboxdrv.git
+
+
 [[ Compilation ]]
 -----------------
 
@@ -24,11 +31,24 @@ Required libraries and tools:
  * libusb
  * boost
  * scons
- * uinput
+ * uinput (userspace input kernel module)
+ * git (only to download the development version)
 
-You can compile by typing:
+Once installed, you can compile by typing:
 
  % scons
+
+On Ubuntu 8.10 you can install all the required libraries via:
+
+ % apt-get install libboost1.35-dev scons libusb-dev git-core
+
+To load the uinput kernel module automatically on boot add it
+/etc/modules, to load it manually type:
+
+ % sudo modprobe uinput
+
+On other distributions exact install instructions might be
+slightly different.
 
 
 [[ Running XboxDrv ]]
@@ -244,7 +264,7 @@ SDL_LINUX_JOYSTICK
 ------------------
 
 If you start xboxdrv and instead of having a fully working joystick,
-you end up controllering the mouse that might be due to recent changes
+you end up controlling the mouse that might be due to recent changes
 in Xorg and its device hotplug handling. There are three workarounds:
 
 Get the device id from hal:
