@@ -30,7 +30,9 @@
 LinuxUinput::LinuxUinput()
   : key_bit(false),
     rel_bit(false),
-    abs_bit(false)
+    abs_bit(false),
+    led_bit(false),
+    ff_bit(false)
 {
     // Open the input device
   const char* uinput_filename[] = { "/dev/input/uinput", "/dev/uinput", "/dev/misc/uinput" };
@@ -62,6 +64,12 @@ LinuxUinput::LinuxUinput()
     }
 }
 
+LinuxUinput::~LinuxUinput()
+{
+  ioctl(fd, UI_DEV_DESTROY);
+  close(fd);
+}
+
 void
 LinuxUinput::add_abs(uint16_t code, int min, int max)
 {
@@ -90,7 +98,7 @@ LinuxUinput::add_rel(uint16_t code)
 }
 
 void
-LinuxUinput::add_btn(uint16_t code)
+LinuxUinput::add_key(uint16_t code)
 {
   if (!key_bit)
     {
@@ -105,6 +113,11 @@ void
 LinuxUinput::finish()
 {
   std::cout << "Finalizing UInput" << std::endl;
+  strncpy(user_dev.name, "Xbox Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
+  user_dev.id.version = 0;
+  user_dev.id.bustype = BUS_USB;
+  user_dev.id.vendor  = 0x045e; // FIXME: this shouldn't be hardcoded
+  user_dev.id.product = 0x028e;
 
   if (write(fd, &user_dev, sizeof(user_dev)) < 0)
     throw std::runtime_error(strerror(errno));

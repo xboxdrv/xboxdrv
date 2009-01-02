@@ -1,3 +1,5 @@
+* create two seperate uinput devices for keyboard and mouse events
+
 * output driver/device name on startup
 
 * add support for analog buttons
@@ -21,7 +23,6 @@ http://lists.libsdl.org/pipermail/sdl-libsdl.org/2007-March/060263.html
 - --mimic-xpad
 
 - using rumble in scripts doesn't work, since you can't reset rumble back to 0,0
-- locate a USB device with a string or two
 - thread away on all endpoints
 - read from stdin on the main thread
 - send output to file or so

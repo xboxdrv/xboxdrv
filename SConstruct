@@ -10,7 +10,8 @@ env.Program("xboxdrv", ["src/xboxdrv.cpp",
                         "src/xbox_controller.cpp",
                         "src/xbox360_controller.cpp",
                         "src/xbox360_wireless_controller.cpp",
-                        "src/evdev_helper.cpp"
+                        "src/evdev_helper.cpp",
+                        "src/linux_uinput.cpp"
                         ])
 
 if True:

@@ -19,7 +19,9 @@
 #ifndef HEADER_UINPUT_HPP
 #define HEADER_UINPUT_HPP
 
+#include <memory>
 #include "xboxdrv.hpp"
+#include "linux_uinput.hpp"
 
 class Xbox360Msg;
 class Xbox360GuitarMsg;
@@ -43,7 +45,7 @@ public:
 class uInput
 {
 private:
-  int fd;
+  std::auto_ptr<LinuxUinput> uinput;
   uInputCfg cfg;
 
 public:
@@ -57,9 +59,6 @@ public:
   void send(Xbox360Msg& msg);
   void send(Xbox360GuitarMsg& msg);
   void send(XboxMsg& msg);
-
-  void send_button(uint16_t code, int32_t value);
-  void send_axis(uint16_t code, int32_t value);
 
   void update();
 };

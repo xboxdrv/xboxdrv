@@ -79,286 +79,143 @@ uInputCfg::uInputCfg()
 }
 
 uInput::uInput(GamepadType type, uInputCfg config_)
-  : fd(-1), cfg(config_)
+  :cfg(config_)
 {
-  // Open the input device
-  const char* uinput_filename[] = { "/dev/input/uinput", "/dev/uinput", "/dev/misc/uinput" };
-  const int uinput_filename_count = (sizeof(uinput_filename)/sizeof(char*));
+  uinput = std::auto_ptr<LinuxUinput>(new LinuxUinput());
 
-  for (int i = 0; i < uinput_filename_count; ++i) 
+  if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX || type == GAMEPAD_XBOX360_WIRELESS)
     {
-      if ((fd = open(uinput_filename[i], O_RDWR | O_NDELAY)) >= 0)
-        {
-          break;
-        }
-      else
-        {
-          std::cout << "Error: " << uinput_filename[i] << ": " << strerror(errno) << std::endl;
-        }
+      setup_xbox360_gamepad(type);
     }
-
-  if (fd < 0)
+  else if (type == GAMEPAD_XBOX360_GUITAR) 
     {
-      std::cout << "Error: No stuitable uinput device found" << std::endl;
-      std::cout << "" << std::endl;
-      std::cout << "Troubleshooting:" << std::endl;
-      std::cout << "  * make sure uinput kernel module is loaded " << std::endl;
-      std::cout << "  * make sure joydev kernel module is loaded " << std::endl;
-      std::cout << "  * make sure you have permissions to access the uinput device" << std::endl;
-      std::cout << "  * start the driver with ./xboxdrv -v --no-uinput to see if the driver itself works" << std::endl;
-      std::cout << "" << std::endl;
-      exit(EXIT_FAILURE);
+      setup_xbox360_guitar();
     }
   else
     {
-      if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX || type == GAMEPAD_XBOX360_WIRELESS)
-        {
-          setup_xbox360_gamepad(type);
-        }
-      else if (type == GAMEPAD_XBOX360_GUITAR) 
-        {
-          setup_xbox360_guitar();
-        }
-      else
-        {
-          std::cout << "Unhandled type: " << type << std::endl;
-          exit(EXIT_FAILURE);
-        }
-
-      if (ioctl(fd, UI_DEV_CREATE))
-        {
-          throw std::runtime_error("Unable to create UINPUT device.");
-        }
+      std::cout << "Unhandled type: " << type << std::endl;
+      exit(EXIT_FAILURE);
     }
+
+  uinput->finish();
 }
 
 void
 uInput::setup_xbox360_gamepad(GamepadType type)
 {
   // LED
-  ioctl(fd, UI_SET_EVBIT, EV_LED);
-  ioctl(fd, UI_SET_LEDBIT, LED_MISC);
-
-  ioctl(fd, UI_SET_EVBIT, EV_ABS);
-  ioctl(fd, UI_SET_EVBIT, EV_KEY);
+  //ioctl(fd, UI_SET_EVBIT, EV_LED);
+  //ioctl(fd, UI_SET_LEDBIT, LED_MISC);
 
   if (cfg.force_feedback)
     {
-      ioctl(fd, UI_SET_EVBIT, EV_FF);
-      ioctl(fd, UI_SET_FFBIT, FF_RUMBLE);
-      ioctl(fd, UI_SET_FFBIT, FF_PERIODIC);
+//       ioctl(fd, UI_SET_EVBIT, EV_FF);
+//       ioctl(fd, UI_SET_FFBIT, FF_RUMBLE);
+//       ioctl(fd, UI_SET_FFBIT, FF_PERIODIC);
 
-      // More stuff, only for testing
-      ioctl(fd, UI_SET_FFBIT, FF_CONSTANT);
-      ioctl(fd, UI_SET_FFBIT, FF_SPRING);
-      ioctl(fd, UI_SET_FFBIT, FF_FRICTION);
-      ioctl(fd, UI_SET_FFBIT, FF_DAMPER);
-      ioctl(fd, UI_SET_FFBIT, FF_INERTIA);
-      ioctl(fd, UI_SET_FFBIT, FF_RAMP);
+//       // More stuff, only for testing
+//       ioctl(fd, UI_SET_FFBIT, FF_CONSTANT);
+//       ioctl(fd, UI_SET_FFBIT, FF_SPRING);
+//       ioctl(fd, UI_SET_FFBIT, FF_FRICTION);
+//       ioctl(fd, UI_SET_FFBIT, FF_DAMPER);
+//       ioctl(fd, UI_SET_FFBIT, FF_INERTIA);
+//       ioctl(fd, UI_SET_FFBIT, FF_RAMP);
     }
 
-  ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_X1]);
-  ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_Y1]);
+  uinput->add_abs(cfg.axis_map[XBOX_AXIS_X1], -32768, 32767);
+  uinput->add_abs(cfg.axis_map[XBOX_AXIS_Y1], -32768, 32767);
 
   if (!cfg.dpad_only)
     {  
-      ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_X2]);
-      ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_Y2]);
+      uinput->add_abs(cfg.axis_map[XBOX_AXIS_X2], -32768, 32767);
+      uinput->add_abs(cfg.axis_map[XBOX_AXIS_Y2], -32768, 32767);
     }
 
   if (cfg.trigger_as_button)
     {
-      ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_LT]);
-      ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_RT]);
+      uinput->add_key(cfg.btn_map[XBOX_BTN_LT]);
+      uinput->add_key(cfg.btn_map[XBOX_BTN_RT]);
     }
   else if (cfg.trigger_as_zaxis)
     {
-      ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_TRIGGER]);
+      uinput->add_abs(cfg.axis_map[XBOX_AXIS_TRIGGER], -255, 255);
     }
   else
     {
-      ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_LT]);
-      ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_RT]);
+      uinput->add_abs(cfg.axis_map[XBOX_AXIS_LT], 0, 255);
+      uinput->add_abs(cfg.axis_map[XBOX_AXIS_RT], 0, 255);
     }
 
   if (!cfg.dpad_only)
     {
       if (!cfg.dpad_as_button)
         {
-          ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_DPAD_X]);
-          ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_DPAD_Y]);
+          uinput->add_abs(cfg.axis_map[XBOX_AXIS_DPAD_X], -1, 1);
+          uinput->add_abs(cfg.axis_map[XBOX_AXIS_DPAD_Y], -1, 1);
         }
       else
         {
-          ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_DPAD_UP]);
-          ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_DPAD_DOWN]);
-          ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_DPAD_LEFT]);
-          ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_DPAD_RIGHT]);
+          uinput->add_key(cfg.btn_map[XBOX_DPAD_UP]);
+          uinput->add_key(cfg.btn_map[XBOX_DPAD_DOWN]);
+          uinput->add_key(cfg.btn_map[XBOX_DPAD_LEFT]);
+          uinput->add_key(cfg.btn_map[XBOX_DPAD_RIGHT]);
         }
     }
 
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_START]);
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_BACK]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_START]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_BACK]);
         
   if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX360_WIRELESS)
-    ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_GUIDE]);
+    uinput->add_key(cfg.btn_map[XBOX_BTN_GUIDE]);
 
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_A]);
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_B]);
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_X]);
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_Y]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_A]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_B]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_X]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_Y]);
 
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_LB]);
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_RB]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_LB]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_RB]);
 
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_THUMB_L]);
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_THUMB_R]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_THUMB_L]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_THUMB_R]);
 
   struct uinput_user_dev uinp;
   memset(&uinp,0,sizeof(uinp));
   
   strncpy(uinp.name, "Xbox Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
 
-  if (cfg.force_feedback)
-    uinp.ff_effects_max = 64; 
-
-  uinp.id.version = 0;
-  uinp.id.bustype = BUS_USB;
-  uinp.id.vendor  = 0x045e; // FIXME: this shouldn't be hardcoded
-  uinp.id.product = 0x028e;
-
-  if (cfg.dpad_only)
-    {
-      // FIXME: Adjust properly to work with --ui-axismap
-      uinp.absmin[cfg.axis_map[XBOX_AXIS_X1]] = -1;
-      uinp.absmax[cfg.axis_map[XBOX_AXIS_X1]] =  1;
-      
-      uinp.absmin[cfg.axis_map[XBOX_AXIS_Y1]] = -1;
-      uinp.absmax[cfg.axis_map[XBOX_AXIS_Y1]] =  1;
-    }
-  else
-    {
-      uinp.absmin[cfg.axis_map[XBOX_AXIS_X1]] = -32768;
-      uinp.absmax[cfg.axis_map[XBOX_AXIS_X1]] =  32767;
-
-      uinp.absmin[cfg.axis_map[XBOX_AXIS_Y1]] = -32768;
-      uinp.absmax[cfg.axis_map[XBOX_AXIS_Y1]] =  32767;
-    
-      uinp.absmin[cfg.axis_map[XBOX_AXIS_X2]] = -32768;
-      uinp.absmax[cfg.axis_map[XBOX_AXIS_X2]] =  32767;
-      
-      uinp.absmin[cfg.axis_map[XBOX_AXIS_Y2]] = -32768;
-      uinp.absmax[cfg.axis_map[XBOX_AXIS_Y2]] =  32767;
-    }
-
-  if (cfg.trigger_as_zaxis)
-    {
-      uinp.absmin[cfg.axis_map[XBOX_AXIS_TRIGGER]] = -255;
-      uinp.absmax[cfg.axis_map[XBOX_AXIS_TRIGGER]] =  255;         
-    }
-  else if (!cfg.trigger_as_button)
-    {
-      uinp.absmin[cfg.axis_map[XBOX_AXIS_LT]] = 0;
-      uinp.absmax[cfg.axis_map[XBOX_AXIS_LT]] = 255;
-
-      uinp.absmin[cfg.axis_map[XBOX_AXIS_RT]] = 0;
-      uinp.absmax[cfg.axis_map[XBOX_AXIS_RT]] = 255;
-    }
-      
-  if (!cfg.dpad_as_button && !cfg.dpad_only)
-    {
-      uinp.absmin[cfg.axis_map[XBOX_AXIS_DPAD_X]] = -1;
-      uinp.absmax[cfg.axis_map[XBOX_AXIS_DPAD_X]] =  1;
-
-      uinp.absmin[cfg.axis_map[XBOX_AXIS_DPAD_Y]] = -1;
-      uinp.absmax[cfg.axis_map[XBOX_AXIS_DPAD_Y]] =  1;
-    }
-
-  if (write(fd, &uinp, sizeof(uinp)) < 0)
-    throw std::runtime_error(strerror(errno));
+  // if (cfg.force_feedback)
+  // uinp.ff_effects_max = 64; 
 }
 
 void
 uInput::setup_xbox360_guitar()
 {
-  ioctl(fd, UI_SET_EVBIT, EV_ABS);
-  ioctl(fd, UI_SET_EVBIT, EV_KEY);
-        
   // Whammy and Tilt
-  ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_X1]);
-  ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_Y1]);
+  uinput->add_abs(cfg.axis_map[XBOX_AXIS_X1], -32768, 32767);
+  uinput->add_abs(cfg.axis_map[XBOX_AXIS_Y1], -32768, 32767);
 
   // Dpad
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_DPAD_UP]);
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_DPAD_DOWN]);
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_DPAD_LEFT]);
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_DPAD_RIGHT]);
+  uinput->add_key(cfg.btn_map[XBOX_DPAD_UP]);
+  uinput->add_key(cfg.btn_map[XBOX_DPAD_DOWN]);
+  uinput->add_key(cfg.btn_map[XBOX_DPAD_LEFT]);
+  uinput->add_key(cfg.btn_map[XBOX_DPAD_RIGHT]);
 
   // Base
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_START]);
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_BACK]);
-  ioctl(fd, UI_SET_KEYBIT, cfg.btn_map[XBOX_BTN_GUIDE]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_START]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_BACK]);
+  uinput->add_key(cfg.btn_map[XBOX_BTN_GUIDE]);
 
   // Fret button
-  ioctl(fd, UI_SET_KEYBIT, BTN_1);
-  ioctl(fd, UI_SET_KEYBIT, BTN_2);
-  ioctl(fd, UI_SET_KEYBIT, BTN_3);
-  ioctl(fd, UI_SET_KEYBIT, BTN_4);
-  ioctl(fd, UI_SET_KEYBIT, BTN_5);
-
-  struct uinput_user_dev uinp;
-  memset(&uinp,0,sizeof(uinp));
-  strncpy(uinp.name, "Xbox360 Guitar (userspace driver)", UINPUT_MAX_NAME_SIZE);
-  uinp.id.version = 0;
-  uinp.id.bustype = BUS_USB;
-  uinp.id.vendor  = 0x045e; // FIXME: Shouldn't be hardcoded
-  uinp.id.product = 0x028e;
-
-  uinp.absmin[cfg.btn_map[XBOX_BTN_X]] = -32768;
-  uinp.absmax[cfg.btn_map[XBOX_BTN_X]] =  32767;
-
-  uinp.absmin[cfg.btn_map[XBOX_BTN_Y]] = -32768;
-  uinp.absmax[cfg.btn_map[XBOX_BTN_Y]] =  32767;
-
-  
-  if (write(fd, &uinp, sizeof(uinp)) < 0)
-    throw std::runtime_error(strerror(errno));
+  uinput->add_key(BTN_1);
+  uinput->add_key(BTN_2);
+  uinput->add_key(BTN_3);
+  uinput->add_key(BTN_4);
+  uinput->add_key(BTN_5);
 }
 
 uInput::~uInput()
 {
-  ioctl(fd, UI_DEV_DESTROY);
-  close(fd);
-}
-
-void
-uInput::send_button(uint16_t code, int32_t value)
-{
-  struct input_event ev;      
-  memset(&ev, 0, sizeof(ev));
-
-  gettimeofday(&ev.time, NULL);
-  ev.type  = EV_KEY;
-  ev.code  = code;
-  ev.value = (value>0) ? 1 : 0;
-
-  if (write(fd, &ev, sizeof(ev)) < 0)
-    throw std::runtime_error(strerror(errno));
-}
-
-void
-uInput::send_axis(uint16_t code, int32_t value)
-{
-  struct input_event ev;      
-  memset(&ev, 0, sizeof(ev));
-
-  gettimeofday(&ev.time, NULL);
-  ev.type  = EV_ABS;
-  ev.code  = code;
-  ev.value = value;
-
-  if (write(fd, &ev, sizeof(ev)) < 0)
-    throw std::runtime_error(strerror(errno));
 }
 
 void
@@ -389,48 +246,48 @@ uInput::send(XboxGenericMsg& msg)
 void
 uInput::send(Xbox360Msg& msg)
 {
-  send_button(BTN_THUMBL,  msg.thumb_l);
-  send_button(BTN_THUMBR,  msg.thumb_r);
+  uinput->send_button(BTN_THUMBL,  msg.thumb_l);
+  uinput->send_button(BTN_THUMBR,  msg.thumb_r);
 
-  send_button(BTN_TL,  msg.lb);
-  send_button(BTN_TR,  msg.rb);
+  uinput->send_button(BTN_TL,  msg.lb);
+  uinput->send_button(BTN_TR,  msg.rb);
 
-  send_button(cfg.btn_map[XBOX_BTN_START], msg.start);
-  send_button(cfg.btn_map[XBOX_BTN_GUIDE], msg.guide);
-  send_button(cfg.btn_map[XBOX_BTN_BACK],  msg.back);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_START], msg.start);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_GUIDE], msg.guide);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_BACK],  msg.back);
 
-  send_button(cfg.btn_map[XBOX_BTN_A], msg.a);
-  send_button(cfg.btn_map[XBOX_BTN_B], msg.b);
-  send_button(cfg.btn_map[XBOX_BTN_X], msg.x);
-  send_button(cfg.btn_map[XBOX_BTN_Y], msg.y);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_A], msg.a);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_B], msg.b);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_X], msg.x);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_Y], msg.y);
 
-  send_axis(cfg.axis_map[XBOX_AXIS_X1],  msg.x1);
-  send_axis(cfg.axis_map[XBOX_AXIS_Y1], -msg.y1);
+  uinput->send_axis(cfg.axis_map[XBOX_AXIS_X1],  msg.x1);
+  uinput->send_axis(cfg.axis_map[XBOX_AXIS_Y1], -msg.y1);
 
-  send_axis(cfg.axis_map[XBOX_AXIS_X2],  msg.x2);
-  send_axis(cfg.axis_map[XBOX_AXIS_Y2], -msg.y2);
+  uinput->send_axis(cfg.axis_map[XBOX_AXIS_X2],  msg.x2);
+  uinput->send_axis(cfg.axis_map[XBOX_AXIS_Y2], -msg.y2);
 
   if (cfg.trigger_as_zaxis)
     {
-      send_axis(cfg.axis_map[XBOX_AXIS_TRIGGER], (int(msg.rt) - int(msg.lt)));
+      uinput->send_axis(cfg.axis_map[XBOX_AXIS_TRIGGER], (int(msg.rt) - int(msg.lt)));
     }
   else if (cfg.trigger_as_button)
     {
-      send_button(cfg.btn_map[XBOX_BTN_LT], msg.lt);
-      send_button(cfg.btn_map[XBOX_BTN_RT], msg.rt);
+      uinput->send_button(cfg.btn_map[XBOX_BTN_LT], msg.lt);
+      uinput->send_button(cfg.btn_map[XBOX_BTN_RT], msg.rt);
     }
   else
     {
-      send_axis(cfg.axis_map[XBOX_AXIS_LT], msg.lt);
-      send_axis(cfg.axis_map[XBOX_AXIS_RT], msg.rt);
+      uinput->send_axis(cfg.axis_map[XBOX_AXIS_LT], msg.lt);
+      uinput->send_axis(cfg.axis_map[XBOX_AXIS_RT], msg.rt);
     }
   
   if (cfg.dpad_as_button && !cfg.dpad_only)
     {
-      send_button(BTN_BASE,  msg.dpad_up);
-      send_button(BTN_BASE2, msg.dpad_down);
-      send_button(BTN_BASE3, msg.dpad_left);
-      send_button(BTN_BASE4, msg.dpad_right);
+      uinput->send_button(BTN_BASE,  msg.dpad_up);
+      uinput->send_button(BTN_BASE2, msg.dpad_down);
+      uinput->send_button(BTN_BASE3, msg.dpad_left);
+      uinput->send_button(BTN_BASE4, msg.dpad_right);
     }
   else
     {
@@ -445,28 +302,28 @@ uInput::send(Xbox360Msg& msg)
 
       if (msg.dpad_up)
         {
-          send_axis(dpad_y, -1);
+          uinput->send_axis(dpad_y, -1);
         }
       else if (msg.dpad_down)
         {
-          send_axis(dpad_y, 1);
+          uinput->send_axis(dpad_y, 1);
         }
       else
         {
-          send_axis(dpad_y, 0);
+          uinput->send_axis(dpad_y, 0);
         }
 
       if (msg.dpad_left)
         {
-          send_axis(dpad_x, -1);
+          uinput->send_axis(dpad_x, -1);
         }
       else if (msg.dpad_right)
         {
-          send_axis(dpad_x, 1);
+          uinput->send_axis(dpad_x, 1);
         }
       else
         {
-          send_axis(dpad_x, 0);
+          uinput->send_axis(dpad_x, 0);
         }
     }
 }
@@ -474,74 +331,74 @@ uInput::send(Xbox360Msg& msg)
 void
 uInput::send(XboxMsg& msg)
 {
-  send_button(BTN_THUMBL,  msg.thumb_l);
-  send_button(BTN_THUMBR,  msg.thumb_r);
+  uinput->send_button(BTN_THUMBL,  msg.thumb_l);
+  uinput->send_button(BTN_THUMBR,  msg.thumb_r);
 
-  send_button(BTN_TL,  msg.white);
-  send_button(BTN_TR,  msg.black);
+  uinput->send_button(BTN_TL,  msg.white);
+  uinput->send_button(BTN_TR,  msg.black);
 
-  send_button(BTN_START,  msg.start);
-  send_button(BTN_SELECT, msg.back);
+  uinput->send_button(BTN_START,  msg.start);
+  uinput->send_button(BTN_SELECT, msg.back);
 
-  send_button(cfg.btn_map[XBOX_BTN_A], msg.a);
-  send_button(cfg.btn_map[XBOX_BTN_B], msg.b);
-  send_button(cfg.btn_map[XBOX_BTN_X], msg.x);
-  send_button(cfg.btn_map[XBOX_BTN_Y], msg.y);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_A], msg.a);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_B], msg.b);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_X], msg.x);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_Y], msg.y);
 
-  send_axis(cfg.axis_map[XBOX_AXIS_X1], msg.x1);
-  send_axis(cfg.axis_map[XBOX_AXIS_Y1], msg.y1);
+  uinput->send_axis(cfg.axis_map[XBOX_AXIS_X1], msg.x1);
+  uinput->send_axis(cfg.axis_map[XBOX_AXIS_Y1], msg.y1);
 
-  send_axis(cfg.axis_map[XBOX_AXIS_X2], msg.x2);
-  send_axis(cfg.axis_map[XBOX_AXIS_Y2], msg.y2);
+  uinput->send_axis(cfg.axis_map[XBOX_AXIS_X2], msg.x2);
+  uinput->send_axis(cfg.axis_map[XBOX_AXIS_Y2], msg.y2);
 
   if (cfg.trigger_as_zaxis)
     {
-      send_axis(cfg.axis_map[XBOX_AXIS_TRIGGER], (int(msg.rt) - int(msg.lt)));
+      uinput->send_axis(cfg.axis_map[XBOX_AXIS_TRIGGER], (int(msg.rt) - int(msg.lt)));
     }
   else if (cfg.trigger_as_button)
     {
-      send_button(cfg.btn_map[XBOX_BTN_LT], msg.lt);
-      send_button(cfg.btn_map[XBOX_BTN_RT], msg.rt);
+      uinput->send_button(cfg.btn_map[XBOX_BTN_LT], msg.lt);
+      uinput->send_button(cfg.btn_map[XBOX_BTN_RT], msg.rt);
     }
   else
     {
-      send_axis(cfg.axis_map[XBOX_AXIS_LT], msg.lt);
-      send_axis(cfg.axis_map[XBOX_AXIS_RT],   msg.rt);
+      uinput->send_axis(cfg.axis_map[XBOX_AXIS_LT], msg.lt);
+      uinput->send_axis(cfg.axis_map[XBOX_AXIS_RT],   msg.rt);
     }
 
   if (cfg.dpad_as_button)
     {
-      send_button(cfg.btn_map[XBOX_DPAD_UP],    msg.dpad_up);
-      send_button(cfg.btn_map[XBOX_DPAD_DOWN],  msg.dpad_down);
-      send_button(cfg.btn_map[XBOX_DPAD_LEFT],  msg.dpad_left);
-      send_button(cfg.btn_map[XBOX_DPAD_RIGHT], msg.dpad_right);
+      uinput->send_button(cfg.btn_map[XBOX_DPAD_UP],    msg.dpad_up);
+      uinput->send_button(cfg.btn_map[XBOX_DPAD_DOWN],  msg.dpad_down);
+      uinput->send_button(cfg.btn_map[XBOX_DPAD_LEFT],  msg.dpad_left);
+      uinput->send_button(cfg.btn_map[XBOX_DPAD_RIGHT], msg.dpad_right);
     }
   else
     {
       if (msg.dpad_up)
         {
-          send_axis(cfg.axis_map[XBOX_AXIS_DPAD_Y], -1);
+          uinput->send_axis(cfg.axis_map[XBOX_AXIS_DPAD_Y], -1);
         }
       else if (msg.dpad_down)
         {
-          send_axis(cfg.axis_map[XBOX_AXIS_DPAD_Y], 1);
+          uinput->send_axis(cfg.axis_map[XBOX_AXIS_DPAD_Y], 1);
         }
       else
         {
-          send_axis(cfg.axis_map[XBOX_AXIS_DPAD_Y], 0);
+          uinput->send_axis(cfg.axis_map[XBOX_AXIS_DPAD_Y], 0);
         }
 
       if (msg.dpad_left)
         {
-          send_axis(cfg.axis_map[XBOX_AXIS_DPAD_X], -1);
+          uinput->send_axis(cfg.axis_map[XBOX_AXIS_DPAD_X], -1);
         }
       else if (msg.dpad_right)
         {
-          send_axis(cfg.axis_map[XBOX_AXIS_DPAD_X], 1);
+          uinput->send_axis(cfg.axis_map[XBOX_AXIS_DPAD_X], 1);
         }
       else
         {
-          send_axis(cfg.axis_map[XBOX_AXIS_DPAD_X], 0);
+          uinput->send_axis(cfg.axis_map[XBOX_AXIS_DPAD_X], 0);
         }
     }
 }
@@ -549,23 +406,23 @@ uInput::send(XboxMsg& msg)
 void
 uInput::send(Xbox360GuitarMsg& msg)
 {
-  send_button(cfg.btn_map[XBOX_DPAD_UP],    msg.dpad_up);
-  send_button(cfg.btn_map[XBOX_DPAD_DOWN],  msg.dpad_down);
-  send_button(cfg.btn_map[XBOX_DPAD_LEFT],  msg.dpad_left);
-  send_button(cfg.btn_map[XBOX_DPAD_RIGHT], msg.dpad_right);
+  uinput->send_button(cfg.btn_map[XBOX_DPAD_UP],    msg.dpad_up);
+  uinput->send_button(cfg.btn_map[XBOX_DPAD_DOWN],  msg.dpad_down);
+  uinput->send_button(cfg.btn_map[XBOX_DPAD_LEFT],  msg.dpad_left);
+  uinput->send_button(cfg.btn_map[XBOX_DPAD_RIGHT], msg.dpad_right);
 
-  send_button(cfg.btn_map[XBOX_BTN_START], msg.start);
-  send_button(cfg.btn_map[XBOX_BTN_GUIDE], msg.guide);
-  send_button(cfg.btn_map[XBOX_BTN_BACK],  msg.back);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_START], msg.start);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_GUIDE], msg.guide);
+  uinput->send_button(cfg.btn_map[XBOX_BTN_BACK],  msg.back);
 
-  send_button(BTN_1, msg.green);
-  send_button(BTN_2, msg.red);
-  send_button(BTN_3, msg.yellow);
-  send_button(BTN_4, msg.blue);
-  send_button(BTN_5, msg.orange);
+  uinput->send_button(BTN_1, msg.green);
+  uinput->send_button(BTN_2, msg.red);
+  uinput->send_button(BTN_3, msg.yellow);
+  uinput->send_button(BTN_4, msg.blue);
+  uinput->send_button(BTN_5, msg.orange);
 
-  send_axis(cfg.axis_map[XBOX_AXIS_X1], msg.whammy);
-  send_axis(cfg.axis_map[XBOX_AXIS_Y1], msg.tilt);
+  uinput->send_axis(cfg.axis_map[XBOX_AXIS_X1], msg.whammy);
+  uinput->send_axis(cfg.axis_map[XBOX_AXIS_Y1], msg.tilt);
 }
 
 std::ostream& operator<<(std::ostream& out, const struct ff_envelope& envelope)
@@ -658,6 +515,7 @@ std::ostream& operator<<(std::ostream& out, const struct ff_effect& effect)
 void
 uInput::update()
 {
+#if 0
   if (cfg.force_feedback)
     {
       struct input_event ev;
@@ -749,6 +607,7 @@ uInput::update()
           std::cout << "uInput::update: short read: " << ret << std::endl;
         }
     }
+#endif
 }
 
 /* EOF */

@@ -31,16 +31,19 @@ private:
   bool key_bit;
   bool rel_bit;
   bool abs_bit;
+  bool led_bit;
+  bool ff_bit;
   
 public:
   LinuxUinput();
+  ~LinuxUinput();
 
   /*@{*/
   /** Create an absolute axis */
   void add_abs(uint16_t code, int min, int max);
 
   /** Create an button */
-  void add_btn(uint16_t code);
+  void add_key(uint16_t code);
 
   /** Create a relative axis (mice) */
   void add_rel(uint16_t code);
