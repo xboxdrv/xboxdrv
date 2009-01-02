@@ -1,6 +1,6 @@
-* add a --device option that searches for vendor/product id from commandline:
-  --device-by-path BUS:DEV
-  --device-by-id PRODUCT:VENDOR
+* output driver/device name on startup
+
+* add support for analog buttons
 
 * add support for LED messages
 

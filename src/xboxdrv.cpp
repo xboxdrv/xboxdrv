@@ -297,6 +297,35 @@ int find_evdev_number()
     }
 }
 
+bool find_controller_by_id(int id, int vendor_id, int product_id, struct usb_device** xbox_device)
+{
+  struct usb_bus* busses = usb_get_busses();
+
+  int id_count = 0;
+  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+    {
+      for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+        {
+          if (dev->descriptor.idVendor  == vendor_id &&
+              dev->descriptor.idProduct == product_id)
+            {
+              if (id_count == id)
+                {
+                  *xbox_device = dev;
+                  return true;
+                }
+              else
+                {
+                  id_count += 1;
+                  break;
+                }
+            }
+        }
+    }
+  return 0;
+  
+}
+
 bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice* type)
 {
   struct usb_bus* busses = usb_get_busses();
@@ -356,7 +385,10 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  -D, --daemon             run as daemon" << std::endl;
   std::cout << std::endl;
   std::cout << "Device Options: " << std::endl;
-  std::cout << "  -d, --device BUS:DEV     Use device BUS:DEV, do not do any scanning" << std::endl;
+  std::cout << "  --device-by-path BUS:DEV\n"
+            << "                           Use device BUS:DEV, do not do any scanning" << std::endl;
+  std::cout << "  --device-by-id VENDOR:PRODUCT\n"
+            << "                           Use device that matches VENDOR:PRODUCT (as returned by lsusb)" << std::endl;
   std::cout << std::endl;
   std::cout << "Status Options: " << std::endl;
   std::cout << "  -l, --led NUM            set LED status, see --list-led-values (default: 0)" << std::endl;
@@ -720,8 +752,28 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           print_led_help();
           exit(EXIT_SUCCESS);
         }
-      else if (strcmp(argv[i], "--device") == 0 ||
-               strcmp(argv[i], "-d") == 0)
+      else if (strcmp(argv[i], "--device-by-id") == 0)
+        {
+          ++i;
+          if (i < argc)
+            {
+              if (sscanf(argv[i], "%x:%x", &opts.vendor_id, &opts.product_id) == 2)
+                {
+                  // ok
+                }
+              else
+                {
+                  std::cout << "Error: " << argv[i-1] << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)" << std::endl;
+                  exit(EXIT_FAILURE);
+                }
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
+              exit(EXIT_FAILURE);
+            }        
+        }
+      else if (strcmp(argv[i], "--device-by-path") == 0)
         {
           ++i;
           if (i < argc)
@@ -731,7 +783,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
                   std::cout << "     ***************************************" << std::endl;
                   std::cout << "     *** WARNING *** WARNING *** WARNING ***" << std::endl;
                   std::cout << "     ***************************************" << std::endl;
-                  std::cout << "The '--device DEV' option should not be needed for normal use" << std::endl;
+                  std::cout << "The '--device-by-path BUS:DEV' option should not be needed for normal use" << std::endl;
                   std::cout << "and might potentially be harmful when used on devices that" << std::endl;
                   std::cout << "are not a gamepad, use at your own risk and ensure that you" << std::endl;
                   std::cout << "are accessing the right device.\n"  << std::endl;
@@ -793,7 +845,7 @@ void print_info(struct usb_device* dev,
     % dev_type.name % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct) << std::endl;
   if (dev_type.type == GAMEPAD_XBOX360_WIRELESS)
     std::cout << "Wireless Port:     " << opts.wireless_id << std::endl;
-  std::cout << "Controller Type:   " << opts.gamepad_type << std::endl;
+  std::cout << "Controller Type:   " << dev_type.type << std::endl;
   std::cout << "Deadzone:          " << opts.deadzone << std::endl;
   std::cout << "Rumble Debug:      " << (opts.rumble ? "on" : "off") << std::endl;
   std::cout << "Rumble Speed:      " << "left: " << opts.rumble_l << " right: " << opts.rumble_r << std::endl;
@@ -1071,7 +1123,7 @@ void find_controller(struct usb_device*& dev,
     {
       if (opts.gamepad_type == GAMEPAD_UNKNOWN)
         {
-          std::cout << "Error: --device BUS:DEV option must be used in combination with --type TYPE option" << std::endl;
+          std::cout << "Error: --device-by-path BUS:DEV option must be used in combination with --type TYPE option" << std::endl;
           exit(EXIT_FAILURE);
         }
       else
@@ -1080,6 +1132,38 @@ void find_controller(struct usb_device*& dev,
             {
               std::cout << "Error: couldn't find device " << opts.busid << ":" << opts.devid << std::endl;
               exit(EXIT_FAILURE);
+            }
+          else
+            {
+              dev_type.type = opts.gamepad_type;
+              dev_type.idVendor  = dev->descriptor.idVendor;
+              dev_type.idProduct = dev->descriptor.idProduct;
+              dev_type.name = "unknown";
+            }
+        }
+    }
+  else if (opts.vendor_id != -1 && opts.product_id != -1)
+    {
+      if (opts.gamepad_type == GAMEPAD_UNKNOWN)
+        {
+          std::cout << "Error: --device-by-id VENDOR:PRODUCT option must be used in combination with --type TYPE option" << std::endl;
+          exit(EXIT_FAILURE);
+        }
+      else 
+        {
+          if (!find_controller_by_id(opts.controller_id, opts.vendor_id, opts.product_id, &dev))
+            {
+              std::cout << "Error: couldn't find device with " 
+                        << (boost::format("%04x:%04x") % opts.vendor_id % opts.product_id) 
+                        << std::endl;
+              exit(EXIT_FAILURE);
+            }
+          else
+            {
+              dev_type.type = opts.gamepad_type;
+              dev_type.idVendor  = opts.vendor_id;
+              dev_type.idProduct = opts.product_id;
+              dev_type.name = "unknown";
             }
         }
     }
@@ -1129,15 +1213,6 @@ void run_main(CommandLineOptions& opts)
     }
   else 
     {
-      if (opts.gamepad_type != GAMEPAD_UNKNOWN)
-        { // Override the default gamepad type when given
-          dev_type.type = opts.gamepad_type;
-        }
-      else
-        {
-          opts.gamepad_type = dev_type.type;
-        }
- 
       print_info(dev, dev_type, opts);
 
       XboxGenericController* controller = 0;
@@ -1176,7 +1251,10 @@ void run_main(CommandLineOptions& opts)
       else
         controller->set_led(opts.led);
 
-      controller->set_rumble(opts.rumble_l, opts.rumble_r);
+      if (opts.rumble_l != -1 && opts.rumble_r != -1)
+        { // Only set rumble when explicitly requested
+          controller->set_rumble(opts.rumble_l, opts.rumble_r);
+        }
       
       if (opts.instant_exit)
         {
@@ -1188,7 +1266,7 @@ void run_main(CommandLineOptions& opts)
           if (!opts.no_uinput)
             {
               std::cout << "Starting with uinput... " << std::flush;
-              uinput = new uInput(opts.gamepad_type, opts.uinput_config);
+              uinput = new uInput(dev_type.type, opts.uinput_config);
               std::cout << "done" << std::endl;
             }
           else

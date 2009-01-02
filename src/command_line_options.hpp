@@ -44,9 +44,15 @@ struct CommandLineOptions
   int  wireless_id;
   bool instant_exit;
   bool no_uinput;
+
   GamepadType gamepad_type;
+  
   char busid[4];
   char devid[4];
+
+  int vendor_id;
+  int product_id;
+
   uInputCfg uinput_config;
   int deadzone;
   std::vector<ButtonMapping> button_map;

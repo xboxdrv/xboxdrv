@@ -25,8 +25,8 @@ CommandLineOptions::CommandLineOptions()
   silent   = false;
   rumble   = false;
   led      = -1;
-  rumble_l = 0;
-  rumble_r = 0;
+  rumble_l = -1;
+  rumble_r = -1;
   controller_id = 0;
   wireless_id   = 0;
   instant_exit = false;
@@ -34,6 +34,8 @@ CommandLineOptions::CommandLineOptions()
   gamepad_type = GAMEPAD_UNKNOWN;
   busid[0] = '\0';
   devid[0] = '\0';
+  vendor_id  = -1;
+  product_id = -1;
   deadzone = 0;
   square_axis  = false;
 }

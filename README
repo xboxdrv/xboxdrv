@@ -54,9 +54,9 @@ slightly different.
 [[ Running XboxDrv ]]
 ---------------------
 
-First make sure that the xpad kernel module does not get loaded,
-either by deleting or renaming it. rmmod might not be enough since it
-might be automatically loaded again.
+First make sure that the xpad kernel module is not loaded, either by
+deleting, renaming it or blacklisting it. rmmod might not be enough
+since it might be automatically loaded again.
 
 Next you have to load the uinput kernel module which allows userspace
 programms to create input devices and the joydev module which gives
@@ -80,8 +80,7 @@ should often be enough) start the driver as root via:
  % sudo ./xboxdrv
 
 This will create /dev/input/js0 and allow you to access the gamepad
-from any game. To exit the driver press Ctrl-c.
-
+from any game. To exit the driver press Ctrl-c. 
 If you have multiple wired controllers you need to start multiple instances
 of the xboxdrv driver and append the -i argument like this:
 
@@ -292,6 +291,8 @@ And insert the following lines:
     <match key="input.product" string="Xbox Gamepad (userspace driver)">
       <remove key="input.x11_driver" />
     </match>
+
+Note: The exact string will differ depending on the type of controller you use.
 
 [[ Mouse Emulation ]]
 ---------------------

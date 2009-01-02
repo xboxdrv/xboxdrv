@@ -677,7 +677,8 @@ uInput::update()
               case EV_LED:
                 if (ev.code == LED_MISC)
                   {
-                    std::cout << "Set LED status: " << ev.value << std::endl;
+                    // FIXME: implement this
+                    std::cout << "unimplemented: Set LED status: " << ev.value << std::endl;
                   }
                 break;
 
