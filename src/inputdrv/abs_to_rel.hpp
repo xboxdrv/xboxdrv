@@ -25,11 +25,12 @@
 class AbsToRel : public Control
 {
 private:
+  void on_abs(AbsPortOut* port);
+
 public:
   AbsToRel();
   std::string get_name() const { return "AbsToRel"; }
 
-  void on_abs(AbsPortOut* port);
   void update(float delta);
 
 private:

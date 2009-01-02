@@ -21,7 +21,7 @@
 
 #include <linux/uinput.h>
 #include "control.hpp"
-
+
 /** */
 class UInputDriver : public Control
 {
@@ -38,20 +38,32 @@ public:
 
   std::string get_name() const { return "Uinput"; }
 
+  /*@{*/
+  /** Create an absolute axis */
   void add_abs(uint16_t code, int min, int max);
-  void add_btn(uint16_t code);
-  void add_rel(uint16_t code);
-  void finish();
 
+  /** Create an button */
+  void add_btn(uint16_t code);
+
+  /** Create a relative axis (mice) */
+  void add_rel(uint16_t code);
+  
+  /** Finish*/
+  void finish();
+  /*@}*/
+
+private:
+  /** Called when one of the ports of this Control changes */
+  /*@{*/
   void on_abs(AbsPortOut* port, uint16_t code);
   void on_rel(RelPortOut* port, uint16_t code);
   void on_btn(BtnPortOut* port, uint16_t code);
-
+  /*@}*/
 private:
   UInputDriver (const UInputDriver&);
   UInputDriver& operator= (const UInputDriver&);
 };
-
+
 #endif
 
 /* EOF */

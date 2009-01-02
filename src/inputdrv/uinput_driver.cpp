@@ -23,7 +23,7 @@
 #include <linux/uinput.h>
 #include <boost/bind.hpp>
 #include "uinput_driver.hpp"
-
+
 UInputDriver::UInputDriver(const std::string& name)
   : abs_bit(false),
     rel_bit(false),
@@ -203,5 +203,5 @@ UInputDriver::finish()
       std::cout << "Unable to create UINPUT device." << std::endl;
     }
 }
-
+
 /* EOF */
