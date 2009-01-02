@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <string.h>
 #include <errno.h>
 #include <stdexcept>
 #include <sstream>
@@ -35,10 +36,14 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev, bool is_guitar)
     }
   else
     {
-      if (usb_claim_interface(handle, 0) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
+      // FIXME: bInterfaceNumber shouldn't be hardcoded
+      int err = usb_claim_interface(handle, 0);
+      if (err != 0) 
         {
-          throw std::runtime_error("Error couldn't claim the USB interface\n"
-                                   "Try to run 'rmmod xpad' and start xboxdrv again");
+          std::ostringstream out;
+          out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
+              << "Try to run 'rmmod xpad' and start xboxdrv again.";
+          throw std::runtime_error(out.str());
         }
     }
 

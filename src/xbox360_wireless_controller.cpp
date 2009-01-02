@@ -17,6 +17,7 @@
 */
 
 #include <usb.h>
+#include <string.h>
 #include <errno.h>
 #include <assert.h>
 #include <sstream>
@@ -43,11 +44,14 @@ Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev,
     }
   else
     {
-      if (usb_claim_interface(handle, interface) != 0) // FIXME: bInterfaceNumber shouldn't be hardcoded
+      // FIXME: bInterfaceNumber shouldn't be hardcoded
+      int err = usb_claim_interface(handle, 0);
+      if (err != 0) 
         {
-          std::ostringstream str;
-          str << "Xbox360WirelessController: Error couldn't claim the USB interface " << interface;
-          throw std::runtime_error(str.str());
+          std::ostringstream out;
+          out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
+              << "Try to run 'rmmod xpad' and start xboxdrv again.";
+          throw std::runtime_error(out.str());
         }
     }
 }
