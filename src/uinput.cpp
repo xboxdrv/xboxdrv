@@ -135,14 +135,26 @@ uInput::uInput(GamepadType type, uInputCfg config_)
 void
 uInput::setup_xbox360_gamepad(GamepadType type)
 {
+  // LED
+  ioctl(fd, UI_SET_EVBIT, EV_LED);
+  ioctl(fd, UI_SET_LEDBIT, LED_MISC);
+
   ioctl(fd, UI_SET_EVBIT, EV_ABS);
   ioctl(fd, UI_SET_EVBIT, EV_KEY);
 
   if (cfg.force_feedback)
     {
       ioctl(fd, UI_SET_EVBIT, EV_FF);
-      ioctl(fd, UI_SET_FFBIT, FF_PERIODIC);
       ioctl(fd, UI_SET_FFBIT, FF_RUMBLE);
+      ioctl(fd, UI_SET_FFBIT, FF_PERIODIC);
+
+      // More stuff, only for testing
+      ioctl(fd, UI_SET_FFBIT, FF_CONSTANT);
+      ioctl(fd, UI_SET_FFBIT, FF_SPRING);
+      ioctl(fd, UI_SET_FFBIT, FF_FRICTION);
+      ioctl(fd, UI_SET_FFBIT, FF_DAMPER);
+      ioctl(fd, UI_SET_FFBIT, FF_INERTIA);
+      ioctl(fd, UI_SET_FFBIT, FF_RAMP);
     }
 
   ioctl(fd, UI_SET_ABSBIT, cfg.axis_map[XBOX_AXIS_X1]);
@@ -208,7 +220,7 @@ uInput::setup_xbox360_gamepad(GamepadType type)
   strncpy(uinp.name, "Xbox Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
 
   if (cfg.force_feedback)
-    uinp.ff_effects_max = 16; 
+    uinp.ff_effects_max = 64; 
 
   uinp.id.version = 0;
   uinp.id.bustype = BUS_USB;
@@ -556,6 +568,93 @@ uInput::send(Xbox360GuitarMsg& msg)
   send_axis(cfg.axis_map[XBOX_AXIS_Y1], msg.tilt);
 }
 
+std::ostream& operator<<(std::ostream& out, const struct ff_envelope& envelope)
+{
+  out << "attack_length: " << envelope.attack_length
+      << " attack_level: " << envelope.attack_level
+      << " fade_length: " << envelope.fade_length
+      << " fade_level: " << envelope.fade_level;
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const struct ff_replay& replay)
+{
+  out << "length: " << replay.length << " delay: " << replay.delay;
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const struct ff_trigger& trigger)
+{
+  out << "button: " << trigger.button << " interval: " << trigger.interval;
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const struct ff_effect& effect)
+{
+  switch (effect.type)
+    {
+      case FF_CONSTANT:
+        out << "FF_CONSTANT "
+            << "level: " << effect.u.constant.level
+            << " envelope: { " << effect.u.constant.envelope << " }";
+        break;
+
+      case FF_PERIODIC:
+        out << "FF_PERIODIC"
+            << " waveform: " << effect.u.periodic.waveform
+            << " period: " << effect.u.periodic.period
+            << " magnitude: " << effect.u.periodic.magnitude
+            << " offset: " << effect.u.periodic.offset
+            << " phase: " << effect.u.periodic.phase
+            << " envelope: { " << effect.u.periodic.envelope << " }";
+        break;
+
+      case FF_RAMP:
+        out << "FF_RAMP " 
+            << "start_level: " << effect.u.ramp.start_level
+            << "end_level: " << effect.u.ramp.end_level
+            << "envelope: { " <<  effect.u.ramp.envelope << " }";
+        break;
+
+      case FF_SPRING:
+        out << "FF_SPRING";
+        break;
+
+      case FF_FRICTION:
+        out << "FF_FRICTION";
+        break;
+
+      case FF_DAMPER:
+        out << "FF_DAMPER";
+        break;
+
+      case FF_RUMBLE:
+        out << "FF_RUMBLE: "
+            << "strong_magnitude: " << effect.u.rumble.strong_magnitude
+            << " weak_magnitude: " << effect.u.rumble.weak_magnitude;
+        break;
+
+      case FF_INERTIA:
+        out << "FF_INERTIA";
+        break;
+
+      case FF_CUSTOM:
+        out << "FF_CUSTOM";
+        break;
+
+      default:
+        out << "FF_<unknown>";
+        break;
+    }
+
+  out << "\n";
+  out << "direction: " << effect.direction << "\n";
+  out << "replay: " << effect.replay << "\n";
+  out << "trigger: " << effect.trigger << "\n";
+
+  return out;
+}
+
 void
 uInput::update()
 {
@@ -575,6 +674,13 @@ uInput::update()
 
           switch(ev.type)
             {
+              case EV_LED:
+                if (ev.code == LED_MISC)
+                  {
+                    std::cout << "Set LED status: " << ev.value << std::endl;
+                  }
+                break;
+
               case EV_FF:
                 std::cout << "EV_FF: playing effect: effect_id = " << ev.code << " value: " << ev.value << std::endl;
                 break;
@@ -594,7 +700,11 @@ uInput::update()
 
                         ioctl(fd, UI_BEGIN_FF_UPLOAD, &upload);
 
-                        std::cout << "FF_UPLOAD: rumble upload: effect_id = " << upload.effect.id << std::endl;
+                        std::cout << "XXX FF_UPLOAD: rumble upload:"
+                                  << " effect_id: " << upload.effect.id
+                                  << " effect_type: " << upload.effect.type
+                                  << std::endl;
+                        std::cout << "EFFECT: " << upload.effect << std::endl;
 
                         upload.retval = 0;
                             
@@ -620,7 +730,15 @@ uInput::update()
                         ioctl(fd, UI_END_FF_ERASE, &erase);
                       }
                       break;
+
+                    default: 
+                      std::cout << "Unhandled event code read" << std::endl;
+                      break;
                   }
+                break;
+
+              default:
+                std::cout << "Unhandled event type read: " << ev.type << std::endl;
                 break;
             }
           std::cout << "--------------------------------" << std::endl;
