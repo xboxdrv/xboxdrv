@@ -1,3 +1,20 @@
+* add a --device option that searches for vendor/product id from commandline:
+  --device-by-path BUS:DEV
+  --device-by-id PRODUCT:VENDOR
+
+* add support for LED messages
+
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
+- handle FF status report
+
+http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/
+
+Thrustmaster Gamepad Rumble:
+usb> ctrl 0x21 0x09 0x0200 0 ff ff 0 0
+Sending to ctrl: 33 9 512 0: [4] { 0xff, 0xff, 0x00, 0x00 } ->
+
+http://lists.libsdl.org/pipermail/sdl-libsdl.org/2007-March/060263.html
+
 - fix http://userweb.kernel.org/~dtor/eviocgbit-bug.html in evtest
 - cleanup evtest some more, add more features
 - make guitar button configurable  
@@ -238,6 +255,191 @@ dbus-send \
   --dest=org.x.config.display0 \
   org.freedesktop.DBus.Introspectable \
 org.freedesktop.DBus.Introspectable.Introspect \
+
+
+Wine Force Feedback:
+
+
+[ingo@duo:~/projects/xboxdrv/trunk/experimental]$ ~/bin/tombraider-anniversary
+ERROR: Module xpad does not exist in /proc/modules
+USB Device:        003:002
+Controller:        "Microsoft Xbox 360 Controller" (idVendor: 0x045e, idProduct: 0x028e)
+Controller Type:   Xbox360
+Deadzone:          0
+Rumble Debug:      off
+Rumble Speed:      left: 0 right: 0
+LED Status:        auto
+ButtonMap:         none
+AxisMap:           none
+Square Axis:       no
+RelativeAxisMap:   none
+AutoFireMap:       none
+ForceFeedback:     enabled
+Starting with uinput... done
+
+Your Xbox/Xbox360 controller should now be available as:
+  /dev/input/js1
+  /dev/input/event10
+
+Press Ctrl-c to quit
+
+Unknown: len: 3 data: 0x02 0x03 0x00 
+user.reg is not a valid registry file
+fixme:ole:CoInitializeSecurity ((nil),-1,(nil),(nil),0,3,(nil),0,(nil)) - stub!
+err:ole:CoGetClassObject class {9a5ea990-3034-4d6f-9128-01f3c61022bc} not registered
+err:ole:CoGetClassObject class {9a5ea990-3034-4d6f-9128-01f3c61022bc} not registered
+err:ole:create_server class {9a5ea990-3034-4d6f-9128-01f3c61022bc} not registered
+fixme:ole:CoGetClassObject CLSCTX_REMOTE_SERVER not supported
+err:ole:CoGetClassObject no class object {9a5ea990-3034-4d6f-9128-01f3c61022bc} could be created for context 0x17
+fixme:win:EnumDisplayDevicesW ((null),0,0x33ef54,0x00000000), stub!
+fixme:system:SystemParametersInfoW Unimplemented action: 59 (SPI_SETSTICKYKEYS)
+fixme:d3d:IWineD3DDeviceImpl_EvictManagedResources (0x140a78) : stub
+fixme:d3d:IWineD3DDeviceImpl_EvictManagedResources (0x140a78) : stub
+fixme:d3d:IWineD3DDeviceImpl_EvictManagedResources (0x140a78) : stub
+fixme:d3d:IWineD3DDeviceImpl_EvictManagedResources (0x140a78) : stub
+fixme:d3d:IWineD3DDeviceImpl_EvictManagedResources (0x140a78) : stub
+fixme:d3d:IWineD3DDeviceImpl_EvictManagedResources (0x140a78) : stub
+err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
+err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
+err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
+err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
+err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
+err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
+err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
+err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
+err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
+err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
+err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
+err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
+err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
+err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
+fixme:dinput:JoystickAImpl_SetProperty DIPROP_AUTOCENTER(0)
+fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
+err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
+err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
+err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
+err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
+Headset: nonetype: 257 code: 1 value: 0
+XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
+EFFECT: FF_CONSTANT level: 0 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
+--------------------------------
+type: 21 code: 0 value: 1
+EV_FF: playing effect: effect_id = 0 value: 1
+--------------------------------
+type: 257 code: 1 value: 0
+XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
+EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
+--------------------------------
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+type: 21 code: 0 value: 1
+EV_FF: playing effect: effect_id = 0 value: 1
+--------------------------------
+type: 257 code: 1 value: 0
+XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
+EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
+--------------------------------
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+type: 21 code: 0 value: 1
+EV_FF: playing effect: effect_id = 0 value: 1
+--------------------------------
+type: 257 code: 1 value: 0
+XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
+EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
+--------------------------------
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+type: 21 code: 0 value: 1
+EV_FF: playing effect: effect_id = 0 value: 1
+--------------------------------
+type: 257 code: 1 value: 0
+XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
+EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
+--------------------------------
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+type: 21 code: 0 value: 1
+EV_FF: playing effect: effect_id = 0 value: 1
+--------------------------------
+type: 257 code: 1 value: 0
+XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
+EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
+--------------------------------
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+type: 21 code: 0 value: 1
+EV_FF: playing effect: effect_id = 0 value: 1
+--------------------------------
+type: 257 code: 1 value: 0
+XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
+EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
+--------------------------------
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+type: 21 code: 0 value: 1
+EV_FF: playing effect: effect_id = 0 value: 1
+--------------------------------
+type: 257 code: 1 value: 0
+XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
+EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
+--------------------------------
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+type: 21 code: 0 value: 1
+EV_FF: playing effect: effect_id = 0 value: 1
+--------------------------------
+type: 257 code: 1 value: 0
+XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
+EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
+--------------------------------
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+type: 21 code: 0 value: 1
+EV_FF: playing effect: effect_id = 0 value: 1
+--------------------------------
+type: 21 code: 0 value: 0
+EV_FF: playing effect: effect_id = 0 value: 0
+--------------------------------
+type: 21 code: 0 value: 0
+EV_FF: playing effect: effect_id = 0 value: 0
+--------------------------------
+type: 257 code: 2 value: 0
+FF_ERASE: rumble erase: effect_id = 0
+--------------------------------
+
+
+fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
+fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
+fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
+fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
+fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
+wine: Unhandled page fault on read access to 0x35545844 at address 0x35545844 (thread 0009), starting debugger...
+Unhandled exception: page fault on read access to 0x35545844 in 32-bit code (0x35545844).
+Register dump:
+ CS:0073 SS:007b DS:007b ES:007b FS:0033 GS:003b
+ EIP:35545844 ESP:0033f2f8 EBP:0033f324 EFLAGS:00210206(   - 00      - RIP1)
+ EAX:12b895d0 EBX:7c08fff4 ECX:116fe938 EDX:1294b6e8
+ ESI:12c59178 EDI:116fe920
+Stack dump:
+0x0033f2f8:  7c07d52a 12b895d0 b7ed0094 116fe938
+0x0033f308:  0033f344 0033f344 b7ed0189 7c07d45b
+0x0033f318:  7c08fff4 116fe920 00000000 0033f344
+0x0033f328:  7c06f45f 116fe920 00000001 12b895d0
+0x0033f338:  00000011 03a23650 039fbac0 03a2369c
+0x0033f348:  00412e8a 116fe920 039fbbb0 03a23650
+Backtrace:
+=>1 0x35545844 (0x0033f324)
+  2 0x7c06f45f IDirectInputDevice2AImpl_Release+0x4f() in dinput (0x0033f344)
+  3 0x00412e8a in tra (+0x12e8a) (0x03a2369c)
+  4 0x00000000 (0x00000000)
+0x35545844: addb	%al,0x0(%eax)
+Modules:
+Module	Address			Debug info	Name (88 modules)
+PE	  400000-  c5b000	Export          tra
+PE	18000000-18033000	Deferred        binkw32
+ELF	7b800000-7b93d000	Deferred        kernel32<elf>
 
 
 # EOF #
