@@ -81,8 +81,8 @@ public:
   void add_abs(const Event& event, int min, int max);
   void add_key(const Event& event);
 
-  void send_button(const Event& event, int32_t value);
-  void send_axis(const Event& event, int32_t value);
+  void send_button(int code, int32_t value);
+  void send_axis(int code, int32_t value);
 
   void update();
 };

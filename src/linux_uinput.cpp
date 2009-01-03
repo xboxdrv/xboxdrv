@@ -34,9 +34,9 @@ LinuxUinput::LinuxUinput()
     led_bit(false),
     ff_bit(false)
 {
-  std::fill(abs_lst, abs_lst+ABS_CNT, false);
-  std::fill(rel_lst, rel_lst+REL_CNT, false);
-  std::fill(key_lst, key_lst+KEY_CNT, false);
+  std::fill_n(abs_lst, ABS_CNT, false);
+  std::fill_n(rel_lst, REL_CNT, false);
+  std::fill_n(key_lst, KEY_CNT, false);
 
   // Open the input device
   const char* uinput_filename[] = { "/dev/input/uinput", "/dev/uinput", "/dev/misc/uinput" };

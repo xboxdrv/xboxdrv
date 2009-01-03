@@ -1,6 +1,6 @@
-* figure out which devices xorg handles as keyboard
+* figure out which devices xorg handles as keyboard (just a button isn't enough, might need space or so)
 
-* catch duplicates in uinput
+* only send out uinput events when things changed 
 
 * could optimize to only send buttons when things changed
 
