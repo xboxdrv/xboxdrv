@@ -34,6 +34,10 @@ private:
   bool led_bit;
   bool ff_bit;
   
+  bool abs_lst[ABS_CNT];
+  bool rel_lst[REL_CNT];
+  bool key_lst[KEY_CNT];
+
 public:
   LinuxUinput();
   ~LinuxUinput();

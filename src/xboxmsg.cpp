@@ -192,15 +192,20 @@ int get_button(XboxGenericMsg& msg, XboxButton button)
             case XBOX_BTN_BACK:
               return msg.xbox360.back;
 
+            case XBOX_BTN_GREEN:
             case XBOX_BTN_A:
               return msg.xbox360.a;
+            case XBOX_BTN_RED:
             case XBOX_BTN_B:
               return msg.xbox360.b;
+            case XBOX_BTN_BLUE:
             case XBOX_BTN_X:
               return msg.xbox360.x;
+            case XBOX_BTN_YELLOW:
             case XBOX_BTN_Y:
               return msg.xbox360.y;
 
+            case XBOX_BTN_ORANGE:
             case XBOX_BTN_LB:
             case XBOX_BTN_WHITE:
               return msg.xbox360.lb;
@@ -244,15 +249,20 @@ int get_button(XboxGenericMsg& msg, XboxButton button)
             case XBOX_BTN_BACK:
               return msg.xbox.back;
 
+            case XBOX_BTN_GREEN:
             case XBOX_BTN_A:
               return msg.xbox.a;
+            case XBOX_BTN_RED:
             case XBOX_BTN_B:
               return msg.xbox.b;
+            case XBOX_BTN_BLUE:
             case XBOX_BTN_X:
               return msg.xbox.x;
+            case XBOX_BTN_YELLOW:
             case XBOX_BTN_Y:
               return msg.xbox.y;
 
+            case XBOX_BTN_ORANGE:
             case XBOX_BTN_LB:
             case XBOX_BTN_WHITE:
               return msg.xbox.white;
@@ -307,15 +317,20 @@ void set_button(XboxGenericMsg& msg, XboxButton button, int v)
             case XBOX_BTN_BACK:
               msg.xbox360.back = v; break;
 
+            case XBOX_BTN_GREEN:
             case XBOX_BTN_A:
               msg.xbox360.a = v; break;
+            case XBOX_BTN_RED:
             case XBOX_BTN_B:
               msg.xbox360.b = v; break;
+            case XBOX_BTN_BLUE:
             case XBOX_BTN_X:
               msg.xbox360.x = v; break;
+            case XBOX_BTN_YELLOW:
             case XBOX_BTN_Y:
               msg.xbox360.y = v; break;
 
+            case XBOX_BTN_ORANGE:
             case XBOX_BTN_LB:
             case XBOX_BTN_WHITE:
               msg.xbox360.lb = v; break;
@@ -359,15 +374,20 @@ void set_button(XboxGenericMsg& msg, XboxButton button, int v)
             case XBOX_BTN_BACK:
               msg.xbox.back = v; break;
 
+            case XBOX_BTN_GREEN:
             case XBOX_BTN_A:
               msg.xbox.a = v; break;
+            case XBOX_BTN_RED:
             case XBOX_BTN_B:
               msg.xbox.b = v; break;
+            case XBOX_BTN_BLUE:
             case XBOX_BTN_X:
               msg.xbox.x = v; break;
+            case XBOX_BTN_YELLOW:
             case XBOX_BTN_Y:
               msg.xbox.y = v; break;
 
+            case XBOX_BTN_ORANGE:
             case XBOX_BTN_LB:
             case XBOX_BTN_WHITE:
               msg.xbox.white = v; break;

@@ -34,7 +34,11 @@ LinuxUinput::LinuxUinput()
     led_bit(false),
     ff_bit(false)
 {
-    // Open the input device
+  std::fill(abs_lst, abs_lst+ABS_CNT, false);
+  std::fill(rel_lst, rel_lst+REL_CNT, false);
+  std::fill(key_lst, key_lst+KEY_CNT, false);
+
+  // Open the input device
   const char* uinput_filename[] = { "/dev/input/uinput", "/dev/uinput", "/dev/misc/uinput" };
   const int uinput_filename_count = (sizeof(uinput_filename)/sizeof(char*));
 
@@ -73,40 +77,55 @@ LinuxUinput::~LinuxUinput()
 void
 LinuxUinput::add_abs(uint16_t code, int min, int max)
 {
-  if (!abs_bit)
+  if (!abs_lst[code])
     {
-      ioctl(fd, UI_SET_EVBIT, EV_ABS);
-      abs_bit = true;
+      abs_lst[code] = true;
+
+      if (!abs_bit)
+        {
+          ioctl(fd, UI_SET_EVBIT, EV_ABS);
+          abs_bit = true;
+        }
+
+      ioctl(fd, UI_SET_ABSBIT, code);
+
+      user_dev.absmin[code] = min;
+      user_dev.absmax[code] = max; 
     }
-
-  ioctl(fd, UI_SET_ABSBIT, code);
-
-  user_dev.absmin[code] = min;
-  user_dev.absmax[code] = max; 
 }
 
 void
 LinuxUinput::add_rel(uint16_t code)
 {
-  if (!rel_bit)
+  if (!rel_lst[code])
     {
-      ioctl(fd, UI_SET_EVBIT, EV_REL);
-      rel_bit = true;
-    }
+      rel_lst[code] = true;
 
-  ioctl(fd, UI_SET_RELBIT, code);
+      if (!rel_bit)
+        {
+          ioctl(fd, UI_SET_EVBIT, EV_REL);
+          rel_bit = true;
+        }
+
+      ioctl(fd, UI_SET_RELBIT, code);
+    }
 }
 
 void
 LinuxUinput::add_key(uint16_t code)
 {
-  if (!key_bit)
+  if (!key_lst[code])
     {
-      ioctl(fd, UI_SET_EVBIT, EV_KEY);
-      key_bit = true;
-    }
+      key_lst[code] = true;
 
-  ioctl(fd, UI_SET_KEYBIT, code);
+      if (!key_bit)
+        {
+          ioctl(fd, UI_SET_EVBIT, EV_KEY);
+          key_bit = true;
+        }
+
+      ioctl(fd, UI_SET_KEYBIT, code);
+    }
 }
 
 void

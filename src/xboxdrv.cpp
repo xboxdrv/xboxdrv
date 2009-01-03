@@ -169,7 +169,7 @@ void set_ui_button_map(Event* ui_button_map, const std::string& str)
       else
         {
           throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, Xbox button name not valid");
-        }      
+        }
     }
 }
 
