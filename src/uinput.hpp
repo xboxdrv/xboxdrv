@@ -27,6 +27,23 @@ class Xbox360Msg;
 class Xbox360GuitarMsg;
 class XboxMsg;
 
+struct Event
+{
+  static Event create(int type, int code)
+  {
+    Event ev;
+    ev.type = type;
+    ev.code = code;
+    return ev;
+  }
+
+  /** EV_KEY, EV_ABS, EV_REL */
+  int type;
+
+  /** BTN_A, REL_X, ABS_X, ... */
+  int code;
+};
+
 class uInputCfg
 {
 public:
@@ -36,8 +53,8 @@ public:
   bool dpad_only;
   bool force_feedback;
 
-  int  btn_map[XBOX_BTN_MAX];
-  int  axis_map[XBOX_AXIS_MAX];
+  Event btn_map[XBOX_BTN_MAX];
+  Event axis_map[XBOX_AXIS_MAX];
 
   uInputCfg();
 };
@@ -61,11 +78,11 @@ public:
   void send(Xbox360GuitarMsg& msg);
   void send(XboxMsg& msg);
 
-  void add_abs(uint16_t code, int min, int max);
-  void add_key(uint16_t code);
+  void add_abs(const Event& event, int min, int max);
+  void add_key(const Event& event);
 
-  void send_button(uint16_t code, int32_t value);
-  void send_axis(uint16_t code, int32_t value);
+  void send_button(const Event& event, int32_t value);
+  void send_axis(const Event& event, int32_t value);
 
   void update();
 };

@@ -147,7 +147,7 @@ bool is_number(const std::string& str)
   return true;
 }
 
-void set_ui_button_map(int* ui_button_map, const std::string& str)
+void set_ui_button_map(Event* ui_button_map, const std::string& str)
 {
   std::string::size_type i = str.find_first_of('=');
   if (i == std::string::npos)
@@ -164,7 +164,7 @@ void set_ui_button_map(int* ui_button_map, const std::string& str)
 
       if (btn != XBOX_BTN_UNKNOWN)
         {
-          ui_button_map[btn] = code;
+          ui_button_map[btn] = Event::create(EV_KEY, code);
         }
       else
         {
@@ -173,7 +173,7 @@ void set_ui_button_map(int* ui_button_map, const std::string& str)
     }
 }
 
-void set_ui_axis_map(int* ui_axis_map, const std::string& str)
+void set_ui_axis_map(Event* ui_axis_map, const std::string& str)
 {
   std::string::size_type i = str.find_first_of('=');
   if (i == std::string::npos)
@@ -188,7 +188,7 @@ void set_ui_axis_map(int* ui_axis_map, const std::string& str)
       
       if (axis != XBOX_AXIS_UNKNOWN)
         {
-          ui_axis_map[axis] = code;
+          ui_axis_map[axis] = Event::create(EV_ABS, code);
         }
       else
         {

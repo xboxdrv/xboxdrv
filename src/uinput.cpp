@@ -40,48 +40,48 @@ uInputCfg::uInputCfg()
   force_feedback    = false;
 
   // Button Mapping
-  btn_map[XBOX_BTN_START] = BTN_START;
-  btn_map[XBOX_BTN_GUIDE] = BTN_MODE;
-  btn_map[XBOX_BTN_BACK]  = BTN_SELECT;
+  btn_map[XBOX_BTN_START] = Event::create(EV_KEY, BTN_START);
+  btn_map[XBOX_BTN_GUIDE] = Event::create(EV_KEY, BTN_MODE);
+  btn_map[XBOX_BTN_BACK]  = Event::create(EV_KEY, BTN_SELECT);
 
-  btn_map[XBOX_BTN_A] = BTN_A;
-  btn_map[XBOX_BTN_B] = BTN_B;
-  btn_map[XBOX_BTN_X] = BTN_X;
-  btn_map[XBOX_BTN_Y] = BTN_Y;
+  btn_map[XBOX_BTN_A] = Event::create(EV_KEY, BTN_A);
+  btn_map[XBOX_BTN_B] = Event::create(EV_KEY, BTN_B);
+  btn_map[XBOX_BTN_X] = Event::create(EV_KEY, BTN_X);
+  btn_map[XBOX_BTN_Y] = Event::create(EV_KEY, BTN_Y);
 
-  btn_map[XBOX_BTN_GREEN]  = BTN_0;
-  btn_map[XBOX_BTN_RED]    = BTN_1;
-  btn_map[XBOX_BTN_YELLOW] = BTN_2;
-  btn_map[XBOX_BTN_BLUE]   = BTN_3;
-  btn_map[XBOX_BTN_ORANGE] = BTN_4;
+  btn_map[XBOX_BTN_GREEN]  = Event::create(EV_KEY, BTN_0);
+  btn_map[XBOX_BTN_RED]    = Event::create(EV_KEY, BTN_1);
+  btn_map[XBOX_BTN_YELLOW] = Event::create(EV_KEY, BTN_2);
+  btn_map[XBOX_BTN_BLUE]   = Event::create(EV_KEY, BTN_3);
+  btn_map[XBOX_BTN_ORANGE] = Event::create(EV_KEY, BTN_4);
 
-  btn_map[XBOX_BTN_WHITE] = BTN_TL;
-  btn_map[XBOX_BTN_BLACK] = BTN_TR;
+  btn_map[XBOX_BTN_WHITE] = Event::create(EV_KEY, BTN_TL);
+  btn_map[XBOX_BTN_BLACK] = Event::create(EV_KEY, BTN_TR);
 
-  btn_map[XBOX_BTN_LB] = BTN_TL;
-  btn_map[XBOX_BTN_RB] = BTN_TR;
+  btn_map[XBOX_BTN_LB] = Event::create(EV_KEY, BTN_TL);
+  btn_map[XBOX_BTN_RB] = Event::create(EV_KEY, BTN_TR);
 
-  btn_map[XBOX_BTN_LT] = BTN_TL2;
-  btn_map[XBOX_BTN_RT] = BTN_TR2;
+  btn_map[XBOX_BTN_LT] = Event::create(EV_KEY, BTN_TL2);
+  btn_map[XBOX_BTN_RT] = Event::create(EV_KEY, BTN_TR2);
 
-  btn_map[XBOX_BTN_THUMB_L] = BTN_THUMBL;
-  btn_map[XBOX_BTN_THUMB_R] = BTN_THUMBR;
+  btn_map[XBOX_BTN_THUMB_L] = Event::create(EV_KEY, BTN_THUMBL);
+  btn_map[XBOX_BTN_THUMB_R] = Event::create(EV_KEY, BTN_THUMBR);
   
-  btn_map[XBOX_DPAD_UP]    = BTN_BASE;
-  btn_map[XBOX_DPAD_DOWN]  = BTN_BASE2;
-  btn_map[XBOX_DPAD_LEFT]  = BTN_BASE3;
-  btn_map[XBOX_DPAD_RIGHT] = BTN_BASE4;
+  btn_map[XBOX_DPAD_UP]    = Event::create(EV_KEY, BTN_BASE);
+  btn_map[XBOX_DPAD_DOWN]  = Event::create(EV_KEY, BTN_BASE2);
+  btn_map[XBOX_DPAD_LEFT]  = Event::create(EV_KEY, BTN_BASE3);
+  btn_map[XBOX_DPAD_RIGHT] = Event::create(EV_KEY, BTN_BASE4);
 
   // Axis Mapping
-  axis_map[XBOX_AXIS_X1] = ABS_X; 
-  axis_map[XBOX_AXIS_Y1] = ABS_Y; 
-  axis_map[XBOX_AXIS_X2] = ABS_RX; 
-  axis_map[XBOX_AXIS_Y2] = ABS_RY; 
-  axis_map[XBOX_AXIS_LT] = ABS_GAS;
-  axis_map[XBOX_AXIS_RT] = ABS_BRAKE; 
-  axis_map[XBOX_AXIS_TRIGGER] = ABS_Z; 
-  axis_map[XBOX_AXIS_DPAD_X] = ABS_HAT0X;
-  axis_map[XBOX_AXIS_DPAD_Y] = ABS_HAT0Y;
+  axis_map[XBOX_AXIS_X1]      = Event::create(EV_ABS, ABS_X); 
+  axis_map[XBOX_AXIS_Y1]      = Event::create(EV_ABS, ABS_Y); 
+  axis_map[XBOX_AXIS_X2]      = Event::create(EV_ABS, ABS_RX);
+  axis_map[XBOX_AXIS_Y2]      = Event::create(EV_ABS, ABS_RY);
+  axis_map[XBOX_AXIS_LT]      = Event::create(EV_ABS, ABS_GAS);
+  axis_map[XBOX_AXIS_RT]      = Event::create(EV_ABS, ABS_BRAKE); 
+  axis_map[XBOX_AXIS_TRIGGER] = Event::create(EV_ABS, ABS_Z); 
+  axis_map[XBOX_AXIS_DPAD_X]  = Event::create(EV_ABS, ABS_HAT0X);
+  axis_map[XBOX_AXIS_DPAD_Y]  = Event::create(EV_ABS, ABS_HAT0Y);
 }
 
 uInput::uInput(GamepadType type, uInputCfg config_)
@@ -215,11 +215,11 @@ uInput::setup_xbox360_guitar()
   add_key(cfg.btn_map[XBOX_BTN_GUIDE]);
 
   // Fret button
-  add_key(BTN_1);
-  add_key(BTN_2);
-  add_key(BTN_3);
-  add_key(BTN_4);
-  add_key(BTN_5);
+  add_key(cfg.btn_map[XBOX_BTN_GREEN]);
+  add_key(cfg.btn_map[XBOX_BTN_RED]);
+  add_key(cfg.btn_map[XBOX_BTN_BLUE]);
+  add_key(cfg.btn_map[XBOX_BTN_YELLOW]);
+  add_key(cfg.btn_map[XBOX_BTN_ORANGE]);
 }
 
 uInput::~uInput()
@@ -299,8 +299,8 @@ uInput::send(Xbox360Msg& msg)
     }
   else
     {
-      uint16_t dpad_x = cfg.axis_map[XBOX_AXIS_DPAD_X];
-      uint16_t dpad_y = cfg.axis_map[XBOX_AXIS_DPAD_Y];
+      Event dpad_x = cfg.axis_map[XBOX_AXIS_DPAD_X];
+      Event dpad_y = cfg.axis_map[XBOX_AXIS_DPAD_Y];
       
       if (cfg.dpad_only) // FIXME: Implement via ui-buttonmap
         {
@@ -619,35 +619,35 @@ uInput::update()
 }
 
 void
-uInput::send_button(uint16_t code, int32_t value)
+uInput::send_button(const Event& event, int32_t value)
 {
   //std::cout << "send_button: " << code << " " << value << std::endl;
 
-  if (code < 256)
-    key_uinput->send_button(code, value);
+  if (event.code < 256)
+    key_uinput->send_button(event.code, value);
   else
-    joy_uinput->send_button(code, value);
+    joy_uinput->send_button(event.code, value);
 }
 
 void
-uInput::send_axis(uint16_t code, int32_t value)
+uInput::send_axis(const Event& event, int32_t value)
 {
-  joy_uinput->send_axis(code, value);
+  joy_uinput->send_axis(event.code, value);
 }
 
 void
-uInput::add_abs(uint16_t code, int min, int max)
+uInput::add_abs(const Event& event, int min, int max)
 {
-  joy_uinput->add_abs(code, min, max);
+  joy_uinput->add_abs(event.code, min, max);
 }
 
 void
-uInput::add_key(uint16_t code)
+uInput::add_key(const Event& event)
 {
-  if (code < 256)
-    key_uinput->add_key(code);
+  if (event.code < 256)
+    key_uinput->add_key(event.code);
   else
-    joy_uinput->add_key(code);
+    joy_uinput->add_key(event.code);
 }
 
 /* EOF */
