@@ -546,6 +546,17 @@ XboxButton string2btn(const std::string& str_)
   else if (str == "y")
     return XBOX_BTN_Y;
 
+  else if (str == "green")
+    return XBOX_BTN_GREEN;
+  else if (str == "red")
+    return XBOX_BTN_RED;
+  else if (str == "blue")
+    return XBOX_BTN_BLUE;
+  else if (str == "yellow")
+    return XBOX_BTN_YELLOW;
+  else if (str == "orange")
+    return XBOX_BTN_ORANGE;
+
   else if (str == "black")
     return XBOX_BTN_BLACK;
   else if (str == "white")
@@ -647,6 +658,12 @@ std::string btn2string(XboxButton btn)
       case XBOX_BTN_B: return "B";
       case XBOX_BTN_X: return "X";
       case XBOX_BTN_Y: return "Y";
+
+      case XBOX_BTN_GREEN:  return "green";
+      case XBOX_BTN_RED:    return "red";
+      case XBOX_BTN_BLUE:   return "blue";
+      case XBOX_BTN_YELLOW: return "yellow";
+      case XBOX_BTN_ORANGE: return "orange";
 
       case XBOX_BTN_WHITE: return "White";
       case XBOX_BTN_BLACK: return "Black";

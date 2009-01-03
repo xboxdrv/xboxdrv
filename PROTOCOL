@@ -150,10 +150,10 @@ struct Xbox360Msg
   unsigned int guide       :1;
   unsigned int dummy1      :1; // always 0
 
-  unsigned int a           :1;
-  unsigned int b           :1;
-  unsigned int x           :1;
-  unsigned int y           :1;
+  unsigned int a           :1; // green
+  unsigned int b           :1; // red
+  unsigned int x           :1; // blue
+  unsigned int y           :1; // yellow
 
   // data[4] ------------------
   unsigned int lt          :8;

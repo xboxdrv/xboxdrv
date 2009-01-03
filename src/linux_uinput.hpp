@@ -49,7 +49,7 @@ public:
   void add_rel(uint16_t code);
   
   /** Finish*/
-  void finish();
+  void finish(const char* name);
   /*@}*/
 
   void send_button(uint16_t code, int32_t value);

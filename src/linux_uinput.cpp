@@ -110,17 +110,17 @@ LinuxUinput::add_key(uint16_t code)
 }
 
 void
-LinuxUinput::finish()
+LinuxUinput::finish(const char* name)
 {
   std::cout << "Finalizing UInput" << std::endl;
-  strncpy(user_dev.name, "Xbox Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
+  strncpy(user_dev.name, name, UINPUT_MAX_NAME_SIZE);
   user_dev.id.version = 0;
   user_dev.id.bustype = BUS_USB;
   user_dev.id.vendor  = 0x045e; // FIXME: this shouldn't be hardcoded
   user_dev.id.product = 0x028e;
 
   if (write(fd, &user_dev, sizeof(user_dev)) < 0)
-    throw std::runtime_error(strerror(errno));
+    throw std::runtime_error(std::string("uinput:finish: ") + strerror(errno));
 
   if (ioctl(fd, UI_DEV_CREATE))
     {
@@ -140,7 +140,7 @@ LinuxUinput::send_button(uint16_t code, int32_t value)
   ev.value = (value>0) ? 1 : 0;
 
   if (write(fd, &ev, sizeof(ev)) < 0)
-    throw std::runtime_error(strerror(errno)); 
+    throw std::runtime_error(std::string("uinput:send_button: ") + strerror(errno)); 
 }
 
 void
@@ -155,7 +155,7 @@ LinuxUinput::send_axis(uint16_t code, int32_t value)
   ev.value = value;
 
   if (write(fd, &ev, sizeof(ev)) < 0)
-    throw std::runtime_error(strerror(errno));
+    throw std::runtime_error(std::string("uinput:send_axis: ") + strerror(errno));
 }
 
 /* EOF */

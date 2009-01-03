@@ -1,3 +1,9 @@
+* figure out which devices xorg handles as keyboard
+
+* catch duplicates in uinput
+
+* could optimize to only send buttons when things changed
+
 * create two seperate uinput devices for keyboard and mouse events
 
 * output driver/device name on startup

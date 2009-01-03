@@ -183,6 +183,9 @@ lb, rb         | shoulder buttons (Xbox360 only, mapped to black, white on Xbox1
 lt, rt         | analog trigger (needs --trigger-as-button option)
 tl, tr         | pressing the left or right analog stick
 du, dd, dl, dr | dpad directions (needs --dpad-as-button option)
+green, red,    | guitar buttons
+yellow, blue,  |
+orange         |
 
 [[ Axis Remapping ]]
 --------------------
@@ -297,7 +300,7 @@ Note: The exact string will differ depending on the type of controller you use.
 [[ Mouse Emulation ]]
 ---------------------
 
-xboxdrv does not support mouse emulation, however due to Xorg
+xboxdrv does not support real mouse emulation, however due to Xorg
 brokeness and ugly hackery, the following gives you mouse emulation:
 
   % ./xboxdrv --ui-buttonmap A=BTN_LEFT,B=BTN_RIGHT -s  --relative-axis X1=64000,Y1=64000 --deadzone 4192
