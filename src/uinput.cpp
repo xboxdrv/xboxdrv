@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <algorithm>
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -87,6 +88,9 @@ uInputCfg::uInputCfg()
 uInput::uInput(GamepadType type, uInputCfg config_)
   :cfg(config_)
 {
+  std::fill_n(axis_state,   (int)XBOX_AXIS_MAX, 0);
+  std::fill_n(button_state, (int)XBOX_BTN_MAX,  false);
+
   joy_uinput = std::auto_ptr<LinuxUinput>(new LinuxUinput());
   key_uinput = std::auto_ptr<LinuxUinput>(new LinuxUinput());
 
@@ -619,22 +623,32 @@ uInput::update()
 }
 
 void
-uInput::send_button(int code, int32_t value)
+uInput::send_button(int code, bool value)
 {
-  const Event& event = cfg.btn_map[code];
+  if (button_state[code] != value)
+    {
+      button_state[code] = value;
+
+      const Event& event = cfg.btn_map[code];
   
-  if (event.code < 256)
-    key_uinput->send_button(event.code, value);
-  else
-    joy_uinput->send_button(event.code, value);
+      if (event.code < 256)
+        key_uinput->send_button(event.code, value);
+      else
+        joy_uinput->send_button(event.code, value);
+    }
 }
 
 void
 uInput::send_axis(int code, int32_t value)
 {
-  const Event& event = cfg.axis_map[code];
+  if (axis_state[code] != value)
+    {
+      axis_state[code] = value;
 
-  joy_uinput->send_axis(event.code, value);
+      const Event& event = cfg.axis_map[code];
+
+      joy_uinput->send_axis(event.code, value);
+    }
 }
 
 void

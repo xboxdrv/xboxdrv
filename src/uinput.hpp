@@ -66,6 +66,9 @@ private:
   std::auto_ptr<LinuxUinput> key_uinput;
   uInputCfg cfg;
 
+  int  axis_state[XBOX_AXIS_MAX];
+  bool button_state[XBOX_BTN_MAX];
+
 public:
   uInput(GamepadType type, uInputCfg cfg = uInputCfg());
   ~uInput();
@@ -81,7 +84,7 @@ public:
   void add_abs(const Event& event, int min, int max);
   void add_key(const Event& event);
 
-  void send_button(int code, int32_t value);
+  void send_button(int code, bool value);
   void send_axis(int code, int32_t value);
 
   void update();
