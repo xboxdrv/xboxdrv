@@ -148,33 +148,21 @@ LinuxUinput::finish(const char* name)
 }
 
 void
-LinuxUinput::send_button(uint16_t code, int32_t value)
+LinuxUinput::send(uint16_t type, uint16_t code, int32_t value)
 {
   struct input_event ev;      
   memset(&ev, 0, sizeof(ev));
 
   gettimeofday(&ev.time, NULL);
-  ev.type  = EV_KEY;
+  ev.type  = type;
   ev.code  = code;
-  ev.value = (value>0) ? 1 : 0;
+  if (ev.type == EV_KEY)
+    ev.value = (value>0) ? 1 : 0;
+  else
+    ev.value = value;
 
   if (write(fd, &ev, sizeof(ev)) < 0)
     throw std::runtime_error(std::string("uinput:send_button: ") + strerror(errno)); 
-}
-
-void
-LinuxUinput::send_axis(uint16_t code, int32_t value)
-{
-  struct input_event ev;      
-  memset(&ev, 0, sizeof(ev));
-
-  gettimeofday(&ev.time, NULL);
-  ev.type  = EV_ABS;
-  ev.code  = code;
-  ev.value = value;
-
-  if (write(fd, &ev, sizeof(ev)) < 0)
-    throw std::runtime_error(std::string("uinput:send_axis: ") + strerror(errno));
 }
 
 /* EOF */

@@ -1,6 +1,6 @@
 # -*- python -*-
 
-env = Environment(CPPFLAGS=["-g", "-O2", "-Wall"], LIBS=["usb"])
+env = Environment(CPPFLAGS=["-g", "-O2", "-Wall", "-ansi", "-pedantic"], LIBS=["usb"])
 env.Program("xboxdrv", ["src/xboxdrv.cpp", 
                         "src/xboxmsg.cpp",
                         "src/uinput.cpp",

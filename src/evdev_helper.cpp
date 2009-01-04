@@ -25,12 +25,15 @@
 template<class Enum>
 class EnumBox
 {
-private:
+protected:
+  std::string name;
   std::map<Enum, std::string> enum2string;
   std::map<std::string, Enum> string2enum;
 
 protected:
-  EnumBox() {
+  EnumBox(const std::string& name)
+    : name(name)
+  {
   }
   
   void add(Enum i, const std::string& name) 
@@ -46,7 +49,7 @@ public:
     if (i == string2enum.end())
       {
         std::ostringstream out;
-        out << "Couldn't convert '" << str << "' to enum" << std::endl;
+        out << "Couldn't convert '" << str << "' to enum " << name << std::endl;
         throw std::runtime_error(out.str());
       }
     else
@@ -71,10 +74,33 @@ public:
 };
 
 
+class EvDevRelEnum : public EnumBox<int>
+{
+public:
+  EvDevRelEnum() 
+    : EnumBox<int>("EV_REL")
+  {
+    // File.new("/usr/include/linux/input.h")
+    //  .grep(/^#define REL/)
+    //  .each{|i| name = i.split[1]; puts "add(%s,%s\"%s\");" % [name, " " * (20-name.length), name] };
+    add(REL_X,               "REL_X");
+    add(REL_Y,               "REL_Y");
+    add(REL_Z,               "REL_Z");
+    add(REL_RX,              "REL_RX");
+    add(REL_RY,              "REL_RY");
+    add(REL_RZ,              "REL_RZ");
+    add(REL_HWHEEL,          "REL_HWHEEL");
+    add(REL_DIAL,            "REL_DIAL");
+    add(REL_WHEEL,           "REL_WHEEL");
+    add(REL_MISC,            "REL_MISC");
+  }
+} evdev_rel_names;
+
 class EvDevAbsEnum : public EnumBox<int>
 {
 public:
   EvDevAbsEnum() 
+    : EnumBox<int>("EV_ABS")
   {
     // File.new("/usr/include/linux/input.h")
     //  .grep(/^#define ABS/)
@@ -105,8 +131,6 @@ public:
     add(ABS_TOOL_WIDTH,      "ABS_TOOL_WIDTH");
     add(ABS_VOLUME,          "ABS_VOLUME");
     add(ABS_MISC,            "ABS_MISC");
-    add(ABS_MAX,             "ABS_MAX");
-    add(ABS_CNT,             "ABS_CNT");
   }
 } evdev_abs_names;
 
@@ -114,6 +138,7 @@ class EvDevBtnEnum : public EnumBox<int>
 {
 public:
   EvDevBtnEnum() 
+    : EnumBox<int>("EV_KEY")
   {
     // File.new("/usr/include/linux/input.h")
     //  .grep(/^#define (BTN|KEY)/)
@@ -550,19 +575,23 @@ public:
     add(KEY_BRL_DOT9,        "KEY_BRL_DOT9");
     add(KEY_BRL_DOT10,       "KEY_BRL_DOT10");
     add(KEY_MIN_INTERESTING, "KEY_MIN_INTERESTING");
-    add(KEY_MAX,             "KEY_MAX");
-    add(KEY_CNT,             "KEY_CNT");
   }
 } evdev_btn_names;
 
-int str2evbtn(const std::string& name)
+Event str2event(const std::string& name)
 {
-  return evdev_btn_names[name];
-}
-
-int str2evabs(const std::string& name)
-{
-  return evdev_abs_names[name];
+  if (name.compare(0, 3, "REL") == 0)
+    return Event::create(EV_REL, evdev_rel_names[name]);
+
+  else if (name.compare(0, 3, "ABS") == 0)
+    return Event::create(EV_ABS, evdev_abs_names[name]);
+
+  else if (name.compare(0, 3, "KEY") == 0 ||
+           name.compare(0, 3, "BTN") == 0)
+    return Event::create(EV_KEY, evdev_btn_names[name]);
+
+  else
+    return Event::invalid;
 }
 
 /* EOF */

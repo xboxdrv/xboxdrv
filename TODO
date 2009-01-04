@@ -1,10 +1,6 @@
+* only create mouse and keyboard devices when they are needed 
+
 * figure out which devices xorg handles as keyboard (just a button isn't enough, might need space or so)
-
-* only send out uinput events when things changed 
-
-* could optimize to only send buttons when things changed
-
-* create two seperate uinput devices for keyboard and mouse events
 
 * output driver/device name on startup
 

@@ -158,13 +158,12 @@ void set_ui_button_map(Event* ui_button_map, const std::string& str)
     {
       std::cout << string2btn(str.substr(0, i)) << " -> " << str.substr(i+1, str.size()-i) << std::endl;
 
-      XboxButton btn = string2btn(str.substr(0, i));
-      std::string rhs = str.substr(i+1, str.size()-i);
-      int code = is_number(rhs) ? boost::lexical_cast<int>(rhs) : str2evbtn(rhs);
+      XboxButton btn  = string2btn(str.substr(0, i));
+      Event event     = str2event(str.substr(i+1, str.size()-i));
 
-      if (btn != XBOX_BTN_UNKNOWN)
+      if (btn != XBOX_BTN_UNKNOWN && event != Event::invalid)
         {
-          ui_button_map[btn] = Event::create(EV_KEY, code);
+          ui_button_map[btn] = event;
         }
       else
         {
@@ -182,17 +181,16 @@ void set_ui_axis_map(Event* ui_axis_map, const std::string& str)
     }
   else
     {
-      XboxAxis axis   = string2axis(str.substr(0, i));
-      std::string rhs = str.substr(i+1, str.size()-i);
-      int code = is_number(rhs) ? boost::lexical_cast<int>(rhs) : str2evabs(rhs);
-      
-      if (axis != XBOX_AXIS_UNKNOWN)
+      XboxAxis axis  = string2axis(str.substr(0, i));
+      Event    event = str2event(str.substr(i+1, str.size()-i));
+            
+      if (axis != XBOX_AXIS_UNKNOWN && event != Event::invalid)
         {
-          ui_axis_map[axis] = Event::create(EV_ABS, code);
+          ui_axis_map[axis] = event;
         }
       else
         {
-          throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, Xbox axis name not valid");
+          throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping");
         }      
     }  
 }
@@ -1040,10 +1038,11 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
   if (!opts.relative_axis_map.empty())
     relative_axis_modifier.reset(new RelativeAxisModifier(opts.relative_axis_map)); 
 
-  if (autofire_modifier.get() ||
-      relative_axis_modifier.get() ||
-      opts.uinput_config.force_feedback)
-    timeout = 30;
+  // FIXME: We could block in some cases instead of poll
+  //if (autofire_modifier.get() ||
+  //relative_axis_modifier.get() ||
+  //    opts.uinput_config.force_feedback)
+  timeout = 10;
 
   memset(&oldmsg, 0, sizeof(oldmsg));
   memset(&oldrealmsg, 0, sizeof(oldrealmsg));
@@ -1113,7 +1112,7 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
             }
         }
 
-      uinput->update();
+      uinput->update(delta);
     }
 }
 

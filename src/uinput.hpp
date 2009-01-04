@@ -19,6 +19,7 @@
 #ifndef HEADER_UINPUT_HPP
 #define HEADER_UINPUT_HPP
 
+#include <vector>
 #include <memory>
 #include "xboxdrv.hpp"
 #include "linux_uinput.hpp"
@@ -37,12 +38,19 @@ struct Event
     return ev;
   }
 
+  static Event invalid;
+
   /** EV_KEY, EV_ABS, EV_REL */
   int type;
 
   /** BTN_A, REL_X, ABS_X, ... */
   int code;
 };
+
+inline bool operator!=(const Event& lhs, const Event& rhs)
+{
+  return lhs.type != rhs.type || lhs.code != rhs.code;
+}
 
 class uInputCfg
 {
@@ -62,12 +70,15 @@ public:
 class uInput
 {
 private:
-  std::auto_ptr<LinuxUinput> joy_uinput;
-  std::auto_ptr<LinuxUinput> key_uinput;
+  std::auto_ptr<LinuxUinput> joystick_uinput;
+  std::auto_ptr<LinuxUinput> keyboard_uinput;
+  std::auto_ptr<LinuxUinput> mouse_uinput;
   uInputCfg cfg;
 
   int  axis_state[XBOX_AXIS_MAX];
   bool button_state[XBOX_BTN_MAX];
+
+  std::vector<int> rel_axis;
 
 public:
   uInput(GamepadType type, uInputCfg cfg = uInputCfg());
@@ -81,13 +92,13 @@ public:
   void send(Xbox360GuitarMsg& msg);
   void send(XboxMsg& msg);
 
-  void add_abs(const Event& event, int min, int max);
-  void add_key(const Event& event);
+  void add_axis(int code, int min, int max);
+  void add_button(int code);
 
   void send_button(int code, bool value);
   void send_axis(int code, int32_t value);
 
-  void update();
+  void update(float delta);
 };
 
 #endif

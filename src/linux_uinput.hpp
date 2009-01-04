@@ -56,8 +56,7 @@ public:
   void finish(const char* name);
   /*@}*/
 
-  void send_button(uint16_t code, int32_t value);
-  void send_axis(uint16_t code, int32_t value);
+  void send(uint16_t type, uint16_t code, int32_t value);
 
 private:
   LinuxUinput (const LinuxUinput&);

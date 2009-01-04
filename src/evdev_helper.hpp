@@ -20,9 +20,9 @@
 #define HEADER_EVDEV_HELPER_HPP
 
 #include <string>
+#include "uinput.hpp"
 
-int str2evbtn(const std::string& name);
-int str2evabs(const std::string& name);
+Event str2event(const std::string& name);
 
 #endif
 

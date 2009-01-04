@@ -49,7 +49,7 @@ public:
     XBOX360_BTN_BACK, 
     XBOX360_BTN_GUIDE, 
 
-    XBOX360_BTN_LENGTH, 
+    XBOX360_BTN_LENGTH
   };
 
   enum {
@@ -73,7 +73,7 @@ public:
   enum {
     ABS_PORT_IN_RUMBLE_L,
     ABS_PORT_IN_RUMBLE_R,
-    ABS_PORT_IN_MAX,
+    ABS_PORT_IN_MAX
   };
 
 private:  
