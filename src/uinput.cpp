@@ -82,7 +82,7 @@ uInputCfg::uInputCfg()
   axis_map[XBOX_AXIS_Y2]      = Event::create(EV_ABS, ABS_RY);
   axis_map[XBOX_AXIS_LT]      = Event::create(EV_ABS, ABS_GAS);
   axis_map[XBOX_AXIS_RT]      = Event::create(EV_ABS, ABS_BRAKE); 
-  axis_map[XBOX_AXIS_TRIGGER] = Event::create(EV_ABS, ABS_Z); 
+  axis_map[XBOX_AXIS_TRIGGER] = Event::create(EV_ABS, ABS_Z);
   axis_map[XBOX_AXIS_DPAD_X]  = Event::create(EV_ABS, ABS_HAT0X);
   axis_map[XBOX_AXIS_DPAD_Y]  = Event::create(EV_ABS, ABS_HAT0Y);
 }

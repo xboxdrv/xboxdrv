@@ -1,3 +1,27 @@
+* get rid of guitar, merge into xbox360
+
+* use cases:
+
+BTN  -> REL (mouse wheel)
+AXIS -> REL (mouse cursor)
+
+BTN  -> ABS (no use)
+AXIS -> ABS (standard)
+
+BTN  -> KEY (standard)
+AXIS -> KEY (simplistic WASD emu) [deadzone, (left, right)]
+
+buttonmap:
+
+BTN=KEY_X
+BTN=REL_X:$VALUE
+
+AXIS=ABS_X:$SCALE:$ACCEL
+AXIS=KEY_X:$THREADHOLD
+AXIS=KEY_X:KEY_Y:$THREADHOLD
+AXIS=REL_X:$SCALE:$ACCEL
+
+
 * only create mouse and keyboard devices when they are needed 
 
 * figure out which devices xorg handles as keyboard (just a button isn't enough, might need space or so)

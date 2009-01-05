@@ -296,13 +296,21 @@ Note: The exact string will differ depending on the type of controller you use.
 [[ Mouse Emulation ]]
 ---------------------
 
-xboxdrv does not support real mouse emulation, however due to Xorg
-brokeness and ugly hackery, the following gives you mouse emulation:
+Mouse emulation can be done with something like this:
 
-  % ./xboxdrv --ui-buttonmap A=BTN_LEFT,B=BTN_RIGHT -s  --relative-axis X1=64000,Y1=64000 --deadzone 4192
+./xboxdrv \
+  --axismap -y2=y2 \
+  --ui-axismap x1=REL_X,y1=REL_Y,y2=REL_WHEEL \
+  --ui-buttonmap a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER \
+  --ui-buttonmap rb=KEY_FORWARD,lb=KEY_BACK \
+  --ui-buttonmap dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN \
+  -s --deadzone 5000  --dpad-as-button
 
-This assumed that you have not applied any of the Xorg workarounds and
-are using a version of Xorg that will handle your gamepad as mouse.
+Note that if you have your mouse buttons switched you must adjust the
+above to match your mouse or the button events come out wrong.
+
+Bugs: The mouse wheel emulation is a bit buggy, since to many events are
+send which some apps can't handle.
 
 [[ Wacom Trouble ]]
 -------------------
@@ -363,6 +371,58 @@ Start xboxdrv with:
 
 Your right analog stick will act as trottle control, the trigger as
 rudder.
+
+[[ Testing ]]
+-------------
+
+Knowing how to test a xboxdrv configuration is absolutely crucial in
+understanding what is wrong in a given setup. Testing the
+configuration in a game is most often not helpful, since you won't see
+the true cause beyond endless layers of abstraction between you and
+the actual events. Luckily there are a few tools you can use to test,
+all of these are command line based and it is recomment that you get
+familar with them when you want to do any more complex configuration.
+
+evtest:
+-------
+evtest lets you read raw input events from (/dev/input/eventX). The
+event devices are the very core of all event handling, things like the
+joystick devices are derived from the event device, so if you want to
+fix some issue on the joystick device, you have to fix the event
+device.
+
+jstest:
+-------
+jstest lets you read the output out of a joystick event device (/dev/input/js0). 
+
+sdl-jstest:
+-----------
+sdl-jstest lets you see events as games using SDL see them. This is
+very important when you want to set and test the SDL_LINUX_JOYSTICK
+environment variables.
+
+xev:
+----
+
+xev lets you see the events that Xorg sees. Note however that you
+might not see all events, since some will be grapped by your Window
+manager before they reach xev, this is normal.
+
+jscalc:
+-------
+Do not use this tool, for current day joysticks it doesn't do
+anything useful, so don't touch it and you will be happy.   
+
+missing:
+--------
+No tools for testing the output on /dev/input/mouseX are known.
+
+Note:
+-----
+If the tools provide no output at all, this might not be due to a
+wrong configuration, but due to Xorg grabbing your event device and
+locking it, see Xorg section for possible fixes.
+
 
 [[ Troubleshooting ]]
 ---------------------
