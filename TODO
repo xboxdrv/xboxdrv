@@ -1,11 +1,16 @@
-* get rid of guitar, merge into xbox360
+Stuff to do before 0.4 release:
+===============================
+
+* print version number on normal use
+
+* only create mouse and keyboard devices when they are needed 
 
 * use cases:
 
 BTN  -> REL (mouse wheel)
 AXIS -> REL (mouse cursor)
 
-BTN  -> ABS (no use)
+BTN  -> ABS (no use, dpad is already handled elsewhere)
 AXIS -> ABS (standard)
 
 BTN  -> KEY (standard)
@@ -14,17 +19,14 @@ AXIS -> KEY (simplistic WASD emu) [deadzone, (left, right)]
 buttonmap:
 
 BTN=KEY_X
-BTN=REL_X:$VALUE
+BTN=REL_X:$VALUE:$REPEAT
 
 AXIS=ABS_X:$SCALE:$ACCEL
 AXIS=KEY_X:$THREADHOLD
 AXIS=KEY_X:KEY_Y:$THREADHOLD
-AXIS=REL_X:$SCALE:$ACCEL
 
-
-* only create mouse and keyboard devices when they are needed 
-
-* figure out which devices xorg handles as keyboard (just a button isn't enough, might need space or so)
+* figure out which devices xorg handles as keyboard (just a button
+  isn't enough, might need space or so)
 
 * output driver/device name on startup
 
@@ -33,9 +35,11 @@ AXIS=REL_X:$SCALE:$ACCEL
 * add support for LED messages
 
 fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
+
 - handle FF status report
 
 http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/
+________________________________________________________________________________
 
 Thrustmaster Gamepad Rumble:
 usb> ctrl 0x21 0x09 0x0200 0 ff ff 0 0
@@ -43,18 +47,15 @@ Sending to ctrl: 33 9 512 0: [4] { 0xff, 0xff, 0x00, 0x00 } ->
 
 http://lists.libsdl.org/pipermail/sdl-libsdl.org/2007-March/060263.html
 
+- get rid of guitar, merge into xbox360
+- --mimic-xpad
 - fix http://userweb.kernel.org/~dtor/eviocgbit-bug.html in evtest
 - cleanup evtest some more, add more features
-- make guitar button configurable  
-- --mimic-xpad
-
 - using rumble in scripts doesn't work, since you can't reset rumble back to 0,0
 - thread away on all endpoints
 - read from stdin on the main thread
 - send output to file or so
 usb -d 005:006 -c 5:in,5:out,6:in,7:in,8:out -o /tmp/out, else stdin
-
- - print version number on normal use
 
 Daemon Mode:
 SYSFS{idVendor}=="045e", SYSFS{idProduct}=="028e", RUN+="/home/ingo/projects/xboxdrv/trunk/xboxdrv --daemon"

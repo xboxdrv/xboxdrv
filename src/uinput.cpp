@@ -32,6 +32,151 @@
 #include "xboxmsg.hpp"
 #include "uinput.hpp"
 
+ButtonEvent
+ButtonEvent::create(int type, int code)
+{
+  ButtonEvent ev;
+  ev.type = type;
+  ev.code = code;
+
+  switch (type)
+    {
+      case EV_REL:
+        ev.rel.repeat = 100;
+        ev.rel.value  = 3;
+        break;
+
+      case EV_ABS:
+        ev.abs.value  = 1;
+        break;
+
+      case EV_KEY:
+        break;
+    }
+
+  return ev;
+}
+
+ButtonEvent
+ButtonEvent::from_string(const std::string& str)
+{
+  ButtonEvent ev;
+  boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+
+  int j = 0;
+  tokenizer tokens(str, sep);
+  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+    {
+      if (j == 0)
+        {
+          int type, code;
+          if (!str2event(*i, type, code))
+            {
+              throw std::runtime_error("Couldn't convert '" + str + "' to ButtonEvent");
+            }
+          else
+            {
+              ev = ButtonEvent::create(type, code);
+            }
+        }
+      else if (j == 1)
+        {
+          switch (ev.type)
+            {
+              case EV_REL:
+                ev.rel.value = boost::lexical_cast<int>(*i);
+                break;
+            }
+        }
+      else if (j == 2)
+        {
+          switch (ev.type)
+            {
+              case EV_REL:
+                ev.rel.repeat = boost::lexical_cast<int>(*i);
+                break;
+            }
+        }
+    }
+
+  return ev;
+}
+
+AxisEvent 
+AxisEvent::create(int type, int code)
+{
+  AxisEvent ev;
+  ev.type = type;
+  ev.code = code;
+
+  switch (type)
+    {
+      case EV_REL:
+        ev.rel.repeat = 10;
+        ev.rel.value  = 5;
+        break;
+
+      case EV_ABS:
+        ev.abs.scale  = 0;
+        break;
+
+      case EV_KEY:
+        ev.key.sign      = 0;
+        ev.key.threshold = 0;
+        break;
+    }
+
+  return ev;
+}
+
+AxisEvent
+AxisEvent::from_string(const std::string& str)
+{
+  AxisEvent ev;
+
+  boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+
+  int j = 0;
+  tokenizer tokens(str, sep);
+  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+    {
+      if (j == 0)
+        {
+          int type, code;
+          if (!str2event(*i, type, code))
+            {
+              throw std::runtime_error("Couldn't convert '" + str + "' to AxisEvent");
+            }
+          else
+            {
+              ev = AxisEvent::create(type, code);
+            }
+        }
+      else if (j == 1)
+        {
+          switch (ev.type)
+            {
+              case EV_REL:
+                ev.rel.value = boost::lexical_cast<int>(*i);
+                break;
+            }
+        }
+      else if (j == 2)
+        {
+          switch (ev.type)
+            {
+              case EV_REL:
+                ev.rel.repeat = boost::lexical_cast<int>(*i);
+                break;
+            }
+        }
+    }
+    
+  return ev;
+}
+
 uInputCfg::uInputCfg() 
 {
   trigger_as_button = false;
@@ -532,7 +677,6 @@ uInput::update(float delta)
   int msec = static_cast<int>(delta*1000);
   for(std::vector<RelAxisState>::iterator i = rel_axis.begin(); i != rel_axis.end(); ++i)
     {
-      //std::cout << cfg.axis_map[i->axis].rel.value << " " << cfg.axis_map[i->axis].rel.repeat << std::endl;
       i->time += msec;
 
       if (i->time >= i->next_time)
@@ -540,6 +684,25 @@ uInput::update(float delta)
           mouse_uinput->send(EV_REL, cfg.axis_map[i->axis].code, 
                              static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 32767);
           i->next_time += cfg.axis_map[i->axis].rel.repeat;
+        }
+    }
+
+  for(std::vector<RelButtonState>::iterator i = rel_button.begin(); i != rel_button.end(); ++i)
+    {
+      i->time += msec;
+
+      if (i->time >= i->next_time)
+        {
+          if (0)
+            std::cout << i->button 
+                      << " " << cfg.btn_map[i->button].type
+                      << " " << cfg.btn_map[i->button].code
+                      << " " << cfg.btn_map[i->button].rel.value
+                      << " " << cfg.btn_map[i->button].rel.repeat << std::endl;
+
+          mouse_uinput->send(EV_REL, cfg.btn_map[i->button].code, 
+                             static_cast<int>(cfg.btn_map[i->button].rel.value * button_state[i->button]));
+          i->next_time += cfg.btn_map[i->button].rel.repeat;
         }
     }
   
@@ -703,12 +866,27 @@ uInput::add_button(int code)
 {
   const ButtonEvent& event = cfg.btn_map[code];
 
-  if (event.code < 256)
-    keyboard_uinput->add_key(event.code);
-  else if (event.code >= BTN_MOUSE && event.code <= BTN_TASK)
-    mouse_uinput->add_key(event.code);
-  else
-    joystick_uinput->add_key(event.code);
+  if (event.type == EV_KEY)
+    {
+      if (event.code < 256)
+        keyboard_uinput->add_key(event.code);
+      else if (event.code >= BTN_MOUSE && event.code <= BTN_TASK)
+        mouse_uinput->add_key(event.code);
+      else
+        joystick_uinput->add_key(event.code);
+    }
+  else if (event.type == EV_REL)
+    {
+      mouse_uinput->add_rel(event.code);
+      RelButtonState rel_button_state;
+      rel_button_state.button = code;
+      rel_button_state.time = 0;
+      rel_button_state.next_time = 0;
+      rel_button.push_back(rel_button_state);
+    }
+  else if (event.type == EV_ABS)
+    {
+    }
 }
 
 /* EOF */

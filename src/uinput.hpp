@@ -34,59 +34,8 @@ class XboxMsg;
 
 struct ButtonEvent
 {
-  static ButtonEvent create(int type, int code)
-  {
-    ButtonEvent ev;
-    ev.type = type;
-    ev.code = code;
-
-    switch (type)
-      {
-        case EV_REL:
-          ev.rel.repeat = 0;
-          ev.rel.value  = 0;
-          break;
-
-        case EV_ABS:
-          ev.abs.value  = 1;
-          break;
-
-        case EV_KEY:
-          break;
-      }
-
-    return ev;
-  }
-
-  static ButtonEvent from_string(const std::string& str)
-  {
-    ButtonEvent ev;
-    boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-
-    int j = 0;
-    tokenizer tokens(str, sep);
-    for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
-      {
-        if (j == 0)
-          {
-            int type, code;
-            if (!str2event(*i, type, code))
-              {
-                throw std::runtime_error("Couldn't convert '" + str + "' to ButtonEvent");
-              }
-            else
-              {
-                ev = ButtonEvent::create(type, code);
-              }
-          }
-        else if (j == 1)
-          {
-          }
-      }
-
-    return ev;
-  }
+  static ButtonEvent create(int type, int code);
+  static ButtonEvent from_string(const std::string& str);
 
   /** EV_KEY, EV_ABS, EV_REL */
   int type;
@@ -112,77 +61,8 @@ struct ButtonEvent
 
 struct AxisEvent
 {
-  static AxisEvent create(int type, int code)
-  {
-    AxisEvent ev;
-    ev.type = type;
-    ev.code = code;
-
-    switch (type)
-      {
-        case EV_REL:
-          ev.rel.repeat = 10;
-          ev.rel.value  = 5;
-          break;
-
-        case EV_ABS:
-          ev.abs.scale  = 0;
-          break;
-
-        case EV_KEY:
-          ev.key.sign      = 0;
-          ev.key.threshold = 0;
-          break;
-      }
-
-    return ev;
-  }
-
-  static AxisEvent from_string(const std::string& str)
-  {
-    AxisEvent ev;
-
-    boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-
-    int j = 0;
-    tokenizer tokens(str, sep);
-    for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
-      {
-        if (j == 0)
-          {
-            int type, code;
-            if (!str2event(*i, type, code))
-              {
-                throw std::runtime_error("Couldn't convert '" + str + "' to AxisEvent");
-              }
-            else
-              {
-                ev = AxisEvent::create(type, code);
-              }
-          }
-        else if (j == 1)
-          {
-            switch (ev.type)
-              {
-                case EV_REL:
-                  ev.rel.value = boost::lexical_cast<int>(*i);
-                  break;
-              }
-          }
-        else if (j == 2)
-          {
-            switch (ev.type)
-              {
-                case EV_REL:
-                  ev.rel.repeat = boost::lexical_cast<int>(*i);
-                  break;
-              }
-          }
-      }
-    
-    return ev;
-  }
+  static AxisEvent create(int type, int code);
+  static AxisEvent from_string(const std::string& str);
 
   /** EV_KEY, EV_ABS, EV_REL */
   int type;
@@ -206,7 +86,7 @@ struct AxisEvent
     } key;
   };
 };
-  
+  
 class uInputCfg
 {
 public:
@@ -239,8 +119,15 @@ private:
     int next_time;
   };
 
+  struct RelButtonState {
+    int button;
+    int time;
+    int next_time;
+  };
+
   // rel_axis[XBOx_AXIS_??] = ...
-  std::vector<RelAxisState> rel_axis;
+  std::vector<RelAxisState>   rel_axis;
+  std::vector<RelButtonState> rel_button;
 
 public:
   uInput(GamepadType type, uInputCfg cfg = uInputCfg());

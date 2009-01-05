@@ -216,13 +216,19 @@ axis. Usage is similar to the normal button mapping:
 
 Except that the right hand side is an event name from
 /usr/include/linux/input.h. You can use all KEY_ or BTN_ codes for
---ui-buttonmap and all ABS_ ones for --ui-axismap.
+--ui-buttonmap and all ABS_ and REL_ ones for --ui-axismap.
 
 When you try to let a gamepad key send a keyboard event you might run
 into trouble with Xorg, for possible fixes see the section further down.
 
-In most cases this option is not useful, use the normal --buttonmap
-instead.
+In addition to just the event you can also pass additional
+configuration parameter seperated by colons, the exact parameter
+differ on the type of event:
+
+--ui-axismap REL_???:VALUE:REPEAT
+  VALUE:  the maximum value of the event (default: 10)
+  REPEAT: number of milisecond to pass before the event is fired again (default: 5)
+
 
 [[ Running InputDrv ]]
 ----------------------
@@ -311,9 +317,6 @@ cursor and right analogstick to mouse wheel.
 
 Note that if you have your mouse buttons switched you must adjust the
 above to match your mouse or the button events come out wrong.
-
-Bugs: The mouse wheel emulation is a bit buggy, since to many events are
-send which some apps can't handle.
 
 [[ Wacom Trouble ]]
 -------------------
