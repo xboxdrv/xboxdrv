@@ -52,6 +52,9 @@ ButtonEvent::create(int type, int code)
 
       case EV_KEY:
         break;
+
+      default:
+        assert(!"This should never be reached");
     }
 
   return ev;
@@ -80,21 +83,15 @@ ButtonEvent::from_string(const std::string& str)
               ev = ButtonEvent::create(type, code);
             }
         }
-      else if (j == 1)
+      else
         {
           switch (ev.type)
             {
               case EV_REL:
-                ev.rel.value = boost::lexical_cast<int>(*i);
-                break;
-            }
-        }
-      else if (j == 2)
-        {
-          switch (ev.type)
-            {
-              case EV_REL:
-                ev.rel.repeat = boost::lexical_cast<int>(*i);
+                switch(j) {
+                  case 1: ev.rel.value  = boost::lexical_cast<int>(*i); break;
+                  case 2: ev.rel.repeat = boost::lexical_cast<int>(*i); break;
+                }
                 break;
             }
         }
@@ -122,9 +119,12 @@ AxisEvent::create(int type, int code)
         break;
 
       case EV_KEY:
-        ev.key.sign      = 0;
-        ev.key.threshold = 0;
+        ev.key.sign      = 1;
+        ev.key.threshold = 4000;
         break;
+
+      default:
+        assert(!"This should never be reached");
     }
 
   return ev;
@@ -154,21 +154,22 @@ AxisEvent::from_string(const std::string& str)
               ev = AxisEvent::create(type, code);
             }
         }
-      else if (j == 1)
+      else
         {
           switch (ev.type)
             {
               case EV_REL:
-                ev.rel.value = boost::lexical_cast<int>(*i);
+                switch(j) {
+                  case 1:  ev.rel.value  = boost::lexical_cast<int>(*i); break;
+                  case 2:  ev.rel.repeat = boost::lexical_cast<int>(*i); break;
+                }
                 break;
-            }
-        }
-      else if (j == 2)
-        {
-          switch (ev.type)
-            {
-              case EV_REL:
-                ev.rel.repeat = boost::lexical_cast<int>(*i);
+
+              case EV_KEY:
+                switch(j) {
+                  case 1: ev.key.sign      = boost::lexical_cast<int>(*i); break;
+                  case 2: ev.key.threshold = boost::lexical_cast<int>(*i); break;
+                }
                 break;
             }
         }
@@ -828,12 +829,30 @@ uInput::send_axis(int code, int32_t value)
 
       const AxisEvent& event = cfg.axis_map[code];
 
-      assert(event.type == EV_ABS ||
-             event.type == EV_REL);
+      switch(event.type)
+        {
+          case EV_ABS:
+            if (event.type == EV_ABS || event.type == EV_KEY)
+              joystick_uinput->send(event.type, event.code, value);
+            break;
 
-      if (event.type == EV_ABS || event.type == EV_KEY)
-        joystick_uinput->send(event.type, event.code, value);
-      // Mouse events are handled in update()
+          case EV_REL:
+            // Mouse events are handled in update() (which is wrong,
+            // since we miss the first click and introduce a delay)
+            break;
+
+          case EV_KEY:
+            /*
+            
+            if (event.code < 256)
+              keyboard_uinput->send(event.type, event.code, value);
+            else if (event.code >= BTN_MOUSE && event.code <= BTN_TASK)
+              mouse_uinput->send(event.type, event.code, value);
+            else
+              joystick_uinput->send(event.type, event.code, value);
+            */
+            break;
+        }
     }
 }
 

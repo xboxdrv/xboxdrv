@@ -229,6 +229,10 @@ differ on the type of event:
   VALUE:  the maximum value of the event (default: 10)
   REPEAT: number of milisecond to pass before the event is fired again (default: 5)
 
+--ui-buttonmap REL_???:VALUE:REPEAT
+  VALUE:  the maximum value of the event (default: 10)
+  REPEAT: number of milisecond to pass before the event is fired again (default: 5)
+
 
 [[ Running InputDrv ]]
 ----------------------
