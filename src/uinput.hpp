@@ -144,6 +144,9 @@ public:
   void add_axis(int code, int min, int max);
   void add_button(int code);
 
+  void add_key(int ev_code);
+  void send_key(int ev_code, bool value);
+
   void send_button(int code, bool value);
   void send_axis(int code, int32_t value);
 

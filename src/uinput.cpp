@@ -811,13 +811,30 @@ uInput::send_button(int code, bool value)
 
       const ButtonEvent& event = cfg.btn_map[code];
   
-      if (event.code < 256)
-        keyboard_uinput->send(event.type, event.code, value);
-      else if (event.code >= BTN_MOUSE && event.code <= BTN_TASK)
-        mouse_uinput->send(event.type, event.code, value);
-      else
-        joystick_uinput->send(event.type, event.code, value);
+      send_key(event.code, value);
     }
+}
+
+void
+uInput::add_key(int ev_code)
+{
+  if (ev_code < 256)
+    keyboard_uinput->add_key(ev_code);
+  else if (ev_code >= BTN_MOUSE && ev_code <= BTN_TASK)
+    mouse_uinput->add_key(ev_code);
+  else
+    joystick_uinput->add_key(ev_code);
+}
+
+void
+uInput::send_key(int ev_code, bool value)
+{
+  if (ev_code < 256)
+    keyboard_uinput->send(EV_KEY, ev_code, value);
+  else if (ev_code >= BTN_MOUSE && ev_code <= BTN_TASK)
+    mouse_uinput->send(EV_KEY, ev_code, value);
+  else
+    joystick_uinput->send(EV_KEY, ev_code, value);
 }
 
 void
@@ -825,6 +842,7 @@ uInput::send_axis(int code, int32_t value)
 {
   if (axis_state[code] != value)
     {
+      int old_value = axis_state[code];
       axis_state[code] = value;
 
       const AxisEvent& event = cfg.axis_map[code];
@@ -842,15 +860,16 @@ uInput::send_axis(int code, int32_t value)
             break;
 
           case EV_KEY:
-            /*
-            
-            if (event.code < 256)
-              keyboard_uinput->send(event.type, event.code, value);
-            else if (event.code >= BTN_MOUSE && event.code <= BTN_TASK)
-              mouse_uinput->send(event.type, event.code, value);
-            else
-              joystick_uinput->send(event.type, event.code, value);
-            */
+            if (abs(old_value) <  event.key.threshold &&
+                abs(value)     >= event.key.threshold)
+              {
+                send_key(event.code, true);
+              }
+            else if (abs(old_value) >= event.key.threshold &&
+                     abs(value)     <  event.key.threshold)
+              {
+                send_key(event.code, false);
+              }
             break;
         }
     }
@@ -874,6 +893,10 @@ uInput::add_axis(int code, int min, int max)
       rel_axis_state.next_time = 0;
       rel_axis.push_back(rel_axis_state);
     }
+  else if (event.type == EV_KEY)
+    {
+      add_key(event.code);
+    }
   else
     {
       std::cout << "uInput: Unhandled event type: " << event.type << std::endl;
@@ -887,12 +910,7 @@ uInput::add_button(int code)
 
   if (event.type == EV_KEY)
     {
-      if (event.code < 256)
-        keyboard_uinput->add_key(event.code);
-      else if (event.code >= BTN_MOUSE && event.code <= BTN_TASK)
-        mouse_uinput->add_key(event.code);
-      else
-        joystick_uinput->add_key(event.code);
+      add_key(event.code);
     }
   else if (event.type == EV_REL)
     {
