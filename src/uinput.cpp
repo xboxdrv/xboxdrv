@@ -123,17 +123,17 @@ uInput::setup_xbox360_gamepad(GamepadType type)
 
   if (cfg.force_feedback)
     {
-//       ioctl(fd, UI_SET_EVBIT, EV_FF);
-//       ioctl(fd, UI_SET_FFBIT, FF_RUMBLE);
-//       ioctl(fd, UI_SET_FFBIT, FF_PERIODIC);
+      //       ioctl(fd, UI_SET_EVBIT, EV_FF);
+      //       ioctl(fd, UI_SET_FFBIT, FF_RUMBLE);
+      //       ioctl(fd, UI_SET_FFBIT, FF_PERIODIC);
 
-//       // More stuff, only for testing
-//       ioctl(fd, UI_SET_FFBIT, FF_CONSTANT);
-//       ioctl(fd, UI_SET_FFBIT, FF_SPRING);
-//       ioctl(fd, UI_SET_FFBIT, FF_FRICTION);
-//       ioctl(fd, UI_SET_FFBIT, FF_DAMPER);
-//       ioctl(fd, UI_SET_FFBIT, FF_INERTIA);
-//       ioctl(fd, UI_SET_FFBIT, FF_RAMP);
+      //       // More stuff, only for testing
+      //       ioctl(fd, UI_SET_FFBIT, FF_CONSTANT);
+      //       ioctl(fd, UI_SET_FFBIT, FF_SPRING);
+      //       ioctl(fd, UI_SET_FFBIT, FF_FRICTION);
+      //       ioctl(fd, UI_SET_FFBIT, FF_DAMPER);
+      //       ioctl(fd, UI_SET_FFBIT, FF_INERTIA);
+      //       ioctl(fd, UI_SET_FFBIT, FF_RAMP);
     }
 
   add_axis(XBOX_AXIS_X1, -32768, 32767);
@@ -529,11 +529,19 @@ std::ostream& operator<<(std::ostream& out, const struct ff_effect& effect)
 void
 uInput::update(float delta)
 {
-  for(std::vector<int>::iterator i = rel_axis.begin(); i != rel_axis.end(); ++i)
+  int msec = static_cast<int>(delta*1000);
+  for(std::vector<RelAxisState>::iterator i = rel_axis.begin(); i != rel_axis.end(); ++i)
     {
-      float speed = 0.02f;
-      mouse_uinput->send(EV_REL, cfg.axis_map[*i].code, static_cast<int>(axis_state[*i] * delta * speed));
-    } 
+      //std::cout << cfg.axis_map[i->axis].rel.value << " " << cfg.axis_map[i->axis].rel.repeat << std::endl;
+      i->time += msec;
+
+      if (i->time >= i->next_time)
+        {
+          mouse_uinput->send(EV_REL, cfg.axis_map[i->axis].code, 
+                             static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 32767);
+          i->next_time += cfg.axis_map[i->axis].rel.repeat;
+        }
+    }
   
 #if 0
   if (cfg.force_feedback)
@@ -678,7 +686,11 @@ uInput::add_axis(int code, int min, int max)
   else if (event.type == EV_REL)
     {
       mouse_uinput->add_rel(event.code);
-      rel_axis.push_back(code);
+      RelAxisState rel_axis_state;
+      rel_axis_state.axis = code;
+      rel_axis_state.time = 0;
+      rel_axis_state.next_time = 0;
+      rel_axis.push_back(rel_axis_state);
     }
   else
     {

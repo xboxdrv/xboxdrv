@@ -19,6 +19,8 @@
 #ifndef HEADER_UINPUT_HPP
 #define HEADER_UINPUT_HPP
 
+#include <boost/tokenizer.hpp>
+#include <boost/lexical_cast.hpp>
 #include <vector>
 #include <memory>
 #include <stdexcept>
@@ -37,20 +39,53 @@ struct ButtonEvent
     ButtonEvent ev;
     ev.type = type;
     ev.code = code;
+
+    switch (type)
+      {
+        case EV_REL:
+          ev.rel.repeat = 0;
+          ev.rel.value  = 0;
+          break;
+
+        case EV_ABS:
+          ev.abs.value  = 1;
+          break;
+
+        case EV_KEY:
+          break;
+      }
+
     return ev;
   }
 
   static ButtonEvent from_string(const std::string& str)
   {
     ButtonEvent ev;
-    if (!str2event(str, ev.type, ev.code))
+    boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+
+    int j = 0;
+    tokenizer tokens(str, sep);
+    for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
       {
-        throw std::runtime_error("Couldn't convert '" + str + "' to ButtonEvent");
+        if (j == 0)
+          {
+            int type, code;
+            if (!str2event(*i, type, code))
+              {
+                throw std::runtime_error("Couldn't convert '" + str + "' to ButtonEvent");
+              }
+            else
+              {
+                ev = ButtonEvent::create(type, code);
+              }
+          }
+        else if (j == 1)
+          {
+          }
       }
-    else
-      {
-        return ev;
-      }
+
+    return ev;
   }
 
   /** EV_KEY, EV_ABS, EV_REL */
@@ -61,8 +96,8 @@ struct ButtonEvent
 
   union {
     struct {
-      int   repeat;
-      float value;
+      int  repeat;
+      int  value;
     } rel;
 
     struct {
@@ -82,20 +117,71 @@ struct AxisEvent
     AxisEvent ev;
     ev.type = type;
     ev.code = code;
+
+    switch (type)
+      {
+        case EV_REL:
+          ev.rel.repeat = 10;
+          ev.rel.value  = 5;
+          break;
+
+        case EV_ABS:
+          ev.abs.scale  = 0;
+          break;
+
+        case EV_KEY:
+          ev.key.sign      = 0;
+          ev.key.threshold = 0;
+          break;
+      }
+
     return ev;
   }
 
   static AxisEvent from_string(const std::string& str)
   {
     AxisEvent ev;
-    if (!str2event(str, ev.type, ev.code))
+
+    boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+
+    int j = 0;
+    tokenizer tokens(str, sep);
+    for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
       {
-        throw std::runtime_error("Couldn't convert '" + str + "' to AxisEvent");
+        if (j == 0)
+          {
+            int type, code;
+            if (!str2event(*i, type, code))
+              {
+                throw std::runtime_error("Couldn't convert '" + str + "' to AxisEvent");
+              }
+            else
+              {
+                ev = AxisEvent::create(type, code);
+              }
+          }
+        else if (j == 1)
+          {
+            switch (ev.type)
+              {
+                case EV_REL:
+                  ev.rel.value = boost::lexical_cast<int>(*i);
+                  break;
+              }
+          }
+        else if (j == 2)
+          {
+            switch (ev.type)
+              {
+                case EV_REL:
+                  ev.rel.repeat = boost::lexical_cast<int>(*i);
+                  break;
+              }
+          }
       }
-    else
-      {
-        return ev;
-      }
+    
+    return ev;
   }
 
   /** EV_KEY, EV_ABS, EV_REL */
@@ -107,7 +193,7 @@ struct AxisEvent
   union {
     struct {
       int   repeat;
-      float scale;
+      float value;
     } rel;
 
     struct {
@@ -120,7 +206,7 @@ struct AxisEvent
     } key;
   };
 };
-
+  
 class uInputCfg
 {
 public:
@@ -135,7 +221,7 @@ public:
 
   uInputCfg();
 };
-
+  
 class uInput
 {
 private:
@@ -147,7 +233,14 @@ private:
   int  axis_state[XBOX_AXIS_MAX];
   bool button_state[XBOX_BTN_MAX];
 
-  std::vector<int> rel_axis;
+  struct RelAxisState {
+    int axis;
+    int time;
+    int next_time;
+  };
+
+  // rel_axis[XBOx_AXIS_??] = ...
+  std::vector<RelAxisState> rel_axis;
 
 public:
   uInput(GamepadType type, uInputCfg cfg = uInputCfg());

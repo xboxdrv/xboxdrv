@@ -300,11 +300,14 @@ Mouse emulation can be done with something like this:
 
 ./xboxdrv \
   --axismap -y2=y2 \
-  --ui-axismap x1=REL_X,y1=REL_Y,y2=REL_WHEEL \
+  --ui-axismap x1=REL_X,y1=REL_Y,y2=REL_WHEEL:3:50 \
   --ui-buttonmap a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER \
   --ui-buttonmap rb=KEY_FORWARD,lb=KEY_BACK \
   --ui-buttonmap dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN \
   -s --deadzone 5000  --dpad-as-button
+
+This will map the dpad to cursor keys, left analogstick to mouse
+cursor and right analogstick to mouse wheel.
 
 Note that if you have your mouse buttons switched you must adjust the
 above to match your mouse or the button events come out wrong.
