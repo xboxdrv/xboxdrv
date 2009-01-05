@@ -32,8 +32,6 @@
 #include "xboxmsg.hpp"
 #include "uinput.hpp"
 
-Event Event::invalid = Event::create(-1, -1);
-
 uInputCfg::uInputCfg() 
 {
   trigger_as_button = false;
@@ -43,48 +41,48 @@ uInputCfg::uInputCfg()
   force_feedback    = false;
 
   // Button Mapping
-  btn_map[XBOX_BTN_START] = Event::create(EV_KEY, BTN_START);
-  btn_map[XBOX_BTN_GUIDE] = Event::create(EV_KEY, BTN_MODE);
-  btn_map[XBOX_BTN_BACK]  = Event::create(EV_KEY, BTN_SELECT);
+  btn_map[XBOX_BTN_START] = ButtonEvent::create(EV_KEY, BTN_START);
+  btn_map[XBOX_BTN_GUIDE] = ButtonEvent::create(EV_KEY, BTN_MODE);
+  btn_map[XBOX_BTN_BACK]  = ButtonEvent::create(EV_KEY, BTN_SELECT);
 
-  btn_map[XBOX_BTN_A] = Event::create(EV_KEY, BTN_A);
-  btn_map[XBOX_BTN_B] = Event::create(EV_KEY, BTN_B);
-  btn_map[XBOX_BTN_X] = Event::create(EV_KEY, BTN_X);
-  btn_map[XBOX_BTN_Y] = Event::create(EV_KEY, BTN_Y);
+  btn_map[XBOX_BTN_A] = ButtonEvent::create(EV_KEY, BTN_A);
+  btn_map[XBOX_BTN_B] = ButtonEvent::create(EV_KEY, BTN_B);
+  btn_map[XBOX_BTN_X] = ButtonEvent::create(EV_KEY, BTN_X);
+  btn_map[XBOX_BTN_Y] = ButtonEvent::create(EV_KEY, BTN_Y);
 
-  btn_map[XBOX_BTN_GREEN]  = Event::create(EV_KEY, BTN_0);
-  btn_map[XBOX_BTN_RED]    = Event::create(EV_KEY, BTN_1);
-  btn_map[XBOX_BTN_YELLOW] = Event::create(EV_KEY, BTN_2);
-  btn_map[XBOX_BTN_BLUE]   = Event::create(EV_KEY, BTN_3);
-  btn_map[XBOX_BTN_ORANGE] = Event::create(EV_KEY, BTN_4);
+  btn_map[XBOX_BTN_GREEN]  = ButtonEvent::create(EV_KEY, BTN_0);
+  btn_map[XBOX_BTN_RED]    = ButtonEvent::create(EV_KEY, BTN_1);
+  btn_map[XBOX_BTN_YELLOW] = ButtonEvent::create(EV_KEY, BTN_2);
+  btn_map[XBOX_BTN_BLUE]   = ButtonEvent::create(EV_KEY, BTN_3);
+  btn_map[XBOX_BTN_ORANGE] = ButtonEvent::create(EV_KEY, BTN_4);
 
-  btn_map[XBOX_BTN_WHITE] = Event::create(EV_KEY, BTN_TL);
-  btn_map[XBOX_BTN_BLACK] = Event::create(EV_KEY, BTN_TR);
+  btn_map[XBOX_BTN_WHITE] = ButtonEvent::create(EV_KEY, BTN_TL);
+  btn_map[XBOX_BTN_BLACK] = ButtonEvent::create(EV_KEY, BTN_TR);
 
-  btn_map[XBOX_BTN_LB] = Event::create(EV_KEY, BTN_TL);
-  btn_map[XBOX_BTN_RB] = Event::create(EV_KEY, BTN_TR);
+  btn_map[XBOX_BTN_LB] = ButtonEvent::create(EV_KEY, BTN_TL);
+  btn_map[XBOX_BTN_RB] = ButtonEvent::create(EV_KEY, BTN_TR);
 
-  btn_map[XBOX_BTN_LT] = Event::create(EV_KEY, BTN_TL2);
-  btn_map[XBOX_BTN_RT] = Event::create(EV_KEY, BTN_TR2);
+  btn_map[XBOX_BTN_LT] = ButtonEvent::create(EV_KEY, BTN_TL2);
+  btn_map[XBOX_BTN_RT] = ButtonEvent::create(EV_KEY, BTN_TR2);
 
-  btn_map[XBOX_BTN_THUMB_L] = Event::create(EV_KEY, BTN_THUMBL);
-  btn_map[XBOX_BTN_THUMB_R] = Event::create(EV_KEY, BTN_THUMBR);
+  btn_map[XBOX_BTN_THUMB_L] = ButtonEvent::create(EV_KEY, BTN_THUMBL);
+  btn_map[XBOX_BTN_THUMB_R] = ButtonEvent::create(EV_KEY, BTN_THUMBR);
   
-  btn_map[XBOX_DPAD_UP]    = Event::create(EV_KEY, BTN_BASE);
-  btn_map[XBOX_DPAD_DOWN]  = Event::create(EV_KEY, BTN_BASE2);
-  btn_map[XBOX_DPAD_LEFT]  = Event::create(EV_KEY, BTN_BASE3);
-  btn_map[XBOX_DPAD_RIGHT] = Event::create(EV_KEY, BTN_BASE4);
+  btn_map[XBOX_DPAD_UP]    = ButtonEvent::create(EV_KEY, BTN_BASE);
+  btn_map[XBOX_DPAD_DOWN]  = ButtonEvent::create(EV_KEY, BTN_BASE2);
+  btn_map[XBOX_DPAD_LEFT]  = ButtonEvent::create(EV_KEY, BTN_BASE3);
+  btn_map[XBOX_DPAD_RIGHT] = ButtonEvent::create(EV_KEY, BTN_BASE4);
 
   // Axis Mapping
-  axis_map[XBOX_AXIS_X1]      = Event::create(EV_ABS, ABS_X); 
-  axis_map[XBOX_AXIS_Y1]      = Event::create(EV_ABS, ABS_Y); 
-  axis_map[XBOX_AXIS_X2]      = Event::create(EV_ABS, ABS_RX);
-  axis_map[XBOX_AXIS_Y2]      = Event::create(EV_ABS, ABS_RY);
-  axis_map[XBOX_AXIS_LT]      = Event::create(EV_ABS, ABS_GAS);
-  axis_map[XBOX_AXIS_RT]      = Event::create(EV_ABS, ABS_BRAKE); 
-  axis_map[XBOX_AXIS_TRIGGER] = Event::create(EV_ABS, ABS_Z);
-  axis_map[XBOX_AXIS_DPAD_X]  = Event::create(EV_ABS, ABS_HAT0X);
-  axis_map[XBOX_AXIS_DPAD_Y]  = Event::create(EV_ABS, ABS_HAT0Y);
+  axis_map[XBOX_AXIS_X1]      = AxisEvent::create(EV_ABS, ABS_X); 
+  axis_map[XBOX_AXIS_Y1]      = AxisEvent::create(EV_ABS, ABS_Y); 
+  axis_map[XBOX_AXIS_X2]      = AxisEvent::create(EV_ABS, ABS_RX);
+  axis_map[XBOX_AXIS_Y2]      = AxisEvent::create(EV_ABS, ABS_RY);
+  axis_map[XBOX_AXIS_LT]      = AxisEvent::create(EV_ABS, ABS_GAS);
+  axis_map[XBOX_AXIS_RT]      = AxisEvent::create(EV_ABS, ABS_BRAKE); 
+  axis_map[XBOX_AXIS_TRIGGER] = AxisEvent::create(EV_ABS, ABS_Z);
+  axis_map[XBOX_AXIS_DPAD_X]  = AxisEvent::create(EV_ABS, ABS_HAT0X);
+  axis_map[XBOX_AXIS_DPAD_Y]  = AxisEvent::create(EV_ABS, ABS_HAT0Y);
 }
 
 uInput::uInput(GamepadType type, uInputCfg config_)
@@ -639,7 +637,7 @@ uInput::send_button(int code, bool value)
     {
       button_state[code] = value;
 
-      const Event& event = cfg.btn_map[code];
+      const ButtonEvent& event = cfg.btn_map[code];
   
       if (event.code < 256)
         keyboard_uinput->send(event.type, event.code, value);
@@ -657,7 +655,7 @@ uInput::send_axis(int code, int32_t value)
     {
       axis_state[code] = value;
 
-      const Event& event = cfg.axis_map[code];
+      const AxisEvent& event = cfg.axis_map[code];
 
       assert(event.type == EV_ABS ||
              event.type == EV_REL);
@@ -671,7 +669,7 @@ uInput::send_axis(int code, int32_t value)
 void
 uInput::add_axis(int code, int min, int max)
 {
-  const Event& event = cfg.axis_map[code];
+  const AxisEvent& event = cfg.axis_map[code];
 
   if (event.type == EV_ABS)
     {
@@ -691,7 +689,7 @@ uInput::add_axis(int code, int min, int max)
 void
 uInput::add_button(int code)
 {
-  const Event& event = cfg.btn_map[code];
+  const ButtonEvent& event = cfg.btn_map[code];
 
   if (event.code < 256)
     keyboard_uinput->add_key(event.code);

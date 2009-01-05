@@ -403,7 +403,6 @@ environment variables.
 
 xev:
 ----
-
 xev lets you see the events that Xorg sees. Note however that you
 might not see all events, since some will be grapped by your Window
 manager before they reach xev, this is normal.

@@ -21,36 +21,105 @@
 
 #include <vector>
 #include <memory>
+#include <stdexcept>
 #include "xboxdrv.hpp"
 #include "linux_uinput.hpp"
+#include "evdev_helper.hpp"
 
 class Xbox360Msg;
 class Xbox360GuitarMsg;
 class XboxMsg;
 
-struct Event
+struct ButtonEvent
 {
-  static Event create(int type, int code)
+  static ButtonEvent create(int type, int code)
   {
-    Event ev;
+    ButtonEvent ev;
     ev.type = type;
     ev.code = code;
     return ev;
   }
 
-  static Event invalid;
+  static ButtonEvent from_string(const std::string& str)
+  {
+    ButtonEvent ev;
+    if (!str2event(str, ev.type, ev.code))
+      {
+        throw std::runtime_error("Couldn't convert '" + str + "' to ButtonEvent");
+      }
+    else
+      {
+        return ev;
+      }
+  }
 
   /** EV_KEY, EV_ABS, EV_REL */
   int type;
 
   /** BTN_A, REL_X, ABS_X, ... */
   int code;
-};
 
-inline bool operator!=(const Event& lhs, const Event& rhs)
+  union {
+    struct {
+      int   repeat;
+      float value;
+    } rel;
+
+    struct {
+      int value;
+    } abs;
+
+    struct {
+      // nothing
+    } key;
+  };
+};
+
+struct AxisEvent
 {
-  return lhs.type != rhs.type || lhs.code != rhs.code;
-}
+  static AxisEvent create(int type, int code)
+  {
+    AxisEvent ev;
+    ev.type = type;
+    ev.code = code;
+    return ev;
+  }
+
+  static AxisEvent from_string(const std::string& str)
+  {
+    AxisEvent ev;
+    if (!str2event(str, ev.type, ev.code))
+      {
+        throw std::runtime_error("Couldn't convert '" + str + "' to AxisEvent");
+      }
+    else
+      {
+        return ev;
+      }
+  }
+
+  /** EV_KEY, EV_ABS, EV_REL */
+  int type;
+
+  /** BTN_A, REL_X, ABS_X, ... */
+  int code;
+
+  union {
+    struct {
+      int   repeat;
+      float scale;
+    } rel;
+
+    struct {
+      float scale;
+    } abs;
+
+    struct {
+      int sign;
+      int threshold;
+    } key;
+  };
+};
 
 class uInputCfg
 {
@@ -61,8 +130,8 @@ public:
   bool dpad_only;
   bool force_feedback;
 
-  Event btn_map[XBOX_BTN_MAX];
-  Event axis_map[XBOX_AXIS_MAX];
+  ButtonEvent btn_map[XBOX_BTN_MAX];
+  AxisEvent   axis_map[XBOX_AXIS_MAX];
 
   uInputCfg();
 };

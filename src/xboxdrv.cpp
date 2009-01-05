@@ -147,7 +147,7 @@ bool is_number(const std::string& str)
   return true;
 }
 
-void set_ui_button_map(Event* ui_button_map, const std::string& str)
+void set_ui_button_map(ButtonEvent* ui_button_map, const std::string& str)
 {
   std::string::size_type i = str.find_first_of('=');
   if (i == std::string::npos)
@@ -158,10 +158,10 @@ void set_ui_button_map(Event* ui_button_map, const std::string& str)
     {
       std::cout << string2btn(str.substr(0, i)) << " -> " << str.substr(i+1, str.size()-i) << std::endl;
 
-      XboxButton btn  = string2btn(str.substr(0, i));
-      Event event     = str2event(str.substr(i+1, str.size()-i));
-
-      if (btn != XBOX_BTN_UNKNOWN && event != Event::invalid)
+      XboxButton  btn   = string2btn(str.substr(0, i));
+      ButtonEvent event = ButtonEvent::from_string(str.substr(i+1, str.size()-i));
+      
+      if (btn != XBOX_BTN_UNKNOWN && event.type != -1)
         {
           ui_button_map[btn] = event;
         }
@@ -172,7 +172,7 @@ void set_ui_button_map(Event* ui_button_map, const std::string& str)
     }
 }
 
-void set_ui_axis_map(Event* ui_axis_map, const std::string& str)
+void set_ui_axis_map(AxisEvent* ui_axis_map, const std::string& str)
 {
   std::string::size_type i = str.find_first_of('=');
   if (i == std::string::npos)
@@ -181,10 +181,10 @@ void set_ui_axis_map(Event* ui_axis_map, const std::string& str)
     }
   else
     {
-      XboxAxis axis  = string2axis(str.substr(0, i));
-      Event    event = str2event(str.substr(i+1, str.size()-i));
+      XboxAxis  axis  = string2axis(str.substr(0, i));
+      AxisEvent event = AxisEvent::from_string(str.substr(i+1, str.size()-i));
             
-      if (axis != XBOX_AXIS_UNKNOWN && event != Event::invalid)
+      if (axis != XBOX_AXIS_UNKNOWN && event.type != -1)
         {
           ui_axis_map[axis] = event;
         }
@@ -757,9 +757,12 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           ++i;
           if (i < argc)
             {
-              if (sscanf(argv[i], "%x:%x", &opts.vendor_id, &opts.product_id) == 2)
+              unsigned int product_id;
+              unsigned int vendor_id;
+              if (sscanf(argv[i], "%x:%x", &vendor_id, &product_id) == 2)
                 {
-                  // ok
+                  vendor_id  = opts.vendor_id;
+                  product_id = opts.product_id;
                 }
               else
                 {

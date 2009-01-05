@@ -20,9 +20,8 @@
 #define HEADER_EVDEV_HELPER_HPP
 
 #include <string>
-#include "uinput.hpp"
 
-Event str2event(const std::string& name);
+bool str2event(const std::string& name, int& type, int& code);
 
 #endif
 
