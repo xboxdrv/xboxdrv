@@ -223,16 +223,21 @@ into trouble with Xorg, for possible fixes see the section further down.
 
 In addition to just the event you can also pass additional
 configuration parameter seperated by colons, the exact parameter
-differ on the type of event:
+differ on the type of event, everything but the first parameter is
+optional:
 
---ui-axismap REL_???:VALUE:REPEAT
+--ui-axismap X1=REL_???:VALUE:REPEAT
   VALUE:  the maximum value of the event (default: 10)
   REPEAT: number of milisecond to pass before the event is fired again (default: 5)
 
---ui-buttonmap REL_???:VALUE:REPEAT
-  VALUE:  the maximum value of the event (default: 10)
+--ui-axismap X1=KEY_UP:KEY_DOWN:THRESHOLD
+  KEY_UP:    keycode to be send when the axis is moved up
+  KEY_DOWN:  keycode to be send when the axis is moved down
+  THRESHOLD: threshold that triggers the sending of an event
+ 
+--ui-buttonmap X1=REL_???:VALUE:REPEAT
+  VALUE:  the of the event (default: 10)
   REPEAT: number of milisecond to pass before the event is fired again (default: 5)
-
 
 [[ Running InputDrv ]]
 ----------------------

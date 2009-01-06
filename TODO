@@ -5,8 +5,6 @@ Stuff to do before 0.4 release:
 
 * print out created device names, include id in device name
 
-* only create mouse and keyboard devices when they are needed 
-
 * figure out which devices xorg/hal handles as keyboard (just a button
   isn't enough, KEY_SPACE might be)
 
