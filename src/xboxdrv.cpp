@@ -156,7 +156,7 @@ void set_ui_button_map(ButtonEvent* ui_button_map, const std::string& str)
     }
   else
     {
-      std::cout << string2btn(str.substr(0, i)) << " -> " << str.substr(i+1, str.size()-i) << std::endl;
+      //std::cout << string2btn(str.substr(0, i)) << " -> " << str.substr(i+1, str.size()-i) << std::endl;
 
       XboxButton  btn   = string2btn(str.substr(0, i));
       ButtonEvent event = ButtonEvent::from_string(str.substr(i+1, str.size()-i));

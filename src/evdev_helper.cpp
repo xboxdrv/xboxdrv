@@ -605,6 +605,21 @@ bool str2event(const std::string& name, int& type, int& code)
       return false;
     }
 }
+
+std::string btn2str(int i)
+{
+  return evdev_btn_names[i];
+}
+
+std::string abs2str(int i)
+{
+  return evdev_abs_names[i];
+}
+
+std::string rel2str(int i)
+{
+  return evdev_rel_names[i];
+}
 
 /* EOF */
 

@@ -17,6 +17,7 @@
 */
 
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <errno.h>
 #include <string.h>
@@ -25,10 +26,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "evdev_helper.hpp"
 #include "linux_uinput.hpp"
 
-LinuxUinput::LinuxUinput()
-  : key_bit(false),
+LinuxUinput::LinuxUinput(const std::string& name)
+  : name(name),
+    fd(-1),
+    key_bit(false),
     rel_bit(false),
     abs_bit(false),
     led_bit(false),
@@ -37,6 +41,8 @@ LinuxUinput::LinuxUinput()
   std::fill_n(abs_lst, ABS_CNT, false);
   std::fill_n(rel_lst, REL_CNT, false);
   std::fill_n(key_lst, KEY_CNT, false);
+
+  memset(&user_dev, 0, sizeof(uinput_user_dev));
 
   // Open the input device
   const char* uinput_filename[] = { "/dev/input/uinput", "/dev/uinput", "/dev/misc/uinput" };
@@ -77,6 +83,8 @@ LinuxUinput::~LinuxUinput()
 void
 LinuxUinput::add_abs(uint16_t code, int min, int max)
 {
+  // std::cout << "add_abs: " << abs2str(code) << " (" << min << ", " << max << ") " << name << std::endl;
+
   if (!abs_lst[code])
     {
       abs_lst[code] = true;
@@ -97,6 +105,8 @@ LinuxUinput::add_abs(uint16_t code, int min, int max)
 void
 LinuxUinput::add_rel(uint16_t code)
 {
+  // std::cout << "add_rel: " << rel2str(code) << " " << name << std::endl;
+
   if (!rel_lst[code])
     {
       rel_lst[code] = true;
@@ -114,6 +124,8 @@ LinuxUinput::add_rel(uint16_t code)
 void
 LinuxUinput::add_key(uint16_t code)
 {
+  // std::cout << "add_key: " << btn2str(code) << " " << name << std::endl;
+
   if (!key_lst[code])
     {
       key_lst[code] = true;
@@ -129,21 +141,24 @@ LinuxUinput::add_key(uint16_t code)
 }
 
 void
-LinuxUinput::finish(const char* name)
+LinuxUinput::finish()
 {
-  std::cout << "Finalizing UInput" << std::endl;
-  strncpy(user_dev.name, name, UINPUT_MAX_NAME_SIZE);
+  strncpy(user_dev.name, name.c_str(), UINPUT_MAX_NAME_SIZE);
   user_dev.id.version = 0;
   user_dev.id.bustype = BUS_USB;
   user_dev.id.vendor  = 0x045e; // FIXME: this shouldn't be hardcoded
   user_dev.id.product = 0x028e;
 
+  //std::cout << "Finalizing uinput: '" << user_dev.name << "'" << std::endl;
+
   if (write(fd, &user_dev, sizeof(user_dev)) < 0)
-    throw std::runtime_error(std::string("uinput:finish: ") + strerror(errno));
+    throw std::runtime_error("uinput:finish: " + name + strerror(errno));
 
   if (ioctl(fd, UI_DEV_CREATE))
     {
-      std::cout << "Unable to create UINPUT device." << std::endl;
+      std::ostringstream out;
+      out << "LinuxUinput: Unable to create UINPUT device: '" << name << "': " << strerror(errno);
+      throw std::runtime_error(out.str());
     }
 }
 

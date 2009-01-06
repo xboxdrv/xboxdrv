@@ -20,12 +20,14 @@
 #define HEADER_LINUX_UINPUT_HPP
 
 #include <linux/uinput.h>
+#include <string>
 #include <stdint.h>
 
 /** */
 class LinuxUinput
 {
 private:
+  std::string name;
   int fd;
   uinput_user_dev user_dev;
   bool key_bit;
@@ -39,7 +41,7 @@ private:
   bool key_lst[KEY_CNT];
 
 public:
-  LinuxUinput();
+  LinuxUinput(const std::string& name);
   ~LinuxUinput();
 
   /*@{*/
@@ -53,7 +55,7 @@ public:
   void add_rel(uint16_t code);
   
   /** Finish*/
-  void finish(const char* name);
+  void finish();
   /*@}*/
 
   void send(uint16_t type, uint16_t code, int32_t value);

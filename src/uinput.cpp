@@ -54,6 +54,9 @@ ButtonEvent::create(int type, int code)
       case EV_KEY:
         break;
 
+      case -1:
+        break;
+
       default:
         assert(!"This should never be reached");
     }
@@ -121,6 +124,9 @@ AxisEvent::create(int type, int code)
       case EV_KEY:
         ev.key.secondary_code = code;
         ev.key.threshold      = 8000;
+        break;
+
+      case -1:
         break;
         
       default:
@@ -196,6 +202,10 @@ uInputCfg::uInputCfg()
   trigger_as_zaxis  = false;
   dpad_only         = false;
   force_feedback    = false;
+  extra_devices     = true;
+
+  std::fill_n(btn_map,  (int)XBOX_BTN_MAX,  ButtonEvent::create(-1, -1));
+  std::fill_n(axis_map, (int)XBOX_AXIS_MAX, AxisEvent::create(-1, -1));
 
   // Button Mapping
   btn_map[XBOX_BTN_START] = ButtonEvent::create(EV_KEY, BTN_START);
@@ -242,33 +252,120 @@ uInputCfg::uInputCfg()
   axis_map[XBOX_AXIS_DPAD_Y]  = AxisEvent::create(EV_ABS, ABS_HAT0Y);
 }
 
+bool
+uInput::need_keyboard_device()
+{
+  for(int i = 0; i < XBOX_BTN_MAX; ++i)
+    {
+      if (cfg.btn_map[i].type == EV_KEY &&
+          is_keyboard_button(cfg.btn_map[i].code))
+        {
+          return true;
+        }
+    }
+
+  for(int i = 0; i < XBOX_AXIS_MAX; ++i)
+    {
+      if (cfg.axis_map[i].type == EV_KEY &&
+          (is_keyboard_button(cfg.axis_map[i].code) ||
+           is_keyboard_button(cfg.axis_map[i].key.secondary_code)))
+        {
+          return true;
+        }
+    }
+
+  return false;
+}
+
+bool
+uInput::need_mouse_device()
+{
+  for(int i = 0; i < XBOX_BTN_MAX; ++i)
+    {
+      if (cfg.btn_map[i].type == EV_KEY &&
+          is_mouse_button(cfg.btn_map[i].code))
+        {
+          return true;
+        }
+      else if (cfg.btn_map[i].type == EV_REL)
+        {
+          return true;
+        }
+    }
+
+  for(int i = 0; i < XBOX_AXIS_MAX; ++i)
+    {
+      if (cfg.axis_map[i].type == EV_KEY &&
+          (is_mouse_button(cfg.axis_map[i].code) ||
+           is_mouse_button(cfg.axis_map[i].key.secondary_code)))
+        {
+          return true;
+        }
+      else if (cfg.axis_map[i].type == EV_REL)
+        {
+          return true;
+        }
+    }
+
+  return false;
+}
+
+bool
+uInput::is_mouse_button(int ev_code)
+{
+  return  (ev_code >= BTN_MOUSE && ev_code <= BTN_TASK);
+}
+
+bool
+uInput::is_keyboard_button(int ev_code)
+{
+  return (ev_code < 256);
+}
+
 uInput::uInput(GamepadType type, uInputCfg config_)
-  :cfg(config_)
+  : cfg(config_)
 {
   std::fill_n(axis_state,   (int)XBOX_AXIS_MAX, 0);
   std::fill_n(button_state, (int)XBOX_BTN_MAX,  false);
 
-  joystick_uinput = std::auto_ptr<LinuxUinput>(new LinuxUinput());
-  keyboard_uinput = std::auto_ptr<LinuxUinput>(new LinuxUinput());
-  mouse_uinput    = std::auto_ptr<LinuxUinput>(new LinuxUinput());
+  joystick_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput("Xbox Gamepad (userspace driver)"));
+  joystick_uinput_dev->add_key(BTN_X);
+  joystick_uinput_dev->add_abs(ABS_X, -1, 1);
+  joystick_uinput_dev->add_abs(ABS_Y, -1, 1);
+  joystick_uinput_dev->finish();
 
-  if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX || type == GAMEPAD_XBOX360_WIRELESS)
+  if (0)
     {
-      setup_xbox360_gamepad(type);
-    }
-  else if (type == GAMEPAD_XBOX360_GUITAR) 
-    {
-      setup_xbox360_guitar();
-    }
-  else
-    {
-      std::cout << "Unhandled type: " << type << std::endl;
-      exit(EXIT_FAILURE);
-    }
 
-  joystick_uinput->finish("Xbox Gamepad (userspace driver)");
-  keyboard_uinput->finish("Xbox Gamepad - Keyboard Emulation (userspace driver)");
-  mouse_uinput->finish("Xbox Gamepad - Mouse Emulation (userspace driver)");
+      if (cfg.extra_devices)// && need_mouse_device())
+        {
+          mouse_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput("Xbox Gamepad - Mouse Emulation (userspace driver)"));
+        }
+
+      if (cfg.extra_devices)// && need_keyboard_device())
+        {
+          keyboard_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput("Xbox Gamepad - Keyboard Emulation (userspace driver)"));
+        }
+
+      if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX || type == GAMEPAD_XBOX360_WIRELESS)
+        {
+          setup_xbox360_gamepad(type);
+        }
+      else if (type == GAMEPAD_XBOX360_GUITAR) 
+        {
+          setup_xbox360_guitar();
+        }
+      else
+        {
+          std::cout << "Unhandled type: " << type << std::endl;
+          exit(EXIT_FAILURE);
+        }
+
+      joystick_uinput_dev->finish();
+
+      if (keyboard_uinput_dev.get()) keyboard_uinput_dev->finish();
+      if (mouse_uinput_dev.get())    mouse_uinput_dev->finish();
+    }
 }
 
 void
@@ -349,11 +446,6 @@ uInput::setup_xbox360_gamepad(GamepadType type)
 
   add_button(XBOX_BTN_THUMB_L);
   add_button(XBOX_BTN_THUMB_R);
-
-  struct uinput_user_dev uinp;
-  memset(&uinp,0,sizeof(uinp));
-  
-  strncpy(uinp.name, "Xbox Gamepad (userspace driver)", UINPUT_MAX_NAME_SIZE);
 
   // if (cfg.force_feedback)
   // uinp.ff_effects_max = 64; 
@@ -693,7 +785,7 @@ uInput::update(float delta)
 
       if (i->time >= i->next_time)
         {
-          mouse_uinput->send(EV_REL, cfg.axis_map[i->axis].code, 
+          get_mouse_uinput()->send(EV_REL, cfg.axis_map[i->axis].code, 
                              static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 32767);
           i->next_time += cfg.axis_map[i->axis].rel.repeat;
         }
@@ -712,7 +804,7 @@ uInput::update(float delta)
                       << " " << cfg.btn_map[i->button].rel.value
                       << " " << cfg.btn_map[i->button].rel.repeat << std::endl;
 
-          mouse_uinput->send(EV_REL, cfg.btn_map[i->button].code, 
+          get_mouse_uinput()->send(EV_REL, cfg.btn_map[i->button].code, 
                              static_cast<int>(cfg.btn_map[i->button].rel.value * button_state[i->button]));
           i->next_time += cfg.btn_map[i->button].rel.repeat;
         }
@@ -829,23 +921,23 @@ uInput::send_button(int code, bool value)
 void
 uInput::add_key(int ev_code)
 {
-  if (ev_code < 256)
-    keyboard_uinput->add_key(ev_code);
-  else if (ev_code >= BTN_MOUSE && ev_code <= BTN_TASK)
-    mouse_uinput->add_key(ev_code);
+  if (is_keyboard_button(ev_code))
+    get_keyboard_uinput()->add_key(ev_code);
+  else if (is_mouse_button(ev_code))
+    get_mouse_uinput()->add_key(ev_code);
   else
-    joystick_uinput->add_key(ev_code);
+    get_joystick_uinput()->add_key(ev_code);
 }
 
 void
 uInput::send_key(int ev_code, bool value)
 {
-  if (ev_code < 256)
-    keyboard_uinput->send(EV_KEY, ev_code, value);
-  else if (ev_code >= BTN_MOUSE && ev_code <= BTN_TASK)
-    mouse_uinput->send(EV_KEY, ev_code, value);
+  if (is_keyboard_button(ev_code))
+    get_keyboard_uinput()->send(EV_KEY, ev_code, value);
+  else if (is_mouse_button(ev_code))
+    get_mouse_uinput()->send(EV_KEY, ev_code, value);
   else
-    joystick_uinput->send(EV_KEY, ev_code, value);
+    get_joystick_uinput()->send(EV_KEY, ev_code, value);
 }
 
 void
@@ -862,7 +954,7 @@ uInput::send_axis(int code, int32_t value)
         {
           case EV_ABS:
             if (event.type == EV_ABS || event.type == EV_KEY)
-              joystick_uinput->send(event.type, event.code, value);
+              get_joystick_uinput()->send(event.type, event.code, value);
             break;
 
           case EV_REL:
@@ -901,28 +993,33 @@ uInput::add_axis(int code, int min, int max)
 {
   const AxisEvent& event = cfg.axis_map[code];
 
-  if (event.type == EV_ABS)
+  switch(event.type)
     {
-      joystick_uinput->add_abs(event.code, min, max);
-    }
-  else if (event.type == EV_REL)
-    {
-      mouse_uinput->add_rel(event.code);
-      RelAxisState rel_axis_state;
-      rel_axis_state.axis = code;
-      rel_axis_state.time = 0;
-      rel_axis_state.next_time = 0;
-      rel_axis.push_back(rel_axis_state);
-    }
-  else if (event.type == EV_KEY)
-    {
-      add_key(event.code);
-      if (event.code != event.key.secondary_code)
-        add_key(event.key.secondary_code);
-    }
-  else
-    {
-      std::cout << "uInput: Unhandled event type: " << event.type << std::endl;
+      case EV_ABS:
+        get_joystick_uinput()->add_abs(event.code, min, max);
+        break;
+    
+      case EV_REL:
+        {
+          get_mouse_uinput()->add_rel(event.code);
+
+          RelAxisState rel_axis_state;
+          rel_axis_state.axis = code;
+          rel_axis_state.time = 0;
+          rel_axis_state.next_time = 0;
+          rel_axis.push_back(rel_axis_state);
+        }
+        break;
+
+      case EV_KEY:
+        add_key(event.code);
+        if (event.code != event.key.secondary_code)
+          add_key(event.key.secondary_code);
+        break;
+
+      default:
+        std::cout << "uInput: Unhandled event type: " << event.type << std::endl;
+        break;
     }
 }
 
@@ -937,7 +1034,8 @@ uInput::add_button(int code)
     }
   else if (event.type == EV_REL)
     {
-      mouse_uinput->add_rel(event.code);
+      get_mouse_uinput()->add_rel(event.code);
+
       RelButtonState rel_button_state;
       rel_button_state.button = code;
       rel_button_state.time = 0;
@@ -947,6 +1045,30 @@ uInput::add_button(int code)
   else if (event.type == EV_ABS)
     {
     }
+}
+
+LinuxUinput*
+uInput::get_mouse_uinput() const
+{
+  if (mouse_uinput_dev.get())
+    return mouse_uinput_dev.get();
+  else
+    return joystick_uinput_dev.get();
+}
+
+LinuxUinput*
+uInput::get_keyboard_uinput() const
+{
+  if (keyboard_uinput_dev.get())
+    return keyboard_uinput_dev.get();
+  else
+    return joystick_uinput_dev.get();
+}
+
+LinuxUinput*
+uInput::get_joystick_uinput() const
+{
+  return joystick_uinput_dev.get();
 }
 
 /* EOF */

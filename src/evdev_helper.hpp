@@ -22,6 +22,9 @@
 #include <string>
 
 bool str2event(const std::string& name, int& type, int& code);
+std::string btn2str(int i);
+std::string abs2str(int i);
+std::string rel2str(int i);
 
 #endif
 

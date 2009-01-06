@@ -93,6 +93,7 @@ public:
   bool trigger_as_zaxis;
   bool dpad_only;
   bool force_feedback;
+  bool extra_devices;
 
   ButtonEvent btn_map[XBOX_BTN_MAX];
   AxisEvent   axis_map[XBOX_AXIS_MAX];
@@ -103,9 +104,9 @@ public:
 class uInput
 {
 private:
-  std::auto_ptr<LinuxUinput> joystick_uinput;
-  std::auto_ptr<LinuxUinput> keyboard_uinput;
-  std::auto_ptr<LinuxUinput> mouse_uinput;
+  std::auto_ptr<LinuxUinput> joystick_uinput_dev;
+  std::auto_ptr<LinuxUinput> keyboard_uinput_dev;
+  std::auto_ptr<LinuxUinput> mouse_uinput_dev;
   uInputCfg cfg;
 
   int  axis_state[XBOX_AXIS_MAX];
@@ -149,6 +150,16 @@ public:
   void send_axis(int code, int32_t value);
 
   void update(float delta);
+
+  LinuxUinput* get_mouse_uinput() const;
+  LinuxUinput* get_keyboard_uinput() const;
+  LinuxUinput* get_joystick_uinput() const;
+
+  bool need_mouse_device();
+  bool need_keyboard_device();
+
+  bool is_mouse_button(int ev_code);
+  bool is_keyboard_button(int ev_code);
 };
 
 #endif
