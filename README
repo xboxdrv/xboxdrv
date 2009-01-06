@@ -419,9 +419,15 @@ joystick devices are derived from the event device, so if you want to
 fix some issue on the joystick device, you have to fix the event
 device.
 
+evtest is available in the tools/ directory, you might also find it in
+your distribution.
+
 jstest:
 -------
 jstest lets you read the output out of a joystick event device (/dev/input/js0). 
+
+jstest is available in the tools/ directory or as part of your
+distribution.
 
 sdl-jstest:
 -----------
@@ -429,18 +435,26 @@ sdl-jstest lets you see events as games using SDL see them. This is
 very important when you want to set and test the SDL_LINUX_JOYSTICK
 environment variables.
 
+Currently available via:
+
+ svn co svn://svn.berlios.de/windstille/trunk/windstille/tools/sdl-jstest
+
 xev:
 ----
 xev lets you see the events that Xorg sees. Note however that you
 might not see all events, since some will be grapped by your Window
 manager before they reach xev, this is normal.
 
+xev is part of every Linux distribution, on Ubuntu its available via:
+
+  apt-get install x11-utils
+
 jscalc:
 -------
 Do not use this tool, for current day joysticks it doesn't do
-anything useful, so don't touch it and you will be happy.   
+anything useful, so don't touch it, it won't fix your problems.
 
-missing:
+mouse:
 --------
 No tools for testing the output on /dev/input/mouseX are known.
 
@@ -489,14 +503,14 @@ of:
 
  % lsusb -v
 
-Along with all the "Unknown data" lines you get.
+Along with all the "Unknown data" lines you get. 
 
 
 3) Program starts and then just does nothing
 --------------------------------------------
 
-This is what the program is supposed to do. After you started it will
-give you basically two devices, a new /dev/input/eventX and a
+This is what the program is supposed to do. After you started it, it
+will give you basically two devices, a new /dev/input/eventX and a
 /dev/input/jsX. You can access and test your controller with jstest
 and evtest applications (available from your distribution or in the
 tools/ subdirectory). Or in case you want just see if your driver is

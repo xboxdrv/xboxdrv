@@ -329,43 +329,35 @@ uInput::uInput(GamepadType type, uInputCfg config_)
   std::fill_n(button_state, (int)XBOX_BTN_MAX,  false);
 
   joystick_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput("Xbox Gamepad (userspace driver)"));
-  joystick_uinput_dev->add_key(BTN_X);
-  joystick_uinput_dev->add_abs(ABS_X, -1, 1);
-  joystick_uinput_dev->add_abs(ABS_Y, -1, 1);
+
+  if (cfg.extra_devices && need_mouse_device())
+    {
+      mouse_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput("Xbox Gamepad - Mouse Emulation (userspace driver)"));
+    }
+
+  if (cfg.extra_devices && need_keyboard_device())
+    {
+      keyboard_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput("Xbox Gamepad - Keyboard Emulation (userspace driver)"));
+    }
+
+  if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX || type == GAMEPAD_XBOX360_WIRELESS)
+    {
+      setup_xbox360_gamepad(type);
+    }
+  else if (type == GAMEPAD_XBOX360_GUITAR) 
+    {
+      setup_xbox360_guitar();
+    }
+  else
+    {
+      std::cout << "Unhandled type: " << type << std::endl;
+      exit(EXIT_FAILURE);
+    }
+
   joystick_uinput_dev->finish();
 
-  if (0)
-    {
-
-      if (cfg.extra_devices)// && need_mouse_device())
-        {
-          mouse_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput("Xbox Gamepad - Mouse Emulation (userspace driver)"));
-        }
-
-      if (cfg.extra_devices)// && need_keyboard_device())
-        {
-          keyboard_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput("Xbox Gamepad - Keyboard Emulation (userspace driver)"));
-        }
-
-      if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX || type == GAMEPAD_XBOX360_WIRELESS)
-        {
-          setup_xbox360_gamepad(type);
-        }
-      else if (type == GAMEPAD_XBOX360_GUITAR) 
-        {
-          setup_xbox360_guitar();
-        }
-      else
-        {
-          std::cout << "Unhandled type: " << type << std::endl;
-          exit(EXIT_FAILURE);
-        }
-
-      joystick_uinput_dev->finish();
-
-      if (keyboard_uinput_dev.get()) keyboard_uinput_dev->finish();
-      if (mouse_uinput_dev.get())    mouse_uinput_dev->finish();
-    }
+  if (keyboard_uinput_dev.get()) keyboard_uinput_dev->finish();
+  if (mouse_uinput_dev.get())    mouse_uinput_dev->finish();
 }
 
 void
