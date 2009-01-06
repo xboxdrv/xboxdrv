@@ -22,8 +22,6 @@ BTN=KEY_X
 BTN=REL_X:$VALUE:$REPEAT
 
 AXIS=ABS_X:$SCALE:$ACCEL
-AXIS=KEY_X:$THREADHOLD
-AXIS=KEY_X:KEY_Y:$THREADHOLD
 
 * figure out which devices xorg handles as keyboard (just a button
   isn't enough, might need space or so)

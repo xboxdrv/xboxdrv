@@ -54,7 +54,6 @@ struct ButtonEvent
     } abs;
 
     struct {
-      // nothing
     } key;
   };
 };
@@ -77,7 +76,6 @@ struct AxisEvent
     } rel;
 
     struct {
-      float scale;
     } abs;
 
     struct {

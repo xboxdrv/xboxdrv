@@ -47,6 +47,7 @@ ButtonEvent::create(int type, int code)
         break;
 
       case EV_ABS:
+        throw std::runtime_error("Using EV_ABS for ButtonEvent is currently not supported");
         ev.abs.value  = 1;
         break;
 
@@ -115,7 +116,6 @@ AxisEvent::create(int type, int code)
         break;
 
       case EV_ABS:
-        ev.abs.scale  = 0;
         break;
 
       case EV_KEY:
@@ -160,6 +160,9 @@ AxisEvent::from_string(const std::string& str)
         {
           switch (ev.type)
             {
+              case EV_ABS:
+                break;
+
               case EV_REL:
                 switch(j) {
                   case 1:  ev.rel.value  = boost::lexical_cast<int>(*i); break;
