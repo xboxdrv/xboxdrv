@@ -361,7 +361,7 @@ Prince of Persia: Warrior Within (in Wine)
 Prince of Persia: The Two Thrones (in Wine)
 Tomb Raider Anniversary (in Wine)
 Tomb Raider Legend (in Wine)
-
+----------------------------
  % xboxdrv --trigger-as-button -s 
 
 The triggers are not regonized in these games when they are analog, so
@@ -369,7 +369,7 @@ we have to handle them as buttons.
 
 
 CH Flightstick emulation in Dosbox:
-
+-----------------------------------
 In dosbox.conf set:
 
 [joystick]
@@ -381,6 +381,19 @@ Start xboxdrv with:
 
 Your right analog stick will act as trottle control, the trigger as
 rudder.
+
+Sauerbraten
+-----------
+
+First analogstick gets mapped te cursor keys, second analogstick gets mapped to mouse.
+
+ % ./xboxdrv \
+    --ui-axismap x2=REL_X:10,y2=REL_Y:-10,x1=KEY_LEFT:KEY_RIGHT,y1=KEY_UP:KEY_DOWN \
+    --ui-buttonmap a=BTN_RIGHT,b=BTN_LEFT,x=BTN_EXTRA \
+    --ui-buttonmap rb=KEY_5,lb=KEY_6,lt=BTN_LEFT,rt=BTN_RIGHT \
+    --ui-buttonmap y=KEY_ENTER,dl=KEY_4,dr=KEY_2,du=KEY_1,dd=KEY_3,back=KEY_TAB,start=KEY_ESC \
+    -s --deadzone 6000  --dpad-as-button --trigger-as-button
+
 
 [[ Testing ]]
 -------------

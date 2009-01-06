@@ -119,10 +119,10 @@ AxisEvent::create(int type, int code)
         break;
 
       case EV_KEY:
-        ev.key.sign      = 1;
-        ev.key.threshold = 4000;
+        ev.key.secondary_code = code;
+        ev.key.threshold      = 8000;
         break;
-
+        
       default:
         assert(!"This should never be reached");
     }
@@ -136,11 +136,13 @@ AxisEvent::from_string(const std::string& str)
   AxisEvent ev;
 
   boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  boost::tokenizer<boost::char_separator<char> > tokenizer(str, sep);
+
+  std::vector<std::string> tokens;
+  std::copy(tokenizer.begin(), tokenizer.end(), std::back_inserter(tokens));
 
   int j = 0;
-  tokenizer tokens(str, sep);
-  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+  for(std::vector<std::string>::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
     {
       if (j == 0)
         {
@@ -167,7 +169,13 @@ AxisEvent::from_string(const std::string& str)
 
               case EV_KEY:
                 switch(j) {
-                  case 1: ev.key.sign      = boost::lexical_cast<int>(*i); break;
+                  case 1: 
+                    { 
+                      int type;
+                      str2event(*i, type, ev.key.secondary_code);
+                      assert(type == EV_KEY);
+                    }
+                    break;
                   case 2: ev.key.threshold = boost::lexical_cast<int>(*i); break;
                 }
                 break;
@@ -862,13 +870,23 @@ uInput::send_axis(int code, int32_t value)
           case EV_KEY:
             if (abs(old_value) <  event.key.threshold &&
                 abs(value)     >= event.key.threshold)
-              {
-                send_key(event.code, true);
+              { // entering bigger then threshold zone
+                if (value < 0)
+                  {
+                    send_key(event.key.secondary_code, false);
+                    send_key(event.code,               true);
+                  }
+                else // (value > 0)
+                  { 
+                    send_key(event.code,               false);
+                    send_key(event.key.secondary_code, true);
+                  }
               }
             else if (abs(old_value) >= event.key.threshold &&
-                     abs(value)     <  event.key.threshold)
-              {
-                send_key(event.code, false);
+                abs(value)     <  event.key.threshold)
+              { // entering zero zone
+                send_key(event.code,               false);
+                send_key(event.key.secondary_code, false);
               }
             break;
         }
@@ -896,6 +914,8 @@ uInput::add_axis(int code, int min, int max)
   else if (event.type == EV_KEY)
     {
       add_key(event.code);
+      if (event.code != event.key.secondary_code)
+        add_key(event.key.secondary_code);
     }
   else
     {

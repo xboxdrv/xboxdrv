@@ -81,7 +81,7 @@ struct AxisEvent
     } abs;
 
     struct {
-      int sign;
+      int secondary_code;
       int threshold;
     } key;
   };
