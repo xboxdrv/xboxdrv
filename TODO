@@ -3,34 +3,14 @@ Stuff to do before 0.4 release:
 
 * print version number on normal use
 
+* print out created device names, include id in device name
+
 * only create mouse and keyboard devices when they are needed 
 
-* use cases:
+* figure out which devices xorg/hal handles as keyboard (just a button
+  isn't enough, KEY_SPACE might be)
 
-BTN  -> REL (mouse wheel)
-AXIS -> REL (mouse cursor)
-
-BTN  -> ABS (no use, dpad is already handled elsewhere)
-AXIS -> ABS (standard)
-
-BTN  -> KEY (standard)
-AXIS -> KEY (simplistic WASD emu) [deadzone, (left, right)]
-
-buttonmap:
-
-BTN=KEY_X
-BTN=REL_X:$VALUE:$REPEAT
-
-AXIS=ABS_X:$SCALE:$ACCEL
-
-* figure out which devices xorg handles as keyboard (just a button
-  isn't enough, might need space or so)
-
-* output driver/device name on startup
-
-* add support for analog buttons
-
-* add support for LED messages
+* implement basic rumble force feedback support
 
 fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
 
@@ -39,6 +19,13 @@ fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == 
 http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/
 ________________________________________________________________________________
 
+Stuff to do before 0.5 release:
+===============================
+
+* add support for LED messages
+
+* add support for analog buttons
+
 Thrustmaster Gamepad Rumble:
 usb> ctrl 0x21 0x09 0x0200 0 ff ff 0 0
 Sending to ctrl: 33 9 512 0: [4] { 0xff, 0xff, 0x00, 0x00 } ->
