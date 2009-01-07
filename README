@@ -5,14 +5,16 @@ This is a Xbox/Xbox360 gamepad driver for Linux that works in
 userspace. It is an alternative to the xpad kernel driver and has
 support for Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless
 gamepads. The Xbox360 guitar and some Xbox1 dancemats might work too.
+The Xbox 360 racing wheel is not supported, but shouldn't be to hard
+to add if somebody is interested.
 
 The Xbox360 chatpad does currently not work and the headset does
 neither. There has been some work on reverse enginiering, but no
 usable results.
 
 This driver is only of interest if the xpad kernel driver doesn't work
-for you or if you want some more configurabity, if the xpad kernel
-driver works for you there is no need to try this driver.
+for you or if you want more configurabity. If the xpad kernel driver
+works for you there is no need to try this driver.
 
 Newest version of the driver can be found at:
 
@@ -34,7 +36,7 @@ Required libraries and tools:
  * uinput (userspace input kernel module)
  * git (only to download the development version)
 
-Once installed, you can compile by typing:
+Once everything installed, you can compile by typing:
 
  % scons
 
@@ -54,9 +56,14 @@ slightly different.
 [[ Running XboxDrv ]]
 ---------------------
 
-First make sure that the xpad kernel module is not loaded, either by
-deleting, renaming it or blacklisting it. rmmod might not be enough
-since it might be automatically loaded again.
+Plug in your Xbox360 gamepad and then unload the xpad driver via:
+
+ % rmmod xpad
+
+If you want to permanently unload it add the following line to
+/etc/modprobe.d/blacklist:
+
+blacklist xpad
 
 Next you have to load the uinput kernel module which allows userspace
 programms to create input devices and the joydev module which gives
@@ -70,7 +77,7 @@ You also have to make sure that you have access rights to
 adjust the permissions or run xboxdrv as root.
 
 Once ensured that xpad is out of the way and everything is in place
-plug in your Xbox360 gamepad and start the userspace driver with:
+start the userspace driver with:
 
  % ./xboxdrv
 
@@ -116,7 +123,7 @@ This will cause a mild rumble and the led to rotate, you can stop it
 again via, which also happens to be the command you can use to stop
 your Xbox360 controller from blinking:
 
- % ./xboxdrv -q
+ % ./xboxdrv ---led 0 --rumble 0,0 --quit
 
 For rumble to work make sure you have connected the controller to a
 USB port that has enough power, i.e. an unpowered USB hub might not
@@ -147,17 +154,19 @@ given frequency in miliseconds:
 
 Combining --autofire with button map allows you to have one button act
 as autofire while another one, emitting the same signal, acts normally.
+
+ % ./xboxdrv --autofire B=250 --buttonmap B=A
 
 [[ Relative Axis Mapping ]]
 
 The function --relative-axis allows you to change the behaviour of an
 axis so that your movement of it moves its value up or down instead of
-applying it instantly.  This is mostly useful for flightsim games that
+applying it directly.  This is mostly useful for flightsim games that
 make use of a throttle control, which you can emulate by using the
-relative axis mapping. Since the axis might be upside down, you might want
-to use the --axismap function to reverse it.
+relative axis mapping. Since the axis might be upside down, you might
+want to use the --axismap function to reverse it.
 
- % ./xboxdrv --relative-axis y2=64000
+ % ./xboxdrv --relative-axis y2=64000 --axismap -y2=y2
 
 [[ Button Remapping ]]
 ----------------------
@@ -202,7 +211,8 @@ If you want to swap the left and right stick start with:
 
 Possible axis names are: x1, y1, x2, y2, lt, rt
 
-Swaping lt or rt with x1, y1, x2, y2 will not work properly.
+Swaping lt or rt with x1, y1, x2, y2 will not work properly, since
+their range is different.
 
 [[ UInput Mapping ]]
 --------------------
@@ -242,7 +252,7 @@ optional:
 [[ Running InputDrv ]]
 ----------------------
 
-The programs inputdrv and gui/inputcfg.py are part of an experiment to
+The programs src/inputdrv and gui/inputcfg.py are part of an experiment to
 create a very flexible input configuration framework. They are still
 in development and not of any use unless you want to hack the
 source. Their compilation is disabled by default.
@@ -305,8 +315,6 @@ And insert the following lines:
     <match key="input.product" string="Xbox Gamepad (userspace driver)">
       <remove key="input.x11_driver" />
     </match>
-
-Note: The exact string will differ depending on the type of controller you use.
 
 [[ Mouse Emulation ]]
 ---------------------
@@ -325,7 +333,7 @@ This will map the dpad to cursor keys, left analogstick to mouse
 cursor and right analogstick to mouse wheel.
 
 Note that if you have your mouse buttons switched you must adjust the
-above to match your mouse or the button events come out wrong.
+above to match your mouse or the button events will come out wrong.
 
 [[ Wacom Trouble ]]
 -------------------
@@ -358,8 +366,8 @@ not work properly or not at all.
 It is currently unknown if this can be fixed by xboxdrv or if it
 requires patches to Wine.
 
-[[ Examples ]]
---------------
+[[ Example Configurations ]]
+----------------------------
 
 Prince of Persia: Sands of Time (in Wine)
 Prince of Persia: Warrior Within (in Wine)
@@ -367,6 +375,7 @@ Prince of Persia: The Two Thrones (in Wine)
 Tomb Raider Anniversary (in Wine)
 Tomb Raider Legend (in Wine)
 ----------------------------
+
  % xboxdrv --trigger-as-button -s 
 
 The triggers are not regonized in these games when they are analog, so
@@ -375,6 +384,7 @@ we have to handle them as buttons.
 
 CH Flightstick emulation in Dosbox:
 -----------------------------------
+
 In dosbox.conf set:
 
 [joystick]
@@ -387,6 +397,7 @@ Start xboxdrv with:
 Your right analog stick will act as trottle control, the trigger as
 rudder.
 
+
 Sauerbraten
 -----------
 
@@ -398,6 +409,19 @@ First analogstick gets mapped te cursor keys, second analogstick gets mapped to 
     --ui-buttonmap rb=KEY_5,lb=KEY_6,lt=BTN_LEFT,rt=BTN_RIGHT \
     --ui-buttonmap y=KEY_ENTER,dl=KEY_4,dr=KEY_2,du=KEY_1,dd=KEY_3,back=KEY_TAB,start=KEY_ESC \
     -s --deadzone 6000  --dpad-as-button --trigger-as-button
+
+
+Warsow
+------
+
+ % ./xboxdrv \
+   --ui-axismap x2=REL_X:10,y2=REL_Y:-10,x1=KEY_A:KEY_D,y1=KEY_W:KEY_S \
+   --ui-buttonmap a=KEY_LEFTSHIFT,b=BTN_C,x=BTN_EXTRA,y=KEY_C \
+   --ui-buttonmap lb=BTN_RIGHT,rb=KEY_SPACE \
+   --ui-buttonmap lt=KEY_Z,rt=BTN_LEFT \
+   --ui-buttonmap dl=KEY_4,dr=KEY_2,du=REL_WHEEL:-1:150,dd=REL_WHEEL:1:150 \
+   --ui-buttonmap back=KEY_TAB,start=KEY_ESC \
+   -s --deadzone 6000 --dpad-as-button --trigger-as-button
 
 
 [[ Testing ]]

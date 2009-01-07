@@ -441,6 +441,17 @@ void print_led_help()
             << std::endl;
 }
 
+void print_version()
+{
+  std::cout
+    << "xboxdrv 0.4\n"
+    << "Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>\n"
+    << "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
+    << "This is free software: you are free to change and redistribute it.\n"
+    << "There is NO WARRANTY, to the extent permitted by law."
+    << std::endl;
+}
+
 void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
 {  
   for(int i = 1; i < argc; ++i)
@@ -459,13 +470,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
       else if (strcmp(argv[i], "-V") == 0 ||
           strcmp(argv[i], "--version") == 0)
         {
-          std::cout
-            << "xboxdrv 0.3\n"
-            << "Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>\n"
-            << "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
-            << "This is free software: you are free to change and redistribute it.\n"
-            << "There is NO WARRANTY, to the extent permitted by law."
-            << std::endl;
+          print_version();
           exit(EXIT_SUCCESS);
         }
       else if (strcmp(argv[i], "-s") == 0 ||
@@ -566,6 +571,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
         }
       else if (strcmp(argv[i], "--force-feedback") == 0)
         {
+          std::cout << "Warrning: force-feedback support is not yet implemented" << std::endl;
           opts.uinput_config.force_feedback = true;
         }
       else if (strcmp(argv[i], "-b") == 0 ||
@@ -1201,6 +1207,9 @@ void on_sigint(int)
 
 void run_main(CommandLineOptions& opts)
 {
+  print_version();
+  std::cout << std::endl;
+
   usb_init();
   usb_find_busses();
   usb_find_devices();
@@ -1269,7 +1278,7 @@ void run_main(CommandLineOptions& opts)
           uInput* uinput = 0;
           if (!opts.no_uinput)
             {
-              std::cout << "Starting with uinput... " << std::flush;
+              std::cout << "\nStarting with uinput... " << std::flush;
               uinput = new uInput(dev_type.type, opts.uinput_config);
               std::cout << "done" << std::endl;
             }

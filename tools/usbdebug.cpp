@@ -64,6 +64,22 @@ public:
     usb_close(handle);
   }
 
+  void clear_halt(int ep)
+  {
+    if (usb_clear_halt(handle, ep) != 0)
+      {
+        std::cout << "Failure to reset_ep: " << ep << std::endl;
+      }    
+  }
+
+  void reset()
+  {
+    if (usb_reset(handle) != 0)
+      {
+        std::cout << "Failure to reset" << std::endl;
+      }
+  }
+
   void detach_kernel_driver(int iface)
   {
     if (usb_detach_kernel_driver_np(handle, iface) < 0)
@@ -625,6 +641,23 @@ void console_ctrlreq_cmd(const std::vector<std::string>& args)
     }
 }
 
+void console_reset_ep_cmd(const std::vector<std::string>& args)
+{
+  if (args.size() != 2)
+    {
+      std::cout << "Usage: clear_halt ENDPOINT" << std::endl;
+    }
+  else
+    {
+      USBDevice::current()->clear_halt(atoi(args[1].c_str()));
+    }
+}
+
+void console_reset_cmd(const std::vector<std::string>& args)
+{
+  USBDevice::current()->reset();
+}
+
 void console_ctrl_cmd(const std::vector<std::string>& args)
 {
   if (args.size() < 5)
@@ -731,6 +764,14 @@ void dispatch_command(const std::vector<std::string>& args)
   else if (args[0] == "send")
     {
       console_send_cmd(args);
+    }
+  else if (args[0] == "reset")
+    {
+      console_reset_cmd(args);
+    }
+  else if (args[0] == "clear_halt")
+    {
+      console_reset_ep_cmd(args);
     }
   else if (args[0] == "quit")
     {
