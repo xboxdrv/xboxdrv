@@ -1,6 +1,7 @@
 # -*- python -*-
 
-env = Environment(CPPFLAGS=["-g", "-O2", "-Wall", "-ansi", "-pedantic"], LIBS=["usb"])
+# env = Environment(CPPFLAGS=["-g", "-O2", "-Wall", "-ansi", "-pedantic"], LIBS=["usb"])
+env = Environment(CPPFLAGS=["-g", "-O2"], LIBS=["usb"])
 env.Program("xboxdrv", ["src/xboxdrv.cpp", 
                         "src/xboxmsg.cpp",
                         "src/uinput.cpp",
@@ -14,7 +15,7 @@ env.Program("xboxdrv", ["src/xboxdrv.cpp",
                         "src/linux_uinput.cpp"
                         ])
 
-if True:
+if False:
     env.Program("inputdrv",
                 ["src/inputdrv/inputdrv.cpp",
                  "src/inputdrv/xbox360_driver.cpp",

@@ -1,4 +1,4 @@
-xboxdrv 0.4 - (08/Jan/2009)
+xboxdrv 0.4 - (07/Jan/2009)
 ===========================
 
 * added --square-axis option
@@ -6,6 +6,7 @@ xboxdrv 0.4 - (08/Jan/2009)
 * added --relative-axis option (i.e. emulate joystick throttle)
 * added --ui-buttonmap and --ui-axismap to change uinput events
 * support for keyboard events
+* support for mouse emulation
 
 
 xboxdrv 0.3 - (06/Nov/2008)
