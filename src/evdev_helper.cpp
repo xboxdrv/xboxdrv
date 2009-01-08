@@ -538,7 +538,9 @@ public:
     add(KEY_FRAMEBACK,       "KEY_FRAMEBACK");
     add(KEY_FRAMEFORWARD,    "KEY_FRAMEFORWARD");
     add(KEY_CONTEXT_MENU,    "KEY_CONTEXT_MENU");
+#ifdef KEY_MEDIA_REPEAT
     add(KEY_MEDIA_REPEAT,    "KEY_MEDIA_REPEAT");
+#endif
     add(KEY_DEL_EOL,         "KEY_DEL_EOL");
     add(KEY_DEL_EOS,         "KEY_DEL_EOS");
     add(KEY_INS_LINE,        "KEY_INS_LINE");
