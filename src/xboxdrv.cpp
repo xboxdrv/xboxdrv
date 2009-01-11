@@ -680,10 +680,16 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
         }
       else if (strcmp("--dpad-only", argv[i]) == 0)
         {
+          if (opts.uinput_config.dpad_as_button)
+            throw std::runtime_error("Can't combine --dpad-as-button with --dpad-only");
+
           opts.uinput_config.dpad_only = true;
         }
       else if (strcmp("--dpad-as-button", argv[i]) == 0)
         {
+          if (opts.uinput_config.dpad_only)
+            throw std::runtime_error("Can't combine --dpad-as-button with --dpad-only");
+
           opts.uinput_config.dpad_as_button = true;
         }
       else if (strcmp("--deadzone", argv[i]) == 0)

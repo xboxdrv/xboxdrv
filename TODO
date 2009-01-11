@@ -1,3 +1,10 @@
+- Test cases:
+
+* default, test all axis and buttons 
+* --dpad-only check that X/Y act properly
+* --dpad-as-button check buttons are working and no useless axis present
+
+
 Stuff to do before 0.5 release:
 ===============================
 
