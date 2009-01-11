@@ -382,8 +382,16 @@ uInput::setup_xbox360_gamepad(GamepadType type)
       //       ioctl(fd, UI_SET_FFBIT, FF_RAMP);
     }
 
-  add_axis(XBOX_AXIS_X1, -32768, 32767);
-  add_axis(XBOX_AXIS_Y1, -32768, 32767);
+  if (cfg.dpad_only)
+    {
+      add_axis(XBOX_AXIS_X1, -1, 1);
+      add_axis(XBOX_AXIS_Y1, -1, 1);
+    }
+  else
+    {
+      add_axis(XBOX_AXIS_X1, -32768, 32767);
+      add_axis(XBOX_AXIS_Y1, -32768, 32767);
+    }
 
   if (!cfg.dpad_only)
     {  
@@ -516,12 +524,6 @@ uInput::send(Xbox360Msg& msg)
   send_button(XBOX_BTN_X, msg.x);
   send_button(XBOX_BTN_Y, msg.y);
 
-  send_axis(XBOX_AXIS_X1, msg.x1);
-  send_axis(XBOX_AXIS_Y1, -msg.y1);
-
-  send_axis(XBOX_AXIS_X2, msg.x2);
-  send_axis(XBOX_AXIS_Y2, -msg.y2);
-
   if (cfg.trigger_as_zaxis)
     {
       send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
@@ -536,12 +538,21 @@ uInput::send(Xbox360Msg& msg)
       send_axis(XBOX_AXIS_LT, msg.lt);
       send_axis(XBOX_AXIS_RT, msg.rt);
     }
-  
-  if (cfg.dpad_as_button && !cfg.dpad_only)
+
+  if (!cfg.dpad_only)
     {
-      send_button(XBOX_DPAD_UP,   msg.dpad_up);
-      send_button(XBOX_DPAD_DOWN, msg.dpad_down);
-      send_button(XBOX_DPAD_LEFT, msg.dpad_left);
+      send_axis(XBOX_AXIS_X1,  msg.x1);
+      send_axis(XBOX_AXIS_Y1, -msg.y1);
+
+      send_axis(XBOX_AXIS_X2,  msg.x2);
+      send_axis(XBOX_AXIS_Y2, -msg.y2);
+    }
+
+  if (cfg.dpad_as_button)
+    {
+      send_button(XBOX_DPAD_UP,    msg.dpad_up);
+      send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
+      send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
       send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
     }
   else
@@ -549,37 +560,19 @@ uInput::send(Xbox360Msg& msg)
       int dpad_x = XBOX_AXIS_DPAD_X;
       int dpad_y = XBOX_AXIS_DPAD_Y;
       
-      if (cfg.dpad_only) // FIXME: Implement via ui-buttonmap
+      if (cfg.dpad_only)
         {
           dpad_x = XBOX_AXIS_X1;
           dpad_y = XBOX_AXIS_Y1;
         }
 
-      if (msg.dpad_up)
-        {
-          send_axis(dpad_y, -1);
-        }
-      else if (msg.dpad_down)
-        {
-          send_axis(dpad_y, 1);
-        }
-      else
-        {
-          send_axis(dpad_y, 0);
-        }
+      if      (msg.dpad_up)    send_axis(dpad_y, -1);
+      else if (msg.dpad_down)  send_axis(dpad_y,  1);
+      else                     send_axis(dpad_y,  0);
 
-      if (msg.dpad_left)
-        {
-          send_axis(dpad_x, -1);
-        }
-      else if (msg.dpad_right)
-        {
-          send_axis(dpad_x, 1);
-        }
-      else
-        {
-          send_axis(dpad_x, 0);
-        }
+      if      (msg.dpad_left)  send_axis(dpad_x, -1);
+      else if (msg.dpad_right) send_axis(dpad_x,  1);
+      else                     send_axis(dpad_x,  0);
     }
 }
 
@@ -600,12 +593,6 @@ uInput::send(XboxMsg& msg)
   send_button(XBOX_BTN_X, msg.x);
   send_button(XBOX_BTN_Y, msg.y);
 
-  send_axis(XBOX_AXIS_X1, msg.x1);
-  send_axis(XBOX_AXIS_Y1, msg.y1);
-
-  send_axis(XBOX_AXIS_X2, msg.x2);
-  send_axis(XBOX_AXIS_Y2, msg.y2);
-
   if (cfg.trigger_as_zaxis)
     {
       send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
@@ -621,40 +608,41 @@ uInput::send(XboxMsg& msg)
       send_axis(XBOX_AXIS_RT,   msg.rt);
     }
 
+
+  if (!cfg.dpad_only)
+    {
+      send_axis(XBOX_AXIS_X1,  msg.x1);
+      send_axis(XBOX_AXIS_Y1, -msg.y1);
+
+      send_axis(XBOX_AXIS_X2,  msg.x2);
+      send_axis(XBOX_AXIS_Y2, -msg.y2);
+    }
+
   if (cfg.dpad_as_button)
     {
-      send_button(XBOX_DPAD_UP,   msg.dpad_up);
-      send_button(XBOX_DPAD_DOWN, msg.dpad_down);
-      send_button(XBOX_DPAD_LEFT, msg.dpad_left);
+      send_button(XBOX_DPAD_UP,    msg.dpad_up);
+      send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
+      send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
       send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
     }
   else
     {
-      if (msg.dpad_up)
+      int dpad_x = XBOX_AXIS_DPAD_X;
+      int dpad_y = XBOX_AXIS_DPAD_Y;
+      
+      if (cfg.dpad_only)
         {
-          send_axis(XBOX_AXIS_DPAD_Y, -1);
-        }
-      else if (msg.dpad_down)
-        {
-          send_axis(XBOX_AXIS_DPAD_Y, 1);
-        }
-      else
-        {
-          send_axis(XBOX_AXIS_DPAD_Y, 0);
+          dpad_x = XBOX_AXIS_X1;
+          dpad_y = XBOX_AXIS_Y1;
         }
 
-      if (msg.dpad_left)
-        {
-          send_axis(XBOX_AXIS_DPAD_X, -1);
-        }
-      else if (msg.dpad_right)
-        {
-          send_axis(XBOX_AXIS_DPAD_X, 1);
-        }
-      else
-        {
-          send_axis(XBOX_AXIS_DPAD_X, 0);
-        }
+      if      (msg.dpad_up)    send_axis(dpad_y, -1);
+      else if (msg.dpad_down)  send_axis(dpad_y,  1);
+      else                     send_axis(dpad_y,  0);
+
+      if      (msg.dpad_left)  send_axis(dpad_x, -1);
+      else if (msg.dpad_right) send_axis(dpad_x,  1);
+      else                     send_axis(dpad_x,  0);
     }
 }
 
@@ -778,7 +766,7 @@ uInput::update(float delta)
       if (i->time >= i->next_time)
         {
           get_mouse_uinput()->send(EV_REL, cfg.axis_map[i->axis].code, 
-                             static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 32767);
+                                   static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 32767);
           i->next_time += cfg.axis_map[i->axis].rel.repeat;
         }
     }
@@ -797,7 +785,7 @@ uInput::update(float delta)
                       << " " << cfg.btn_map[i->button].rel.repeat << std::endl;
 
           get_mouse_uinput()->send(EV_REL, cfg.btn_map[i->button].code, 
-                             static_cast<int>(cfg.btn_map[i->button].rel.value * button_state[i->button]));
+                                   static_cast<int>(cfg.btn_map[i->button].rel.value * button_state[i->button]));
           i->next_time += cfg.btn_map[i->button].rel.repeat;
         }
     }
@@ -970,7 +958,7 @@ uInput::send_axis(int code, int32_t value)
                   }
               }
             else if (abs(old_value) >= event.key.threshold &&
-                abs(value)     <  event.key.threshold)
+                     abs(value)     <  event.key.threshold)
               { // entering zero zone
                 send_key(event.code,               false);
                 send_key(event.key.secondary_code, false);
