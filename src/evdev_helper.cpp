@@ -16,7 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <X11/Xlib.h>
 #include <linux/input.h>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <map>
@@ -580,6 +582,65 @@ public:
   }
 } evdev_btn_names;
 
+class Keysym2Keycode
+{
+public:
+  std::map<KeySym, int> mapping;
+
+  Keysym2Keycode() 
+  {
+    //std::cout << "Initing Keysym2Keycode" << std::endl;
+
+    Display* dpy = XOpenDisplay(NULL);
+    if (!dpy)
+      {
+        throw std::runtime_error("Keysym2Keycode: Couldn't open X11 display");
+      }
+    else
+      {
+        process_keymap(dpy);
+        XCloseDisplay(dpy);
+      }
+  }
+
+  void process_keymap(Display* dpy)
+  {
+    int min_keycode, max_keycode;
+    XDisplayKeycodes(dpy, &min_keycode, &max_keycode);
+
+    int num_keycodes = max_keycode - min_keycode + 1;
+    int keysyms_per_keycode;
+    KeySym* keymap = XGetKeyboardMapping(dpy, min_keycode,
+                                         num_keycodes,
+                                         &keysyms_per_keycode);
+
+    for(int i = 0; i < num_keycodes; ++i)
+      {
+        if (keymap[i*keysyms_per_keycode] != NoSymbol)
+          mapping[keymap[i*keysyms_per_keycode]] = i;
+      }
+
+    XFree(keymap);
+  }
+};
+
+int xkeysym2keycode(const std::string& name)
+{
+  static Keysym2Keycode sym2code;
+
+  KeySym keysym = XStringToKeysym(name.substr(3).c_str());
+  if (keysym == NoSymbol)
+    {
+      throw std::runtime_error("xkeysym2keycode: Couldn't convert name '" + name + "' to xkeysym");
+    }
+
+  std::map<KeySym, int>::iterator i =  sym2code.mapping.find(keysym);
+  if (i == sym2code.mapping.end())
+    throw std::runtime_error("xkeysym2keycode: Couldn't convert xkeysym '" + name + "' to evdev keycode");
+  else
+    return i->second;
+}
+
 bool str2event(const std::string& name, int& type, int& code)
 {
   if (name.compare(0, 3, "REL") == 0)
@@ -588,12 +649,17 @@ bool str2event(const std::string& name, int& type, int& code)
       code = evdev_rel_names[name];
       return true;
     }
-
   else if (name.compare(0, 3, "ABS") == 0)
     {
       type = EV_ABS;
       code = evdev_abs_names[name];
       return true;
+    }
+  else if (name.compare(0, 2, "XK") == 0)
+    {
+      type = EV_KEY;
+      code = xkeysym2keycode(name);
+      return true;      
     }
   else if (name.compare(0, 3, "KEY") == 0 ||
            name.compare(0, 3, "BTN") == 0)

@@ -8,6 +8,33 @@
 Stuff to do before 0.5 release:
 ===============================
 
+Example config for flash game:
+
+./xboxdrv --dpad-as-button --ui-buttonmap du=KEY_UP,dd=KEY_DOWN,dl=KEY_LEFT,dr=KEY_RIGHT,a=KEY_A,x=KEY_SEMICOLON -s --deadzone 16000
+
+* add a way to ignore axis or button
+
+* add a way to not create a joystick device
+
+* add translation for xmodmap
+XKeysymToString
+XStringToKeysym
+NoSymbol
+XGetKeyboardMapping (dpy, min_keycode,
+                                      (max_keycode - min_keycode + 1),
+                                      &keysyms_per_keycode);
+    XDisplayKeycodes (dpy, &min_keycode, &max_keycode);
+
+experimental/xkeys.h
+
+* figure out what jscal does and if it can break stuff
+  1) jscal uses the joystick interface, not the event interface
+
+* different xbox controller use different endpoints for read/write, solution:
+  1) make endpoints variables
+  2) check if endpoints are available on start
+  3) if not, then use different one, seems to be just 1 or 2
+
 * implement basic rumble force feedback support
 
 fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 

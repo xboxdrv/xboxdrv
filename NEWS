@@ -1,6 +1,17 @@
+xboxdrv 0.4.3 - (??/Jan/2009)
+=============================
+* support for X11 keysym in --ui-buttonmap
+
+
 xboxdrv 0.4.2 - (11/Jan/2009)
 ============================
 * fixed --dpad-only
+
+
+xboxdrv 0.4.1 - (08/Jan/2009)
+============================
+* workaround for KEY_MEDIA_REPEAT
+
 
 xboxdrv 0.4 - (07/Jan/2009)
 ===========================
