@@ -16,17 +16,6 @@ Example config for flash game:
 
 * add a way to not create a joystick device
 
-* add translation for xmodmap
-XKeysymToString
-XStringToKeysym
-NoSymbol
-XGetKeyboardMapping (dpy, min_keycode,
-                                      (max_keycode - min_keycode + 1),
-                                      &keysyms_per_keycode);
-    XDisplayKeycodes (dpy, &min_keycode, &max_keycode);
-
-experimental/xkeys.h
-
 * figure out what jscal does and if it can break stuff
   1) jscal uses the joystick interface, not the event interface
 

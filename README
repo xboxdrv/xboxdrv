@@ -424,6 +424,20 @@ Your right analog stick will act as trottle control, the trigger as
 rudder.
 
 
+Keyboard controlled games:
+-------------------------
+
+The following configuration works for games that are played with
+keyboard, like Flash games or games that don't support a joystick, you
+have to adjust the keybindings to fit the game:
+
+ % ./xboxdrv \
+     --dpad-as-button \
+     --ui-buttonmap a=XK_a,b=XK_b,x=XK_x,y=XK_y \
+     --ui-buttonmap dl=XK_Left,dr=XK_Right,du=XK_Up,dd=XK_Down \
+     --deadzone 16000
+
+
 Sauerbraten
 -----------
 
