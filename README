@@ -261,18 +261,27 @@ configuration parameter seperated by colons, the exact parameter
 differ on the type of event, everything but the first parameter is
 optional:
 
---ui-axismap X1=REL_???:VALUE:REPEAT
-  VALUE:  the maximum value of the event (default: 10)
-  REPEAT: number of milisecond to pass before the event is fired again (default: 5)
+  --ui-axismap X1=REL_???:VALUE:REPEAT
+    VALUE:  the maximum value of the event (default: 10)
+    REPEAT: number of milisecond to pass before the event is fired again (default: 5)
 
---ui-axismap X1=KEY_UP:KEY_DOWN:THRESHOLD
-  KEY_UP:    keycode to be send when the axis is moved up
-  KEY_DOWN:  keycode to be send when the axis is moved down
-  THRESHOLD: threshold that triggers the sending of an event
+  --ui-axismap X1=KEY_UP:KEY_DOWN:THRESHOLD
+    KEY_UP:    keycode to be send when the axis is moved up
+    KEY_DOWN:  keycode to be send when the axis is moved down
+    THRESHOLD: threshold that triggers the sending of an event
  
---ui-buttonmap X1=REL_???:VALUE:REPEAT
-  VALUE:  the of the event (default: 10)
-  REPEAT: number of milisecond to pass before the event is fired again (default: 5)
+  --ui-buttonmap X1=REL_???:VALUE:REPEAT
+    VALUE:  the of the event (default: 10)
+    REPEAT: number of milisecond to pass before the event is fired again (default: 5)
+
+If you want to get rid of all uinput mappings you can use --ui-clear
+which will leave the driver in a blank state and only map those things
+you add later. You can get rid of individual buttons by using the
+'void' event:
+
+  % ./xboxdrv \
+    --ui-buttonmap tr=void,tl=void,lb=void,rb=void \
+    --ui-axismap x2=void,y2=void,rt=void,lt=void,dpad_x=void,dpad_y=void
 
 
 [[ Running InputDrv ]]
@@ -425,7 +434,7 @@ rudder.
 
 
 Keyboard controlled games:
--------------------------
+--------------------------
 
 The following configuration works for games that are played with
 keyboard, like Flash games or games that don't support a joystick, you

@@ -161,7 +161,7 @@ void set_ui_button_map(ButtonEvent* ui_button_map, const std::string& str)
       XboxButton  btn   = string2btn(str.substr(0, i));
       ButtonEvent event = ButtonEvent::from_string(str.substr(i+1, str.size()-i));
       
-      if (btn != XBOX_BTN_UNKNOWN && event.type != -1)
+      if (btn != XBOX_BTN_UNKNOWN)
         {
           ui_button_map[btn] = event;
         }
@@ -184,7 +184,7 @@ void set_ui_axis_map(AxisEvent* ui_axis_map, const std::string& str)
       XboxAxis  axis  = string2axis(str.substr(0, i));
       AxisEvent event = AxisEvent::from_string(str.substr(i+1, str.size()-i));
             
-      if (axis != XBOX_AXIS_UNKNOWN && event.type != -1)
+      if (axis != XBOX_AXIS_UNKNOWN)
         {
           ui_axis_map[axis] = event;
         }
@@ -406,6 +406,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  -b, --buttonmap MAP      Remap the buttons as specified by MAP (example: B=A,X=A,Y=A)" << std::endl;
   std::cout << "  -a, --axismap MAP        Remap the axis as specified by MAP (example: -Y1=Y1,X1=X2)" << std::endl;
 
+  std::cout << "  --ui-clear               Removes all existing uinput bindings" << std::endl;
   std::cout << "  --ui-buttonmap MAP       Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)" << std::endl;
   std::cout << "  --ui-axismap MAP         Changes the uinput events send when moving a axis (example: X1=ABS_X2)" << std::endl;
 
@@ -602,7 +603,12 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
               exit(EXIT_FAILURE);
             }          
         }
-      else if ((strcmp(argv[i], "--ui-axismap") == 0))
+      else if (strcmp(argv[i], "--ui-clear") == 0)
+        {
+          std::fill_n(opts.uinput_config.axis_map, (int)XBOX_AXIS_MAX, AxisEvent::invalid());
+          std::fill_n(opts.uinput_config.btn_map,  (int)XBOX_BTN_MAX,  ButtonEvent::invalid());
+        }
+      else if (strcmp(argv[i], "--ui-axismap") == 0)
         {
           ++i;
           if (i < argc)
@@ -615,7 +621,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
               exit(EXIT_FAILURE);
             }                  
         }
-      else if ((strcmp(argv[i], "--ui-buttonmap") == 0))
+      else if (strcmp(argv[i], "--ui-buttonmap") == 0)
         {
           ++i;
           if (i < argc)

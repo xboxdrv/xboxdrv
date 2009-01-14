@@ -643,7 +643,13 @@ int xkeysym2keycode(const std::string& name)
 
 bool str2event(const std::string& name, int& type, int& code)
 {
-  if (name.compare(0, 3, "REL") == 0)
+  if (name == "void")
+    {
+      type = -1;
+      code = -1;
+      return true;
+    }
+  else if (name.compare(0, 3, "REL") == 0)
     {
       type = EV_REL;
       code = evdev_rel_names[name];

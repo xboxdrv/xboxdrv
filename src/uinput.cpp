@@ -276,7 +276,7 @@ uInput::need_keyboard_device()
 
   return false;
 }
-
+
 bool
 uInput::need_mouse_device()
 {
@@ -309,7 +309,14 @@ uInput::need_mouse_device()
 
   return false;
 }
-
+
+bool
+uInput::need_joystick_device()
+{
+  // FIXME: Implement me
+  return true;
+}
+
 bool
 uInput::is_mouse_button(int ev_code)
 {
@@ -912,7 +919,9 @@ uInput::add_key(int ev_code)
 void
 uInput::send_key(int ev_code, bool value)
 {
-  if (is_keyboard_button(ev_code))
+  if (ev_code == -1)
+    ; // pass
+  else if (is_keyboard_button(ev_code))
     get_keyboard_uinput()->send(EV_KEY, ev_code, value);
   else if (is_mouse_button(ev_code))
     get_mouse_uinput()->send(EV_KEY, ev_code, value);
@@ -932,6 +941,9 @@ uInput::send_axis(int code, int32_t value)
 
       switch(event.type)
         {
+          case -1:
+            break;
+
           case EV_ABS:
             if (event.type == EV_ABS || event.type == EV_KEY)
               get_joystick_uinput()->send(event.type, event.code, value);
@@ -995,6 +1007,9 @@ uInput::add_axis(int code, int min, int max)
         add_key(event.code);
         if (event.code != event.key.secondary_code)
           add_key(event.key.secondary_code);
+        break;
+
+      case -1:
         break;
 
       default:

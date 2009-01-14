@@ -34,6 +34,7 @@ class XboxMsg;
 
 struct ButtonEvent
 {
+  static ButtonEvent invalid() { return create(-1, -1); }
   static ButtonEvent create(int type, int code);
   static ButtonEvent from_string(const std::string& str);
 
@@ -60,6 +61,7 @@ struct ButtonEvent
 
 struct AxisEvent
 {
+  static AxisEvent invalid() { return create(-1, -1); }
   static AxisEvent create(int type, int code);
   static AxisEvent from_string(const std::string& str);
 
@@ -157,6 +159,7 @@ public:
 
   bool need_mouse_device();
   bool need_keyboard_device();
+  bool need_joystick_device();
 
   bool is_mouse_button(int ev_code);
   bool is_keyboard_button(int ev_code);

@@ -8,12 +8,7 @@
 Stuff to do before 0.5 release:
 ===============================
 
-Example config for flash game:
-
-./xboxdrv --dpad-as-button --ui-buttonmap du=KEY_UP,dd=KEY_DOWN,dl=KEY_LEFT,dr=KEY_RIGHT,a=KEY_A,x=KEY_SEMICOLON -s --deadzone 16000
-
 * add a way to ignore axis or button
-
 * add a way to not create a joystick device
 
 * figure out what jscal does and if it can break stuff
@@ -35,13 +30,17 @@ http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/
 * figure out which devices xorg/hal handles as keyboard (just a button
   isn't enough, KEY_SPACE might be)
 
-* print version number on normal use
+
+Later versions:
+===============
 
-* include id/wid in device name (maybe)
+* add support for LED messages (can this be used by anything?)
 
-* add support for LED messages
+* add support for analog buttons (not all that useful, but would still be nice to have)
 
-* add support for analog buttons
+* include id/wid in device name (would be cleaner, since it makes the
+  device unique, but would make Xorg trouble worse)
+
 
 Thrustmaster Gamepad Rumble:
 usb> ctrl 0x21 0x09 0x0200 0 ff ff 0 0
