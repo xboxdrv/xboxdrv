@@ -445,7 +445,7 @@ void print_led_help()
 void print_version()
 {
   std::cout
-    << "xboxdrv 0.4.2\n"
+    << "xboxdrv 0.4.3\n"
     << "Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>\n"
     << "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
     << "This is free software: you are free to change and redistribute it.\n"
@@ -874,6 +874,9 @@ void print_info(struct usb_device* dev,
     std::cout << "LED Status:        " << "auto" << std::endl;
   else
     std::cout << "LED Status:        " << opts.led << std::endl;
+
+  std::cout << "Square Axis:       " << ((opts.square_axis) ? "yes" : "no") << std::endl;
+  
   std::cout << "ButtonMap:         ";
   if (opts.button_map.empty())
     {
@@ -904,12 +907,6 @@ void print_info(struct usb_device* dev,
         }
       std::cout << std::endl;
     }
-
-  std::cout << "Square Axis:       ";
-  if (opts.square_axis)
-    std::cout << "yes" << std::endl;
-  else
-    std::cout << "no" << std::endl;
 
   std::cout << "RelativeAxisMap:   ";
   if (opts.relative_axis_map.empty())

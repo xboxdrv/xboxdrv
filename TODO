@@ -1,4 +1,5 @@
-- Test cases:
+Pre Release Testing:
+====================
 
 * default, test all axis and buttons 
 * --dpad-only check that X/Y act properly
@@ -8,8 +9,17 @@
 Stuff to do before 0.5 release:
 ===============================
 
-* add a way to ignore axis or button
-* add a way to not create a joystick device
+* print unused dummy bytes
+
+* add a way to not create a joystick/event device
+
+* report more precisly what devices got created, include device name (HAL has that information)
+
+* display ui-buttonmap in the configuration overview, tricky since we
+  don't differ between default bindings and user created ones, also
+  which bindings get used depends on other configuration options
+
+* set proper idVendor/idProduct in uinput
 
 * figure out what jscal does and if it can break stuff
   1) jscal uses the joystick interface, not the event interface

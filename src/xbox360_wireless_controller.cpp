@@ -30,6 +30,7 @@
 
 Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev,
                                                      int controller_id)
+  : led_status(0)
 {
   assert(controller_id >= 0 && controller_id < 4);
   
@@ -74,6 +75,7 @@ Xbox360WirelessController::set_rumble(uint8_t left, uint8_t right)
 void
 Xbox360WirelessController::set_led(uint8_t status)
 {
+  led_status = status;
   //                                +--- Why not just status?
   //                                v
   char ledcmd[] = { 0x00, 0x00, 0x08, 0x40 + (status % 0x0e), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -105,6 +107,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
       else if (data[1] == 0x80) 
         {
           std::cout << "Connection status: controller connected" << std::endl;
+          set_led(led_status);
         } 
       else if (data[1] == 0x40) 
         {
@@ -113,6 +116,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
       else if (data[1] == 0xc0) 
         {
           std::cout << "Connection status: controller and headset connected" << std::endl;
+          set_led(led_status);
         }
       else
         {

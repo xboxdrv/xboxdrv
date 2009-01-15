@@ -585,6 +585,7 @@ public:
 class Keysym2Keycode
 {
 public:
+  // Map KeySym to kernel keycode
   std::map<KeySym, int> mapping;
 
   Keysym2Keycode() 
@@ -617,7 +618,14 @@ public:
     for(int i = 0; i < num_keycodes; ++i)
       {
         if (keymap[i*keysyms_per_keycode] != NoSymbol)
-          mapping[keymap[i*keysyms_per_keycode]] = i;
+          {
+            KeySym keysym = keymap[i*keysyms_per_keycode];
+            // FIXME: Duplicate entries confuse the conversion
+            // std::map<KeySym, int>::iterator it = mapping.find(keysym);
+            // if (it != mapping.end())
+            //   std::cout << "Duplicate keycode: " << i << std::endl;
+            mapping[keysym] = i;
+          }
       }
 
     XFree(keymap);
@@ -629,16 +637,24 @@ int xkeysym2keycode(const std::string& name)
   static Keysym2Keycode sym2code;
 
   KeySym keysym = XStringToKeysym(name.substr(3).c_str());
+
   if (keysym == NoSymbol)
     {
       throw std::runtime_error("xkeysym2keycode: Couldn't convert name '" + name + "' to xkeysym");
     }
 
-  std::map<KeySym, int>::iterator i =  sym2code.mapping.find(keysym);
+  std::map<KeySym, int>::iterator i = sym2code.mapping.find(keysym);
   if (i == sym2code.mapping.end())
-    throw std::runtime_error("xkeysym2keycode: Couldn't convert xkeysym '" + name + "' to evdev keycode");
+    {
+      throw std::runtime_error("xkeysym2keycode: Couldn't convert xkeysym '" + name + "' to evdev keycode");
+    }
   else
-    return i->second;
+    {
+      if (0)
+        std::cout << name << " -> " << keysym << " -> " << XKeysymToString(keysym) 
+                  << " -> " << btn2str(i->second) << "(" << i->second << ")" << std::endl;
+      return i->second;
+    }
 }
 
 bool str2event(const std::string& name, int& type, int& code)

@@ -251,7 +251,8 @@ expect in case you use a keymap that is different then your keyboard
 
 A full list of X11 keysyms is available at
 /usr/include/X11/keysymdef.h, note that you can only use those that
-are reachable by your current.
+are reachable by your current keymap. Keysyms that are reachable via
+multiple keycodes might break the mapping from keysym to evdev code.
 
 When you try to let a gamepad key send a keyboard event you might run
 into trouble with Xorg, for possible fixes see the section further down.
@@ -441,10 +442,10 @@ keyboard, like Flash games or games that don't support a joystick, you
 have to adjust the keybindings to fit the game:
 
  % ./xboxdrv \
+     --ui-clear \
      --dpad-as-button \
      --ui-buttonmap a=XK_a,b=XK_b,x=XK_x,y=XK_y \
      --ui-buttonmap dl=XK_Left,dr=XK_Right,du=XK_Up,dd=XK_Down \
-     --deadzone 16000
 
 
 Sauerbraten
@@ -619,7 +620,18 @@ itself works with:
 You have to sync the controller befor it can be used, restart of the
 driver isn't needed and the driver should let you now when it recieves
 a connection after you sync the controller.
+
+[[ Force Feedback ]]
+--------------------
 
+Force feedback is provided via the standard kernel ff interface:
+
+
+[[ Known bugs ]]
+----------------
+
+X11 keysyms might not work correctly in '--ui-buttonmap a=XK_Down'
+when Down is mapped to multiple keycodes in the keymap.
 
 
 # EOF #

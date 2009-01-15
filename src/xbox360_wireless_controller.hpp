@@ -33,6 +33,7 @@ private:
   int interface;
   int battery_status;
   std::string serial;
+  int led_status;
   
 public:
   Xbox360WirelessController(struct usb_device* dev,
