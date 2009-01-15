@@ -39,7 +39,6 @@ public:
 
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
-  void send_raw(char* buffer, int len);
   bool read(XboxGenericMsg& msg, bool verbose, int timeout);
 
 private:

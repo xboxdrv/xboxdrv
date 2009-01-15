@@ -77,12 +77,6 @@ Xbox360Controller::~Xbox360Controller()
 }
 
 void
-Xbox360Controller::send_raw(char* buffer, int len)
-{
-  usb_interrupt_write(handle, 2, buffer, len, 0);  
-}
-
-void
 Xbox360Controller::set_rumble(uint8_t left, uint8_t right)
 {
   char rumblecmd[] = { 0x00, 0x08, 0x00, left, right, 0x00, 0x00, 0x00 };
