@@ -35,6 +35,7 @@
 #include "xbox_controller.hpp"
 #include "xbox360_controller.hpp"
 #include "xbox360_wireless_controller.hpp"
+#include "firestorm_dual_controller.hpp"
 #include "helper.hpp"
 #include "evdev_helper.hpp"
 #include "command_line_options.hpp"
@@ -98,6 +99,8 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX_MAT,         0x0c12, 0x8809, "RedOctane Xbox Dance Pad" },
   { GAMEPAD_XBOX_MAT,         0x12ab, 0x8809, "Xbox DDR dancepad" },
   { GAMEPAD_XBOX_MAT,         0x1430, 0x8888, "TX6500+ Dance Pad (first generation)" },
+
+  { GAMEPAD_FIRESTORM,        0x044f, 0xb304, "ThrustMaster, Inc. Firestorm Dual Power" },
 };
 
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
@@ -997,7 +1000,7 @@ void apply_square_axis(XboxGenericMsg& msg)
       case GAMEPAD_XBOX360_GUITAR:
       case GAMEPAD_UNKNOWN:
         break;
-    }  
+    }
 }
 
 void apply_deadzone(XboxGenericMsg& msg, int deadzone)
@@ -1256,6 +1259,11 @@ void run_main(CommandLineOptions& opts)
 
           case GAMEPAD_XBOX360_WIRELESS:
             controller = new Xbox360WirelessController(dev, opts.wireless_id);
+            break;
+
+          case GAMEPAD_FIRESTORM:
+            controller = new FirestormDualController(dev);
+            dev_type.type = GAMEPAD_XBOX360;
             break;
 
           default:

@@ -1,7 +1,7 @@
 # -*- python -*-
 
-# env = Environment(CPPFLAGS=["-g", "-O2", "-Wall", "-ansi", "-pedantic"], LIBS=["usb"])
-env = Environment(CPPFLAGS=["-g", "-O2"], LIBS=["usb", "X11"])
+env = Environment(CPPFLAGS=["-g", "-O2", "-Wall", "-ansi", "-pedantic"], LIBS=["usb", "X11"])
+# env = Environment(CPPFLAGS=["-g", "-O2"], LIBS=["usb", "X11"])
 env.Program("xboxdrv", ["src/xboxdrv.cpp", 
                         "src/xboxmsg.cpp",
                         "src/uinput.cpp",
@@ -11,6 +11,7 @@ env.Program("xboxdrv", ["src/xboxdrv.cpp",
                         "src/xbox_controller.cpp",
                         "src/xbox360_controller.cpp",
                         "src/xbox360_wireless_controller.cpp",
+                        'src/firestorm_dual_controller.cpp',
                         "src/evdev_helper.cpp",
                         "src/linux_uinput.cpp"
                         ])
