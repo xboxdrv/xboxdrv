@@ -9,6 +9,8 @@ Pre Release Testing:
 Stuff to do before 0.5 release:
 ===============================
 
+* fix names in non '--silent' output to match names used for button bindings
+
 * print unused dummy bytes
 
 * add a way to not create a joystick/event device
