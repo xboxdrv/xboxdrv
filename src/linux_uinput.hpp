@@ -28,6 +28,9 @@ class LinuxUinput
 {
 private:
   std::string name;
+  uint16_t    vendor;
+  uint16_t    product;
+
   int fd;
   uinput_user_dev user_dev;
   bool key_bit;
@@ -41,7 +44,7 @@ private:
   bool key_lst[KEY_CNT];
 
 public:
-  LinuxUinput(const std::string& name);
+  LinuxUinput(const std::string& name, uint16_t vendor, uint16_t product);
   ~LinuxUinput();
 
   /*@{*/

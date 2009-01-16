@@ -331,31 +331,31 @@ uInput::is_keyboard_button(int ev_code)
   return (ev_code < 256);
 }
 
-uInput::uInput(GamepadType type, uInputCfg config_)
+uInput::uInput(XPadDevice dev, uInputCfg config_)
   : cfg(config_)
 {
   std::fill_n(axis_state,   (int)XBOX_AXIS_MAX, 0);
   std::fill_n(button_state, (int)XBOX_BTN_MAX,  false);
 
-  joystick_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name));
+  joystick_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name, dev.idVendor, dev.idProduct));
 
   if (cfg.extra_devices && need_mouse_device())
     {
-      mouse_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Mouse Emulation"));
+      mouse_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Mouse Emulation", dev.idVendor, dev.idProduct));
     }
 
   if (cfg.extra_devices && need_keyboard_device())
     {
-      keyboard_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Keyboard Emulation"));
+      keyboard_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Keyboard Emulation", dev.idVendor, dev.idProduct));
     }
 
-  switch(type)
+  switch(dev.type)
     {
       case GAMEPAD_XBOX360:
       case GAMEPAD_XBOX:
       case GAMEPAD_XBOX360_WIRELESS:
       case GAMEPAD_FIRESTORM:
-        setup_xbox360_gamepad(type);
+        setup_xbox360_gamepad(dev.type);
         break;
 
       case GAMEPAD_XBOX360_GUITAR:
@@ -363,7 +363,7 @@ uInput::uInput(GamepadType type, uInputCfg config_)
         break;
 
       default:
-        std::cout << "Unhandled type: " << type << std::endl;
+        std::cout << "Unhandled type: " << dev.type << std::endl;
         exit(EXIT_FAILURE);
         break;
     }

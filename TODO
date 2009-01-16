@@ -29,8 +29,6 @@ Stuff to do before 0.5 release:
   don't differ between default bindings and user created ones, also
   which bindings get used depends on other configuration options
 
-* set proper idVendor/idProduct in uinput
-
 * figure out what jscal does and if it can break stuff
   1) jscal uses the joystick interface, not the event interface
 

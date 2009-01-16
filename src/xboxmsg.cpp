@@ -41,6 +41,9 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
       case GAMEPAD_XBOX360_GUITAR:
         return out << "Xbox360 Guitar";
 
+      case GAMEPAD_FIRESTORM:
+        return out << "Firestorm Dual Power";
+
       default:
         return out << "unknown" << std::endl;
     }

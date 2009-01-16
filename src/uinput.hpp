@@ -132,7 +132,7 @@ private:
   std::vector<RelButtonState> rel_button;
 
 public:
-  uInput(GamepadType type, uInputCfg cfg = uInputCfg());
+  uInput(XPadDevice dev, uInputCfg cfg = uInputCfg());
   ~uInput();
 
   void setup_xbox360_gamepad(GamepadType type);

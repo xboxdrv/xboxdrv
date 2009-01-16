@@ -29,8 +29,10 @@
 #include "evdev_helper.hpp"
 #include "linux_uinput.hpp"
 
-LinuxUinput::LinuxUinput(const std::string& name)
+LinuxUinput::LinuxUinput(const std::string& name, uint16_t vendor, uint16_t product)
   : name(name),
+    vendor(vendor),
+    product(product),
     fd(-1),
     key_bit(false),
     rel_bit(false),
@@ -146,8 +148,8 @@ LinuxUinput::finish()
   strncpy(user_dev.name, name.c_str(), UINPUT_MAX_NAME_SIZE);
   user_dev.id.version = 0;
   user_dev.id.bustype = BUS_USB;
-  user_dev.id.vendor  = 0x045e; // FIXME: this shouldn't be hardcoded
-  user_dev.id.product = 0x028e;
+  user_dev.id.vendor  = vendor;
+  user_dev.id.product = product;
 
   //std::cout << "Finalizing uinput: '" << user_dev.name << "'" << std::endl;
 

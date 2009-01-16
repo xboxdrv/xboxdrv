@@ -1052,7 +1052,7 @@ void apply_deadzone(XboxGenericMsg& msg, int deadzone)
   return tv.tv_sec * 1000 + tv.tv_usec/1000;
 }
 
-void controller_loop(uInput* uinput, XboxGenericController* controller, CommandLineOptions& opts)
+void controller_loop(GamepadType type, uInput* uinput, XboxGenericController* controller, CommandLineOptions& opts)
 {
   int timeout = 0; // 0 == no timeout
   XboxGenericMsg oldmsg; // last data send to uinput
@@ -1126,17 +1126,22 @@ void controller_loop(uInput* uinput, XboxGenericController* controller, CommandL
 
           if (uinput) 
             uinput->send(msg);
-                    
+                 
           if (opts.rumble)
             {
-              if (opts.gamepad_type == GAMEPAD_XBOX)
+              if (type == GAMEPAD_XBOX)
                 {
                   controller->set_rumble(msg.xbox.lt, msg.xbox.rt);
                 }
-              else if (opts.gamepad_type == GAMEPAD_XBOX360 ||
-                       opts.gamepad_type == GAMEPAD_XBOX360_WIRELESS)
+              else if (type == GAMEPAD_XBOX360 ||
+                       type == GAMEPAD_XBOX360_WIRELESS)
                 {
-                  controller->set_rumble(msg.xbox360.lt, msg.xbox360.rt);                      
+                  controller->set_rumble(msg.xbox360.lt, msg.xbox360.rt);
+                }
+              else if (type == GAMEPAD_FIRESTORM)
+                {
+                  controller->set_rumble(std::min(255, abs((msg.xbox360.y1>>8)*2)), 
+                                         std::min(255, abs((msg.xbox360.y2>>8)*2)));
                 }
             }
         }
@@ -1165,10 +1170,10 @@ void find_controller(struct usb_device*& dev,
             }
           else
             {
-              dev_type.type = opts.gamepad_type;
+              dev_type.type      = opts.gamepad_type;
               dev_type.idVendor  = dev->descriptor.idVendor;
               dev_type.idProduct = dev->descriptor.idProduct;
-              dev_type.name = "unknown";
+              dev_type.name      = "unknown";
             }
         }
     }
@@ -1303,7 +1308,7 @@ void run_main(CommandLineOptions& opts)
           if (!opts.no_uinput)
             {
               std::cout << "\nStarting with uinput... " << std::flush;
-              uinput = new uInput(dev_type.type, opts.uinput_config);
+              uinput = new uInput(dev_type, opts.uinput_config);
               std::cout << "done" << std::endl;
             }
           else
@@ -1317,7 +1322,7 @@ void run_main(CommandLineOptions& opts)
           std::cout << "\nPress Ctrl-c to quit\n" << std::endl;
           
           global_exit_xboxdrv = false;
-          controller_loop(uinput, controller, opts);
+          controller_loop(dev_type.type, uinput, controller, opts);
           
           delete controller;
           delete uinput;
