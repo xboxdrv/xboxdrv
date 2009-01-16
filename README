@@ -257,6 +257,15 @@ multiple keycodes might break the mapping from keysym to evdev code.
 When you try to let a gamepad key send a keyboard event you might run
 into trouble with Xorg, for possible fixes see the section further down.
 
+For joystick buttons there is in addition to the BTN_JOYSTICK, BTN_X,
+etc. macros the special name JS_$NUM, which sets the given button to
+the $NUMS joystick button, i.e.:
+
+ % xboxdrv --ui-clear --ui-buttonmap A=JS_0,B=JS_1
+
+Note that this will only work if no other joystick button ids are in
+the way
+
 In addition to just the event you can also pass additional
 configuration parameter seperated by colons, the exact parameter
 differ on the type of event, everything but the first parameter is
