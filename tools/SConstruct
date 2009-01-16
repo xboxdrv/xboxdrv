@@ -6,5 +6,6 @@ env.Program("evtest", ["evtest.c"])
 env.Program("usbcat", ["usbcat.cpp"], LIBS = ["usb"])
 env.Program("usbdebug", ["usbdebug.cpp"], LIBS = ["usb", "pthread"])
 env.Program("evtestplus", ["evtestplus.cpp"])
+env.Program("usbattach", ["usbattach.c"])
 
 # EOF #

@@ -52,6 +52,8 @@ http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/
 Later versions:
 ===============
 
+* write a daemon that listens to HAL and automatically starts xboxdrv
+
 * add support for LED messages (can this be used by anything?)
 
 * add support for analog buttons (not all that useful, but would still be nice to have)
