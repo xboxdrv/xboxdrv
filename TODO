@@ -9,17 +9,13 @@ Pre Release Testing:
 Stuff to do before 0.5 release:
 ===============================
 
+* rename usbattach to usbconnect, add disconnect commands
+
 * guitar doesn't get a guide button?!
 
 * add --detach option that detaches any existing driver
 
 * add a --mimic-xpad option that behaves exactly like xpad
-
-* add a --ui-buttonmap X=JS_0
-
-* fix names in non '--silent' output to match names used for button bindings
-
-* print unused dummy bytes
 
 * add a way to not create a joystick/event device
 

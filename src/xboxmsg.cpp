@@ -108,13 +108,13 @@ std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg)
 
 std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg) 
 {
-  out << boost::format("S1:(%6d, %6d)") 
+  out << boost::format("X1:%6d Y1:%6d") 
     % int(msg.x1) % int(msg.y1);
 
-  out << boost::format("  S2:(%6d, %6d)")
+  out << boost::format("  X2:%6d Y2:%6d")
     % int(msg.x2) % int(msg.y2);
                           
-  out << boost::format(" [u:%d|d:%d|l:%d|r:%d]")
+  out << boost::format("  du:%d dd:%d dl:%d dr:%d")
     % int(msg.dpad_up)
     % int(msg.dpad_down)
     % int(msg.dpad_left)
@@ -124,8 +124,8 @@ std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg)
   out << " guide:" << msg.guide;
   out << " start:" << msg.start;
 
-  out << "  sl:" << msg.thumb_l;
-  out << " sr:"  << msg.thumb_r;
+  out << "  TL:" << msg.thumb_l;
+  out << " TR:"  << msg.thumb_r;
 
   out << "  A:" << msg.a;
   out << " B:"  << msg.b;
@@ -146,10 +146,10 @@ std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg)
 
 std::ostream& operator<<(std::ostream& out, const XboxMsg& msg) 
 {
-  out << boost::format(" S1:(%6d, %6d) S2:(%6d, %6d) "
-                       " [u:%d|d:%d|l:%d|r:%d] "
+  out << boost::format(" X1:%6d Y1:%6d  X2:%6d Y2:%6d "
+                       " du:%d dd:%d dl:%d dr:%d "
                        " start:%d back:%d "
-                       " sl:%d sr:%d "
+                       " TL:%d TR:%d "
                        " A:%3d B:%3d X:%3d Y:%3d "
                        " black:%3d white:%3d "
                        " LT:%3d RT:%3d ")
@@ -177,6 +177,9 @@ std::ostream& operator<<(std::ostream& out, const XboxMsg& msg)
 
     % int(msg.lt) 
     % int(msg.rt);
+
+  if (command_line_options->verbose)
+    out << " Dummy: " << msg.dummy;
 
   return out;
 }
