@@ -31,6 +31,12 @@ enum GamepadType {
   GAMEPAD_FIRESTORM
 };
 
+enum XboxMsgType {
+  XBOX_MSG_XBOX,
+  XBOX_MSG_XBOX360,
+  XBOX_MSG_XBOX360_GUITAR
+};
+
 struct Xbox360Msg
 {
   // -------------------------
@@ -164,7 +170,7 @@ struct XboxMsg
 
 struct XboxGenericMsg
 {
-  GamepadType type;
+  XboxMsgType type;
   union {
     struct Xbox360GuitarMsg guitar;
     struct Xbox360Msg       xbox360;

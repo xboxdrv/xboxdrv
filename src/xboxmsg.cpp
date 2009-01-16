@@ -48,18 +48,20 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
 
 std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg)
 {
-  if (msg.type == GAMEPAD_XBOX)
-    return out << msg.xbox;
-  else if (msg.type == GAMEPAD_XBOX_MAT)
-    return out << msg.xbox;
-  else if (msg.type == GAMEPAD_XBOX360)
-    return out << msg.xbox360;
-  else if (msg.type == GAMEPAD_XBOX360_WIRELESS)
-    return out << msg.xbox360;
-  else if (msg.type == GAMEPAD_XBOX360_GUITAR)
-    return out << msg.guitar;
-  else
-    return out << "Error: Unhandled XboxGenericMsg type: " << msg.type;
+  switch (msg.type)
+    {
+      case XBOX_MSG_XBOX:
+        return out << msg.xbox;
+        
+      case XBOX_MSG_XBOX360:
+        return out << msg.xbox360;
+      
+      case XBOX_MSG_XBOX360_GUITAR:
+        return out << msg.guitar;
+  
+      default:
+        return out << "Error: Unhandled XboxGenericMsg type: " << msg.type;
+    }
 }
 
 std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg) 
@@ -180,9 +182,8 @@ int get_button(XboxGenericMsg& msg, XboxButton button)
 {
   switch(msg.type)
     {
-      case GAMEPAD_XBOX360_GUITAR:
-      case GAMEPAD_XBOX360:
-      case GAMEPAD_XBOX360_WIRELESS:
+      case XBOX_MSG_XBOX360:
+      case XBOX_MSG_XBOX360_GUITAR:
         switch(button)
           {
             case XBOX_BTN_START:
@@ -238,8 +239,7 @@ int get_button(XboxGenericMsg& msg, XboxButton button)
           }
         break;
         
-      case GAMEPAD_XBOX:
-      case GAMEPAD_XBOX_MAT:
+      case XBOX_MSG_XBOX:
         switch(button)
           {
             case XBOX_BTN_START:
@@ -294,9 +294,6 @@ int get_button(XboxGenericMsg& msg, XboxButton button)
               return 0;
           }
         break;
-
-      case GAMEPAD_UNKNOWN:
-        break;
     }
   return 0;
 }
@@ -305,9 +302,8 @@ void set_button(XboxGenericMsg& msg, XboxButton button, int v)
 {
   switch(msg.type)
     {
-      case GAMEPAD_XBOX360_GUITAR:
-      case GAMEPAD_XBOX360:
-      case GAMEPAD_XBOX360_WIRELESS:
+      case XBOX_MSG_XBOX360_GUITAR:
+      case XBOX_MSG_XBOX360:
         switch(button)
           {
             case XBOX_BTN_START:
@@ -363,8 +359,7 @@ void set_button(XboxGenericMsg& msg, XboxButton button, int v)
           }
         break;
         
-      case GAMEPAD_XBOX:
-      case GAMEPAD_XBOX_MAT:
+      case XBOX_MSG_XBOX:
         switch(button)
           {
             case XBOX_BTN_START:
@@ -419,9 +414,6 @@ void set_button(XboxGenericMsg& msg, XboxButton button, int v)
               break;
           }
         break;
-
-      case GAMEPAD_UNKNOWN:
-        break;
     }
 }
 
@@ -429,9 +421,8 @@ int get_axis(XboxGenericMsg& msg, XboxAxis axis)
 {
   switch(msg.type)
     {
-      case GAMEPAD_XBOX360_GUITAR:
-      case GAMEPAD_XBOX360:
-      case GAMEPAD_XBOX360_WIRELESS:
+      case XBOX_MSG_XBOX360_GUITAR:
+      case XBOX_MSG_XBOX360:
         switch(axis)
           {
             case XBOX_AXIS_MAX:
@@ -455,8 +446,7 @@ int get_axis(XboxGenericMsg& msg, XboxAxis axis)
           }
         break;
 
-      case GAMEPAD_XBOX:
-      case GAMEPAD_XBOX_MAT:
+      case XBOX_MSG_XBOX:
         switch(axis)
           {
             case XBOX_AXIS_MAX:
@@ -479,9 +469,6 @@ int get_axis(XboxGenericMsg& msg, XboxAxis axis)
               return msg.xbox.rt;
           }
         break;
-
-      case GAMEPAD_UNKNOWN:
-        break;
     }
   return 0;
 }
@@ -490,9 +477,8 @@ void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
 {
   switch(msg.type)
     {
-      case GAMEPAD_XBOX360_GUITAR:
-      case GAMEPAD_XBOX360:
-      case GAMEPAD_XBOX360_WIRELESS:
+      case XBOX_MSG_XBOX360_GUITAR:
+      case XBOX_MSG_XBOX360:
         switch(axis)
           {
             case XBOX_AXIS_MAX:
@@ -516,8 +502,7 @@ void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
           }
         break;
 
-      case GAMEPAD_XBOX:
-      case GAMEPAD_XBOX_MAT:
+      case XBOX_MSG_XBOX:
         switch(axis)
           {
             case XBOX_AXIS_MAX:
@@ -539,9 +524,6 @@ void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
             case XBOX_AXIS_RT:
               msg.xbox.rt = v; break;
           }
-        break;
-
-      case GAMEPAD_UNKNOWN:
         break;
     }
 }

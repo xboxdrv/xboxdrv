@@ -144,12 +144,12 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
     {
       if (is_guitar)
         {
-          msg.type   = GAMEPAD_XBOX360_GUITAR;
+          msg.type   = XBOX_MSG_XBOX360_GUITAR;
           msg.guitar = *reinterpret_cast<Xbox360GuitarMsg*>(data);
         }
       else
         {
-          msg.type    = GAMEPAD_XBOX360;
+          msg.type    = XBOX_MSG_XBOX360;
           msg.xbox360 = *reinterpret_cast<Xbox360Msg*>(data);
         }
       return true;

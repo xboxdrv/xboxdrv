@@ -9,7 +9,9 @@ Pre Release Testing:
 Stuff to do before 0.5 release:
 ===============================
 
-* seperate XboxMsg type from Gamepad type
+* guitar doesn't get a guide button?!
+
+* add --detach option that detaches any existing driver
 
 * add a --mimic-xpad option that behaves exactly like xpad
 
@@ -60,14 +62,9 @@ Later versions:
   device unique, but would make Xorg trouble worse)
 
 
-Thrustmaster Gamepad Rumble:
-usb> ctrl 0x21 0x09 0x0200 0 ff ff 0 0
-Sending to ctrl: 33 9 512 0: [4] { 0xff, 0xff, 0x00, 0x00 } ->
-
 http://lists.libsdl.org/pipermail/sdl-libsdl.org/2007-March/060263.html
 
 - get rid of guitar, merge into xbox360
-- --mimic-xpad
 - fix http://userweb.kernel.org/~dtor/eviocgbit-bug.html in evtest
 - cleanup evtest some more, add more features
 - using rumble in scripts doesn't work, since you can't reset rumble back to 0,0

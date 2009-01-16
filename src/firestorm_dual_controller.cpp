@@ -60,7 +60,7 @@ FirestormDualController::FirestormDualController(struct usb_device* dev)
     }
   else
     {
-      //usb_detach_kernel_driver_np(handle, 0);
+      usb_detach_kernel_driver_np(handle, 0);
 
       int err = usb_claim_interface(handle, 0);
       if (err != 0) 
@@ -111,7 +111,7 @@ FirestormDualController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   else if (ret == sizeof(data))
     {
       memset(&msg, 0, sizeof(msg));
-      msg.type    = GAMEPAD_XBOX360;
+      msg.type    = XBOX_MSG_XBOX360;
 
       msg.xbox360.a = data.a;
       msg.xbox360.b = data.b;

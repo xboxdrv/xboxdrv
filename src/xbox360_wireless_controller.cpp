@@ -141,7 +141,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
         }
       else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
         { // Event message
-          msg.type    = GAMEPAD_XBOX360_WIRELESS;
+          msg.type    = XBOX_MSG_XBOX360;
           msg.xbox360 = *reinterpret_cast<Xbox360Msg*>(&data[4]);
           return true;
         }

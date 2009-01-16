@@ -349,18 +349,23 @@ uInput::uInput(GamepadType type, uInputCfg config_)
       keyboard_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Keyboard Emulation"));
     }
 
-  if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX || type == GAMEPAD_XBOX360_WIRELESS)
+  switch(type)
     {
-      setup_xbox360_gamepad(type);
-    }
-  else if (type == GAMEPAD_XBOX360_GUITAR) 
-    {
-      setup_xbox360_guitar();
-    }
-  else
-    {
-      std::cout << "Unhandled type: " << type << std::endl;
-      exit(EXIT_FAILURE);
+      case GAMEPAD_XBOX360:
+      case GAMEPAD_XBOX:
+      case GAMEPAD_XBOX360_WIRELESS:
+      case GAMEPAD_FIRESTORM:
+        setup_xbox360_gamepad(type);
+        break;
+
+      case GAMEPAD_XBOX360_GUITAR:
+        setup_xbox360_guitar();
+        break;
+
+      default:
+        std::cout << "Unhandled type: " << type << std::endl;
+        exit(EXIT_FAILURE);
+        break;
     }
 
   joystick_uinput_dev->finish();
@@ -442,7 +447,8 @@ uInput::setup_xbox360_gamepad(GamepadType type)
   add_button(XBOX_BTN_START);
   add_button(XBOX_BTN_BACK);
         
-  if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX360_WIRELESS)
+  if (type == GAMEPAD_XBOX360 || 
+      type == GAMEPAD_XBOX360_WIRELESS)
     add_button(XBOX_BTN_GUIDE);
 
   add_button(XBOX_BTN_A);
@@ -495,17 +501,15 @@ uInput::send(XboxGenericMsg& msg)
 {
   switch(msg.type)
     {
-      case GAMEPAD_XBOX:
-      case GAMEPAD_XBOX_MAT:
+      case XBOX_MSG_XBOX:
         send(msg.xbox);
         break;
 
-      case GAMEPAD_XBOX360:
-      case GAMEPAD_XBOX360_WIRELESS:
+      case XBOX_MSG_XBOX360:
         send(msg.xbox360);
         break;
 
-      case GAMEPAD_XBOX360_GUITAR:
+      case XBOX_MSG_XBOX360_GUITAR:
         send(msg.guitar);
         break;
         

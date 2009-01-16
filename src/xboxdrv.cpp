@@ -999,20 +999,17 @@ void apply_square_axis(XboxGenericMsg& msg)
 {
   switch (msg.type)
     {
-      case GAMEPAD_XBOX:
-      case GAMEPAD_XBOX_MAT:
+      case XBOX_MSG_XBOX:
         squarify_axis(msg.xbox.x1, msg.xbox.y1);
         squarify_axis(msg.xbox.x2, msg.xbox.y2);
         break;
 
-      case GAMEPAD_XBOX360:
-      case GAMEPAD_XBOX360_WIRELESS:
+      case XBOX_MSG_XBOX360:
         squarify_axis(msg.xbox360.x1, msg.xbox360.y1);
         squarify_axis(msg.xbox360.x2, msg.xbox360.y2);
         break;
         
-      case GAMEPAD_XBOX360_GUITAR:
-      case GAMEPAD_UNKNOWN:
+      case XBOX_MSG_XBOX360_GUITAR:
         break;
     }
 }
@@ -1021,8 +1018,7 @@ void apply_deadzone(XboxGenericMsg& msg, int deadzone)
 {
   switch (msg.type)
     {
-      case GAMEPAD_XBOX:
-      case GAMEPAD_XBOX_MAT:
+      case XBOX_MSG_XBOX:
         if (abs(msg.xbox.x1) < deadzone)
           msg.xbox.x1 = 0;
         if (abs(msg.xbox.y1) < deadzone)
@@ -1033,8 +1029,7 @@ void apply_deadzone(XboxGenericMsg& msg, int deadzone)
           msg.xbox.y2 = 0;
         break;
 
-      case GAMEPAD_XBOX360:
-      case GAMEPAD_XBOX360_WIRELESS:
+      case XBOX_MSG_XBOX360:
         if (abs(msg.xbox360.x1) < deadzone)
           msg.xbox360.x1 = 0;
         if (abs(msg.xbox360.y1) < deadzone)
@@ -1045,8 +1040,7 @@ void apply_deadzone(XboxGenericMsg& msg, int deadzone)
           msg.xbox360.y2 = 0;      
         break;
 
-      case GAMEPAD_XBOX360_GUITAR:
-      case GAMEPAD_UNKNOWN:
+      case XBOX_MSG_XBOX360_GUITAR:
         // FIXME: any use for deadzone here?
         break;
     }
@@ -1277,7 +1271,6 @@ void run_main(CommandLineOptions& opts)
 
           case GAMEPAD_FIRESTORM:
             controller = new FirestormDualController(dev);
-            dev_type.type = GAMEPAD_XBOX360;
             break;
 
           default:
