@@ -197,6 +197,8 @@ AxisEvent::from_string(const std::string& str)
 
 uInputCfg::uInputCfg() 
 {
+  device_name = "Xbox Gamepad (userspace driver)";
+
   trigger_as_button = false;
   dpad_as_button    = false;
   trigger_as_zaxis  = false;
@@ -335,16 +337,16 @@ uInput::uInput(GamepadType type, uInputCfg config_)
   std::fill_n(axis_state,   (int)XBOX_AXIS_MAX, 0);
   std::fill_n(button_state, (int)XBOX_BTN_MAX,  false);
 
-  joystick_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput("Xbox Gamepad (userspace driver)"));
+  joystick_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name));
 
   if (cfg.extra_devices && need_mouse_device())
     {
-      mouse_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput("Xbox Gamepad - Mouse Emulation (userspace driver)"));
+      mouse_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Mouse Emulation"));
     }
 
   if (cfg.extra_devices && need_keyboard_device())
     {
-      keyboard_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput("Xbox Gamepad - Keyboard Emulation (userspace driver)"));
+      keyboard_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Keyboard Emulation"));
     }
 
   if (type == GAMEPAD_XBOX360 || type == GAMEPAD_XBOX || type == GAMEPAD_XBOX360_WIRELESS)
