@@ -29,6 +29,94 @@
 #include "evdev_helper.hpp"
 #include "linux_uinput.hpp"
 
+
+std::ostream& operator<<(std::ostream& out, const struct ff_envelope& envelope)
+{
+  out << "attack_length: " << envelope.attack_length
+      << " attack_level: " << envelope.attack_level
+      << " fade_length: " << envelope.fade_length
+      << " fade_level: " << envelope.fade_level;
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const struct ff_replay& replay)
+{
+  out << "length: " << replay.length << " delay: " << replay.delay;
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const struct ff_trigger& trigger)
+{
+  out << "button: " << trigger.button << " interval: " << trigger.interval;
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const struct ff_effect& effect)
+{
+  switch (effect.type)
+    {
+      case FF_CONSTANT:
+        out << "FF_CONSTANT "
+            << "level: " << effect.u.constant.level
+            << " envelope: { " << effect.u.constant.envelope << " }";
+        break;
+
+      case FF_PERIODIC:
+        out << "FF_PERIODIC"
+            << " waveform: " << effect.u.periodic.waveform
+            << " period: " << effect.u.periodic.period
+            << " magnitude: " << effect.u.periodic.magnitude
+            << " offset: " << effect.u.periodic.offset
+            << " phase: " << effect.u.periodic.phase
+            << " envelope: { " << effect.u.periodic.envelope << " }";
+        break;
+
+      case FF_RAMP:
+        out << "FF_RAMP " 
+            << "start_level: " << effect.u.ramp.start_level
+            << "end_level: " << effect.u.ramp.end_level
+            << "envelope: { " <<  effect.u.ramp.envelope << " }";
+        break;
+
+      case FF_SPRING:
+        out << "FF_SPRING";
+        break;
+
+      case FF_FRICTION:
+        out << "FF_FRICTION";
+        break;
+
+      case FF_DAMPER:
+        out << "FF_DAMPER";
+        break;
+
+      case FF_RUMBLE:
+        out << "FF_RUMBLE: "
+            << "strong_magnitude: " << effect.u.rumble.strong_magnitude
+            << " weak_magnitude: " << effect.u.rumble.weak_magnitude;
+        break;
+
+      case FF_INERTIA:
+        out << "FF_INERTIA";
+        break;
+
+      case FF_CUSTOM:
+        out << "FF_CUSTOM";
+        break;
+
+      default:
+        out << "FF_<unknown>";
+        break;
+    }
+
+  out << "\n";
+  out << "direction: " << effect.direction << "\n";
+  out << "replay: " << effect.replay << "\n";
+  out << "trigger: " << effect.trigger << "\n";
+
+  return out;
+}
+
 LinuxUinput::LinuxUinput(const std::string& name, uint16_t vendor, uint16_t product)
   : name(name),
     vendor(vendor),
@@ -43,6 +131,7 @@ LinuxUinput::LinuxUinput(const std::string& name, uint16_t vendor, uint16_t prod
   std::fill_n(abs_lst, ABS_CNT, false);
   std::fill_n(rel_lst, REL_CNT, false);
   std::fill_n(key_lst, KEY_CNT, false);
+  std::fill_n(ff_lst,  FF_CNT,  false);
 
   memset(&user_dev, 0, sizeof(uinput_user_dev));
 
@@ -143,6 +232,23 @@ LinuxUinput::add_key(uint16_t code)
 }
 
 void
+LinuxUinput::add_ff(uint16_t code)
+{
+  if (!ff_lst[code])
+    {
+      ff_lst[code] = true;
+
+      if (!ff_bit)
+        {
+          ioctl(fd, UI_SET_EVBIT, EV_FF);
+          ff_bit = true;
+        }
+
+      ioctl(fd, UI_SET_FFBIT, code);
+    }  
+}
+
+void
 LinuxUinput::finish()
 {
   strncpy(user_dev.name, name.c_str(), UINPUT_MAX_NAME_SIZE);
@@ -150,6 +256,9 @@ LinuxUinput::finish()
   user_dev.id.bustype = BUS_USB;
   user_dev.id.vendor  = vendor;
   user_dev.id.product = product;
+
+  if (ff_bit)
+    user_dev.ff_effects_max = 64;
 
   //std::cout << "Finalizing uinput: '" << user_dev.name << "'" << std::endl;
 
@@ -181,5 +290,102 @@ LinuxUinput::send(uint16_t type, uint16_t code, int32_t value)
   if (write(fd, &ev, sizeof(ev)) < 0)
     throw std::runtime_error(std::string("uinput:send_button: ") + strerror(errno)); 
 }
+
+void
+LinuxUinput::update(float delta)
+{
+  if (ff_bit)
+    {
+      struct input_event ev;
+
+      int ret = read(fd, &ev, sizeof(ev));
+      if (ret < 0)
+        {
+          if (errno != EAGAIN)
+            std::cout << "Error: " << strerror(errno) << " " << ret << std::endl;
+        }
+      else if (ret == sizeof(ev))
+        { // successful read
+          std::cout << "type: " << ev.type << " code: " << ev.code << " value: " << ev.value << std::endl;
+
+          switch(ev.type)
+            {
+              case EV_LED:
+                if (ev.code == LED_MISC)
+                  {
+                    // FIXME: implement this
+                    std::cout << "unimplemented: Set LED status: " << ev.value << std::endl;
+                  }
+                break;
+
+              case EV_FF:
+                std::cout << "EV_FF: playing effect: effect_id = " << ev.code << " value: " << ev.value << std::endl;
+                break;
+
+              case EV_UINPUT:
+                switch (ev.code)
+                  {
+                    case UI_FF_UPLOAD:
+                      {
+                        struct uinput_ff_upload upload;
+                        memset(&upload, 0, sizeof(upload));
+
+                        // *VERY* important, without this you
+                        // break the kernel and have to reboot due
+                        // to dead hanging process
+                        upload.request_id = ev.value;
+
+                        ioctl(fd, UI_BEGIN_FF_UPLOAD, &upload);
+
+                        std::cout << "XXX FF_UPLOAD: rumble upload:"
+                                  << " effect_id: " << upload.effect.id
+                                  << " effect_type: " << upload.effect.type
+                                  << std::endl;
+                        std::cout << "EFFECT: " << upload.effect << std::endl;
+
+                        upload.retval = 0;
+                            
+                        ioctl(fd, UI_END_FF_UPLOAD, &upload);
+                      }
+                      break;
+
+                    case UI_FF_ERASE:
+                      {
+                        struct uinput_ff_erase erase;
+                        memset(&erase, 0, sizeof(erase));
+
+                        // *VERY* important, without this you
+                        // break the kernel and have to reboot due
+                        // to dead hanging process
+                        erase.request_id = ev.value;
+
+                        ioctl(fd, UI_BEGIN_FF_ERASE, &erase);
+
+                        std::cout << "FF_ERASE: rumble erase: effect_id = " << erase.effect_id << std::endl;
+                        erase.retval = 0; // FIXME: is this used?
+                            
+                        ioctl(fd, UI_END_FF_ERASE, &erase);
+                      }
+                      break;
+
+                    default: 
+                      std::cout << "Unhandled event code read" << std::endl;
+                      break;
+                  }
+                break;
+
+              default:
+                std::cout << "Unhandled event type read: " << ev.type << std::endl;
+                break;
+            }
+          std::cout << "--------------------------------" << std::endl;
+        }
+      else
+        {
+          std::cout << "uInput::update: short read: " << ret << std::endl;
+        }
+    }
+}
+
 
 /* EOF */

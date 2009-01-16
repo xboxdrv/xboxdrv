@@ -383,17 +383,19 @@ uInput::setup_xbox360_gamepad(GamepadType type)
 
   if (cfg.force_feedback)
     {
-      //       ioctl(fd, UI_SET_EVBIT, EV_FF);
-      //       ioctl(fd, UI_SET_FFBIT, FF_RUMBLE);
-      //       ioctl(fd, UI_SET_FFBIT, FF_PERIODIC);
+      // Not sure how much we should support, for the moment we only
+      // do rumble
+      get_joystick_uinput()->add_ff(FF_RUMBLE);
 
-      //       // More stuff, only for testing
-      //       ioctl(fd, UI_SET_FFBIT, FF_CONSTANT);
-      //       ioctl(fd, UI_SET_FFBIT, FF_SPRING);
-      //       ioctl(fd, UI_SET_FFBIT, FF_FRICTION);
-      //       ioctl(fd, UI_SET_FFBIT, FF_DAMPER);
-      //       ioctl(fd, UI_SET_FFBIT, FF_INERTIA);
-      //       ioctl(fd, UI_SET_FFBIT, FF_RAMP);
+      //get_joystick_uinput()->add_ff(FF_PERIODIC);
+
+      // More stuff, only for testing
+      //get_joystick_uinput()->add_ff(FF_CONSTANT);
+      //get_joystick_uinput()->add_ff(FF_SPRING);
+      //get_joystick_uinput()->add_ff(FF_FRICTION);
+      //get_joystick_uinput()->add_ff(FF_DAMPER);
+      //get_joystick_uinput()->add_ff(FF_INERTIA);
+      //get_joystick_uinput()->add_ff(FF_RAMP);
     }
 
   if (cfg.dpad_only)
@@ -461,9 +463,6 @@ uInput::setup_xbox360_gamepad(GamepadType type)
 
   add_button(XBOX_BTN_THUMB_L);
   add_button(XBOX_BTN_THUMB_R);
-
-  // if (cfg.force_feedback)
-  // uinp.ff_effects_max = 64; 
 }
 
 void
@@ -681,96 +680,10 @@ uInput::send(Xbox360GuitarMsg& msg)
   send_axis(XBOX_AXIS_Y1, msg.tilt);
 }
 
-std::ostream& operator<<(std::ostream& out, const struct ff_envelope& envelope)
-{
-  out << "attack_length: " << envelope.attack_length
-      << " attack_level: " << envelope.attack_level
-      << " fade_length: " << envelope.fade_length
-      << " fade_level: " << envelope.fade_level;
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const struct ff_replay& replay)
-{
-  out << "length: " << replay.length << " delay: " << replay.delay;
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const struct ff_trigger& trigger)
-{
-  out << "button: " << trigger.button << " interval: " << trigger.interval;
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const struct ff_effect& effect)
-{
-  switch (effect.type)
-    {
-      case FF_CONSTANT:
-        out << "FF_CONSTANT "
-            << "level: " << effect.u.constant.level
-            << " envelope: { " << effect.u.constant.envelope << " }";
-        break;
-
-      case FF_PERIODIC:
-        out << "FF_PERIODIC"
-            << " waveform: " << effect.u.periodic.waveform
-            << " period: " << effect.u.periodic.period
-            << " magnitude: " << effect.u.periodic.magnitude
-            << " offset: " << effect.u.periodic.offset
-            << " phase: " << effect.u.periodic.phase
-            << " envelope: { " << effect.u.periodic.envelope << " }";
-        break;
-
-      case FF_RAMP:
-        out << "FF_RAMP " 
-            << "start_level: " << effect.u.ramp.start_level
-            << "end_level: " << effect.u.ramp.end_level
-            << "envelope: { " <<  effect.u.ramp.envelope << " }";
-        break;
-
-      case FF_SPRING:
-        out << "FF_SPRING";
-        break;
-
-      case FF_FRICTION:
-        out << "FF_FRICTION";
-        break;
-
-      case FF_DAMPER:
-        out << "FF_DAMPER";
-        break;
-
-      case FF_RUMBLE:
-        out << "FF_RUMBLE: "
-            << "strong_magnitude: " << effect.u.rumble.strong_magnitude
-            << " weak_magnitude: " << effect.u.rumble.weak_magnitude;
-        break;
-
-      case FF_INERTIA:
-        out << "FF_INERTIA";
-        break;
-
-      case FF_CUSTOM:
-        out << "FF_CUSTOM";
-        break;
-
-      default:
-        out << "FF_<unknown>";
-        break;
-    }
-
-  out << "\n";
-  out << "direction: " << effect.direction << "\n";
-  out << "replay: " << effect.replay << "\n";
-  out << "trigger: " << effect.trigger << "\n";
-
-  return out;
-}
-
 void
 uInput::update(float delta)
 {
+  // Relative Motion emulation for axis
   int msec = static_cast<int>(delta*1000);
   for(std::vector<RelAxisState>::iterator i = rel_axis.begin(); i != rel_axis.end(); ++i)
     {
@@ -784,6 +697,7 @@ uInput::update(float delta)
         }
     }
 
+  // Relative Motion emulation for button
   for(std::vector<RelButtonState>::iterator i = rel_button.begin(); i != rel_button.end(); ++i)
     {
       i->time += msec;
@@ -802,100 +716,9 @@ uInput::update(float delta)
           i->next_time += cfg.btn_map[i->button].rel.repeat;
         }
     }
-  
-#if 0
-  if (cfg.force_feedback)
-    {
-      struct input_event ev;
 
-      int ret = read(fd, &ev, sizeof(ev));
-      if (ret < 0)
-        {
-          if (errno != EAGAIN)
-            std::cout << "Error: " << strerror(errno) << " " << ret << std::endl;
-        }
-      else if (ret == sizeof(ev))
-        { // successful read
-          std::cout << "type: " << ev.type << " code: " << ev.code << " value: " << ev.value << std::endl;
-
-          switch(ev.type)
-            {
-              case EV_LED:
-                if (ev.code == LED_MISC)
-                  {
-                    // FIXME: implement this
-                    std::cout << "unimplemented: Set LED status: " << ev.value << std::endl;
-                  }
-                break;
-
-              case EV_FF:
-                std::cout << "EV_FF: playing effect: effect_id = " << ev.code << " value: " << ev.value << std::endl;
-                break;
-
-              case EV_UINPUT:
-                switch (ev.code)
-                  {
-                    case UI_FF_UPLOAD:
-                      {
-                        struct uinput_ff_upload upload;
-                        memset(&upload, 0, sizeof(upload));
-
-                        // *VERY* important, without this you
-                        // break the kernel and have to reboot due
-                        // to dead hanging process
-                        upload.request_id = ev.value;
-
-                        ioctl(fd, UI_BEGIN_FF_UPLOAD, &upload);
-
-                        std::cout << "XXX FF_UPLOAD: rumble upload:"
-                                  << " effect_id: " << upload.effect.id
-                                  << " effect_type: " << upload.effect.type
-                                  << std::endl;
-                        std::cout << "EFFECT: " << upload.effect << std::endl;
-
-                        upload.retval = 0;
-                            
-                        ioctl(fd, UI_END_FF_UPLOAD, &upload);
-                      }
-                      break;
-
-                    case UI_FF_ERASE:
-                      {
-                        struct uinput_ff_erase erase;
-                        memset(&erase, 0, sizeof(erase));
-
-                        // *VERY* important, without this you
-                        // break the kernel and have to reboot due
-                        // to dead hanging process
-                        erase.request_id = ev.value;
-
-                        ioctl(fd, UI_BEGIN_FF_ERASE, &erase);
-
-                        std::cout << "FF_ERASE: rumble erase: effect_id = " << erase.effect_id << std::endl;
-                        erase.retval = 0; // FIXME: is this used?
-                            
-                        ioctl(fd, UI_END_FF_ERASE, &erase);
-                      }
-                      break;
-
-                    default: 
-                      std::cout << "Unhandled event code read" << std::endl;
-                      break;
-                  }
-                break;
-
-              default:
-                std::cout << "Unhandled event type read: " << ev.type << std::endl;
-                break;
-            }
-          std::cout << "--------------------------------" << std::endl;
-        }
-      else
-        {
-          std::cout << "uInput::update: short read: " << ret << std::endl;
-        }
-    }
-#endif
+  // Update forcefeedback 
+  get_joystick_uinput()->update(delta);
 }
 
 void

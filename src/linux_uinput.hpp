@@ -42,6 +42,7 @@ private:
   bool abs_lst[ABS_CNT];
   bool rel_lst[REL_CNT];
   bool key_lst[KEY_CNT];
+  bool ff_lst[FF_CNT];
 
 public:
   LinuxUinput(const std::string& name, uint16_t vendor, uint16_t product);
@@ -56,12 +57,16 @@ public:
 
   /** Create a relative axis (mice) */
   void add_rel(uint16_t code);
+
+  void add_ff(uint16_t code);
   
   /** Finish*/
   void finish();
   /*@}*/
 
   void send(uint16_t type, uint16_t code, int32_t value);
+
+  void update(float delta);
 
 private:
   LinuxUinput (const LinuxUinput&);
