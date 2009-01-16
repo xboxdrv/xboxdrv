@@ -330,9 +330,9 @@ LinuxUinput::update(float delta)
                         struct uinput_ff_upload upload;
                         memset(&upload, 0, sizeof(upload));
 
-                        // *VERY* important, without this you
-                        // break the kernel and have to reboot due
-                        // to dead hanging process
+                        // *VERY* important, without this you break
+                        // the kernel and have to reboot due to dead
+                        // hanging process
                         upload.request_id = ev.value;
 
                         ioctl(fd, UI_BEGIN_FF_UPLOAD, &upload);
@@ -354,15 +354,15 @@ LinuxUinput::update(float delta)
                         struct uinput_ff_erase erase;
                         memset(&erase, 0, sizeof(erase));
 
-                        // *VERY* important, without this you
-                        // break the kernel and have to reboot due
-                        // to dead hanging process
+                        // *VERY* important, without this you break
+                        // the kernel and have to reboot due to dead
+                        // hanging process
                         erase.request_id = ev.value;
 
                         ioctl(fd, UI_BEGIN_FF_ERASE, &erase);
 
                         std::cout << "FF_ERASE: rumble erase: effect_id = " << erase.effect_id << std::endl;
-                        erase.retval = 0; // FIXME: is this used?
+                        erase.retval = 0;
                             
                         ioctl(fd, UI_END_FF_ERASE, &erase);
                       }

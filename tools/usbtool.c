@@ -27,17 +27,38 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+void print_usage(int argc, char** argv)
+{
+      printf("Usage: %s connect    /dev/bus/usb/${BUS}/${DEV}\n", argv[0]);
+      printf("       %s disconnect /dev/bus/usb/${BUS}/${DEV}\n", argv[0]);
+      printf("Disconnect or reconnect USB devices\n");
+}
+
 int main(int argc, char** argv)
 {
-  if (argc != 2)
+  if (argc != 3)
     {
-      printf("Usage: %s /dev/bus/usb/${BUS}/${DEV}\n", argv[0]);
-      printf("Reconnect USB devices after they got disconnected\n");
+      print_usage(argc, argv);
       return EXIT_FAILURE;
     }
   else
     {
-      int fd = open(argv[1], O_RDWR);
+      int connect;
+      if (strcmp(argv[1], "connect") == 0)
+        {
+          connect = 1;
+        }
+      else if (strcmp(argv[1], "disconnect") == 0)
+        {
+          connect = 0;
+        }
+      else
+        {
+          print_usage(argc, argv);
+          return EXIT_FAILURE;
+        }
+
+      int fd = open(argv[2], O_RDWR);
 
       if (fd < 0)
         {
@@ -49,20 +70,23 @@ int main(int argc, char** argv)
           struct usbdevfs_ioctl command;
 
           command.ifno = 0; // interface number, does it matter?
-          command.ioctl_code = USBDEVFS_CONNECT;
+          if (connect)
+            command.ioctl_code = USBDEVFS_CONNECT;
+          else
+            command.ioctl_code = USBDEVFS_DISCONNECT;
           command.data = NULL;
-
+          
           int ret = ioctl(fd, USBDEVFS_IOCTL, &command);
 
           if (ret < 0)
             {
-              printf("%s: Could not issue usb connect on %s: %s\n", argv[0], argv[1], strerror(errno));
+              printf("%s: Could not issue usb %s on %s: %s\n", argv[0], argv[1], argv[2], strerror(errno));
               close(fd);
               return EXIT_FAILURE;
             }
           else
             {
-              printf("%s: reconnect of %s successful\n", argv[0], argv[1]);
+              printf("%s: %s of %s successful\n", argv[0], argv[1], argv[2]);
               close(fd);
               return EXIT_SUCCESS;
             }

@@ -9,8 +9,6 @@ Pre Release Testing:
 Stuff to do before 0.5 release:
 ===============================
 
-* rename usbattach to usbconnect, add disconnect commands
-
 * guitar doesn't get a guide button?!
 
 * add --detach option that detaches any existing driver
