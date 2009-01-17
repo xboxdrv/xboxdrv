@@ -254,8 +254,22 @@ A full list of X11 keysyms is available at
 are reachable by your current keymap. Keysyms that are reachable via
 multiple keycodes might break the mapping from keysym to evdev code.
 
-When you try to let a gamepad key send a keyboard event you might run
-into trouble with Xorg, for possible fixes see the section further down.
+When you try to let a gamepad key send a keyboard events Xorg must
+register it as keyboard device to work properly. This seems to work
+automatically when you bind more then two keyboard keys, if you bind
+less you need to create the file /etc/hal/fdi/preprobe/xboxdrv.fdi
+containing:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<deviceinfo version="0.2">
+  <device>
+   <match key="input.product" string="Xbox Gamepad (userspace driver) - Keyboard Emulation">
+     <addset key="info.capabilities" type="strlist">input.keys</addset>
+   </match>
+  </device>
+</deviceinfo>
+
+This will tell HAL and later Xorg that xboxdrv acts as keyboard.
 
 For joystick buttons there is in addition to the BTN_JOYSTICK, BTN_X,
 etc. macros the special name JS_$NUM, which sets the given button to
