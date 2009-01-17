@@ -45,8 +45,7 @@ Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev,
     }
   else
     {
-      // FIXME: bInterfaceNumber shouldn't be hardcoded
-      int err = usb_claim_interface(handle, 0);
+      int err = usb_claim_interface(handle, interface);
       if (err != 0) 
         {
           std::ostringstream out;
