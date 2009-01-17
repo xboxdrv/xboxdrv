@@ -5,6 +5,16 @@ Pre Release Testing:
 * --dpad-only check that X/Y act properly
 * --dpad-as-button check buttons are working and no useless axis present
 
+TAG=0.4.2
+git tag ${TAG}
+git-archive --format=tar --prefix="xboxdrv-linux-${TAG}/" ${TAG} | bzip2 -c > /tmp/xboxdrv-linux-${TAG}.tar.bz2
+git push --tags
+
+Stuff to do before 0.4.3 release:
+=================================
+
+* improve force feedback output a little bit
+
 
 Stuff to do before 0.5 release:
 ===============================
@@ -17,12 +27,6 @@ Stuff to do before 0.5 release:
 
 * add a way to not create a joystick/event device
 
-* report more precisly what devices got created, include device name (HAL has that information)
-
-* display ui-buttonmap in the configuration overview, tricky since we
-  don't differ between default bindings and user created ones, also
-  which bindings get used depends on other configuration options
-
 * figure out what jscal does and if it can break stuff
   1) jscal uses the joystick interface, not the event interface
 
@@ -31,23 +35,28 @@ Stuff to do before 0.5 release:
   2) check if endpoints are available on start
   3) if not, then use different one, seems to be just 1 or 2
 
-
-
 * implement basic rumble force feedback support
-  1) move force feedback code from uinput into LinuxUinput
-
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
-
+- see ff-memless for effect emulation on rumble
 - handle FF status report
 
-http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/
+
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
 
-* figure out which devices xorg/hal handles as keyboard (just a button
-  isn't enough, KEY_SPACE might be)
+http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/
 
 
 Later versions:
 ===============
+
+* figure out which devices xorg/hal handles as keyboard and how to
+  make it always happen, seems to require two keyboard keys, devices
+  with only one aren't registered
+
+* display ui-buttonmap in the configuration overview, tricky since we
+  don't differ between default bindings and user created ones, also
+  which bindings get used depends on other configuration options
+
+* report more precisly what devices got created, include device name (HAL has that information)
 
 * write a daemon that listens to HAL and automatically starts xboxdrv
 

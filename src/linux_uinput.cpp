@@ -29,90 +29,89 @@
 #include "evdev_helper.hpp"
 #include "linux_uinput.hpp"
 
-
 std::ostream& operator<<(std::ostream& out, const struct ff_envelope& envelope)
 {
-  out << "attack_length: " << envelope.attack_length
-      << " attack_level: " << envelope.attack_level
-      << " fade_length: " << envelope.fade_length
-      << " fade_level: " << envelope.fade_level;
+  out << "Envelope(attack_length:" << envelope.attack_length
+      << ", attack_level:" << envelope.attack_level
+      << ", fade_length:" << envelope.fade_length
+      << ", fade_level:" << envelope.fade_level << ")";
   return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const struct ff_replay& replay)
 {
-  out << "length: " << replay.length << " delay: " << replay.delay;
+  out << "Replay(length:" << replay.length << ", delay:" << replay.delay << ")";
   return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const struct ff_trigger& trigger)
 {
-  out << "button: " << trigger.button << " interval: " << trigger.interval;
+  out << "Trigger(button:" << trigger.button << ", interval:" << trigger.interval << ")";
   return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const struct ff_effect& effect)
 {
+  std::cout << "Effect(";
   switch (effect.type)
     {
       case FF_CONSTANT:
-        out << "FF_CONSTANT "
-            << "level: " << effect.u.constant.level
-            << " envelope: { " << effect.u.constant.envelope << " }";
+        out << "FF_CONSTANT("
+            << "level:" << effect.u.constant.level
+            << ", envelope:" << effect.u.constant.envelope << ")";
         break;
 
       case FF_PERIODIC:
-        out << "FF_PERIODIC"
-            << " waveform: " << effect.u.periodic.waveform
-            << " period: " << effect.u.periodic.period
-            << " magnitude: " << effect.u.periodic.magnitude
-            << " offset: " << effect.u.periodic.offset
-            << " phase: " << effect.u.periodic.phase
-            << " envelope: { " << effect.u.periodic.envelope << " }";
+        out << "FF_PERIODIC("
+            << ", waveform:" << effect.u.periodic.waveform
+            << ", period:" << effect.u.periodic.period
+            << ", magnitude:" << effect.u.periodic.magnitude
+            << ", offset:" << effect.u.periodic.offset
+            << ", phase:" << effect.u.periodic.phase
+            << ", envelope:" << effect.u.periodic.envelope << ")";
         break;
 
       case FF_RAMP:
-        out << "FF_RAMP " 
-            << "start_level: " << effect.u.ramp.start_level
-            << "end_level: " << effect.u.ramp.end_level
-            << "envelope: { " <<  effect.u.ramp.envelope << " }";
+        out << "FF_RAMP(" 
+            << "start_level:" << effect.u.ramp.start_level
+            << ", end_level:" << effect.u.ramp.end_level
+            << ", envelope:" <<  effect.u.ramp.envelope << ")";
         break;
 
       case FF_SPRING:
-        out << "FF_SPRING";
+        out << "FF_SPRING()";
         break;
 
       case FF_FRICTION:
-        out << "FF_FRICTION";
+        out << "FF_FRICTION()";
         break;
 
       case FF_DAMPER:
-        out << "FF_DAMPER";
+        out << "FF_DAMPER()";
         break;
 
       case FF_RUMBLE:
-        out << "FF_RUMBLE: "
-            << "strong_magnitude: " << effect.u.rumble.strong_magnitude
-            << " weak_magnitude: " << effect.u.rumble.weak_magnitude;
+        out << "FF_RUMBLE("
+            << "strong_magnitude:" << effect.u.rumble.strong_magnitude
+            << ", weak_magnitude:" << effect.u.rumble.weak_magnitude << ")";
         break;
 
       case FF_INERTIA:
-        out << "FF_INERTIA";
+        out << "FF_INERTIA()";
         break;
 
       case FF_CUSTOM:
-        out << "FF_CUSTOM";
+        out << "FF_CUSTOM()";
         break;
 
       default:
-        out << "FF_<unknown>";
+        out << "FF_<unknown>()";
         break;
     }
 
-  out << "\n";
-  out << "direction: " << effect.direction << "\n";
-  out << "replay: " << effect.replay << "\n";
-  out << "trigger: " << effect.trigger << "\n";
+  out << ", direction:" << effect.direction
+      << ", replay:" << effect.replay
+      << ", trigger:" << effect.trigger << ")";
 
   return out;
 }
@@ -306,7 +305,7 @@ LinuxUinput::update(float delta)
         }
       else if (ret == sizeof(ev))
         { // successful read
-          std::cout << "type: " << ev.type << " code: " << ev.code << " value: " << ev.value << std::endl;
+          //std::cout << "type: " << ev.type << " code: " << ev.code << " value: " << ev.value << std::endl;
 
           switch(ev.type)
             {
@@ -319,7 +318,7 @@ LinuxUinput::update(float delta)
                 break;
 
               case EV_FF:
-                std::cout << "EV_FF: playing effect: effect_id = " << ev.code << " value: " << ev.value << std::endl;
+                std::cout << "FFPlay(effect_id:" << ev.code << ", value:" << ev.value << ")" << std::endl;
                 break;
 
               case EV_UINPUT:
@@ -337,12 +336,11 @@ LinuxUinput::update(float delta)
 
                         ioctl(fd, UI_BEGIN_FF_UPLOAD, &upload);
 
-                        std::cout << "XXX FF_UPLOAD: rumble upload:"
-                                  << " effect_id: " << upload.effect.id
-                                  << " effect_type: " << upload.effect.type
-                                  << std::endl;
-                        std::cout << "EFFECT: " << upload.effect << std::endl;
-
+                        std::cout << "FF_UPLOAD("
+                                  << "effect_id:" << upload.effect.id
+                                  << ", effect_type:" << upload.effect.type
+                                  << ",\n          " << upload.effect 
+                                  << ")" << std::endl;
                         upload.retval = 0;
                             
                         ioctl(fd, UI_END_FF_UPLOAD, &upload);
@@ -361,7 +359,7 @@ LinuxUinput::update(float delta)
 
                         ioctl(fd, UI_BEGIN_FF_ERASE, &erase);
 
-                        std::cout << "FF_ERASE: rumble erase: effect_id = " << erase.effect_id << std::endl;
+                        std::cout << "FF_ERASE(effect_id:" << erase.effect_id << ")" << std::endl;
                         erase.retval = 0;
                             
                         ioctl(fd, UI_END_FF_ERASE, &erase);
@@ -378,7 +376,6 @@ LinuxUinput::update(float delta)
                 std::cout << "Unhandled event type read: " << ev.type << std::endl;
                 break;
             }
-          std::cout << "--------------------------------" << std::endl;
         }
       else
         {

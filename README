@@ -653,8 +653,19 @@ Force feedback is provided via the standard kernel ff interface:
 [[ Known bugs ]]
 ----------------
 
-X11 keysyms might not work correctly in '--ui-buttonmap a=XK_Down'
-when Down is mapped to multiple keycodes in the keymap.
+X11 keysyms might not work correctly in '--ui-buttonmap a=XK_Foobar'
+when Foobar is mapped to multiple keycodes in the keymap. 
+
+Workaround: Use KEY_ instead or cleanup your keymap
+
+
+Force feedback support is brittle, if you Ctrl-c the driver in the
+wrong moment you will end up with a dead uninterruptable process and
+basically have to reboot. This looks might a kernel issue and not a
+xboxdrv one. 
+
+Workaround: Kill the app that uses xboxdrv before xboxdrv itself.
+
 
 
 # EOF #

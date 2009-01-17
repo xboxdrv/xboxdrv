@@ -386,16 +386,14 @@ uInput::setup_xbox360_gamepad(GamepadType type)
       // Not sure how much we should support, for the moment we only
       // do rumble
       get_joystick_uinput()->add_ff(FF_RUMBLE);
-
-      //get_joystick_uinput()->add_ff(FF_PERIODIC);
-
-      // More stuff, only for testing
-      //get_joystick_uinput()->add_ff(FF_CONSTANT);
-      //get_joystick_uinput()->add_ff(FF_SPRING);
-      //get_joystick_uinput()->add_ff(FF_FRICTION);
-      //get_joystick_uinput()->add_ff(FF_DAMPER);
-      //get_joystick_uinput()->add_ff(FF_INERTIA);
-      //get_joystick_uinput()->add_ff(FF_RAMP);
+      get_joystick_uinput()->add_ff(FF_PERIODIC);
+      get_joystick_uinput()->add_ff(FF_CONSTANT);
+      get_joystick_uinput()->add_ff(FF_SPRING);
+      get_joystick_uinput()->add_ff(FF_FRICTION);
+      get_joystick_uinput()->add_ff(FF_DAMPER);
+      get_joystick_uinput()->add_ff(FF_INERTIA);
+      get_joystick_uinput()->add_ff(FF_RAMP);
+      get_joystick_uinput()->add_ff(FF_SINE);
     }
 
   if (cfg.dpad_only)

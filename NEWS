@@ -1,13 +1,16 @@
-xboxdrv 0.4.3 - (??/Jan/2009)
+xboxdrv 0.4.3 - (17/Jan/2009)
 =============================
 
 * added support for X11 keysym in --ui-buttonmap
-* added --ui-clear and void mappings to unmap buttons and axis
+* added --ui-clear and 'void' mappings to unmap buttons and axis
 * fixed LED handling for wireless gamepads
 * Thrustmaster Firestorm Dual Power support
 * added --name option to set device name
 * added JS_${NUM} name to address joystick buttons by number instead
   of name
+* fixed issue with multiple wireless controller
+* some preparation for rumble (prints FF events)
+
 
 xboxdrv 0.4.2 - (11/Jan/2009)
 =============================
