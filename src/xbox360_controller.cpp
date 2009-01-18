@@ -103,7 +103,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   else if (ret < 0)
     { // Error
       std::ostringstream str;
-      str << "USBError: " << ret << "\n" << usb_strerror();
+      str << "Xbox360Controller: USBError: " << ret << "\n" << usb_strerror();
       throw std::runtime_error(str.str());
     }
   else if (ret == 0)

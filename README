@@ -142,6 +142,10 @@ value to something higher:
 
 A value of 4000 works quite well for most games. 
 
+You can also give the deadzone in percentage:
+
+ % ./xboxdrv --deadzone 15%
+
 
 [[ Square Axis ]]
 -----------------

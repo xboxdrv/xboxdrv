@@ -5,19 +5,17 @@ Pre Release Testing:
 * --dpad-only check that X/Y act properly
 * --dpad-as-button check buttons are working and no useless axis present
 
-TAG=0.4.2
+TAG=v0.4.4
 git tag ${TAG}
 git-archive --format=tar --prefix="xboxdrv-linux-${TAG}/" ${TAG} | bzip2 -c > /tmp/xboxdrv-linux-${TAG}.tar.bz2
 git push --tags
 
-Stuff to do before 0.4.3 release:
-=================================
-
-* improve force feedback output a little bit
-
-
 Stuff to do before 0.5 release:
 ===============================
+
+* create dummy joystick, mouse and keyboard buttons so that the
+  devices always act as they should, also figure out the exakt minimum
+  requirements for each device.
 
 * guitar doesn't get a guide button?!
 
@@ -47,6 +45,8 @@ http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/
 
 Later versions:
 ===============
+
+* add axis specific deadzones or deal with LT/RT somehow
 
 * figure out which devices xorg/hal handles as keyboard and how to
   make it always happen, seems to require two keyboard keys, devices

@@ -449,12 +449,32 @@ void print_led_help()
 void print_version()
 {
   std::cout
-    << "xboxdrv 0.4.3\n"
+    << "xboxdrv 0.4.4\n"
     << "Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>\n"
     << "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
     << "This is free software: you are free to change and redistribute it.\n"
     << "There is NO WARRANTY, to the extent permitted by law."
     << std::endl;
+}
+
+int to_number(int range, const std::string& str)
+{
+  if (str.empty())
+    {
+      return 0;
+    }
+  else
+    {
+      if (str[str.size() - 1] == '%')
+        {
+          int percent = std::max(0, std::min(100, boost::lexical_cast<int>(str.substr(0, str.size()-1))));
+          return range * percent / 100;
+        }
+      else
+        {
+          return std::max(0, std::min(range, boost::lexical_cast<int>(str)));
+        }
+    }
 }
 
 void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
@@ -720,7 +740,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
           ++i;
           if (i < argc)
             {
-              opts.deadzone = atoi(argv[i]);
+              opts.deadzone = to_number(32767, argv[i]);
             }
           else
             {
