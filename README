@@ -35,6 +35,7 @@ Required libraries and tools:
  * scons
  * uinput (userspace input kernel module)
  * git (only to download the development version)
+ * X11
 
 Once everything installed, you can compile by typing:
 
@@ -42,7 +43,7 @@ Once everything installed, you can compile by typing:
 
 On Ubuntu 8.10 you can install all the required libraries via:
 
- % apt-get install libboost1.35-dev scons libusb-dev git-core
+ % apt-get install libboost1.35-dev scons libusb-dev git-core libx11-dev x11proto-core-dev
 
 To load the uinput kernel module automatically on boot add it
 /etc/modules, to load it manually type:

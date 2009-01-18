@@ -6,7 +6,7 @@ Pre Release Testing:
 * --dpad-as-button check buttons are working and no useless axis present
 
 TAG=v0.4.4
-git tag ${TAG}
+git tag "${TAG}" -s -a "xboxdrv ${TAG}"
 git-archive --format=tar --prefix="xboxdrv-linux-${TAG}/" ${TAG} | bzip2 -c > /tmp/xboxdrv-linux-${TAG}.tar.bz2
 git push --tags
 
