@@ -43,7 +43,13 @@ Once everything installed, you can compile by typing:
 
 On Ubuntu 8.10 you can install all the required libraries via:
 
- % apt-get install libboost1.35-dev scons libusb-dev git-core libx11-dev x11proto-core-dev
+ % apt-get install \
+     libboost1.35-dev \
+     scons \
+     libusb-dev \
+     git-core \
+     libx11-dev \
+     x11proto-core-dev
 
 To load the uinput kernel module automatically on boot add it
 /etc/modules, to load it manually type:
@@ -352,7 +358,12 @@ SDL_LINUX_JOYSTICK
 
 If you start xboxdrv and instead of having a fully working joystick,
 you end up controlling the mouse that might be due to recent changes
-in Xorg and its device hotplug handling. There are three workarounds:
+in Xorg and its device hotplug handling. There are four workarounds,
+the one that involves editing /etc/hal/fdi/policy/preferences.fdi is
+the recommont one.
+
+1) Temporary workaround using hal-device
+----------------------------------------
 
 Get the device id from hal:
 
@@ -362,10 +373,16 @@ Then remove the device from hal with:
 
  % hal-device -r $DEVICEID
 
+2) Temporary workaround using xinput
+------------------------------------
+
 Second workaround works with xinput:
 
  % xinput list
  % xinput set-int-prop $DEVICEID 'Device Enabled' 32 0
+
+3) Permanent woraround using .fdi files
+---------------------------------------
 
 The former two workarounds are just temporary and have to be redone
 after each start of xboxdrv, the last workaround is a permanent one:
@@ -379,6 +396,25 @@ And insert the following lines:
     <match key="input.product" string="Xbox Gamepad (userspace driver)">
       <remove key="input.x11_driver" />
     </match>
+
+4) Permanent workaround by disabling device auto detection
+----------------------------------------------------------
+
+A fourth workaround involved disabling the autodetection of Xorg
+completly, you can do that by adding the following lines to
+/etc/X11/xorg.conf:
+
+Section "ServerFlags"
+  Option "AutoAddDevices" "False"
+EndSection
+
+Note that without auto detection you will have to manually configure
+all your mice and keyborads or your Xorg Server won't start up
+properly. So unless you are already familiar with editing Xorg you
+better avoid this workaround. Workaround 3) has basically the same
+effect, except that auto detection only gets disabled for the single
+device it is causing problems.
+
 
 [[ Mouse Emulation ]]
 ---------------------
