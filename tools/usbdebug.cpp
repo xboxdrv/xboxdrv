@@ -100,6 +100,37 @@ public:
       }
   }
 
+
+  void release_interface(int iface)
+  {
+    if (usb_release_interface(handle, iface) != 0)
+      {
+        std::ostringstream str;
+        str << "Couldn't release interface " << iface;
+        throw std::runtime_error(str.str());
+      }
+  }
+
+  void set_configuration(int configuration)
+  {
+    if (usb_set_configuration(handle, configuration) != 0)
+      {
+        std::ostringstream str;
+        str << "Couldn't set configuration " << configuration;
+        throw std::runtime_error(str.str());
+      }
+  }
+
+  void set_altinterface(int interface)
+  {
+    if (usb_set_altinterface(handle, interface) != 0)
+      {
+        std::ostringstream str;
+        str << "Couldn't set alternative interface " << interface;
+        throw std::runtime_error(str.str());
+      }
+  }
+
   int read(int endpoint, uint8_t* data, int len)
   {
     return usb_interrupt_read(handle, endpoint, (char*)data, len, 0);
@@ -310,6 +341,29 @@ void console_claim_cmd(const std::vector<std::string>& args)
             goto end;
           }
           std::cout << "Interface " << interface << " successfully claimed" << std::endl;
+        end:;
+        }
+    }
+}
+
+void console_release_cmd(const std::vector<std::string>& args)
+{
+  if (args.size() < 2)
+    {
+      std::cout << "Usage: release [INTERFACE]..." << std::endl;
+    }
+  else
+    {
+      for(size_t i = 1; i < args.size(); ++i)
+        {
+          int interface = atoi(args[i].c_str());
+          try {
+            USBDevice::current()->release_interface(interface);
+          } catch (std::exception& err) {
+            std::cout << "Error: " << err.what() << std::endl;
+            goto end;
+          }
+          std::cout << "Interface " << interface << " successfully releaseed" << std::endl;
         end:;
         }
     }
@@ -641,6 +695,30 @@ void console_ctrlreq_cmd(const std::vector<std::string>& args)
     }
 }
 
+void console_setconfiguration_cmd(const std::vector<std::string>& args)
+{
+  if (args.size() != 2)
+    {
+      std::cout << "Usage: setconfiguration CFG" << std::endl;
+    }
+  else
+    {
+      USBDevice::current()->set_configuration(atoi(args[1].c_str()));
+    }
+}
+
+void console_setaltinterface_cmd(const std::vector<std::string>& args)
+{
+  if (args.size() != 2)
+    {
+      std::cout << "Usage: " << args[0] << " INTERFACE" << std::endl;
+    }
+  else
+    {
+      USBDevice::current()->set_altinterface(atoi(args[1].c_str()));
+    }
+}
+
 void console_reset_ep_cmd(const std::vector<std::string>& args)
 {
   if (args.size() != 2)
@@ -724,6 +802,7 @@ void dispatch_command(const std::vector<std::string>& args)
       std::cout << "help:\n   Print this help\n" << std::endl;
       std::cout << "quit:\n   Exit usbdebug\n" << std::endl;
       std::cout << "claim [INTERFACE]...\n   Claim the given interfaces\n" << std::endl;
+      std::cout << "release [INTERFACE]...\n   Release the given interfaces\n" << std::endl;
       std::cout << "detach [INTERFACE]...\n   Detach kernel driver from interfaces\n" << std::endl;
       std::cout << "listen [ENDPOINT]...\n   On the given endpoints\n" << std::endl;
       std::cout << "info\n   Print some info on the current device\n" << std::endl;
@@ -740,6 +819,10 @@ void dispatch_command(const std::vector<std::string>& args)
   else if (args[0] == "claim")
     {
       console_claim_cmd(args);
+    }
+  else if (args[0] == "release")
+    {
+      console_release_cmd(args);
     }
   else if (args[0] == "probe")
     {
@@ -772,6 +855,14 @@ void dispatch_command(const std::vector<std::string>& args)
   else if (args[0] == "clear_halt")
     {
       console_reset_ep_cmd(args);
+    }
+  else if (args[0] == "setconfiguration")
+    {
+      console_setconfiguration_cmd(args);
+    }
+  else if (args[0] == "setaltinterface")
+    {
+      console_setaltinterface_cmd(args);
     }
   else if (args[0] == "quit")
     {
