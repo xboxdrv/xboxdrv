@@ -1,6 +1,7 @@
 xboxdrv 0.4.4 - (??/Jan/2009)
 =============================
 
+* properly auto-detect USB endpoints
 
 
 xboxdrv 0.4.3 - (17/Jan/2009)
