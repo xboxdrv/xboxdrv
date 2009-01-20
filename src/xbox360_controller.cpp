@@ -27,7 +27,9 @@
 #include "xbox360_controller.hpp"
 
 Xbox360Controller::Xbox360Controller(struct usb_device* dev, bool is_guitar)
-  : is_guitar(is_guitar)
+  : is_guitar(is_guitar),
+    endpoint_in(1),
+    endpoint_out(2)
 {
   handle = usb_open(dev);
   if (!handle)
@@ -59,10 +61,10 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev, bool is_guitar)
                 {
                   char ledcmd[] = { front, len, arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i] }; 
                   printf("%d %d %d\n", len, front, arr[i]);
-                  usb_interrupt_write(handle, 2, ledcmd, len, 0);
+                  usb_interrupt_write(handle, endpoint_out, ledcmd, len, 0);
 
                   uint8_t data[32];
-                  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, sizeof(data), 20);
+                  int ret = usb_interrupt_read(handle, endpoint_in, (char*)data, sizeof(data), 20);
                   print_raw_data(std::cout, data, ret);
                 }
             }
@@ -80,21 +82,21 @@ void
 Xbox360Controller::set_rumble(uint8_t left, uint8_t right)
 {
   char rumblecmd[] = { 0x00, 0x08, 0x00, left, right, 0x00, 0x00, 0x00 };
-  usb_interrupt_write(handle, 2, rumblecmd, sizeof(rumblecmd), 0);
+  usb_interrupt_write(handle, endpoint_out, rumblecmd, sizeof(rumblecmd), 0);
 }
 
 void
 Xbox360Controller::set_led(uint8_t status)
 {
   char ledcmd[] = { 0x01, 0x03, status }; 
-  usb_interrupt_write(handle, 2, ledcmd, sizeof(ledcmd), 0);
+  usb_interrupt_write(handle, endpoint_out, ledcmd, sizeof(ledcmd), 0);
 }
 
 bool
 Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   uint8_t data[32];
-  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)data, sizeof(data), timeout);
+  int ret = usb_interrupt_read(handle, endpoint_in, (char*)data, sizeof(data), timeout);
 
   if (ret == -ETIMEDOUT)
     {

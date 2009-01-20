@@ -33,6 +33,9 @@ private:
   XPadDevice*        dev_type;
   struct usb_dev_handle* handle;
   
+  int endpoint_in;
+  int endpoint_out;
+
 public:
   Xbox360Controller(struct usb_device* dev, bool is_guitar);
   ~Xbox360Controller();
