@@ -383,17 +383,36 @@ uInput::setup_xbox360_gamepad(GamepadType type)
 
   if (cfg.force_feedback)
     {
-      // Not sure how much we should support, for the moment we only
-      // do rumble
+      // 
       get_joystick_uinput()->add_ff(FF_RUMBLE);
       get_joystick_uinput()->add_ff(FF_PERIODIC);
       get_joystick_uinput()->add_ff(FF_CONSTANT);
+
+      // 
       get_joystick_uinput()->add_ff(FF_SPRING);
       get_joystick_uinput()->add_ff(FF_FRICTION);
       get_joystick_uinput()->add_ff(FF_DAMPER);
       get_joystick_uinput()->add_ff(FF_INERTIA);
+
       get_joystick_uinput()->add_ff(FF_RAMP);
       get_joystick_uinput()->add_ff(FF_SINE);
+
+      // FF_GAIN     - relative strength of rumble
+      // FF_RUMBLE   - basic rumble (delay, time)
+      // FF_CONSTANT - envelope, emulate with rumble
+      // FF_RAMP     - same as constant, except strength grows
+      // FF_PERIODIC - envelope
+      // |- FF_SINE      types of periodic effects
+      // |- FF_TRIANGLE
+      // |- FF_SQUARE
+      // |- FF_SAW_UP
+      // |- FF_SAW_DOWN
+      // '- FF_CUSTOM
+
+      // FF_SPRING
+      // FF_FRICTION
+      // FF_DAMPER
+      // FF_INERTIA
     }
 
   if (cfg.dpad_only)
@@ -659,9 +678,9 @@ uInput::send(XboxMsg& msg)
 void
 uInput::send(Xbox360GuitarMsg& msg)
 {
-  send_button(XBOX_DPAD_UP,   msg.dpad_up);
-  send_button(XBOX_DPAD_DOWN, msg.dpad_down);
-  send_button(XBOX_DPAD_LEFT, msg.dpad_left);
+  send_button(XBOX_DPAD_UP,    msg.dpad_up);
+  send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
+  send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
   send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
 
   send_button(XBOX_BTN_START, msg.start);
