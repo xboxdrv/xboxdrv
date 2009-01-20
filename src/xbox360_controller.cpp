@@ -27,11 +27,32 @@
 #include "xbox360_controller.hpp"
 
 Xbox360Controller::Xbox360Controller(struct usb_device* dev, bool is_guitar)
-  : is_guitar(is_guitar),
+  : dev(dev),
+    is_guitar(is_guitar),
     endpoint_in(1),
     endpoint_out(2)
 {
+  find_endpoints();
+  if (0)
+    {
+      std::cout << "EP(IN):  " << endpoint_in << std::endl;
+      std::cout << "EP(OUT): " << endpoint_out << std::endl;
+    }
+
   handle = usb_open(dev);
+
+  if (0)
+    {
+      int err;
+      if ((err = usb_set_configuration(handle, 0)) < 0)
+        {
+          std::ostringstream out;
+          out << "Error set USB configuration: " << strerror(-err) << std::endl
+              << "Try to run 'rmmod xpad' and start xboxdrv again.";
+          throw std::runtime_error(out.str());
+        }
+    }
+
   if (!handle)
     {
       throw std::runtime_error("Error opening Xbox360 controller");
@@ -76,6 +97,52 @@ Xbox360Controller::~Xbox360Controller()
 {
   usb_release_interface(handle, 0); 
   usb_close(handle);
+}
+
+void
+Xbox360Controller::find_endpoints()
+{
+  bool print_debug = false;
+
+  if (print_debug)
+    std::cout << "find_endpoints: numcfg: " << (int)dev->descriptor.bNumConfigurations << std::endl;
+
+  for(int i = 0; i < dev->descriptor.bNumConfigurations; ++i)
+    {
+      if (print_debug)
+        std::cout << "Configuration: " << i << std::endl;
+      for(int j = 0; j < dev->config[i].bNumInterfaces; ++j)
+        {
+          if (print_debug)
+            std::cout << "  Interface " << j << ":" << std::endl;
+          for(int k = 0; k < dev->config[i].interface[j].num_altsetting; ++k)
+            {
+              for(int l = 0; l < dev->config[i].interface[j].altsetting[k].bNumEndpoints; ++l)
+                {
+                  if (dev->config[i].interface[j].altsetting[k].bInterfaceClass    == USB_CLASS_VENDOR_SPEC &&
+                      dev->config[i].interface[j].altsetting[k].bInterfaceSubClass == 93 &&
+                      dev->config[i].interface[j].altsetting[k].bInterfaceProtocol == 1)
+                    {
+                      if (dev->config[i].interface[j].altsetting[k].endpoint[l].bEndpointAddress & USB_ENDPOINT_DIR_MASK)
+                        {
+                          endpoint_in = int(dev->config[i].interface[j].altsetting[k].endpoint[l].bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK);
+                        }
+                      else
+                        {
+                          endpoint_out = int(dev->config[i].interface[j].altsetting[k].endpoint[l].bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK);
+                        }
+                    }
+
+                  if (print_debug)
+                    std::cout << "    Endpoint: " 
+                              << int(dev->config[i].interface[j].altsetting[k].endpoint[l].bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK)
+                              << ((dev->config[i].interface[j].altsetting[k].endpoint[l].bEndpointAddress & USB_ENDPOINT_DIR_MASK) ? " (IN)" : " (OUT)")
+                              << std::endl;
+                }
+            }
+        }
+    }
+
 }
 
 void

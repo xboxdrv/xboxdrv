@@ -28,14 +28,15 @@ struct XPadDevice;
 class Xbox360Controller : public XboxGenericController
 {
 private:
-  bool is_guitar;
   struct usb_device* dev;
+  bool is_guitar;
   XPadDevice*        dev_type;
   struct usb_dev_handle* handle;
   
   int endpoint_in;
   int endpoint_out;
 
+  void find_endpoints();
 public:
   Xbox360Controller(struct usb_device* dev, bool is_guitar);
   ~Xbox360Controller();
