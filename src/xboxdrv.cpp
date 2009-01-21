@@ -100,6 +100,8 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX_MAT,         0x12ab, 0x8809, "Xbox DDR dancepad" },
   { GAMEPAD_XBOX_MAT,         0x1430, 0x8888, "TX6500+ Dance Pad (first generation)" },
 
+  { GAMEPAD_XBOX360,          0x12ab, 0x0004, "DDR Universe 2 Mat" }, 
+
   { GAMEPAD_FIRESTORM,        0x044f, 0xb304, "ThrustMaster, Inc. Firestorm Dual Power" },
 };
 
