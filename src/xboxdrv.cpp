@@ -818,8 +818,8 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
               unsigned int vendor_id;
               if (sscanf(argv[i], "%x:%x", &vendor_id, &product_id) == 2)
                 {
-                  vendor_id  = opts.vendor_id;
-                  product_id = opts.product_id;
+                  opts.vendor_id  = vendor_id;
+                  opts.product_id = product_id;
                 }
               else
                 {
