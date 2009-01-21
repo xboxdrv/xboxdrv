@@ -578,6 +578,10 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
                 {
                   opts.gamepad_type = GAMEPAD_XBOX360_WIRELESS;
                 }
+              else if (strcmp(argv[i], "firestorm") == 0)
+                {
+                  opts.gamepad_type = GAMEPAD_FIRESTORM;
+                }
               else
                 {
                   std::cout << "Error: unknown type: " << argv[i] << std::endl;
@@ -587,6 +591,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
                   std::cout << " * xbox360" << std::endl;
                   std::cout << " * xbox360-guitar" << std::endl;
                   std::cout << " * xbox360-wireless" << std::endl;
+                  std::cout << " * firestorm" << std::endl;
                   exit(EXIT_FAILURE); 
                 }
             }
