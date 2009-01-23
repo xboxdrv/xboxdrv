@@ -698,13 +698,12 @@ uInput::send(Xbox360GuitarMsg& msg)
 }
 
 void
-uInput::update(float delta)
+uInput::update(int msec_delta)
 {
   // Relative Motion emulation for axis
-  int msec = static_cast<int>(delta*1000);
   for(std::vector<RelAxisState>::iterator i = rel_axis.begin(); i != rel_axis.end(); ++i)
     {
-      i->time += msec;
+      i->time += msec_delta;
 
       if (i->time >= i->next_time)
         {
@@ -717,7 +716,7 @@ uInput::update(float delta)
   // Relative Motion emulation for button
   for(std::vector<RelButtonState>::iterator i = rel_button.begin(); i != rel_button.end(); ++i)
     {
-      i->time += msec;
+      i->time += msec_delta;
 
       if (i->time >= i->next_time)
         {
@@ -735,7 +734,7 @@ uInput::update(float delta)
     }
 
   // Update forcefeedback 
-  get_joystick_uinput()->update(delta);
+  get_joystick_uinput()->update(msec_delta);
 }
 
 void

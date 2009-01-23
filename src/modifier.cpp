@@ -160,7 +160,7 @@ AutoFireMapping::from_string(const std::string& str)
     {
       AutoFireMapping mapping; 
       mapping.button    = string2btn(str.substr(0, i));
-      mapping.frequency = atoi(str.substr(i+1, str.size()-i).c_str())/1000.0f;
+      mapping.frequency = boost::lexical_cast<int>(str.substr(i+1, str.size()-i).c_str());
       return mapping;
     }
 }

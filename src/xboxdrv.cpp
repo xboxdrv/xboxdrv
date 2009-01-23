@@ -1120,7 +1120,7 @@ void controller_loop(GamepadType type, uInput* uinput, XboxGenericController* co
 
       // Calc changes in time
       uint32_t this_time = get_time();
-      float delta = (this_time - last_time)/1000.0f;
+      int msec_delta = this_time - last_time;
       last_time = this_time;
 
       // Apply modifier
@@ -1130,10 +1130,10 @@ void controller_loop(GamepadType type, uInput* uinput, XboxGenericController* co
         apply_square_axis(msg);
 
       if (autofire_modifier.get())
-        autofire_modifier->update(delta, msg);
+        autofire_modifier->update(msec_delta, msg);
       
       if (relative_axis_modifier.get())
-        relative_axis_modifier->update(delta, msg);
+        relative_axis_modifier->update(msec_delta, msg);
 
       if (!opts.button_map.empty())
         apply_button_map(msg, opts.button_map);
@@ -1173,7 +1173,7 @@ void controller_loop(GamepadType type, uInput* uinput, XboxGenericController* co
             }
         }
 
-      uinput->update(delta);
+      uinput->update(msec_delta);
     }
 }
 

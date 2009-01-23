@@ -66,7 +66,7 @@ public:
 
   void send(uint16_t type, uint16_t code, int32_t value);
 
-  void update(float delta);
+  void update(int msec_delta);
 
 private:
   LinuxUinput (const LinuxUinput&);

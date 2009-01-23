@@ -28,11 +28,6 @@ Stuff to do before 0.5 release:
 * figure out what jscal does and if it can break stuff
   1) jscal uses the joystick interface, not the event interface
 
-* different xbox controller use different endpoints for read/write, solution:
-  1) make endpoints variables
-  2) check if endpoints are available on start
-  3) if not, then use different one, seems to be just 1 or 2
-
 * implement basic rumble force feedback support
 - see ff-memless for effect emulation on rumble
 - handle FF status report

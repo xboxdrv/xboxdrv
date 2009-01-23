@@ -43,7 +43,7 @@ struct AutoFireMapping {
   static AutoFireMapping from_string(const std::string&);
 
   XboxButton button;
-  float      frequency;
+  int        frequency;
 };
 
 struct RelativeAxisMapping {
@@ -70,14 +70,14 @@ public:
       }
   }
 
-  void update(float delta, XboxGenericMsg& msg)
+  void update(int msec_delta, XboxGenericMsg& msg)
   {
     for(size_t i = 0; i < relative_axis_map.size(); ++i)
       {
         int value = get_axis(msg, relative_axis_map[i].axis);
         if (abs(value) > 4000 ) // FIXME: add proper deadzone handling
           {
-            axis_state[i] += static_cast<int>(relative_axis_map[i].speed * delta * (value/32768.0f));
+            axis_state[i] += ((relative_axis_map[i].speed * value) / 32768) * msec_delta / 1000;
             if (axis_state[i] < -32768)
               axis_state[i] = -32768;
             else if (axis_state[i] > 32767)
@@ -97,7 +97,7 @@ class AutoFireModifier
 {
 private:
   std::vector<AutoFireMapping> autofire_map;
-  std::vector<float> button_timer;
+  std::vector<int> button_timer;
 
 public:
   AutoFireModifier(const std::vector<AutoFireMapping>& autofire_map)
@@ -109,13 +109,13 @@ public:
       }
   }
 
-  void update(float delta, XboxGenericMsg& msg)
+  void update(int msec_delta, XboxGenericMsg& msg)
   {
     for(size_t i = 0; i < autofire_map.size(); ++i)
       {
         if (get_button(msg, autofire_map[i].button))
           {
-            button_timer[i] += delta;
+            button_timer[i] += msec_delta;
 
             if (button_timer[i] > autofire_map[i].frequency)
               {

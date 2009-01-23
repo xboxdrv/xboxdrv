@@ -152,7 +152,7 @@ public:
   void send_button(int code, bool value);
   void send_axis(int code, int32_t value);
 
-  void update(float delta);
+  void update(int msec_delta);
 
   LinuxUinput* get_mouse_uinput() const;
   LinuxUinput* get_keyboard_uinput() const;

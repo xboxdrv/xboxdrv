@@ -291,7 +291,7 @@ LinuxUinput::send(uint16_t type, uint16_t code, int32_t value)
 }
 
 void
-LinuxUinput::update(float delta)
+LinuxUinput::update(int msec_delta)
 {
   if (ff_bit)
     {
