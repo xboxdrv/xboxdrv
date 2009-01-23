@@ -23,7 +23,8 @@
 #include <string>
 #include <stdint.h>
 
-/** */
+class ForceFeedbackHandler;
+
 class LinuxUinput
 {
 private:
@@ -43,6 +44,8 @@ private:
   bool rel_lst[REL_CNT];
   bool key_lst[KEY_CNT];
   bool ff_lst[FF_CNT];
+
+  ForceFeedbackHandler* ff_handler;
 
 public:
   LinuxUinput(const std::string& name, uint16_t vendor, uint16_t product);

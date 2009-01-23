@@ -36,7 +36,7 @@ Stuff to do before 0.5 release:
 fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
 
 http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/
-
+http://msdn.microsoft.com/en-us/library/bb219655(VS.85).aspx
 
 Later versions:
 ===============

@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <assert.h>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -27,94 +28,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "evdev_helper.hpp"
+#include "force_feedback_handler.hpp"
 #include "linux_uinput.hpp"
-
-std::ostream& operator<<(std::ostream& out, const struct ff_envelope& envelope)
-{
-  out << "Envelope(attack_length:" << envelope.attack_length
-      << ", attack_level:" << envelope.attack_level
-      << ", fade_length:" << envelope.fade_length
-      << ", fade_level:" << envelope.fade_level << ")";
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const struct ff_replay& replay)
-{
-  out << "Replay(length:" << replay.length << ", delay:" << replay.delay << ")";
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const struct ff_trigger& trigger)
-{
-  out << "Trigger(button:" << trigger.button << ", interval:" << trigger.interval << ")";
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const struct ff_effect& effect)
-{
-  std::cout << "Effect(";
-  switch (effect.type)
-    {
-      case FF_CONSTANT:
-        out << "FF_CONSTANT("
-            << "level:" << effect.u.constant.level
-            << ", envelope:" << effect.u.constant.envelope << ")";
-        break;
-
-      case FF_PERIODIC:
-        out << "FF_PERIODIC("
-            << ", waveform:" << effect.u.periodic.waveform
-            << ", period:" << effect.u.periodic.period
-            << ", magnitude:" << effect.u.periodic.magnitude
-            << ", offset:" << effect.u.periodic.offset
-            << ", phase:" << effect.u.periodic.phase
-            << ", envelope:" << effect.u.periodic.envelope << ")";
-        break;
-
-      case FF_RAMP:
-        out << "FF_RAMP(" 
-            << "start_level:" << effect.u.ramp.start_level
-            << ", end_level:" << effect.u.ramp.end_level
-            << ", envelope:" <<  effect.u.ramp.envelope << ")";
-        break;
-
-      case FF_SPRING:
-        out << "FF_SPRING()";
-        break;
-
-      case FF_FRICTION:
-        out << "FF_FRICTION()";
-        break;
-
-      case FF_DAMPER:
-        out << "FF_DAMPER()";
-        break;
-
-      case FF_RUMBLE:
-        out << "FF_RUMBLE("
-            << "strong_magnitude:" << effect.u.rumble.strong_magnitude
-            << ", weak_magnitude:" << effect.u.rumble.weak_magnitude << ")";
-        break;
-
-      case FF_INERTIA:
-        out << "FF_INERTIA()";
-        break;
-
-      case FF_CUSTOM:
-        out << "FF_CUSTOM()";
-        break;
-
-      default:
-        out << "FF_<unknown>()";
-        break;
-    }
-
-  out << ", direction:" << effect.direction
-      << ", replay:" << effect.replay
-      << ", trigger:" << effect.trigger << ")";
-
-  return out;
-}
 
 LinuxUinput::LinuxUinput(const std::string& name, uint16_t vendor, uint16_t product)
   : name(name),
@@ -125,7 +40,8 @@ LinuxUinput::LinuxUinput(const std::string& name, uint16_t vendor, uint16_t prod
     rel_bit(false),
     abs_bit(false),
     led_bit(false),
-    ff_bit(false)
+    ff_bit(false),
+    ff_handler(0)
 {
   std::fill_n(abs_lst, ABS_CNT, false);
   std::fill_n(rel_lst, REL_CNT, false);
@@ -241,6 +157,8 @@ LinuxUinput::add_ff(uint16_t code)
         {
           ioctl(fd, UI_SET_EVBIT, EV_FF);
           ff_bit = true;
+          assert(ff_handler == 0);
+          ff_handler = new ForceFeedbackHandler();
         }
 
       ioctl(fd, UI_SET_FFBIT, code);
@@ -295,6 +213,7 @@ LinuxUinput::update(int msec_delta)
 {
   if (ff_bit)
     {
+      assert(ff_handler);
       struct input_event ev;
 
       int ret = read(fd, &ev, sizeof(ev));
@@ -318,7 +237,10 @@ LinuxUinput::update(int msec_delta)
                 break;
 
               case EV_FF:
-                std::cout << "FFPlay(effect_id:" << ev.code << ", value:" << ev.value << ")" << std::endl;
+                if (ev.value)
+                  ff_handler->play(ev.code);
+                else
+                  ff_handler->stop(ev.code);
                 break;
 
               case EV_UINPUT:
@@ -335,12 +257,7 @@ LinuxUinput::update(int msec_delta)
                         upload.request_id = ev.value;
 
                         ioctl(fd, UI_BEGIN_FF_UPLOAD, &upload);
-
-                        std::cout << "FF_UPLOAD("
-                                  << "effect_id:" << upload.effect.id
-                                  << ", effect_type:" << upload.effect.type
-                                  << ",\n          " << upload.effect 
-                                  << ")" << std::endl;
+                        ff_handler->upload(upload.effect);
                         upload.retval = 0;
                             
                         ioctl(fd, UI_END_FF_UPLOAD, &upload);
@@ -358,8 +275,7 @@ LinuxUinput::update(int msec_delta)
                         erase.request_id = ev.value;
 
                         ioctl(fd, UI_BEGIN_FF_ERASE, &erase);
-
-                        std::cout << "FF_ERASE(effect_id:" << erase.effect_id << ")" << std::endl;
+                        ff_handler->erase(erase.effect_id);
                         erase.retval = 0;
                             
                         ioctl(fd, UI_END_FF_ERASE, &erase);
