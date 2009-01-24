@@ -25,7 +25,7 @@
 class ForceFeedbackEffect
 {
 public:
-  ForceFeedbackEffect() {}
+  ForceFeedbackEffect();
   ForceFeedbackEffect(const struct ff_effect& e);
 
   // Delay before the effect start
@@ -66,6 +66,18 @@ public:
     int fade_length;
     int fade_level;
   } envelope;
+
+  bool playing;
+  int  count;
+  int  weak_magnitude;
+  int  strong_magnitude;
+
+  int  get_weak_magnitude()   const { return weak_magnitude; }
+  int  get_strong_magnitude() const { return strong_magnitude; }
+
+  void update(int msec_delta);
+  void play();
+  void stop();
 };
 
 /** */

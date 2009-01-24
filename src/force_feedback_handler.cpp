@@ -107,7 +107,19 @@ std::ostream& operator<<(std::ostream& out, const struct ff_effect& effect)
   return out;
 }
 
+ForceFeedbackEffect::ForceFeedbackEffect()
+  : playing(false),
+    count(0),
+    weak_magnitude(0),
+    strong_magnitude(0)
+{
+}
+
 ForceFeedbackEffect::ForceFeedbackEffect(const struct ff_effect& effect)
+  : playing(false),
+    count(0),
+    weak_magnitude(0),
+    strong_magnitude(0)
 {
   delay  = effect.replay.delay;
   length = effect.replay.length;
@@ -155,9 +167,75 @@ ForceFeedbackEffect::ForceFeedbackEffect(const struct ff_effect& effect)
         // case FF_DAMPER
         // case FF_INERTIA:
         // case FF_CUSTOM:
-        assert(!"Unsupported effect");
+        std::cout << "Unsupported effect" << std::endl;
+        start_weak_magnitude   = 0;
+        start_strong_magnitude = 0;
+        end_weak_magnitude     = 0;
+        end_strong_magnitude   = 0;
         break;
     }
+}
+
+static int get_pos(int start, int end, int pos, int len)
+{
+  int rel = end - start;
+  return start + (rel * pos / len);
+}
+
+void
+ForceFeedbackEffect::update(int msec_delta)
+{
+  if (playing)
+    {
+      count += msec_delta;
+
+      if (count > delay)
+        {
+          int t = count - delay;
+          if (t < envelope.attack_length)
+            { // attack
+              strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
+              weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
+              
+              // apply envelope
+              strong_magnitude = strong_magnitude * t / envelope.attack_length;
+              weak_magnitude   = weak_magnitude   * t / envelope.attack_length;
+            }
+          else if  (t < length - envelope.fade_length)
+            { // sustain
+              strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
+              weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
+            }
+          else if (t < length)
+            { // fade
+              strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
+              weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
+
+              // apply envelope
+              strong_magnitude = strong_magnitude * (envelope.fade_length - t) / envelope.fade_length;
+              weak_magnitude   = weak_magnitude   * (envelope.fade_length - t) / envelope.fade_length;
+            }
+          else
+            { // effect ended
+              stop();
+            }
+        }
+    }
+}
+
+void
+ForceFeedbackEffect::play()
+{
+  playing = true;
+}
+
+void
+ForceFeedbackEffect::stop()
+{
+  playing = false;
+  count = 0;
+  weak_magnitude   = 0;
+  strong_magnitude = 0;
 }
 
 ForceFeedbackHandler::ForceFeedbackHandler()
@@ -209,7 +287,7 @@ ForceFeedbackHandler::play(int id)
 
   std::map<int, ForceFeedbackEffect>::iterator i = effects.find(id);
   if (i != effects.end())
-    ; // play
+    i->second.play();
   else
     std::cout << "ForceFeedbackHandler::play: Unknown id " << id << std::endl;
 }
@@ -221,7 +299,7 @@ ForceFeedbackHandler::stop(int id)
 
   std::map<int, ForceFeedbackEffect>::iterator i = effects.find(id);
   if (i != effects.end())
-    ; // stop
+    i->second.stop();
   else
     std::cout << "ForceFeedbackHandler::play: Unknown id " << id << std::endl;
 }
@@ -229,9 +307,21 @@ ForceFeedbackHandler::stop(int id)
 void
 ForceFeedbackHandler::update(int msec_delta)
 {
-  for(Effects::iterator i = effects.begin(); i != effects.end(); ++i)
+  weak_magnitude   = 0;
+  strong_magnitude = 0;
+
+  if (!effects.empty())
     {
-      
+      for(Effects::iterator i = effects.begin(); i != effects.end(); ++i)
+        {
+          i->second.update(msec_delta);
+
+          weak_magnitude   += i->second.get_weak_magnitude();
+          strong_magnitude += i->second.get_strong_magnitude();
+        }
+
+      weak_magnitude   = std::min(weak_magnitude,   0x7fff);
+      strong_magnitude = std::min(strong_magnitude, 0x7fff);
     }
 }
 

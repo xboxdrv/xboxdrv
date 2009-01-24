@@ -19,6 +19,7 @@
 #ifndef HEADER_LINUX_UINPUT_HPP
 #define HEADER_LINUX_UINPUT_HPP
 
+#include <boost/function.hpp>
 #include <linux/uinput.h>
 #include <string>
 #include <stdint.h>
@@ -46,6 +47,7 @@ private:
   bool ff_lst[FF_CNT];
 
   ForceFeedbackHandler* ff_handler;
+  boost::function<void (uint8_t, uint8_t)> ff_callback;
 
 public:
   LinuxUinput(const std::string& name, uint16_t vendor, uint16_t product);
@@ -62,7 +64,9 @@ public:
   void add_rel(uint16_t code);
 
   void add_ff(uint16_t code);
-  
+
+  void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
+
   /** Finish*/
   void finish();
   /*@}*/

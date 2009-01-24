@@ -154,6 +154,8 @@ public:
 
   void update(int msec_delta);
 
+  void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
+
   LinuxUinput* get_mouse_uinput() const;
   LinuxUinput* get_keyboard_uinput() const;
   LinuxUinput* get_joystick_uinput() const;

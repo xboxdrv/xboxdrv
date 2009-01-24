@@ -911,4 +911,10 @@ uInput::get_joystick_uinput() const
   return joystick_uinput_dev.get();
 }
 
+void
+uInput::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+{
+  get_joystick_uinput()->set_ff_callback(callback);
+}
+
 /* EOF */

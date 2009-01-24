@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <boost/format.hpp>
 #include <assert.h>
 #include <iostream>
 #include <sstream>
@@ -166,6 +167,12 @@ LinuxUinput::add_ff(uint16_t code)
 }
 
 void
+LinuxUinput::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+{
+  ff_callback = callback;
+}
+
+void
 LinuxUinput::finish()
 {
   strncpy(user_dev.name, name.c_str(), UINPUT_MAX_NAME_SIZE);
@@ -214,6 +221,20 @@ LinuxUinput::update(int msec_delta)
   if (ff_bit)
     {
       assert(ff_handler);
+
+      ff_handler->update(msec_delta);
+
+      if (0)
+        std::cout << boost::format("%5d %5d") 
+          % ff_handler->get_weak_magnitude() 
+          % ff_handler->get_strong_magnitude() << std::endl;
+
+      if (ff_callback)
+        {
+          ff_callback(ff_handler->get_weak_magnitude()   / 128,
+                      ff_handler->get_strong_magnitude() / 128);
+        }
+      
       struct input_event ev;
 
       int ret = read(fd, &ev, sizeof(ev));

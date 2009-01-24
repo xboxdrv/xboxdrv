@@ -1336,6 +1336,7 @@ void run_main(CommandLineOptions& opts)
             {
               std::cout << "\nStarting with uinput... " << std::flush;
               uinput = new uInput(dev_type, opts.uinput_config);
+              uinput->set_ff_callback(boost::bind(&XboxGenericController::set_rumble, controller, _1, _2));
               std::cout << "done" << std::endl;
             }
           else
