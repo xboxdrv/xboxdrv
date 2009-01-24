@@ -231,8 +231,9 @@ LinuxUinput::update(int msec_delta)
 
       if (ff_callback)
         {
-          ff_callback(ff_handler->get_weak_magnitude()   / 128,
-                      ff_handler->get_strong_magnitude() / 128);
+          ff_callback(ff_handler->get_strong_magnitude() / 128,
+                      ff_handler->get_weak_magnitude()   / 128);
+                      
         }
       
       struct input_event ev;
