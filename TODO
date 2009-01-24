@@ -17,17 +17,9 @@ Stuff to do before 0.5 release:
   devices always act as they should, also figure out the exakt minimum
   requirements for each device.
 
-* guitar doesn't get a guide button?!
-
 * add a way to not create a joystick/event device
 
-* implement basic rumble force feedback support
-- see ff-memless for effect emulation on rumble
-- handle FF status report
-
-* figure out the max values of force feedback effects so that stuff is mapped more properly
-
-* make debug output optional
+* make force feedback debug output optional (maybe later, doesn't seem to hurt and helps debugging)
 
 fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
 
@@ -36,6 +28,13 @@ http://msdn.microsoft.com/en-us/library/bb219655(VS.85).aspx
 
 Later versions:
 ===============
+
+* get rid of guitar, merge into xbox360
+
+* send FF status reports (maybe, is that used by anything?)
+
+* figure out the max values of force feedback effects so that stuff is
+  mapped more properly (kind of done, could need verification)
 
 * figure out what jscal does and if it can break stuff
   1) jscal uses the joystick interface, not the event interface
@@ -69,7 +68,6 @@ Later versions:
 
 http://lists.libsdl.org/pipermail/sdl-libsdl.org/2007-March/060263.html
 
-- get rid of guitar, merge into xbox360
 - fix http://userweb.kernel.org/~dtor/eviocgbit-bug.html in evtest
 - cleanup evtest some more, add more features
 - using rumble in scripts doesn't work, since you can't reset rumble back to 0,0

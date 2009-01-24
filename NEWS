@@ -1,8 +1,11 @@
-xboxdrv 0.4.4 - (??/Jan/2009)
+xboxdrv 0.4.4 - (24/Jan/2009)
 =============================
 
 * auto-detect USB endpoints
 * rumble support, enabled via --force-feedback
+* added --rumble-gain to control rumble strength
+* --deadzone accepts values in percentage
+* DDR Universe 2 Mat added
 
 
 xboxdrv 0.4.3 - (17/Jan/2009)
