@@ -28,8 +28,6 @@ Stuff to do before 0.5 release:
 * figure out the max values of force feedback effects so that stuff is mapped more properly
 
 * make debug output optional
-
-* implement --rumble-strength 100% to set relative rumble strength
 
 fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
 

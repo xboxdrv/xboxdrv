@@ -40,6 +40,7 @@ struct CommandLineOptions
   int  led;
   int  rumble_l;
   int  rumble_r;
+  int  rumble_gain;
   int  controller_id;
   int  wireless_id;
   bool instant_exit;

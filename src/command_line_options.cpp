@@ -27,6 +27,7 @@ CommandLineOptions::CommandLineOptions()
   led      = -1;
   rumble_l = -1;
   rumble_r = -1;
+  rumble_gain = 255;
   controller_id = 0;
   wireless_id   = 0;
   instant_exit = false;

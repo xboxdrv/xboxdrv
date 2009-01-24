@@ -685,10 +685,46 @@ You have to sync the controller befor it can be used, restart of the
 driver isn't needed and the driver should let you now when it recieves
 a connection after you sync the controller.
 
-[[ Force Feedback ]]
---------------------
+[[ Force Feedback / Rumble ]]
+-----------------------------
 
-Force feedback is provided via the standard kernel ff interface:
+Force feedback is disabled by default and has to be enabled with:
+
+ % ./xboxdrv --force-feedback
+
+Xboxdrv works via the standard kernel force feedback interface. For
+documentation on the FF interface see:
+
+ * http://github.com/github/linux-2.6/blob/f3b8436ad9a8ad36b3c9fa1fe030c7f38e5d3d0b/Documentation/input/ff.txt
+ * /usr/include/linux/input.h
+
+Additional, non Linux related, force feedback related information can
+be found at:
+
+ * http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/
+ * http://msdn.microsoft.com/en-us/library/bb219655(VS.85).aspx
+
+fftest is an application you can use to test the force feedback
+interface.
+
+Since the Xbox360 controller supports just rumble not full force
+feedback, xboxdrv tries to emulate other effects. This emulation
+hasn't been tested much and might not always work as expected. Bug
+reports and test cases are welcome.
+
+Force feedback is disabed by default since it seems to causes trouble
+in certain application, namely "Tomb Raider: Legend" when run in Wine
+crashes at startup when rumble is enabled, while it works perfectly
+when rumble is disabled.
+
+"Tomb Raider: Anniversary" running in Wine seems to work together with
+xboxdrv and rumble, but hasn't been intensivly tested.
+
+You can change the rumble strength via:
+
+ ./xboxdrv --rumble-gain 50%
+
+Values larger then 100% are possible as well.
 
 
 [[ Known bugs ]]

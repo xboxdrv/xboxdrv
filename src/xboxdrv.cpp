@@ -420,6 +420,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  --relative-axis MAP      Make an axis emulate a joystick throttle (example: y2=64000)" << std::endl;
   std::cout << "  --autofire MAP           Cause the given buttons to act as autofire (example: A=250)" << std::endl;
   std::cout << "  --force-feedback         Enable force feedback support" << std::endl;
+  std::cout << "  --rumble-gain NUM        Set relative rumble strength (default: 255)" << std::endl;
   std::cout << std::endl;
   std::cout << "See README for more documentation and examples." << std::endl;
   std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
@@ -469,12 +470,12 @@ int to_number(int range, const std::string& str)
     {
       if (str[str.size() - 1] == '%')
         {
-          int percent = std::max(0, std::min(100, boost::lexical_cast<int>(str.substr(0, str.size()-1))));
+          int percent = boost::lexical_cast<int>(str.substr(0, str.size()-1));
           return range * percent / 100;
         }
       else
         {
-          return std::max(0, std::min(range, boost::lexical_cast<int>(str)));
+          return boost::lexical_cast<int>(str);
         }
     }
 }
@@ -603,8 +604,20 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
         }
       else if (strcmp(argv[i], "--force-feedback") == 0)
         {
-          std::cout << "Warrning: force-feedback support is not yet implemented" << std::endl;
           opts.uinput_config.force_feedback = true;
+        }
+      else if (strcmp(argv[i], "--rumble-gain") == 0)
+        {
+          ++i;
+          if (i < argc)
+            {
+              opts.rumble_gain = to_number(255, argv[i]);
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
+              exit(EXIT_FAILURE);
+            }
         }
       else if (strcmp(argv[i], "-b") == 0 ||
                strcmp(argv[i], "--buttonmap") == 0)
@@ -753,7 +766,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
             {
               std::cout << "Error: " << argv[i-1] << " expected an INT argument" << std::endl;
               exit(EXIT_FAILURE);
-            }          
+            }
         }
       else if (strcmp("--trigger-as-button", argv[i]) == 0)
         {
@@ -980,6 +993,7 @@ void print_info(struct usb_device* dev,
       std::cout << std::endl;
     }
 
+  std::cout << "RumbleGain:        " << opts.rumble_gain << std::endl;
   std::cout << "ForceFeedback:     " << ((opts.uinput_config.force_feedback) ? "enabled" : "disabled") << std::endl;
 }
 
@@ -1072,11 +1086,22 @@ void apply_deadzone(XboxGenericMsg& msg, int deadzone)
         break;
     }
 }
-uint32_t get_time()
+
+uint32_t get_time()
 {
   struct timeval tv;
   gettimeofday(&tv, NULL);
   return tv.tv_sec * 1000 + tv.tv_usec/1000;
+}
+
+void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_t rhs)
+{
+  lhs = std::min(lhs * gain / 255, 255);
+  rhs = std::min(rhs * gain / 255, 255);
+  
+  //std::cout << (int)lhs << " " << (int)rhs << std::endl;
+
+  controller->set_rumble(lhs, rhs);
 }
 
 void controller_loop(GamepadType type, uInput* uinput, XboxGenericController* controller, CommandLineOptions& opts)
@@ -1158,17 +1183,18 @@ void controller_loop(GamepadType type, uInput* uinput, XboxGenericController* co
             {
               if (type == GAMEPAD_XBOX)
                 {
-                  controller->set_rumble(msg.xbox.lt, msg.xbox.rt);
+                  set_rumble(controller, opts.rumble_gain, msg.xbox.lt, msg.xbox.rt);
                 }
               else if (type == GAMEPAD_XBOX360 ||
                        type == GAMEPAD_XBOX360_WIRELESS)
                 {
-                  controller->set_rumble(msg.xbox360.lt, msg.xbox360.rt);
+                  set_rumble(controller, opts.rumble_gain, msg.xbox360.lt, msg.xbox360.rt);
                 }
               else if (type == GAMEPAD_FIRESTORM)
                 {
-                  controller->set_rumble(std::min(255, abs((msg.xbox360.y1>>8)*2)), 
-                                         std::min(255, abs((msg.xbox360.y2>>8)*2)));
+                  set_rumble(controller, opts.rumble_gain,
+                             std::min(255, abs((msg.xbox360.y1>>8)*2)), 
+                             std::min(255, abs((msg.xbox360.y2>>8)*2)));
                 }
             }
         }
@@ -1336,7 +1362,7 @@ void run_main(CommandLineOptions& opts)
             {
               std::cout << "\nStarting with uinput... " << std::flush;
               uinput = new uInput(dev_type, opts.uinput_config);
-              uinput->set_ff_callback(boost::bind(&XboxGenericController::set_rumble, controller, _1, _2));
+              uinput->set_ff_callback(boost::bind(&set_rumble,  controller, opts.rumble_gain, _1, _2));
               std::cout << "done" << std::endl;
             }
           else

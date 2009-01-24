@@ -2,7 +2,7 @@ xboxdrv 0.4.4 - (??/Jan/2009)
 =============================
 
 * auto-detect USB endpoints
-* force feedback support
+* rumble support, enabled via --force-feedback
 
 
 xboxdrv 0.4.3 - (17/Jan/2009)
