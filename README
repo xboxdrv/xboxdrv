@@ -726,6 +726,11 @@ You can change the rumble strength via:
 
 Values larger then 100% are possible as well.
 
+Note that you must close the application that is using force feedback
+always before you close the xboxdrv driver, else you might end up with
+a hanging non-interruptable xboxdrv process that will require a reboot
+to get rid of.
+
 
 [[ Known bugs ]]
 ----------------

@@ -14,6 +14,9 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
+* Thrustmaster has weird delay when reporting actions, which makes it
+  basically unusable
+
 * test TR:Anniversary with max effect 16
 
 * create dummy joystick, mouse and keyboard buttons so that the

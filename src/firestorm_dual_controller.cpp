@@ -130,11 +130,14 @@ FirestormDualController::read(XboxGenericMsg& msg, bool verbose, int timeout)
       msg.xbox360.thumb_l = data.thumb_l;
       msg.xbox360.thumb_r = data.thumb_r;
 
+      if (data.y1 == -128) data.y1 = -127;
+      if (data.y2 == 0) data.y2 = 1;
+
       msg.xbox360.x1 = data.x1 << 8;
-      msg.xbox360.y1 = data.y1 << 8;
+      msg.xbox360.y1 = -(data.y1 << 8);
 
       msg.xbox360.x2 = data.x2 << 8;
-      msg.xbox360.y2 = (data.y2 - 128) << 8;
+      msg.xbox360.y2 = -((data.y2 - 128) << 8);
 
       // data.dpad == 0xf0 -> dpad centered
       // data.dpad == 0xe0 -> dpad-only mode is enabled
