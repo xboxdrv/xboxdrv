@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdlib.h>
 #include <iostream>
 #include <assert.h>
 #include "force_feedback_handler.hpp"
@@ -121,34 +122,45 @@ ForceFeedbackEffect::ForceFeedbackEffect(const struct ff_effect& effect)
     weak_magnitude(0),
     strong_magnitude(0)
 {
+  // Since we can't excute most effects directly, we have to emulate
+  // them, for documentation on effects see:
+  //
+  // http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/
+  // http://msdn.microsoft.com/en-us/library/bb219655(VS.85).aspx
+  // http://github.com/github/linux-2.6/blob/f3b8436ad9a8ad36b3c9fa1fe030c7f38e5d3d0b/Documentation/input/ff.txt
+  // /usr/include/linux/input.h
+  //
+  // Since documentation is a little lacking, some of the emulation is
+  // likely be wrong.
+
   delay  = effect.replay.delay;
   length = effect.replay.length;
 
   switch(effect.type)
     {
       case FF_CONSTANT:
-        start_weak_magnitude   = effect.u.constant.level;
-        start_strong_magnitude = effect.u.constant.level;
-        end_weak_magnitude     = effect.u.constant.level;
-        end_strong_magnitude   = effect.u.constant.level;
+        start_weak_magnitude   = abs(effect.u.constant.level);
+        start_strong_magnitude = abs(effect.u.constant.level);
+        end_weak_magnitude     = abs(effect.u.constant.level);
+        end_strong_magnitude   = abs(effect.u.constant.level);
 
         envelope = effect.u.constant.envelope;
         break;
 
       case FF_PERIODIC:
-        start_weak_magnitude   = effect.u.periodic.magnitude;
-        start_strong_magnitude = effect.u.periodic.magnitude;
-        end_weak_magnitude     = effect.u.periodic.magnitude;
-        end_strong_magnitude   = effect.u.periodic.magnitude;
+        start_weak_magnitude   = abs(effect.u.periodic.magnitude);
+        start_strong_magnitude = abs(effect.u.periodic.magnitude);
+        end_weak_magnitude     = abs(effect.u.periodic.magnitude);
+        end_strong_magnitude   = abs(effect.u.periodic.magnitude);
 
         envelope = effect.u.periodic.envelope;
         break;
 
       case FF_RAMP:
-        start_weak_magnitude   = effect.u.ramp.start_level;
-        start_strong_magnitude = effect.u.ramp.start_level;
-        end_weak_magnitude     = effect.u.ramp.end_level;
-        end_strong_magnitude   = effect.u.ramp.end_level;
+        start_weak_magnitude   = abs(effect.u.ramp.start_level);
+        start_strong_magnitude = abs(effect.u.ramp.start_level);
+        end_weak_magnitude     = abs(effect.u.ramp.end_level);
+        end_strong_magnitude   = abs(effect.u.ramp.end_level);
 
         envelope = effect.u.ramp.envelope;
         break;
@@ -166,7 +178,6 @@ ForceFeedbackEffect::ForceFeedbackEffect(const struct ff_effect& effect)
 	// case FF_FRICTION:
         // case FF_DAMPER
         // case FF_INERTIA:
-        // case FF_CUSTOM:
         std::cout << "Unsupported effect" << std::endl;
         start_weak_magnitude   = 0;
         start_strong_magnitude = 0;
@@ -198,8 +209,8 @@ ForceFeedbackEffect::update(int msec_delta)
               weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
               
               // apply envelope
-              strong_magnitude = strong_magnitude * t / envelope.attack_length;
-              weak_magnitude   = weak_magnitude   * t / envelope.attack_length;
+              strong_magnitude = ((envelope.attack_level * t) + strong_magnitude * (envelope.attack_length - t)) / envelope.attack_length;
+              weak_magnitude   = ((envelope.attack_level * t) + weak_magnitude   * (envelope.attack_length - t)) / envelope.attack_length;
             }
           else if  (t < length - envelope.fade_length)
             { // sustain
@@ -212,8 +223,9 @@ ForceFeedbackEffect::update(int msec_delta)
               weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
 
               // apply envelope
-              strong_magnitude = strong_magnitude * (envelope.fade_length - t) / envelope.fade_length;
-              weak_magnitude   = weak_magnitude   * (envelope.fade_length - t) / envelope.fade_length;
+              int dt = t - (length - envelope.fade_length);
+              strong_magnitude = ((envelope.fade_level * dt) + strong_magnitude * (envelope.fade_length - dt)) / envelope.fade_length;
+              weak_magnitude   = ((envelope.fade_level * dt) + weak_magnitude   * (envelope.fade_length - dt)) / envelope.fade_length;
             }
           else
             { // effect ended
@@ -239,7 +251,8 @@ ForceFeedbackEffect::stop()
 }
 
 ForceFeedbackHandler::ForceFeedbackHandler()
-  : max_effects(16),
+  : gain(0xFFFF),
+    max_effects(16),
     weak_magnitude(0),
     strong_magnitude(0)
 {
@@ -305,6 +318,12 @@ ForceFeedbackHandler::stop(int id)
 }
 
 void
+ForceFeedbackHandler::set_gain(int g)
+{
+  gain = g;
+}
+
+void
 ForceFeedbackHandler::update(int msec_delta)
 {
   weak_magnitude   = 0;
@@ -328,13 +347,13 @@ ForceFeedbackHandler::update(int msec_delta)
 int
 ForceFeedbackHandler::get_weak_magnitude() const
 {
-  return weak_magnitude;
+  return weak_magnitude * gain / 0xffff;
 }
 
 int
 ForceFeedbackHandler::get_strong_magnitude() const
 {
-  return strong_magnitude;
+  return strong_magnitude * gain / 0xffff;
 }
 
 /* EOF */

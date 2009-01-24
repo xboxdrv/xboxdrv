@@ -19,19 +19,17 @@ Stuff to do before 0.5 release:
 
 * guitar doesn't get a guide button?!
 
-* add --detach option that detaches any existing driver
-
-* add a --mimic-xpad option that behaves exactly like xpad
-
 * add a way to not create a joystick/event device
-
-* figure out what jscal does and if it can break stuff
-  1) jscal uses the joystick interface, not the event interface
 
 * implement basic rumble force feedback support
 - see ff-memless for effect emulation on rumble
 - handle FF status report
 
+* figure out the max values of force feedback effects so that stuff is mapped more properly
+
+* make debug output optional
+
+* implement --rumble-strength 100% to set relative rumble strength
 
 fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
 
@@ -40,6 +38,14 @@ http://msdn.microsoft.com/en-us/library/bb219655(VS.85).aspx
 
 Later versions:
 ===============
+
+* figure out what jscal does and if it can break stuff
+  1) jscal uses the joystick interface, not the event interface
+
+* add --detach option that detaches any existing driver (needed for
+  gamepads that use HID)
+
+* add a --mimic-xpad option that behaves exactly like xpad
 
 * add axis specific deadzones or deal with LT/RT somehow
 

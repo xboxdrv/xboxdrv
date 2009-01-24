@@ -387,15 +387,24 @@ uInput::setup_xbox360_gamepad(GamepadType type)
       get_joystick_uinput()->add_ff(FF_RUMBLE);
       get_joystick_uinput()->add_ff(FF_PERIODIC);
       get_joystick_uinput()->add_ff(FF_CONSTANT);
-
-      // 
-      get_joystick_uinput()->add_ff(FF_SPRING);
-      get_joystick_uinput()->add_ff(FF_FRICTION);
-      get_joystick_uinput()->add_ff(FF_DAMPER);
-      get_joystick_uinput()->add_ff(FF_INERTIA);
-
       get_joystick_uinput()->add_ff(FF_RAMP);
+
+      // Periodic effect subtypes
       get_joystick_uinput()->add_ff(FF_SINE);
+      get_joystick_uinput()->add_ff(FF_TRIANGLE);
+      get_joystick_uinput()->add_ff(FF_SQUARE);
+      get_joystick_uinput()->add_ff(FF_SAW_UP);
+      get_joystick_uinput()->add_ff(FF_SAW_DOWN);
+      get_joystick_uinput()->add_ff(FF_CUSTOM);
+
+      // Gain support
+      get_joystick_uinput()->add_ff(FF_GAIN);
+
+      // Unsupported effects
+      // get_joystick_uinput()->add_ff(FF_SPRING);
+      // get_joystick_uinput()->add_ff(FF_FRICTION);
+      // get_joystick_uinput()->add_ff(FF_DAMPER);
+      // get_joystick_uinput()->add_ff(FF_INERTIA);
 
       // FF_GAIN     - relative strength of rumble
       // FF_RUMBLE   - basic rumble (delay, time)
@@ -408,11 +417,6 @@ uInput::setup_xbox360_gamepad(GamepadType type)
       // |- FF_SAW_UP
       // |- FF_SAW_DOWN
       // '- FF_CUSTOM
-
-      // FF_SPRING
-      // FF_FRICTION
-      // FF_DAMPER
-      // FF_INERTIA
     }
 
   if (cfg.dpad_only)

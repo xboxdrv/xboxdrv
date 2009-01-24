@@ -258,10 +258,18 @@ LinuxUinput::update(int msec_delta)
                 break;
 
               case EV_FF:
-                if (ev.value)
-                  ff_handler->play(ev.code);
-                else
-                  ff_handler->stop(ev.code);
+                switch(ev.code)
+                  {
+                    case FF_GAIN:
+                      ff_handler->set_gain(ev.value);
+                      break;
+
+                    default:
+                      if (ev.value)
+                        ff_handler->play(ev.code);
+                      else
+                        ff_handler->stop(ev.code);
+                  }
                 break;
 
               case EV_UINPUT:

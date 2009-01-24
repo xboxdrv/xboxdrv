@@ -84,6 +84,7 @@ public:
 class ForceFeedbackHandler
 {
 private:
+  int gain;
   int max_effects;
   typedef std::map<int, ForceFeedbackEffect> Effects;
   Effects effects;
@@ -102,6 +103,8 @@ public:
   
   void play(int id);
   void stop(int id);
+
+  void set_gain(int id);
 
   void update(int msec_delta);
 
