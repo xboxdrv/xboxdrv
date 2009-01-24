@@ -5,9 +5,10 @@ Pre Release Testing:
 * --dpad-only check that X/Y act properly
 * --dpad-as-button check buttons are working and no useless axis present
 
-TAG=v0.4.4
+VERSION="0.4.4"
+TAG="v${VERSION}"
 git tag "${TAG}" -s -a "xboxdrv ${TAG}"
-git-archive --format=tar --prefix="xboxdrv-linux-${TAG}/" ${TAG} | bzip2 -c > /tmp/xboxdrv-linux-${TAG}.tar.bz2
+git-archive --format=tar --prefix="xboxdrv-linux-${VERSION}/" ${TAG} | bzip2 -c > /tmp/xboxdrv-linux-${VERSION}.tar.bz2
 git push --tags
 
 Stuff to do before 0.5 release:

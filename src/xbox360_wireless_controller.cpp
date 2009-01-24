@@ -67,8 +67,8 @@ Xbox360WirelessController::set_rumble(uint8_t left, uint8_t right)
 {
   //                                       +-- typo? might be 0x0c, i.e. length
   //                                       v
-  char rumblecmd[] = { 0x00, 0x01, 0x0f, 0xc0, 0x00, left, right, 0x00, 0x00, 0x00, 0x00, 0x00 };
-  usb_interrupt_write(handle, endpoint, rumblecmd, sizeof(rumblecmd), 0);
+  uint8_t rumblecmd[] = { 0x00, 0x01, 0x0f, 0xc0, 0x00, left, right, 0x00, 0x00, 0x00, 0x00, 0x00 };
+  usb_interrupt_write(handle, endpoint, (char*)rumblecmd, sizeof(rumblecmd), 0);
 }
 
 void
