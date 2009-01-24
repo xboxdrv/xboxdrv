@@ -151,8 +151,8 @@ Xbox360Controller::find_endpoints()
 void
 Xbox360Controller::set_rumble(uint8_t left, uint8_t right)
 {
-  char rumblecmd[] = { 0x00, 0x08, 0x00, left, right, 0x00, 0x00, 0x00 };
-  usb_interrupt_write(handle, endpoint_out, rumblecmd, sizeof(rumblecmd), 0);
+  uint8_t rumblecmd[] = { 0x00, 0x08, 0x00, left, right, 0x00, 0x00, 0x00 };
+  usb_interrupt_write(handle, endpoint_out, (char*)rumblecmd, sizeof(rumblecmd), 0);
 }
 
 void
