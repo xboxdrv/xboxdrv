@@ -14,6 +14,8 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
+* test TR:Anniversary with max effect 16
+
 * create dummy joystick, mouse and keyboard buttons so that the
   devices always act as they should, also figure out the exakt minimum
   requirements for each device.

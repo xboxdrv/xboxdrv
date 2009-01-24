@@ -182,7 +182,7 @@ LinuxUinput::finish()
   user_dev.id.product = product;
 
   if (ff_bit)
-    user_dev.ff_effects_max = 64;
+    user_dev.ff_effects_max = ff_handler->get_max_effects();
 
   //std::cout << "Finalizing uinput: '" << user_dev.name << "'" << std::endl;
 
