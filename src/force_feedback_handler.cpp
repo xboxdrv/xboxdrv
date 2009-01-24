@@ -278,7 +278,26 @@ ForceFeedbackHandler::upload(const struct ff_effect& effect)
             << ", effect_type:" << effect.type
             << ",\n          "  << effect 
             << ")" << std::endl;
-  effects[effect.id] = ForceFeedbackEffect(effect);
+
+  std::map<int, ForceFeedbackEffect>::iterator i = effects.find(effect.id);
+  if (i == effects.end())
+    {
+      effects[effect.id] = ForceFeedbackEffect(effect);
+    }
+  else
+    {
+      ForceFeedbackEffect old_effect = i->second;
+      ForceFeedbackEffect new_effect(effect);
+
+      // We the copy state variables of the effect , so we can update
+      // the effect while it is playing
+      new_effect.playing          = old_effect.playing;
+      new_effect.count            = old_effect.count;
+      new_effect.weak_magnitude   = old_effect.weak_magnitude;
+      new_effect.strong_magnitude = old_effect.strong_magnitude;
+
+      effects[effect.id] = effect;
+    }
 }
 
 void
