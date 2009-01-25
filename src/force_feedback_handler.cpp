@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <assert.h>
+#include "command_line_options.hpp"
 #include "force_feedback_handler.hpp"
 
 std::ostream& operator<<(std::ostream& out, const struct ff_envelope& envelope)
@@ -183,7 +184,7 @@ ForceFeedbackEffect::ForceFeedbackEffect(const struct ff_effect& effect)
 	// case FF_FRICTION:
         // case FF_DAMPER
         // case FF_INERTIA:
-        std::cout << "Unsupported effect" << std::endl;
+        std::cout << "Unsupported effect: " << effect << std::endl;
         start_weak_magnitude   = 0;
         start_strong_magnitude = 0;
         end_weak_magnitude     = 0;
@@ -278,11 +279,12 @@ ForceFeedbackHandler::get_max_effects()
 void
 ForceFeedbackHandler::upload(const struct ff_effect& effect)
 {
-  std::cout << "FF_UPLOAD("
-            << "effect_id:" << effect.id
-            << ", effect_type:" << effect.type
-            << ",\n          "  << effect 
-            << ")" << std::endl;
+  if (command_line_options->verbose)
+    std::cout << "FF_UPLOAD("
+              << "effect_id:" << effect.id
+              << ", effect_type:" << effect.type
+              << ",\n          "  << effect 
+              << ")" << std::endl;
 
   std::map<int, ForceFeedbackEffect>::iterator i = effects.find(effect.id);
   if (i == effects.end())
@@ -308,37 +310,40 @@ ForceFeedbackHandler::upload(const struct ff_effect& effect)
 void
 ForceFeedbackHandler::erase(int id)
 {
-  std::cout << "FF_ERASE(effect_id:" << id << ")" << std::endl;
+  if (command_line_options->verbose)
+    std::cout << "FF_ERASE(effect_id:" << id << ")" << std::endl;
 
   std::map<int, ForceFeedbackEffect>::iterator i = effects.find(id);
   if (i != effects.end())
     effects.erase(i);
   else
-    std::cout << "ForceFeedbackHandler::erase: Unknown id " << id << std::endl;
+    std::cout << "Error: ForceFeedbackHandler::erase: Unknown id " << id << std::endl;
 }
 
 void
 ForceFeedbackHandler::play(int id)
 {
-  std::cout << "FFPlay(effect_id:" << id << ")" << std::endl;
+  if (command_line_options->verbose)
+    std::cout << "FFPlay(effect_id:" << id << ")" << std::endl;
 
   std::map<int, ForceFeedbackEffect>::iterator i = effects.find(id);
   if (i != effects.end())
     i->second.play();
   else
-    std::cout << "ForceFeedbackHandler::play: Unknown id " << id << std::endl;
+    std::cout << "Error: ForceFeedbackHandler::play: Unknown id " << id << std::endl;
 }
 
 void
 ForceFeedbackHandler::stop(int id)
 {
-  std::cout << "FFStop(effect_id:" << id << ")" << std::endl;
+  if (command_line_options->verbose)
+    std::cout << "FFStop(effect_id:" << id << ")" << std::endl;
 
   std::map<int, ForceFeedbackEffect>::iterator i = effects.find(id);
   if (i != effects.end())
     i->second.stop();
   else
-    std::cout << "ForceFeedbackHandler::play: Unknown id " << id << std::endl;
+    std::cout << "Error: ForceFeedbackHandler::play: Unknown id " << id << std::endl;
 }
 
 void
