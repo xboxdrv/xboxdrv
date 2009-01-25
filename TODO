@@ -15,7 +15,9 @@ Stuff to do before 0.5 release:
 ===============================
 
 * Thrustmaster has weird delay when reporting actions, which makes it
-  basically unusable
+  basically unusable, likely caused by to many rumble messages, should
+  limit amount of rumble messages send, only send when things have
+  changed
 
 * test TR:Anniversary with max effect 16
 

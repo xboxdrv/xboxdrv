@@ -60,6 +60,7 @@ FirestormDualController::FirestormDualController(struct usb_device* dev)
     }
   else
     {
+      // FIXME: Do not always do that unrequested
       usb_detach_kernel_driver_np(handle, 0);
 
       int err = usb_claim_interface(handle, 0);
@@ -69,7 +70,7 @@ FirestormDualController::FirestormDualController(struct usb_device* dev)
           out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
               << "Try to run 'rmmod xpad' and start xboxdrv again.";
           throw std::runtime_error(out.str());
-        }    
+        }
     }
 }
 
@@ -90,6 +91,23 @@ void
 FirestormDualController::set_led(uint8_t status)
 {
   // not supported
+}
+
+// Change the sign
+inline int16_t negate_16(int16_t v)
+{
+  if (v)
+    return ~v;
+  else
+    return v;
+}
+
+inline int16_t scale_8to16(int8_t a)
+{
+  if (a > 0) 
+    return a * 32767 / 127;
+  else
+    return a * 32768 / 128;
 }
 
 bool
@@ -121,23 +139,24 @@ FirestormDualController::read(XboxGenericMsg& msg, bool verbose, int timeout)
       msg.xbox360.lb = data.lb;
       msg.xbox360.rb = data.rb;
 
-      msg.xbox360.lt = data.lt << 8;
-      msg.xbox360.rt = data.rt << 8;
+      msg.xbox360.lt = data.lt * 255;
+      msg.xbox360.rt = data.rt * 255;
 
       msg.xbox360.start = data.start;
       msg.xbox360.back  = data.back;
 
       msg.xbox360.thumb_l = data.thumb_l;
       msg.xbox360.thumb_r = data.thumb_r;
+      
+      msg.xbox360.x1 = scale_8to16(data.x1);
+      msg.xbox360.y1 = scale_8to16(data.y1);
 
-      if (data.y1 == -128) data.y1 = -127;
-      if (data.y2 == 0) data.y2 = 1;
+      msg.xbox360.x2 = scale_8to16(data.x2);
+      msg.xbox360.y2 = scale_8to16(data.y2 - 128);
 
-      msg.xbox360.x1 = data.x1 << 8;
-      msg.xbox360.y1 = -(data.y1 << 8);
-
-      msg.xbox360.x2 = data.x2 << 8;
-      msg.xbox360.y2 = -((data.y2 - 128) << 8);
+      // Invert the axis
+      msg.xbox360.y1 = negate_16(msg.xbox360.y1);
+      msg.xbox360.y2 = negate_16(msg.xbox360.y2);
 
       // data.dpad == 0xf0 -> dpad centered
       // data.dpad == 0xe0 -> dpad-only mode is enabled
