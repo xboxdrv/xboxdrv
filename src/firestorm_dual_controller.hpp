@@ -28,6 +28,9 @@ class FirestormDualController : public XboxGenericController
 private:
   struct usb_device* dev;
   struct usb_dev_handle* handle;
+  
+  int left_rumble;
+  int right_rumble;
 
 public:
   FirestormDualController(struct usb_device* dev);

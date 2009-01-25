@@ -50,8 +50,10 @@ struct FirestormMsg
   int x2 :8;
   unsigned int y2 :8;
 } __attribute__((__packed__));
-
+
 FirestormDualController::FirestormDualController(struct usb_device* dev)
+  : left_rumble(0),
+    right_rumble(0)
 {
   handle = usb_open(dev);
   if (!handle)
@@ -83,8 +85,15 @@ FirestormDualController::~FirestormDualController()
 void
 FirestormDualController::set_rumble(uint8_t left, uint8_t right)
 {
-  char cmd[] = { left, right, 0x00, 0x00 };
-  usb_control_msg(handle, 0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd), 0);
+  if (left_rumble  != left ||
+      right_rumble != right)
+    {
+      left_rumble  = left;
+      right_rumble = right;
+
+      char cmd[] = { left, right, 0x00, 0x00 };
+      usb_control_msg(handle, 0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd), 0);
+    }
 }
 
 void
