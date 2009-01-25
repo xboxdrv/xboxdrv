@@ -1124,7 +1124,7 @@ void controller_loop(GamepadType type, uInput* uinput, XboxGenericController* co
   //if (autofire_modifier.get() ||
   //relative_axis_modifier.get() ||
   //    opts.uinput_config.force_feedback)
-  timeout = 10;
+  timeout = 25; // FIXME: How long should we wait for a new event?
 
   memset(&oldmsg, 0, sizeof(oldmsg));
   memset(&oldrealmsg, 0, sizeof(oldrealmsg));
