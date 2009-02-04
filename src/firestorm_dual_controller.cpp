@@ -52,8 +52,8 @@ struct FirestormMsg
 } __attribute__((__packed__));
 
 FirestormDualController::FirestormDualController(struct usb_device* dev)
-  : left_rumble(0),
-    right_rumble(0)
+  : left_rumble(-1),
+    right_rumble(-1)
 {
   handle = usb_open(dev);
   if (!handle)
