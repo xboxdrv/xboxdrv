@@ -580,7 +580,7 @@ environment variables.
 
 Currently available via:
 
- svn co svn://svn.berlios.de/windstille/trunk/windstille/tools/sdl-jstest
+ svn co svn://svn.berlios.de/windstille/trunk/sdl-jstest
 
 xev:
 ----
