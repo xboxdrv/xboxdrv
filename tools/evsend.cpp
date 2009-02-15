@@ -10,6 +10,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+/** Simple program to send events to /dev/input/eventX devices, useful
+    for toggling LEDs and such */
 int main(int argc, char** argv)
 {
   if (argc != 5)
