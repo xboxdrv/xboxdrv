@@ -93,6 +93,7 @@ CalibrationMapping CalibrationMapping::from_string(const std::string& str)
 
           if (!i->empty())
             {
+              try {
               if (j == 0) 
                 mapping.min = boost::lexical_cast<int>(*i);
               else if (j == 1)
@@ -100,7 +101,10 @@ CalibrationMapping CalibrationMapping::from_string(const std::string& str)
               else if (j == 2)
                 mapping.max = boost::lexical_cast<int>(*i);
               else 
-                throw std::runtime_error("To many arguments given, syntax is 'AXIS=MIN:CENTER:MAX': " + str);
+                throw std::runtime_error("--calibration: to many arguments given, syntax is 'AXIS=MIN:CENTER:MAX': " + str);
+              } catch(boost::bad_lexical_cast&) {
+                throw std::runtime_error("--calibration: couldn't convert '" + *i + "' to int");
+              }
             }
         }
       

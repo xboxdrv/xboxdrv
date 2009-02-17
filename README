@@ -172,7 +172,7 @@ joystick more sensitive. A setting of:
  ./xboxdrv --calibration X2=-16384:0:16384
 
 Will cause the joystick device report maximum position when your
-joystick is only moved half the way.
+stick is only moved half the way.
 
 [[ Square Axis ]]
 -----------------
