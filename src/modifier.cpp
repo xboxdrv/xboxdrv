@@ -69,15 +69,15 @@ void apply_axis_map(XboxGenericMsg& msg, std::vector<AxisMapping>& lst)
 
 CalibrationMapping CalibrationMapping::from_string(const std::string& str)
 {
-  std::string::size_type i = str.find_first_of('=');
-  if (i == std::string::npos)
+  std::string::size_type epos = str.find_first_of('=');
+  if (epos == std::string::npos)
     {
       throw std::runtime_error("Couldn't convert string \"" + str + "\" to CalibrationMapping");
     }
   else
     {
       CalibrationMapping mapping; 
-      mapping.axis    = string2axis(str.substr(0, i));
+      mapping.axis    = string2axis(str.substr(0, epos));
       mapping.min     = -32768;
       mapping.center  = 0;
       mapping.max     = 32767;
@@ -85,7 +85,7 @@ CalibrationMapping CalibrationMapping::from_string(const std::string& str)
       boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
       typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
-      tokenizer tokens(str.substr(i+1), sep);
+      tokenizer tokens(str.substr(epos+1), sep);
       int j = 0;
       for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
         {
@@ -93,18 +93,21 @@ CalibrationMapping CalibrationMapping::from_string(const std::string& str)
 
           if (!i->empty())
             {
-              try {
-              if (j == 0) 
-                mapping.min = boost::lexical_cast<int>(*i);
-              else if (j == 1)
-                mapping.center = boost::lexical_cast<int>(*i);
-              else if (j == 2)
-                mapping.max = boost::lexical_cast<int>(*i);
-              else 
-                throw std::runtime_error("--calibration: to many arguments given, syntax is 'AXIS=MIN:CENTER:MAX': " + str);
-              } catch(boost::bad_lexical_cast&) {
-                throw std::runtime_error("--calibration: couldn't convert '" + *i + "' to int");
-              }
+              try 
+                {
+                  if (j == 0) 
+                    mapping.min = boost::lexical_cast<int>(*i);
+                  else if (j == 1)
+                    mapping.center = boost::lexical_cast<int>(*i);
+                  else if (j == 2)
+                    mapping.max = boost::lexical_cast<int>(*i);
+                  else 
+                    throw std::runtime_error("--calibration: to many arguments given, syntax is 'AXIS=MIN:CENTER:MAX': " + str);
+                } 
+              catch(boost::bad_lexical_cast&) 
+                {
+                  throw std::runtime_error("--calibration: couldn't convert '" + *i + "' to int");
+                }
             }
         }
       
