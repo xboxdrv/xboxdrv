@@ -16,6 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <iostream>
+#include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <stdexcept>
 #include "modifier.hpp"
@@ -63,6 +65,72 @@ void apply_axis_map(XboxGenericMsg& msg, std::vector<AxisMapping>& lst)
       set_axis(newmsg, i->rhs, std::max(std::min(nrhs + lhs, 32767), -32768));
     }
   msg = newmsg;
+}
+
+CalibrationMapping CalibrationMapping::from_string(const std::string& str)
+{
+  std::string::size_type i = str.find_first_of('=');
+  if (i == std::string::npos)
+    {
+      throw std::runtime_error("Couldn't convert string \"" + str + "\" to CalibrationMapping");
+    }
+  else
+    {
+      CalibrationMapping mapping; 
+      mapping.axis    = string2axis(str.substr(0, i));
+      mapping.min     = -32768;
+      mapping.center  = 0;
+      mapping.max     = 32767;
+
+      boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
+      typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+
+      tokenizer tokens(str.substr(i+1), sep);
+      int j = 0;
+      for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+        {
+          std::cout << "Token: '" << *i << "'" << std::endl;
+
+          if (!i->empty())
+            {
+              if (j == 0) 
+                mapping.min = boost::lexical_cast<int>(*i);
+              else if (j == 1)
+                mapping.center = boost::lexical_cast<int>(*i);
+              else if (j == 2)
+                mapping.max = boost::lexical_cast<int>(*i);
+              else 
+                throw std::runtime_error("To many arguments given, syntax is 'AXIS=MIN:CENTER:MAX': " + str);
+            }
+        }
+      
+      if (!(mapping.min <= mapping.center && mapping.center <= mapping.max))
+        throw std::runtime_error("Order wrong 'AXIS=MIN:CENTER:MAX': " + str);
+
+      return mapping;
+    } 
+}
+
+static int clamp(int lhs, int rhs, int v)
+{
+  return std::max(lhs, std::min(v, rhs));
+}
+
+void apply_calibration_map(XboxGenericMsg& msg, std::vector<CalibrationMapping>& lst)
+{
+  for(std::vector<CalibrationMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
+    {
+      int value = get_axis(msg,  i->axis);
+
+      if (value < i->center)
+        value = 32768 * (value - i->center) / (i->center - i->min);
+      else if (value > i->center)
+        value = 32767 * (value - i->center) / (i->max - i->center);
+      else
+        value = 0;
+
+      set_axis(msg, i->axis, clamp(-32768, 32767, value));
+    }
 }
 
 ButtonMapping 
@@ -142,7 +210,6 @@ RelativeAxisMapping::from_string(const std::string& str)
       return mapping;
     }
 }
-
 
 AutoFireMapping 
 AutoFireMapping::from_string(const std::string& str)

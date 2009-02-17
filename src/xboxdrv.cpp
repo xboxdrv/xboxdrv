@@ -421,6 +421,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  --square-axis            Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)" << std::endl;
   std::cout << "  --relative-axis MAP      Make an axis emulate a joystick throttle (example: y2=64000)" << std::endl;
   std::cout << "  --autofire MAP           Cause the given buttons to act as autofire (example: A=250)" << std::endl;
+  std::cout << "  --calibration MAP        Cause the given buttons to act as autofire (example: X2=-32768:0:32767)" << std::endl;
   std::cout << "  --force-feedback         Enable force feedback support" << std::endl;
   std::cout << "  --rumble-gain NUM        Set relative rumble strength (default: 255)" << std::endl;
   std::cout << std::endl;
@@ -795,6 +796,19 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
               exit(EXIT_FAILURE);
             }          
         }
+      else if (strcmp("--calibration", argv[i]) == 0)
+        {
+          ++i;
+          if (i < argc)
+            {
+              arg2vector(argv[i], opts.calibration_map, &CalibrationMapping::from_string);
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
+              exit(EXIT_FAILURE);
+            }
+        }
       else if (strcmp("--relative-axis", argv[i]) == 0)
         {
           ++i;
@@ -1149,6 +1163,8 @@ void controller_loop(GamepadType type, uInput* uinput, XboxGenericController* co
       uint32_t this_time = get_time();
       int msec_delta = this_time - last_time;
       last_time = this_time;
+
+      apply_calibration_map(msg, opts.calibration_map);
 
       // Apply modifier
       apply_deadzone(msg, opts.deadzone);

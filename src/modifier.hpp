@@ -52,6 +52,15 @@ struct RelativeAxisMapping {
   XboxAxis axis;
   int      speed;
 };
+
+struct CalibrationMapping {
+  static CalibrationMapping from_string(const std::string&);
+
+  XboxAxis axis;
+  int min;
+  int center;
+  int max;
+};
 
 
 class RelativeAxisModifier
@@ -141,6 +150,7 @@ public:
 
 void apply_button_map(XboxGenericMsg& msg, std::vector<ButtonMapping>& lst);
 void apply_axis_map(XboxGenericMsg& msg, std::vector<AxisMapping>& lst);
+void apply_calibration_map(XboxGenericMsg& msg, std::vector<CalibrationMapping>& lst);
 
 #endif
 

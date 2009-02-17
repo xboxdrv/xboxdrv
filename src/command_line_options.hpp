@@ -60,6 +60,7 @@ struct CommandLineOptions
   std::vector<AxisMapping>   axis_map;
   std::vector<AutoFireMapping> autofire_map;
   std::vector<RelativeAxisMapping> relative_axis_map;
+  std::vector<CalibrationMapping> calibration_map;
   bool square_axis;
 
   CommandLineOptions();

@@ -1,8 +1,17 @@
-xboxdrv 0.4.5 - (??/Jan/2009)
+xboxdrv 0.4.6 - (??/Feb/2009)
+=============================
+* --calibration option
+
+
+xboxdrv 0.4.5 - (15/Feb/2009)
 =============================
 
 * fixed mixup between strong and weak rumble
-* added Harmonix Drum Kit for Xbox 360
+* added Harmonix Drum Kit for Xbox 360 support
+* added Logitech Chillstream support
+* added evsend tool to send events to /dev/input/eventX
+* Y-Axis for Firestorm gamepad fixed
+
 
 xboxdrv 0.4.4 - (24/Jan/2009)
 =============================

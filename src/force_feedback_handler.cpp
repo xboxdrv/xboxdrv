@@ -117,7 +117,7 @@ ForceFeedbackEffect::ForceFeedbackEffect()
 {
 }
 
-int clamp(int lhs, int rhs, int v)
+static int clamp(int lhs, int rhs, int v)
 {
   return std::max(lhs, std::min(v, rhs));
 }
