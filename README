@@ -154,6 +154,26 @@ You can also give the deadzone in percentage:
  % ./xboxdrv --deadzone 15%
 
 
+[[ Calibration ]]
+-----------------
+
+If your gamepad for some reason can't reach the maximum value or isn't
+centered properly you can fix that via the calibration options:
+
+ % ./xboxdrv --calibration X2=-32768:0:32767
+
+X2 is the axis name and the three values that follow are min, center
+and max. Simply insert the values that jstest reports when your axis
+is in the respective positions.
+
+You can also use the calibration option if you want to make your
+joystick more sensitive. A setting of:
+
+ ./xboxdrv --calibration X2=-16384:0:16384
+
+Will cause the joystick device report maximum position when your
+joystick is only moved half the way.
+
 [[ Square Axis ]]
 -----------------
 
