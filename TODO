@@ -16,9 +16,7 @@ Stuff to do before 0.4.6 release:
 
 * work in xboxdrv-hal demon to launch things
 
-* Recalibrate: CalibrationModifier
-
-  --calibration X2=min:center:max
+* boost::tokenizer is broken on 64bit
 
 
 Stuff to do before 0.5 release:

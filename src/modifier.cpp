@@ -85,7 +85,8 @@ CalibrationMapping CalibrationMapping::from_string(const std::string& str)
       boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
       typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
-      tokenizer tokens(str.substr(epos+1), sep);
+      std::string rhs = str.substr(epos+1);
+      tokenizer tokens(rhs, sep);
       int j = 0;
       for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
         {
@@ -103,7 +104,7 @@ CalibrationMapping CalibrationMapping::from_string(const std::string& str)
                     mapping.max = boost::lexical_cast<int>(*i);
                   else 
                     throw std::runtime_error("--calibration: to many arguments given, syntax is 'AXIS=MIN:CENTER:MAX': " + str);
-                } 
+                }
               catch(boost::bad_lexical_cast&) 
                 {
                   throw std::runtime_error("--calibration: couldn't convert '" + *i + "' to int");
