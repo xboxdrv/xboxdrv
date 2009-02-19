@@ -20,6 +20,8 @@ import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 import gobject
 import sys
+import os
+import signal
 
 # This list is a direct copy of src/xboxmsg.hpp
 xboxdrv_device_list = [
@@ -118,14 +120,25 @@ class DeviceManager:
         self.xboxdrv_kill(udi)
 
     def xboxdrv_launch(self, udi, bus, dev, type):
-        self.processes[udi] = "xboxdrv --device-by-path %03d:%03d --type %s" %  \
-            (bus, dev, type)
-        print "Launching:", self.processes[udi]
+        self.processes[udi] = os.spawnlp(os.P_NOWAIT, 'xboxdrv',
+                                         'xboxdrv', '--silent', '--device-by-path', "%03d:%03d" % (bus, dev), '--type', type)
+        print "Launched:", self.processes[udi]
 
     def xboxdrv_kill(self, udi):
         if self.processes.has_key(udi):
-            print "Killing:  ", self.processes[udi]
+            pid = self.processes[udi]
+            print "Killing:  ", pid
+            os.kill(pid, signal.SIGINT)
+            os.waitpid(pid, 0)
+            del self.processes[udi]
 
+    def shutdown(self):
+        for (udi, pid) in self.processes.iteritems():
+            print "Shutdown:", udi, pid
+            os.kill(pid, signal.SIGINT)
+            os.waitpid(pid, 0)
+        self.processes.clear()
+            
     def is_xboxdrv_device(self, arg_vendor_id, arg_product_id):
         for (type, vendor_id, product_id, name) in xboxdrv_device_list:
             # print arg_vendor_id,  vendor_id, arg_product_id, product_id
@@ -136,15 +149,15 @@ class DeviceManager:
 if __name__ == '__main__':
     DBusGMainLoop(set_as_default=True)
 
-    m = DeviceManager()
-
-    mainloop = gobject.MainLoop()
+    mgr  = DeviceManager()
+    loop = gobject.MainLoop()
 
     try:
-        mainloop.run()
+        loop.run()
+
     except KeyboardInterrupt:
-        mainloop.quit()
-        print 'Exiting...'
+        loop.quit()
+        mgr.shutdown()
         sys.exit(0)
 
 # EOF #
