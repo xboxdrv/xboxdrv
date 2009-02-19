@@ -1,0 +1,22 @@
+#!/bin/sh
+# Define constants
+c_no_xbmc=1
+c_no_stick=0
+
+# Get number of Hori Sticks plugged in
+v_nb_of_sticks=`lsusb -d 0f0d:000d | wc -l`
+# Get test result of XBMC already running
+v_xbmc_running=`ps -C xbmc.bin | wc -l`
+
+# If XBMC is not running
+if [ $v_xbmc_running -eq $c_no_xbmc ]
+then
+  # If no sticks plugged in
+  if [ $v_nb_of_sticks -eq $c_no_stick ]
+  then
+    # MAME is a windows version running under Wine, so stop Wineserver to kill MAME
+    wineserver -k
+    # Run custom script to launch XBMC
+    exec "/home/media/Scripts/XBMC_NOWAIT" &
+  fi
+fi
