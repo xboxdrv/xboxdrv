@@ -16,12 +16,14 @@
 ##  You should have received a copy of the GNU General Public License
 ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 import gobject
 import sys
 import os
 import signal
+from optparse import OptionParser
 
 # This list is a direct copy of src/xboxmsg.hpp
 xboxdrv_device_list = [
@@ -78,7 +80,11 @@ xboxdrv_device_list = [
 ]
 
 class DeviceManager:
-    def __init__(self):
+    def __init__(self, attach=None, detach=None, xboxdrv_args=[]):
+        self.attach_script = attach
+        self.detach_script = detach
+        self.xboxdrv_args  = xboxdrv_args
+
         self.processes = {}
         self.bus = dbus.SystemBus()
 
@@ -120,9 +126,17 @@ class DeviceManager:
         self.xboxdrv_kill(udi)
 
     def xboxdrv_launch(self, udi, bus, dev, type):
-        self.processes[udi] = os.spawnlp(os.P_NOWAIT, 'xboxdrv',
-                                         'xboxdrv', '--silent', '--device-by-path', "%03d:%03d" % (bus, dev), '--type', type)
+        self.processes[udi] = os.spawnvp(os.P_NOWAIT, 'xboxdrv',
+                                         ['xboxdrv', 
+                                          '--silent', 
+                                          '--device-by-path', "%03d:%03d" % (bus, dev), 
+                                          '--type', type] +
+                                         self.xboxdrv_args)
         print "Launched:", self.processes[udi]
+
+        if self.attach_script:
+            time.sleep(2) # give xboxdrv time to start up
+            os.system(self.attach_script)
 
     def xboxdrv_kill(self, udi):
         if self.processes.has_key(udi):
@@ -131,6 +145,9 @@ class DeviceManager:
             os.kill(pid, signal.SIGINT)
             os.waitpid(pid, 0)
             del self.processes[udi]
+
+            if self.detach_script:
+                os.system(self.detach_script)
 
     def shutdown(self):
         for (udi, pid) in self.processes.iteritems():
@@ -147,9 +164,19 @@ class DeviceManager:
         return None
         
 if __name__ == '__main__':
+    # parse options
+    parser = OptionParser(usage = "%prog [OPTIONS] -- [XBOXDRV ARGS]",
+                          version = "0.1",
+                          description = "A simple daemon that automatically launches xboxdrv.")
+    parser.add_option('-a', '--attach', metavar='EXE',
+                      help="Launch EXE when a new controller is connected")
+    parser.add_option('-d', '--detach', metavar='EXE',
+                      help="Launch EXE when a controller is detached")
+    (opts, args) = parser.parse_args()
+
     DBusGMainLoop(set_as_default=True)
 
-    mgr  = DeviceManager()
+    mgr  = DeviceManager(attach = opts.attach, detach = opts.detach, xboxdrv_args = args)
     loop = gobject.MainLoop()
 
     try:

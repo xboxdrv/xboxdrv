@@ -4,6 +4,7 @@ Pre Release Testing:
 * default, test all axis and buttons 
 * --dpad-only check that X/Y act properly
 * --dpad-as-button check buttons are working and no useless axis present
+* check the version number
 
 VERSION="0.4.6"
 TAG="v${VERSION}"
@@ -14,9 +15,7 @@ git push --tags
 Stuff to do before 0.4.6 release:
 =================================
 
-* work in xboxdrv-hal demon to launch things
-
-* boost::tokenizer is broken on 64bit
+* check for controllers already connected when launching xboxdrv-daemon
 
 
 Stuff to do before 0.5 release:
