@@ -36,6 +36,7 @@ Required libraries and tools:
  * uinput (userspace input kernel module)
  * git (only to download the development version)
  * X11
+ * python-dbus (for xboxdrv-daemon.py)
 
 Once everything installed, you can compile by typing:
 
@@ -49,7 +50,8 @@ On Ubuntu 8.10 you can install all the required libraries via:
      libusb-dev \
      git-core \
      libx11-dev \
-     x11proto-core-dev
+     x11proto-core-dev \
+     python-dbus
 
 To load the uinput kernel module automatically on boot add it
 /etc/modules, to load it manually type:
@@ -143,9 +145,7 @@ You can also run xboxdrv automatically whenever you plug in a gamepad via:
 
  % tools/xboxdrv-daemon.py
 
-The script assumes that xboxdrv is available from PATH and that hal
-and dbus are available. You can pass arguments to xboxdrv after a
-double dash '--':
+You can pass arguments to xboxdrv after a double dash '--':
 
  % tools/xboxdrv-daemon.py -- --buttonmap B=A,X=A,Y=A
 
