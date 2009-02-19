@@ -1,4 +1,8 @@
 *~
+evsend
 evtest
+evtestplus
 jstest
 usbdebug
+usbtool
+usbattach
