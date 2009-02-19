@@ -60,8 +60,8 @@ On other distributions exact install instructions might be
 slightly different.
 
 
-[[ Running XboxDrv ]]
----------------------
+[[ Running XboxDrv manually ]]
+------------------------------
 
 Plug in your Xbox360 gamepad and then unload the xpad driver via:
 
@@ -135,6 +135,38 @@ your Xbox360 controller from blinking:
 For rumble to work make sure you have connected the controller to a
 USB port that has enough power, i.e. an unpowered USB hub might not
 work.
+
+[[ Running XboxDrv via daemon ]]
+--------------------------------
+
+You can also run xboxdrv automatically whenever you plug in a gamepad via:
+
+ % tools/xboxdrv-daemon.py
+
+The script assumes that xboxdrv is available from PATH and that hal
+and dbus are available.
+
+Note that you lose most of the configurabilty when you launch it
+automatically, so this isn't recomment. 
+
+When you want configurability and automatic launching, it is recomment
+that you write little startup scripts for your games, such as this:
+
+#!/bin/sh
+
+xboxdrv --trigger-as-button -s &
+XBOXPID=$!
+
+# Launch your favorite game
+your_favorite_game
+
+kill $XBOXPID
+wait $XBOXPID
+
+# EOF #
+
+That way you can individually configure every game and still not have
+to worry about launching xboxdrv manually.
 
 [[ Deadzone ]]
 --------------
