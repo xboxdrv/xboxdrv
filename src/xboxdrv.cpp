@@ -591,7 +591,7 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
                   std::cout << "Error: unknown type: " << argv[i] << std::endl;
                   std::cout << "Possible types are:" << std::endl;
                   std::cout << " * xbox" << std::endl;
-                  std::cout << " * xbox-emat" << std::endl;
+                  std::cout << " * xbox-mat" << std::endl;
                   std::cout << " * xbox360" << std::endl;
                   std::cout << " * xbox360-guitar" << std::endl;
                   std::cout << " * xbox360-wireless" << std::endl;
@@ -874,17 +874,6 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
             {
               if (sscanf(argv[i], "%3s:%3s", opts.busid, opts.devid) == 2)
                 {
-                  std::cout << "     ***************************************" << std::endl;
-                  std::cout << "     *** WARNING *** WARNING *** WARNING ***" << std::endl;
-                  std::cout << "     ***************************************" << std::endl;
-                  std::cout << "The '--device-by-path BUS:DEV' option should not be needed for normal use" << std::endl;
-                  std::cout << "and might potentially be harmful when used on devices that" << std::endl;
-                  std::cout << "are not a gamepad, use at your own risk and ensure that you" << std::endl;
-                  std::cout << "are accessing the right device.\n"  << std::endl;
-                  std::cout << "If you have multiple gamepads and want to select a differnt" << std::endl;
-                  std::cout << "one use the '-id N' option instead.\n" << std::endl;
-                  std::cout << "Press Ctrl-c to exit and Enter to continue." << std::endl;
-                  getchar();
                 }
               else
                 {
