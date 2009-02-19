@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<deviceinfo version="0.2">
+  <device>
+    <match key="input.product" string="Microsoft X-Box 360 pad">     
+      <remove key="input.x11_driver" />
+    </match>
+
+    <match key="input.product" string="Xbox Gamepad (userspace driver)">     
+      <remove key="input.x11_driver" />
+    </match>
+
+    <match key="input.product" string="Sony PLAYSTATION(R)3 Controller">
+      <remove key="input.x11_driver" />
+    </match>
+
+    <match key="input.product" string="3Dconnexion SpaceNavigator">
+      <remove key="input.x11_driver" />
+    </match>
+  </device>
+</deviceinfo>
+

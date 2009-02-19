@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?> <!-- -*- SGML -*- -->
+
+<deviceinfo version="0.2">
+  <device>
+   <match key="input.product" string="Xbox Gamepad (userspace driver) - Keyboard Emulation">
+     <addset key="info.capabilities" type="strlist">input.keys</addset>
+   </match>
+  </device>
+</deviceinfo>
