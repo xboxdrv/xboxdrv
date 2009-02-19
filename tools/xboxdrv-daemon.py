@@ -80,7 +80,8 @@ xboxdrv_device_list = [
 ]
 
 class DeviceManager:
-    def __init__(self, attach=None, detach=None, xboxdrv_args=[]):
+    def __init__(self, xboxdrv="xboxdrv", attach=None, detach=None, xboxdrv_args=[]):
+        self.xboxdrv_bin   = xboxdrv
         self.attach_script = attach
         self.detach_script = detach
         self.xboxdrv_args  = xboxdrv_args
@@ -99,7 +100,14 @@ class DeviceManager:
                                      'org.freedesktop.Hal.Manager',
                                      'org.freedesktop.Hal',
                                      '/org/freedesktop/Hal/Manager')
-        
+
+        hal_manager_obj = self.bus.get_object("org.freedesktop.Hal", "/org/freedesktop/Hal/Manager")
+        hal_manager     = dbus.Interface(hal_manager_obj, "org.freedesktop.Hal.Manager")
+
+        # find xboxdrv devices that are already connected
+        for udi in hal_manager.FindDeviceStringMatch('info.subsystem', 'usb_device'):
+            self.device_added(udi)
+
     def udi_to_device(self, udi):
         # uid: /org/freedesktop/Hal/devices/usb_device_45e_28e_13FEF2D
         return self.bus.get_object("org.freedesktop.Hal", udi)
@@ -126,7 +134,7 @@ class DeviceManager:
         self.xboxdrv_kill(udi)
 
     def xboxdrv_launch(self, udi, bus, dev, type):
-        self.processes[udi] = os.spawnvp(os.P_NOWAIT, 'xboxdrv',
+        self.processes[udi] = os.spawnvp(os.P_NOWAIT, self.xboxdrv_bin,
                                          ['xboxdrv', 
                                           '--silent', 
                                           '--device-by-path', "%03d:%03d" % (bus, dev), 
@@ -168,15 +176,18 @@ if __name__ == '__main__':
     parser = OptionParser(usage = "%prog [OPTIONS] -- [XBOXDRV ARGS]",
                           version = "0.1",
                           description = "A simple daemon that automatically launches xboxdrv.")
-    parser.add_option('-a', '--attach', metavar='EXE',
+    parser.add_option('-a', '--attach', metavar='FILENAME',
                       help="Launch EXE when a new controller is connected")
-    parser.add_option('-d', '--detach', metavar='EXE',
+    parser.add_option('-d', '--detach', metavar='FILENAME',
                       help="Launch EXE when a controller is detached")
+    parser.add_option('-x', '--xboxdrv', metavar='FILENAME',
+                      help="Set the location of the xboxdrv executable")
     (opts, args) = parser.parse_args()
 
     DBusGMainLoop(set_as_default=True)
 
-    mgr  = DeviceManager(attach = opts.attach, detach = opts.detach, xboxdrv_args = args)
+    mgr  = DeviceManager(xboxdrv = opts.xboxdrv, xboxdrv_args = args, 
+                         attach = opts.attach, detach = opts.detach)
     loop = gobject.MainLoop()
 
     try:

@@ -15,7 +15,7 @@ git push --tags
 Stuff to do before 0.4.6 release:
 =================================
 
-* check for controllers already connected when launching xboxdrv-daemon
+* cleanup output some
 
 
 Stuff to do before 0.5 release:
