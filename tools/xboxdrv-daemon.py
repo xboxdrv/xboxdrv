@@ -77,6 +77,7 @@ xboxdrv_device_list = [
 
 class DeviceManager:
     def __init__(self):
+        self.processes = {}
         self.bus = dbus.SystemBus()
 
         self.bus.add_signal_receiver(self.device_added,
@@ -96,33 +97,34 @@ class DeviceManager:
         return self.bus.get_object("org.freedesktop.Hal", udi)
     
     def device_added(self, udi):
-        print "add:", udi
+        # print "add:", udi
 
         device = self.udi_to_device(udi)
         device_if = dbus.Interface(device, 'org.freedesktop.Hal.Device')
-        
-        try:
+
+        if device_if.GetPropertyString('info.subsystem') == 'usb_device':
             vendor_id  = device_if.GetPropertyInteger('usb_device.vendor_id')
             product_id = device_if.GetPropertyInteger('usb_device.product_id')
 
             device_type = self.is_xboxdrv_device(vendor_id, product_id)
 
             if device_type:           
-                try: 
-                    bus_number = device_if.GetPropertyInteger('usb_device.bus_number')
-                    dev_number = device_if.GetPropertyInteger('usb_device.linux.device_number')
-
-                    print "Launching: xboxdrv --device-by-path %03d:%03d --type %s" %  \
-                        (bus_number, dev_number, device_type[0])
-                except dbus.DBusException, err:
-                    print err                    
-                
-        except dbus.DBusException:
-            # device isn't a full USB device, so ignore
-            pass
+                bus_number = device_if.GetPropertyInteger('usb_device.bus_number')
+                dev_number = device_if.GetPropertyInteger('usb_device.linux.device_number')
+                self.xboxdrv_launch(udi, bus_number, dev_number, device_type[0])
             
     def device_removed(self, udi):
-	print "remove:", udi
+	# print "remove:", udi
+        self.xboxdrv_kill(udi)
+
+    def xboxdrv_launch(self, udi, bus, dev, type):
+        self.processes[udi] = "xboxdrv --device-by-path %03d:%03d --type %s" %  \
+            (bus, dev, type)
+        print "Launching:", self.processes[udi]
+
+    def xboxdrv_kill(self, udi):
+        if self.processes.has_key(udi):
+            print "Killing:  ", self.processes[udi]
 
     def is_xboxdrv_device(self, arg_vendor_id, arg_product_id):
         for (type, vendor_id, product_id, name) in xboxdrv_device_list:
