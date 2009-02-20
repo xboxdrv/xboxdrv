@@ -383,6 +383,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  --help-led               list possible values for the led" << std::endl;
   std::cout << "  --help-devices           list supported devices" << std::endl;
   std::cout << "  -s, --silent             do not display events on console" << std::endl;
+  std::cout << "  --quiet                  do not display startup text" << std::endl;
   std::cout << "  -i, --id N               use controller with id N (default: 0)" << std::endl;
   std::cout << "  -w, --wid N              use wireless controller with wid N (default: 0)" << std::endl;
   std::cout << "  -L, --list-controller    list available controllers" << std::endl;
@@ -503,6 +504,10 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
         {
           print_version();
           exit(EXIT_SUCCESS);
+        }
+      else if (strcmp(argv[i], "--quiet") == 0)
+        {
+          opts.quiet   = true;
         }
       else if (strcmp(argv[i], "-s") == 0 ||
                strcmp(argv[i], "--silent") == 0)
@@ -1278,7 +1283,7 @@ void on_sigint(int)
 {
   if (global_exit_xboxdrv)
     {
-      std::cout << "Ctrl-c pressed twice, exting hard" << std::endl;
+      std::cout << "Ctrl-c pressed twice, exiting hard" << std::endl;
       exit(EXIT_SUCCESS);
     }
   else
@@ -1292,8 +1297,11 @@ void on_sigint(int)
 
 void run_main(CommandLineOptions& opts)
 {
-  print_version();
-  std::cout << std::endl;
+  if (!opts.quiet)
+    {
+      print_version();
+      std::cout << std::endl;
+    }
 
   usb_init();
   usb_find_busses();
@@ -1311,7 +1319,8 @@ void run_main(CommandLineOptions& opts)
     }
   else 
     {
-      print_info(dev, dev_type, opts);
+      if (!opts.quiet)
+        print_info(dev, dev_type, opts);
 
       XboxGenericController* controller = 0;
 
@@ -1367,28 +1376,36 @@ void run_main(CommandLineOptions& opts)
           uInput* uinput = 0;
           if (!opts.no_uinput)
             {
-              std::cout << "\nStarting with uinput... " << std::flush;
+              if (!opts.quiet)
+                std::cout << "\nStarting with uinput... " << std::flush;
               uinput = new uInput(dev_type, opts.uinput_config);
               uinput->set_ff_callback(boost::bind(&set_rumble,  controller, opts.rumble_gain, _1, _2));
-              std::cout << "done" << std::endl;
+              if (!opts.quiet)
+                std::cout << "done" << std::endl;
             }
           else
             {
-              std::cout << "Starting without uinput" << std::endl;
+              if (!opts.quiet)
+                std::cout << "Starting without uinput" << std::endl;
             }
-          std::cout << "\nYour Xbox/Xbox360 controller should now be available as:" << std::endl
-                    << "  /dev/input/js" << jsdev_number << std::endl
-                    << "  /dev/input/event" << evdev_number << std::endl;
+
+          if (!opts.quiet)
+            {
+              std::cout << "\nYour Xbox/Xbox360 controller should now be available as:" << std::endl
+                        << "  /dev/input/js" << jsdev_number << std::endl
+                        << "  /dev/input/event" << evdev_number << std::endl;
           
-          std::cout << "\nPress Ctrl-c to quit\n" << std::endl;
-          
+              std::cout << "\nPress Ctrl-c to quit\n" << std::endl;
+            }
+
           global_exit_xboxdrv = false;
           controller_loop(dev_type.type, uinput, controller, opts);
           
           delete controller;
           delete uinput;
-          
-          std::cout << "Shutdown complete" << std::endl;
+         
+          if (!opts.quiet) 
+            std::cout << "Shutdown complete" << std::endl;
         }
     }
 }

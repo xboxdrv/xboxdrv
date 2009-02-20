@@ -145,6 +145,11 @@ You can also run xboxdrv automatically whenever you plug in a gamepad via:
 
  % tools/xboxdrv-daemon.py
 
+Since xboxdrv-daemon.py needs to know where xboxdrv is located you
+might need to start it with:
+
+ % tools/xboxdrv-daemon.py --xboxdrv ./xboxdrv
+
 You can pass arguments to xboxdrv after a double dash '--':
 
  % tools/xboxdrv-daemon.py -- --buttonmap B=A,X=A,Y=A

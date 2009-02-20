@@ -15,7 +15,11 @@ git push --tags
 Stuff to do before 0.4.6 release:
 =================================
 
-* cleanup output some
+* cleanup output some, add --quit option
+* crazy stuff: get list of supported devices directly from xboxdrv:
+   xboxdrv --list-supported-devices
+    xbox 0x045e 0x0202 Microsoft X-Box pad v1 (US)
+    ...
 
 
 Stuff to do before 0.5 release:
@@ -51,6 +55,8 @@ Later versions:
 
 * figure out what jscal does and if it can break stuff
   1) jscal uses the joystick interface, not the event interface
+  2) no idea what the coefficent values mean or why there are six per
+  axis instead of three
 
 * add --detach option that detaches any existing driver (needed for
   gamepads that use HID)

@@ -36,6 +36,7 @@ struct CommandLineOptions
   bool daemon;
   bool verbose;
   bool silent;
+  bool quiet;
   bool rumble;
   int  led;
   int  rumble_l;

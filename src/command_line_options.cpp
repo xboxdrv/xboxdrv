@@ -23,6 +23,7 @@ CommandLineOptions::CommandLineOptions()
   daemon   = false;
   verbose  = false;
   silent   = false;
+  quiet    = false;
   rumble   = false;
   led      = -1;
   rumble_l = -1;
