@@ -1,8 +1,9 @@
-xboxdrv 0.4.6 - (??/Feb/2009)
+xboxdrv 0.4.6 - (21/Feb/2009)
 =============================
 
-* --calibration option to workaround broken controller
-* xboxdrv-daemon.py to launch xboxdrv automatically
+* --calibration MIN,CENTER,MAX option to workaround broken controller
+* xboxdrv-daemon.py to launch xboxdrv automatically when device gets
+  plugged in
 
 
 xboxdrv 0.4.5 - (15/Feb/2009)
