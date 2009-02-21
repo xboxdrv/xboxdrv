@@ -105,7 +105,7 @@ class DeviceManager:
         try: 
             self.processes[udi] = subprocess.Popen(args).pid
         except OSError, err:
-            raise Exception("xboxdrv-daemon: couldn't launch '%s' " % self.xboxdrv_bin)
+            raise Exception("xboxdrv-daemon: couldn't launch '%s', set the location of xboxdrv with '-x'" % self.xboxdrv_bin)
 
         if self.verbose:
             print "xboxdrv-daemon: launched: pid: %d - %s" % (self.processes[udi], udi)
@@ -158,14 +158,17 @@ if __name__ == '__main__':
     (opts, args) = parser.parse_args()
 
     # Read list of supported devices from xboxdrv
-    xboxdrv_device_list = []
-    for i in subprocess.Popen([opts.xboxdrv, '--list-supported-devices'], 
-                              stdout=subprocess.PIPE).stdout:
-        lst = i.rstrip().split(' ', 3)
-        xboxdrv_device_list.append((lst[0],
-                                     int(lst[1], 16),
-                                     int(lst[2], 16),
-                                     lst[3]))
+    try:
+        xboxdrv_device_list = []
+        for i in subprocess.Popen([opts.xboxdrv, '--list-supported-devices'], 
+                                  stdout=subprocess.PIPE).stdout:
+            lst = i.rstrip().split(' ', 3)
+            xboxdrv_device_list.append((lst[0],
+                                        int(lst[1], 16),
+                                        int(lst[2], 16),
+                                        lst[3]))
+    except OSError, err:
+        raise Exception("xboxdrv-daemon: couldn't launch '%s', set the location of xboxdrv with '-x'" % opts.xboxdrv)
 
     DBusGMainLoop(set_as_default=True)
 
