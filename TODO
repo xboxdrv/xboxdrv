@@ -14,11 +14,6 @@ git push --tags
 
 Stuff to do before 0.4.6 release:
 =================================
-
-* crazy stuff: get list of supported devices directly from xboxdrv:
-   xboxdrv --list-supported-devices
-    xbox 0x045e 0x0202 Microsoft X-Box pad v1 (US)
-    ...
 
 
 Stuff to do before 0.5 release:
