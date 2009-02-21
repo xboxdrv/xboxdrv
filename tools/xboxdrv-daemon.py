@@ -145,7 +145,7 @@ class DeviceManager:
 if __name__ == '__main__':
     # parse options
     parser = OptionParser(usage = "%prog [OPTIONS] -- [XBOXDRV ARGS]",
-                          version = "0.1",
+                          version = "0.4.6",
                           description = "A simple daemon that automatically launches xboxdrv.")
     parser.add_option('-a', '--attach', metavar='FILENAME',
                       help="Launch EXE when a new controller is connected")
