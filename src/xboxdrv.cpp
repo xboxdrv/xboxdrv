@@ -387,6 +387,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  -i, --id N               use controller with id N (default: 0)" << std::endl;
   std::cout << "  -w, --wid N              use wireless controller with wid N (default: 0)" << std::endl;
   std::cout << "  -L, --list-controller    list available controllers" << std::endl;
+  std::cout << "  --list-supported-devices list supported devices (used by xboxdrv-daemon.py)" << std::endl;
   std::cout << "  -R, --test-rumble        map rumbling to LT and RT (for testing only)" << std::endl;
   std::cout << "  --no-uinput              do not try to start uinput event dispatching" << std::endl;
   std::cout << "  --mimic-xpad             Causes xboxdrv to use the same axis and button names as the xpad kernel driver" << std::endl;
@@ -892,6 +893,19 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
               exit(EXIT_FAILURE);
             }          
         }
+      else if (strcmp(argv[i], "--list-supported-devices") == 0)
+        {
+          for(unsigned int i = 0; i < sizeof(xpad_devices)/sizeof(XPadDevice); ++i)
+            {
+              std::cout << boost::format("%s 0x%04x 0x%04x %s\n")
+                % gamepadtype_to_string(xpad_devices[i].type)
+                % int(xpad_devices[i].idVendor)
+                % int(xpad_devices[i].idProduct)
+                % xpad_devices[i].name;
+            }
+
+          exit(EXIT_FAILURE);
+        }
       else if (strcmp(argv[i], "--list-controller") == 0 ||
                strcmp(argv[i], "-L") == 0)
         {
@@ -1283,12 +1297,15 @@ void on_sigint(int)
 {
   if (global_exit_xboxdrv)
     {
-      std::cout << "Ctrl-c pressed twice, exiting hard" << std::endl;
+      if (!command_line_options->quiet)
+        std::cout << "Ctrl-c pressed twice, exiting hard" << std::endl;
       exit(EXIT_SUCCESS);
     }
   else
     {
-      std::cout << "Shutdown initiated, press Ctrl-c again if nothing is happening" << std::endl;
+      if (!command_line_options->quiet)
+        std::cout << "Shutdown initiated, press Ctrl-c again if nothing is happening" << std::endl;
+
       global_exit_xboxdrv = true; 
       if (global_controller)
         global_controller->set_led(0);

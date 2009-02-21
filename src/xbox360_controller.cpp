@@ -22,6 +22,7 @@
 #include <sstream>
 #include <iostream>
 #include <boost/format.hpp>
+#include "command_line_options.hpp"
 #include "xboxmsg.hpp"
 #include "helper.hpp"
 #include "xbox360_controller.hpp"
@@ -207,10 +208,13 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
     }
   else if (ret == 3 && data[0] == 0x08 && data[1] == 0x03)
     {
-      if (data[2] == 0x00)
-        std::cout << "Headset: none";
-      else if (data[2] == 0x02)
-        std::cout << "Headset: none";
+      if (!command_line_options->quiet)
+        {
+          if (data[2] == 0x00)
+            std::cout << "Headset: none";
+          else if (data[2] == 0x02)
+            std::cout << "Headset: none";
+        }
     }
   else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
     {

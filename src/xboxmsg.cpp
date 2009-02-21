@@ -16,11 +16,39 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <assert.h>
 #include <boost/format.hpp>
 #include <iostream>
 #include "helper.hpp"
 #include "command_line_options.hpp"
 #include "xboxmsg.hpp"
+
+std::string gamepadtype_to_string(const GamepadType& type)
+{
+  switch (type)
+    {
+      case GAMEPAD_XBOX360:
+        return "xbox360";
+
+      case GAMEPAD_XBOX360_WIRELESS:
+        return "xbox360-wireless";
+
+      case GAMEPAD_XBOX:
+        return "xbox";
+
+      case GAMEPAD_XBOX_MAT:
+        return "xbox-mat";
+        
+      case GAMEPAD_XBOX360_GUITAR:
+        return "xbox360-guitar";
+
+      case GAMEPAD_FIRESTORM:
+        return "firestorm";
+
+      default:
+        assert(!"Unknown gamepad type supplied");
+    }
+}
 
 std::ostream& operator<<(std::ostream& out, const GamepadType& type) 
 {
