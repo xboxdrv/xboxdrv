@@ -146,7 +146,8 @@ You can also run xboxdrv automatically whenever you plug in a gamepad via:
  % tools/xboxdrv-daemon.py
 
 Since xboxdrv-daemon.py needs to know where xboxdrv is located you
-might need to start it with:
+need to supply the location of the xboxdrv binary manually if its not
+located in PATH:
 
  % tools/xboxdrv-daemon.py --xboxdrv ./xboxdrv
 
