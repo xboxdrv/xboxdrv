@@ -173,12 +173,17 @@ that you write little startup scripts for your games, such as this:
 
 #!/bin/sh
 
+# Start xboxdrv and remember its PID in the variable XBOXPID
 xboxdrv --trigger-as-button -s &
 XBOXPID=$!
+
+ # Give xboxdrv a second to startup and create the device
+sleep 1
 
 # Launch your favorite game
 your_favorite_game
 
+# Kill xboxdrv and wait for it to finish
 kill $XBOXPID
 wait $XBOXPID
 
@@ -452,7 +457,7 @@ Second workaround works with xinput:
  % xinput list
  % xinput set-int-prop $DEVICEID 'Device Enabled' 32 0
 
-3) Permanent woraround using .fdi files
+3) Permanent workaround using .fdi files
 ---------------------------------------
 
 The former two workarounds are just temporary and have to be redone
@@ -785,8 +790,8 @@ reports and test cases are welcome.
 
 Force feedback is disabed by default since it seems to causes trouble
 in certain application, namely "Tomb Raider: Legend" when run in Wine
-crashes at startup when rumble is enabled, while it works perfectly
-when rumble is disabled.
+it crashes at startup when rumble is enabled, while it works perfectly
+normal when rumble is disabled.
 
 "Tomb Raider: Anniversary" running in Wine seems to work together with
 xboxdrv and rumble, but hasn't been intensivly tested.
