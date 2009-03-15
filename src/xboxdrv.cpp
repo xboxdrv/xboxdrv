@@ -197,7 +197,7 @@ void set_ui_axis_map(AxisEvent* ui_axis_map, const std::string& str)
         }
       else
         {
-          throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping");
+          throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-axis-mapping");
         }      
     }  
 }
