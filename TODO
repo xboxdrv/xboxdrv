@@ -15,6 +15,21 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
+I saved that (as root) as 45-permissions-xboxdrv.rules in /etc/udev/rules.d/ .
+--------------------------------------------------------
+# xboxdrv
+# Gives 660 permissions to the uinput device, and I guess hopefully any Xbox 
+# 360 controller.  And sticks both in the plugdev group.
+
+# not so important one
+BUS=="usb", SYSFS{idVendor}=="045e", SYSFS{idProduct}=="028e", MODE="0660", GROUP="plugdev"
+
+# important one
+KERNEL=="uinput", MODE="0660", GROUP="root"
+--------------------------------------------------------
+
+* build packages and put into Ubuntu PPA (suggested by Mårten Woxberg <marten.woxberg@gmail.com>)
+
 * Thrustmaster has weird delay when reporting actions, which makes it
   basically unusable, likely caused by to many rumble messages, should
   limit amount of rumble messages send, only send when things have

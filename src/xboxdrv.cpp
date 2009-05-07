@@ -425,7 +425,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "  --square-axis            Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)" << std::endl;
   std::cout << "  --relative-axis MAP      Make an axis emulate a joystick throttle (example: y2=64000)" << std::endl;
   std::cout << "  --autofire MAP           Cause the given buttons to act as autofire (example: A=250)" << std::endl;
-  std::cout << "  --calibration MAP        Cause the given buttons to act as autofire (example: X2=-32768:0:32767)" << std::endl;
+  std::cout << "  --calibration MAP        Changes the calibration for the given axis (example: X2=-32768:0:32767)" << std::endl;
   std::cout << "  --force-feedback         Enable force feedback support" << std::endl;
   std::cout << "  --rumble-gain NUM        Set relative rumble strength (default: 255)" << std::endl;
   std::cout << std::endl;
