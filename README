@@ -412,6 +412,11 @@ you have to set an environment variable:
  % SDL_LINUX_JOYSTICK="'Xbox Gamepad (userspace driver)' 6 1 0"
  % export SDL_LINUX_JOYSTICK
 
+You might also need in addition use this (depends on the way SDL was compiled):
+
+ % SDL_JOYSTICK_DEVICE="/dev/input/js0"
+ % export SDL_JOYSTICK_DEVICE
+
 This will let the DPad act as Hat in SDL based application. For many
 games the driver will work without this, but especially in Dosbox this
 variable is very important.
@@ -427,6 +432,10 @@ SDL_LINUX_JOYSTICK
 	where name is the name string of the joystick (possibly in single
 	quotes), and the rest are the number of axes, hats and balls
 	respectively.
+
+SDL_JOYSTICK_DEVICE
+	Joystick device to use in the linux joystick driver, in addition
+	to the usual: /dev/js*, /dev/input/event*, /dev/input/js*
 
 
 [[ Xorg Trouble ]]
