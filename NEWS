@@ -1,3 +1,12 @@
+xboxdrv 0.4.7 - (??/May/2009)
+=============================
+
+* support for Pelican TSZ360 pad
+* support for Saitek P3200 pad
+* deadzone support for trigger via --deadzone-trigger NUM
+* some documentation improvements
+
+
 xboxdrv 0.4.6 - (21/Feb/2009)
 =============================
 

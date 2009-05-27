@@ -209,6 +209,11 @@ You can also give the deadzone in percentage:
 
  % ./xboxdrv --deadzone 15%
 
+The left and right trigger have a separate deadzone value which can be
+specified with:
+
+ % ./xboxdrv --deadzone-trigger 15%
+
 
 [[ Calibration ]]
 -----------------

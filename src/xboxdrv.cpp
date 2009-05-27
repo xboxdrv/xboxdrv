@@ -461,7 +461,7 @@ void print_led_help()
 void print_version()
 {
   std::cout
-    << "xboxdrv 0.4.6\n"
+    << "xboxdrv 0.4.7\n"
     << "Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>\n"
     << "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
     << "This is free software: you are free to change and redistribute it.\n"
