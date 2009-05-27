@@ -57,6 +57,7 @@ struct CommandLineOptions
 
   uInputCfg uinput_config;
   int deadzone;
+  int deadzone_trigger;
   std::vector<ButtonMapping> button_map;
   std::vector<AxisMapping>   axis_map;
   std::vector<AutoFireMapping> autofire_map;

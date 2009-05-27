@@ -39,6 +39,7 @@ CommandLineOptions::CommandLineOptions()
   vendor_id  = -1;
   product_id = -1;
   deadzone = 0;
+  deadzone_trigger = 0;
   square_axis  = false;
 }
 

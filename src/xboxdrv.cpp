@@ -409,6 +409,7 @@ void print_command_line_help(int argc, char** argv)
   std::cout << std::endl;
   std::cout << "Configuration Options: " << std::endl;
   std::cout << "  --deadzone INT           Threshold under which axis events are ignored (default: 0)" << std::endl;
+  std::cout << "  --deadzone-trigger INT   Threshold under which trigger events are ignored (default: 0)" << std::endl;
   std::cout << "  --trigger-as-button      LT and RT send button instead of axis events" << std::endl;
   std::cout << "  --trigger-as-zaxis       Combine LT and RT to form a zaxis instead" << std::endl;
   std::cout << "  --dpad-as-button         DPad sends button instead of axis events" << std::endl;
@@ -468,6 +469,9 @@ void print_version()
     << std::endl;
 }
 
+/** Convert the given string \a str to an integer, the string can
+    either be an exact integer or a percent value, in which case it is
+    handled as (range * int(str)) */
 int to_number(int range, const std::string& str)
 {
   if (str.empty())
@@ -780,6 +784,19 @@ void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
               exit(EXIT_FAILURE);
             }
         }
+      else if (strcmp("--deadzone-trigger", argv[i]) == 0)
+        {
+          ++i;
+          if (i < argc)
+            {
+              opts.deadzone_trigger = to_number(255, argv[i]);
+            }
+          else
+            {
+              std::cout << "Error: " << argv[i-1] << " expected an INT argument" << std::endl;
+              exit(EXIT_FAILURE);
+            }
+        }
       else if (strcmp("--trigger-as-button", argv[i]) == 0)
         {
           if (opts.uinput_config.trigger_as_zaxis)
@@ -952,6 +969,7 @@ void print_info(struct usb_device* dev,
     std::cout << "Wireless Port:     " << opts.wireless_id << std::endl;
   std::cout << "Controller Type:   " << dev_type.type << std::endl;
   std::cout << "Deadzone:          " << opts.deadzone << std::endl;
+  std::cout << "Trigger Deadzone:  " << opts.deadzone_trigger << std::endl;
   std::cout << "Rumble Debug:      " << (opts.rumble ? "on" : "off") << std::endl;
   std::cout << "Rumble Speed:      " << "left: " << opts.rumble_l << " right: " << opts.rumble_r << std::endl;
   if (opts.led == -1)
@@ -1082,30 +1100,38 @@ void apply_square_axis(XboxGenericMsg& msg)
     }
 }
 
-void apply_deadzone(XboxGenericMsg& msg, int deadzone)
+void apply_deadzone(XboxGenericMsg& msg, CommandLineOptions& opts)
 {
   switch (msg.type)
     {
       case XBOX_MSG_XBOX:
-        if (abs(msg.xbox.x1) < deadzone)
+        if (abs(msg.xbox.x1) < opts.deadzone)
           msg.xbox.x1 = 0;
-        if (abs(msg.xbox.y1) < deadzone)
+        if (abs(msg.xbox.y1) < opts.deadzone)
           msg.xbox.y1 = 0;
-        if (abs(msg.xbox.x2) < deadzone)
+        if (abs(msg.xbox.x2) < opts.deadzone)
           msg.xbox.x2 = 0;
-        if (abs(msg.xbox.y2) < deadzone)
+        if (abs(msg.xbox.y2) < opts.deadzone)
           msg.xbox.y2 = 0;
+        if (msg.xbox.lt < opts.deadzone_trigger)
+          msg.xbox.lt = 0;
+        if (msg.xbox.rt < opts.deadzone_trigger)
+          msg.xbox.rt = 0;
         break;
 
       case XBOX_MSG_XBOX360:
-        if (abs(msg.xbox360.x1) < deadzone)
+        if (abs(msg.xbox360.x1) < opts.deadzone)
           msg.xbox360.x1 = 0;
-        if (abs(msg.xbox360.y1) < deadzone)
+        if (abs(msg.xbox360.y1) < opts.deadzone)
           msg.xbox360.y1 = 0;
-        if (abs(msg.xbox360.x2) < deadzone)
+        if (abs(msg.xbox360.x2) < opts.deadzone)
           msg.xbox360.x2 = 0;
-        if (abs(msg.xbox360.y2) < deadzone)
+        if (abs(msg.xbox360.y2) < opts.deadzone)
           msg.xbox360.y2 = 0;      
+        if (msg.xbox360.lt < opts.deadzone_trigger)
+          msg.xbox360.lt = 0;
+        if (msg.xbox360.rt < opts.deadzone_trigger)
+          msg.xbox360.rt = 0;
         break;
 
       case XBOX_MSG_XBOX360_GUITAR:
@@ -1178,7 +1204,7 @@ void controller_loop(GamepadType type, uInput* uinput, XboxGenericController* co
       apply_calibration_map(msg, opts.calibration_map);
 
       // Apply modifier
-      apply_deadzone(msg, opts.deadzone);
+      apply_deadzone(msg, opts);
 
       if (opts.square_axis)
         apply_square_axis(msg);
