@@ -17,13 +17,14 @@
 */
 
 #include <iostream>
+#include <stdexcept>
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
 
 #include "helper.hpp"
 #include "command_line_options.hpp"
 
-#define RAISE_EXCEPTION(x) static_cast<std::ostringstream&>(std::ostringstream() << x).str()
+#define RAISE_EXCEPTION(x) throw std::runtime_error(static_cast<std::ostringstream&>(std::ostringstream() << x).str())
 
 CommandLineOptions* command_line_options = 0;
 
