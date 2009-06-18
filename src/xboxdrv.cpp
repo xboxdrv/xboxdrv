@@ -635,24 +635,44 @@ Xboxdrv::main(int argc, char** argv)
 
       switch(opts.mode)
         {
+          case CommandLineOptions::PRINT_HELP_DEVICES:
+            {
+              std::cout << " idVendor | idProduct | Name" << std::endl;
+              std::cout << "----------+-----------+---------------------------------" << std::endl;
+              for(int i = 0; i < xpad_devices_count; ++i)
+                {
+                  std::cout << boost::format("   0x%04x |    0x%04x | %s")
+                    % int(xpad_devices[i].idVendor)
+                    % int(xpad_devices[i].idProduct)
+                    % xpad_devices[i].name 
+                            << std::endl;
+                }
+            }
+            break;
+
           case CommandLineOptions::RUN_LIST_SUPPORTED_DEVICES:
-            for(int i = 0; i < xpad_devices_count; ++i)
-              {
-                std::cout << boost::format("%s 0x%04x 0x%04x %s\n")
-                  % gamepadtype_to_string(xpad_devices[i].type)
-                  % int(xpad_devices[i].idVendor)
-                  % int(xpad_devices[i].idProduct)
-                  % xpad_devices[i].name;
-              }
+            {
+              for(int i = 0; i < xpad_devices_count; ++i)
+                {
+                  std::cout << boost::format("%s 0x%04x 0x%04x %s\n")
+                    % gamepadtype_to_string(xpad_devices[i].type)
+                    % int(xpad_devices[i].idVendor)
+                    % int(xpad_devices[i].idProduct)
+                    % xpad_devices[i].name;
+                }
+            }
             break;
 
           case CommandLineOptions::PRINT_VERSION:
+            opts.print_version();
             break;
 
           case CommandLineOptions::PRINT_HELP:
+            opts.print_command_line_help(argc, argv);
             break;
 
           case CommandLineOptions::PRINT_LED_HELP:
+            opts.print_led_help();
             break;
 
           case CommandLineOptions::RUN_DEFAULT:

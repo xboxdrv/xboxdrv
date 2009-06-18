@@ -42,6 +42,7 @@ public:
          RUN_LIST_SUPPORTED_DEVICES,
          PRINT_VERSION,
          PRINT_HELP,
+         PRINT_HELP_DEVICES,
          PRINT_LED_HELP
   } mode;
 

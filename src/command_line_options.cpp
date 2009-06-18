@@ -113,8 +113,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
       if (strcmp(argv[i], "-h") == 0 ||
           strcmp(argv[i], "--help") == 0)
         {
-          print_command_line_help(argc, argv);
-          exit(EXIT_SUCCESS);
+          opts.mode = PRINT_HELP;
         }
       else if (strcmp(argv[i], "-v") == 0 ||
                strcmp(argv[i], "--verbose") == 0)
@@ -124,8 +123,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
       else if (strcmp(argv[i], "-V") == 0 ||
                strcmp(argv[i], "--version") == 0)
         {
-          print_version();
-          exit(EXIT_SUCCESS);
+          opts.mode = PRINT_VERSION;
         }
       else if (strcmp(argv[i], "--quiet") == 0)
         {
@@ -345,8 +343,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             {
               if (strcmp(argv[i], "help") == 0)
                 {
-                  print_led_help();
-                  exit(EXIT_SUCCESS);
+                  opts.mode = PRINT_LED_HELP;
                 }
               else
                 {
@@ -460,8 +457,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
         }
       else if (strcmp("--help-led", argv[i]) == 0)
         {
-          print_led_help();
-          exit(EXIT_SUCCESS);
+          opts.mode = PRINT_LED_HELP;
         }
       else if (strcmp(argv[i], "--device-by-id") == 0)
         {
@@ -514,17 +510,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
         }
       else if (strcmp(argv[i], "--help-devices") == 0)
         {
-          std::cout << " idVendor | idProduct | Name" << std::endl;
-          std::cout << "----------+-----------+---------------------------------" << std::endl;
-          for(int i = 0; i < xpad_devices_count; ++i)
-            {
-              std::cout << boost::format("   0x%04x |    0x%04x | %s")
-                % int(xpad_devices[i].idVendor)
-                % int(xpad_devices[i].idProduct)
-                % xpad_devices[i].name 
-                        << std::endl;
-            }
-          exit(EXIT_SUCCESS);
+          opts.mode = PRINT_HELP_DEVICES;
         }
       else
         {
