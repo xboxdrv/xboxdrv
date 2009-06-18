@@ -15,18 +15,24 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
-I saved that (as root) as 45-permissions-xboxdrv.rules in /etc/udev/rules.d/ .
---------------------------------------------------------
-# xboxdrv
-# Gives 660 permissions to the uinput device, and I guess hopefully any Xbox 
-# 360 controller.  And sticks both in the plugdev group.
+* reading from USB is broken "Firestorm vs b" is losing data all the
+  time, other controllers have similar issues, reading from USB needs
+  to be changed
 
-# not so important one
-BUS=="usb", SYSFS{idVendor}=="045e", SYSFS{idProduct}=="028e", MODE="0660", GROUP="plugdev"
+* permissions on uinput are broken(?) on Ubuntu:
 
-# important one
-KERNEL=="uinput", MODE="0660", GROUP="root"
---------------------------------------------------------
+  I saved that (as root) as 45-permissions-xboxdrv.rules in /etc/udev/rules.d/ .
+  --------------------------------------------------------
+  # xboxdrv
+  # Gives 660 permissions to the uinput device, and I guess hopefully any Xbox 
+  # 360 controller.  And sticks both in the plugdev group.
+
+  # not so important one
+  BUS=="usb", SYSFS{idVendor}=="045e", SYSFS{idProduct}=="028e", MODE="0660", GROUP="plugdev"
+
+  # important one
+  KERNEL=="uinput", MODE="0660", GROUP="root"
+  --------------------------------------------------------
 
 * build packages and put into Ubuntu PPA (suggested by Mårten Woxberg <marten.woxberg@gmail.com>)
 
@@ -50,6 +56,11 @@ http://msdn.microsoft.com/en-us/library/bb219655(VS.85).aspx
 
 Later versions:
 ===============
+
+* The World Tour wireless guitar have 5 buttons and a
+  slide. Currently, the slide is mapped to the x axis, but I don't
+  know if it allows multiple presses at once. I don't have a Xbox, so
+  I don't know if it is allowed at all in the console.
 
 * get rid of guitar, merge into xbox360
 
