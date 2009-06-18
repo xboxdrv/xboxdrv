@@ -109,6 +109,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x12ab, 0x0004, "DDR Universe 2 Mat" }, 
 
   { GAMEPAD_FIRESTORM,        0x044f, 0xb304, "ThrustMaster, Inc. Firestorm Dual Power" },
+  //{ GAMEPAD_FIRESTORM,        0x044f, 0xb312, "ThrustMaster, Inc. Firestorm Dual Power (vs b)" },
 };
 
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
@@ -1255,7 +1256,8 @@ void controller_loop(GamepadType type, uInput* uinput, XboxGenericController* co
             }
         }
 
-      uinput->update(msec_delta);
+      if (uinput)
+        uinput->update(msec_delta);
     }
 }
 
