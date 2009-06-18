@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 #include "xboxmsg.hpp"
+
+class CommandLineOptions;
 
 struct ButtonMapping {
   static ButtonMapping from_string(const std::string& str);
@@ -62,7 +64,6 @@ struct CalibrationMapping {
   int max;
 };
 
-
 class RelativeAxisModifier
 {
 private:
@@ -151,6 +152,8 @@ public:
 void apply_button_map(XboxGenericMsg& msg, const std::vector<ButtonMapping>& lst);
 void apply_axis_map(XboxGenericMsg& msg, const std::vector<AxisMapping>& lst);
 void apply_calibration_map(XboxGenericMsg& msg, const std::vector<CalibrationMapping>& lst);
+void apply_deadzone(XboxGenericMsg& msg, const CommandLineOptions& opts);
+void apply_square_axis(XboxGenericMsg& msg);
 
 #endif
 

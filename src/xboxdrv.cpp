@@ -47,101 +47,42 @@
 bool global_exit_xboxdrv = false;
 XboxGenericController* global_controller = 0;
 
-void arg2apply(const std::string& str, const boost::function<void (const std::string&)>& func)
+void on_sigint(int)
 {
-  std::string::const_iterator start = str.begin();
-  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+  if (global_exit_xboxdrv)
     {
-      if (*i == ',')
-        {
-          if (i != start)
-            func(std::string(start, i));
-          
-          start = i+1;
-        }
-    }
-  
-  if (start != str.end())
-    func(std::string(start, str.end()));
-}
-
-template<class C, class Func>
-void arg2vector(const std::string& str, typename std::vector<C>& lst, Func func)
-{
-  std::string::const_iterator start = str.begin();
-  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
-    {
-      if (*i == ',')
-        {
-          if (i != start)
-            lst.push_back(func(std::string(start, i)));
-          
-          start = i+1;
-        }
-    }
-  
-  if (start != str.end())
-    lst.push_back(func(std::string(start, str.end())));
-}
-
-bool is_number(const std::string& str)
-{
-  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
-    if (!isdigit(*i))
-      return false;
-  return true;
-}
-
-void set_ui_button_map(ButtonEvent* ui_button_map, const std::string& str)
-{
-  std::string::size_type i = str.find_first_of('=');
-  if (i == std::string::npos)
-    {
-      throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, '=' missing");
+      if (!command_line_options->quiet)
+        std::cout << "Ctrl-c pressed twice, exiting hard" << std::endl;
+      exit(EXIT_SUCCESS);
     }
   else
     {
-      //std::cout << string2btn(str.substr(0, i)) << " -> " << str.substr(i+1, str.size()-i) << std::endl;
+      if (!command_line_options->quiet)
+        std::cout << "Shutdown initiated, press Ctrl-c again if nothing is happening" << std::endl;
 
-      XboxButton  btn   = string2btn(str.substr(0, i));
-      ButtonEvent event = ButtonEvent::from_string(str.substr(i+1, str.size()-i));
-      
-      if (btn != XBOX_BTN_UNKNOWN)
-        {
-          ui_button_map[btn] = event;
-        }
-      else
-        {
-          throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, Xbox button name not valid");
-        }
+      global_exit_xboxdrv = true; 
+      if (global_controller)
+        global_controller->set_led(0);
     }
 }
 
-void set_ui_axis_map(AxisEvent* ui_axis_map, const std::string& str)
+void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_t rhs)
 {
-  std::string::size_type i = str.find_first_of('=');
-  if (i == std::string::npos)
-    {
-      throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-axis-mapping");
-    }
-  else
-    {
-      XboxAxis  axis  = string2axis(str.substr(0, i));
-      AxisEvent event = AxisEvent::from_string(str.substr(i+1, str.size()-i));
-            
-      if (axis != XBOX_AXIS_UNKNOWN)
-        {
-          ui_axis_map[axis] = event;
-        }
-      else
-        {
-          throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-axis-mapping");
-        }      
-    }  
+  lhs = std::min(lhs * gain / 255, 255);
+  rhs = std::min(rhs * gain / 255, 255);
+  
+  //std::cout << (int)lhs << " " << (int)rhs << std::endl;
+
+  controller->set_rumble(lhs, rhs);
 }
 
-void list_controller()
+void
+Xboxdrv::list_controller()
 {
+  usb_init();
+  usb_find_busses();
+  usb_find_devices();
+
   struct usb_bus* busses = usb_get_busses();
 
   int id = 0;
@@ -191,7 +132,8 @@ void list_controller()
     std::cout << "\nNo controller detected" << std::endl; 
 }
 
-bool find_controller_by_path(const char* busid, const char* devid,struct usb_device** xbox_device)
+bool
+Xboxdrv::find_controller_by_path(const char* busid, const char* devid,struct usb_device** xbox_device)
 {
   struct usb_bus* busses = usb_get_busses();
 
@@ -213,7 +155,8 @@ bool find_controller_by_path(const char* busid, const char* devid,struct usb_dev
 }
 
 /** find the number of the next unused /dev/input/jsX device */
-int find_jsdev_number()
+int
+Xboxdrv::find_jsdev_number()
 {
   for(int i = 0; ; ++i)
     {
@@ -229,7 +172,8 @@ int find_jsdev_number()
 }
 
 /** find the number of the next unused /dev/input/eventX device */
-int find_evdev_number()
+int
+Xboxdrv::find_evdev_number()
 {
   for(int i = 0; ; ++i)
     {
@@ -242,7 +186,8 @@ int find_evdev_number()
     }
 }
 
-bool find_controller_by_id(int id, int vendor_id, int product_id, struct usb_device** xbox_device)
+bool
+Xboxdrv::find_controller_by_id(int id, int vendor_id, int product_id, struct usb_device** xbox_device)
 {
   struct usb_bus* busses = usb_get_busses();
 
@@ -271,7 +216,8 @@ bool find_controller_by_id(int id, int vendor_id, int product_id, struct usb_dev
   
 }
 
-bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice* type)
+bool
+Xboxdrv::find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice* type)
 {
   struct usb_bus* busses = usb_get_busses();
 
@@ -307,793 +253,6 @@ bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice
         }
     }
   return 0;
-}
-
-void
-Xboxdrv::print_command_line_help(int argc, char** argv)
-{
-  std::cout << "Usage: " << argv[0] << " [OPTION]..." << std::endl;
-  std::cout << "Xbox360 USB Gamepad Userspace Driver" << std::endl;
-  std::cout << std::endl;
-  std::cout << "General Options: " << std::endl;
-  std::cout << "  -h, --help               display this help and exit" << std::endl;
-  std::cout << "  -V, --version            print the version number and exit" << std::endl;
-  std::cout << "  -v, --verbose            print verbose messages" << std::endl;
-  std::cout << "  --help-led               list possible values for the led" << std::endl;
-  std::cout << "  --help-devices           list supported devices" << std::endl;
-  std::cout << "  -s, --silent             do not display events on console" << std::endl;
-  std::cout << "  --quiet                  do not display startup text" << std::endl;
-  std::cout << "  -i, --id N               use controller with id N (default: 0)" << std::endl;
-  std::cout << "  -w, --wid N              use wireless controller with wid N (default: 0)" << std::endl;
-  std::cout << "  -L, --list-controller    list available controllers" << std::endl;
-  std::cout << "  --list-supported-devices list supported devices (used by xboxdrv-daemon.py)" << std::endl;
-  std::cout << "  -R, --test-rumble        map rumbling to LT and RT (for testing only)" << std::endl;
-  std::cout << "  --no-uinput              do not try to start uinput event dispatching" << std::endl;
-  std::cout << "  --mimic-xpad             Causes xboxdrv to use the same axis and button names as the xpad kernel driver" << std::endl;
-  std::cout << "  -D, --daemon             run as daemon" << std::endl;
-  std::cout << std::endl;
-  std::cout << "Device Options: " << std::endl;
-  std::cout << "  --device-by-path BUS:DEV\n"
-            << "                           Use device BUS:DEV, do not do any scanning" << std::endl;
-  std::cout << "  --device-by-id VENDOR:PRODUCT\n"
-            << "                           Use device that matches VENDOR:PRODUCT (as returned by lsusb)" << std::endl;
-  std::cout << std::endl;
-  std::cout << "Status Options: " << std::endl;
-  std::cout << "  -l, --led NUM            set LED status, see --list-led-values (default: 0)" << std::endl;
-  std::cout << "  -r, --rumble L,R         set the speed for both rumble motors [0-255] (default: 0,0)" << std::endl;
-  std::cout << "  -q, --quit               only set led and rumble status then quit" << std::endl;
-  std::cout << std::endl;
-  std::cout << "Configuration Options: " << std::endl;
-  std::cout << "  --deadzone INT           Threshold under which axis events are ignored (default: 0)" << std::endl;
-  std::cout << "  --deadzone-trigger INT   Threshold under which trigger events are ignored (default: 0)" << std::endl;
-  std::cout << "  --trigger-as-button      LT and RT send button instead of axis events" << std::endl;
-  std::cout << "  --trigger-as-zaxis       Combine LT and RT to form a zaxis instead" << std::endl;
-  std::cout << "  --dpad-as-button         DPad sends button instead of axis events" << std::endl;
-  std::cout << "  --dpad-only              Both sticks are ignored, only DPad sends out axis events" << std::endl;
-  std::cout << "  --type TYPE              Ignore autodetection and enforce controller type\n"
-            << "                           (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)" << std::endl;
-  std::cout << "  -b, --buttonmap MAP      Remap the buttons as specified by MAP (example: B=A,X=A,Y=A)" << std::endl;
-  std::cout << "  -a, --axismap MAP        Remap the axis as specified by MAP (example: -Y1=Y1,X1=X2)" << std::endl;
-
-  std::cout << "  --name DEVNAME           Changes the descriptive name the device will have" << std::endl;
-  std::cout << "  --ui-clear               Removes all existing uinput bindings" << std::endl;
-  std::cout << "  --ui-buttonmap MAP       Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)" << std::endl;
-  std::cout << "  --ui-axismap MAP         Changes the uinput events send when moving a axis (example: X1=ABS_X2)" << std::endl;
-
-  std::cout << "  --square-axis            Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)" << std::endl;
-  std::cout << "  --relative-axis MAP      Make an axis emulate a joystick throttle (example: y2=64000)" << std::endl;
-  std::cout << "  --autofire MAP           Cause the given buttons to act as autofire (example: A=250)" << std::endl;
-  std::cout << "  --calibration MAP        Changes the calibration for the given axis (example: X2=-32768:0:32767)" << std::endl;
-  std::cout << "  --force-feedback         Enable force feedback support" << std::endl;
-  std::cout << "  --rumble-gain NUM        Set relative rumble strength (default: 255)" << std::endl;
-  std::cout << std::endl;
-  std::cout << "See README for more documentation and examples." << std::endl;
-  std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
-}
-
-void
-Xboxdrv::print_led_help()
-{
-  std::cout << 
-    "Possible values for '--led VALUE' are:\n\n"
-    "   0: off\n"
-    "   1: all blinking\n"
-    "   2: 1/top-left blink, then on\n"
-    "   3: 2/top-right blink, then on\n"
-    "   4: 3/bottom-left blink, then on\n"
-    "   5: 4/bottom-right blink, then on\n"
-    "   6: 1/top-left on\n"
-    "   7: 2/top-right on\n"
-    "   8: 3/bottom-left on\n"
-    "   9: 4/bottom-right on\n"
-    "  10: rotate\n"
-    "  11: blink\n"
-    "  12: blink slower\n"
-    "  13: rotate with two lights\n"
-    "  14: blink\n"
-    "  15: blink once\n"
-            << std::endl;
-}
-
-void
-Xboxdrv::print_version()
-{
-  std::cout
-    << "xboxdrv 0.4.7\n"
-    << "Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>\n"
-    << "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
-    << "This is free software: you are free to change and redistribute it.\n"
-    << "There is NO WARRANTY, to the extent permitted by law."
-    << std::endl;
-}
-
-/** Convert the given string \a str to an integer, the string can
-    either be an exact integer or a percent value, in which case it is
-    handled as (range * int(str)) */
-int to_number(int range, const std::string& str)
-{
-  if (str.empty())
-    {
-      return 0;
-    }
-  else
-    {
-      if (str[str.size() - 1] == '%')
-        {
-          int percent = boost::lexical_cast<int>(str.substr(0, str.size()-1));
-          return range * percent / 100;
-        }
-      else
-        {
-          return boost::lexical_cast<int>(str);
-        }
-    }
-}
-
-void
-Xboxdrv::parse_command_line(int argc, char** argv, CommandLineOptions& opts)
-{  
-  for(int i = 1; i < argc; ++i)
-    {
-      if (strcmp(argv[i], "-h") == 0 ||
-          strcmp(argv[i], "--help") == 0)
-        {
-          print_command_line_help(argc, argv);
-          exit(EXIT_SUCCESS);
-        }
-      else if (strcmp(argv[i], "-v") == 0 ||
-          strcmp(argv[i], "--verbose") == 0)
-        {
-          opts.verbose = true;
-        }
-      else if (strcmp(argv[i], "-V") == 0 ||
-          strcmp(argv[i], "--version") == 0)
-        {
-          print_version();
-          exit(EXIT_SUCCESS);
-        }
-      else if (strcmp(argv[i], "--quiet") == 0)
-        {
-          opts.quiet   = true;
-        }
-      else if (strcmp(argv[i], "-s") == 0 ||
-               strcmp(argv[i], "--silent") == 0)
-        {
-          opts.silent = true;
-        }
-      else if (strcmp(argv[i], "--daemon") == 0 ||
-               strcmp(argv[i], "-D") == 0)
-        {
-          opts.silent = true;
-          opts.daemon = true;
-        }
-      else if (strcmp(argv[i], "--test-rumble") == 0 ||
-               strcmp(argv[i], "-R") == 0)
-        {
-          opts.rumble = true;
-        }
-      else if (strcmp(argv[i], "-r") == 0 ||
-               strcmp(argv[i], "--rumble") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              if (sscanf(argv[i], "%d,%d", &opts.rumble_l, &opts.rumble_r) == 2)
-                {
-                  opts.rumble_l = std::max(0, std::min(255, opts.rumble_l));
-                  opts.rumble_r = std::max(0, std::min(255, opts.rumble_r));
-                }
-              else
-                {
-                  std::cout << "Error: " << argv[i-1] << " expected an argument in form INT,INT" << std::endl;
-                  exit(EXIT_FAILURE);
-                }
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }          
-        }
-      else if (strcmp(argv[i], "-q") == 0 ||
-               strcmp(argv[i], "--quit") == 0)
-        {
-          opts.instant_exit = true;
-        }
-      else if (strcmp(argv[i], "--no-uinput") == 0)
-        {
-          opts.no_uinput = true;
-        }
-      else if (strcmp(argv[i], "--mimic-xpad") == 0)
-        {
-          //opts.mimic_xpad = true;
-        }
-      else if (strcmp(argv[i], "-t") == 0 ||
-               strcmp(argv[i], "--type") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              if (strcmp(argv[i], "xbox") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_XBOX;
-                }
-              else if (strcmp(argv[i], "xbox-mat") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_XBOX_MAT;
-                }
-              else if (strcmp(argv[i], "xbox360") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_XBOX360;
-                }
-              else if (strcmp(argv[i], "xbox360-guitar") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_XBOX360_GUITAR;
-                }
-              else if (strcmp(argv[i], "xbox360-wireless") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_XBOX360_WIRELESS;
-                }
-              else if (strcmp(argv[i], "firestorm") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_FIRESTORM;
-                }
-              else
-                {
-                  std::cout << "Error: unknown type: " << argv[i] << std::endl;
-                  std::cout << "Possible types are:" << std::endl;
-                  std::cout << " * xbox" << std::endl;
-                  std::cout << " * xbox-mat" << std::endl;
-                  std::cout << " * xbox360" << std::endl;
-                  std::cout << " * xbox360-guitar" << std::endl;
-                  std::cout << " * xbox360-wireless" << std::endl;
-                  std::cout << " * firestorm" << std::endl;
-                  exit(EXIT_FAILURE); 
-                }
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }
-        }
-      else if (strcmp(argv[i], "--force-feedback") == 0)
-        {
-          opts.uinput_config.force_feedback = true;
-        }
-      else if (strcmp(argv[i], "--rumble-gain") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              opts.rumble_gain = to_number(255, argv[i]);
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }
-        }
-      else if (strcmp(argv[i], "-b") == 0 ||
-               strcmp(argv[i], "--buttonmap") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2vector(argv[i], opts.button_map, &ButtonMapping::from_string);
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }
-        }
-      else if (strcmp(argv[i], "-a") == 0 ||
-               strcmp(argv[i], "--axismap") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2vector(argv[i], opts.axis_map, &AxisMapping::from_string);
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }          
-        }
-      else if (strcmp(argv[i], "--name") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              opts.uinput_config.device_name = argv[i];
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }                  
-        }
-      else if (strcmp(argv[i], "--ui-clear") == 0)
-        {
-          std::fill_n(opts.uinput_config.axis_map, (int)XBOX_AXIS_MAX, AxisEvent::invalid());
-          std::fill_n(opts.uinput_config.btn_map,  (int)XBOX_BTN_MAX,  ButtonEvent::invalid());
-        }
-      else if (strcmp(argv[i], "--ui-axismap") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2apply(argv[i], boost::bind(&set_ui_axis_map, opts.uinput_config.axis_map, _1));
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }                  
-        }
-      else if (strcmp(argv[i], "--ui-buttonmap") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2apply(argv[i], boost::bind(&set_ui_button_map, opts.uinput_config.btn_map, _1));
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }         
-        }
-      else if (strcmp(argv[i], "-i") == 0 ||
-               strcmp(argv[i], "--id") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              opts.controller_id = atoi(argv[i]);
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }
-        }
-      else if (strcmp(argv[i], "-w") == 0 ||
-               strcmp(argv[i], "--wid") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              opts.wireless_id = atoi(argv[i]);
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }
-        }
-      else if (strcmp(argv[i], "-l") == 0 ||
-               strcmp(argv[i], "--led") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              if (strcmp(argv[i], "help") == 0)
-                {
-                  print_led_help();
-                  exit(EXIT_SUCCESS);
-                }
-              else
-                {
-                  opts.led = atoi(argv[i]);
-                }
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }
-        }
-      else if (strcmp("--dpad-only", argv[i]) == 0)
-        {
-          if (opts.uinput_config.dpad_as_button)
-            throw std::runtime_error("Can't combine --dpad-as-button with --dpad-only");
-
-          opts.uinput_config.dpad_only = true;
-        }
-      else if (strcmp("--dpad-as-button", argv[i]) == 0)
-        {
-          if (opts.uinput_config.dpad_only)
-            throw std::runtime_error("Can't combine --dpad-as-button with --dpad-only");
-
-          opts.uinput_config.dpad_as_button = true;
-        }
-      else if (strcmp("--deadzone", argv[i]) == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              opts.deadzone = to_number(32767, argv[i]);
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an INT argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }
-        }
-      else if (strcmp("--deadzone-trigger", argv[i]) == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              opts.deadzone_trigger = to_number(255, argv[i]);
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an INT argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }
-        }
-      else if (strcmp("--trigger-as-button", argv[i]) == 0)
-        {
-          if (opts.uinput_config.trigger_as_zaxis)
-            {
-              std::cout << "Error: Can't combine --trigger-as-button and --trigger-as-zaxis" << std::endl;
-              exit(EXIT_FAILURE);
-            }
-          else
-            {
-              opts.uinput_config.trigger_as_button = true;
-            }
-        }
-      else if (strcmp("--autofire", argv[i]) == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2vector(argv[i], opts.autofire_map, &AutoFireMapping::from_string);
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }          
-        }
-      else if (strcmp("--calibration", argv[i]) == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2vector(argv[i], opts.calibration_map, &CalibrationMapping::from_string);
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }
-        }
-      else if (strcmp("--relative-axis", argv[i]) == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2vector(argv[i], opts.relative_axis_map, &RelativeAxisMapping::from_string);
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }          
-        }
-      else if (strcmp("--square-axis", argv[i]) == 0)
-        {
-          opts.square_axis = true;
-        }
-      else if (strcmp("--trigger-as-zaxis", argv[i]) == 0)
-        {
-          if (opts.uinput_config.trigger_as_button)
-            {
-              std::cout << "Error: Can't combine --trigger-as-button and --trigger-as-zaxis" << std::endl;
-              exit(EXIT_FAILURE);
-            }
-          else
-            {
-              opts.uinput_config.trigger_as_zaxis = true;
-            }
-        }
-      else if (strcmp("--help-led", argv[i]) == 0)
-        {
-          print_led_help();
-          exit(EXIT_SUCCESS);
-        }
-      else if (strcmp(argv[i], "--device-by-id") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              unsigned int product_id;
-              unsigned int vendor_id;
-              if (sscanf(argv[i], "%x:%x", &vendor_id, &product_id) == 2)
-                {
-                  opts.vendor_id  = vendor_id;
-                  opts.product_id = product_id;
-                }
-              else
-                {
-                  std::cout << "Error: " << argv[i-1] << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)" << std::endl;
-                  exit(EXIT_FAILURE);
-                }
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }        
-        }
-      else if (strcmp(argv[i], "--device-by-path") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              if (sscanf(argv[i], "%3s:%3s", opts.busid, opts.devid) == 2)
-                {
-                }
-              else
-                {
-                  std::cout << "Error: " << argv[i-1] << " expected an argument in form BUS:DEV (i.e. 006:003)" << std::endl;
-                  exit(EXIT_FAILURE);
-                }
-            }
-          else
-            {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
-            }          
-        }
-      else if (strcmp(argv[i], "--list-supported-devices") == 0)
-        {
-          for(int i = 0; i < xpad_devices_count; ++i)
-            {
-              std::cout << boost::format("%s 0x%04x 0x%04x %s\n")
-                % gamepadtype_to_string(xpad_devices[i].type)
-                % int(xpad_devices[i].idVendor)
-                % int(xpad_devices[i].idProduct)
-                % xpad_devices[i].name;
-            }
-
-          exit(EXIT_FAILURE);
-        }
-      else if (strcmp(argv[i], "--list-controller") == 0 ||
-               strcmp(argv[i], "-L") == 0)
-        {
-          usb_init();
-          usb_find_busses();
-          usb_find_devices();
-
-          list_controller();
-          exit(EXIT_SUCCESS);
-        }
-      else if (strcmp(argv[i], "--help-devices") == 0)
-        {
-          std::cout << " idVendor | idProduct | Name" << std::endl;
-          std::cout << "----------+-----------+---------------------------------" << std::endl;
-          for(int i = 0; i < xpad_devices_count; ++i)
-            {
-              std::cout << boost::format("   0x%04x |    0x%04x | %s")
-                % int(xpad_devices[i].idVendor)
-                % int(xpad_devices[i].idProduct)
-                % xpad_devices[i].name 
-                        << std::endl;
-            }
-          exit(EXIT_SUCCESS);
-        }
-      else
-        {
-          std::cout << "Error: unknown command line option: " << argv[i] << std::endl;
-          exit(EXIT_FAILURE);
-        }
-    }
-}
-
-void print_info(struct usb_device* dev,
-                const XPadDevice& dev_type,
-                const CommandLineOptions& opts)
-{
-  std::cout << "USB Device:        " << dev->bus->dirname << ":" << dev->filename << std::endl;
-  std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
-    % dev_type.name % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct) << std::endl;
-  if (dev_type.type == GAMEPAD_XBOX360_WIRELESS)
-    std::cout << "Wireless Port:     " << opts.wireless_id << std::endl;
-  std::cout << "Controller Type:   " << dev_type.type << std::endl;
-  std::cout << "Deadzone:          " << opts.deadzone << std::endl;
-  std::cout << "Trigger Deadzone:  " << opts.deadzone_trigger << std::endl;
-  std::cout << "Rumble Debug:      " << (opts.rumble ? "on" : "off") << std::endl;
-  std::cout << "Rumble Speed:      " << "left: " << opts.rumble_l << " right: " << opts.rumble_r << std::endl;
-  if (opts.led == -1)
-    std::cout << "LED Status:        " << "auto" << std::endl;
-  else
-    std::cout << "LED Status:        " << opts.led << std::endl;
-
-  std::cout << "Square Axis:       " << ((opts.square_axis) ? "yes" : "no") << std::endl;
-  
-  std::cout << "ButtonMap:         ";
-  if (opts.button_map.empty())
-    {
-      std::cout << "none" << std::endl;
-    }
-  else
-    {
-      for(std::vector<ButtonMapping>::const_iterator i = opts.button_map.begin(); i != opts.button_map.end(); ++i)
-        {
-          std::cout << btn2string(i->lhs) << "->" << btn2string(i->rhs) << " ";
-        }
-      std::cout << std::endl;
-    }
-
-  std::cout << "AxisMap:           ";
-  if (opts.axis_map.empty())
-    {
-      std::cout << "none" << std::endl;
-    }
-  else
-    {
-      for(std::vector<AxisMapping>::const_iterator i = opts.axis_map.begin(); i != opts.axis_map.end(); ++i)
-        {
-          if (i->invert)
-            std::cout << "-" << axis2string(i->lhs) << "->" << axis2string(i->rhs) << " ";
-          else
-            std::cout << axis2string(i->lhs) << "->" << axis2string(i->rhs) << " ";
-        }
-      std::cout << std::endl;
-    }
-
-  std::cout << "RelativeAxisMap:   ";
-  if (opts.relative_axis_map.empty())
-    {
-      std::cout << "none" << std::endl;
-    }
-  else
-    {
-      for(std::vector<RelativeAxisMapping>::const_iterator i = opts.relative_axis_map.begin(); i != opts.relative_axis_map.end(); ++i)
-        {
-          std::cout << axis2string(i->axis) << "=" << i->speed << " ";
-        }
-      std::cout << std::endl;
-    }
-
-  std::cout << "AutoFireMap:       ";
-  if (opts.autofire_map.empty())
-    {
-      std::cout << "none" << std::endl;
-    }
-  else
-    {
-      for(std::vector<AutoFireMapping>::const_iterator i = opts.autofire_map.begin(); i != opts.autofire_map.end(); ++i)
-        {
-          std::cout << btn2string(i->button) << "=" << i->frequency << " ";
-        }
-      std::cout << std::endl;
-    }
-
-  std::cout << "RumbleGain:        " << opts.rumble_gain << std::endl;
-  std::cout << "ForceFeedback:     " << ((opts.uinput_config.force_feedback) ? "enabled" : "disabled") << std::endl;
-}
-
-namespace Math {
-template<class T>
-T clamp (const T& low, const T& v, const T& high)
-{
-  assert(low <= high);
-  return std::max((low), std::min((v), (high)));
-}
-} // namespace Math
-
-void squarify_axis_(int16_t& x_inout, int16_t& y_inout)
-{
-  if (x_inout != 0 || y_inout != 0)
-    {
-      // Convert values to float
-      float x = (x_inout < 0) ? x_inout / 32768.0f : x_inout / 32767.0f;
-      float y = (y_inout < 0) ? y_inout / 32768.0f : y_inout / 32767.0f;
-
-      // Transform values to square range
-      float l = sqrtf(x*x + y*y);
-      float v = fabs((fabsf(x) > fabsf(y)) ? l/x : l/y);
-      x *= v;
-      y *= v;
-
-      // Convert values to int16_t
-      x_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((x < 0) ? x * 32768 : x * 32767), 32767));
-      y_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((y < 0) ? y * 32768 : y * 32767), 32767));
-    }
-}
-
-// Little hack to allow access to bitfield via reference
-#define squarify_axis(x, y) \
-{ \
-  int16_t x_ = x;         \
-  int16_t y_ = y;         \
-  squarify_axis_(x_, y_); \
-  x = x_;                 \
-  y = y_;                 \
-}
-
-void apply_square_axis(XboxGenericMsg& msg)
-{
-  switch (msg.type)
-    {
-      case XBOX_MSG_XBOX:
-        squarify_axis(msg.xbox.x1, msg.xbox.y1);
-        squarify_axis(msg.xbox.x2, msg.xbox.y2);
-        break;
-
-      case XBOX_MSG_XBOX360:
-        squarify_axis(msg.xbox360.x1, msg.xbox360.y1);
-        squarify_axis(msg.xbox360.x2, msg.xbox360.y2);
-        break;
-        
-      case XBOX_MSG_XBOX360_GUITAR:
-        break;
-    }
-}
-
-void apply_deadzone(XboxGenericMsg& msg, const CommandLineOptions& opts)
-{
-  switch (msg.type)
-    {
-      case XBOX_MSG_XBOX:
-        if (abs(msg.xbox.x1) < opts.deadzone)
-          msg.xbox.x1 = 0;
-        if (abs(msg.xbox.y1) < opts.deadzone)
-          msg.xbox.y1 = 0;
-        if (abs(msg.xbox.x2) < opts.deadzone)
-          msg.xbox.x2 = 0;
-        if (abs(msg.xbox.y2) < opts.deadzone)
-          msg.xbox.y2 = 0;
-        if (msg.xbox.lt < opts.deadzone_trigger)
-          msg.xbox.lt = 0;
-        if (msg.xbox.rt < opts.deadzone_trigger)
-          msg.xbox.rt = 0;
-        break;
-
-      case XBOX_MSG_XBOX360:
-        if (abs(msg.xbox360.x1) < opts.deadzone)
-          msg.xbox360.x1 = 0;
-        if (abs(msg.xbox360.y1) < opts.deadzone)
-          msg.xbox360.y1 = 0;
-        if (abs(msg.xbox360.x2) < opts.deadzone)
-          msg.xbox360.x2 = 0;
-        if (abs(msg.xbox360.y2) < opts.deadzone)
-          msg.xbox360.y2 = 0;      
-        if (msg.xbox360.lt < opts.deadzone_trigger)
-          msg.xbox360.lt = 0;
-        if (msg.xbox360.rt < opts.deadzone_trigger)
-          msg.xbox360.rt = 0;
-        break;
-
-      case XBOX_MSG_XBOX360_GUITAR:
-        // FIXME: any use for deadzone here?
-        break;
-    }
-}
-
-uint32_t get_time()
-{
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  return tv.tv_sec * 1000 + tv.tv_usec/1000;
-}
-
-void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_t rhs)
-{
-  lhs = std::min(lhs * gain / 255, 255);
-  rhs = std::min(rhs * gain / 255, 255);
-  
-  //std::cout << (int)lhs << " " << (int)rhs << std::endl;
-
-  controller->set_rumble(lhs, rhs);
 }
 
 void
@@ -1199,9 +358,10 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
     }
 }
 
-void find_controller(struct usb_device*& dev,
-                     XPadDevice&         dev_type,
-                     const CommandLineOptions& opts)
+void
+Xboxdrv::find_controller(struct usb_device*& dev,
+                         XPadDevice&         dev_type,
+                         const CommandLineOptions& opts)
 {
   if (opts.busid[0] != '\0' && opts.devid[0] != '\0')
     {
@@ -1261,33 +421,12 @@ void find_controller(struct usb_device*& dev,
     }
 }
 
-int led_count = 0;
-
-void on_sigint(int)
-{
-  if (global_exit_xboxdrv)
-    {
-      if (!command_line_options->quiet)
-        std::cout << "Ctrl-c pressed twice, exiting hard" << std::endl;
-      exit(EXIT_SUCCESS);
-    }
-  else
-    {
-      if (!command_line_options->quiet)
-        std::cout << "Shutdown initiated, press Ctrl-c again if nothing is happening" << std::endl;
-
-      global_exit_xboxdrv = true; 
-      if (global_controller)
-        global_controller->set_led(0);
-    }
-}
-
 void
 Xboxdrv::run_main(const CommandLineOptions& opts)
 {
   if (!opts.quiet)
     {
-      print_version();
+      opts.print_version();
       std::cout << std::endl;
     }
 
@@ -1398,6 +537,91 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
     }
 }
 
+void
+Xboxdrv::print_info(struct usb_device* dev,
+                    const XPadDevice& dev_type,
+                    const CommandLineOptions& opts) const
+{
+  std::cout << "USB Device:        " << dev->bus->dirname << ":" << dev->filename << std::endl;
+  std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
+    % dev_type.name % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct) << std::endl;
+  if (dev_type.type == GAMEPAD_XBOX360_WIRELESS)
+    std::cout << "Wireless Port:     " << opts.wireless_id << std::endl;
+  std::cout << "Controller Type:   " << dev_type.type << std::endl;
+  std::cout << "Deadzone:          " << opts.deadzone << std::endl;
+  std::cout << "Trigger Deadzone:  " << opts.deadzone_trigger << std::endl;
+  std::cout << "Rumble Debug:      " << (opts.rumble ? "on" : "off") << std::endl;
+  std::cout << "Rumble Speed:      " << "left: " << opts.rumble_l << " right: " << opts.rumble_r << std::endl;
+  if (opts.led == -1)
+    std::cout << "LED Status:        " << "auto" << std::endl;
+  else
+    std::cout << "LED Status:        " << opts.led << std::endl;
+
+  std::cout << "Square Axis:       " << ((opts.square_axis) ? "yes" : "no") << std::endl;
+  
+  std::cout << "ButtonMap:         ";
+  if (opts.button_map.empty())
+    {
+      std::cout << "none" << std::endl;
+    }
+  else
+    {
+      for(std::vector<ButtonMapping>::const_iterator i = opts.button_map.begin(); i != opts.button_map.end(); ++i)
+        {
+          std::cout << btn2string(i->lhs) << "->" << btn2string(i->rhs) << " ";
+        }
+      std::cout << std::endl;
+    }
+
+  std::cout << "AxisMap:           ";
+  if (opts.axis_map.empty())
+    {
+      std::cout << "none" << std::endl;
+    }
+  else
+    {
+      for(std::vector<AxisMapping>::const_iterator i = opts.axis_map.begin(); i != opts.axis_map.end(); ++i)
+        {
+          if (i->invert)
+            std::cout << "-" << axis2string(i->lhs) << "->" << axis2string(i->rhs) << " ";
+          else
+            std::cout << axis2string(i->lhs) << "->" << axis2string(i->rhs) << " ";
+        }
+      std::cout << std::endl;
+    }
+
+  std::cout << "RelativeAxisMap:   ";
+  if (opts.relative_axis_map.empty())
+    {
+      std::cout << "none" << std::endl;
+    }
+  else
+    {
+      for(std::vector<RelativeAxisMapping>::const_iterator i = opts.relative_axis_map.begin(); i != opts.relative_axis_map.end(); ++i)
+        {
+          std::cout << axis2string(i->axis) << "=" << i->speed << " ";
+        }
+      std::cout << std::endl;
+    }
+
+  std::cout << "AutoFireMap:       ";
+  if (opts.autofire_map.empty())
+    {
+      std::cout << "none" << std::endl;
+    }
+  else
+    {
+      for(std::vector<AutoFireMapping>::const_iterator i = opts.autofire_map.begin(); i != opts.autofire_map.end(); ++i)
+        {
+          std::cout << btn2string(i->button) << "=" << i->frequency << " ";
+        }
+      std::cout << std::endl;
+    }
+
+  std::cout << "RumbleGain:        " << opts.rumble_gain << std::endl;
+  std::cout << "ForceFeedback:     " << ((opts.uinput_config.force_feedback) ? "enabled" : "disabled") << std::endl;
+}
+
 int
 Xboxdrv::main(int argc, char** argv)
 {
@@ -1406,9 +630,8 @@ Xboxdrv::main(int argc, char** argv)
       signal(SIGINT, on_sigint);
 
       CommandLineOptions opts;
+      opts.parse_args(*this, argc, argv);
       command_line_options = &opts;
-
-      parse_command_line(argc, argv, opts);
 
       if (opts.daemon)
         {

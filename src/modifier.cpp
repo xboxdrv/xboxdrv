@@ -20,6 +20,10 @@
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <stdexcept>
+#include <math.h>
+
+#include "command_line_options.hpp"
+#include "helper.hpp"
 #include "modifier.hpp"
 
 void apply_button_map(XboxGenericMsg& msg, const std::vector<ButtonMapping>& lst)
@@ -237,6 +241,95 @@ AutoFireMapping::from_string(const std::string& str)
       mapping.button    = string2btn(str.substr(0, i));
       mapping.frequency = boost::lexical_cast<int>(str.substr(i+1, str.size()-i).c_str());
       return mapping;
+    }
+}
+
+void squarify_axis_(int16_t& x_inout, int16_t& y_inout)
+{
+  if (x_inout != 0 || y_inout != 0)
+    {
+      // Convert values to float
+      float x = (x_inout < 0) ? x_inout / 32768.0f : x_inout / 32767.0f;
+      float y = (y_inout < 0) ? y_inout / 32768.0f : y_inout / 32767.0f;
+
+      // Transform values to square range
+      float l = sqrtf(x*x + y*y);
+      float v = fabs((fabsf(x) > fabsf(y)) ? l/x : l/y);
+      x *= v;
+      y *= v;
+
+      // Convert values to int16_t
+      x_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((x < 0) ? x * 32768 : x * 32767), 32767));
+      y_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((y < 0) ? y * 32768 : y * 32767), 32767));
+    }
+}
+
+// Little hack to allow access to bitfield via reference
+#define squarify_axis(x, y) \
+{ \
+  int16_t x_ = x;         \
+  int16_t y_ = y;         \
+  squarify_axis_(x_, y_); \
+  x = x_;                 \
+  y = y_;                 \
+}
+
+void apply_square_axis(XboxGenericMsg& msg)
+{
+  switch (msg.type)
+    {
+      case XBOX_MSG_XBOX:
+        squarify_axis(msg.xbox.x1, msg.xbox.y1);
+        squarify_axis(msg.xbox.x2, msg.xbox.y2);
+        break;
+
+      case XBOX_MSG_XBOX360:
+        squarify_axis(msg.xbox360.x1, msg.xbox360.y1);
+        squarify_axis(msg.xbox360.x2, msg.xbox360.y2);
+        break;
+        
+      case XBOX_MSG_XBOX360_GUITAR:
+        break;
+    }
+}
+
+void apply_deadzone(XboxGenericMsg& msg, const CommandLineOptions& opts)
+{
+  switch (msg.type)
+    {
+      case XBOX_MSG_XBOX:
+        if (abs(msg.xbox.x1) < opts.deadzone)
+          msg.xbox.x1 = 0;
+        if (abs(msg.xbox.y1) < opts.deadzone)
+          msg.xbox.y1 = 0;
+        if (abs(msg.xbox.x2) < opts.deadzone)
+          msg.xbox.x2 = 0;
+        if (abs(msg.xbox.y2) < opts.deadzone)
+          msg.xbox.y2 = 0;
+        if (msg.xbox.lt < opts.deadzone_trigger)
+          msg.xbox.lt = 0;
+        if (msg.xbox.rt < opts.deadzone_trigger)
+          msg.xbox.rt = 0;
+        break;
+
+      case XBOX_MSG_XBOX360:
+        if (abs(msg.xbox360.x1) < opts.deadzone)
+          msg.xbox360.x1 = 0;
+        if (abs(msg.xbox360.y1) < opts.deadzone)
+          msg.xbox360.y1 = 0;
+        if (abs(msg.xbox360.x2) < opts.deadzone)
+          msg.xbox360.x2 = 0;
+        if (abs(msg.xbox360.y2) < opts.deadzone)
+          msg.xbox360.y2 = 0;      
+        if (msg.xbox360.lt < opts.deadzone_trigger)
+          msg.xbox360.lt = 0;
+        if (msg.xbox360.rt < opts.deadzone_trigger)
+          msg.xbox360.rt = 0;
+        break;
+
+      case XBOX_MSG_XBOX360_GUITAR:
+        // FIXME: any use for deadzone here?
+        break;
     }
 }
 

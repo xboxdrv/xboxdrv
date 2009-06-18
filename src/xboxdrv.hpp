@@ -28,16 +28,26 @@ class XboxGenericController;
 class Xboxdrv
 {
 private:
-  void print_command_line_help(int argc, char** argv);
-  void print_led_help();
-  void print_version();
   void run_main(const CommandLineOptions& opts);
-  void parse_command_line(int argc, char** argv, CommandLineOptions& opts);
+  void print_info(struct usb_device* dev,
+                  const XPadDevice& dev_type,
+                  const CommandLineOptions& opts) const;
+
   void controller_loop(GamepadType type, uInput* uinput,
                        XboxGenericController* controller, 
                        const CommandLineOptions& opts);
+  bool find_controller_by_path(const char* busid, const char* devid,struct usb_device** xbox_device);
+  void find_controller(struct usb_device*& dev,
+                       XPadDevice&         dev_type,
+                       const CommandLineOptions& opts);
+  int  find_jsdev_number();
+  int  find_evdev_number();
+  bool find_controller_by_id(int id, int vendor_id, int product_id, struct usb_device** xbox_device);
+  bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice* type);
 
 public:
+  void list_controller();
+
   int main(int argc, char** argv);
 };
 

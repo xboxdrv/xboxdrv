@@ -18,8 +18,11 @@
 
 #include <iostream>
 #include <boost/format.hpp>
-#include "helper.hpp"
+#include <boost/lexical_cast.hpp>
+#include <sys/time.h>
 
+#include "helper.hpp"
+
 void print_raw_data(std::ostream& out, uint8_t* data, int len)
 {
   std::cout << "len: " << len 
@@ -30,7 +33,7 @@ void print_raw_data(std::ostream& out, uint8_t* data, int len)
 
   std::cout << std::endl;
 }
-
+
 std::string to_lower(const std::string &str)
 {
   std::string lower_impl = str;
@@ -44,5 +47,58 @@ std::string to_lower(const std::string &str)
 
   return lower_impl;
 }
-
+
+void arg2apply(const std::string& str, const boost::function<void (const std::string&)>& func)
+{
+  std::string::const_iterator start = str.begin();
+  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+    {
+      if (*i == ',')
+        {
+          if (i != start)
+            func(std::string(start, i));
+          
+          start = i+1;
+        }
+    }
+  
+  if (start != str.end())
+    func(std::string(start, str.end()));
+}
+
+bool is_number(const std::string& str)
+{
+  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+    if (!isdigit(*i))
+      return false;
+  return true;
+}
+
+int to_number(int range, const std::string& str)
+{
+  if (str.empty())
+    {
+      return 0;
+    }
+  else
+    {
+      if (str[str.size() - 1] == '%')
+        {
+          int percent = boost::lexical_cast<int>(str.substr(0, str.size()-1));
+          return range * percent / 100;
+        }
+      else
+        {
+          return boost::lexical_cast<int>(str);
+        }
+    }
+}
+
+uint32_t get_time()
+{
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  return tv.tv_sec * 1000 + tv.tv_usec/1000;
+}
+
 /* EOF */

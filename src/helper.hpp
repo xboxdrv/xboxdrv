@@ -20,10 +20,48 @@
 #define HEADER_HELPER_HPP
 
 #include <iosfwd>
-
+#include <vector>
+#include <boost/function.hpp>
+
 void print_raw_data(std::ostream& out, uint8_t* buffer, int len);
 std::string to_lower(const std::string &str);
+bool is_number(const std::string& str);
+void arg2apply(const std::string& str, const boost::function<void (const std::string&)>& func);
 
+/** Convert the given string \a str to an integer, the string can
+    either be an exact integer or a percent value (i.e. "75%"), in
+    which case it is handled as (range * int(str)) */
+int to_number(int range, const std::string& str);
+uint32_t get_time();
+
+template<class C, class Func>
+void arg2vector(const std::string& str, typename std::vector<C>& lst, Func func)
+{
+  std::string::const_iterator start = str.begin();
+  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+    {
+      if (*i == ',')
+        {
+          if (i != start)
+            lst.push_back(func(std::string(start, i)));
+          
+          start = i+1;
+        }
+    }
+  
+  if (start != str.end())
+    lst.push_back(func(std::string(start, str.end())));
+}
+
+namespace Math {
+template<class T>
+T clamp (const T& low, const T& v, const T& high)
+{
+  assert(low <= high);
+  return std::max((low), std::min((v), (high)));
+}
+} // namespace Math
+
 #endif
 
 /* EOF */

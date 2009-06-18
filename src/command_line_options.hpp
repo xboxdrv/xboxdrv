@@ -30,9 +30,12 @@
 #include "modifier.hpp"
 #include "xboxmsg.hpp"
 #include "uinput.hpp"
+
+class Xboxdrv;
 
-struct CommandLineOptions 
+class CommandLineOptions 
 {
+public:
   bool daemon;
   bool verbose;
   bool silent;
@@ -65,7 +68,13 @@ struct CommandLineOptions
   std::vector<CalibrationMapping> calibration_map;
   bool square_axis;
 
+public:
   CommandLineOptions();
+  void parse_args(Xboxdrv& xboxdrv, int argc, char** argv);
+
+  void print_command_line_help(int argc, char** argv) const;
+  void print_led_help() const;
+  void print_version() const;
 };
 
 extern CommandLineOptions* command_line_options;
