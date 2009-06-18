@@ -24,7 +24,8 @@
 #include "helper.hpp"
 #include "command_line_options.hpp"
 
-#define RAISE_EXCEPTION(x) throw std::runtime_error(static_cast<std::ostringstream&>(std::ostringstream() << x).str())
+// See http://stackoverflow.com/questions/303562/c-format-macro-inline-ostringstream
+#define RAISE_EXCEPTION(x) throw std::runtime_error(static_cast<std::ostringstream&>(std::ostringstream().seekp(0, std::ios_base::cur) << x).str())
 
 CommandLineOptions* command_line_options = 0;
 
