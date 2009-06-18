@@ -331,7 +331,7 @@ uInput::is_keyboard_button(int ev_code)
   return (ev_code < 256);
 }
 
-uInput::uInput(XPadDevice dev, uInputCfg config_)
+uInput::uInput(const XPadDevice& dev, uInputCfg config_)
   : cfg(config_)
 {
   std::fill_n(axis_state,   (int)XBOX_AXIS_MAX, 0);

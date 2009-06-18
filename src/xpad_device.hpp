@@ -16,16 +16,23 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOX360_HPP
-#define HEADER_XBOX360_HPP
+#ifndef HEADER_XPAD_DEVICES_HPP
+#define HEADER_XPAD_DEVICES_HPP
+
+#include <stdint.h>
 
 #include "xboxmsg.hpp"
 
-class Xboxdrv
+struct XPadDevice 
 {
-public:
-  int main(int argc, char** argv);
+  GamepadType type;
+  uint16_t    idVendor;
+  uint16_t    idProduct;
+  const char* name;
 };
+
+extern XPadDevice xpad_devices[];
+extern const int xpad_devices_count;
 
 #endif
 

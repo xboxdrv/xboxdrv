@@ -24,6 +24,8 @@
 #include <vector>
 #include <memory>
 #include <stdexcept>
+
+#include "xpad_device.hpp"
 #include "xboxdrv.hpp"
 #include "linux_uinput.hpp"
 #include "evdev_helper.hpp"
@@ -132,7 +134,7 @@ private:
   std::vector<RelButtonState> rel_button;
 
 public:
-  uInput(XPadDevice dev, uInputCfg cfg = uInputCfg());
+  uInput(const XPadDevice& dev, uInputCfg cfg = uInputCfg());
   ~uInput();
 
   void setup_xbox360_gamepad(GamepadType type);
