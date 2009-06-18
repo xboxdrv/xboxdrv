@@ -41,6 +41,8 @@ public:
 
   /** @param timeout   timeout in msec, 0 means forever */
   bool read(XboxGenericMsg& msg, bool verbose, int timeout);
+  bool read_default(XboxGenericMsg& msg, bool verbose, int timeout);
+  bool read_vsb(XboxGenericMsg& msg, bool verbose, int timeout);
 };
 
 #endif
