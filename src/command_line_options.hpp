@@ -38,7 +38,11 @@ class CommandLineOptions
 public:
   enum { RUN_DEFAULT,
          RUN_DAEMON, 
-         RUN_LIST_CONTROLLER
+         RUN_LIST_CONTROLLER,
+         RUN_LIST_SUPPORTED_DEVICES,
+         PRINT_VERSION,
+         PRINT_HELP,
+         PRINT_LED_HELP
   } mode;
 
   bool verbose;

@@ -635,10 +635,28 @@ Xboxdrv::main(int argc, char** argv)
 
       switch(opts.mode)
         {
+          case CommandLineOptions::RUN_LIST_SUPPORTED_DEVICES:
+            for(int i = 0; i < xpad_devices_count; ++i)
+              {
+                std::cout << boost::format("%s 0x%04x 0x%04x %s\n")
+                  % gamepadtype_to_string(xpad_devices[i].type)
+                  % int(xpad_devices[i].idVendor)
+                  % int(xpad_devices[i].idProduct)
+                  % xpad_devices[i].name;
+              }
+            break;
+
+          case CommandLineOptions::PRINT_VERSION:
+            break;
+
+          case CommandLineOptions::PRINT_HELP:
+            break;
+
+          case CommandLineOptions::PRINT_LED_HELP:
+            break;
+
           case CommandLineOptions::RUN_DEFAULT:
-            {
-              run_main(opts);
-            }
+            run_main(opts);
             break;
 
           case CommandLineOptions::RUN_DAEMON:
@@ -668,7 +686,7 @@ Xboxdrv::main(int argc, char** argv)
     }
   catch(std::exception& err)
     {
-      std::cout << "Exception: " << err.what() << std::endl;
+      std::cout << "Error: " << err.what() << std::endl;
     }
 
   return 0;

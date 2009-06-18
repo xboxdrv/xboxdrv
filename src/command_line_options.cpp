@@ -22,6 +22,8 @@
 
 #include "helper.hpp"
 #include "command_line_options.hpp"
+
+#define RAISE_EXCEPTION(x) static_cast<std::ostringstream&>(std::ostringstream() << x).str()
 
 CommandLineOptions* command_line_options = 0;
 
@@ -156,14 +158,12 @@ CommandLineOptions::parse_args(int argc, char** argv)
                 }
               else
                 {
-                  std::cout << "Error: " << argv[i-1] << " expected an argument in form INT,INT" << std::endl;
-                  exit(EXIT_FAILURE);
+                  RAISE_EXCEPTION(argv[i-1] << " expected an argument in form INT,INT");
                 }
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }          
         }
       else if (strcmp(argv[i], "-q") == 0 ||
@@ -211,21 +211,19 @@ CommandLineOptions::parse_args(int argc, char** argv)
                 }
               else
                 {
-                  std::cout << "Error: unknown type: " << argv[i] << std::endl;
-                  std::cout << "Possible types are:" << std::endl;
-                  std::cout << " * xbox" << std::endl;
-                  std::cout << " * xbox-mat" << std::endl;
-                  std::cout << " * xbox360" << std::endl;
-                  std::cout << " * xbox360-guitar" << std::endl;
-                  std::cout << " * xbox360-wireless" << std::endl;
-                  std::cout << " * firestorm" << std::endl;
-                  exit(EXIT_FAILURE); 
+                  RAISE_EXCEPTION("unknown type: " << argv[i] << '\n'
+                                  << "Possible types are:\n"
+                                  << " * xbox\n"
+                                  << " * xbox-mat\n"
+                                  << " * xbox360\n"
+                                  << " * xbox360-guitar\n"
+                                  << " * xbox360-wireless\n"
+                                  << " * firestorm\n");
                 }
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }
         }
       else if (strcmp(argv[i], "--force-feedback") == 0)
@@ -241,8 +239,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }
         }
       else if (strcmp(argv[i], "-b") == 0 ||
@@ -255,8 +252,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }
         }
       else if (strcmp(argv[i], "-a") == 0 ||
@@ -269,8 +265,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }          
         }
       else if (strcmp(argv[i], "--name") == 0)
@@ -282,8 +277,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }                  
         }
       else if (strcmp(argv[i], "--ui-clear") == 0)
@@ -300,8 +294,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }                  
         }
       else if (strcmp(argv[i], "--ui-buttonmap") == 0)
@@ -313,8 +306,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }         
         }
       else if (strcmp(argv[i], "-i") == 0 ||
@@ -327,8 +319,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }
         }
       else if (strcmp(argv[i], "-w") == 0 ||
@@ -341,8 +332,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }
         }
       else if (strcmp(argv[i], "-l") == 0 ||
@@ -363,14 +353,13 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }
         }
       else if (strcmp("--dpad-only", argv[i]) == 0)
         {
           if (opts.uinput_config.dpad_as_button)
-            throw std::runtime_error("Can't combine --dpad-as-button with --dpad-only");
+            RAISE_EXCEPTION("Can't combine --dpad-as-button with --dpad-only");
 
           opts.uinput_config.dpad_only = true;
         }
@@ -390,8 +379,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an INT argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an INT argument");
             }
         }
       else if (strcmp("--deadzone-trigger", argv[i]) == 0)
@@ -403,16 +391,14 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an INT argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an INT argument");
             }
         }
       else if (strcmp("--trigger-as-button", argv[i]) == 0)
         {
           if (opts.uinput_config.trigger_as_zaxis)
             {
-              std::cout << "Error: Can't combine --trigger-as-button and --trigger-as-zaxis" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION("Can't combine --trigger-as-button and --trigger-as-zaxis");
             }
           else
             {
@@ -428,8 +414,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }          
         }
       else if (strcmp("--calibration", argv[i]) == 0)
@@ -441,8 +426,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }
         }
       else if (strcmp("--relative-axis", argv[i]) == 0)
@@ -454,8 +438,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }          
         }
       else if (strcmp("--square-axis", argv[i]) == 0)
@@ -466,8 +449,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
         {
           if (opts.uinput_config.trigger_as_button)
             {
-              std::cout << "Error: Can't combine --trigger-as-button and --trigger-as-zaxis" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION("Can't combine --trigger-as-button and --trigger-as-zaxis");
             }
           else
             {
@@ -493,14 +475,12 @@ CommandLineOptions::parse_args(int argc, char** argv)
                 }
               else
                 {
-                  std::cout << "Error: " << argv[i-1] << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)" << std::endl;
-                  exit(EXIT_FAILURE);
+                  RAISE_EXCEPTION(argv[i-1] << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)");
                 }
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }        
         }
       else if (strcmp(argv[i], "--device-by-path") == 0)
@@ -513,28 +493,17 @@ CommandLineOptions::parse_args(int argc, char** argv)
                 }
               else
                 {
-                  std::cout << "Error: " << argv[i-1] << " expected an argument in form BUS:DEV (i.e. 006:003)" << std::endl;
-                  exit(EXIT_FAILURE);
+                  RAISE_EXCEPTION(argv[i-1] << " expected an argument in form BUS:DEV (i.e. 006:003)");
                 }
             }
           else
             {
-              std::cout << "Error: " << argv[i-1] << " expected an argument" << std::endl;
-              exit(EXIT_FAILURE);
+              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
             }          
         }
       else if (strcmp(argv[i], "--list-supported-devices") == 0)
         {
-          for(int i = 0; i < xpad_devices_count; ++i)
-            {
-              std::cout << boost::format("%s 0x%04x 0x%04x %s\n")
-                % gamepadtype_to_string(xpad_devices[i].type)
-                % int(xpad_devices[i].idVendor)
-                % int(xpad_devices[i].idProduct)
-                % xpad_devices[i].name;
-            }
-
-          exit(EXIT_FAILURE);
+          opts.mode = RUN_LIST_SUPPORTED_DEVICES;
         }
       else if (strcmp(argv[i], "--list-controller") == 0 ||
                strcmp(argv[i], "-L") == 0)
@@ -557,8 +526,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
         }
       else
         {
-          std::cout << "Error: unknown command line option: " << argv[i] << std::endl;
-          exit(EXIT_FAILURE);
+          RAISE_EXCEPTION("unknown command line option: " << argv[i]);
         }
     }
 }
