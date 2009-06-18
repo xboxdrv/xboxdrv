@@ -148,9 +148,9 @@ public:
   }
 };
 
-void apply_button_map(XboxGenericMsg& msg, std::vector<ButtonMapping>& lst);
-void apply_axis_map(XboxGenericMsg& msg, std::vector<AxisMapping>& lst);
-void apply_calibration_map(XboxGenericMsg& msg, std::vector<CalibrationMapping>& lst);
+void apply_button_map(XboxGenericMsg& msg, const std::vector<ButtonMapping>& lst);
+void apply_axis_map(XboxGenericMsg& msg, const std::vector<AxisMapping>& lst);
+void apply_calibration_map(XboxGenericMsg& msg, const std::vector<CalibrationMapping>& lst);
 
 #endif
 

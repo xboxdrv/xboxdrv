@@ -20,9 +20,23 @@
 #define HEADER_XBOX360_HPP
 
 #include "xboxmsg.hpp"
+
+class CommandLineOptions;
+class uInput;
+class XboxGenericController;
 
 class Xboxdrv
 {
+private:
+  void print_command_line_help(int argc, char** argv);
+  void print_led_help();
+  void print_version();
+  void run_main(const CommandLineOptions& opts);
+  void parse_command_line(int argc, char** argv, CommandLineOptions& opts);
+  void controller_loop(GamepadType type, uInput* uinput,
+                       XboxGenericController* controller, 
+                       const CommandLineOptions& opts);
+
 public:
   int main(int argc, char** argv);
 };

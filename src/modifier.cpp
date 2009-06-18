@@ -22,29 +22,29 @@
 #include <stdexcept>
 #include "modifier.hpp"
 
-void apply_button_map(XboxGenericMsg& msg, std::vector<ButtonMapping>& lst)
+void apply_button_map(XboxGenericMsg& msg, const std::vector<ButtonMapping>& lst)
 {
   XboxGenericMsg newmsg = msg;
 
-  for(std::vector<ButtonMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
+  for(std::vector<ButtonMapping>::const_iterator i = lst.begin(); i != lst.end(); ++i)
     set_button(newmsg, i->lhs, 0);
 
-  for(std::vector<ButtonMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
+  for(std::vector<ButtonMapping>::const_iterator i = lst.begin(); i != lst.end(); ++i)
     set_button(newmsg, i->rhs, get_button(msg, i->lhs) || get_button(newmsg, i->rhs));
 
   msg = newmsg;  
 }
 
-void apply_axis_map(XboxGenericMsg& msg, std::vector<AxisMapping>& lst)
+void apply_axis_map(XboxGenericMsg& msg, const std::vector<AxisMapping>& lst)
 {
   XboxGenericMsg newmsg = msg;
 
-  for(std::vector<AxisMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
+  for(std::vector<AxisMapping>::const_iterator i = lst.begin(); i != lst.end(); ++i)
     {
       set_axis(newmsg, i->lhs, 0);
     }
 
-  for(std::vector<AxisMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
+  for(std::vector<AxisMapping>::const_iterator i = lst.begin(); i != lst.end(); ++i)
     {
       int lhs  = get_axis(msg,    i->lhs);
       int nrhs = get_axis(newmsg, i->rhs);
@@ -124,9 +124,9 @@ static int clamp(int lhs, int rhs, int v)
   return std::max(lhs, std::min(v, rhs));
 }
 
-void apply_calibration_map(XboxGenericMsg& msg, std::vector<CalibrationMapping>& lst)
+void apply_calibration_map(XboxGenericMsg& msg, const std::vector<CalibrationMapping>& lst)
 {
-  for(std::vector<CalibrationMapping>::iterator i = lst.begin(); i != lst.end(); ++i)
+  for(std::vector<CalibrationMapping>::const_iterator i = lst.begin(); i != lst.end(); ++i)
     {
       int value = get_axis(msg,  i->axis);
 

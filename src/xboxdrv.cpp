@@ -309,7 +309,8 @@ bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice
   return 0;
 }
 
-void print_command_line_help(int argc, char** argv)
+void
+Xboxdrv::print_command_line_help(int argc, char** argv)
 {
   std::cout << "Usage: " << argv[0] << " [OPTION]..." << std::endl;
   std::cout << "Xbox360 USB Gamepad Userspace Driver" << std::endl;
@@ -370,7 +371,8 @@ void print_command_line_help(int argc, char** argv)
   std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
 }
 
-void print_led_help()
+void
+Xboxdrv::print_led_help()
 {
   std::cout << 
     "Possible values for '--led VALUE' are:\n\n"
@@ -393,7 +395,8 @@ void print_led_help()
             << std::endl;
 }
 
-void print_version()
+void
+Xboxdrv::print_version()
 {
   std::cout
     << "xboxdrv 0.4.7\n"
@@ -427,7 +430,8 @@ int to_number(int range, const std::string& str)
     }
 }
 
-void parse_command_line(int argc, char** argv, CommandLineOptions& opts)
+void
+Xboxdrv::parse_command_line(int argc, char** argv, CommandLineOptions& opts)
 {  
   for(int i = 1; i < argc; ++i)
     {
@@ -1035,7 +1039,7 @@ void apply_square_axis(XboxGenericMsg& msg)
     }
 }
 
-void apply_deadzone(XboxGenericMsg& msg, CommandLineOptions& opts)
+void apply_deadzone(XboxGenericMsg& msg, const CommandLineOptions& opts)
 {
   switch (msg.type)
     {
@@ -1092,7 +1096,8 @@ void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_
   controller->set_rumble(lhs, rhs);
 }
 
-void controller_loop(GamepadType type, uInput* uinput, XboxGenericController* controller, CommandLineOptions& opts)
+void
+Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController* controller, const CommandLineOptions& opts)
 {
   int timeout = 0; // 0 == no timeout
   XboxGenericMsg oldmsg; // last data send to uinput
@@ -1277,7 +1282,8 @@ void on_sigint(int)
     }
 }
 
-void run_main(CommandLineOptions& opts)
+void
+Xboxdrv::run_main(const CommandLineOptions& opts)
 {
   if (!opts.quiet)
     {
