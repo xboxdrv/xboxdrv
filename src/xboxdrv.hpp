@@ -29,13 +29,17 @@ class Xboxdrv
 {
 private:
   void run_main(const CommandLineOptions& opts);
+  void run_daemon(const CommandLineOptions& opts);
+  void run_list_supported_devices();
+  void run_help_devices();
+  void run_list_controller();
+
   void print_info(struct usb_device* dev,
                   const XPadDevice& dev_type,
                   const CommandLineOptions& opts) const;
   void controller_loop(GamepadType type, uInput* uinput,
                        XboxGenericController* controller, 
                        const CommandLineOptions& opts);
-  void list_controller();
 
   bool find_controller_by_path(const char* busid, const char* devid,struct usb_device** xbox_device) const;
   void find_controller(struct usb_device*& dev,

@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <string.h>
+
 #include "uinput.hpp"
 #include "xboxmsg.hpp"
 #include "xbox_controller.hpp"
@@ -77,7 +78,7 @@ void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_
 }
 
 void
-Xboxdrv::list_controller()
+Xboxdrv::run_list_controller()
 {
   usb_init();
   usb_find_busses();
@@ -449,41 +450,40 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
       if (!opts.quiet)
         print_info(dev, dev_type, opts);
 
-      XboxGenericController* controller = 0;
+      std::auto_ptr<XboxGenericController> controller;
 
       switch (dev_type.type)
         {
           case GAMEPAD_XBOX:
           case GAMEPAD_XBOX_MAT:
-            controller = new XboxController(dev);
+            controller = std::auto_ptr<XboxGenericController>(new XboxController(dev));
             break;
 
           case GAMEPAD_XBOX360_GUITAR:
-            controller = new Xbox360Controller(dev, true);
+            controller = std::auto_ptr<XboxGenericController>(new Xbox360Controller(dev, true));
             break;
 
           case GAMEPAD_XBOX360:
-            controller = new Xbox360Controller(dev, false);
+            controller = std::auto_ptr<XboxGenericController>(new Xbox360Controller(dev, false));
             break;
 
           case GAMEPAD_XBOX360_WIRELESS:
-            controller = new Xbox360WirelessController(dev, opts.wireless_id);
+            controller = std::auto_ptr<XboxGenericController>(new Xbox360WirelessController(dev, opts.wireless_id));
             break;
 
           case GAMEPAD_FIRESTORM:
-            controller = new FirestormDualController(dev);
+            controller = std::auto_ptr<XboxGenericController>(new FirestormDualController(dev));
             break;
 
           default:
             assert(!"Unknown gamepad type");
         }
 
-      global_controller = controller;
+      global_controller = controller.get();
 
       int jsdev_number = find_jsdev_number();
       int evdev_number = find_evdev_number();
 
-      // FIXME: insert /dev/input/jsX detection magic here
       if (opts.led == -1)
         controller->set_led(2 + jsdev_number % 4);
       else
@@ -500,13 +500,13 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
         }
       else
         {          
-          uInput* uinput = 0;
+          std::auto_ptr<uInput> uinput;
           if (!opts.no_uinput)
             {
               if (!opts.quiet)
                 std::cout << "\nStarting with uinput... " << std::flush;
-              uinput = new uInput(dev_type, opts.uinput_config);
-              uinput->set_ff_callback(boost::bind(&set_rumble,  controller, opts.rumble_gain, _1, _2));
+              uinput = std::auto_ptr<uInput>(new uInput(dev_type, opts.uinput_config));
+              uinput->set_ff_callback(boost::bind(&set_rumble,  controller.get(), opts.rumble_gain, _1, _2));
               if (!opts.quiet)
                 std::cout << "done" << std::endl;
             }
@@ -526,11 +526,8 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
             }
 
           global_exit_xboxdrv = false;
-          controller_loop(dev_type.type, uinput, controller, opts);
+          controller_loop(dev_type.type, uinput.get(), controller.get(), opts);
           
-          delete controller;
-          delete uinput;
-         
           if (!opts.quiet) 
             std::cout << "Shutdown complete" << std::endl;
         }
@@ -622,6 +619,52 @@ Xboxdrv::print_info(struct usb_device* dev,
   std::cout << "ForceFeedback:     " << ((opts.uinput_config.force_feedback) ? "enabled" : "disabled") << std::endl;
 }
 
+void
+Xboxdrv::run_list_supported_devices()
+{
+  for(int i = 0; i < xpad_devices_count; ++i)
+    {
+      std::cout << boost::format("%s 0x%04x 0x%04x %s\n")
+        % gamepadtype_to_string(xpad_devices[i].type)
+        % int(xpad_devices[i].idVendor)
+        % int(xpad_devices[i].idProduct)
+        % xpad_devices[i].name;
+    }    
+}
+
+void
+Xboxdrv::run_help_devices()
+{
+  std::cout << " idVendor | idProduct | Name" << std::endl;
+  std::cout << "----------+-----------+---------------------------------" << std::endl;
+  for(int i = 0; i < xpad_devices_count; ++i)
+    {
+      std::cout << boost::format("   0x%04x |    0x%04x | %s")
+        % int(xpad_devices[i].idVendor)
+        % int(xpad_devices[i].idProduct)
+        % xpad_devices[i].name 
+                << std::endl;
+    }           
+}
+
+void
+Xboxdrv::run_daemon(const CommandLineOptions& opts)
+{
+  pid_t pid = fork();
+
+  if (pid < 0) exit(EXIT_FAILURE); /* fork error */
+  if (pid > 0) exit(EXIT_SUCCESS); /* parent exits */
+
+  pid_t sid = setsid();
+  std::cout << "Sid: " << sid << std::endl;
+  if (chdir("/") != 0)
+    {
+      throw std::runtime_error(strerror(errno));
+    }
+
+  run_main(opts);
+}
+
 int
 Xboxdrv::main(int argc, char** argv)
 {
@@ -636,31 +679,11 @@ Xboxdrv::main(int argc, char** argv)
       switch(opts.mode)
         {
           case CommandLineOptions::PRINT_HELP_DEVICES:
-            {
-              std::cout << " idVendor | idProduct | Name" << std::endl;
-              std::cout << "----------+-----------+---------------------------------" << std::endl;
-              for(int i = 0; i < xpad_devices_count; ++i)
-                {
-                  std::cout << boost::format("   0x%04x |    0x%04x | %s")
-                    % int(xpad_devices[i].idVendor)
-                    % int(xpad_devices[i].idProduct)
-                    % xpad_devices[i].name 
-                            << std::endl;
-                }
-            }
+            run_help_devices();
             break;
 
           case CommandLineOptions::RUN_LIST_SUPPORTED_DEVICES:
-            {
-              for(int i = 0; i < xpad_devices_count; ++i)
-                {
-                  std::cout << boost::format("%s 0x%04x 0x%04x %s\n")
-                    % gamepadtype_to_string(xpad_devices[i].type)
-                    % int(xpad_devices[i].idVendor)
-                    % int(xpad_devices[i].idProduct)
-                    % xpad_devices[i].name;
-                }
-            }
+            run_list_supported_devices();
             break;
 
           case CommandLineOptions::PRINT_VERSION:
@@ -680,27 +703,11 @@ Xboxdrv::main(int argc, char** argv)
             break;
 
           case CommandLineOptions::RUN_DAEMON:
-            {
-              pid_t pid = fork();
-
-              if (pid < 0) exit(EXIT_FAILURE); /* fork error */
-              if (pid > 0) exit(EXIT_SUCCESS); /* parent exits */
-
-              pid_t sid = setsid();
-              std::cout << "Sid: " << sid << std::endl;
-              if (chdir("/") != 0)
-                {
-                  throw std::runtime_error(strerror(errno));
-                }
-
-              run_main(opts);
-            }
+            run_daemon(opts);
             break;
 
           case CommandLineOptions::RUN_LIST_CONTROLLER:
-            {
-              list_controller();
-            }
+            run_list_controller();
             break;
         }
     }
