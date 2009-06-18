@@ -15,6 +15,10 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
+* better keyboard emulation via analog sticks: axis must not be
+  handled separately as this leads to issues with the diagonals (see
+  mail from Matthew G <matt@remort.org>)
+
 * reading from USB is broken "Firestorm vs b" is losing data all the
   time, other controllers have similar issues, reading from USB needs
   to be changed
