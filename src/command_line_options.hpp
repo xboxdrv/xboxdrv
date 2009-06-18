@@ -36,7 +36,11 @@ class Xboxdrv;
 class CommandLineOptions 
 {
 public:
-  bool daemon;
+  enum { RUN_DEFAULT,
+         RUN_DAEMON, 
+         RUN_LIST_CONTROLLER
+  } mode;
+
   bool verbose;
   bool silent;
   bool quiet;
@@ -70,7 +74,7 @@ public:
 
 public:
   CommandLineOptions();
-  void parse_args(Xboxdrv& xboxdrv, int argc, char** argv);
+  void parse_args(int argc, char** argv);
 
   void print_command_line_help(int argc, char** argv) const;
   void print_led_help() const;

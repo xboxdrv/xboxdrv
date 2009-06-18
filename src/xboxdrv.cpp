@@ -630,28 +630,40 @@ Xboxdrv::main(int argc, char** argv)
       signal(SIGINT, on_sigint);
 
       CommandLineOptions opts;
-      opts.parse_args(*this, argc, argv);
+      opts.parse_args(argc, argv);
       command_line_options = &opts;
 
-      if (opts.daemon)
+      switch(opts.mode)
         {
-          pid_t pid = fork();
-
-          if (pid < 0) exit(EXIT_FAILURE); /* fork error */
-          if (pid > 0) exit(EXIT_SUCCESS); /* parent exits */
-
-          pid_t sid = setsid();
-          std::cout << "Sid: " << sid << std::endl;
-          if (chdir("/") != 0)
+          case CommandLineOptions::RUN_DEFAULT:
             {
-              throw std::runtime_error(strerror(errno));
+              run_main(opts);
             }
+            break;
 
-          run_main(opts);
-        }
-      else
-        {
-          run_main(opts);
+          case CommandLineOptions::RUN_DAEMON:
+            {
+              pid_t pid = fork();
+
+              if (pid < 0) exit(EXIT_FAILURE); /* fork error */
+              if (pid > 0) exit(EXIT_SUCCESS); /* parent exits */
+
+              pid_t sid = setsid();
+              std::cout << "Sid: " << sid << std::endl;
+              if (chdir("/") != 0)
+                {
+                  throw std::runtime_error(strerror(errno));
+                }
+
+              run_main(opts);
+            }
+            break;
+
+          case CommandLineOptions::RUN_LIST_CONTROLLER:
+            {
+              list_controller();
+            }
+            break;
         }
     }
   catch(std::exception& err)

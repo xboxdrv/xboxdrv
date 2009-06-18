@@ -27,7 +27,8 @@ CommandLineOptions* command_line_options = 0;
 
 CommandLineOptions::CommandLineOptions()
 {
-  daemon   = false;
+  mode     = RUN_DEFAULT;
+
   verbose  = false;
   silent   = false;
   quiet    = false;
@@ -99,7 +100,7 @@ void set_ui_axis_map(AxisEvent* ui_axis_map, const std::string& str)
 }
 
 void
-CommandLineOptions::parse_args(Xboxdrv& xboxdrv, int argc, char** argv)
+CommandLineOptions::parse_args(int argc, char** argv)
 {  
   CommandLineOptions& opts = *this;
 
@@ -135,7 +136,7 @@ CommandLineOptions::parse_args(Xboxdrv& xboxdrv, int argc, char** argv)
                strcmp(argv[i], "-D") == 0)
         {
           opts.silent = true;
-          opts.daemon = true;
+          opts.mode = RUN_DAEMON;
         }
       else if (strcmp(argv[i], "--test-rumble") == 0 ||
                strcmp(argv[i], "-R") == 0)
@@ -538,8 +539,7 @@ CommandLineOptions::parse_args(Xboxdrv& xboxdrv, int argc, char** argv)
       else if (strcmp(argv[i], "--list-controller") == 0 ||
                strcmp(argv[i], "-L") == 0)
         {
-          xboxdrv.list_controller();
-          exit(EXIT_SUCCESS);
+          opts.mode = RUN_LIST_CONTROLLER;
         }
       else if (strcmp(argv[i], "--help-devices") == 0)
         {

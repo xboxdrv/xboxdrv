@@ -35,6 +35,7 @@ private:
   void controller_loop(GamepadType type, uInput* uinput,
                        XboxGenericController* controller, 
                        const CommandLineOptions& opts);
+  void list_controller();
 
   bool find_controller_by_path(const char* busid, const char* devid,struct usb_device** xbox_device) const;
   void find_controller(struct usb_device*& dev,
@@ -46,8 +47,6 @@ private:
   bool find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice* type) const;
 
 public:
-  void list_controller();
-
   int main(int argc, char** argv);
 };
 
