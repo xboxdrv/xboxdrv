@@ -133,7 +133,7 @@ Xboxdrv::list_controller()
 }
 
 bool
-Xboxdrv::find_controller_by_path(const char* busid, const char* devid,struct usb_device** xbox_device)
+Xboxdrv::find_controller_by_path(const char* busid, const char* devid,struct usb_device** xbox_device) const
 {
   struct usb_bus* busses = usb_get_busses();
 
@@ -156,7 +156,7 @@ Xboxdrv::find_controller_by_path(const char* busid, const char* devid,struct usb
 
 /** find the number of the next unused /dev/input/jsX device */
 int
-Xboxdrv::find_jsdev_number()
+Xboxdrv::find_jsdev_number() const
 {
   for(int i = 0; ; ++i)
     {
@@ -173,7 +173,7 @@ Xboxdrv::find_jsdev_number()
 
 /** find the number of the next unused /dev/input/eventX device */
 int
-Xboxdrv::find_evdev_number()
+Xboxdrv::find_evdev_number() const
 {
   for(int i = 0; ; ++i)
     {
@@ -187,7 +187,7 @@ Xboxdrv::find_evdev_number()
 }
 
 bool
-Xboxdrv::find_controller_by_id(int id, int vendor_id, int product_id, struct usb_device** xbox_device)
+Xboxdrv::find_controller_by_id(int id, int vendor_id, int product_id, struct usb_device** xbox_device) const
 {
   struct usb_bus* busses = usb_get_busses();
 
@@ -217,7 +217,7 @@ Xboxdrv::find_controller_by_id(int id, int vendor_id, int product_id, struct usb
 }
 
 bool
-Xboxdrv::find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice* type)
+Xboxdrv::find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice* type) const
 {
   struct usb_bus* busses = usb_get_busses();
 
@@ -361,7 +361,7 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
 void
 Xboxdrv::find_controller(struct usb_device*& dev,
                          XPadDevice&         dev_type,
-                         const CommandLineOptions& opts)
+                         const CommandLineOptions& opts) const
 {
   if (opts.busid[0] != '\0' && opts.devid[0] != '\0')
     {
