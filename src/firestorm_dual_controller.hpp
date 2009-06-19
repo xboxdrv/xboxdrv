@@ -38,8 +38,6 @@ public:
   ~FirestormDualController();
 
   void set_rumble(uint8_t left, uint8_t right);
-  void set_rumble_default(uint8_t left, uint8_t right);
-  void set_rumble_vsb(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
 
   /** @param timeout   timeout in msec, 0 means forever */

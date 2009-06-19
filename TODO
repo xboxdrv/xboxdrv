@@ -45,7 +45,9 @@ Stuff to do before 0.5 release:
 
 * create dummy joystick, mouse and keyboard buttons so that the
   devices always act as they should, also figure out the exakt minimum
-  requirements for each device.
+  requirements for each device (i.e. if a device is a
+  joystick/mouse/keyboard is determined if it as certain button or
+  axis).
 
 * add a way to not create a joystick/event device
 

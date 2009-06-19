@@ -23,6 +23,7 @@
 #include <string.h>
 #include <boost/format.hpp>
 
+#include "helper.hpp"
 #include "firestorm_dual_controller.hpp"
 
 // 044f:b312
@@ -116,15 +117,6 @@ FirestormDualController::~FirestormDualController()
 void
 FirestormDualController::set_rumble(uint8_t left, uint8_t right)
 {
-  if (is_vsb)
-    set_rumble_vsb(left, right);
-  else
-    set_rumble_default(left, right);
-}
-
-void
-FirestormDualController::set_rumble_vsb(uint8_t left, uint8_t right)
-{
   if (left_rumble  != left ||
       right_rumble != right)
     {
@@ -132,20 +124,10 @@ FirestormDualController::set_rumble_vsb(uint8_t left, uint8_t right)
       right_rumble = right;
 
       char cmd[] = { left, right, 0x00, 0x00 };
-      usb_control_msg(handle, 0x21, 0x09, 0x0200, 0x00, cmd, sizeof(cmd), 0);
-    }  
-}
+      if (is_vsb)
+        usb_control_msg(handle, 0x21, 0x09, 0x0200, 0x00, cmd, sizeof(cmd), 0);
+      else
 
-void
-FirestormDualController::set_rumble_default(uint8_t left, uint8_t right)
-{
-  if (left_rumble  != left ||
-      right_rumble != right)
-    {
-      left_rumble  = left;
-      right_rumble = right;
-
-      char cmd[] = { left, right, 0x00, 0x00 };
       usb_control_msg(handle, 0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd), 0);
     }
 }
@@ -154,23 +136,6 @@ void
 FirestormDualController::set_led(uint8_t status)
 {
   // not supported
-}
-
-// Change the sign
-inline int16_t negate_16(int16_t v)
-{
-  if (v)
-    return ~v;
-  else
-    return v;
-}
-
-inline int16_t scale_8to16(int8_t a)
-{
-  if (a > 0) 
-    return a * 32767 / 127;
-  else
-    return a * 32768 / 128;
 }
 
 bool
