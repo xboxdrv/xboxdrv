@@ -160,6 +160,10 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
           print_raw_data(std::cout, data, ret);
         }
     }
+  else if (ret == 0)
+    {
+      // ignore
+    }
   else
     {
       std::cout << "Unknown: ";
