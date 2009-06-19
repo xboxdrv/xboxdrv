@@ -45,6 +45,9 @@ std::string gamepadtype_to_string(const GamepadType& type)
       case GAMEPAD_FIRESTORM:
         return "firestorm";
 
+      case GAMEPAD_FIRESTORM_VSB:
+        return "firestorm-vsb";
+
       default:
         assert(!"Unknown gamepad type supplied");
     }
@@ -71,6 +74,9 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
 
       case GAMEPAD_FIRESTORM:
         return out << "Firestorm Dual Power";
+
+      case GAMEPAD_FIRESTORM_VSB:
+        return out << "Firestorm Dual Power (vsb)";
 
       default:
         return out << "unknown" << std::endl;

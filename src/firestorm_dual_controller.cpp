@@ -50,7 +50,7 @@ struct Firestorm_vsb_Msg
   int y1 :8;
   int x2 :8;
   unsigned int y2 :8;  
-};
+} __attribute__((__packed__));
 
 // 044f:b304
 struct FirestormMsg
@@ -81,8 +81,9 @@ struct FirestormMsg
   unsigned int y2 :8;
 } __attribute__((__packed__));
 
-FirestormDualController::FirestormDualController(struct usb_device* dev)
-  : left_rumble(-1),
+FirestormDualController::FirestormDualController(struct usb_device* dev, bool is_vsb_)
+  : is_vsb(is_vsb_),
+    left_rumble(-1),
     right_rumble(-1)
 {
   handle = usb_open(dev);
@@ -114,6 +115,29 @@ FirestormDualController::~FirestormDualController()
 
 void
 FirestormDualController::set_rumble(uint8_t left, uint8_t right)
+{
+  if (is_vsb)
+    set_rumble_vsb(left, right);
+  else
+    set_rumble_default(left, right);
+}
+
+void
+FirestormDualController::set_rumble_vsb(uint8_t left, uint8_t right)
+{
+  if (left_rumble  != left ||
+      right_rumble != right)
+    {
+      left_rumble  = left;
+      right_rumble = right;
+
+      char cmd[] = { left, right, 0x00, 0x00 };
+      usb_control_msg(handle, 0x21, 0x09, 0x0200, 0x00, cmd, sizeof(cmd), 0);
+    }  
+}
+
+void
+FirestormDualController::set_rumble_default(uint8_t left, uint8_t right)
 {
   if (left_rumble  != left ||
       right_rumble != right)
@@ -152,8 +176,10 @@ inline int16_t scale_8to16(int8_t a)
 bool
 FirestormDualController::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
-  //return read_vsb(msg, verbose, timeout);
-  return read_default(msg, verbose, timeout);
+  if (is_vsb)
+    return read_vsb(msg, verbose, timeout);
+  else
+    return read_default(msg, verbose, timeout);
 }
 
 bool

@@ -26,6 +26,7 @@
 class FirestormDualController : public XboxGenericController
 {
 private:
+  bool is_vsb;
   struct usb_device* dev;
   struct usb_dev_handle* handle;
   
@@ -33,10 +34,12 @@ private:
   int right_rumble;
 
 public:
-  FirestormDualController(struct usb_device* dev);
+  FirestormDualController(struct usb_device* dev, bool is_vsb);
   ~FirestormDualController();
 
   void set_rumble(uint8_t left, uint8_t right);
+  void set_rumble_default(uint8_t left, uint8_t right);
+  void set_rumble_vsb(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
 
   /** @param timeout   timeout in msec, 0 means forever */

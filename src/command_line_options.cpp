@@ -209,6 +209,10 @@ CommandLineOptions::parse_args(int argc, char** argv)
                 {
                   opts.gamepad_type = GAMEPAD_FIRESTORM;
                 }
+              else if (strcmp(argv[i], "firestorm-vsb") == 0)
+                {
+                  opts.gamepad_type = GAMEPAD_FIRESTORM_VSB;
+                }
               else
                 {
                   RAISE_EXCEPTION("unknown type: " << argv[i] << '\n'
@@ -218,7 +222,8 @@ CommandLineOptions::parse_args(int argc, char** argv)
                                   << " * xbox360\n"
                                   << " * xbox360-guitar\n"
                                   << " * xbox360-wireless\n"
-                                  << " * firestorm\n");
+                                  << " * firestorm\n"
+                                  << " * firestorm-vsb\n");
                 }
             }
           else

@@ -257,6 +257,19 @@ Xboxdrv::find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDe
 }
 
 void
+Xboxdrv::apply_modifier(XboxGenericMsg& msg, int msec_delta, const CommandLineOptions& opts) const
+{
+  apply_calibration_map(msg, opts.calibration_map);
+
+  // Apply modifier
+  apply_deadzone(msg, opts);
+
+  if (opts.square_axis)
+    apply_square_axis(msg);
+
+}
+
+void
 Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController* controller, const CommandLineOptions& opts)
 {
   int timeout = 0; // 0 == no timeout
@@ -278,7 +291,7 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
   //    opts.uinput_config.force_feedback)
   timeout = 25; // FIXME: How long should we wait for a new event?
 
-  memset(&oldmsg, 0, sizeof(oldmsg));
+  memset(&oldmsg,     0, sizeof(oldmsg));
   memset(&oldrealmsg, 0, sizeof(oldrealmsg));
 
   uint32_t last_time = get_time();
@@ -301,13 +314,7 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
       int msec_delta = this_time - last_time;
       last_time = this_time;
 
-      apply_calibration_map(msg, opts.calibration_map);
-
-      // Apply modifier
-      apply_deadzone(msg, opts);
-
-      if (opts.square_axis)
-        apply_square_axis(msg);
+      apply_modifier(msg, msec_delta, opts);
 
       if (autofire_modifier.get())
         autofire_modifier->update(msec_delta, msg);
@@ -321,7 +328,7 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
       if (!opts.axis_map.empty())
         apply_axis_map(msg,   opts.axis_map);
 
-      if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)))
+      if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)) != 0)
         { // Only send a new event out if something has changed,
           // this is useful since some controllers send events
           // even if nothing has changed, deadzone can cause this
@@ -345,7 +352,8 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
                 {
                   set_rumble(controller, opts.rumble_gain, msg.xbox360.lt, msg.xbox360.rt);
                 }
-              else if (type == GAMEPAD_FIRESTORM)
+              else if (type == GAMEPAD_FIRESTORM ||
+                       type == GAMEPAD_FIRESTORM_VSB)
                 {
                   set_rumble(controller, opts.rumble_gain,
                              std::min(255, abs((msg.xbox360.y1>>8)*2)), 
@@ -472,7 +480,11 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
             break;
 
           case GAMEPAD_FIRESTORM:
-            controller = std::auto_ptr<XboxGenericController>(new FirestormDualController(dev));
+            controller = std::auto_ptr<XboxGenericController>(new FirestormDualController(dev, false));
+            break;
+
+          case GAMEPAD_FIRESTORM_VSB:
+            controller = std::auto_ptr<XboxGenericController>(new FirestormDualController(dev, true));
             break;
 
           default:

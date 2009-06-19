@@ -40,6 +40,7 @@ private:
   void controller_loop(GamepadType type, uInput* uinput,
                        XboxGenericController* controller, 
                        const CommandLineOptions& opts);
+  void apply_modifier(XboxGenericMsg& msg, int msec_delta, const CommandLineOptions& opts) const;
 
   bool find_controller_by_path(const char* busid, const char* devid,struct usb_device** xbox_device) const;
   void find_controller(struct usb_device*& dev,

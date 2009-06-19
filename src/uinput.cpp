@@ -355,6 +355,7 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_)
       case GAMEPAD_XBOX:
       case GAMEPAD_XBOX360_WIRELESS:
       case GAMEPAD_FIRESTORM:
+      case GAMEPAD_FIRESTORM_VSB:
         setup_xbox360_gamepad(dev.type);
         break;
 
