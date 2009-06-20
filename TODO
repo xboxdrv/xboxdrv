@@ -15,6 +15,8 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
+* write better command line parser/printer (i.e. take COLUMNS into account)
+
 * better keyboard emulation via analog sticks: axis must not be
   handled separately as this leads to issues with the diagonals (see
   mail from Matthew G <matt@remort.org>)
@@ -35,11 +37,6 @@ Stuff to do before 0.5 release:
   --------------------------------------------------------
 
 * build packages and put into Ubuntu PPA (suggested by Mårten Woxberg <marten.woxberg@gmail.com>)
-
-* Thrustmaster has weird delay when reporting actions, which makes it
-  basically unusable, likely caused by to many rumble messages, should
-  limit amount of rumble messages send, only send when things have
-  changed
 
 * test TR:Anniversary with max effect 16
 
@@ -64,6 +61,14 @@ Later versions:
   know if it allows multiple presses at once. I don't have a Xbox, so
   I don't know if it is allowed at all in the console.
 
+Colour: 	Button: 	Value in X1 (slide):
+Green 	A	-27500
+Red	B	-12900
+Yellow	Y	+7000
+Blue	X	+18500
+Orange	LB1	+32767
+(None)	(None)	-300
+
 * get rid of guitar, merge into xbox360
 
 * send FF status reports (maybe, is that used by anything?)
@@ -71,17 +76,10 @@ Later versions:
 * figure out the max values of force feedback effects so that stuff is
   mapped more properly (kind of done, could need verification)
 
-* figure out what jscal does and if it can break stuff
-  1) jscal uses the joystick interface, not the event interface
-  2) no idea what the coefficent values mean or why there are six per
-  axis instead of three
-
 * add --detach option that detaches any existing driver (needed for
   gamepads that use HID)
 
 * add a --mimic-xpad option that behaves exactly like xpad
-
-* add axis specific deadzones or deal with LT/RT somehow
 
 * figure out which devices xorg/hal handles as keyboard and how to
   make it always happen, seems to require two keyboard keys, devices
@@ -92,8 +90,6 @@ Later versions:
   which bindings get used depends on other configuration options
 
 * report more precisly what devices got created, include device name (HAL has that information)
-
-* write a daemon that listens to HAL and automatically starts xboxdrv
 
 * add support for LED messages (can this be used by anything?)
 
