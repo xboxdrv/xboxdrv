@@ -62,7 +62,6 @@ T clamp (const T& low, const T& v, const T& high)
 }
 } // namespace Math
 
-
 // Change the sign
 inline int16_t negate_16(int16_t v)
 {
@@ -79,6 +78,8 @@ inline int16_t scale_8to16(int8_t a)
   else
     return a * 32768 / 128;
 }
+
+int get_terminal_width();
 
 #endif
 
