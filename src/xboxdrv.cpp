@@ -703,7 +703,7 @@ Xboxdrv::main(int argc, char** argv)
             break;
 
           case CommandLineOptions::PRINT_HELP:
-            opts.print_command_line_help(argc, argv);
+            opts.print_help();
             break;
 
           case CommandLineOptions::PRINT_LED_HELP:

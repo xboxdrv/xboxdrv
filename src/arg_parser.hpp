@@ -35,15 +35,19 @@ private:
     bool visible;
   };
 
+public:
   struct ParsedOption
   {
     int key;
+    std::string option;
     std::string argument;
 
     ParsedOption() : key(-1) {}
 
-    ParsedOption(int key_, const std::string& argument_)
-      : key(key_), argument(argument_)
+    ParsedOption(int key_, const std::string& option_, const std::string& argument_)
+      : key(key_), 
+        option(option_),
+        argument(argument_)
     {}
   };
 
@@ -53,14 +57,15 @@ private:
     USAGE     = -5
   };
 
+private:
   std::string programm;
   
   typedef std::vector<Option> Options;
   Options options;
 
+public:  
   typedef std::vector<ParsedOption> ParsedOptions;
 
-public:  
   ArgParser();
 
   ArgParser& add_usage(const std::string& usage);
@@ -75,7 +80,7 @@ public:
                         bool visible = true);
 
   ParsedOptions parse_args(int argc, char** argv);
-  void print_help(std::ostream& out = std::cout);
+  void print_help(std::ostream& out = std::cout) const;
   
   bool next();
   int  get_key();

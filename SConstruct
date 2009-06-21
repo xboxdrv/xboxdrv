@@ -5,6 +5,7 @@ env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'], LIBS=['
 env.Program('xboxdrv', ['src/xboxdrv.cpp', 
                         'src/xboxmsg.cpp',
                         'src/uinput.cpp',
+                        'src/arg_parser.cpp',
                         'src/helper.cpp',
                         'src/modifier.cpp',
                         'src/command_line_options.cpp',

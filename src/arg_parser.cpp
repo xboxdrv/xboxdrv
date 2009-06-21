@@ -48,7 +48,7 @@ ArgParser::parse_args(int argc, char** argv)
                   ++i;
                   while(i < argc) 
                     {
-                      parsed_options.push_back(ParsedOption(ArgParser::REST_ARG, argv[i]));
+                      parsed_options.push_back(ParsedOption(ArgParser::REST_ARG, "", argv[i]));
                       ++i;
                     }
                 } 
@@ -77,13 +77,13 @@ ArgParser::parse_args(int argc, char** argv)
                     {
                       if (option->argument.empty()) 
                         {
-                          parsed_options.push_back(ParsedOption(option->key, ""));
+                          parsed_options.push_back(ParsedOption(option->key, long_opt, ""));
                         } 
                       else
                         {
                           if (pos != std::string::npos) 
                             {
-                              parsed_options.push_back(ParsedOption(option->key, long_opt_arg));
+                              parsed_options.push_back(ParsedOption(option->key, long_opt, long_opt_arg));
                             }
                           else
                             {            
@@ -93,7 +93,7 @@ ArgParser::parse_args(int argc, char** argv)
                                 }
                               else 
                                 {
-                                  parsed_options.push_back(ParsedOption(option->key, argv[i + 1]));
+                                  parsed_options.push_back(ParsedOption(option->key, long_opt, argv[i + 1]));
                                   ++i;
                                 }
                             }
@@ -122,7 +122,7 @@ ArgParser::parse_args(int argc, char** argv)
                         {
                           if (option->argument.empty()) 
                             {
-                              parsed_options.push_back(ParsedOption(option->key, ""));
+                              parsed_options.push_back(ParsedOption(option->key, std::string(1, *p), ""));
                             } 
                           else 
                             {
@@ -133,7 +133,7 @@ ArgParser::parse_args(int argc, char** argv)
                                 }
                               else
                                 {
-                                  parsed_options.push_back(ParsedOption(option->key, argv[i + 1]));
+                                  parsed_options.push_back(ParsedOption(option->key, std::string(1, *p), argv[i + 1]));
                                   ++i;
                                 }
                             }
@@ -147,13 +147,13 @@ ArgParser::parse_args(int argc, char** argv)
                 } 
               else
                 {
-                  parsed_options.push_back(ParsedOption(ArgParser::REST_ARG, "-"));
-                } 
+                  parsed_options.push_back(ParsedOption(ArgParser::REST_ARG, "", "-"));
+                }
             }
         } 
       else
         {
-          parsed_options.push_back(ParsedOption(ArgParser::REST_ARG, argv[i]));
+          parsed_options.push_back(ParsedOption(ArgParser::REST_ARG, "", argv[i]));
         }
     }
 
@@ -183,10 +183,10 @@ ArgParser::lookup_long_option(const std::string& long_option)
 }
 
 void
-ArgParser::print_help(std::ostream& out)
+ArgParser::print_help(std::ostream& out) const
 {
   bool first_usage = true;
-  for(Options::iterator i = options.begin(); i != options.end(); ++i)
+  for(Options::const_iterator i = options.begin(); i != options.end(); ++i)
     {
       if (i->visible)
         {
@@ -228,11 +228,11 @@ ArgParser::print_help(std::ostream& out)
                   if (i->long_option.empty())
                     snprintf(argument, 256, " %s", i->argument.c_str());
                   else
-                    snprintf(argument, 256, "=%s", i->argument.c_str());
+                    snprintf(argument, 256, " %s", i->argument.c_str());
                 }
 
               out << "  " 
-                  << std::setiosflags(std::ios::left) << std::setw(18) // FIXME: Calculate this dynamically
+                  << std::setiosflags(std::ios::left) << std::setw(24) // FIXME: Calculate this dynamically
                   << (std::string(option) + std::string(argument)) << std::setw(0)
                   << " " << i->help << std::endl;
             }

@@ -21,6 +21,7 @@
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
 
+#include "arg_parser.hpp"
 #include "helper.hpp"
 #include "command_line_options.hpp"
 
@@ -28,6 +29,48 @@
 #define RAISE_EXCEPTION(x) throw std::runtime_error(static_cast<std::ostringstream&>(std::ostringstream().seekp(0, std::ios_base::cur) << x).str())
 
 CommandLineOptions* command_line_options = 0;
+
+enum {
+  OPTION_HELP,
+  OPTION_VERBOSE,
+  OPTION_VERSION,
+  OPTION_QUIET,
+  OPTION_SILENT,
+  OPTION_DAEMON,
+  OPTION_TEST_RUMBLE,
+  OPTION_RUMBLE,
+  OPTION_QUIT,
+  OPTION_NO_UINPUT,
+  OPTION_MIMIC_XPAD,
+  OPTION_TYPE,
+  OPTION_FORCE_FEEDBACK,
+  OPTION_RUMBLE_GAIN,
+  OPTION_BUTTONMAP,
+  OPTION_AXISMAP,
+  OPTION_NAME,
+  OPTION_UI_CLEAR,
+  OPTION_UI_AXISMAP,
+  OPTION_UI_BUTTONMAP,
+  OPTION_ID,
+  OPTION_WID,
+  OPTION_LED,
+  OPTION_DPAD_ONLY,
+  OPTION_DPAD_AS_BUTTON,
+  OPTION_DEADZONE,
+  OPTION_DEADZONE_TRIGGER,
+  OPTION_TRIGGER_AS_BUTTON,
+  OPTION_TRIGGER_AS_ZAXIS,
+  OPTION_AUTOFIRE,
+  OPTION_CALIBRARIOTION,
+  OPTION_RELATIVE_AXIS,
+  OPTION_SQUARE_AXIS,
+  OPTION_HELP_LED,
+  OPTION_DEVICE_BY_ID,
+  OPTION_DEVICE_BY_PATH,
+  OPTION_LIST_SUPPORTED_DEVICES,
+  OPTION_LIST_CONTROLLER,
+  OPTION_HELP_DEVICES
+};
 
 CommandLineOptions::CommandLineOptions()
 {
@@ -53,6 +96,65 @@ CommandLineOptions::CommandLineOptions()
   deadzone = 0;
   deadzone_trigger = 0;
   square_axis  = false;
+
+  argp
+    .add_usage("[OPTION]...")
+    .add_text("Xbox360 USB Gamepad Userspace Driver")
+    .add_newline()
+  
+    .add_text("General Options: ")
+    .add_option(OPTION_HELP,         'h', "help",         "", "display this help and exit")
+    .add_option(OPTION_VERSION,      'V', "version",      "", "print the version number and exit")
+    .add_option(OPTION_VERBOSE,      'v', "verbose",      "", "print verbose messages")
+    .add_option(OPTION_HELP_LED,      0,  "help-led",     "", "list possible values for the led")
+    .add_option(OPTION_HELP_DEVICES,  0,  "help-devices", "", "list supported devices")
+    .add_option(OPTION_SILENT,       's', "silent",  "",  "do not display events on console")
+    .add_option(OPTION_QUIET,         0,  "quiet",   "",  "do not display startup text")
+    .add_option(OPTION_ID,           'i', "id",      "N", "use controller with id N (default: 0)")
+    .add_option(OPTION_WID,          'w', "wid",     "N", "use wireless controller with wid N (default: 0)")
+    .add_option(OPTION_LIST_CONTROLLER, 'L', "list-controller", "", "list available controllers")
+    .add_option(OPTION_LIST_SUPPORTED_DEVICES, 0, "list-supported-devices", "", "list supported devices (used by xboxdrv-daemon.py)")
+    .add_option(OPTION_TEST_RUMBLE,  'R', "test-rumble", "", "map rumbling to LT and RT (for testing only)")
+    .add_option(OPTION_NO_UINPUT,     0,  "no-uinput",   "", "do not try to start uinput event dispatching")
+    .add_option(OPTION_MIMIC_XPAD,    0,  "mimic-xpad",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver")
+    .add_option(OPTION_DAEMON,       'D', "daemon",      "", "run as daemon")
+    .add_newline()
+
+    .add_text("Device Options: ")
+    .add_option(OPTION_DEVICE_BY_PATH, 0, "device-by-path", "BUS:DEV", "Use device BUS:DEV, do not do any scanning")
+    .add_option(OPTION_DEVICE_BY_ID,   0, "device-by-id",   "VENDOR:PRODUCT", "Use device that matches VENDOR:PRODUCT (as returned by lsusb)")
+    .add_newline()
+
+    .add_text("Status Options: ")
+    .add_option(OPTION_LED,     'l', "led",    "NUM", "set LED status, see --list-led-values (default: 0)")
+    .add_option(OPTION_RUMBLE,  'r', "rumble", "L,R", "set the speed for both rumble motors [0-255] (default: 0,0)")
+    .add_option(OPTION_QUIT,    'q', "quit",   "",    "only set led and rumble status then quit")
+    .add_newline()
+
+    .add_text("Configuration Options: ")
+    .add_option(OPTION_DEADZONE,           0, "deadzone",         "INT",  "Threshold under which axis events are ignored (default: 0)")
+    .add_option(OPTION_DEADZONE_TRIGGER,   0, "deadzone-trigger", "INT",  "Threshold under which trigger events are ignored (default: 0)")
+    .add_option(OPTION_TRIGGER_AS_BUTTON,  0, "trigger-as-button", "",    "LT and RT send button instead of axis events")
+    .add_option(OPTION_TRIGGER_AS_ZAXIS,   0, "trigger-as-zaxis", "",     "Combine LT and RT to form a zaxis instead")
+    .add_option(OPTION_DPAD_AS_BUTTON,     0, "dpad-as-button",   "",     "DPad sends button instead of axis events")
+    .add_option(OPTION_DPAD_ONLY,          0, "dpad-only",        "",     "Both sticks are ignored, only DPad sends out axis events")
+    .add_option(OPTION_TYPE,               0, "type",             "TYPE", "Ignore autodetection and enforce controller type (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)")
+    .add_option(OPTION_BUTTONMAP,         'b', "buttonmap",      "MAP",   "Remap the buttons as specified by MAP (example: B=A,X=A,Y=A)")
+    .add_option(OPTION_AXISMAP,           'a', "axismap",        "MAP",   "Remap the axis as specified by MAP (example: -Y1=Y1,X1=X2)")
+    .add_option(OPTION_NAME,               0, "name",             "DEVNAME", "Changes the descriptive name the device will have")
+    .add_option(OPTION_UI_CLEAR,           0, "ui-clear",         "",     "Removes all existing uinput bindings")
+    .add_option(OPTION_UI_BUTTONMAP,       0, "ui-buttonmap",     "MAP",  "Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)")
+    .add_option(OPTION_UI_AXISMAP,         0, "ui-axismap",       "MAP",  "Changes the uinput events send when moving a axis (example: X1=ABS_X2)")
+    .add_option(OPTION_SQUARE_AXIS,        0, "square-axis",      "",     "Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)")
+    .add_option(OPTION_RELATIVE_AXIS,      0, "relative-axis",    "MAP",  "Make an axis emulate a joystick throttle (example: y2=64000)")
+    .add_option(OPTION_AUTOFIRE,           0, "autofire",         "MAP",  "Cause the given buttons to act as autofire (example: A=250)")
+    .add_option(OPTION_CALIBRARIOTION,     0, "calibration",      "MAP",  "Changes the calibration for the given axis (example: X2=-32768:0:32767)")
+    .add_option(OPTION_FORCE_FEEDBACK,     0, "force-feedback",   "",     "Enable force feedback support")
+    .add_option(OPTION_RUMBLE_GAIN,        0, "rumble-gain",      "NUM",  "Set relative rumble strength (default: 255)")
+    .add_newline()
+
+    .add_text("See README for more documentation and examples.")
+    .add_text("Report bugs to Ingo Ruhnke <grumbel@gmx.de>");
 }
 
 void set_ui_button_map(ButtonEvent* ui_button_map, const std::string& str)
@@ -106,486 +208,279 @@ void set_ui_axis_map(AxisEvent* ui_axis_map, const std::string& str)
 void
 CommandLineOptions::parse_args(int argc, char** argv)
 {  
-  CommandLineOptions& opts = *this;
+  ArgParser::ParsedOptions parsed = argp.parse_args(argc, argv);
 
-  for(int i = 1; i < argc; ++i)
+  for(ArgParser::ParsedOptions::const_iterator i = parsed.begin(); i != parsed.end(); ++i)
     {
-      if (strcmp(argv[i], "-h") == 0 ||
-          strcmp(argv[i], "--help") == 0)
-        {
-          opts.mode = PRINT_HELP;
-        }
-      else if (strcmp(argv[i], "-v") == 0 ||
-               strcmp(argv[i], "--verbose") == 0)
-        {
-          opts.verbose = true;
-        }
-      else if (strcmp(argv[i], "-V") == 0 ||
-               strcmp(argv[i], "--version") == 0)
-        {
-          opts.mode = PRINT_VERSION;
-        }
-      else if (strcmp(argv[i], "--quiet") == 0)
-        {
-          opts.quiet   = true;
-        }
-      else if (strcmp(argv[i], "-s") == 0 ||
-               strcmp(argv[i], "--silent") == 0)
-        {
-          opts.silent = true;
-        }
-      else if (strcmp(argv[i], "--daemon") == 0 ||
-               strcmp(argv[i], "-D") == 0)
-        {
-          opts.silent = true;
-          opts.mode = RUN_DAEMON;
-        }
-      else if (strcmp(argv[i], "--test-rumble") == 0 ||
-               strcmp(argv[i], "-R") == 0)
-        {
-          opts.rumble = true;
-        }
-      else if (strcmp(argv[i], "-r") == 0 ||
-               strcmp(argv[i], "--rumble") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              if (sscanf(argv[i], "%d,%d", &opts.rumble_l, &opts.rumble_r) == 2)
-                {
-                  opts.rumble_l = std::max(0, std::min(255, opts.rumble_l));
-                  opts.rumble_r = std::max(0, std::min(255, opts.rumble_r));
-                }
-              else
-                {
-                  RAISE_EXCEPTION(argv[i-1] << " expected an argument in form INT,INT");
-                }
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }          
-        }
-      else if (strcmp(argv[i], "-q") == 0 ||
-               strcmp(argv[i], "--quit") == 0)
-        {
-          opts.instant_exit = true;
-        }
-      else if (strcmp(argv[i], "--no-uinput") == 0)
-        {
-          opts.no_uinput = true;
-        }
-      else if (strcmp(argv[i], "--mimic-xpad") == 0)
-        {
-          //opts.mimic_xpad = true;
-        }
-      else if (strcmp(argv[i], "-t") == 0 ||
-               strcmp(argv[i], "--type") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              if (strcmp(argv[i], "xbox") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_XBOX;
-                }
-              else if (strcmp(argv[i], "xbox-mat") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_XBOX_MAT;
-                }
-              else if (strcmp(argv[i], "xbox360") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_XBOX360;
-                }
-              else if (strcmp(argv[i], "xbox360-guitar") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_XBOX360_GUITAR;
-                }
-              else if (strcmp(argv[i], "xbox360-wireless") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_XBOX360_WIRELESS;
-                }
-              else if (strcmp(argv[i], "firestorm") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_FIRESTORM;
-                }
-              else if (strcmp(argv[i], "firestorm-vsb") == 0)
-                {
-                  opts.gamepad_type = GAMEPAD_FIRESTORM_VSB;
-                }
-              else
-                {
-                  RAISE_EXCEPTION("unknown type: " << argv[i] << '\n'
-                                  << "Possible types are:\n"
-                                  << " * xbox\n"
-                                  << " * xbox-mat\n"
-                                  << " * xbox360\n"
-                                  << " * xbox360-guitar\n"
-                                  << " * xbox360-wireless\n"
-                                  << " * firestorm\n"
-                                  << " * firestorm-vsb\n");
-                }
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }
-        }
-      else if (strcmp(argv[i], "--force-feedback") == 0)
-        {
-          opts.uinput_config.force_feedback = true;
-        }
-      else if (strcmp(argv[i], "--rumble-gain") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              opts.rumble_gain = to_number(255, argv[i]);
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }
-        }
-      else if (strcmp(argv[i], "-b") == 0 ||
-               strcmp(argv[i], "--buttonmap") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2vector(argv[i], opts.button_map, &ButtonMapping::from_string);
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }
-        }
-      else if (strcmp(argv[i], "-a") == 0 ||
-               strcmp(argv[i], "--axismap") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2vector(argv[i], opts.axis_map, &AxisMapping::from_string);
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }          
-        }
-      else if (strcmp(argv[i], "--name") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              opts.uinput_config.device_name = argv[i];
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }                  
-        }
-      else if (strcmp(argv[i], "--ui-clear") == 0)
-        {
-          std::fill_n(opts.uinput_config.axis_map, (int)XBOX_AXIS_MAX, AxisEvent::invalid());
-          std::fill_n(opts.uinput_config.btn_map,  (int)XBOX_BTN_MAX,  ButtonEvent::invalid());
-        }
-      else if (strcmp(argv[i], "--ui-axismap") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2apply(argv[i], boost::bind(&set_ui_axis_map, opts.uinput_config.axis_map, _1));
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }                  
-        }
-      else if (strcmp(argv[i], "--ui-buttonmap") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2apply(argv[i], boost::bind(&set_ui_button_map, opts.uinput_config.btn_map, _1));
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }         
-        }
-      else if (strcmp(argv[i], "-i") == 0 ||
-               strcmp(argv[i], "--id") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              opts.controller_id = atoi(argv[i]);
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }
-        }
-      else if (strcmp(argv[i], "-w") == 0 ||
-               strcmp(argv[i], "--wid") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              opts.wireless_id = atoi(argv[i]);
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }
-        }
-      else if (strcmp(argv[i], "-l") == 0 ||
-               strcmp(argv[i], "--led") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              if (strcmp(argv[i], "help") == 0)
-                {
-                  opts.mode = PRINT_LED_HELP;
-                }
-              else
-                {
-                  opts.led = atoi(argv[i]);
-                }
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }
-        }
-      else if (strcmp("--dpad-only", argv[i]) == 0)
-        {
-          if (opts.uinput_config.dpad_as_button)
-            RAISE_EXCEPTION("Can't combine --dpad-as-button with --dpad-only");
+      CommandLineOptions& opts = *this;
+      const ArgParser::ParsedOption& opt = *i;
 
-          opts.uinput_config.dpad_only = true;
-        }
-      else if (strcmp("--dpad-as-button", argv[i]) == 0)
+      switch (i->key)
         {
-          if (opts.uinput_config.dpad_only)
-            throw std::runtime_error("Can't combine --dpad-as-button with --dpad-only");
+          case OPTION_HELP:
+            opts.mode = PRINT_HELP;
+            break;
 
-          opts.uinput_config.dpad_as_button = true;
-        }
-      else if (strcmp("--deadzone", argv[i]) == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              opts.deadzone = to_number(32767, argv[i]);
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an INT argument");
-            }
-        }
-      else if (strcmp("--deadzone-trigger", argv[i]) == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              opts.deadzone_trigger = to_number(255, argv[i]);
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an INT argument");
-            }
-        }
-      else if (strcmp("--trigger-as-button", argv[i]) == 0)
-        {
-          if (opts.uinput_config.trigger_as_zaxis)
-            {
-              RAISE_EXCEPTION("Can't combine --trigger-as-button and --trigger-as-zaxis");
-            }
-          else
-            {
-              opts.uinput_config.trigger_as_button = true;
-            }
-        }
-      else if (strcmp("--autofire", argv[i]) == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2vector(argv[i], opts.autofire_map, &AutoFireMapping::from_string);
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }          
-        }
-      else if (strcmp("--calibration", argv[i]) == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2vector(argv[i], opts.calibration_map, &CalibrationMapping::from_string);
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }
-        }
-      else if (strcmp("--relative-axis", argv[i]) == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              arg2vector(argv[i], opts.relative_axis_map, &RelativeAxisMapping::from_string);
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }          
-        }
-      else if (strcmp("--square-axis", argv[i]) == 0)
-        {
-          opts.square_axis = true;
-        }
-      else if (strcmp("--trigger-as-zaxis", argv[i]) == 0)
-        {
-          if (opts.uinput_config.trigger_as_button)
-            {
-              RAISE_EXCEPTION("Can't combine --trigger-as-button and --trigger-as-zaxis");
-            }
-          else
-            {
-              opts.uinput_config.trigger_as_zaxis = true;
-            }
-        }
-      else if (strcmp("--help-led", argv[i]) == 0)
-        {
-          opts.mode = PRINT_LED_HELP;
-        }
-      else if (strcmp(argv[i], "--device-by-id") == 0)
-        {
-          ++i;
-          if (i < argc)
+          case OPTION_VERSION:
+            opts.mode = PRINT_VERSION;
+            break;
+          
+          case OPTION_VERBOSE:
+            opts.verbose = true;
+            break;
+
+          case OPTION_QUIET:
+            opts.quiet   = true;
+            break;
+
+          case OPTION_SILENT:
+            opts.silent = true;
+            break;
+
+          case OPTION_DAEMON:
+            opts.silent = true;
+            opts.mode = RUN_DAEMON;
+            break;
+
+          case OPTION_TEST_RUMBLE:
+            opts.rumble = true;
+            break;
+
+          case OPTION_RUMBLE:
+            if (sscanf(opt.argument.c_str(), "%d,%d", &opts.rumble_l, &opts.rumble_r) == 2)
+              {
+                opts.rumble_l = std::max(0, std::min(255, opts.rumble_l));
+                opts.rumble_r = std::max(0, std::min(255, opts.rumble_r));
+              }
+            else
+              {
+                RAISE_EXCEPTION(opt.option << " expected an argument in form INT,INT");
+              }
+            break;
+
+          case OPTION_QUIT:
+            opts.instant_exit = true;
+            break;
+
+          case OPTION_NO_UINPUT:
+            opts.no_uinput = true;
+            break;
+
+          case OPTION_MIMIC_XPAD:
+            //opts.mimic_xpad = true;
+            break;
+
+          case OPTION_TYPE:
+            if (opt.argument == "xbox")
+              {
+                opts.gamepad_type = GAMEPAD_XBOX;
+              }
+            else if (opt.argument == "xbox-mat")
+              {
+                opts.gamepad_type = GAMEPAD_XBOX_MAT;
+              }
+            else if (opt.argument == "xbox360")
+              {
+                opts.gamepad_type = GAMEPAD_XBOX360;
+              }
+            else if (opt.argument == "xbox360-guitar")
+              {
+                opts.gamepad_type = GAMEPAD_XBOX360_GUITAR;
+              }
+            else if (opt.argument == "xbox360-wireless")
+              {
+                opts.gamepad_type = GAMEPAD_XBOX360_WIRELESS;
+              }
+            else if (opt.argument == "firestorm")
+              {
+                opts.gamepad_type = GAMEPAD_FIRESTORM;
+              }
+            else if (opt.argument == "firestorm-vsb")
+              {
+                opts.gamepad_type = GAMEPAD_FIRESTORM_VSB;
+              }
+            else
+              {
+                RAISE_EXCEPTION("unknown type: " << opt.argument << '\n'
+                                << "Possible types are:\n"
+                                << " * xbox\n"
+                                << " * xbox-mat\n"
+                                << " * xbox360\n"
+                                << " * xbox360-guitar\n"
+                                << " * xbox360-wireless\n"
+                                << " * firestorm\n"
+                                << " * firestorm-vsb\n");
+              }
+            break;
+
+          case OPTION_FORCE_FEEDBACK:
+            opts.uinput_config.force_feedback = true;
+            break;
+
+          case OPTION_RUMBLE_GAIN:
+            opts.rumble_gain = to_number(255, opt.argument);
+            break;
+
+          case OPTION_BUTTONMAP:
+            arg2vector(opt.argument, opts.button_map, &ButtonMapping::from_string);
+            break;
+
+          case OPTION_AXISMAP:
+            arg2vector(opt.argument, opts.axis_map, &AxisMapping::from_string);
+            break;
+                    
+          case OPTION_NAME:
+            opts.uinput_config.device_name = opt.argument;
+            break;
+
+          case OPTION_UI_CLEAR:
+            std::fill_n(opts.uinput_config.axis_map, (int)XBOX_AXIS_MAX, AxisEvent::invalid());
+            std::fill_n(opts.uinput_config.btn_map,  (int)XBOX_BTN_MAX,  ButtonEvent::invalid());
+            break;
+
+          case OPTION_UI_AXISMAP:
+            arg2apply(opt.argument, boost::bind(&set_ui_axis_map, opts.uinput_config.axis_map, _1));
+            break;
+
+          case OPTION_UI_BUTTONMAP:
+            arg2apply(opt.argument, boost::bind(&set_ui_button_map, opts.uinput_config.btn_map, _1));
+            break;
+
+          case OPTION_ID:
+            opts.controller_id = boost::lexical_cast<int>(opt.argument);
+            break;
+
+          case OPTION_WID:
+            opts.wireless_id = boost::lexical_cast<int>(opt.argument);
+            break;
+
+          case OPTION_LED:
+            if (opt.argument == "help")
+              {
+                opts.mode = PRINT_LED_HELP;
+              }
+            else
+              {
+                opts.led = boost::lexical_cast<int>(opt.argument);
+              }
+            break;
+            
+          case OPTION_DPAD_ONLY:
+            if (opts.uinput_config.dpad_as_button)
+              RAISE_EXCEPTION("Can't combine --dpad-as-button with --dpad-only");
+            
+            opts.uinput_config.dpad_only = true;
+            break;
+            
+          case OPTION_DPAD_AS_BUTTON:
+            if (opts.uinput_config.dpad_only)
+              throw std::runtime_error("Can't combine --dpad-as-button with --dpad-only");
+
+            opts.uinput_config.dpad_as_button = true;
+            break;
+
+          case OPTION_DEADZONE:
+            opts.deadzone = to_number(32767, opt.argument);
+            break;
+
+          case OPTION_DEADZONE_TRIGGER:
+            opts.deadzone_trigger = to_number(255, opt.argument);
+            break;
+
+          case OPTION_TRIGGER_AS_BUTTON:
+            if (opts.uinput_config.trigger_as_zaxis)
+              {
+                RAISE_EXCEPTION("Can't combine --trigger-as-button and --trigger-as-zaxis");
+              }
+            else
+              {
+                opts.uinput_config.trigger_as_button = true;
+              }
+            break;
+
+          case OPTION_AUTOFIRE:
+            arg2vector(opt.argument, opts.autofire_map, &AutoFireMapping::from_string);
+            break;
+
+          case OPTION_CALIBRARIOTION:
+            arg2vector(opt.argument, opts.calibration_map, &CalibrationMapping::from_string);
+            break;
+
+          case OPTION_RELATIVE_AXIS:
+            arg2vector(opt.argument, opts.relative_axis_map, &RelativeAxisMapping::from_string);
+            break;
+
+          case OPTION_SQUARE_AXIS:
+            opts.square_axis = true;
+            break;
+
+          case OPTION_TRIGGER_AS_ZAXIS:
+            if (opts.uinput_config.trigger_as_button)
+              {
+                RAISE_EXCEPTION("Can't combine --trigger-as-button and --trigger-as-zaxis");
+              }
+            else
+              {
+                opts.uinput_config.trigger_as_zaxis = true;
+              }
+            break;
+
+          case OPTION_HELP_LED:
+            opts.mode = PRINT_LED_HELP;
+            break;
+
+          case OPTION_DEVICE_BY_ID:
             {
               unsigned int product_id;
               unsigned int vendor_id;
-              if (sscanf(argv[i], "%x:%x", &vendor_id, &product_id) == 2)
+              if (sscanf(opt.argument.c_str(), "%x:%x", &vendor_id, &product_id) == 2)
                 {
                   opts.vendor_id  = vendor_id;
                   opts.product_id = product_id;
                 }
               else
                 {
-                  RAISE_EXCEPTION(argv[i-1] << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)");
+                  RAISE_EXCEPTION(opt.option << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)");
                 }
+              break;
             }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }        
-        }
-      else if (strcmp(argv[i], "--device-by-path") == 0)
-        {
-          ++i;
-          if (i < argc)
-            {
-              if (sscanf(argv[i], "%3s:%3s", opts.busid, opts.devid) == 2)
-                {
-                }
-              else
-                {
-                  RAISE_EXCEPTION(argv[i-1] << " expected an argument in form BUS:DEV (i.e. 006:003)");
-                }
-            }
-          else
-            {
-              RAISE_EXCEPTION(argv[i-1] << " expected an argument");
-            }          
-        }
-      else if (strcmp(argv[i], "--list-supported-devices") == 0)
-        {
-          opts.mode = RUN_LIST_SUPPORTED_DEVICES;
-        }
-      else if (strcmp(argv[i], "--list-controller") == 0 ||
-               strcmp(argv[i], "-L") == 0)
-        {
-          opts.mode = RUN_LIST_CONTROLLER;
-        }
-      else if (strcmp(argv[i], "--help-devices") == 0)
-        {
-          opts.mode = PRINT_HELP_DEVICES;
-        }
-      else
-        {
-          RAISE_EXCEPTION("unknown command line option: " << argv[i]);
+
+          case OPTION_DEVICE_BY_PATH:
+            if (sscanf(opt.argument.c_str(), "%3s:%3s", opts.busid, opts.devid) != 2)
+              {  
+                RAISE_EXCEPTION(opt.option << " expected an argument in form BUS:DEV (i.e. 006:003)");
+              }
+            break;
+
+          case OPTION_LIST_SUPPORTED_DEVICES:
+            opts.mode = RUN_LIST_SUPPORTED_DEVICES;
+            break;
+
+          case OPTION_LIST_CONTROLLER:
+            opts.mode = RUN_LIST_CONTROLLER;
+            break;
+
+          case OPTION_HELP_DEVICES:
+            opts.mode = PRINT_HELP_DEVICES;
+            break;
+
+          case ArgParser::REST_ARG:
+            RAISE_EXCEPTION("unknown command line option: " << opt.argument);
+            break;
+
+          default:
+            RAISE_EXCEPTION("unknown command line option: " << opt.option);
+            break;
         }
     }
 }
-
+
 void
-CommandLineOptions::print_command_line_help(int argc, char** argv) const
+CommandLineOptions::print_help() const
 {
-  std::cout << "Usage: " << argv[0] << " [OPTION]..." << std::endl;
-  std::cout << "Xbox360 USB Gamepad Userspace Driver" << std::endl;
-  std::cout << std::endl;
-  std::cout << "General Options: " << std::endl;
-  std::cout << "  -h, --help               display this help and exit" << std::endl;
-  std::cout << "  -V, --version            print the version number and exit" << std::endl;
-  std::cout << "  -v, --verbose            print verbose messages" << std::endl;
-  std::cout << "  --help-led               list possible values for the led" << std::endl;
-  std::cout << "  --help-devices           list supported devices" << std::endl;
-  std::cout << "  -s, --silent             do not display events on console" << std::endl;
-  std::cout << "  --quiet                  do not display startup text" << std::endl;
-  std::cout << "  -i, --id N               use controller with id N (default: 0)" << std::endl;
-  std::cout << "  -w, --wid N              use wireless controller with wid N (default: 0)" << std::endl;
-  std::cout << "  -L, --list-controller    list available controllers" << std::endl;
-  std::cout << "  --list-supported-devices list supported devices (used by xboxdrv-daemon.py)" << std::endl;
-  std::cout << "  -R, --test-rumble        map rumbling to LT and RT (for testing only)" << std::endl;
-  std::cout << "  --no-uinput              do not try to start uinput event dispatching" << std::endl;
-  std::cout << "  --mimic-xpad             Causes xboxdrv to use the same axis and button names as the xpad kernel driver" << std::endl;
-  std::cout << "  -D, --daemon             run as daemon" << std::endl;
-  std::cout << std::endl;
-  std::cout << "Device Options: " << std::endl;
-  std::cout << "  --device-by-path BUS:DEV\n"
-            << "                           Use device BUS:DEV, do not do any scanning" << std::endl;
-  std::cout << "  --device-by-id VENDOR:PRODUCT\n"
-            << "                           Use device that matches VENDOR:PRODUCT (as returned by lsusb)" << std::endl;
-  std::cout << std::endl;
-  std::cout << "Status Options: " << std::endl;
-  std::cout << "  -l, --led NUM            set LED status, see --list-led-values (default: 0)" << std::endl;
-  std::cout << "  -r, --rumble L,R         set the speed for both rumble motors [0-255] (default: 0,0)" << std::endl;
-  std::cout << "  -q, --quit               only set led and rumble status then quit" << std::endl;
-  std::cout << std::endl;
-  std::cout << "Configuration Options: " << std::endl;
-  std::cout << "  --deadzone INT           Threshold under which axis events are ignored (default: 0)" << std::endl;
-  std::cout << "  --deadzone-trigger INT   Threshold under which trigger events are ignored (default: 0)" << std::endl;
-  std::cout << "  --trigger-as-button      LT and RT send button instead of axis events" << std::endl;
-  std::cout << "  --trigger-as-zaxis       Combine LT and RT to form a zaxis instead" << std::endl;
-  std::cout << "  --dpad-as-button         DPad sends button instead of axis events" << std::endl;
-  std::cout << "  --dpad-only              Both sticks are ignored, only DPad sends out axis events" << std::endl;
-  std::cout << "  --type TYPE              Ignore autodetection and enforce controller type\n"
-            << "                           (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)" << std::endl;
-  std::cout << "  -b, --buttonmap MAP      Remap the buttons as specified by MAP (example: B=A,X=A,Y=A)" << std::endl;
-  std::cout << "  -a, --axismap MAP        Remap the axis as specified by MAP (example: -Y1=Y1,X1=X2)" << std::endl;
-
-  std::cout << "  --name DEVNAME           Changes the descriptive name the device will have" << std::endl;
-  std::cout << "  --ui-clear               Removes all existing uinput bindings" << std::endl;
-  std::cout << "  --ui-buttonmap MAP       Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)" << std::endl;
-  std::cout << "  --ui-axismap MAP         Changes the uinput events send when moving a axis (example: X1=ABS_X2)" << std::endl;
-
-  std::cout << "  --square-axis            Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)" << std::endl;
-  std::cout << "  --relative-axis MAP      Make an axis emulate a joystick throttle (example: y2=64000)" << std::endl;
-  std::cout << "  --autofire MAP           Cause the given buttons to act as autofire (example: A=250)" << std::endl;
-  std::cout << "  --calibration MAP        Changes the calibration for the given axis (example: X2=-32768:0:32767)" << std::endl;
-  std::cout << "  --force-feedback         Enable force feedback support" << std::endl;
-  std::cout << "  --rumble-gain NUM        Set relative rumble strength (default: 255)" << std::endl;
-  std::cout << std::endl;
-  std::cout << "See README for more documentation and examples." << std::endl;
-  std::cout << "Report bugs to Ingo Ruhnke <grumbel@gmx.de>" << std::endl;
+  argp.print_help(std::cout);
 }
-
+
 void
 CommandLineOptions::print_led_help() const
 {
@@ -609,7 +504,7 @@ CommandLineOptions::print_led_help() const
     "  15: blink once\n"
             << std::endl;
 }
-
+  
 void
 CommandLineOptions::print_version() const
 {
@@ -621,5 +516,5 @@ CommandLineOptions::print_version() const
     << "There is NO WARRANTY, to the extent permitted by law."
     << std::endl;
 }
-
+                
 /* EOF */

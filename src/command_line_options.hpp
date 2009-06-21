@@ -24,6 +24,7 @@
 #include "modifier.hpp"
 #include "xboxmsg.hpp"
 #include "uinput.hpp"
+#include "arg_parser.hpp"
 
 class Xboxdrv;
 
@@ -70,12 +71,13 @@ public:
   std::vector<RelativeAxisMapping> relative_axis_map;
   std::vector<CalibrationMapping> calibration_map;
   bool square_axis;
+  ArgParser argp;
 
 public:
   CommandLineOptions();
   void parse_args(int argc, char** argv);
 
-  void print_command_line_help(int argc, char** argv) const;
+  void print_help() const;
   void print_led_help() const;
   void print_version() const;
 };
