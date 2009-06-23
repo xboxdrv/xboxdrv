@@ -15,6 +15,13 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
+* figure out a way to make userspace force feedback driver not become dead processes
+
+* try out soft realtime scheduling: http://www.ddj.com/linux-open-source/184402031
+  to fix missed events on some controller
+
+* add a --mimic-xpad option that behaves exactly like xpad
+
 * write better command line parser/printer (i.e. take COLUMNS into account)
 
 * better keyboard emulation via analog sticks: axis must not be
@@ -78,8 +85,6 @@ Orange	LB1	+32767
 
 * add --detach option that detaches any existing driver (needed for
   gamepads that use HID)
-
-* add a --mimic-xpad option that behaves exactly like xpad
 
 * figure out which devices xorg/hal handles as keyboard and how to
   make it always happen, seems to require two keyboard keys, devices

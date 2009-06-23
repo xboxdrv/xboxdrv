@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <boost/format.hpp>
 
+#include "helper.hpp"
+#include "pretty_printer.hpp"
 #include "arg_parser.hpp"
 
 ArgParser::ArgParser()
@@ -185,6 +187,37 @@ ArgParser::lookup_long_option(const std::string& long_option)
 void
 ArgParser::print_help(std::ostream& out) const
 {
+  const int terminal_width = get_terminal_width();
+  const int column_min_width = 8;
+  int column_width = column_min_width; 
+
+  { // Calculate left column width
+    for(Options::const_iterator i = options.begin(); i != options.end(); ++i)
+      {
+        int width = 2; // add two leading space
+        if (i->short_option)
+          width += 2; // "-a"
+      
+        if (!i->long_option.empty())
+          width += i->long_option.size() + 2; // "--foobar"
+
+        if (!i->argument.empty())
+          width += i->argument.size() + 1;
+
+        column_width = std::max(column_width, width);
+      }
+
+    column_width = column_width+2; // add two trailing space
+  }
+
+  if (terminal_width < column_width * 3)
+    {
+      column_width -= (column_width*3 - terminal_width);
+      column_width = std::max(column_width, 4);
+    }
+
+  PrettyPrinter pprint(column_width, terminal_width - column_width - 1); // -1 so we have a whitespace on the right side
+
   bool first_usage = true;
   for(Options::const_iterator i = options.begin(); i != options.end(); ++i)
     {
@@ -231,10 +264,12 @@ ArgParser::print_help(std::ostream& out) const
                     snprintf(argument, 256, " %s", i->argument.c_str());
                 }
 
-              out << "  " 
-                  << std::setiosflags(std::ios::left) << std::setw(24) // FIXME: Calculate this dynamically
-                  << (std::string(option) + std::string(argument)) << std::setw(0)
-                  << " " << i->help << std::endl;
+              std::string left_column("  ");
+              left_column += option;
+              left_column += argument;
+              left_column += " ";
+
+              pprint.print(left_column, i->help);
             }
         }
     }

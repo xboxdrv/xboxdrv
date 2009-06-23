@@ -20,6 +20,7 @@
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <sys/time.h>
+#include <stdlib.h>
 #include <sys/ioctl.h>
 #include <stdio.h>
 
@@ -105,14 +106,14 @@ uint32_t get_time()
 
 int get_terminal_width()
 {
-  char* width = getenv("COLUMNS");
-  if (!width)
+  struct winsize w;
+  if (ioctl(0, TIOCGWINSZ, &w) < 0)
     {
       return 80;
     }
   else
     {
-      return boost::lexical_cast<int>(width);
+      return w.ws_col;
     }
 }
 
