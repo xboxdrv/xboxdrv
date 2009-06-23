@@ -22,8 +22,6 @@ Stuff to do before 0.5 release:
 
 * add a --mimic-xpad option that behaves exactly like xpad
 
-* write better command line parser/printer (i.e. take COLUMNS into account)
-
 * better keyboard emulation via analog sticks: axis must not be
   handled separately as this leads to issues with the diagonals (see
   mail from Matthew G <matt@remort.org>)

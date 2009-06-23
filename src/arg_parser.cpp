@@ -213,10 +213,10 @@ ArgParser::print_help(std::ostream& out) const
   if (terminal_width < column_width * 3)
     {
       column_width -= (column_width*3 - terminal_width);
-      column_width = std::max(column_width, 4);
+      column_width = std::max(column_width, 5);
     }
 
-  PrettyPrinter pprint(column_width, terminal_width - column_width - 1); // -1 so we have a whitespace on the right side
+  PrettyPrinter pprint(terminal_width - column_width - 1); // -1 so we have a whitespace on the right side
 
   bool first_usage = true;
   for(Options::const_iterator i = options.begin(); i != options.end(); ++i)
@@ -237,7 +237,7 @@ ArgParser::print_help(std::ostream& out) const
             } 
           else if (i->key == TEXT) 
             {
-              out << i->help << std::endl;
+              pprint.print(i->help);
             }
           else 
             {
@@ -269,7 +269,7 @@ ArgParser::print_help(std::ostream& out) const
               left_column += argument;
               left_column += " ";
 
-              pprint.print(left_column, i->help);
+              pprint.print(std::string(column_width, ' '), left_column, i->help);
             }
         }
     }

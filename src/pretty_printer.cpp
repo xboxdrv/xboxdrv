@@ -22,22 +22,34 @@
 #include "helper.hpp"
 #include "pretty_printer.hpp"
 
-PrettyPrinter::PrettyPrinter(int indent_, int width_)
-  : indent(indent_),
-    width(width_)
+PrettyPrinter::PrettyPrinter(int width_)
+  : width(width_)
 {
 }
 
-void 
-PrettyPrinter::print(const std::string& left, const std::string& str)
+void
+PrettyPrinter::print(const std::string& str)
 {
-  if (static_cast<int>(left.size()) < indent)
+  print("", "", str);
+}
+
+void 
+PrettyPrinter::print(const std::string& indent_str, const std::string& left, const std::string& str)
+{
+  if (!left.empty())
     {
-      std::cout << left << std::string(indent - left.size(), ' ');
+      if (left.size() < indent_str.size())
+        {
+          std::cout << left << std::string(indent_str.size() - left.size(), ' ');
+        }
+      else
+        {
+          std::cout << left << '\n' << indent_str;
+        }
     }
   else
     {
-      std::cout << left << '\n' << std::string(indent, ' ');
+      std::cout << indent_str;
     }
 
   // skip leading space
@@ -96,13 +108,13 @@ PrettyPrinter::print(const std::string& left, const std::string& str)
       { // process the current character           
         if (str[i] == '\n')
           {
-            std::cout << '\n' << std::string(indent, ' ');
+            std::cout << '\n' << indent_str;
             word_begin = i+1;
             word_begin_column = 0;
           }
         else if (word_begin_column + word_length >= width)
           {
-            std::cout << '\n' << std::string(indent, ' ');
+            std::cout << '\n' << indent_str;
             word_begin_column = 0;
           }
       }

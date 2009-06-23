@@ -24,13 +24,13 @@
 class PrettyPrinter
 {
 private:
-  int indent;
   int width;
 
 public:
-  PrettyPrinter(int indent, int terminal_width);
+  PrettyPrinter(int terminal_width);
 
-  void print(const std::string& left, const std::string& str);
+  void print(const std::string& str);
+  void print(const std::string& indent_str, const std::string& left, const std::string& str);
 
 private:
   PrettyPrinter(const PrettyPrinter&);
