@@ -216,7 +216,7 @@ ArgParser::print_help(std::ostream& out) const
       column_width = std::max(column_width, 5);
     }
 
-  PrettyPrinter pprint(terminal_width - column_width - 1); // -1 so we have a whitespace on the right side
+  PrettyPrinter pprint(terminal_width); // -1 so we have a whitespace on the right side
 
   bool first_usage = true;
   for(Options::const_iterator i = options.begin(); i != options.end(); ++i)

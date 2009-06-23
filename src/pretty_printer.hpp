@@ -24,7 +24,7 @@
 class PrettyPrinter
 {
 private:
-  int width;
+  int terminal_width;
 
 public:
   PrettyPrinter(int terminal_width);

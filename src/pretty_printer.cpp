@@ -22,8 +22,8 @@
 #include "helper.hpp"
 #include "pretty_printer.hpp"
 
-PrettyPrinter::PrettyPrinter(int width_)
-  : width(width_)
+PrettyPrinter::PrettyPrinter(int terminal_width_)
+  : terminal_width(terminal_width_)
 {
 }
 
@@ -36,6 +36,8 @@ PrettyPrinter::print(const std::string& str)
 void 
 PrettyPrinter::print(const std::string& indent_str, const std::string& left, const std::string& str)
 {
+  const int width = terminal_width - indent_str.size() - 1;
+
   if (!left.empty())
     {
       if (left.size() < indent_str.size())
