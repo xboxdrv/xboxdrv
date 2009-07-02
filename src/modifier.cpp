@@ -94,7 +94,7 @@ CalibrationMapping CalibrationMapping::from_string(const std::string& str)
       int j = 0;
       for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
         {
-          std::cout << "Token: '" << *i << "'" << std::endl;
+          //std::cout << "Token: '" << *i << "'" << std::endl;
 
           if (!i->empty())
             {
