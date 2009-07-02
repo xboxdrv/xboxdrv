@@ -15,6 +15,9 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
+* src/xbox_controller.cpp:71: Make endpoint variable
+  http://ubuntuforums.org/showthread.php?p=7538167#post7538167
+
 * figure out a way to make userspace force feedback driver not become dead processes
 
 * try out soft realtime scheduling: http://www.ddj.com/linux-open-source/184402031
