@@ -18,7 +18,9 @@
 
 #include <assert.h>
 #include <boost/thread/thread.hpp>
+#include <boost/bind.hpp>
 #include <usb.h>
+
 #include "usb_read_thread.hpp"
 
 USBReadThread::USBReadThread(struct usb_dev_handle* handle, int endpoint, int len) : 
@@ -37,14 +39,14 @@ void
 USBReadThread::start_thread()
 {
   m_stop = false;
-  m_thread = boost::thread(boost::bind(&USBReadThread::run, this));
+  m_thread = std::auto_ptr<boost::thread>(new boost::thread(boost::bind(&USBReadThread::run, this)));
 }
 
 void
 USBReadThread::stop_thread()
 {
   m_stop = true;
-  m_thread.join();
+  m_thread->join();
 }
 
 int

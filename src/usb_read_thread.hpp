@@ -19,6 +19,7 @@
 #ifndef HEADER_USB_READ_THREAD_HPP
 #define HEADER_USB_READ_THREAD_HPP
 
+#include <memory>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
 #include <list>
@@ -37,7 +38,7 @@ private:
 
   std::list<Paket> m_read_buffer;
   boost::mutex m_read_buffer_mutex;
-  boost::thread m_thread;
+  std::auto_ptr<boost::thread> m_thread;
 
   bool m_stop;
 

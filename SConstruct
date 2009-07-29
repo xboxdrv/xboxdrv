@@ -1,7 +1,41 @@
 # -*- python -*-
+
+env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'])
+conf = Configure(env)
+
+# X11 checks
+if not conf.CheckLibWithHeader('X11', 'X11/Xlib.h', 'C++'):
+    print 'libx11-dev must be installed!'
+    Exit(1)
+else:
+    conf.env.Append(LIBS = 'X11')
 
-env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'],
-                  LIBS=['usb', 'X11', 'boost_thread-mt'])
+# libusb Checks
+if not conf.CheckLibWithHeader('usb', 'usb.h', 'C++'):
+    print 'libusb must be installed!'
+    Exit(1)
+else:
+    conf.env.Append(LIBS = 'usb')
+
+# boost-thread checks
+if not conf.CheckCXXHeader('boost/thread/thread.hpp'):
+    print 'libboost-thread-dev must be installed!'
+    Exit(1)
+
+boost_thread = None
+for lib in ['boost_thread-mt', 'boost_thread']:
+    if conf.CheckLib(lib, language='C++'):
+        boost_thread = lib
+        break
+
+if not boost_thread:
+    print 'libboost-thread-dev must be installed!'
+    Exit(1)
+else:
+    conf.env.Append(LIBS = boost_thread)
+
+env = conf.Finish()
+
 # env = Environment(CPPFLAGS=['-g', '-O2'], LIBS=['usb', 'X11'])
 env.Program('xboxdrv', ['src/xboxdrv.cpp', 
                         'src/xboxmsg.cpp',
@@ -38,5 +72,5 @@ if False:
                  'src/inputdrv/throttle.cpp',
                  'src/inputdrv/toggle_button.cpp'],
                 LIBS=['boost_signals', 'usb', 'pthread'])
-
+
 # EOF #
