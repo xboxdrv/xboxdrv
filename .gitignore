@@ -11,3 +11,6 @@ macosx
 windows
 inputdrv
 old
+.sconf_temp/
+arg_parser_test
+config.log
