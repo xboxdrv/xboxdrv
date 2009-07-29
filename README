@@ -42,10 +42,11 @@ Once everything installed, you can compile by typing:
 
  % scons
 
-On Ubuntu 8.10 you can install all the required libraries via:
+On Ubuntu 9.04 you can install all the required libraries via:
 
  % apt-get install \
-     libboost1.35-dev \
+     libboost1.37-dev \
+     libboost-thread1.37-dev \
      scons \
      libusb-dev \
      git-core \
