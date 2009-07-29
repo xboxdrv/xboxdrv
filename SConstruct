@@ -1,6 +1,7 @@
 # -*- python -*-
 
-env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'], LIBS=['usb', 'X11'])
+env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'],
+                  LIBS=['usb', 'X11', 'boost_thread-mt'])
 # env = Environment(CPPFLAGS=['-g', '-O2'], LIBS=['usb', 'X11'])
 env.Program('xboxdrv', ['src/xboxdrv.cpp', 
                         'src/xboxmsg.cpp',
@@ -17,6 +18,7 @@ env.Program('xboxdrv', ['src/xboxdrv.cpp',
                         'src/firestorm_dual_controller.cpp',
                         'src/evdev_helper.cpp',
                         'src/linux_uinput.cpp',
+                        'src/usb_read_thread.cpp',
                         'src/force_feedback_handler.cpp'                        
                         ])
 

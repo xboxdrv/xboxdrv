@@ -37,6 +37,7 @@ private:
   int endpoint_out;
 
   void find_endpoints();
+
 public:
   Xbox360Controller(struct usb_device* dev, bool is_guitar);
   ~Xbox360Controller();

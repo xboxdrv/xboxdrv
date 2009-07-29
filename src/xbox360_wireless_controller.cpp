@@ -24,6 +24,8 @@
 #include <iostream>
 #include <boost/format.hpp>
 #include <stdexcept>
+
+#include "usb_read_thread.hpp"
 #include "helper.hpp"
 #include "xboxmsg.hpp"
 #include "xbox360_wireless_controller.hpp"
@@ -54,6 +56,8 @@ Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev,
           throw std::runtime_error(out.str());
         }
     }
+
+  read_thread = std::auto_ptr<USBReadThread>(new USBReadThread(handle, endpoint, 32));
 }
 
 Xbox360WirelessController::~Xbox360WirelessController()
@@ -85,7 +89,16 @@ bool
 Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   uint8_t data[32];
-  int ret = usb_interrupt_read(handle, endpoint, (char*)data, sizeof(data), timeout);
+  int ret = 0;
+
+  if (read_thread.get())
+    {
+      ret = read_thread->read(data, sizeof(data));
+    }
+  else
+    {
+      ret = usb_interrupt_read(handle, endpoint, (char*)data, sizeof(data), timeout);
+    }
 
   if (ret == -ETIMEDOUT)
     {

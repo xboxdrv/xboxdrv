@@ -21,6 +21,7 @@
 
 #include "xbox_generic_controller.hpp"
 
+class USBReadThread;
 struct XPadDevice;
 
 /** */
@@ -35,6 +36,8 @@ private:
   std::string serial;
   int led_status;
   
+  std::auto_ptr<USBReadThread> read_thread;
+
 public:
   Xbox360WirelessController(struct usb_device* dev,
                             int controller_id);

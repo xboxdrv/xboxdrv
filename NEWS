@@ -1,3 +1,9 @@
+xboxdrv 0.4.8 - (??/Jul/2009)
+=============================
+
+* moved to threaded architecture, might fix missed events
+
+
 xboxdrv 0.4.7 - (29/Jul/2009)
 =============================
 
