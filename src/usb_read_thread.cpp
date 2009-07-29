@@ -33,6 +33,11 @@ USBReadThread::USBReadThread(struct usb_dev_handle* handle, int endpoint, int le
 
 USBReadThread::~USBReadThread()
 {
+  if (!m_stop)
+    stop_thread();
+
+  for(std::list<Paket>::iterator i = m_read_buffer.begin(); i != m_read_buffer.end(); ++i)
+    delete[] i->data;
 }
   
 void

@@ -20,14 +20,6 @@ Stuff to do before 0.5 release:
 
 * figure out a way to make userspace force feedback driver not become dead processes
 
-* try out soft realtime scheduling: http://www.ddj.com/linux-open-source/184402031
-  to fix missed events on some controller
-
-  setting timeout = 0 fixes missing issues, but breaks relativeaxis and autofire
-  other alternative would be to go multithreaded
-
-  Write usb_thread.?pp thing to read usb data with timeout=0
-
 * add a --mimic-xpad option that behaves exactly like xpad
 
 * better keyboard emulation via analog sticks: axis must not be
