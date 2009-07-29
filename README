@@ -541,6 +541,22 @@ device js0 and replace it with a symbolic link js1 via:
 This workaround will only last till the next reboot, since the device
 names are dynamically created, but for the time being there doesn't
 seem to any other way to easily work around this issue. 
+
+
+[[ uinput Trouble ]]
+--------------------
+
+On Ubuntu 9.04 the permissions of the uinput device have changed to
+0640, meaning only root has access to the device. To change this back
+so that users in the group root have access the device and in turn can
+run xboxdrv without sudo you have to create a file called:
+
+/etc/udev/rules.d/55-permissions-uinput.rules
+
+With the content:
+
+KERNEL=="uinput", MODE="0660", GROUP="root"
+
 
 [[ Wine Trouble ]]
 ------------------

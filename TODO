@@ -34,21 +34,6 @@ Stuff to do before 0.5 release:
   handled separately as this leads to issues with the diagonals (see
   mail from Matthew G <matt@remort.org>)
 
-* permissions on uinput are broken(?) on Ubuntu:
-
-  I saved that (as root) as 45-permissions-xboxdrv.rules in /etc/udev/rules.d/ .
-  --------------------------------------------------------
-  # xboxdrv
-  # Gives 660 permissions to the uinput device, and I guess hopefully any Xbox 
-  # 360 controller.  And sticks both in the plugdev group.
-
-  # not so important one
-  BUS=="usb", SYSFS{idVendor}=="045e", SYSFS{idProduct}=="028e", MODE="0660", GROUP="plugdev"
-
-  # important one
-  KERNEL=="uinput", MODE="0660", GROUP="root"
-  --------------------------------------------------------
-
 * build packages and put into Ubuntu PPA (suggested by Mårten Woxberg <marten.woxberg@gmail.com>)
 
 * test TR:Anniversary with max effect 16

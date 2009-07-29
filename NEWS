@@ -1,7 +1,7 @@
 xboxdrv 0.4.8 - (??/Jul/2009)
 =============================
 
-* moved to threaded architecture, might fix missed events
+* read usb data in a separate thread, should fix missed events
 
 
 xboxdrv 0.4.7 - (29/Jul/2009)
@@ -109,5 +109,6 @@ xboxdrv 0.1 - (13/Apr/2008)
 ===========================
 
   * initial release
+
 
 # EOF #
