@@ -88,15 +88,20 @@ USBReadThread::run()
 
       int ret = usb_interrupt_read(m_handle, m_read_endpoint, (char*)data, m_read_length, 0 /*timeout*/);
 
-      {
-        boost::mutex::scoped_lock lock(m_read_buffer_mutex);
+      if (ret == 0)
+        {
+          delete[] data;
+        }
+      else
+        {
+          boost::mutex::scoped_lock lock(m_read_buffer_mutex);
 
-        Paket paket;
-        paket.data   = data;
-        paket.length = ret;
+          Paket paket;
+          paket.data   = data;
+          paket.length = ret;
 
-        m_read_buffer.push_back(paket);
-      }
+          m_read_buffer.push_back(paket);
+        }
     }
 }
 
