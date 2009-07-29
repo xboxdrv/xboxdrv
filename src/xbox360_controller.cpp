@@ -22,6 +22,8 @@
 #include <sstream>
 #include <iostream>
 #include <boost/format.hpp>
+
+#include "usb_read_thread.hpp"
 #include "command_line_options.hpp"
 #include "xboxmsg.hpp"
 #include "helper.hpp"
@@ -92,10 +94,14 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev, bool is_guitar)
             }
         }
     }
+
+  read_thread = std::auto_ptr<USBReadThread>(new USBReadThread(handle, endpoint_in, 32));
+  read_thread->start_thread();
 }
 
 Xbox360Controller::~Xbox360Controller()
 {
+  read_thread->stop_thread();
   usb_release_interface(handle, 0); 
   usb_close(handle);
 }
@@ -167,7 +173,16 @@ bool
 Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   uint8_t data[32];
-  int ret = usb_interrupt_read(handle, endpoint_in, (char*)data, sizeof(data), timeout);
+  int ret = 0;
+
+  if (read_thread.get())
+    {
+      ret = read_thread->read(data, sizeof(data));
+    }
+  else
+    {
+      ret = usb_interrupt_read(handle, endpoint_in, (char*)data, sizeof(data), timeout);
+    }
 
   if (ret == -ETIMEDOUT)
     {

@@ -58,10 +58,12 @@ Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev,
     }
 
   read_thread = std::auto_ptr<USBReadThread>(new USBReadThread(handle, endpoint, 32));
+  read_thread->start_thread();
 }
 
 Xbox360WirelessController::~Xbox360WirelessController()
 {
+  read_thread->stop_thread();
   usb_release_interface(handle, interface); 
   usb_close(handle);
 }

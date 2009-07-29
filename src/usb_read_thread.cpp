@@ -79,7 +79,7 @@ USBReadThread::run()
     {
       uint8_t* data = new uint8_t[m_read_length];
 
-      int ret = usb_interrupt_read(m_handle, m_read_endpoint, (char*)data, sizeof(data), 0 /*timeout*/);
+      int ret = usb_interrupt_read(m_handle, m_read_endpoint, (char*)data, m_read_length, 0 /*timeout*/);
 
       {
         boost::mutex::scoped_lock lock(m_read_buffer_mutex);

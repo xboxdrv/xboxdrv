@@ -22,6 +22,7 @@
 #include <usb.h>
 #include "xbox_generic_controller.hpp"
 
+class USBReadThread;
 struct XPadDevice;
 
 /** */
@@ -35,6 +36,8 @@ private:
   
   int endpoint_in;
   int endpoint_out;
+
+  std::auto_ptr<USBReadThread> read_thread;
 
   void find_endpoints();
 
