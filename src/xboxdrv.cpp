@@ -307,6 +307,9 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
         {
           // no new data read, so copy the last read data
           msg = oldrealmsg;
+
+          // If no new data is available sleep a bit
+          usleep(1000); // == 1/1000 sec
         }
 
       // Calc changes in time
@@ -364,8 +367,6 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
 
       if (uinput)
         uinput->update(msec_delta);
-
-      usleep(1000);
     }
 }
 
