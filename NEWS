@@ -1,7 +1,8 @@
-xboxdrv 0.4.8 - (??/Jul/2009)
+xboxdrv 0.4.8 - (30/Jul/2009)
 =============================
 
-* read usb data in a separate thread, should fix missed events
+* usb reading in separate thread, should fix missed events and stuck buttons
+* some SCons configuration magic for better compatibility
 
 
 xboxdrv 0.4.7 - (29/Jul/2009)

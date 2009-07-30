@@ -1,5 +1,5 @@
-/*
-**  Windstille - A Sci-Fi Action-Adventure Game
+/* 
+**  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2009 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
