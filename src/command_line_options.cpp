@@ -299,6 +299,10 @@ CommandLineOptions::parse_args(int argc, char** argv)
               {
                 opts.gamepad_type = GAMEPAD_FIRESTORM_VSB;
               }
+            else if (opt.argument == "saitek-p2500")
+              {
+                opts.gamepad_type = GAMEPAD_SAITEK_P2500;
+              }
             else
               {
                 RAISE_EXCEPTION("unknown type: " << opt.argument << '\n'
@@ -309,7 +313,8 @@ CommandLineOptions::parse_args(int argc, char** argv)
                                 << " * xbox360-guitar\n"
                                 << " * xbox360-wireless\n"
                                 << " * firestorm\n"
-                                << " * firestorm-vsb\n");
+                                << " * firestorm-vsb\n"
+                                << " * saitek-p2500\n");
               }
             break;
 

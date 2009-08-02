@@ -37,6 +37,7 @@
 #include "xbox360_controller.hpp"
 #include "xbox360_wireless_controller.hpp"
 #include "firestorm_dual_controller.hpp"
+#include "saitek_p2500_controller.hpp"
 #include "helper.hpp"
 #include "evdev_helper.hpp"
 #include "command_line_options.hpp"
@@ -488,6 +489,10 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
 
           case GAMEPAD_FIRESTORM_VSB:
             controller = std::auto_ptr<XboxGenericController>(new FirestormDualController(dev, true));
+            break;
+
+          case GAMEPAD_SAITEK_P2500:
+            controller = std::auto_ptr<XboxGenericController>(new SaitekP2500Controller(dev));
             break;
 
           default:
