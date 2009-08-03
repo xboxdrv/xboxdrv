@@ -7,32 +7,21 @@ conf = Configure(env)
 if not conf.CheckLibWithHeader('X11', 'X11/Xlib.h', 'C++'):
     print 'libx11-dev must be installed!'
     Exit(1)
-else:
-    conf.env.Append(LIBS = 'X11')
 
 # libusb Checks
 if not conf.CheckLibWithHeader('usb', 'usb.h', 'C++'):
     print 'libusb must be installed!'
     Exit(1)
-else:
-    conf.env.Append(LIBS = 'usb')
 
 # boost-thread checks
 if not conf.CheckCXXHeader('boost/thread/thread.hpp'):
     print 'libboost-thread-dev must be installed!'
     Exit(1)
 
-boost_thread = None
-for lib in ['boost_thread-mt', 'boost_thread']:
-    if conf.CheckLib(lib, language='C++'):
-        boost_thread = lib
-        break
-
-if not boost_thread:
-    print 'libboost-thread-dev must be installed!'
-    Exit(1)
-else:
-    conf.env.Append(LIBS = boost_thread)
+if not conf.CheckLib('boost_thread-mt', language='C++'):
+    if not conf.CheckLib('boost_thread', language='C++'):
+        print 'libboost-thread-dev must be installed!'
+        Exit(1)
 
 env = conf.Finish()
 
