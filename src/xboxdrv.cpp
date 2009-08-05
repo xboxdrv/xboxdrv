@@ -286,11 +286,8 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
   if (!opts.relative_axis_map.empty())
     relative_axis_modifier.reset(new RelativeAxisModifier(opts.relative_axis_map)); 
 
-  // FIXME: We could block in some cases instead of poll
-  //if (autofire_modifier.get() ||
-  //relative_axis_modifier.get() ||
-  //    opts.uinput_config.force_feedback)
-  timeout = 25; // FIXME: How long should we wait for a new event?
+  // how long to wait for a controller event before taking care of autofire etc.
+  timeout = 25; 
 
   memset(&oldmsg,     0, sizeof(oldmsg));
   memset(&oldrealmsg, 0, sizeof(oldrealmsg));
@@ -308,9 +305,6 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
         {
           // no new data read, so copy the last read data
           msg = oldrealmsg;
-
-          // If no new data is available sleep a bit
-          usleep(1000); // == 1/1000 sec
         }
 
       // Calc changes in time

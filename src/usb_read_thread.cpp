@@ -55,28 +55,24 @@ USBReadThread::stop_thread()
 }
 
 int
-USBReadThread::read(uint8_t* data, int len)
+USBReadThread::read(uint8_t* data, int len, int timeout)
 {
   boost::mutex::scoped_lock lock(m_read_buffer_mutex);
 
-  if (m_read_buffer.empty())
-    {
-      return 0;
-    }
-  else
-    {
-      assert(len == m_read_length);
+  if (!m_read_buffer_cond.timed_wait(lock, boost::posix_time::milliseconds(timeout), buffer_not_empty(m_read_buffer)))
+    return 0;
 
-      Paket& paket = m_read_buffer.front();
+  assert(len == m_read_length);
 
-      memcpy(data, paket.data, m_read_length);
-      delete[] paket.data;
-      int ret = paket.length;
+  Paket& paket = m_read_buffer.front();
 
-      m_read_buffer.pop_front();
-  
-      return ret;
-    }
+  memcpy(data, paket.data, m_read_length);
+  delete[] paket.data;
+  int ret = paket.length;
+
+  m_read_buffer.pop_front();
+
+  return ret;
 }
 
 void
@@ -101,6 +97,8 @@ USBReadThread::run()
           paket.length = ret;
 
           m_read_buffer.push_back(paket);
+          
+          m_read_buffer_cond.notify_one();
         }
     }
 }

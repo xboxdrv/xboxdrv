@@ -22,6 +22,7 @@
 #include <memory>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/thread/condition.hpp>
 #include <list>
 
 class USBReadThread
@@ -36,9 +37,26 @@ private:
     int      length;
   };
 
-  std::list<Paket> m_read_buffer;
+  typedef std::list<Paket> Buffer;
+  Buffer m_read_buffer;
   boost::mutex m_read_buffer_mutex;
+  boost::condition m_read_buffer_cond;
   std::auto_ptr<boost::thread> m_thread;
+
+  struct buffer_not_empty
+  {
+    Buffer& m_buffer;
+
+    buffer_not_empty(Buffer& buffer) :
+      m_buffer(buffer)
+    {
+    }
+    
+    bool operator()() const
+    {
+      return !m_buffer.empty();
+    }
+  };
 
   bool m_stop;
 
@@ -46,7 +64,7 @@ public:
   USBReadThread(struct usb_dev_handle* handle, int endpoint, int len);
   ~USBReadThread();
 
-  int read(uint8_t* data, int len);
+  int read(uint8_t* data, int len, int timeout);
 
   void start_thread();
   void stop_thread();
