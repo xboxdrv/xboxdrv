@@ -35,9 +35,6 @@ USBReadThread::~USBReadThread()
 {
   if (!m_stop)
     stop_thread();
-
-  for(std::list<Paket>::iterator i = m_read_buffer.begin(); i != m_read_buffer.end(); ++i)
-    delete[] i->data;
 }
   
 void
@@ -57,48 +54,49 @@ USBReadThread::stop_thread()
 int
 USBReadThread::read(uint8_t* data, int len, int timeout)
 {
-  boost::mutex::scoped_lock lock(m_read_buffer_mutex);
-
-  if (!m_read_buffer_cond.timed_wait(lock, boost::posix_time::milliseconds(timeout), buffer_not_empty(m_read_buffer)))
-    return 0;
-
   assert(len == m_read_length);
 
-  Paket& paket = m_read_buffer.front();
+  boost::mutex::scoped_lock lock(m_read_buffer_mutex);
 
-  memcpy(data, paket.data, m_read_length);
-  delete[] paket.data;
-  int ret = paket.length;
+  if (!m_read_buffer_cond.timed_wait(lock, boost::posix_time::milliseconds(timeout), 
+                                     buffer_not_empty(m_read_buffer)))
+  {
+    return 0;
+  }
+  else
+  {
+    Paket paket = m_read_buffer.front();
 
-  m_read_buffer.pop_front();
+    memcpy(data, paket.data.get(), m_read_length);
+    m_read_buffer.pop_front();
 
-  return ret;
+    return paket.length;
+  }
 }
 
 void
 USBReadThread::run()
 {
+  boost::shared_array<uint8_t> data(new uint8_t[m_read_length]);
+  
   while(!m_stop)
     {
-      uint8_t* data = new uint8_t[m_read_length];
+      int ret = usb_interrupt_read(m_handle, m_read_endpoint, (char*)data.get(), m_read_length, 0 /*timeout*/);
 
-      int ret = usb_interrupt_read(m_handle, m_read_endpoint, (char*)data, m_read_length, 0 /*timeout*/);
-
-      if (ret == 0)
-        {
-          delete[] data;
-        }
-      else
+      if (ret != 0)
         {
           boost::mutex::scoped_lock lock(m_read_buffer_mutex);
 
           Paket paket;
+
           paket.data   = data;
           paket.length = ret;
 
           m_read_buffer.push_back(paket);
           
           m_read_buffer_cond.notify_one();
+
+          data = boost::shared_array<uint8_t>(new uint8_t[m_read_length]);
         }
     }
 }

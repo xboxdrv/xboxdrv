@@ -2,6 +2,7 @@ xboxdrv 0.4.9 - (??/Aug/2009)
 =============================
 
 * Saitek P2500 support (no rumble, untested)
+* changes in the thread handling to reduce latency some more
 
 
 xboxdrv 0.4.8 - (30/Jul/2009)

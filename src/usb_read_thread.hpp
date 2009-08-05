@@ -23,6 +23,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/condition.hpp>
+#include <boost/shared_array.hpp>
 #include <list>
 
 class USBReadThread
@@ -32,9 +33,10 @@ private:
   const int m_read_endpoint;
   const int m_read_length;
 
-  struct Paket {
-    uint8_t* data;
-    int      length;
+  struct Paket 
+  {
+    boost::shared_array<uint8_t> data;
+    int length;
   };
 
   typedef std::list<Paket> Buffer;
@@ -47,14 +49,13 @@ private:
   {
     Buffer& m_buffer;
 
-    buffer_not_empty(Buffer& buffer) :
-      m_buffer(buffer)
-    {
-    }
-    
-    bool operator()() const
-    {
-      return !m_buffer.empty();
+    buffer_not_empty(Buffer& buffer)
+      : m_buffer(buffer)
+    {}
+
+    bool operator()() const 
+    { 
+      return !m_buffer.empty(); 
     }
   };
 
