@@ -25,7 +25,6 @@ if not conf.CheckLib('boost_thread-mt', language='C++'):
 
 env = conf.Finish()
 
-# env = Environment(CPPFLAGS=['-g', '-O2'], LIBS=['usb', 'X11'])
 env.Program('xboxdrv', ['src/xboxdrv.cpp', 
                         'src/xboxmsg.cpp',
                         'src/uinput.cpp',
