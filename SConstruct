@@ -3,6 +3,10 @@
 env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'])
 conf = Configure(env)
 
+if not conf.env['CXX']:
+    print "g++ must be installed!"
+    Exit(1)
+
 # X11 checks
 if not conf.CheckLibWithHeader('X11', 'X11/Xlib.h', 'C++'):
     print 'libx11-dev must be installed!'
