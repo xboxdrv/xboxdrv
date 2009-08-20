@@ -30,6 +30,7 @@ The development version can be optained via:
 
 Required libraries and tools:
 
+ * g++ - GNU C++ Compiler
  * libusb
  * boost
  * scons
@@ -45,6 +46,7 @@ Once everything installed, you can compile by typing:
 On Ubuntu 9.04 you can install all the required libraries via:
 
  % apt-get install \
+     g++ \
      libboost1.37-dev \
      libboost-thread1.37-dev \
      scons \
