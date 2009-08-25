@@ -21,6 +21,7 @@
 
 #include <iosfwd>
 #include <vector>
+#include <stdint.h>
 #include <boost/function.hpp>
 
 void print_raw_data(std::ostream& out, uint8_t* buffer, int len);

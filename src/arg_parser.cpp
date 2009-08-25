@@ -20,6 +20,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <stdio.h>
+#include <stdint.h>
 #include <boost/format.hpp>
 
 #include "helper.hpp"
