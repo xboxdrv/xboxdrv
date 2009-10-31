@@ -69,6 +69,17 @@ void on_sigint(int)
     }
 }
 
+void on_sigterm(int)
+{
+  if (!command_line_options->quiet)
+    std::cout << "Shutdown initiated by SIGTERM" << std::endl;
+
+  if (global_controller)
+    global_controller->set_led(0);
+
+  exit(EXIT_SUCCESS);
+}
+
 void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_t rhs)
 {
   lhs = std::min(lhs * gain / 255, 255);
@@ -685,7 +696,8 @@ Xboxdrv::main(int argc, char** argv)
 {
   try 
     {
-      signal(SIGINT, on_sigint);
+      signal(SIGINT,  on_sigint);
+      signal(SIGTERM, on_sigterm);
 
       CommandLineOptions opts;
       opts.parse_args(argc, argv);
