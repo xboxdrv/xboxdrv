@@ -1,9 +1,10 @@
-xboxdrv 0.4.9 - (??/Aug/2009)
+xboxdrv 0.4.9 - (01/Nov/2009)
 =============================
 
 * Saitek P2500 support (no rumble, untested)
 * Hori Real Arcade Pro Ex support
 * changes in the thread handling to reduce latency
+* include fixes for g++-4.4
 
 
 xboxdrv 0.4.8 - (30/Jul/2009)
