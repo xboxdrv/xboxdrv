@@ -705,38 +705,47 @@ uInput::send(Xbox360GuitarMsg& msg)
 void
 uInput::update(int msec_delta)
 {
+  bool needs_syncronization = false;
+
   // Relative Motion emulation for axis
   for(std::vector<RelAxisState>::iterator i = rel_axis.begin(); i != rel_axis.end(); ++i)
-    {
-      i->time += msec_delta;
+  {
+    i->time += msec_delta;
 
-      if (i->time >= i->next_time)
-        {
-          get_mouse_uinput()->send(EV_REL, cfg.axis_map[i->axis].code, 
-                                   static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 32767);
-          i->next_time += cfg.axis_map[i->axis].rel.repeat;
-        }
+    if (i->time >= i->next_time)
+    {
+      get_mouse_uinput()->send(EV_REL, cfg.axis_map[i->axis].code,
+                               static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 32767);
+      i->next_time += cfg.axis_map[i->axis].rel.repeat;
+      needs_syncronization = true;
     }
+  }
 
   // Relative Motion emulation for button
   for(std::vector<RelButtonState>::iterator i = rel_button.begin(); i != rel_button.end(); ++i)
+  {
+    i->time += msec_delta;
+
+    if (i->time >= i->next_time)
     {
-      i->time += msec_delta;
+      if (0)
+        std::cout << i->button 
+                  << " " << cfg.btn_map[i->button].type
+                  << " " << cfg.btn_map[i->button].code
+                  << " " << cfg.btn_map[i->button].rel.value
+                  << " " << cfg.btn_map[i->button].rel.repeat << std::endl;
 
-      if (i->time >= i->next_time)
-        {
-          if (0)
-            std::cout << i->button 
-                      << " " << cfg.btn_map[i->button].type
-                      << " " << cfg.btn_map[i->button].code
-                      << " " << cfg.btn_map[i->button].rel.value
-                      << " " << cfg.btn_map[i->button].rel.repeat << std::endl;
-
-          get_mouse_uinput()->send(EV_REL, cfg.btn_map[i->button].code, 
-                                   static_cast<int>(cfg.btn_map[i->button].rel.value * button_state[i->button]));
-          i->next_time += cfg.btn_map[i->button].rel.repeat;
-        }
+      get_mouse_uinput()->send(EV_REL, cfg.btn_map[i->button].code, 
+                               static_cast<int>(cfg.btn_map[i->button].rel.value * button_state[i->button]));
+      i->next_time += cfg.btn_map[i->button].rel.repeat;
+      needs_syncronization = true;
     }
+  }
+
+  if (needs_syncronization)
+  {
+    get_mouse_uinput()->send(EV_SYN, SYN_REPORT, 0);
+  }
 
   // Update forcefeedback 
   get_joystick_uinput()->update(msec_delta);
