@@ -6,7 +6,7 @@ Pre Release Testing:
 * --dpad-as-button check buttons are working and no useless axis present
 * check the version number
 
-VERSION="0.4.8"
+VERSION="0.4.9"
 TAG="v${VERSION}"
 git tag -s  "${TAG}" -m "xboxdrv ${TAG}" 
 git archive --format=tar --prefix="xboxdrv-linux-${VERSION}/" ${TAG} | bzip2 -c > /tmp/xboxdrv-linux-${VERSION}.tar.bz2
@@ -14,6 +14,13 @@ git push --tags
 
 Stuff to do before 0.5 release:
 ===============================
+
+* mouse feels sluggish and jumpy, tweaking value and repeat makes the problem
+  smaller, but not go away
+
+  --ui-axismap x1=REL_X:10:20,y1=REL_Y:10:20,y2
+
+* improve uinput error message when /dev/input/uinput isn't found
 
 * src/xbox_controller.cpp:71: Make endpoint variable
   http://ubuntuforums.org/showthread.php?p=7538167#post7538167

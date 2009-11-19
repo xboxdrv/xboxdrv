@@ -73,7 +73,7 @@ Plug in your Xbox360 gamepad and then unload the xpad driver via:
  % rmmod xpad
 
 If you want to permanently unload it add the following line to
-/etc/modprobe.d/blacklist:
+/etc/modprobe.d/blacklist.conf:
 
 blacklist xpad
 
