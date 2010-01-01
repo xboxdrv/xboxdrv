@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
+#include <string.h>
 #include <usb.h>
 
 #include "usb_read_thread.hpp"
