@@ -15,6 +15,12 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
+* could use left,right,up,down as alias for dr,dl,du,dd
+
+* a mouse needs mouse buttons to be recognized as mouse:
+
+ --ui-buttonmap a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER  
+
 * mouse feels sluggish and jumpy, tweaking value and repeat makes the problem
   smaller, but not go away
 

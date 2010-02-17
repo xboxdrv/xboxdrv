@@ -1,7 +1,10 @@
-xboxdrv 0.4.10 - (??/Nov/2009)
-=============================
+xboxdrv 0.4.10 - (17/Feb/2010)
+==============================
 
 * fixed mouse emulation a bit, still somewhat broken
+* Mad Catz Xbox 360 controller support
+* Harmonix controller support
+* minor compile fix (missing string.h)
 
 
 xboxdrv 0.4.9 - (01/Nov/2009)

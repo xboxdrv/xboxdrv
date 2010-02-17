@@ -43,12 +43,12 @@ Once everything installed, you can compile by typing:
 
  % scons
 
-On Ubuntu 9.04 you can install all the required libraries via:
+On Ubuntu 9.10 you can install all the required libraries via:
 
  % apt-get install \
      g++ \
-     libboost1.37-dev \
-     libboost-thread1.37-dev \
+     libboost1.40-dev \
+     libboost-thread1.40-dev \
      scons \
      libusb-dev \
      git-core \
@@ -852,8 +852,8 @@ Workaround: Use KEY_ instead or cleanup your keymap
 
 Force feedback support is brittle, if you Ctrl-c the driver in the
 wrong moment you will end up with a dead uninterruptable process and
-basically have to reboot. This looks might a kernel issue and not a
-xboxdrv one. 
+basically have to reboot. This looks like it might be a kernel issue
+and not a xboxdrv one.
 
 Workaround: Kill the app that uses xboxdrv before xboxdrv itself.
 
