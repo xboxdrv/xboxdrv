@@ -731,7 +731,7 @@ and the idProduct numbers, which you can find out via:
 
 Once done you can try to add them to the array:
 
-XPadDevice xpad_devices[] = { ... } in xboxdrv.c. 
+XPadDevice xpad_devices[] = { ... } in xpad_device.cpp.
 
 If you have success with that, send a patch to grumbel@gmx.de, if not,
 contact me too, I might be able to provide additional help.
