@@ -19,6 +19,8 @@
 #include <assert.h>
 #include <boost/format.hpp>
 #include <iostream>
+#include <algorithm>
+
 #include "helper.hpp"
 #include "command_line_options.hpp"
 #include "xboxmsg.hpp"
@@ -517,6 +519,151 @@ int get_axis(XboxGenericMsg& msg, XboxAxis axis)
         break;
     }
   return 0;
+}
+
+float s16_to_float(int16_t value)
+{
+  if (value >= 0)
+  {
+    return value / 32767.0;
+  }
+  else
+  {
+    return value / 32768.0;
+  }
+}
+
+float u8_to_float(uint8_t value)
+{
+  return value / 255.0f;
+}
+
+int16_t float_to_s16(float v)
+{
+  if (v >= 0.0f)
+  {
+    return static_cast<int16_t>(std::min(1.0f, v) * 32767.0f);
+  }
+  else
+  {
+    return static_cast<int16_t>(std::max(-1.0f, v) * 32768.0f);
+  }
+}
+
+uint8_t float_to_u8(float v)
+{
+  return static_cast<uint8_t>(Math::clamp(0.0f, 1.0f, v) * 255.0f);
+}
+
+float get_axis_float(XboxGenericMsg& msg, XboxAxis axis)
+{
+  switch(msg.type)
+    {
+      case XBOX_MSG_XBOX360_GUITAR:
+      case XBOX_MSG_XBOX360:
+        switch(axis)
+          {
+            case XBOX_AXIS_MAX:
+            case XBOX_AXIS_UNKNOWN:
+            case XBOX_AXIS_DPAD_X:
+            case XBOX_AXIS_DPAD_Y:
+            case XBOX_AXIS_TRIGGER:
+              return 0.0f;
+            case XBOX_AXIS_X1:
+              return s16_to_float(msg.xbox360.x1);
+            case XBOX_AXIS_Y1:
+              return s16_to_float(msg.xbox360.y1);
+            case XBOX_AXIS_X2:
+              return s16_to_float(msg.xbox360.x2);
+            case XBOX_AXIS_Y2:
+              return s16_to_float(msg.xbox360.y2);
+            case XBOX_AXIS_LT:
+              return u8_to_float(msg.xbox360.lt);
+            case XBOX_AXIS_RT:
+              return u8_to_float(msg.xbox360.rt);
+          }
+        break;
+
+      case XBOX_MSG_XBOX:
+        switch(axis)
+          {
+            case XBOX_AXIS_MAX:
+            case XBOX_AXIS_UNKNOWN:
+            case XBOX_AXIS_DPAD_X:
+            case XBOX_AXIS_DPAD_Y:
+            case XBOX_AXIS_TRIGGER:
+              return 0.0f;
+            case XBOX_AXIS_X1:
+              return s16_to_float(msg.xbox.x1);
+            case XBOX_AXIS_Y1:
+              return s16_to_float(msg.xbox.y1);
+            case XBOX_AXIS_X2:
+              return s16_to_float(msg.xbox.x2);
+            case XBOX_AXIS_Y2:
+              return s16_to_float(msg.xbox.y2);
+            case XBOX_AXIS_LT:
+              return u8_to_float(msg.xbox.lt);
+            case XBOX_AXIS_RT:
+              return u8_to_float(msg.xbox.rt);
+          }
+        break;
+    }
+  return 0;
+}
+
+void set_axis_float(XboxGenericMsg& msg, XboxAxis axis, float v)
+{
+  switch(msg.type)
+    {
+      case XBOX_MSG_XBOX360_GUITAR:
+      case XBOX_MSG_XBOX360:
+        switch(axis)
+          {
+            case XBOX_AXIS_MAX:
+            case XBOX_AXIS_UNKNOWN:
+            case XBOX_AXIS_DPAD_X:
+            case XBOX_AXIS_DPAD_Y:
+            case XBOX_AXIS_TRIGGER:
+              break;
+            case XBOX_AXIS_X1:
+              msg.xbox360.x1 = float_to_s16(v); break;
+            case XBOX_AXIS_Y1:
+              msg.xbox360.y1 = float_to_s16(v); break;
+            case XBOX_AXIS_X2:
+              msg.xbox360.x2 = float_to_s16(v); break;
+            case XBOX_AXIS_Y2:
+              msg.xbox360.y2 = float_to_s16(v); break;
+            case XBOX_AXIS_LT:
+              msg.xbox360.lt = float_to_u8(v); break;
+            case XBOX_AXIS_RT:
+              msg.xbox360.rt = float_to_u8(v); break;
+          }
+        break;
+
+      case XBOX_MSG_XBOX:
+        switch(axis)
+          {
+            case XBOX_AXIS_MAX:
+            case XBOX_AXIS_UNKNOWN:
+            case XBOX_AXIS_DPAD_X:
+            case XBOX_AXIS_DPAD_Y:
+            case XBOX_AXIS_TRIGGER:
+              break;
+            case XBOX_AXIS_X1:
+              msg.xbox.x1 = float_to_s16(v); break;
+            case XBOX_AXIS_Y1:
+              msg.xbox.y1 = float_to_s16(v); break;
+            case XBOX_AXIS_X2:
+              msg.xbox.x2 = float_to_s16(v); break;
+            case XBOX_AXIS_Y2:
+              msg.xbox.y2 = float_to_s16(v); break;
+            case XBOX_AXIS_LT:
+              msg.xbox.lt = float_to_u8(v); break;
+            case XBOX_AXIS_RT:
+              msg.xbox.rt = float_to_u8(v); break;
+          }
+        break;
+    }
 }
 
 void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)

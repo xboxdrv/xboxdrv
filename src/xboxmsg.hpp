@@ -247,6 +247,8 @@ int  get_button(XboxGenericMsg& msg, XboxButton button);
 void set_button(XboxGenericMsg& msg, XboxButton button, int v);
 int  get_axis(XboxGenericMsg& msg, XboxAxis axis);
 void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v);
+float get_axis_float(XboxGenericMsg& msg, XboxAxis axis);
+void  set_axis_float(XboxGenericMsg& msg, XboxAxis axis, float v);
 
 XboxButton string2btn(const std::string& str_);
 XboxAxis   string2axis(const std::string& str_);

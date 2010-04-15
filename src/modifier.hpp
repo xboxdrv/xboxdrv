@@ -63,6 +63,13 @@ struct CalibrationMapping {
   int center;
   int max;
 };
+
+struct AxisSensitivityMapping {
+  static AxisSensitivityMapping from_string(const std::string&);
+
+  XboxAxis axis;
+  float sensitivity;
+};
 
 class RelativeAxisModifier
 {
@@ -154,6 +161,7 @@ void apply_axis_map(XboxGenericMsg& msg, const std::vector<AxisMapping>& lst);
 void apply_calibration_map(XboxGenericMsg& msg, const std::vector<CalibrationMapping>& lst);
 void apply_deadzone(XboxGenericMsg& msg, const CommandLineOptions& opts);
 void apply_square_axis(XboxGenericMsg& msg);
+void apply_axis_sensitivity(XboxGenericMsg& msg, const CommandLineOptions& opts);
 
 #endif
 

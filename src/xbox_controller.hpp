@@ -20,11 +20,11 @@
 #define HEADER_XBOX_CONTROLLER_HPP
 
 #include <usb.h>
+
 #include "xbox_generic_controller.hpp"
 
 struct XPadDevice;
 
-/** */
 class XboxController : public XboxGenericController
 {
 private:

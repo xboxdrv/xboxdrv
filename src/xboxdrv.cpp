@@ -280,6 +280,8 @@ Xboxdrv::apply_modifier(XboxGenericMsg& msg, int msec_delta, const CommandLineOp
   if (opts.square_axis)
     apply_square_axis(msg);
 
+  if (!opts.axis_sensitivity_map.empty())
+    apply_axis_sensitivity(msg, opts);
 }
 
 void

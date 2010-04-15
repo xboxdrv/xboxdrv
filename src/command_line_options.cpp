@@ -65,6 +65,7 @@ enum {
   OPTION_CALIBRARIOTION,
   OPTION_RELATIVE_AXIS,
   OPTION_SQUARE_AXIS,
+  OPTION_AXIS_SENSITIVITY,
   OPTION_HELP_LED,
   OPTION_DEVICE_BY_ID,
   OPTION_DEVICE_BY_PATH,
@@ -147,6 +148,7 @@ CommandLineOptions::CommandLineOptions()
     .add_option(OPTION_UI_BUTTONMAP,       0, "ui-buttonmap",     "MAP",  "Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)")
     .add_option(OPTION_UI_AXISMAP,         0, "ui-axismap",       "MAP",  "Changes the uinput events send when moving a axis (example: X1=ABS_X2)")
     .add_option(OPTION_SQUARE_AXIS,        0, "square-axis",      "",     "Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)")
+    .add_option(OPTION_AXIS_SENSITIVITY,   0, "axis-sensitivity", "MAP",  "Adjust the axis sensitivity (example: X1=2.0,Y1=1.0)")
     .add_option(OPTION_RELATIVE_AXIS,      0, "relative-axis",    "MAP",  "Make an axis emulate a joystick throttle (example: y2=64000)")
     .add_option(OPTION_AUTOFIRE,           0, "autofire",         "MAP",  "Cause the given buttons to act as autofire (example: A=250)")
     .add_option(OPTION_CALIBRARIOTION,     0, "calibration",      "MAP",  "Changes the calibration for the given axis (example: X2=-32768:0:32767)")
@@ -414,6 +416,10 @@ CommandLineOptions::parse_args(int argc, char** argv)
 
           case OPTION_RELATIVE_AXIS:
             arg2vector(opt.argument, opts.relative_axis_map, &RelativeAxisMapping::from_string);
+            break;
+
+          case OPTION_AXIS_SENSITIVITY:
+            arg2vector(opt.argument, opts.axis_sensitivity_map, &AxisSensitivityMapping::from_string);
             break;
 
           case OPTION_SQUARE_AXIS:

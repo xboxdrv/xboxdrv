@@ -70,6 +70,7 @@ public:
   std::vector<AutoFireMapping> autofire_map;
   std::vector<RelativeAxisMapping> relative_axis_map;
   std::vector<CalibrationMapping> calibration_map;
+  std::vector<AxisSensitivityMapping> axis_sensitivity_map;
   bool square_axis;
   ArgParser argp;
 
