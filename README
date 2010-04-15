@@ -254,6 +254,25 @@ will thus not function properly with the Xbox360 gamepad. Via the
 --square-axis option you can work around this issue and diagonals will
 be reported as (1,1).
 
+[[Axis Sensitivity]]
+--------------------
+
+The sensitive of an axis can be adjusted via --axis-sensitivty:
+
+  ./xboxdrv --axis-sensitivty X1=2.0,Y1=2.0
+
+A value of 0 gives you the default linear sensitivity, values larger
+then 0 will give you heigher sensitivity, while values smaller then 0
+will give you lower sensitivity.
+
+Sensitivity works by applying:
+
+  t = 2 ** sensitivity;
+  pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);
+
+To the value of the axis, thus both the min and max position will
+always stay the same, only the values inbetween change.
+
 [[ AutoFire Mapping ]]
 
 Autofire mapping allows you to let a button automatically fire with a

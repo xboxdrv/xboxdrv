@@ -361,8 +361,17 @@ void apply_axis_sensitivity(XboxGenericMsg& msg, const CommandLineOptions& opts)
   {
     float pos = get_axis_float(msg, i->axis);
     float t = powf(2, i->sensitivity);
-    pos = powf(1.0f - powf(1.0f - pos, t), 1 / t);
-    set_axis_float(msg, i->axis, pos);
+
+    if (pos > 0)
+    {
+      pos = powf(1.0f - powf(1.0f - pos, t), 1 / t);
+      set_axis_float(msg, i->axis, pos);
+    }
+    else
+    {
+      pos = powf(1.0f - powf(1.0f - -pos, t), 1 / t);
+      set_axis_float(msg, i->axis, -pos);
+    }
   }
 }
 
