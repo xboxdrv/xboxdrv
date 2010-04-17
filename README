@@ -259,7 +259,7 @@ be reported as (1,1).
 
 The sensitive of an axis can be adjusted via --axis-sensitivty:
 
-  ./xboxdrv --axis-sensitivty X1=2.0,Y1=2.0
+  ./xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0
 
 A value of 0 gives you the default linear sensitivity, values larger
 then 0 will give you heigher sensitivity, while values smaller then 0
