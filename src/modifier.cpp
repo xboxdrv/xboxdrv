@@ -270,12 +270,12 @@ void squarify_axis_(int16_t& x_inout, int16_t& y_inout)
   if (x_inout != 0 || y_inout != 0)
     {
       // Convert values to float
-      float x = (x_inout < 0) ? x_inout / 32768.0f : x_inout / 32767.0f;
-      float y = (y_inout < 0) ? y_inout / 32768.0f : y_inout / 32767.0f;
+      float x = (x_inout < 0) ? static_cast<float>(x_inout) / 32768.0f : static_cast<float>(x_inout) / 32767.0f;
+      float y = (y_inout < 0) ? static_cast<float>(y_inout) / 32768.0f : static_cast<float>(y_inout) / 32767.0f;
 
       // Transform values to square range
       float l = sqrtf(x*x + y*y);
-      float v = fabs((fabsf(x) > fabsf(y)) ? l/x : l/y);
+      float v = fabsf((fabsf(x) > fabsf(y)) ? l/x : l/y);
       x *= v;
       y *= v;
 

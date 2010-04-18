@@ -45,7 +45,7 @@ std::string to_lower(const std::string &str)
        i != lower_impl.end();
        ++i )
     {
-      *i = tolower(*i);
+      *i = static_cast<char>(tolower(*i));
     }
 
   return lower_impl;

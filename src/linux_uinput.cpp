@@ -233,8 +233,8 @@ LinuxUinput::update(int msec_delta)
 
       if (ff_callback)
         {
-          ff_callback(ff_handler->get_strong_magnitude() / 128,
-                      ff_handler->get_weak_magnitude()   / 128);
+          ff_callback(static_cast<unsigned char>(ff_handler->get_strong_magnitude() / 128),
+                      static_cast<unsigned char>(ff_handler->get_weak_magnitude()   / 128));
                       
         }
       

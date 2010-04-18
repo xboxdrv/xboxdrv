@@ -617,7 +617,7 @@ public:
 
     int num_keycodes = max_keycode - min_keycode + 1;
     int keysyms_per_keycode;
-    KeySym* keymap = XGetKeyboardMapping(dpy, min_keycode,
+    KeySym* keymap = XGetKeyboardMapping(dpy, static_cast<KeyCode>(min_keycode),
                                          num_keycodes,
                                          &keysyms_per_keycode);
 

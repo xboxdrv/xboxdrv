@@ -67,7 +67,7 @@ T clamp (const T& low, const T& v, const T& high)
 inline int16_t negate_16(int16_t v)
 {
   if (v)
-    return ~v;
+    return static_cast<int16_t>(~v);
   else // v == 0
     return v;
 }
@@ -75,9 +75,9 @@ inline int16_t negate_16(int16_t v)
 inline int16_t scale_8to16(int8_t a)
 {
   if (a > 0) 
-    return a * 32767 / 127;
+    return static_cast<int16_t>(a * 32767 / 127);
   else
-    return a * 32768 / 128;
+    return static_cast<int16_t>(a * 32768 / 128);
 }
 
 int get_terminal_width();

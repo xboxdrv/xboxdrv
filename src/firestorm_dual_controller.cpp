@@ -188,8 +188,8 @@ FirestormDualController::read_vsb(XboxGenericMsg& msg, bool verbose, int timeout
       msg.xbox360.lb = data.lb;
       msg.xbox360.rb = data.rb;
 
-      msg.xbox360.lt = data.lt * 255;
-      msg.xbox360.rt = data.rt * 255;
+      msg.xbox360.lt = static_cast<unsigned char>(data.lt * 255);
+      msg.xbox360.rt = static_cast<unsigned char>(data.rt * 255);
 
       msg.xbox360.start = data.start;
       msg.xbox360.back  = data.back;
