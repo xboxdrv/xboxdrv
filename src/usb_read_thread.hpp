@@ -37,6 +37,11 @@ private:
   {
     boost::shared_array<uint8_t> data;
     int length;
+
+    Paket() :
+      data(),
+      length()
+    {}
   };
 
   typedef std::list<Paket> Buffer;

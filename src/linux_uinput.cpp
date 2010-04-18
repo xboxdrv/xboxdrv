@@ -32,17 +32,19 @@
 #include "force_feedback_handler.hpp"
 #include "linux_uinput.hpp"
 
-LinuxUinput::LinuxUinput(const std::string& name, uint16_t vendor, uint16_t product)
-  : name(name),
-    vendor(vendor),
-    product(product),
-    fd(-1),
-    key_bit(false),
-    rel_bit(false),
-    abs_bit(false),
-    led_bit(false),
-    ff_bit(false),
-    ff_handler(0)
+LinuxUinput::LinuxUinput(const std::string& name, uint16_t vendor, uint16_t product) :
+  name(name),
+  vendor(vendor),
+  product(product),
+  fd(-1),
+  user_dev(),
+  key_bit(false),
+  rel_bit(false),
+  abs_bit(false),
+  led_bit(false),
+  ff_bit(false),
+  ff_handler(0),
+  ff_callback()
 {
   std::fill_n(abs_lst, ABS_CNT, false);
   std::fill_n(rel_lst, REL_CNT, false);
@@ -56,29 +58,29 @@ LinuxUinput::LinuxUinput(const std::string& name, uint16_t vendor, uint16_t prod
   const int uinput_filename_count = (sizeof(uinput_filename)/sizeof(char*));
 
   for (int i = 0; i < uinput_filename_count; ++i) 
+  {
+    if ((fd = open(uinput_filename[i], O_RDWR | O_NDELAY)) >= 0)
     {
-      if ((fd = open(uinput_filename[i], O_RDWR | O_NDELAY)) >= 0)
-        {
-          break;
-        }
-      else
-        {
-          std::cout << "Error: " << uinput_filename[i] << ": " << strerror(errno) << std::endl;
-        }
+      break;
     }
+    else
+    {
+      std::cout << "Error: " << uinput_filename[i] << ": " << strerror(errno) << std::endl;
+    }
+  }
 
   if (fd < 0)
-    {
-      std::cout << "Error: No stuitable uinput device found" << std::endl;
-      std::cout << "" << std::endl;
-      std::cout << "Troubleshooting:" << std::endl;
-      std::cout << "  * make sure uinput kernel module is loaded " << std::endl;
-      std::cout << "  * make sure joydev kernel module is loaded " << std::endl;
-      std::cout << "  * make sure you have permissions to access the uinput device" << std::endl;
-      std::cout << "  * start the driver with ./xboxdrv -v --no-uinput to see if the driver itself works" << std::endl;
-      std::cout << "" << std::endl;
-      exit(EXIT_FAILURE);
-    }
+  {
+    std::cout << "Error: No stuitable uinput device found" << std::endl;
+    std::cout << "" << std::endl;
+    std::cout << "Troubleshooting:" << std::endl;
+    std::cout << "  * make sure uinput kernel module is loaded " << std::endl;
+    std::cout << "  * make sure joydev kernel module is loaded " << std::endl;
+    std::cout << "  * make sure you have permissions to access the uinput device" << std::endl;
+    std::cout << "  * start the driver with ./xboxdrv -v --no-uinput to see if the driver itself works" << std::endl;
+    std::cout << "" << std::endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
 LinuxUinput::~LinuxUinput()

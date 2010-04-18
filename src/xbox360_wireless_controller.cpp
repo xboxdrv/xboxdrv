@@ -31,8 +31,15 @@
 #include "xbox360_wireless_controller.hpp"
 
 Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev,
-                                                     int controller_id)
-  : led_status(0)
+                                                     int controller_id) :
+  dev(),
+  handle(),
+  endpoint(),
+  interface(),
+  battery_status(),
+  serial(),
+  led_status(0),
+  read_thread()
 {
   assert(controller_id >= 0 && controller_id < 4);
   
@@ -42,20 +49,20 @@ Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev,
 
   handle = usb_open(dev);
   if (!handle)
-    {
-      throw std::runtime_error("Xbox360WirelessController: Error opening Xbox360 controller");
-    }
+  {
+    throw std::runtime_error("Xbox360WirelessController: Error opening Xbox360 controller");
+  }
   else
+  {
+    int err = usb_claim_interface(handle, interface);
+    if (err != 0) 
     {
-      int err = usb_claim_interface(handle, interface);
-      if (err != 0) 
-        {
-          std::ostringstream out;
-          out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
-              << "Try to run 'rmmod xpad' and start xboxdrv again.";
-          throw std::runtime_error(out.str());
-        }
+      std::ostringstream out;
+      out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
+          << "Try to run 'rmmod xpad' and start xboxdrv again.";
+      throw std::runtime_error(out.str());
     }
+  }
 
   read_thread = std::auto_ptr<USBReadThread>(new USBReadThread(handle, endpoint, 32));
   read_thread->start_thread();

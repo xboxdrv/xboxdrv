@@ -195,7 +195,14 @@ AxisEvent::from_string(const std::string& str)
   return ev;
 }
 
-uInputCfg::uInputCfg() 
+uInputCfg::uInputCfg() :
+  device_name(),
+  trigger_as_button(),
+  dpad_as_button(),
+  trigger_as_zaxis(),
+  dpad_only(),
+  force_feedback(),
+  extra_devices()
 {
   device_name = "Xbox Gamepad (userspace driver)";
 
@@ -331,8 +338,13 @@ uInput::is_keyboard_button(int ev_code)
   return (ev_code < 256);
 }
 
-uInput::uInput(const XPadDevice& dev, uInputCfg config_)
-  : cfg(config_)
+uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
+  joystick_uinput_dev(),
+  keyboard_uinput_dev(),
+  mouse_uinput_dev(),
+  cfg(config_),
+  rel_axis(),
+  rel_button()
 {
   std::fill_n(axis_state,   (int)XBOX_AXIS_MAX, 0);
   std::fill_n(button_state, (int)XBOX_BTN_MAX,  false);
@@ -340,34 +352,34 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_)
   joystick_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name, dev.idVendor, dev.idProduct));
 
   if (cfg.extra_devices && need_mouse_device())
-    {
-      mouse_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Mouse Emulation", dev.idVendor, dev.idProduct));
-    }
+  {
+    mouse_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Mouse Emulation", dev.idVendor, dev.idProduct));
+  }
 
   if (cfg.extra_devices && need_keyboard_device())
-    {
-      keyboard_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Keyboard Emulation", dev.idVendor, dev.idProduct));
-    }
+  {
+    keyboard_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Keyboard Emulation", dev.idVendor, dev.idProduct));
+  }
 
   switch(dev.type)
-    {
-      case GAMEPAD_XBOX360:
-      case GAMEPAD_XBOX:
-      case GAMEPAD_XBOX360_WIRELESS:
-      case GAMEPAD_FIRESTORM:
-      case GAMEPAD_FIRESTORM_VSB:
-        setup_xbox360_gamepad(dev.type);
-        break;
+  {
+    case GAMEPAD_XBOX360:
+    case GAMEPAD_XBOX:
+    case GAMEPAD_XBOX360_WIRELESS:
+    case GAMEPAD_FIRESTORM:
+    case GAMEPAD_FIRESTORM_VSB:
+      setup_xbox360_gamepad(dev.type);
+      break;
 
-      case GAMEPAD_XBOX360_GUITAR:
-        setup_xbox360_guitar();
-        break;
+    case GAMEPAD_XBOX360_GUITAR:
+      setup_xbox360_guitar();
+      break;
 
-      default:
-        std::cout << "Unhandled type: " << dev.type << std::endl;
-        exit(EXIT_FAILURE);
-        break;
-    }
+    default:
+      std::cout << "Unhandled type: " << dev.type << std::endl;
+      exit(EXIT_FAILURE);
+      break;
+  }
 
   joystick_uinput_dev->finish();
 

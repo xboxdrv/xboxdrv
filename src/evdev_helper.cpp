@@ -34,11 +34,15 @@ protected:
   std::map<std::string, Enum> string2enum;
 
 protected:
-  EnumBox(const std::string& name)
-    : name(name)
+  EnumBox(const std::string& name) :
+    name(name),
+    enum2string(),
+    string2enum()
   {
   }
   
+  virtual ~EnumBox() {}
+
   void add(Enum i, const std::string& name) 
   {
     enum2string[i] = name;
@@ -589,7 +593,8 @@ public:
   // Map KeySym to kernel keycode
   std::map<KeySym, int> mapping;
 
-  Keysym2Keycode() 
+  Keysym2Keycode() :
+    mapping()
   {
     //std::cout << "Initing Keysym2Keycode" << std::endl;
 

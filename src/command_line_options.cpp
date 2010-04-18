@@ -74,30 +74,37 @@ enum {
   OPTION_HELP_DEVICES
 };
 
-CommandLineOptions::CommandLineOptions()
+CommandLineOptions::CommandLineOptions() :
+  mode(RUN_DEFAULT),
+  verbose(false),
+  silent (false),
+  quiet  (false),
+  rumble (false),
+  led    (-1),
+  rumble_l(-1),
+  rumble_r(-1),
+  rumble_gain(255),
+  controller_id(0),
+  wireless_id(0),
+  instant_exit(false),
+  no_uinput(false),
+  gamepad_type(GAMEPAD_UNKNOWN),
+  vendor_id(-1),
+  product_id(-1),
+  uinput_config(),
+  deadzone(0),
+  deadzone_trigger(0),
+  button_map(),
+  axis_map(),
+  autofire_map(),
+  relative_axis_map(),
+  calibration_map(),
+  axis_sensitivity_map(),
+  square_axis(false),
+  argp()
 {
-  mode     = RUN_DEFAULT;
-
-  verbose  = false;
-  silent   = false;
-  quiet    = false;
-  rumble   = false;
-  led      = -1;
-  rumble_l = -1;
-  rumble_r = -1;
-  rumble_gain = 255;
-  controller_id = 0;
-  wireless_id   = 0;
-  instant_exit = false;
-  no_uinput = false;
-  gamepad_type = GAMEPAD_UNKNOWN;
   busid[0] = '\0';
   devid[0] = '\0';
-  vendor_id  = -1;
-  product_id = -1;
-  deadzone = 0;
-  deadzone_trigger = 0;
-  square_axis  = false;
 
   argp
     .add_usage("[OPTION]...")

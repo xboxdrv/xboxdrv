@@ -23,7 +23,10 @@
 #include "xboxmsg.hpp"
 #include "xbox_controller.hpp"
 
-XboxController::XboxController(struct usb_device* dev)
+XboxController::XboxController(struct usb_device* dev) :
+  dev(),
+  handle()
+
 {
   handle = usb_open(dev);
   if (!handle)

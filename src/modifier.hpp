@@ -78,8 +78,9 @@ private:
   std::vector<int> axis_state;
 
 public:
-  RelativeAxisModifier(const std::vector<RelativeAxisMapping>& relative_axis_map) 
-    : relative_axis_map(relative_axis_map)
+  RelativeAxisModifier(const std::vector<RelativeAxisMapping>& relative_axis_map) :
+    relative_axis_map(relative_axis_map),
+    axis_state()
   {
     for(size_t i = 0; i < relative_axis_map.size(); ++i)
       {
@@ -117,8 +118,9 @@ private:
   std::vector<int> button_timer;
 
 public:
-  AutoFireModifier(const std::vector<AutoFireMapping>& autofire_map)
-    : autofire_map(autofire_map)
+  AutoFireModifier(const std::vector<AutoFireMapping>& autofire_map) :
+    autofire_map(autofire_map),
+    button_timer()
   {
     for(std::vector<AutoFireMapping>::const_iterator i = autofire_map.begin(); i != autofire_map.end(); ++i)
       {

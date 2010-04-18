@@ -33,6 +33,15 @@ private:
     std::string help;
     std::string argument;
     bool visible;
+
+    Option() :
+      key(),
+      short_option(),
+      long_option(),
+      help(),
+      argument(),
+      visible()
+    {}
   };
 
 public:
@@ -42,12 +51,16 @@ public:
     std::string option;
     std::string argument;
 
-    ParsedOption() : key(-1) {}
+    ParsedOption() : 
+      key(-1),
+      option(),
+      argument()
+    {}
 
-    ParsedOption(int key_, const std::string& option_, const std::string& argument_)
-      : key(key_), 
-        option(option_),
-        argument(argument_)
+    ParsedOption(int key_, const std::string& option_, const std::string& argument_) :
+      key(key_), 
+      option(option_),
+      argument(argument_)
     {}
   };
 

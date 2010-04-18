@@ -58,9 +58,11 @@ struct SaitekP2500Msg
     
 } __attribute__((__packed__));
 
-SaitekP2500Controller::SaitekP2500Controller(struct usb_device* dev)
-  : left_rumble(-1),
-    right_rumble(-1)
+SaitekP2500Controller::SaitekP2500Controller(struct usb_device* dev) :
+  dev(),
+  handle(),
+  left_rumble(-1),
+  right_rumble(-1)
 {
   handle = usb_open(dev);
   if (!handle)

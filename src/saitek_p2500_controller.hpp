@@ -26,7 +26,6 @@
 class SaitekP2500Controller : public XboxGenericController
 {
 private:
-  bool is_vsb;
   struct usb_device* dev;
   struct usb_dev_handle* handle;
   
@@ -42,6 +41,10 @@ public:
 
   /** @param timeout   timeout in msec, 0 means forever */
   bool read(XboxGenericMsg& msg, bool verbose, int timeout);
+
+private:
+  SaitekP2500Controller(const SaitekP2500Controller&);
+  SaitekP2500Controller& operator=(const SaitekP2500Controller&);
 };
 
 #endif

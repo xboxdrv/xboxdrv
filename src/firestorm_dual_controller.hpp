@@ -44,6 +44,10 @@ public:
   bool read(XboxGenericMsg& msg, bool verbose, int timeout);
   bool read_default(XboxGenericMsg& msg, bool verbose, int timeout);
   bool read_vsb(XboxGenericMsg& msg, bool verbose, int timeout);
+
+private:
+  FirestormDualController(const FirestormDualController&);
+  FirestormDualController& operator=(const FirestormDualController&);
 };
 
 #endif

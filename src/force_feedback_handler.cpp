@@ -109,11 +109,18 @@ std::ostream& operator<<(std::ostream& out, const struct ff_effect& effect)
   return out;
 }
 
-ForceFeedbackEffect::ForceFeedbackEffect()
-  : playing(false),
-    count(0),
-    weak_magnitude(0),
-    strong_magnitude(0)
+ForceFeedbackEffect::ForceFeedbackEffect() :
+  delay(),
+  length(),
+  start_strong_magnitude(),
+  start_weak_magnitude(),
+  end_strong_magnitude(),
+  end_weak_magnitude(),
+  envelope(),
+  playing(false),
+  count(0),
+  weak_magnitude(0),
+  strong_magnitude(0)
 {
 }
 
@@ -122,11 +129,18 @@ static int clamp(int lhs, int rhs, int v)
   return std::max(lhs, std::min(v, rhs));
 }
 
-ForceFeedbackEffect::ForceFeedbackEffect(const struct ff_effect& effect)
-  : playing(false),
-    count(0),
-    weak_magnitude(0),
-    strong_magnitude(0)
+ForceFeedbackEffect::ForceFeedbackEffect(const struct ff_effect& effect) :
+  delay(),
+  length(),
+  start_strong_magnitude(),
+  start_weak_magnitude(),
+  end_strong_magnitude(),
+  end_weak_magnitude(),
+  envelope(),
+  playing(false),
+  count(0),
+  weak_magnitude(0),
+  strong_magnitude(0)
 {
   // Since we can't excute most effects directly, we have to emulate
   // them, for documentation on effects see:
@@ -143,54 +157,54 @@ ForceFeedbackEffect::ForceFeedbackEffect(const struct ff_effect& effect)
   length = effect.replay.length;
 
   switch(effect.type)
-    {
-      case FF_CONSTANT:
-        start_weak_magnitude   = clamp(0, 0x7fff, abs(effect.u.constant.level));
-        start_strong_magnitude = clamp(0, 0x7fff, abs(effect.u.constant.level));
-        end_weak_magnitude     = clamp(0, 0x7fff, abs(effect.u.constant.level));
-        end_strong_magnitude   = clamp(0, 0x7fff, abs(effect.u.constant.level));
+  {
+    case FF_CONSTANT:
+      start_weak_magnitude   = clamp(0, 0x7fff, abs(effect.u.constant.level));
+      start_strong_magnitude = clamp(0, 0x7fff, abs(effect.u.constant.level));
+      end_weak_magnitude     = clamp(0, 0x7fff, abs(effect.u.constant.level));
+      end_strong_magnitude   = clamp(0, 0x7fff, abs(effect.u.constant.level));
 
-        envelope = effect.u.constant.envelope;
-        break;
+      envelope = effect.u.constant.envelope;
+      break;
 
-      case FF_PERIODIC:
-        start_weak_magnitude   = clamp(0, 0x7fff, abs(effect.u.periodic.magnitude));
-        start_strong_magnitude = clamp(0, 0x7fff, abs(effect.u.periodic.magnitude));
-        end_weak_magnitude     = clamp(0, 0x7fff, abs(effect.u.periodic.magnitude));
-        end_strong_magnitude   = clamp(0, 0x7fff, abs(effect.u.periodic.magnitude));
+    case FF_PERIODIC:
+      start_weak_magnitude   = clamp(0, 0x7fff, abs(effect.u.periodic.magnitude));
+      start_strong_magnitude = clamp(0, 0x7fff, abs(effect.u.periodic.magnitude));
+      end_weak_magnitude     = clamp(0, 0x7fff, abs(effect.u.periodic.magnitude));
+      end_strong_magnitude   = clamp(0, 0x7fff, abs(effect.u.periodic.magnitude));
 
-        envelope = effect.u.periodic.envelope;
-        break;
+      envelope = effect.u.periodic.envelope;
+      break;
 
-      case FF_RAMP:
-        start_weak_magnitude   = clamp(0, 0x7fff, abs(effect.u.ramp.start_level));
-        start_strong_magnitude = clamp(0, 0x7fff, abs(effect.u.ramp.start_level));
-        end_weak_magnitude     = clamp(0, 0x7fff, abs(effect.u.ramp.end_level));
-        end_strong_magnitude   = clamp(0, 0x7fff, abs(effect.u.ramp.end_level));
+    case FF_RAMP:
+      start_weak_magnitude   = clamp(0, 0x7fff, abs(effect.u.ramp.start_level));
+      start_strong_magnitude = clamp(0, 0x7fff, abs(effect.u.ramp.start_level));
+      end_weak_magnitude     = clamp(0, 0x7fff, abs(effect.u.ramp.end_level));
+      end_strong_magnitude   = clamp(0, 0x7fff, abs(effect.u.ramp.end_level));
 
-        envelope = effect.u.ramp.envelope;
-        break;
+      envelope = effect.u.ramp.envelope;
+      break;
 
-      case FF_RUMBLE:
-        start_weak_magnitude   = clamp(0, 0x7fff, effect.u.rumble.weak_magnitude);
-        start_strong_magnitude = clamp(0, 0x7fff, effect.u.rumble.strong_magnitude);
-        end_weak_magnitude     = clamp(0, 0x7fff, effect.u.rumble.weak_magnitude);
-        end_strong_magnitude   = clamp(0, 0x7fff, effect.u.rumble.strong_magnitude);
-        break;
+    case FF_RUMBLE:
+      start_weak_magnitude   = clamp(0, 0x7fff, effect.u.rumble.weak_magnitude);
+      start_strong_magnitude = clamp(0, 0x7fff, effect.u.rumble.strong_magnitude);
+      end_weak_magnitude     = clamp(0, 0x7fff, effect.u.rumble.weak_magnitude);
+      end_strong_magnitude   = clamp(0, 0x7fff, effect.u.rumble.strong_magnitude);
+      break;
         
-      default:
-        // Unsupported effects
-        // case FF_SPRING:
-	// case FF_FRICTION:
-        // case FF_DAMPER
-        // case FF_INERTIA:
-        std::cout << "Unsupported effect: " << effect << std::endl;
-        start_weak_magnitude   = 0;
-        start_strong_magnitude = 0;
-        end_weak_magnitude     = 0;
-        end_strong_magnitude   = 0;
-        break;
-    }
+    default:
+      // Unsupported effects
+      // case FF_SPRING:
+      // case FF_FRICTION:
+      // case FF_DAMPER
+      // case FF_INERTIA:
+      std::cout << "Unsupported effect: " << effect << std::endl;
+      start_weak_magnitude   = 0;
+      start_strong_magnitude = 0;
+      end_weak_magnitude     = 0;
+      end_strong_magnitude   = 0;
+      break;
+  }
 }
 
 static int get_pos(int start, int end, int pos, int len)
@@ -256,11 +270,12 @@ ForceFeedbackEffect::stop()
   strong_magnitude = 0;
 }
 
-ForceFeedbackHandler::ForceFeedbackHandler()
-  : gain(0xFFFF),
-    max_effects(16),
-    weak_magnitude(0),
-    strong_magnitude(0)
+ForceFeedbackHandler::ForceFeedbackHandler() :
+  gain(0xFFFF),
+  max_effects(16),
+  effects(),
+  weak_magnitude(0),
+  strong_magnitude(0)
 {
   
 }

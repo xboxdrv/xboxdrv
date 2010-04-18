@@ -28,6 +28,10 @@ USBReadThread::USBReadThread(struct usb_dev_handle* handle, int endpoint, int le
   m_handle(handle),
   m_read_endpoint(endpoint),
   m_read_length(len),
+  m_read_buffer(),
+  m_read_buffer_mutex(),
+  m_read_buffer_cond(),
+  m_thread(),
   m_stop(false)
 {
 }

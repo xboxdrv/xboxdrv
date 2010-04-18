@@ -27,7 +27,9 @@
 #include "pretty_printer.hpp"
 #include "arg_parser.hpp"
 
-ArgParser::ArgParser()
+ArgParser::ArgParser() :
+  programm(),
+  options()
 {
 }
 

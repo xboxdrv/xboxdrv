@@ -33,8 +33,11 @@
 Xbox360Controller::Xbox360Controller(struct usb_device* dev, bool is_guitar)
   : dev(dev),
     is_guitar(is_guitar),
+    dev_type(),
+    handle(),
     endpoint_in(1),
-    endpoint_out(2)
+    endpoint_out(2),
+    read_thread()
 {
   find_endpoints();
   if (0)
