@@ -30,9 +30,9 @@
 #include "xboxmsg.hpp"
 #include "xbox360_wireless_controller.hpp"
 
-Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev,
+Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev_,
                                                      int controller_id) :
-  dev(),
+  dev(dev_),
   handle(),
   endpoint(),
   interface(),

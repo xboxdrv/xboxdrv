@@ -32,10 +32,10 @@
 #include "force_feedback_handler.hpp"
 #include "linux_uinput.hpp"
 
-LinuxUinput::LinuxUinput(const std::string& name, uint16_t vendor, uint16_t product) :
-  name(name),
-  vendor(vendor),
-  product(product),
+LinuxUinput::LinuxUinput(const std::string& name_, uint16_t vendor_, uint16_t product_) :
+  name(name_),
+  vendor(vendor_),
+  product(product_),
   fd(-1),
   user_dev(),
   key_bit(false),

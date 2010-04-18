@@ -450,12 +450,12 @@ CommandLineOptions::parse_args(int argc, char** argv)
 
           case OPTION_DEVICE_BY_ID:
             {
-              unsigned int product_id;
-              unsigned int vendor_id;
-              if (sscanf(opt.argument.c_str(), "%x:%x", &vendor_id, &product_id) == 2)
+              unsigned int tmp_product_id;
+              unsigned int tmp_vendor_id;
+              if (sscanf(opt.argument.c_str(), "%x:%x", &tmp_vendor_id, &tmp_product_id) == 2)
                 {
-                  opts.vendor_id  = vendor_id;
-                  opts.product_id = product_id;
+                  opts.vendor_id  = tmp_vendor_id;
+                  opts.product_id = tmp_product_id;
                 }
               else
                 {

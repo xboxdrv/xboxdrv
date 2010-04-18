@@ -82,9 +82,9 @@ struct FirestormMsg
   unsigned int y2 :8;
 } __attribute__((__packed__));
 
-FirestormDualController::FirestormDualController(struct usb_device* dev, bool is_vsb_) :
+FirestormDualController::FirestormDualController(struct usb_device* dev_, bool is_vsb_) :
   is_vsb(is_vsb_),
-  dev(),
+  dev(dev_),
   handle(),
   left_rumble(-1),
   right_rumble(-1)

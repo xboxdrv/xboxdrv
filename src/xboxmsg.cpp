@@ -525,17 +525,17 @@ float s16_to_float(int16_t value)
 {
   if (value >= 0)
   {
-    return value / 32767.0;
+    return static_cast<float>(value) / 32767.0;
   }
   else
   {
-    return value / 32768.0;
+    return static_cast<float>(value) / 32768.0;
   }
 }
 
 float u8_to_float(uint8_t value)
 {
-  return value / 255.0f;
+  return static_cast<float>(value) / 255.0f;
 }
 
 int16_t float_to_s16(float v)

@@ -58,8 +58,8 @@ struct SaitekP2500Msg
     
 } __attribute__((__packed__));
 
-SaitekP2500Controller::SaitekP2500Controller(struct usb_device* dev) :
-  dev(),
+SaitekP2500Controller::SaitekP2500Controller(struct usb_device* dev_) :
+  dev(dev_),
   handle(),
   left_rumble(-1),
   right_rumble(-1)

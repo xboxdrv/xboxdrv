@@ -23,8 +23,8 @@
 #include "xboxmsg.hpp"
 #include "xbox_controller.hpp"
 
-XboxController::XboxController(struct usb_device* dev) :
-  dev(),
+XboxController::XboxController(struct usb_device* dev_) :
+  dev(dev_),
   handle()
 
 {

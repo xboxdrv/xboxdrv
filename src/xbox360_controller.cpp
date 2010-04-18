@@ -30,9 +30,9 @@
 #include "helper.hpp"
 #include "xbox360_controller.hpp"
 
-Xbox360Controller::Xbox360Controller(struct usb_device* dev, bool is_guitar)
-  : dev(dev),
-    is_guitar(is_guitar),
+Xbox360Controller::Xbox360Controller(struct usb_device* dev_, bool is_guitar_)
+  : dev(dev_),
+    is_guitar(is_guitar_),
     dev_type(),
     handle(),
     endpoint_in(1),
