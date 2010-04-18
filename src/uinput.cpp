@@ -213,8 +213,8 @@ uInputCfg::uInputCfg() :
   force_feedback    = false;
   extra_devices     = true;
 
-  std::fill_n(btn_map,  (int)XBOX_BTN_MAX,  ButtonEvent::create(-1, -1));
-  std::fill_n(axis_map, (int)XBOX_AXIS_MAX, AxisEvent::create(-1, -1));
+  std::fill_n(btn_map,  static_cast<int>(XBOX_BTN_MAX),  ButtonEvent::create(-1, -1));
+  std::fill_n(axis_map, static_cast<int>(XBOX_AXIS_MAX), AxisEvent::create(-1, -1));
 
   // Button Mapping
   btn_map[XBOX_BTN_START] = ButtonEvent::create(EV_KEY, BTN_START);
@@ -346,8 +346,8 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
   rel_axis(),
   rel_button()
 {
-  std::fill_n(axis_state,   (int)XBOX_AXIS_MAX, 0);
-  std::fill_n(button_state, (int)XBOX_BTN_MAX,  false);
+  std::fill_n(axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
+  std::fill_n(button_state, static_cast<int>(XBOX_BTN_MAX),  false);
 
   joystick_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name, dev.idVendor, dev.idProduct));
 

@@ -153,7 +153,7 @@ bool
 FirestormDualController::read_vsb(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   Firestorm_vsb_Msg data;
-  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)&data, sizeof(data), timeout);
+  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, reinterpret_cast<char*>(&data), sizeof(data), timeout);
 
   if (ret == -ETIMEDOUT)
     {
@@ -172,7 +172,7 @@ FirestormDualController::read_vsb(XboxGenericMsg& msg, bool verbose, int timeout
           for(size_t i = 0; i < sizeof(data); ++i)
             {
               uint8_t v = reinterpret_cast<char*>(&data)[i];
-              std::cout << boost::format("0x%02x ") % (int)v;
+              std::cout << boost::format("0x%02x ") % static_cast<int>(v);
             }
           std::cout << std::endl;
         }
@@ -234,7 +234,7 @@ bool
 FirestormDualController::read_default(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   FirestormMsg data;
-  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)&data, sizeof(data), timeout);
+  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, reinterpret_cast<char*>(&data), sizeof(data), timeout);
 
   if (ret == -ETIMEDOUT)
     {

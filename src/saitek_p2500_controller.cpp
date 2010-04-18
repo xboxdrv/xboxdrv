@@ -118,7 +118,7 @@ bool
 SaitekP2500Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   SaitekP2500Msg data;
-  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, (char*)&data, sizeof(data), timeout);
+  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, reinterpret_cast<char*>(&data), sizeof(data), timeout);
 
   if (ret == -ETIMEDOUT)
   {

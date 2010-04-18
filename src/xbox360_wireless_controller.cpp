@@ -81,7 +81,7 @@ Xbox360WirelessController::set_rumble(uint8_t left, uint8_t right)
   //                                       +-- typo? might be 0x0c, i.e. length
   //                                       v
   uint8_t rumblecmd[] = { 0x00, 0x01, 0x0f, 0xc0, 0x00, left, right, 0x00, 0x00, 0x00, 0x00, 0x00 };
-  usb_interrupt_write(handle, endpoint, (char*)rumblecmd, sizeof(rumblecmd), 0);
+  usb_interrupt_write(handle, endpoint, reinterpret_cast<char*>(rumblecmd), sizeof(rumblecmd), 0);
 }
 
 void
@@ -106,7 +106,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
     }
   else
     {
-      ret = usb_interrupt_read(handle, endpoint, (char*)data, sizeof(data), timeout);
+      ret = usb_interrupt_read(handle, endpoint, reinterpret_cast<char*>(data), sizeof(data), timeout);
     }
 
   if (ret == -ETIMEDOUT)

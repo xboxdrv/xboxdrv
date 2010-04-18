@@ -86,7 +86,7 @@ USBReadThread::run()
   
   while(!m_stop)
     {
-      int ret = usb_interrupt_read(m_handle, m_read_endpoint, (char*)data.get(), m_read_length, 0 /*timeout*/);
+      int ret = usb_interrupt_read(m_handle, m_read_endpoint, reinterpret_cast<char*>(data.get()), m_read_length, 0 /*timeout*/);
 
       if (ret != 0)
         {

@@ -92,7 +92,7 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev, bool is_guitar)
                   usb_interrupt_write(handle, endpoint_out, ledcmd, len, 0);
 
                   uint8_t data[32];
-                  int ret = usb_interrupt_read(handle, endpoint_in, (char*)data, sizeof(data), 20);
+                  int ret = usb_interrupt_read(handle, endpoint_in, reinterpret_cast<char*>(data), sizeof(data), 20);
                   print_raw_data(std::cout, data, ret);
                 }
             }
@@ -119,7 +119,7 @@ Xbox360Controller::find_endpoints()
       config != dev->config + dev->descriptor.bNumConfigurations;
       ++config)
     {
-      if (debug_print) std::cout << "Config: " << (int)config->bConfigurationValue << std::endl;
+      if (debug_print) std::cout << "Config: " << static_cast<int>(config->bConfigurationValue) << std::endl;
 
       for(struct usb_interface* interface = config->interface;
           interface != config->interface + config->bNumInterfaces;
@@ -129,7 +129,7 @@ Xbox360Controller::find_endpoints()
               altsetting != interface->altsetting + interface->num_altsetting;
               ++altsetting)
             {
-              if (debug_print) std::cout << "  Interface: " << (int)altsetting->bInterfaceNumber << std::endl;
+              if (debug_print) std::cout << "  Interface: " << static_cast<int>(altsetting->bInterfaceNumber) << std::endl;
           
               for(struct usb_endpoint_descriptor* endpoint = altsetting->endpoint; 
                   endpoint != altsetting->endpoint + altsetting->bNumEndpoints; 
@@ -163,7 +163,7 @@ void
 Xbox360Controller::set_rumble(uint8_t left, uint8_t right)
 {
   uint8_t rumblecmd[] = { 0x00, 0x08, 0x00, left, right, 0x00, 0x00, 0x00 };
-  usb_interrupt_write(handle, endpoint_out, (char*)rumblecmd, sizeof(rumblecmd), 0);
+  usb_interrupt_write(handle, endpoint_out, reinterpret_cast<char*>(rumblecmd), sizeof(rumblecmd), 0);
 }
 
 void
@@ -185,7 +185,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
     }
   else
     {
-      ret = usb_interrupt_read(handle, endpoint_in, (char*)data, sizeof(data), timeout);
+      ret = usb_interrupt_read(handle, endpoint_in, reinterpret_cast<char*>(data), sizeof(data), timeout);
     }
 
   if (ret == -ETIMEDOUT)

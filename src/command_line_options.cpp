@@ -349,8 +349,8 @@ CommandLineOptions::parse_args(int argc, char** argv)
             break;
 
           case OPTION_UI_CLEAR:
-            std::fill_n(opts.uinput_config.axis_map, (int)XBOX_AXIS_MAX, AxisEvent::invalid());
-            std::fill_n(opts.uinput_config.btn_map,  (int)XBOX_BTN_MAX,  ButtonEvent::invalid());
+            std::fill_n(opts.uinput_config.axis_map, static_cast<int>(XBOX_AXIS_MAX), AxisEvent::invalid());
+            std::fill_n(opts.uinput_config.btn_map,  static_cast<int>(XBOX_BTN_MAX),  ButtonEvent::invalid());
             break;
 
           case OPTION_UI_AXISMAP:
