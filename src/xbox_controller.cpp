@@ -83,7 +83,7 @@ XboxController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
     {
       msg.type = XBOX_MSG_XBOX;
-      msg.xbox = *reinterpret_cast<XboxMsg*>(data);
+      memcpy(&msg.xbox, data, sizeof(XboxMsg));
       return true;
     }
   return false;
