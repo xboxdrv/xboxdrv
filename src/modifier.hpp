@@ -122,7 +122,7 @@ public:
   {
     for(std::vector<AutoFireMapping>::const_iterator i = autofire_map.begin(); i != autofire_map.end(); ++i)
       {
-        button_timer.push_back(0.0f);
+        button_timer.push_back(0);
       }
   }
 
@@ -137,7 +137,7 @@ public:
             if (button_timer[i] > autofire_map[i].frequency)
               {
                 set_button(msg, autofire_map[i].button, 1);
-                button_timer[i] = 0.0f; // FIXME: we ignoring the passed time
+                button_timer[i] = 0; // FIXME: we ignoring the passed time
               }
             else if (button_timer[i] > autofire_map[i].frequency/2)
               {
