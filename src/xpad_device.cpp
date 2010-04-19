@@ -59,6 +59,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x0738, 0x4716, "Mad Catz Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x0738, 0x4726, "Mad Catz Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x0738, 0x4740, "Mad Catz Beat Pad" },
+  { GAMEPAD_XBOX360,          0x0f0d, 0x000a, "Hori Co. DOA4 FightStick" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x000d, "Hori Fighting Stick Ex2" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x0016, "Hori Real Arcade Pro Ex" },
   { GAMEPAD_XBOX360,          0x162e, 0xbeef, "Joytech Neo-Se Take2" },
