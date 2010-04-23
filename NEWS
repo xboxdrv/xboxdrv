@@ -2,7 +2,7 @@ xboxdrv 0.4.11 - (??/Apr/2010)
 ==============================
 
 * added --axis-sensitivity
-* add some aliases for button names
+* add number aliases for button names
 * some warnings in the code got cleaned up
 
 
