@@ -732,13 +732,13 @@ XboxButton string2btn(const std::string& str_)
   else if (str == "back")
     return XBOX_BTN_BACK;
 
-  else if (str == "a")
+  else if (str == "a" || str == "1")
     return XBOX_BTN_A;
-  else if (str == "b")
+  else if (str == "b" || str == "2")
     return XBOX_BTN_B;
-  else if (str == "x")
+  else if (str == "x" || str == "3")
     return XBOX_BTN_X;
-  else if (str == "y")
+  else if (str == "y" || str == "4")
     return XBOX_BTN_Y;
 
   else if (str == "green")
@@ -757,14 +757,14 @@ XboxButton string2btn(const std::string& str_)
   else if (str == "white")
     return XBOX_BTN_WHITE;
 
-  else if (str == "lb")
+  else if (str == "lb" || str == "5")
     return XBOX_BTN_LB;
-  else if (str == "rb")
+  else if (str == "rb" || str == "6")
     return XBOX_BTN_RB;
 
-  else if (str == "lt")
+  else if (str == "lt" || str == "7")
     return XBOX_BTN_LT;
-  else if (str == "rt")
+  else if (str == "rt" || str == "8")
     return XBOX_BTN_RT;
 
   else if (str == "tl")
@@ -772,13 +772,13 @@ XboxButton string2btn(const std::string& str_)
   else if (str == "tr")
     return XBOX_BTN_THUMB_R;
 
-  else if (str == "du")
+  else if (str == "du" || str == "up")
     return XBOX_DPAD_UP;
-  else if (str == "dd")
+  else if (str == "dd" || str == "down")
     return XBOX_DPAD_DOWN;
-  else if (str == "dl")
+  else if (str == "dl" || str == "left")
     return XBOX_DPAD_LEFT;
-  else if (str == "dr")
+  else if (str == "dr" || str == "right")
     return XBOX_DPAD_RIGHT;
 
   else
