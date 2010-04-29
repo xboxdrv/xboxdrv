@@ -611,6 +611,20 @@ The triggers are not regonized in these games when they are analog, so
 we have to handle them as buttons.
 
 
+Fighting games with Datel Arcade Pro Joystick:
+----------------------------------------------
+
+The left and right trigger get turned into digital buttons. All axis
+except the dpad are ignored. RB and RT are mapped to act as if buttons
+1,2 and 3 are pressed simultaniously (useful for some special
+attacks). Instead of using the native button names, the
+1,2,3,... aliases are used, which makes things easier to edit:
+
+ % xboxdrv --dpad-only \
+           --trigger-as-button  \
+           --buttonmap lb=1,x=2,y=3,lt=4,a=5,b=6,rb=1,rb=2,rb=3,rt=4,rt=5,rt=6
+
+
 CH Flightstick emulation in Dosbox:
 -----------------------------------
 
