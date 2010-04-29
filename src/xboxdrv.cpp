@@ -19,6 +19,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <boost/scoped_array.hpp>
 #include <sys/time.h>
 #include <ctype.h>
 #include <time.h>
@@ -660,6 +661,40 @@ Xboxdrv::run_list_supported_devices()
     }    
 }
 
+bool xpad_device_sorter(const XPadDevice& lhs, const XPadDevice& rhs)
+{
+  if (lhs.idVendor < rhs.idVendor)
+  {
+    return true;
+  }
+  else if (lhs.idVendor == rhs.idVendor)
+  {
+    return lhs.idProduct < rhs.idProduct;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+void
+Xboxdrv::run_list_supported_devices_xpad()
+{
+  boost::scoped_array<XPadDevice> sorted_devices(new XPadDevice[xpad_devices_count]);
+  memcpy(sorted_devices.get(), xpad_devices, sizeof(XPadDevice) * xpad_devices_count);
+
+  std::sort(sorted_devices.get(), sorted_devices.get() + xpad_devices_count, xpad_device_sorter);
+
+  for(int i = 0; i < xpad_devices_count; ++i)
+    {
+      std::cout << boost::format("{ 0x%04x, 0x%04x, \"%s\", %s },\n")
+        % int(sorted_devices[i].idVendor)
+        % int(sorted_devices[i].idProduct)
+        % sorted_devices[i].name
+        % gamepadtype_to_macro_string(sorted_devices[i].type);
+    }    
+}
+
 void
 Xboxdrv::run_help_devices()
 {
@@ -713,6 +748,10 @@ Xboxdrv::main(int argc, char** argv)
 
           case CommandLineOptions::RUN_LIST_SUPPORTED_DEVICES:
             run_list_supported_devices();
+            break;
+
+          case CommandLineOptions::RUN_LIST_SUPPORTED_DEVICES_XPAD:
+            run_list_supported_devices_xpad();
             break;
 
           case CommandLineOptions::PRINT_VERSION:

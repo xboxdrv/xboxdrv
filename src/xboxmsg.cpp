@@ -58,6 +58,24 @@ std::string gamepadtype_to_string(const GamepadType& type)
     }
 }
 
+
+std::string gamepadtype_to_macro_string(const GamepadType& type)
+{
+  switch (type)
+    {
+      case GAMEPAD_XBOX360: return "GAMEPAD_XBOX360";
+      case GAMEPAD_XBOX360_WIRELESS: return "GAMEPAD_XBOX360_WIRELESS";
+      case GAMEPAD_XBOX: return "GAMEPAD_XBOX";
+      case GAMEPAD_XBOX_MAT: return "GAMEPAD_XBOX_MAT";
+      case GAMEPAD_XBOX360_GUITAR: return "GAMEPAD_XBOX360_GUITAR";
+      case GAMEPAD_FIRESTORM: return "GAMEPAD_FIRESTORM";
+      case GAMEPAD_FIRESTORM_VSB: return "GAMEPAD_FIRESTORM_VSB";
+      case GAMEPAD_SAITEK_P2500: return "GAMEPAD_SAITEK_P2500";
+      default:
+        assert(!"Unknown gamepad type supplied");
+    }
+}
+
 std::ostream& operator<<(std::ostream& out, const GamepadType& type) 
 {
   switch (type)

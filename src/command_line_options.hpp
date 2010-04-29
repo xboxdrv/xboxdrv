@@ -35,6 +35,7 @@ public:
          RUN_DAEMON, 
          RUN_LIST_CONTROLLER,
          RUN_LIST_SUPPORTED_DEVICES,
+         RUN_LIST_SUPPORTED_DEVICES_XPAD,
          PRINT_VERSION,
          PRINT_HELP,
          PRINT_HELP_DEVICES,

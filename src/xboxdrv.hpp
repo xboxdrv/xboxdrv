@@ -31,6 +31,7 @@ private:
   void run_main(const CommandLineOptions& opts);
   void run_daemon(const CommandLineOptions& opts);
   void run_list_supported_devices();
+  void run_list_supported_devices_xpad();
   void run_help_devices();
   void run_list_controller();
 

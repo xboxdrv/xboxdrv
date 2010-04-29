@@ -256,6 +256,7 @@ std::string btn2string(XboxButton btn);
 std::string axis2string(XboxAxis axis);
 
 std::string gamepadtype_to_string(const GamepadType& type);
+std::string gamepadtype_to_macro_string(const GamepadType& type);
 
 #endif
 

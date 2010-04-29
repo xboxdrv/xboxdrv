@@ -70,6 +70,7 @@ enum {
   OPTION_DEVICE_BY_ID,
   OPTION_DEVICE_BY_PATH,
   OPTION_LIST_SUPPORTED_DEVICES,
+  OPTION_LIST_SUPPORTED_DEVICES_XPAD,
   OPTION_LIST_CONTROLLER,
   OPTION_HELP_DEVICES
 };
@@ -123,6 +124,7 @@ CommandLineOptions::CommandLineOptions() :
     .add_option(OPTION_WID,          'w', "wid",     "N", "use wireless controller with wid N (default: 0)")
     .add_option(OPTION_LIST_CONTROLLER, 'L', "list-controller", "", "list available controllers")
     .add_option(OPTION_LIST_SUPPORTED_DEVICES, 0, "list-supported-devices", "", "list supported devices (used by xboxdrv-daemon.py)")
+    .add_option(OPTION_LIST_SUPPORTED_DEVICES_XPAD, 0, "list-supported-devices-xpad", "", "list supported devices (used by xboxdrv-daemon.py)")
     .add_option(OPTION_TEST_RUMBLE,  'R', "test-rumble", "", "map rumbling to LT and RT (for testing only)")
     .add_option(OPTION_NO_UINPUT,     0,  "no-uinput",   "", "do not try to start uinput event dispatching")
     .add_option(OPTION_MIMIC_XPAD,    0,  "mimic-xpad",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver")
@@ -473,6 +475,10 @@ CommandLineOptions::parse_args(int argc, char** argv)
 
           case OPTION_LIST_SUPPORTED_DEVICES:
             opts.mode = RUN_LIST_SUPPORTED_DEVICES;
+            break;
+
+          case OPTION_LIST_SUPPORTED_DEVICES_XPAD:
+            opts.mode = RUN_LIST_SUPPORTED_DEVICES_XPAD;
             break;
 
           case OPTION_LIST_CONTROLLER:
