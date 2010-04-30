@@ -1,9 +1,12 @@
-xboxdrv 0.4.11 - (??/Apr/2010)
+xboxdrv 0.4.11 - (01/Mai/2010)
 ==============================
 
 * added --axis-sensitivity
-* add number aliases for button names
-* some warnings in the code got cleaned up
+* added number aliases for button names
+* added left/right/up/down aliases for dpad
+* some compiler warnings got cleaned up
+* confusing uinput error messages got cleaned up
+* fixed missing 'report sync' event that broke keyboard emulation
 
 
 xboxdrv 0.4.10 - (17/Feb/2010)

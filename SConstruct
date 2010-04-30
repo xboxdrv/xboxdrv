@@ -1,6 +1,23 @@
 # -*- python -*-
 
-env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'])
+if True:
+    env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'])
+else:
+    env = Environment(CXXFLAGS= [ "-O3", "-g3",
+                                  "-ansi",
+                                  "-pedantic",
+                                  "-Wall",
+                                  "-Wextra",
+                                  "-Wnon-virtual-dtor",
+                                  "-Weffc++",
+                                  #"-Wconversion",
+                                  "-Wold-style-cast",
+                                  # "-Werror",
+                                  "-Wshadow",
+                                  "-Wcast-qual",
+                                  "-Winit-self", # only works with >= -O1
+                                  "-Wno-unused-parameter",
+                                  ])
 conf = Configure(env)
 
 if not conf.env['CXX']:
