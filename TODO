@@ -15,8 +15,6 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
-* could use left,right,up,down as alias for dr,dl,du,dd
-
 * a mouse needs mouse buttons to be recognized as mouse:
 
  --ui-buttonmap a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER  
@@ -25,8 +23,6 @@ Stuff to do before 0.5 release:
   smaller, but not go away
 
   --ui-axismap x1=REL_X:10:20,y1=REL_Y:10:20,y2
-
-* improve uinput error message when /dev/input/uinput isn't found
 
 * src/xbox_controller.cpp:71: Make endpoint variable
   http://ubuntuforums.org/showthread.php?p=7538167#post7538167

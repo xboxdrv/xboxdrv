@@ -57,7 +57,8 @@ LinuxUinput::LinuxUinput(const std::string& name_, uint16_t vendor_, uint16_t pr
   const char* uinput_filename[] = { "/dev/input/uinput", "/dev/uinput", "/dev/misc/uinput" };
   const int uinput_filename_count = (sizeof(uinput_filename)/sizeof(char*));
 
-  for (int i = 0; i < uinput_filename_count; ++i) 
+  std::ostringstream str;
+  for (int i = 0; i < uinput_filename_count; ++i)
   {
     if ((fd = open(uinput_filename[i], O_RDWR | O_NDELAY)) >= 0)
     {
@@ -65,13 +66,15 @@ LinuxUinput::LinuxUinput(const std::string& name_, uint16_t vendor_, uint16_t pr
     }
     else
     {
-      std::cout << "Error: " << uinput_filename[i] << ": " << strerror(errno) << std::endl;
+      str << "  " << uinput_filename[i] << ": " << strerror(errno) << std::endl;
     }
   }
 
   if (fd < 0)
   {
-    std::cout << "Error: No stuitable uinput device found" << std::endl;
+    std::cout << "\nError: No stuitable uinput device found, tried:" << std::endl;
+    std::cout << std::endl;
+    std::cout << str.str();
     std::cout << "" << std::endl;
     std::cout << "Troubleshooting:" << std::endl;
     std::cout << "  * make sure uinput kernel module is loaded " << std::endl;
