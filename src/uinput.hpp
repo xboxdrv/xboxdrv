@@ -137,10 +137,14 @@ public:
   uInput(const XPadDevice& dev, uInputCfg cfg = uInputCfg());
   ~uInput();
 
+  void send(XboxGenericMsg& msg); 
+  void update(int msec_delta);
+  void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
+
+private:
   void setup_xbox360_gamepad(GamepadType type);
   void setup_xbox360_guitar();
 
-  void send(XboxGenericMsg& msg); 
   void send(Xbox360Msg& msg);
   void send(Xbox360GuitarMsg& msg);
   void send(XboxMsg& msg);
@@ -153,10 +157,6 @@ public:
 
   void send_button(int code, bool value);
   void send_axis(int code, int32_t value);
-
-  void update(int msec_delta);
-
-  void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
 
   LinuxUinput* get_mouse_uinput() const;
   LinuxUinput* get_keyboard_uinput() const;
