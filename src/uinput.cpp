@@ -791,13 +791,23 @@ void
 uInput::send_key(int ev_code, bool value)
 {
   if (ev_code == -1)
-    ; // pass
+  {
+    // pass
+  }
   else if (is_keyboard_button(ev_code))
+  {
     get_keyboard_uinput()->send(EV_KEY, ev_code, value);
+    // FIXME: should sync only after all buttons are handled
+    get_keyboard_uinput()->send(EV_SYN, SYN_REPORT, 0); 
+  }
   else if (is_mouse_button(ev_code))
+  {
     get_mouse_uinput()->send(EV_KEY, ev_code, value);
+  }
   else
+  {
     get_joystick_uinput()->send(EV_KEY, ev_code, value);
+  }
 }
 
 void
