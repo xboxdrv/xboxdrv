@@ -254,7 +254,18 @@ will thus not function properly with the Xbox360 gamepad. Via the
 --square-axis option you can work around this issue and diagonals will
 be reported as (1,1).
 
-[[Axis Sensitivity]]
+[[ Four Way Restrictor ]]
+-------------------------
+
+The --four-way-restrictor option allows to to limit the movement on
+both analogsticks to only four directions (up, down, left, right), the
+diagonals (up/left, up/right, down/left, down/right) are filtered out
+from the output. This option is useful for games such as Tetris, that
+don't need diagonals and where you don't want to accidently trigger
+the down-move while trying to do a left/right move.
+
+
+[[ Axis Sensitivity ]]
 --------------------
 
 The sensitive of an axis can be adjusted via --axis-sensitivty:
