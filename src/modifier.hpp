@@ -164,6 +164,7 @@ void apply_calibration_map(XboxGenericMsg& msg, const std::vector<CalibrationMap
 void apply_deadzone(XboxGenericMsg& msg, const CommandLineOptions& opts);
 void apply_square_axis(XboxGenericMsg& msg);
 void apply_axis_sensitivity(XboxGenericMsg& msg, const CommandLineOptions& opts);
+void apply_four_way_restrictor(XboxGenericMsg& msg, const CommandLineOptions& opts);
 
 #endif
 

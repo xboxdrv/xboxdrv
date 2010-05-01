@@ -283,6 +283,9 @@ Xboxdrv::apply_modifier(XboxGenericMsg& msg, int msec_delta, const CommandLineOp
 
   if (!opts.axis_sensitivity_map.empty())
     apply_axis_sensitivity(msg, opts);
+
+  if (opts.four_way_restrictor)
+    apply_four_way_restrictor(msg, opts);
 }
 
 void
@@ -584,6 +587,7 @@ Xboxdrv::print_info(struct usb_device* dev,
     std::cout << "LED Status:        " << opts.led << std::endl;
 
   std::cout << "Square Axis:       " << ((opts.square_axis) ? "yes" : "no") << std::endl;
+  std::cout << "4-Way Restrictor:  " << ((opts.four_way_restrictor) ? "yes" : "no") << std::endl;
   
   std::cout << "ButtonMap:         ";
   if (opts.button_map.empty())

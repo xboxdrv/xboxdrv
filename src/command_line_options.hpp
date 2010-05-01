@@ -73,6 +73,7 @@ public:
   std::vector<CalibrationMapping> calibration_map;
   std::vector<AxisSensitivityMapping> axis_sensitivity_map;
   bool square_axis;
+  bool four_way_restrictor;
   ArgParser argp;
 
 public:

@@ -65,6 +65,7 @@ enum {
   OPTION_CALIBRARIOTION,
   OPTION_RELATIVE_AXIS,
   OPTION_SQUARE_AXIS,
+  OPTION_FOUR_WAY_RESTRICTOR,
   OPTION_AXIS_SENSITIVITY,
   OPTION_HELP_LED,
   OPTION_DEVICE_BY_ID,
@@ -102,6 +103,7 @@ CommandLineOptions::CommandLineOptions() :
   calibration_map(),
   axis_sensitivity_map(),
   square_axis(false),
+  four_way_restrictor(false),
   argp()
 {
   busid[0] = '\0';
@@ -157,6 +159,7 @@ CommandLineOptions::CommandLineOptions() :
     .add_option(OPTION_UI_BUTTONMAP,       0, "ui-buttonmap",     "MAP",  "Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)")
     .add_option(OPTION_UI_AXISMAP,         0, "ui-axismap",       "MAP",  "Changes the uinput events send when moving a axis (example: X1=ABS_X2)")
     .add_option(OPTION_SQUARE_AXIS,        0, "square-axis",      "",     "Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)")
+    .add_option(OPTION_FOUR_WAY_RESTRICTOR,0, "four-way-restrictor", "",  "Restrict axis movement to one axis at a time")
     .add_option(OPTION_AXIS_SENSITIVITY,   0, "axis-sensitivity", "MAP",  "Adjust the axis sensitivity (example: X1=2.0,Y1=1.0)")
     .add_option(OPTION_RELATIVE_AXIS,      0, "relative-axis",    "MAP",  "Make an axis emulate a joystick throttle (example: y2=64000)")
     .add_option(OPTION_AUTOFIRE,           0, "autofire",         "MAP",  "Cause the given buttons to act as autofire (example: A=250)")
@@ -431,6 +434,10 @@ CommandLineOptions::parse_args(int argc, char** argv)
             arg2vector(opt.argument, opts.axis_sensitivity_map, &AxisSensitivityMapping::from_string);
             break;
 
+          case OPTION_FOUR_WAY_RESTRICTOR:
+            opts.four_way_restrictor = true;
+            break;
+
           case OPTION_SQUARE_AXIS:
             opts.square_axis = true;
             break;
@@ -534,7 +541,7 @@ void
 CommandLineOptions::print_version() const
 {
   std::cout
-    << "xboxdrv 0.4.8\n"
+    << "xboxdrv 0.4.12\n"
     << "Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>\n"
     << "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
     << "This is free software: you are free to change and redistribute it.\n"
