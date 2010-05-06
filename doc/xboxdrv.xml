@@ -1223,6 +1223,139 @@ joysticktype = ch]]></programlisting>
   </refsect1>
 
   <refsect1>
+    <title>Xorg Trouble</title>
+    <para>
+      If you start xboxdrv and instead of having a fully working
+      joystick, you end up controlling the mouse that might be due to
+      recent changes in Xorg and its device hotplug handling. There
+      are four workarounds, the one that involves
+      editing <filename>/etc/hal/fdi/policy/preferences.fdi</filename>
+      is the recommont one.
+    </para>
+
+    <refsect2>
+      <title>Temporary workaround using hal-device</title>
+      <para>
+        Get the device id from hal:
+      </para>
+
+      <programlisting>% hal-find-by-property --key 'info.product' --string 'Xbox Gamepad (userspace driver)'</programlisting>
+
+      <para>Then remove the device from hal with:</para>
+
+      <programlisting>% hal-device -r $DEVICEID</programlisting>
+    </refsect2>
+
+    <refsect2>
+      <title>Temporary workaround using xinput</title>
+      <para>
+        Second workaround works with xinput:
+      </para>
+
+      <programlisting><![CDATA[% xinput list
+ % xinput set-int-prop $DEVICEID 'Device Enabled' 32 0]]></programlisting>
+    </refsect2>
+
+    <refsect2>
+      <title>Permanent workaround using .fdi files</title>
+      <para>
+        The former two workarounds are just temporary and have to be redone
+        after each start of xboxdrv, the last workaround is a permanent one:
+      </para>
+      <para>
+        You have to edit:
+      </para>
+
+      <para><filename>/etc/hal/fdi/policy/preferences.fdi</filename></para>
+
+      <para>And insert the following lines:</para>
+
+      <programlisting><![CDATA[
+<match key="input.product" string="Xbox Gamepad (userspace driver)">
+  <remove key="input.x11_driver" />
+</match>]]></programlisting>
+    </refsect2>
+
+    <refsect2>
+      <title>Permanent workaround by disabling device auto detection</title>
+      <para>
+        A fourth workaround involved disabling the autodetection of Xorg
+        completly, you can do that by adding the following lines to
+        <filename>/etc/X11/xorg.conf</filename>:</para>
+
+      <programlisting><![CDATA[Section "ServerFlags"
+  Option "AutoAddDevices" "False"
+EndSection]]></programlisting>
+
+      <para>
+        Note that without auto detection you will have to manually configure
+        all your mice and keyboards or your Xorg Server won't start up
+        properly. So unless you are already familiar with editing Xorg you
+        better avoid this workaround. Workaround 3) has basically the same
+        effect, except that auto detection only gets disabled for the single
+        device it is causing problems.
+      </para>
+    </refsect2>
+  </refsect1>
+
+  <refsect1>
+    <title>Wacom Trouble</title>
+    <para>
+      In recent kernels a Wacom graphic tablet creates a joystick device, so
+      xboxdrv or any other real joysticks ends up as <filename>/dev/input/js1</filename> instead
+      of <filename>/dev/input/js0</filename>. In many games this causes the joystick to not
+      function any more.
+    </para>
+
+    <para>A temporary workaround for this is to simply delete the joystick
+      device js0 and replace it with a symbolic link js1 via:
+    </para>
+
+    <programlisting>% sudo ln -sf /dev/input/js1 /dev/input/js0</programlisting>
+
+    <para>
+      This workaround will only last till the next reboot, since the device
+      names are dynamically created, but for the time being there doesn't
+      seem to any other way to easily work around this issue. 
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>uinput Trouble</title>
+    <para>
+      On Ubuntu 9.04 the permissions of the uinput device have changed to
+      0640, meaning only root has access to the device. To change this back
+      so that users in the group root have access the device and in turn can
+      run xboxdrv without sudo you have to create a file called:
+    </para>
+    <para>
+      <filename>/etc/udev/rules.d/55-permissions-uinput.rules</filename>
+    </para>
+    <para>
+      With the content:
+    </para>
+    <programlisting>KERNEL=="uinput", MODE="0660", GROUP="root"</programlisting>
+  </refsect1>
+
+  <refsect1>
+    <title>Wine Trouble</title>
+    <para>
+      When using the Xbox360 gamepad in Wine it is not specially handled as
+      Xbox360 gamepad, this means games will not display the proper button
+      labels, but just numbers (i.e. 'Btn1' instead of 'A' for
+      example). Asside from that it should work fine.
+    </para>
+    <para>
+      Xinput support (the DirectInput replacment, not the Xorg xinput) might
+      not work properly or not at all.
+    </para>
+    <para>
+      It is currently unknown if this can be fixed by xboxdrv or if it
+      requires patches to Wine.
+    </para>
+  </refsect1>
+
+  <refsect1>
     <title>Force Feedback Programming</title>
     <para>
       For documentation on the FF interface see:

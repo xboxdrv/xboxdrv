@@ -64,121 +64,12 @@ To load the uinput kernel module automatically on boot add it
 On other distributions exact install instructions might be
 slightly different.
 
-[[ Running InputDrv ]]
-----------------------
+Running InputDrv
+----------------
 
 The programs src/inputdrv and gui/inputcfg.py are part of an experiment to
 create a very flexible input configuration framework. They are still
 in development and not of any use unless you want to hack the
 source. Their compilation is disabled by default.
-
-[[ Xorg Trouble ]]
-------------------
-
-If you start xboxdrv and instead of having a fully working joystick,
-you end up controlling the mouse that might be due to recent changes
-in Xorg and its device hotplug handling. There are four workarounds,
-the one that involves editing /etc/hal/fdi/policy/preferences.fdi is
-the recommont one.
-
-1) Temporary workaround using hal-device
-----------------------------------------
-
-Get the device id from hal:
-
- % hal-find-by-property --key 'info.product' --string 'Xbox Gamepad (userspace driver)'
-
-Then remove the device from hal with:
-
- % hal-device -r $DEVICEID
-
-2) Temporary workaround using xinput
-------------------------------------
-
-Second workaround works with xinput:
-
- % xinput list
- % xinput set-int-prop $DEVICEID 'Device Enabled' 32 0
-
-3) Permanent workaround using .fdi files
----------------------------------------
-
-The former two workarounds are just temporary and have to be redone
-after each start of xboxdrv, the last workaround is a permanent one:
-
-You have to edit:
-
- /etc/hal/fdi/policy/preferences.fdi
-
-And insert the following lines:
-
-    <match key="input.product" string="Xbox Gamepad (userspace driver)">
-      <remove key="input.x11_driver" />
-    </match>
-
-4) Permanent workaround by disabling device auto detection
-----------------------------------------------------------
-
-A fourth workaround involved disabling the autodetection of Xorg
-completly, you can do that by adding the following lines to
-/etc/X11/xorg.conf:
-
-Section "ServerFlags"
-  Option "AutoAddDevices" "False"
-EndSection
-
-Note that without auto detection you will have to manually configure
-all your mice and keyborads or your Xorg Server won't start up
-properly. So unless you are already familiar with editing Xorg you
-better avoid this workaround. Workaround 3) has basically the same
-effect, except that auto detection only gets disabled for the single
-device it is causing problems.
-
-[[ Wacom Trouble ]]
--------------------
-
-In recent kernels a Wacom graphic tablet creates a joystick device, so
-xboxdrv or any other real joysticks ends up as /dev/input/js1 instead
-of /dev/input/js0. In many games this causes the joystick to not
-function any more.
-
-A temporary workaround for this is to simply delete the joystick
-device js0 and replace it with a symbolic link js1 via:
-
- % sudo ln -sf /dev/input/js1 /dev/input/js0
-
-This workaround will only last till the next reboot, since the device
-names are dynamically created, but for the time being there doesn't
-seem to any other way to easily work around this issue. 
-
-
-[[ uinput Trouble ]]
---------------------
-
-On Ubuntu 9.04 the permissions of the uinput device have changed to
-0640, meaning only root has access to the device. To change this back
-so that users in the group root have access the device and in turn can
-run xboxdrv without sudo you have to create a file called:
-
-/etc/udev/rules.d/55-permissions-uinput.rules
-
-With the content:
-
-KERNEL=="uinput", MODE="0660", GROUP="root"
-
-
-[[ Wine Trouble ]]
-------------------
-
-When using the Xbox360 gamepad in Wine it is not specially handled as
-Xbox360 gamepad, this means games will not display the proper button
-labels, but just numbers (i.e. 'Btn1' instead of 'A' for
-example). Asside from that it should work fine.
-
-Xinput support (the DirectInput replacment, not the Xorg xinput) might
-not work properly or not at all.
-
-It is currently unknown if this can be fixed by xboxdrv or if it
-requires patches to Wine.
 
 # EOF #
