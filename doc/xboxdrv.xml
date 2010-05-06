@@ -1,0 +1,988 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+          "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id="xboxdrv">
+  <refentryinfo>
+    <date>2010-05-05</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle>
+      <application>xboxdrv</application>
+    </refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo>xboxdrv 0.4.12</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>
+      <application>xboxdrv</application>
+    </refname>
+    <refpurpose>
+      Does nothing useful.
+    </refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <para>blabla</para>
+    <cmdsynopsis>
+      <command>foo</command>
+      <arg><option>-f </option><replaceable class="parameter">bar</replaceable></arg>
+      <arg><option>-d<replaceable class="parameter">n</replaceable></option></arg>
+      <arg rep="repeat"><replaceable class="parameter">file</replaceable></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>DESCRIPTION</title>
+    <variablelist>
+      <varlistentry>
+	<term><option>--deadzone <replaceable class="parameter">NUM</replaceable></option></term>
+        <listitem>
+	  <para>
+            The deadzone is the area at which the sticks do not report any
+            events. The default is zero, which gives the best sensitifity but
+            might also cause trouble in some games in that the character or camera
+            might move without moving the stick. To fix this one has to set the
+            value to something higher:
+          </para>
+
+          <para>
+            <command>% xboxdrv --deadzone 4000</command>
+          </para>
+
+          <para>A value of 4000 works quite well for most games.</para>
+          
+          <para>You can also give the deadzone in percentage:</para>
+          
+          <para><command>% xboxdrv --deadzone 15%</command></para>
+	</listitem>
+      </varlistentry>
+
+      
+      <varlistentry>
+	<term><option>--deadzone-trigger <replaceable class="parameter">NUM</replaceable></option></term>
+        <listitem>
+          <para>
+            The left and right trigger have a separate deadzone value which can be
+            specified with:
+            
+            % xboxdrv --deadzone-trigger 15%  
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><option>--calibration <replaceable class="parameter">CALIBRATIONSPEC</replaceable></option></term>
+        <listitem>
+          <para>
+            If your gamepad for some reason can't reach the maximum value or isn't
+            centered properly you can fix that via the calibration options:
+          </para>
+
+          <para><command>% xboxdrv --calibration X2=-32768:0:32767</command></para>
+
+          <para>X2 is the axis name and the three values that follow are min, center
+            and max. Simply insert the values that jstest reports when your axis
+            is in the respective positions.</para>
+
+          <para>You can also use the calibration option if you want to make your
+            joystick more sensitive. A setting of:</para>
+
+          <para><command>xboxdrv --calibration AXIS=MIN:CENTER:MAX,...</command></para>
+
+          <para>Will cause the joystick device report maximum position when your
+            stick is only moved half the way.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--square-axis</option></term>
+        <listitem>
+          <para>
+            The Xbox360 gamepad, as most other current day gamepads, features a
+            circular movment range, which restricts the movement so that the
+            distance to the center never gets beyond 1. This means that when you
+            have the controller at the top/left the value reported is (0.7, 0.7)
+            (i.e. length 1, angle 45) instead of (1,1). This behaviour is
+            different then most classic joysticks, which had a square range and
+            allowed x and y to be handled completly indepened.
+          </para>
+
+          <para>Some old games (i.e. DOS stuff) require a square movement range and
+            will thus not function properly with the Xbox360 gamepad. Via the
+            <option>--square-axis</option> option you can work around this issue and diagonals will
+            be reported as (1,1).</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--four-way-restrictor</option></term>
+        <listitem>
+          <para>
+            The <option>--four-way-restrictor</option> option allows to
+            to limit the movement on both analogsticks to only four
+            directions (up, down, left, right), the diagonals (up/left,
+            up/right, down/left, down/right) are filtered out from the
+            output. This option is useful for games such as Tetris, that
+            don't need diagonals and where you don't want to accidently
+            trigger the down-move while trying to do a left/right move.
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--axis-sensitivty <replaceable class="parameter">AXIS=SENSITIVITY</replaceable></option>,...</term>
+        <listitem>
+          <para>The sensitive of an axis can be adjusted via --axis-sensitivty:</para>
+
+          <para><command>% xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0</command></para>
+
+          <para>A value of 0 gives you the default linear sensitivity, values larger
+            then 0 will give you heigher sensitivity, while values smaller then 0
+            will give you lower sensitivity.</para>
+
+          <para>Sensitivity works by applying:</para>
+
+          <programlisting><![CDATA[t = 2 ** sensitivity;
+pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
+
+          <para>To the value of the axis, thus both the min and max position will
+            always stay the same, only the values inbetween change.</para>
+
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--autofire BUTTON=FREQUENCY</option></term>
+        <listitem>
+          <para>Autofire mapping allows you to let a button automatically fire with a
+            given frequency in miliseconds:</para>
+          
+          <para><command>% xboxdrv --autofire A=250</command></para>
+
+          <para>Combining <option>--autofire</option> with button map allows you to have one button act
+            as autofire while another one, emitting the same signal, acts normally.</para>
+
+          <para><command>% xboxdrv --autofire B=250 --buttonmap B=A</command></para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--relative-axis AXIS=NUM,...</option></term>
+        <listitem>
+          <para>
+            The function <option>--relative-axis</option> allows you to change the behaviour of an
+            axis so that your movement of it moves its value up or down instead of
+            applying it directly.  This is mostly useful for flightsim games that
+            make use of a throttle control, which you can emulate by using the
+            relative axis mapping.
+          </para>
+          <para>
+            Since the axis might be upside down, you might want to use
+            the <option>--axismap</option> function to reverse it.
+          </para>
+
+          <para><command>% xboxdrv --relative-axis y2=64000 --axismap -y2=y2</command></para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--buttonmap BUTTON=BUTTON,...</option></term>
+        <listitem>
+          <para>
+            Button remapping is available via the <option>--buttonmap</option> option. If you want
+            to swap button A and B start with:
+          </para>
+
+          <para><command>% xboxdrv --buttonmap A=B,B=A</command></para>
+
+          <para>If you want all face buttons send out A button events:</para>
+
+          <para><command>% xboxdrv --buttonmap B=A,X=A,Y=A</command></para>
+
+          <para>Possible button names are (aliases are in parenthesis):</para>
+
+          <table>
+            <title>Button Aliases</title>
+            <thead>
+              <row>
+                <entry>Name</entry>
+                <entry>Description</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>start, back</entry>
+                <entry>start, back buttons</entry>
+              </row>
+
+              <row>
+                <entry>guide</entry>
+                <entry>big X-button in the middle (Xbox360 only)</entry>
+              </row>
+
+              <row>
+                <entry>a(1), b(2), x(3), y(4)</entry>
+                <entry>face buttons</entry>
+              </row>
+
+              <row>
+                <entry>black, white</entry>
+                <entry>black, white buttons (Xbox1 only, mapped to lb, rb on Xbox360)</entry>
+              </row>
+
+              <row>
+                <entry>lb(5), rb(6)</entry>
+                <entry>shoulder buttons (Xbox360 only, mapped to black, white on Xbox1)</entry>
+              </row>
+
+              <row>
+                <entry>lt(7), rt(8)</entry>
+                <entry>analog trigger (needs --trigger-as-button option)</entry>
+              </row>
+
+              <row>
+                <entry>tl, tr</entry>
+                <entry>pressing the left or right analog stick</entry>
+              </row>
+
+              <row><entry>du(up), dd(down), dl(left), dr(right)</entry>
+                <entry>dpad directions (needs --dpad-as-button option)</entry>
+              </row>
+
+              <row>
+                <entry>green, red, yellow, blue, orange</entry>
+                <entry>guitar buttons</entry>
+              </row>
+            </tbody>
+          </table>
+          
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--axismap AXIS=MAPPING</option></term>
+        <listitem>
+          <para>
+            Axis remapping is available via --axismap and works the same as button
+            mapping. In addition you can supply a sign to indicate that an axis
+            should be inverted. So if you want to invert the y1 axis start with:
+          </para>
+
+          <programlisting>% xboxdrv --axismap -Y1=Y1</programlisting>
+
+          <para>
+            If you want to swap the left and right stick start with:
+          </para>
+
+          <programlisting>% xboxdrv --axismap X2=X1,Y2=Y1,X1=X2,Y1=Y2</programlisting>
+
+          <para>
+            Possible axis names are: x1, y1, x2, y2, lt, rt
+          </para>
+
+          <para>
+            Swaping lt or rt with x1, y1, x2, y2 will not work properly, since
+            their range is different.
+          </para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term><option>--ui-buttonmap, --ui-axismap</option></term>
+        <listitem>
+          <para>
+            Another more low level form to remap buttons and axis
+            comes in the form of --ui-buttonmap and --ui-axismap,
+            these allow you to change the event code that is send to
+            the kernel for a given button or axis. Usage is similar to
+            the normal button mapping:
+          </para>
+          
+          <programlisting>% xboxdrv -s --ui-buttonmap X=KEY_A</programlisting>
+
+          <para>
+            Except that the right hand side is an event name from
+            <filename>/usr/include/linux/input.h</filename>. You can use all KEY_ or BTN_ codes for
+            <option>--ui-buttonmap</option> and all ABS_ and REL_ ones
+            for <option>--ui-axismap</option>.
+          </para>
+
+          <para>
+            Instead of the low level KEY_ names, which represent keycodes, you can
+            also use the higher level X11 keysyms XK_, the keysyms have the
+            advantage that they map directly to the key you expect, while a KEY_
+            name gets mungled by the X11 keymap and will often not report what you
+            expect in case you use a keymap that is different then your keyboard
+            (i.e. dvorak on a qwerty keyboard).
+          </para>
+
+          <para>
+            A full list of X11 keysyms is available at
+            /usr/include/X11/keysymdef.h, note that you can only use those that
+            are reachable by your current keymap. Keysyms that are reachable via
+            multiple keycodes might break the mapping from keysym to evdev code.
+          </para>
+
+          <para>
+            When you try to let a gamepad key send a keyboard events
+            Xorg must register it as keyboard device to work
+            properly. This seems to work automatically when you bind
+            more then two keyboard keys, if you bind less you need to
+            create the
+            file <filename>/etc/hal/fdi/preprobe/xboxdrv.fdi</filename>
+            containing:
+          </para>
+
+          <programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<deviceinfo version="0.2">
+  <device>
+    <match key="input.product" string="Xbox Gamepad (userspace driver) - Keyboard Emulation">
+      <addset key="info.capabilities" type="strlist">input.keys</addset>
+    </match>
+  </device>
+</deviceinfo>]]></programlisting>
+
+          <para>
+            This will tell HAL and later Xorg that xboxdrv acts as keyboard.
+          </para>
+
+          <para>
+            For joystick buttons there is in addition to the BTN_JOYSTICK, BTN_X,
+            etc. macros the special name JS_$NUM, which sets the given button to
+            the $NUMS joystick button, i.e.:
+          </para>
+
+          <programlisting>% xboxdrv --ui-clear --ui-buttonmap A=JS_0,B=JS_1</programlisting>
+
+          <para>
+            Note that this will only work if no other joystick button ids are in
+            the way.
+          </para>
+
+          <para>
+            In addition to just the event you can also pass additional
+            configuration parameter seperated by colons, the exact
+            parameter differ on the type of event, everything but the
+            first parameter is optional:
+          </para>
+
+          <programlisting><![CDATA[--ui-axismap X1=REL_???:VALUE:REPEAT
+  VALUE:  the maximum value of the event (default: 10)
+  REPEAT: number of milisecond to pass before the event is fired again (default: 5)
+
+--ui-axismap X1=KEY_UP:KEY_DOWN:THRESHOLD
+  KEY_UP:    keycode to be send when the axis is moved up
+  KEY_DOWN:  keycode to be send when the axis is moved down
+  THRESHOLD: threshold that triggers the sending of an event
+            
+--ui-buttonmap X1=REL_???:VALUE:REPEAT
+  VALUE:  the of the event (default: 10)
+  REPEAT: number of milisecond to pass before the event is fired again (default: 5)]]></programlisting>
+
+          <para>
+            If you want to get rid of all uinput mappings you can use --ui-clear
+            which will leave the driver in a blank state and only map those things
+            you add later. You can get rid of individual buttons by using the
+            'void' event:
+          </para>
+
+          <programlisting><![CDATA[% xboxdrv \
+  --ui-buttonmap tr=void,tl=void,lb=void,rb=void \
+  --ui-axismap x2=void,y2=void,rt=void,lt=void,dpad_x=void,dpad_y=void]]></programlisting>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term><option>--force-feedback</option></term>
+        <listitem>
+          <para>
+            Force feedback is disabled by default and has to be enabled with:
+          </para>
+          <programlisting>% ./xboxdrv --force-feedback</programlisting>
+          <para>
+            Xboxdrv works via the standard kernel force feedback
+            interface. For documentation on the FF interface see:
+          </para>
+
+          <itemizedlist>
+            <listitem><ulink url="http://github.com/github/linux-2.6/blob/f3b8436ad9a8ad36b3c9fa1fe030c7f38e5d3d0b/Documentation/input/ff.txt"></ulink></listitem>
+            <listitem><filename>/usr/include/linux/input.h</filename></listitem>
+          </itemizedlist>
+
+          <para>
+            Additional, non Linux related, force feedback related
+            information can be found at:
+          </para>
+
+          <itemizedlist>
+            <listitem><ulink url="http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/"/></listitem>
+            <listitem><ulink url="http://msdn.microsoft.com/en-us/library/bb219655(VS.85).aspx" /></listitem>
+          </itemizedlist>
+
+          <para>fftest is an application you can use to test the force feedback
+            interface.</para>
+
+          <para>Since the Xbox360 controller supports just rumble not full force
+            feedback, xboxdrv tries to emulate other effects. This emulation
+            hasn't been tested much and might not always work as expected. Bug
+            reports and test cases are welcome.</para>
+
+          <para>Force feedback is disabed by default since it seems to causes trouble
+            in certain application, namely "Tomb Raider: Legend" when run in Wine
+            it crashes at startup when rumble is enabled, while it works perfectly
+            normal when rumble is disabled.</para>
+
+          <para>"Tomb Raider: Anniversary" running in Wine seems to work together with
+            xboxdrv and rumble, but hasn't been intensivly tested.</para>
+
+          <para>You can change the rumble strength via:</para>
+
+          <programlisting>% xboxdrv --rumble-gain 50%</programlisting>
+
+          <para>Values larger then 100% are possible as well.</para>
+
+          <para>
+            Note that you must close the application that is using force feedback
+            always before you close the xboxdrv driver, else you might end up with
+            a hanging non-interruptable xboxdrv process that will require a reboot
+            to get rid of.
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsect1> 
+
+  <refsect1>
+    <title>Running xboxdrv manually</title>
+    <para>
+      Plug in your Xbox360 gamepad and then unload the xpad driver via:
+    </para>
+    <programlisting>% rmmod xpad</programlisting>
+
+    If you want to permanently unload it add the following line to
+    /etc/modprobe.d/blacklist.conf:
+
+    <programlisting>blacklist xpad</programlisting>
+
+    Next you have to load the uinput kernel module which allows userspace
+    programms to create input devices and the joydev module which gives
+    you the /dev/input/jsX device:
+
+    <programlisting><![CDATA[% modprobe uinput
+% modprobe joydev]]></programlisting>
+    <para>
+      You also have to make sure that you have access rights to
+      /dev/input/uinput, either add yourself to the appropriate group,
+      adjust the permissions or run xboxdrv as root.
+    </para>
+    <para>
+      Once ensured that xpad is out of the way and everything is in place
+      start the userspace driver with:
+    </para>
+    <programlisting>% ./xboxdrv</programlisting>
+    <para>
+      Or in case you don't have the neccesary rights (being in group root
+      should often be enough) start the driver as root via:
+    </para>
+
+    <programlisting>% sudo ./xboxdrv</programlisting>
+
+    <para>
+      This will create /dev/input/js0 and allow you to access the gamepad
+      from any game. To exit the driver press Ctrl-c. 
+      If you have multiple wired controllers you need to start multiple instances
+      of the xboxdrv driver and append the -i argument like this:
+    </para>
+
+    <programlisting>% ./xboxdrv -i 1</programlisting>
+
+    <para>
+      If you have multiple wireless controller you need to start multiple
+      instances of the xboxdrv driver and append the --wid argument like
+      this:
+    </para>
+
+    <programlisting>% ./xboxdrv --wid 1</programlisting>
+
+    <para>
+      You have to sync the wireless controller as usual.
+    </para>
+
+    <para>This will then use the second detected controller, see to see which id
+      your controller has:</para>
+
+    <programlisting>% ./xboxdrv --list-controller</programlisting>
+
+    <para>When everything works as expected it is recomment that you run xboxdrv
+      with the silent option:</para>
+
+    <programlisting>% ./xboxdrv --silent</programlisting>
+
+    <para>This will suppress the logging of events to the console and will
+      gurantee that no uneccesarry CPU cycles are wasted.</para>
+
+    <para>If you want to abuse the led or rumble of the gamepad for notification
+      in scripts you can do see via:</para>
+
+    <programlisting>% ./xboxdrv --led 10 --rumble 30,30 --quit</programlisting>
+
+    <para>This will cause a mild rumble and the led to rotate, you can stop it
+      again via, which also happens to be the command you can use to stop
+      your Xbox360 controller from blinking:</para>
+
+    <programlisting>% ./xboxdrv ---led 0 --rumble 0,0 --quit</programlisting>
+
+    <para>For rumble to work make sure you have connected the controller to a
+      USB port that has enough power, i.e. an unpowered USB hub might not
+      work.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Running xboxdrv via xboxdrv-daemon.py</title>
+    <para>You can also run xboxdrv automatically whenever you plug in a gamepad via:</para>
+
+    <programlisting>% tools/xboxdrv-daemon.py</programlisting>
+
+    <para>
+      Since xboxdrv-daemon.py needs to know where xboxdrv is located you
+      need to supply the location of the xboxdrv binary manually if its not
+      located in <envar>PATH</envar>:
+    </para>
+
+    <programlisting>% tools/xboxdrv-daemon.py --xboxdrv ./xboxdrv</programlisting>
+
+    <para>You can pass arguments to xboxdrv after a double dash '--':</para>
+
+    <programlisting>% tools/xboxdrv-daemon.py -- --buttonmap B=A,X=A,Y=A</programlisting>
+
+    <para>You can also run scripts that get started after xboxdrv is started
+      via:</para>
+
+    <programlisting><![CDATA[% tools/xboxdrv-daemon.py \
+  --attach /home/juser/xboxdrv_attach \
+  --detach /home/juser/xboxdrv_deatach]]></programlisting>
+
+    <para>This is useful in Kiosk settings, such as a media center PC, where you
+      might want to restart the media center to have the controller working
+      properly after it got attached.</para>
+
+    <para>Note that you lose some of the configurabilty when you launch it
+      automatically via the daemon, so this isn't generally recomment.</para>
+
+    <para>When you want configurability and automatic launching, it is recomment
+      that you write little startup scripts for your games, such as this:</para>
+
+    <programlisting><![CDATA[#!/bin/sh
+
+# Start xboxdrv and remember its PID in the variable XBOXPID
+xboxdrv --trigger-as-button -s &amp;
+XBOXPID=$!
+
+# Give xboxdrv a second to startup and create the device
+sleep 1
+
+# Launch your favorite game
+your_favorite_game
+
+# Kill xboxdrv and wait for it to finish
+kill $XBOXPID
+wait $XBOXPID
+
+# EOF #]]></programlisting>
+
+    <para>That way you can individually configure every game and still not have
+      to worry about launching xboxdrv manually.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Testing</title>
+    <para>
+      Knowing how to test a xboxdrv configuration is absolutely crucial in
+      understanding what is wrong in a given setup. Testing the
+      configuration in a game is most often not helpful, since you won't see
+      the true cause beyond endless layers of abstraction between you and
+      the actual events. Luckily there are a few tools you can use to test,
+      all of these are command line based and it is recomment that you get
+      familar with them when you want to do any more complex configuration.
+    </para>
+
+    <refsect2>
+      <title>evtest</title>
+      <para>
+        evtest lets you read raw input events from (/dev/input/eventX). The
+        event devices are the very core of all event handling, things like the
+        joystick devices are derived from the event device, so if you want to
+        fix some issue on the joystick device, you have to fix the event
+        device.
+      </para>
+
+      <para>
+        evtest is available in the tools/ directory, you might also find it in
+        your distribution.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>jstest</title>
+      <para>
+        jstest lets you read the output out of a joystick event device (/dev/input/js0).
+      </para>
+
+      <para>
+        jstest is available in the tools/ directory or as part of your
+        distribution.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>sdl-jstest</title>
+      <para>
+        sdl-jstest lets you see events as games using SDL see them. This is
+        very important when you want to set and test the SDL_LINUX_JOYSTICK
+        environment variables.
+      </para>
+
+      <para>
+        Currently available via:
+      </para>
+
+      <programlisting>% svn co svn://svn.berlios.de/windstille/trunk/sdl-jstest</programlisting>
+    </refsect2>
+
+    <refsect2>
+      <title>xev</title>
+      <para>
+        xev lets you see the events that Xorg sees. Note however that you
+        might not see all events, since some will be grapped by your Window
+        manager before they reach xev, this is normal.
+      </para>
+      <para>
+        xev is part of every Linux distribution, on Ubuntu its available via:
+      </para>
+
+      <programlisting>% apt-get install x11-utils</programlisting>
+    </refsect2>
+
+    <refsect2>
+      <title>jscalc</title>
+      <para>
+        Do not use this tool, for current day joysticks it doesn't do
+        anything useful, so don't touch it, it won't fix your problems.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>mouse</title>
+      <para>
+        No tools for testing the output on /dev/input/mouseX are known.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>Note</title>
+      <para>
+        If the tools provide no output at all, this might not be due to a
+        wrong configuration, but due to Xorg grabbing your event device and
+        locking it, see Xorg section for possible fixes.
+      </para>
+    </refsect2>
+  </refsect1>
+
+  <refsect1>
+    <title>EXAMPLES</title>
+    <refsect2>
+      <title>Mouse Emulation</title>
+      <para>
+        Mouse emulation can be done with something like this:
+      </para>
+      
+      <programlisting><![CDATA[% ./xboxdrv \
+   --axismap -y2=y2 \
+   --ui-axismap x1=REL_X,y1=REL_Y,y2=REL_WHEEL:3:50 \
+   --ui-buttonmap a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER \
+   --ui-buttonmap rb=KEY_FORWARD,lb=KEY_BACK \
+   --ui-buttonmap dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN \
+   -s --deadzone 5000  --dpad-as-button]]></programlisting>
+
+      <para>
+        This will map the dpad to cursor keys, left analogstick to mouse
+        cursor and right analogstick to mouse wheel.
+      </para>
+
+      <para>
+        Note that if you have your mouse buttons switched you must adjust the
+        above to match your mouse or the button events will come out wrong.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>
+        Prince of Persia: Sands of Time (in Wine)<sbr/>
+        Prince of Persia: Warrior Within (in Wine)<sbr/>
+        Prince of Persia: The Two Thrones (in Wine)<sbr/>
+        Tomb Raider Anniversary (in Wine)<sbr/>
+        Tomb Raider Legend (in Wine)<sbr/>
+      </title>
+
+      <programlisting><![CDATA[% xboxdrv --trigger-as-button -s ]]></programlisting>
+
+      <para>The triggers are not regonized in these games when they are analog, so
+        we have to handle them as buttons.</para>
+    </refsect2>
+
+    <refsect2>
+      <title>Fighting games with Datel Arcade Pro Joystick:</title>
+
+      <para>The left and right trigger get turned into digital buttons. All axis
+        except the dpad are ignored. RB and RT are mapped to act as if buttons
+        1,2 and 3 are pressed simultaniously (useful for some special
+        attacks). Instead of using the native button names, the
+        1,2,3,... aliases are used, which makes things easier to edit:</para>
+
+      <programlisting><![CDATA[% xboxdrv --dpad-only \
+  --trigger-as-button  \
+  --buttonmap lb=1,x=2,y=3,lt=4,a=5,b=6,rb=1,rb=2,rb=3,rt=4,rt=5,rt=6]]></programlisting>
+    </refsect2>
+
+    <refsect2>
+      <title>CH Flightstick emulation in Dosbox:</title>
+      <para>In <filename>dosbox.conf</filename> set:</para>
+
+      <programlisting><![CDATA[[joystick]
+joysticktype = ch]]></programlisting>
+
+      <para>Start xboxdrv with:</para>
+
+      <programlisting><![CDATA[% xboxdrv -s \
+  --trigger-as-zaxis --square-axis \
+  --relative-axis y2=64000 --axismap -y2=x2,x2=y2]]></programlisting>
+
+      <para>Your right analog stick will act as trottle control, the trigger as
+        rudder.</para>
+    </refsect2>
+
+    <refsect2>
+      <title>Keyboard controlled games</title>
+
+      <para>The following configuration works for games that are played with
+        keyboard, like Flash games or games that don't support a joystick, you
+        have to adjust the keybindings to fit the game:</para>
+
+      <programlisting><![CDATA[% ./xboxdrv \
+  --ui-clear \
+  --dpad-as-button \
+  --ui-buttonmap a=XK_a,b=XK_b,x=XK_x,y=XK_y \
+  --ui-buttonmap dl=XK_Left,dr=XK_Right,du=XK_Up,dd=XK_Down]]></programlisting>
+    </refsect2>
+
+    <refsect2>
+      <title>Sauerbraten</title>
+      <para>
+        First analogstick gets mapped te cursor keys, second
+        analogstick gets mapped to mouse.  Note: This is just an
+        incomplete example, not a perfectly playable configuration,
+        you have to do tweaking yourself.
+      </para>
+
+      <programlisting><![CDATA[% ./xboxdrv \
+  --ui-axismap x2=REL_X:10,y2=REL_Y:-10,x1=KEY_LEFT:KEY_RIGHT,y1=KEY_UP:KEY_DOWN \
+  --ui-buttonmap a=BTN_RIGHT,b=BTN_LEFT,x=BTN_EXTRA \
+  --ui-buttonmap rb=KEY_5,lb=KEY_6,lt=BTN_LEFT,rt=BTN_RIGHT \
+  --ui-buttonmap y=KEY_ENTER,dl=KEY_4,dr=KEY_2,du=KEY_1,dd=KEY_3,back=KEY_TAB,start=KEY_ESC \
+  -s --deadzone 6000  --dpad-as-button --trigger-as-button]]></programlisting>
+    </refsect2>
+
+    <refsect2>
+      <title>Warsow</title>
+
+      <para>
+        Note: This is just an incomplete example, not a perfectly playable
+        configuration, you have to do tweaking yourself.
+      </para>
+
+      <programlisting><![CDATA[% ./xboxdrv \
+  --ui-axismap x2=REL_X:10,y2=REL_Y:-10,x1=KEY_A:KEY_D,y1=KEY_W:KEY_S \
+  --ui-buttonmap a=KEY_LEFTSHIFT,b=BTN_C,x=BTN_EXTRA,y=KEY_C \
+  --ui-buttonmap lb=BTN_RIGHT,rb=KEY_SPACE \
+  --ui-buttonmap lt=KEY_Z,rt=BTN_LEFT \
+  --ui-buttonmap dl=KEY_4,dr=KEY_2,du=REL_WHEEL:-1:150,dd=REL_WHEEL:1:150 \
+  --ui-buttonmap back=KEY_TAB,start=KEY_ESC \
+  -s --deadzone 6000 --dpad-as-button --trigger-as-button]]></programlisting>
+    </refsect2>
+  </refsect1>
+
+  <refsect1>
+    <title>SDL Notes</title>
+    <para>
+      To let SDL know which axis act as a hat and which act as normal axis
+      you have to set an environment variable:
+    </para>
+
+    <programlisting><![CDATA[
+% SDL_LINUX_JOYSTICK="'Xbox Gamepad (userspace driver)' 6 1 0"
+% export SDL_LINUX_JOYSTICK]]></programlisting>
+
+    <para>
+      You might also need in addition use this (depends on the way SDL was compiled):
+    </para>
+
+    <programlisting><![CDATA[
+% SDL_JOYSTICK_DEVICE="/dev/input/js0"
+% export SDL_JOYSTICK_DEVICE]]></programlisting>
+
+    This will let the DPad act as Hat in SDL based application. For many
+    games the driver will work without this, but especially in Dosbox this
+    variable is very important.
+
+    If you use options in xboxdrv that change the number of axis you have
+    to adjust the variable accordingly, see:
+
+    <itemizedlist>
+      <listitem>
+        <ulink url="ftp://ptah.lnf.kth.se/pub/misc/sdl-env-vars">ftp://ptah.lnf.kth.se/pub/misc/sdl-env-vars</ulink>
+      </listitem>
+    </itemizedlist>
+
+    <variablelist>
+      <varlistentry>
+        <term>SDL_LINUX_JOYSTICK</term>
+        <listitem>
+          <para>
+	    Special joystick configuration string for linux. The format is
+	    <option>"name numaxes numhats numballs"</option>
+	    where name is the name string of the joystick (possibly in single
+	    quotes), and the rest are the number of axes, hats and balls
+	    respectively.
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>SDL_JOYSTICK_DEVICE</term>
+        <listitem>
+          <para>
+	    Joystick device to use in the linux joystick driver, in addition to the usual: <filename>/dev/js*</filename>, <filename>/dev/input/event*</filename>, <filename>/dev/input/js*</filename>
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>TROUBLESHOOTING</title>
+    <refsect2>
+      <title>"No Xbox or Xbox360 controller found"</title>
+      <para>
+        This means that either your controller isn't plugged in or not
+        recognized by the driver. To fix this you need to know the idVendor
+        and the idProduct numbers, which you can find out via:
+      </para>
+
+      <programlisting><![CDATA[% lsusb -v]]></programlisting>
+
+      <para>Once done you can try to add them to the array:</para>
+
+      <programlisting><![CDATA[XPadDevice xpad_devices[] = { ... }]]></programlisting> in <filename>xpad_device.cpp</filename>.
+
+      <para>
+        If you have success with that, send a patch
+        to <email>grumbel@gmx.de</email>, if not, contact me too, I
+        might be able to provide additional help.
+      </para>
+
+      <para>
+        As an alternative you can also use the --device and --type option to
+        enforce a USB device as well as a controller type an bypass any auto
+        detection.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>"Unknown data: bytes: 3 Data: ..."</title>
+      <para>
+        This means that your controller is sending data that isn't understood
+        by the driver. If your controller still works, you can just ignore it,
+        the Xbox360 controller seems to send out useless data every now and
+        then. If your controller does not work and you get plenty of those
+        lines when you move the sticks or press buttons it means that your
+        controller talks an un-understood protocol and some reverse
+        enginiering is required. Contact grumbel@gmx.de and include the output
+        of:
+      </para>
+
+      <programlisting><![CDATA[% lsusb -v]]></programlisting>
+
+      <para>Along with all the "Unknown data" lines you get. </para>
+    </refsect2>
+
+    <refsect2>
+      <title>Program starts and then just does nothing</title>
+      <para>
+        This is what the program is supposed to do. After you started it, it
+        will give you basically two devices, a new /dev/input/eventX and a
+        /dev/input/jsX. You can access and test your controller with jstest
+        and evtest applications (available from your distribution or in the
+        tools/ subdirectory). Or in case you want just see if your driver is
+        working correctly you can pass the -v option:
+      </para>
+
+      <programlisting><![CDATA[% ./xboxdrv -v]]></programlisting>
+
+      <para>
+        This will cause the driver to output all the events that it received
+        from the controller.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>"Error: No stuitable uinput device found"</title>
+      <para>
+        Make sure that uinput and joydev kernel modules are loaded. Make sure
+        that you have a /dev/input/uinput, /dev/uinput or /dev/misc/uinput and
+        permissions to access it.
+      </para>
+      <para>
+        Before reporting this as a bug make sure you have tested if the driver
+        itself works with:
+      </para>
+
+      <programlisting><![CDATA[% ./xboxdrv --no-uinput -v]]></programlisting>
+
+    </refsect2>
+    
+    <refsect2>
+      <title>The wireless controller doesn't work</title>
+      <para>
+        You have to sync the controller befor it can be used, restart of the
+        driver isn't needed and the driver should let you now when it recieves
+        a connection after you sync the controller.
+      </para>
+    </refsect2>
+  </refsect1>
+
+  <refsect1>
+    <title>BUGS</title>
+    <para>
+      <para>
+        X11 keysyms might not work correctly in <option>--ui-buttonmap a=XK_Foobar</option>
+        when Foobar is mapped to multiple keycodes in the keymap. 
+      </para>
+
+      <para>Workaround: Use KEY_ instead or cleanup your keymap</para>
+
+      <para>
+        Force feedback support is brittle, if you Ctrl-c the driver in the
+        wrong moment you will end up with a dead uninterruptable process and
+        basically have to reboot. This looks like it might be a kernel issue
+        and not a xboxdrv one.
+      </para>
+
+      <para>Workaround: Kill the app that uses xboxdrv before xboxdrv itself.
+      </para>
+    </para>
+  </refsect1>
+
+</refentry>
