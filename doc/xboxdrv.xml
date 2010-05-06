@@ -64,21 +64,21 @@
         </varlistentry>
 
         <varlistentry>
-          <term>  --help-led</term>
+          <term><option>--help-led</option></term>
           <listitem>
             List possible values for the led.
           </listitem>
         </varlistentry>
 
         <varlistentry>
-          <term>--help-devices</term>
+          <term><option>--help-devices</option></term>
           <listitem>
             List supported devices.
           </listitem>
         </varlistentry>
 
         <varlistentry>
-          <term>  -s, --silent</term>
+          <term><option>-s</option>, <option>--silent</option></term>
           <listitem>
             <para>
               Do not display events on console.
@@ -87,7 +87,7 @@
         </varlistentry>
 
         <varlistentry>
-          <term>--quiet</term>
+          <term><option>--quiet</option></term>
           <listitem>
             <para>
               Do not display startup text.
@@ -168,9 +168,11 @@
       <title>Device Options</title>
       <variablelist>
         <varlistentry>
-          <term>-i, --id N</term>
+          <term><option>-i</option>, <option>--id</option> <replaceable class="parameter">N</replaceable></term>
           <listitem>
-            Use controller with id N (default: 0).
+            Use controller with id N (default: 0),
+            use <option>--list-controller</option> to obtain a list of
+            available controller.
           </listitem>
         </varlistentry>
 
@@ -223,14 +225,7 @@
       <title>Status Options</title>
       <variablelist>
         <varlistentry>
-          <term><option>-l, --led NUM</option></term>
-          <listitem>
-            set LED status, see --list-led-values (default: 0)
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--led</option> <replaceable class="parameter">NUM</replaceable></term>
+          <term><option>-l</option>, <option>--led</option> <replaceable class="parameter">NUM</replaceable></term>
           <listitem>
             <para>
               Set LED status. Possible values for <replaceable class="parameter">NUM</replaceable> are:
@@ -283,7 +278,6 @@
       <title>Configuration Options</title>
 
       <variablelist>
-
         <varlistentry>
           <term><option>--deadzone <replaceable class="parameter">NUM</replaceable></option></term>
           <listitem>
@@ -306,7 +300,6 @@
             <para><command>% xboxdrv --deadzone 15%</command></para>
           </listitem>
         </varlistentry>
-
         
         <varlistentry>
           <term><option>--deadzone-trigger <replaceable class="parameter">NUM</replaceable></option></term>
@@ -427,7 +420,7 @@
         </varlistentry>
 
         <varlistentry>
-          <term><option>--axismap AXIS=MAPPING</option></term>
+          <term><option>--axismap</option> <replaceable class="parameter">AXIS=MAPPING,...</replaceable></term>
           <listitem>
             <para>
               Axis remapping is available via --axismap and works the same as button
@@ -455,119 +448,98 @@
         </varlistentry>
         
         <varlistentry>
-          <term><option>--ui-buttonmap</option> <replaceable class="parameter">BUTTON=UIBUTTONSPEC</replaceable>,
-            <option>--ui-axismap</option> <replaceable class="parameter">AXIS=UIAXISSPEC</replaceable></term>
+          <term><option>--ui-buttonmap</option> <replaceable class="parameter">BUTTON=UIBUTTONSPEC,...</replaceable></term>
           <listitem>
             <para>
-              Another more low level form to remap buttons and axis
-              comes in the form of --ui-buttonmap and --ui-axismap,
-              these allow you to change the event code that is send to
-              the kernel for a given button or axis. Usage is similar to
-              the normal button mapping:
-            </para>
-            
-            <programlisting>% xboxdrv -s --ui-buttonmap X=KEY_A</programlisting>
-
-            <para>
-              Except that the right hand side is an event name from
+              Allows you to change the event code that is send to the
+              kernel for buttons. The usage is similar to the normal button
+              mapping, except that the right hand side is an event name from
               <filename>/usr/include/linux/input.h</filename>. You can
-              use all <keysym>KEY_</keysym> or <keysym>BTN_</keysym>
-              codes for
-              <option>--ui-buttonmap</option> and all <keysym>ABS_</keysym> and <keysym>REL_</keysym> ones
-              for <option>--ui-axismap</option>.
+              use all <keysym>KEY_</keysym> or <keysym>BTN_</keysym> 
+              codes for <option>--ui-buttonmap</option>.
             </para>
-
             <para>
-              Instead of the low level KEY_ names, which represent keycodes, you can
-              also use the higher level X11 keysyms XK_, the keysyms have the
-              advantage that they map directly to the key you expect, while a KEY_
-              name gets mungled by the X11 keymap and will often not report what you
-              expect in case you use a keymap that is different then your keyboard
-              (i.e. dvorak on a qwerty keyboard).
+              Instead of the low level <keysym>KEY_</keysym> names,
+              which represent keycodes, you can also use the higher
+              level X11 keysyms <keysym>XK_</keysym>, the keysyms have
+              the advantage that they map directly to the key you
+              expect, while a <keysym>KEY_</keysym> name gets mungled
+              by the X11 keymap and will often not report what you
+              expect in case you use a keymap that is different then
+              your keyboard (i.e. dvorak on a qwerty keyboard).
             </para>
-
             <para>
               A full list of X11 keysyms is available at
               <filename>/usr/include/X11/keysymdef.h</filename>, note that you can only use those that
               are reachable by your current keymap. Keysyms that are reachable via
               multiple keycodes might break the mapping from keysym to evdev code.
             </para>
-
             <para>
-              When you try to let a gamepad key send a keyboard events
-              Xorg must register it as keyboard device to work
-              properly. This seems to work automatically when you bind
-              more then two keyboard keys, if you bind less you need
-              to create the
-              file <filename>/etc/hal/fdi/preprobe/xboxdrv.fdi</filename>
-              containing:
-            </para>
-
-            <programlisting><![CDATA[
-<?xml version="1.0" encoding="UTF-8"?>
-<deviceinfo version="0.2">
-  <device>
-    <match key="input.product" string="Xbox Gamepad (userspace driver) - Keyboard Emulation">
-      <addset key="info.capabilities" type="strlist">input.keys</addset>
-    </match>
-  </device>
-</deviceinfo>]]></programlisting>
-
-            <para>
-              This will tell HAL and later Xorg that xboxdrv acts as keyboard.
-            </para>
-
-            <para>
-              For joystick buttons there is in addition to the BTN_JOYSTICK, BTN_X,
-              etc. macros the special name JS_$NUM, which sets the given button to
+              For joystick buttons there is in addition to the <keysym>BTN_JOYSTICK</keysym>, <keysym>BTN_X</keysym>,
+              etc. macros the special name <keysym>JS_$NUM</keysym>, which sets the given button to
               the $NUMS joystick button, i.e.:
             </para>
-
             <programlisting>% xboxdrv --ui-clear --ui-buttonmap A=JS_0,B=JS_1</programlisting>
-
             <para>
-              Note that this will only work if no other joystick button ids are in
-              the way.
+              Note that this will only work if no other joystick
+              button ids are in the way.
             </para>
-
             <para>
-              In addition to just the event you can also pass additional
-              configuration parameter seperated by colons, the exact
-              parameter differ on the type of event, everything but the
-              first parameter is optional:
+              You can also map a button to a <keysym>REL_</keysym>
+              event. In that case you can supply additional paramaters in the form of:
             </para>
+            <programlisting>% xboxdrv --ui-buttonmap X=REL_???:VALUE:REPEAT</programlisting>
+            <para>
+              <replaceable class="parameter">VALUE</replaceable> gives the value of the event (default: 10)
+            </para>
+            <para>
+              <replaceable class="parameter">REPEAT</replaceable>
+              gives the number of milisecond to pass before the event
+              is fired again (default: 5)
+            </para>
+            <para>
+              The special 'void' event allows you to clear any
+              existing bindings for a given button, which can be
+              useful in cases when a game only supports a limited
+              number of buttons.
+            </para>
+            <para>
+              See the section KEYBOARD EMULATION below on how to
+              resolve issues with Xorg not detecting the virtual
+              keyboard that xboxdrv creates.
+            </para>
+          </listitem>
+        </varlistentry>
 
-            <variablelist>
-              <varlistentry>
-                <term>--ui-axismap X1=REL_???:VALUE:REPEAT</term>
-                <listitem>
-                  <table>
-                    <tgroup cols="2">
-                      <tbody>
-                        <row>
-                          <entry>VALUE:</entry> 
-                          <entry>the maximum value of the event (default: 10)</entry>
-                        </row>
-                        
-                        <row>
-                          <entry>REPEAT:</entry>
-                          <entry>number of milisecond to pass before the event is fired again (default: 5)</entry>
-                        </row>
-                      </tbody>
-                    </tgroup>
-                  </table>
-                </listitem>
-              </varlistentry>
-            </variablelist>
-
-            <programlisting><![CDATA[--ui-axismap X1=KEY_UP:KEY_DOWN:THRESHOLD
-  KEY_UP:    keycode to be send when the axis is moved up
-  KEY_DOWN:  keycode to be send when the axis is moved down
-  THRESHOLD: threshold that triggers the sending of an event
+        <varlistentry>
+          <term><option>--ui-axismap</option> <replaceable class="parameter">AXIS=UIAXISSPEC,...</replaceable></term>
+          <listitem>
+            <para>
+              Similar to <option>--ui-buttonmap</option> this option
+              allows you to change the event code that is send to the
+              kernel for axes. The events that are available are the
+              same as for <option>--ui-buttonmap</option>.
+            </para>
+            <programlisting>% xboxdrv --ui-axismap X1=REL_???:VALUE:REPEAT</programlisting>
+            <para>
+              <replaceable class="parameter">VALUE</replaceable> gives the maximum value of the event (default: 10)
+            </para>
+            <para>
+              <replaceable class="parameter">REPEAT</replaceable>
+              gives the number of milisecond to pass before the event
+              is fired again (default: 5)
+            </para>
             
---ui-buttonmap X1=REL_???:VALUE:REPEAT
-  VALUE:  the of the event (default: 10)
-  REPEAT: number of milisecond to pass before the event is fired again (default: 5)]]></programlisting>
+            <programlisting>% xboxdrv --ui-axismap X1=KEY_UP:KEY_DOWN:THRESHOLD</programlisting>
+            <para>
+              <replaceable class="parameter">KEY_UP</replaceable> gives the keycode to be send when the axis is moved up
+            </para>
+            <para>
+              <replaceable class="parameter">KEY_DOWN</replaceable> gives the keycode to be send when the axis is moved down
+            </para>
+            <para>
+              <replaceable class="parameter">THRESHOLD</replaceable> gives the threshold that triggers the sending of an event
+            </para>
           </listitem>
         </varlistentry>
 
@@ -630,7 +602,6 @@
             </para>
           </listitem>
         </varlistentry>
-
 
         <varlistentry>
           <term><option>--axis-sensitivty <replaceable class="parameter">AXIS=SENSITIVITY</replaceable></option>,...</term>
@@ -1222,6 +1193,34 @@ joysticktype = ch]]></programlisting>
     </refsect2>
   </refsect1>
 
+  <refsect1 id="keyboardemulation">
+    <title>Keyboard Emulation</title>
+    <para>
+      When you try to let xboxdrv send a keyboard events
+      via <option>--ui-buttonmap</option>
+      or <option>--ui-axismap</option> Xorg must register the device
+      as keyboard device to work properly. This seems to work
+      automatically when you bind more then two keyboard keys, if you
+      bind less you need to create the
+      file <filename>/etc/hal/fdi/preprobe/xboxdrv.fdi</filename>
+      containing:
+    </para>
+
+    <programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<deviceinfo version="0.2">
+  <device>
+    <match key="input.product" string="Xbox Gamepad (userspace driver) - Keyboard Emulation">
+      <addset key="info.capabilities" type="strlist">input.keys</addset>
+    </match>
+  </device>
+</deviceinfo>]]></programlisting>
+
+    <para>
+      This will tell HAL and later Xorg that xboxdrv acts as keyboard.
+    </para>
+  </refsect1>
+
   <refsect1>
     <title>Xorg Trouble</title>
     <para>
@@ -1409,7 +1408,7 @@ EndSection]]></programlisting>
     </para>
 
     <para>
-      Report new bugs to Ingo Ruhnke <email>grumbel@gmx.de</email>.
+      Report bugs to Ingo Ruhnke <email>grumbel@gmx.de</email>.
     </para>
   </refsect1>
 
