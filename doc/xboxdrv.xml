@@ -881,63 +881,6 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
   </refsect1>
 
   <refsect1>
-    <title>Running xboxdrv via xboxdrv-daemon.py</title>
-    <para>You can also run xboxdrv automatically whenever you plug in a gamepad via:</para>
-
-    <programlisting>% tools/xboxdrv-daemon.py</programlisting>
-
-    <para>
-      Since xboxdrv-daemon.py needs to know where xboxdrv is located you
-      need to supply the location of the xboxdrv binary manually if its not
-      located in <envar>PATH</envar>:
-    </para>
-
-    <programlisting>% tools/xboxdrv-daemon.py --xboxdrv ./xboxdrv</programlisting>
-
-    <para>You can pass arguments to xboxdrv after a double dash '--':</para>
-
-    <programlisting>% tools/xboxdrv-daemon.py -- --buttonmap B=A,X=A,Y=A</programlisting>
-
-    <para>You can also run scripts that get started after xboxdrv is started
-      via:</para>
-
-    <programlisting><![CDATA[% tools/xboxdrv-daemon.py \
-  --attach /home/juser/xboxdrv_attach \
-  --detach /home/juser/xboxdrv_deatach]]></programlisting>
-
-    <para>This is useful in Kiosk settings, such as a media center PC, where you
-      might want to restart the media center to have the controller working
-      properly after it got attached.</para>
-
-    <para>Note that you lose some of the configurabilty when you launch it
-      automatically via the daemon, so this isn't generally recomment.</para>
-
-    <para>When you want configurability and automatic launching, it is recomment
-      that you write little startup scripts for your games, such as this:</para>
-
-    <programlisting><![CDATA[#!/bin/sh
-
-# Start xboxdrv and remember its PID in the variable XBOXPID
-xboxdrv --trigger-as-button -s &amp;
-XBOXPID=$!
-
-# Give xboxdrv a second to startup and create the device
-sleep 1
-
-# Launch your favorite game
-your_favorite_game
-
-# Kill xboxdrv and wait for it to finish
-kill $XBOXPID
-wait $XBOXPID
-
-# EOF #]]></programlisting>
-
-    <para>That way you can individually configure every game and still not have
-      to worry about launching xboxdrv manually.</para>
-  </refsect1>
-
-  <refsect1>
     <title>Testing</title>
     <para>
       Knowing how to test a xboxdrv configuration is absolutely crucial in

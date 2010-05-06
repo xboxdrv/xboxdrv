@@ -1,0 +1,153 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+          "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id="xboxdrv">
+  <refentryinfo>
+    <date>2010-05-05</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle>
+      <application>xboxdrv-daemon</application>
+    </refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="version">0.4.12</refmiscinfo>
+    <refmiscinfo class="author">0.4.12</refmiscinfo>
+    <refmiscinfo class="manual">User Commands</refmiscinfo>
+    <refmiscinfo class="source">xboxdrv-daemon</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>
+      <application>xboxdrv-daemon</application>
+    </refname>
+    <refpurpose>
+      A simple daemon that automatically launches xboxdrv when it detects a controller.
+    </refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>xboxdrv</command>
+      <arg rep="repeat"><option>OPTION</option></arg>
+      -- 
+      <arg rep="repeat"><option>XBOXDRV ARGS</option></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>DESCRIPTION</title>
+    <variablelist>
+
+      <varlistentry>
+        <term><option>-h</option>, <option>--help</option></term>
+        <listitem>
+          <para>Display help text and exit.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--version</option></term>
+        <listitem>
+          <para>
+            Print the version number and exit.
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-v</option>, <option>--verbose</option></term>
+        <listitem>
+          <para>
+            Be verbose with printed output.
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-a FILENAME, --attach=FILENAME</option></term>
+        <listitem>
+          <para>
+            Launch EXE when a new controller is connected
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-d FILENAME, --detach=FILENAME</option></term>
+        <listitem>
+          <para>
+            Launch EXE when a controller is detached
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>-x FILENAME, --xboxdrv=FILENAME</option></term>
+        <listitem>
+          <para>
+            Set the location of the xboxdrv executable
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>Running xboxdrv via xboxdrv-daemon.py</title>
+    <para>You can also run xboxdrv automatically whenever you plug in a gamepad via:</para>
+
+    <programlisting>% tools/xboxdrv-daemon.py</programlisting>
+
+    <para>
+      Since xboxdrv-daemon.py needs to know where xboxdrv is located you
+      need to supply the location of the xboxdrv binary manually if its not
+      located in <envar>PATH</envar>:
+    </para>
+
+    <programlisting>% tools/xboxdrv-daemon.py --xboxdrv ./xboxdrv</programlisting>
+
+    <para>You can pass arguments to xboxdrv after a double dash '--':</para>
+
+    <programlisting>% tools/xboxdrv-daemon.py -- --buttonmap B=A,X=A,Y=A</programlisting>
+
+    <para>You can also run scripts that get started after xboxdrv is started
+      via:</para>
+
+    <programlisting><![CDATA[% tools/xboxdrv-daemon.py \
+  --attach /home/juser/xboxdrv_attach \
+  --detach /home/juser/xboxdrv_deatach]]></programlisting>
+
+    <para>This is useful in Kiosk settings, such as a media center PC, where you
+      might want to restart the media center to have the controller working
+      properly after it got attached.</para>
+
+    <para>Note that you lose some of the configurabilty when you launch it
+      automatically via the daemon, so this isn't generally recomment.</para>
+
+    <para>When you want configurability and automatic launching, it is recomment
+      that you write little startup scripts for your games, such as this:</para>
+
+    <programlisting><![CDATA[#!/bin/sh
+
+# Start xboxdrv and remember its PID in the variable XBOXPID
+xboxdrv --trigger-as-button -s &amp;
+XBOXPID=$!
+
+# Give xboxdrv a second to startup and create the device
+sleep 1
+
+# Launch your favorite game
+your_favorite_game
+
+# Kill xboxdrv and wait for it to finish
+kill $XBOXPID
+wait $XBOXPID
+
+# EOF #]]></programlisting>
+
+    <para>That way you can individually configure every game and still not have
+      to worry about launching xboxdrv manually.</para>
+  </refsect1>
+</refentry>
+
