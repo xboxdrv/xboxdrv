@@ -94,27 +94,25 @@
   </refsect1>
 
   <refsect1>
-    <title>Running xboxdrv via xboxdrv-daemon.py</title>
-    <para>You can also run xboxdrv automatically whenever you plug in a gamepad via:</para>
+    <title>Running xboxdrv via xboxdrv-daemon</title>
 
-    <programlisting>% tools/xboxdrv-daemon.py</programlisting>
-
-    <para>
-      Since xboxdrv-daemon.py needs to know where xboxdrv is located you
-      need to supply the location of the xboxdrv binary manually if its not
-      located in <envar>PATH</envar>:
+    <para><command>xboxdrv-daemon</command> allows you to run xboxdrv
+    automatically whenever you plug in a gamepad. Since
+    xboxdrv-daemon.py needs to know where xboxdrv is located you need
+    to supply the location of the xboxdrv binary manually if its not
+    located in <envar>PATH</envar>:
     </para>
 
-    <programlisting>% tools/xboxdrv-daemon.py --xboxdrv ./xboxdrv</programlisting>
+    <programlisting>% xboxdrv-daemon --xboxdrv ./xboxdrv</programlisting>
 
     <para>You can pass arguments to xboxdrv after a double dash '--':</para>
 
-    <programlisting>% tools/xboxdrv-daemon.py -- --buttonmap B=A,X=A,Y=A</programlisting>
+    <programlisting>% xboxdrv-daemon -- --buttonmap B=A,X=A,Y=A</programlisting>
 
     <para>You can also run scripts that get started after xboxdrv is started
       via:</para>
 
-    <programlisting><![CDATA[% tools/xboxdrv-daemon.py \
+    <programlisting><![CDATA[% xboxdrv-daemon \
   --attach /home/juser/xboxdrv_attach \
   --detach /home/juser/xboxdrv_deatach]]></programlisting>
 
@@ -148,6 +146,13 @@ wait $XBOXPID
 
     <para>That way you can individually configure every game and still not have
       to worry about launching xboxdrv manually.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>See also</title>
+    <para>
+      xboxdrv(1)
+    </para>
   </refsect1>
 </refentry>
 

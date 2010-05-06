@@ -153,7 +153,11 @@
           <term><option>-D</option>, <option>--daemon</option></term>
           <listitem>
             <para>
-              Run as daemon.
+              Run as daemon. In most situations this is not very
+              useful, as <command>xboxdrv</command> will fail when the
+              pad is removed or plugged in. See xboxdrv-daemon(1) for
+              a way to launch <command>xboxdrv</command>
+              automatically.
             </para>
           </listitem>
         </varlistentry>
@@ -451,7 +455,8 @@
         </varlistentry>
         
         <varlistentry>
-          <term><option>--ui-buttonmap, --ui-axismap</option></term>
+          <term><option>--ui-buttonmap</option> <replaceable class="parameter">BUTTON=UIBUTTONSPEC</replaceable>,
+            <option>--ui-axismap</option> <replaceable class="parameter">AXIS=UIAXISSPEC</replaceable></term>
           <listitem>
             <para>
               Another more low level form to remap buttons and axis
@@ -492,8 +497,8 @@
               When you try to let a gamepad key send a keyboard events
               Xorg must register it as keyboard device to work
               properly. This seems to work automatically when you bind
-              more then two keyboard keys, if you bind less you need to
-              create the
+              more then two keyboard keys, if you bind less you need
+              to create the
               file <filename>/etc/hal/fdi/preprobe/xboxdrv.fdi</filename>
               containing:
             </para>
@@ -532,24 +537,28 @@
               first parameter is optional:
             </para>
 
-            --ui-axismap X1=REL_???:VALUE:REPEAT
-            <table>
-              <tgroup cols="2">
-                <colspec colwidth="1*"/>
-                <colspec colwidth="2*"/>
-                <tbody>
-                  <row>
-                    <entry>VALUE:</entry> 
-                    <entry>the maximum value of the event (default: 10)</entry>
-                  </row>
-                  
-                  <row>
-                    <entry>REPEAT:</entry>
-                    <entry>number of milisecond to pass before the event is fired again (default: 5)</entry>
-                  </row>
-                </tbody>
-              </tgroup>
-            </table>
+            <variablelist>
+              <varlistentry>
+                <term>--ui-axismap X1=REL_???:VALUE:REPEAT</term>
+                <listitem>
+                  <table>
+                    <tgroup cols="2">
+                      <tbody>
+                        <row>
+                          <entry>VALUE:</entry> 
+                          <entry>the maximum value of the event (default: 10)</entry>
+                        </row>
+                        
+                        <row>
+                          <entry>REPEAT:</entry>
+                          <entry>number of milisecond to pass before the event is fired again (default: 5)</entry>
+                        </row>
+                      </tbody>
+                    </tgroup>
+                  </table>
+                </listitem>
+              </varlistentry>
+            </variablelist>
 
             <programlisting><![CDATA[--ui-axismap X1=KEY_UP:KEY_DOWN:THRESHOLD
   KEY_UP:    keycode to be send when the axis is moved up
@@ -559,24 +568,22 @@
 --ui-buttonmap X1=REL_???:VALUE:REPEAT
   VALUE:  the of the event (default: 10)
   REPEAT: number of milisecond to pass before the event is fired again (default: 5)]]></programlisting>
-
-            <para>
-              If you want to get rid of all uinput mappings you can use --ui-clear
-              which will leave the driver in a blank state and only map those things
-              you add later. You can get rid of individual buttons by using the
-              'void' event:
-            </para>
-
-            <programlisting><![CDATA[% xboxdrv \
-  --ui-buttonmap tr=void,tl=void,lb=void,rb=void \
-  --ui-axismap x2=void,y2=void,rt=void,lt=void,dpad_x=void,dpad_y=void]]></programlisting>
           </listitem>
         </varlistentry>
 
         <varlistentry>
           <term><option>--ui-clear</option></term>
           <listitem>
-            <para>Removes all existing uinput bindings</para>
+            <para>
+              Removes all uinput mappings and will leave the driver in
+              a blank state and only map those things you added
+              yourself.  If you only want to get rid of individual
+              buttons you can use the 'void' event:
+            </para>
+
+            <programlisting><![CDATA[% xboxdrv \
+  --ui-buttonmap tr=void,tl=void,lb=void,rb=void \
+  --ui-axismap x2=void,y2=void,rt=void,lt=void,dpad_x=void,dpad_y=void]]></programlisting>
           </listitem>
         </varlistentry>
 
@@ -647,7 +654,6 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
           </listitem>
         </varlistentry>
 
-
         <varlistentry>
           <term><option>--relative-axis AXIS=NUM,...</option></term>
           <listitem>
@@ -706,7 +712,6 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
           </listitem>
         </varlistentry>
 
-
         <varlistentry>
           <term><option>--axis-sensitivty <replaceable class="parameter">AXIS=SENSITIVITY</replaceable></option>,...</term>
           <listitem>
@@ -733,45 +738,16 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
           <term><option>--force-feedback</option></term>
           <listitem>
             <para>
-              Force feedback is disabled by default and has to be enabled with:
+              Enables the standard kernel force feedback interface. It
+              is disabled by default as it causes trouble with some
+              applications running in Wine.
             </para>
-            <programlisting>% ./xboxdrv --force-feedback</programlisting>
             <para>
-              Xboxdrv works via the standard kernel force feedback
-              interface. For documentation on the FF interface see:
-            </para>
-
-            <itemizedlist>
-              <listitem><ulink url="http://github.com/github/linux-2.6/blob/f3b8436ad9a8ad36b3c9fa1fe030c7f38e5d3d0b/Documentation/input/ff.txt"></ulink></listitem>
-              <listitem><filename>/usr/include/linux/input.h</filename></listitem>
-            </itemizedlist>
-
-            <para>
-              Additional, non Linux related, force feedback related
-              information can be found at:
-            </para>
-
-            <itemizedlist>
-              <listitem><ulink url="http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/"/></listitem>
-              <listitem><ulink url="http://msdn.microsoft.com/en-us/library/bb219655(VS.85).aspx" /></listitem>
-            </itemizedlist>
-
-            <para>fftest is an application you can use to test the force feedback
-              interface.</para>
-
-            <para>Since the Xbox360 controller supports just rumble not full force
+              Since the Xbox360 controller supports just rumble not full force
               feedback, xboxdrv tries to emulate other effects. This emulation
               hasn't been tested much and might not always work as expected. Bug
-              reports and test cases are welcome.</para>
-
-            <para>Force feedback is disabed by default since it seems to causes trouble
-              in certain application, namely "Tomb Raider: Legend" when run in Wine
-              it crashes at startup when rumble is enabled, while it works perfectly
-              normal when rumble is disabled.</para>
-
-            <para>"Tomb Raider: Anniversary" running in Wine seems to work together with
-              xboxdrv and rumble, but hasn't been intensivly tested.</para>
-
+              reports and test cases are welcome.
+            </para>
             <para>
               Note that you must close the application that is using force feedback
               always before you close the xboxdrv driver, else you might end up with
@@ -782,7 +758,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
         </varlistentry>
 
         <varlistentry>
-          <term><option>--rumble-gain</option> <replaceable class="parameter">PERCENT</replaceable></term>
+          <term><option>--rumble-gain</option> <replaceable class="parameter">AMOUNT</replaceable></term>
           <listitem>
             <para>You can change the rumble strength via:</para>
 
@@ -875,9 +851,9 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
 
     <programlisting>% ./xboxdrv ---led 0 --rumble 0,0 --quit</programlisting>
 
-    <para>For rumble to work make sure you have connected the controller to a
-      USB port that has enough power, i.e. an unpowered USB hub might not
-      work.</para>
+    <para>For rumble to work make sure you have connected the
+      controller to a USB port that has enough power, an unpowered USB
+      hub might not work.</para>
   </refsect1>
 
   <refsect1>
@@ -1192,7 +1168,7 @@ joysticktype = ch]]></programlisting>
         then. If your controller does not work and you get plenty of those
         lines when you move the sticks or press buttons it means that your
         controller talks an un-understood protocol and some reverse
-        enginiering is required. Contact grumbel@gmx.de and include the output
+        enginiering is required. Contact <email>grumbel@gmx.de</email> and include the output
         of:
       </para>
 
@@ -1247,45 +1223,78 @@ joysticktype = ch]]></programlisting>
   </refsect1>
 
   <refsect1>
+    <title>Force Feedback Programming</title>
+    <para>
+      For documentation on the FF interface see:
+    </para>
+
+    <itemizedlist>
+      <listitem><ulink url="http://github.com/github/linux-2.6/blob/f3b8436ad9a8ad36b3c9fa1fe030c7f38e5d3d0b/Documentation/input/ff.txt">http://github.com/github/linux-2.6/blob/f3b8436ad9a8ad36b3c9fa1fe030c7f38e5d3d0b/Documentation/input/ff.txt</ulink></listitem>
+      <listitem><filename>/usr/include/linux/input.h</filename></listitem>
+    </itemizedlist>
+
+    <para>
+      Additional, non Linux related, force feedback related
+      information can be found at:
+    </para>
+
+    <itemizedlist>
+      <listitem><ulink url="http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/"></ulink></listitem>
+      <listitem><ulink url="http://msdn.microsoft.com/en-us/library/bb219655(VS.85).aspx"></ulink></listitem>
+    </itemizedlist>
+
+    <para><command>fftest</command> is an application you can use to test the force feedback
+      interface.</para>
+
+    <para>Force feedback is disabed by default since it seems to causes trouble
+      in certain application, namely "Tomb Raider: Legend" when run in Wine
+      it crashes at startup when rumble is enabled, while it works perfectly
+      normal when rumble is disabled.</para>
+
+    <para>"Tomb Raider: Anniversary" running in Wine seems to work together with
+      xboxdrv and rumble, but hasn't been intensivly tested.</para>
+  </refsect1>
+
+  <refsect1>
     <title>BUGS</title>
-      <para>
-        X11 keysyms might not work correctly in <option>--ui-buttonmap a=XK_Foobar</option>
-        when Foobar is mapped to multiple keycodes in the keymap. 
-      </para>
+    <para>
+      X11 keysyms might not work correctly in <option>--ui-buttonmap a=XK_Foobar</option>
+      when Foobar is mapped to multiple keycodes in the keymap. 
+    </para>
 
-      <para>Workaround: Use <keysym>KEY_</keysym> instead or cleanup your keymap</para>
+    <para>Workaround: Use <keysym>KEY_</keysym> instead or cleanup your keymap</para>
 
-      <para>
-        Force feedback support is brittle, if you Ctrl-c the driver in the
-        wrong moment you will end up with a dead uninterruptable process and
-        basically have to reboot. This looks like it might be a kernel issue
-        and not a xboxdrv one.
-      </para>
+    <para>
+      Force feedback support is brittle, if you Ctrl-c the driver in the
+      wrong moment you will end up with a dead uninterruptable process and
+      basically have to reboot. This looks like it might be a kernel issue
+      and not a xboxdrv one.
+    </para>
 
-      <para>
-        Workaround: Kill the app that uses xboxdrv before xboxdrv itself.
-      </para>
+    <para>
+      Workaround: Kill the app that uses xboxdrv before xboxdrv itself.
+    </para>
 
-      <para>
-        Report new bugs to Ingo Ruhnke <email>grumbel@gmx.de</email>.
-      </para>
+    <para>
+      Report new bugs to Ingo Ruhnke <email>grumbel@gmx.de</email>.
+    </para>
   </refsect1>
 
   <refsect1>
     <title>Copyright</title>
     <para>
       Copyright © 2010 Ingo Ruhnke <email>grumbel@gmx.de</email>
-       License GPLv3+: GNU GPL version 3 or later
+      License GPLv3+: GNU GPL version 3 or later
       <ulink url="http://gnu.org/licenses/gpl.html" />.  This is free software: you
-       are free to change and redistribute it.  There is NO WARRANTY,
-       to the extent permitted by law.
+      are free to change and redistribute it.  There is NO WARRANTY,
+      to the extent permitted by law.
     </para>
   </refsect1>
 
   <refsect1>
     <title>See also</title>
     <para>
-      
+      xboxdrv-daemon(1), evtest(1), jstest(1), xev(1), fftest(1), lsusb(1)
     </para>
   </refsect1>
 
