@@ -16,6 +16,9 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
+* version number needs to be centralized, its currently in the man
+  pages, in xboxdrv, in the TODO and in xboxdrv-daemon
+
 * improve syncronization handling in uinput
 
 * a mouse needs mouse buttons to be recognized as mouse:

@@ -43,12 +43,12 @@ Once everything installed, you can compile by typing:
 
  % scons
 
-On Ubuntu 9.10 you can install all the required libraries via:
+On Ubuntu 10.04 you can install all the required libraries via:
 
- % apt-get install \
+ % sudo apt-get install \
      g++ \
-     libboost1.40-dev \
-     libboost-thread1.40-dev \
+     libboost1.41-dev \
+     libboost-thread1.41-dev \
      scons \
      libusb-dev \
      git-core \
@@ -63,6 +63,25 @@ To load the uinput kernel module automatically on boot add it
 
 On other distributions exact install instructions might be
 slightly different.
+
+[[ Installation ]]
+------------------
+
+Once the compilation process is complete you can install xboxdrv with:
+
+ % ./install.sh
+
+You can change the install prefix with:
+
+ % ./install.sh --prefix /usr
+
+Note that there is no need to install xboxdrv, you can run it directly
+from the source directory if you prefer.
+
+[[ Running ]]
+-------------
+
+
 
 Running InputDrv
 ----------------
