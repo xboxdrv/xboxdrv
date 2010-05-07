@@ -1,3 +1,9 @@
+xboxdrv (0.4.12-2) lucid; urgency=low
+
+  * Changed libboost1.41 dependency to libboost1.40
+
+ -- Ingo Ruhnke <grumbel@gmx.de>  Fri, 07 May 2010 14:27:22 +0200
+
 xboxdrv (0.4.12-1) lucid; urgency=low
 
   * Initial release
