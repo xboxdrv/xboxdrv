@@ -53,6 +53,7 @@ if [ -z "$DRYRUN" ]; then
     install -v -d "${BINDIR}"
     install -v -d "${MANDIR}/man1"
     install -v xboxdrv "${BINDIR}"
+    install -v xboxdrv-daemon "${BINDIR}"
     install -v doc/xboxdrv.1 "${MANDIR}/man1/"
     install -v doc/xboxdrv-daemon.1 "${MANDIR}/man1/"
     echo ""
