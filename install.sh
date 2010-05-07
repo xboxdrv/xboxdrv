@@ -1,41 +1,39 @@
 #!/bin/sh
 
+set -e
+
 PREFIX="/usr/local/"
 
-if [ $# -eq 0 ]; then
-    echo "Usage: install.sh [OPTION]"
-else
-    while [ $# -gt 0 ]; do
-        case "$1" in
-            -h|--help) 
-                echo "Usage: install.sh [OPTION]"
-                echo ""
-                echo "  --prefix   Prefix of the install location"
-                echo "  --bindir   Install location for executables"
-                echo "  --mandir   Install location for manpages"
-                echo ""
-                exit 0
-                ;;
-            --prefix) 
-                PREFIX="$2"
-                shift 2
-                ;;
-            --bindir) 
-                USERBINDIR="$2"
-                shift 2
-                ;;
-            --mandir) 
-                USERMANDIR="$2"
-                shift 2
-                ;;
-            *)
-                echo "$0: invalid option: $1"
-                echo "Use '$0 --help' to get a list of options."
-                exit 1 
-                ;;
-        esac
-    done
-fi
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help) 
+            echo "Usage: install.sh [OPTION]"
+            echo ""
+            echo "  --prefix   Prefix of the install location"
+            echo "  --bindir   Install location for executables"
+            echo "  --mandir   Install location for manpages"
+            echo ""
+            exit 0
+            ;;
+        --prefix) 
+            PREFIX="$2"
+            shift 2
+            ;;
+        --bindir) 
+            USERBINDIR="$2"
+            shift 2
+            ;;
+        --mandir) 
+            USERMANDIR="$2"
+            shift 2
+            ;;
+        *)
+            echo "$0: invalid option: $1"
+            echo "Use '$0 --help' to get a list of options."
+            exit 1 
+            ;;
+    esac
+done
 
 if [ -z "$USERMANDIR" ]; then
     MANDIR="${PREFIX}/share/man/"
