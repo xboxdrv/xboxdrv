@@ -47,8 +47,8 @@ On Ubuntu 10.04 you can install all the required libraries via:
 
  % sudo apt-get install \
      g++ \
-     libboost1.41-dev \
-     libboost-thread1.41-dev \
+     libboost1.40-dev \
+     libboost-thread1.40-dev \
      scons \
      libusb-dev \
      git-core \

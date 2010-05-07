@@ -2,7 +2,7 @@ Source: xboxdrv
 Section: utils
 Priority: extra
 Maintainer: Ingo Ruhnke <grumbel@gmx.de>
-Build-Depends: debhelper (>= 7), scons, libboost1.41-dev, libusb-dev, libx11-dev, x11proto-core-dev, scons, g++, libboost-thread1.41-dev, x11proto-core-dev, python-dbus
+Build-Depends: debhelper (>= 7), scons, libusb-dev, libx11-dev, x11proto-core-dev, scons, g++, libboost1.40-dev, libboost-thread1.40-dev, x11proto-core-dev, python-dbus
 Standards-Version: 3.8.0
 Homepage: http://pingus.seul.org/~grumbel/xboxdrv/
 
