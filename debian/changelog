@@ -1,5 +1,5 @@
-xboxdrv (0.4.12-1) unstable; urgency=low
+xboxdrv (0.4.12-1) lucid; urgency=low
 
   * Initial release
 
- -- Ingo Ruhnke <grumbel@gmx.de>  Fri, 7 May 2010 03:01:55 +0200
+ -- Ingo Ruhnke <grumbel@gmx.de>  Fri, 07 May 2010 13:27:22 +0200
