@@ -36,13 +36,13 @@ while [ $# -gt 0 ]; do
 done
 
 if [ -z "$USERMANDIR" ]; then
-    MANDIR="${PREFIX}/share/man/"
+    MANDIR="${PREFIX}/share/man"
 else
     MANDIR="$USERMANDIR"
 fi
 
 if [ -z "$USERBINDIR" ]; then
-    BINDIR="${PREFIX}/bin/"
+    BINDIR="${PREFIX}/bin"
 else
     BINDIR="$USERBINDIR"
 fi
