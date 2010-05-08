@@ -42,6 +42,7 @@ clean:
 	scons -c
 	rm -rf .sconf_temp/
 	rm -f .sconsign.dblite
+	rm -f config.log
 
 	dh_clean 
 
@@ -53,7 +54,7 @@ install: build
 
 	# Add here commands to install the package into debian/xboxdrv.
 	# $(MAKE) DESTDIR=$(CURDIR)/debian/xboxdrv install
-	./install.sh --prefix $(CURDIR)/debian/xboxdrv/usr/bin/
+	./install.sh --prefix $(CURDIR)/debian/xboxdrv/
 
 
 # Build architecture-independent files here.

@@ -1,6 +1,7 @@
 xboxdrv (0.4.12-3) lucid; urgency=low
 
   * Updated to final 0.4.12 release
+  * Fixed incorrect install prefix
 
  -- Ingo Ruhnke <grumbel@gmx.de>  Fri, 08 May 2010 17:06:22 +0200
 
