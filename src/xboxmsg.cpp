@@ -586,6 +586,7 @@ float get_axis_float(XboxGenericMsg& msg, XboxAxis axis)
             case XBOX_AXIS_DPAD_X:
             case XBOX_AXIS_DPAD_Y:
             case XBOX_AXIS_TRIGGER:
+              // FIXME: Doesn't seem right
               return 0.0f;
             case XBOX_AXIS_X1:
               return s16_to_float(msg.xbox360.x1);
@@ -642,6 +643,7 @@ void set_axis_float(XboxGenericMsg& msg, XboxAxis axis, float v)
             case XBOX_AXIS_DPAD_X:
             case XBOX_AXIS_DPAD_Y:
             case XBOX_AXIS_TRIGGER:
+              // FIXME: Doesn't seem right
               break;
             case XBOX_AXIS_X1:
               msg.xbox360.x1 = float_to_s16(v); break;
@@ -697,6 +699,7 @@ void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
             case XBOX_AXIS_DPAD_X:
             case XBOX_AXIS_DPAD_Y:
             case XBOX_AXIS_TRIGGER:
+              // FIXME: Doesn't seem right
               break;
             case XBOX_AXIS_X1:
               msg.xbox360.x1 = v; break;
@@ -721,6 +724,7 @@ void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
             case XBOX_AXIS_DPAD_X:
             case XBOX_AXIS_DPAD_Y:
             case XBOX_AXIS_TRIGGER:
+              // FIXME: Doesn't seem right
               break;
             case XBOX_AXIS_X1:
               msg.xbox.x1 = v; break;
