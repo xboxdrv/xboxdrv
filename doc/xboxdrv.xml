@@ -604,6 +604,24 @@
         </varlistentry>
 
         <varlistentry>
+          <term><option>--dpad-rotation</option> <replaceable class="parameter">DEGREE</replaceable></term>
+          <listitem>
+            <para>
+              Allows you to rotate the
+              dpad. <replaceable class="parameter">DEGREE</replaceable>
+              must be a multiple of 45. This can be useful in
+              isometric games where the playfield itself is rotated,
+              thus a:
+            </para>
+            <programlisting>xboxdrv --dpad-rotation 45</programlisting>
+            <para>
+              Will give you controls that are relative to your
+              character instead of your viewpoint.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>--axis-sensitivty <replaceable class="parameter">AXIS=SENSITIVITY</replaceable></option>,...</term>
           <listitem>
             <para>The sensitive of an axis can be adjusted via --axis-sensitivty:</para>

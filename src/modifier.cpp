@@ -406,4 +406,98 @@ void apply_four_way_restrictor(XboxGenericMsg& msg, const CommandLineOptions& op
   }
 }
 
+void apply_dpad_rotator(XboxGenericMsg& msg, const CommandLineOptions& opts)
+{
+  int up    = get_button(msg, XBOX_DPAD_UP);
+  int down  = get_button(msg, XBOX_DPAD_DOWN);
+  int left  = get_button(msg, XBOX_DPAD_LEFT);
+  int right = get_button(msg, XBOX_DPAD_RIGHT);
+
+  // -1: not pressed, 0: up, 1: up/right, ...
+  int direction = -1;
+  if (up && !down && !left && !right)
+  {
+    direction = 0;
+  }
+  else if (up && !down && !left && right)
+  {
+    direction = 1;
+  }
+  else if (!up && !down && !left && right)
+  {
+    direction = 2;
+  }
+  else if (!up && down && !left && right)
+  {
+    direction = 3;
+  }
+  else if (!up && down && !left && !right)
+  {
+    direction = 4;
+  }
+  else if (!up && down && left && !right)
+  {
+    direction = 5;
+  }
+  else if (!up && !down && left && !right)
+  {
+    direction = 6;
+  }
+  else if (up && !down && left && !right)
+  {
+    direction = 7;
+  }
+
+  if (direction != -1)
+  {  
+    direction += opts.dpad_rotation;
+    direction %= 8;
+    if (direction < 0)
+      direction += 8;
+
+    set_button(msg, XBOX_DPAD_UP, 0);
+    set_button(msg, XBOX_DPAD_DOWN, 0);
+    set_button(msg, XBOX_DPAD_LEFT, 0);
+    set_button(msg, XBOX_DPAD_RIGHT, 0);
+    switch(direction)
+    {
+      case 0:
+        set_button(msg, XBOX_DPAD_UP, 1);
+        break;
+
+      case 1:
+        set_button(msg, XBOX_DPAD_UP, 1);
+        set_button(msg, XBOX_DPAD_RIGHT, 1);
+        break;
+
+      case 2:
+        set_button(msg, XBOX_DPAD_RIGHT, 1);
+        break;
+
+      case 3:
+        set_button(msg, XBOX_DPAD_RIGHT, 1);
+        set_button(msg, XBOX_DPAD_DOWN, 1);
+        break;
+
+      case 4:
+        set_button(msg, XBOX_DPAD_DOWN, 1);
+        break;
+
+      case 5:
+        set_button(msg, XBOX_DPAD_DOWN, 1);
+        set_button(msg, XBOX_DPAD_LEFT, 1);
+        break;
+
+      case 6:
+        set_button(msg, XBOX_DPAD_LEFT, 1);
+        break;
+
+      case 7:
+        set_button(msg, XBOX_DPAD_UP, 1);
+        set_button(msg, XBOX_DPAD_LEFT, 1);
+        break;
+    }
+  }
+}
+
 /* EOF */

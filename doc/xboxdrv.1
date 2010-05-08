@@ -446,6 +446,20 @@ output. This option is useful for games such as Tetris, that
 don't need diagonals and where you don't want to accidently
 trigger the down-move while trying to do a left/right move.
 .TP 
+\*(T<\fB\-\-dpad\-rotation\fR\*(T> \fIDEGREE\fR
+Allows you to rotate the
+dpad. \fIDEGREE\fR
+must be a multiple of 45. This can be useful in
+isometric games where the playfield itself is rotated,
+thus a:
+
+.nf
+\*(T<xboxdrv \-\-dpad\-rotation 45\*(T>
+.fi
+
+Will give you controls that are relative to your
+character instead of your viewpoint.
+.TP 
 \*(T<\fB\-\-axis\-sensitivty \fR\*(T>\fIAXIS=SENSITIVITY\fR,...
 The sensitive of an axis can be adjusted via --axis-sensitivty:
 

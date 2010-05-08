@@ -286,6 +286,9 @@ Xboxdrv::apply_modifier(XboxGenericMsg& msg, int msec_delta, const CommandLineOp
 
   if (opts.four_way_restrictor)
     apply_four_way_restrictor(msg, opts);
+
+  if (opts.dpad_rotation)
+    apply_dpad_rotator(msg, opts);
 }
 
 void
@@ -588,6 +591,7 @@ Xboxdrv::print_info(struct usb_device* dev,
 
   std::cout << "Square Axis:       " << ((opts.square_axis) ? "yes" : "no") << std::endl;
   std::cout << "4-Way Restrictor:  " << ((opts.four_way_restrictor) ? "yes" : "no") << std::endl;
+  std::cout << "Dpad Rotation:     " << opts.dpad_rotation * 45 << " degree" << std::endl;
   
   std::cout << "ButtonMap:         ";
   if (opts.button_map.empty())

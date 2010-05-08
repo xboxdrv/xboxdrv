@@ -74,6 +74,7 @@ public:
   std::vector<AxisSensitivityMapping> axis_sensitivity_map;
   bool square_axis;
   bool four_way_restrictor;
+  int  dpad_rotation;
   ArgParser argp;
 
 public:

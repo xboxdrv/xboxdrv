@@ -20,6 +20,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/format.hpp>
 
 #include "arg_parser.hpp"
@@ -66,6 +67,7 @@ enum {
   OPTION_RELATIVE_AXIS,
   OPTION_SQUARE_AXIS,
   OPTION_FOUR_WAY_RESTRICTOR,
+  OPTION_DPAD_ROTATION,
   OPTION_AXIS_SENSITIVITY,
   OPTION_HELP_LED,
   OPTION_DEVICE_BY_ID,
@@ -104,6 +106,7 @@ CommandLineOptions::CommandLineOptions() :
   axis_sensitivity_map(),
   square_axis(false),
   four_way_restrictor(false),
+  dpad_rotation(0),
   argp()
 {
   busid[0] = '\0';
@@ -160,10 +163,13 @@ CommandLineOptions::CommandLineOptions() :
     .add_option(OPTION_UI_AXISMAP,         0, "ui-axismap",       "MAP",  "Changes the uinput events send when moving a axis (example: X1=ABS_X2)")
     .add_option(OPTION_SQUARE_AXIS,        0, "square-axis",      "",     "Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)")
     .add_option(OPTION_FOUR_WAY_RESTRICTOR,0, "four-way-restrictor", "",  "Restrict axis movement to one axis at a time")
+    .add_option(OPTION_DPAD_ROTATION,      0, "dpad-rotation",    "DEGREE", "Rotate the dpad by the given DEGREE, must be a multiple of 45")
     .add_option(OPTION_AXIS_SENSITIVITY,   0, "axis-sensitivity", "MAP",  "Adjust the axis sensitivity (example: X1=2.0,Y1=1.0)")
     .add_option(OPTION_RELATIVE_AXIS,      0, "relative-axis",    "MAP",  "Make an axis emulate a joystick throttle (example: y2=64000)")
     .add_option(OPTION_AUTOFIRE,           0, "autofire",         "MAP",  "Cause the given buttons to act as autofire (example: A=250)")
     .add_option(OPTION_CALIBRARIOTION,     0, "calibration",      "MAP",  "Changes the calibration for the given axis (example: X2=-32768:0:32767)")
+
+    .add_text("Force Feedback: ")
     .add_option(OPTION_FORCE_FEEDBACK,     0, "force-feedback",   "",     "Enable force feedback support")
     .add_option(OPTION_RUMBLE_GAIN,        0, "rumble-gain",      "NUM",  "Set relative rumble strength (default: 255)")
     .add_newline()
@@ -437,6 +443,16 @@ CommandLineOptions::parse_args(int argc, char** argv)
           case OPTION_FOUR_WAY_RESTRICTOR:
             opts.four_way_restrictor = true;
             break;
+
+          case OPTION_DPAD_ROTATION:
+          {
+            int degree = boost::lexical_cast<int>(opt.argument);
+            degree /= 45;
+            degree %= 8;
+            if (degree < 0) degree += 8;
+            opts.dpad_rotation = degree;
+          }
+          break;
 
           case OPTION_SQUARE_AXIS:
             opts.square_axis = true;
