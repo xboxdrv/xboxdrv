@@ -8,7 +8,8 @@ TAG="v${VERSION}"
 git tag -s  "${TAG}" -m "xboxdrv ${TAG}" 
 
 # Debian
-git archive --format=tar --prefix="xboxdrv-${VERSION}/" ${TAG} | gzip -c > /tmp/xboxdrv_${VERSION}.orig.tar.gz
+git archive --format=tar --prefix="xboxdrv-${VERSION}-3/" ${TAG} | gzip -c > /tmp/xboxdrv_${VERSION}-3.orig.tar.gz
+
 
 # Normal Source
 git archive --format=tar --prefix="xboxdrv-linux-${VERSION}/" ${TAG} | bzip2 -c > /tmp/xboxdrv-linux-${VERSION}.tar.bz2
