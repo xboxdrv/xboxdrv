@@ -9,9 +9,9 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-
-
-
+ifndef DESTDIR
+DESTDIR=..
+endif
 
 configure: configure-stamp
 configure-stamp:
@@ -89,7 +89,7 @@ binary-arch: install
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
-	dh_builddeb
+	dh_builddeb --destdir "$(DESTDIR)"
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install configure
