@@ -63,6 +63,7 @@ To load the uinput kernel module automatically on boot add it
 
 On other distributions exact install instructions might be
 slightly different.
+
 
 [[ Installation ]]
 ------------------
@@ -77,18 +78,21 @@ You can change the install prefix with:
 
 Note that there is no need to install xboxdrv, you can run it directly
 from the source directory if you prefer.
+
 
 [[ Running ]]
 -------------
 
+Extensive documentation on running xboxdrv can be found in the RUNNING
+XBOXDRV section of the xboxdrv manpage. When you haven't installed
+xboxdrv the man page can be found in doc/xboxdrv.1 and be read with:
 
-
-Running InputDrv
-----------------
+ % man -l doc/xboxdrv.1
 
-The programs src/inputdrv and gui/inputcfg.py are part of an experiment to
-create a very flexible input configuration framework. They are still
-in development and not of any use unless you want to hack the
-source. Their compilation is disabled by default.
+Documentation on xboxdrv-daemon, a daemon that will automatically
+launch xboxdrv when a pad is plugged in can be read via:
+
+ % man -l doc/xboxdrv-daemon.1
+
 
 # EOF #

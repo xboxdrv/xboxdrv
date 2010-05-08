@@ -1,8 +1,9 @@
-xboxdrv 0.4.12 - (??/Mai/2010)
+xboxdrv 0.4.12 - (08/Mai/2010)
 ==============================
 
 * added --four-way-restrictor
-* added proper man pages
+* added --dpad-rotation
+* added proper man pages for xboxdrv and xboxdrv-daemon
 
 
 xboxdrv 0.4.11 - (01/Mai/2010)

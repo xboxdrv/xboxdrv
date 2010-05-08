@@ -1,9 +1,6 @@
 Pre Release Testing:
 ====================
 
-* default, test all axis and buttons 
-* --dpad-only check that X/Y act properly
-* --dpad-as-button check buttons are working and no useless axis present
 * check the version number
 
 VERSION="0.4.12"
@@ -16,6 +13,8 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
+* split xboxdrv-daemon into a separate .deb package
+
 * version number needs to be centralized, its currently in the man
   pages, in xboxdrv, in the TODO and in xboxdrv-daemon
 
@@ -26,7 +25,7 @@ Stuff to do before 0.5 release:
  --ui-buttonmap a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER  
 
 * mouse feels sluggish and jumpy, tweaking value and repeat makes the problem
-  smaller, but not go away
+  smaller, but not go away (already solved by sync?!)
 
   --ui-axismap x1=REL_X:10:20,y1=REL_Y:10:20,y2
 
@@ -40,8 +39,6 @@ Stuff to do before 0.5 release:
 * better keyboard emulation via analog sticks: axis must not be
   handled separately as this leads to issues with the diagonals (see
   mail from Matthew G <matt@remort.org>)
-
-* build packages and put into Ubuntu PPA (suggested by Mårten Woxberg <marten.woxberg@gmail.com>)
 
 * test TR:Anniversary with max effect 16
 
