@@ -62,6 +62,13 @@ Do not try to start uinput event dispatching, useful for debugging.
 \*(T<\fB\-\-mimic\-xpad\fR\*(T>
 Causes xboxdrv to use the same axis and button names as the xpad kernel driver.
 .TP 
+\*(T<\fB\-\-no\-extra\-devices\fR\*(T>
+Normally xboxdrv will create an extra device for
+keyboard emulation and mouse emulation when it detects a
+button mapping that requires that. If this option is
+set, it will not do that and instead dump all the
+buttons into the joystick device.
+.TP 
 \*(T<\fB\-D\fR\*(T>, \*(T<\fB\-\-daemon\fR\*(T>
 Run as daemon. In most situations this is not very
 useful, as \fBxboxdrv\fR will fail when the

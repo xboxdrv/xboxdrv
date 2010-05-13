@@ -150,6 +150,19 @@
         </varlistentry>
 
         <varlistentry>
+          <term><option>--no-extra-devices</option></term>
+          <listitem>
+            <para>
+              Normally xboxdrv will create an extra device for
+              keyboard emulation and mouse emulation when it detects a
+              button mapping that requires that. If this option is
+              set, it will not do that and instead dump all the
+              buttons into the joystick device.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>-D</option>, <option>--daemon</option></term>
           <listitem>
             <para>

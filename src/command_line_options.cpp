@@ -44,6 +44,7 @@ enum {
   OPTION_QUIT,
   OPTION_NO_UINPUT,
   OPTION_MIMIC_XPAD,
+  OPTION_NO_EXTRA_DEVICES,
   OPTION_TYPE,
   OPTION_FORCE_FEEDBACK,
   OPTION_RUMBLE_GAIN,
@@ -130,6 +131,7 @@ CommandLineOptions::CommandLineOptions() :
     .add_option(OPTION_LIST_SUPPORTED_DEVICES_XPAD, 0, "list-supported-devices-xpad", "", "list supported devices in xpad.c style")
     .add_option(OPTION_TEST_RUMBLE,  'R', "test-rumble", "", "map rumbling to LT and RT (for testing only)")
     .add_option(OPTION_NO_UINPUT,     0,  "no-uinput",   "", "do not try to start uinput event dispatching")
+    .add_option(OPTION_NO_EXTRA_DEVICES, 0,  "no-extra-devices",  "", "Do not create keyboard and mouse devices, just use a single device")
     .add_option(OPTION_MIMIC_XPAD,    0,  "mimic-xpad",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver")
     .add_option(OPTION_DAEMON,       'D', "daemon",      "", "run as daemon")
     .add_newline()
@@ -289,6 +291,10 @@ CommandLineOptions::parse_args(int argc, char** argv)
 
           case OPTION_MIMIC_XPAD:
             opts.uinput_config.mimic_xpad();
+            break;
+
+          case OPTION_NO_EXTRA_DEVICES:
+            opts.uinput_config.extra_devices = false;
             break;
 
           case OPTION_TYPE:
