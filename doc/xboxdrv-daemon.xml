@@ -3,7 +3,7 @@
           "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <refentry id="xboxdrv">
   <refentryinfo>
-    <date>2010-05-05</date>
+    <date>2010-05-13</date>
   </refentryinfo>
 
   <refmeta>
@@ -11,8 +11,8 @@
       <application>xboxdrv-daemon</application>
     </refentrytitle>
     <manvolnum>1</manvolnum>
-    <refmiscinfo class="version">0.4.12</refmiscinfo>
-    <refmiscinfo class="author">0.4.12</refmiscinfo>
+    <refmiscinfo class="version">0.4.13</refmiscinfo>
+    <refmiscinfo class="author">0.4.13</refmiscinfo>
     <refmiscinfo class="manual">User Commands</refmiscinfo>
     <refmiscinfo class="source">xboxdrv-daemon</refmiscinfo>
   </refmeta>
