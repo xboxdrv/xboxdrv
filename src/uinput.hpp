@@ -64,7 +64,7 @@ struct ButtonEvent
 struct AxisEvent
 {
   static AxisEvent invalid() { return create(-1, -1); }
-  static AxisEvent create(int type, int code);
+  static AxisEvent create(int type, int code, int fuzz = 0, int flat = 0);
   static AxisEvent from_string(const std::string& str);
 
   /** EV_KEY, EV_ABS, EV_REL */
@@ -80,6 +80,8 @@ struct AxisEvent
     } rel;
 
     struct {
+      int fuzz;
+      int flat;
     } abs;
 
     struct {
@@ -104,6 +106,9 @@ public:
   AxisEvent   axis_map[XBOX_AXIS_MAX];
 
   uInputCfg();
+
+  /** Sets a button/axis mapping that is equal to the xpad kernel driver */
+  void mimic_xpad();
 };
   
 class uInput

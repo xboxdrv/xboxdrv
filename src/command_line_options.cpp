@@ -288,7 +288,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             break;
 
           case OPTION_MIMIC_XPAD:
-            //opts.mimic_xpad = true;
+            opts.uinput_config.mimic_xpad();
             break;
 
           case OPTION_TYPE:

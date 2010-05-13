@@ -93,7 +93,7 @@ LinuxUinput::~LinuxUinput()
 }
 
 void
-LinuxUinput::add_abs(uint16_t code, int min, int max)
+LinuxUinput::add_abs(uint16_t code, int min, int max, int fuzz, int flat)
 {
   // std::cout << "add_abs: " << abs2str(code) << " (" << min << ", " << max << ") " << name << std::endl;
 
@@ -111,6 +111,8 @@ LinuxUinput::add_abs(uint16_t code, int min, int max)
 
       user_dev.absmin[code] = min;
       user_dev.absmax[code] = max; 
+      user_dev.absfuzz[code] = fuzz;
+      user_dev.absflat[code] = flat;
     }
 }
 
@@ -181,7 +183,7 @@ void
 LinuxUinput::finish()
 {
   strncpy(user_dev.name, name.c_str(), UINPUT_MAX_NAME_SIZE);
-  user_dev.id.version = 0;
+  user_dev.id.version = 0x114; // FIXME: whats this for?
   user_dev.id.bustype = BUS_USB;
   user_dev.id.vendor  = vendor;
   user_dev.id.product = product;

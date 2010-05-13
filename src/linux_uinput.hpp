@@ -55,7 +55,7 @@ public:
 
   /*@{*/
   /** Create an absolute axis */
-  void add_abs(uint16_t code, int min, int max);
+  void add_abs(uint16_t code, int min, int max, int fuzz = 0, int flat = 0);
 
   /** Create an button */
   void add_key(uint16_t code);
