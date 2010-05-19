@@ -33,19 +33,40 @@
 #include "uinput.hpp"
 #include "uinput_deviceid.hpp"
 
+bool is_keyboard_event(const ButtonEvent& event)
+{
+  if (event.type == EV_KEY && uInput::is_keyboard_button(event.code))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+bool is_mouse_event(const ButtonEvent& event)
+{
+  if (event.type == EV_KEY && uInput::is_mouse_button(event.code))
+  {
+    return true;
+  }
+  else if (event.type == EV_REL)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
 bool
 uInput::need_keyboard_device()
 {
-  for(int j = 0; j < XBOX_BTN_MAX; ++j)
+  if (cfg.btn_map.contains(is_keyboard_event))
   {
-    for(int i = 0; i < XBOX_BTN_MAX; ++i)
-    {
-      if (cfg.btn_map[j][i].type == EV_KEY &&
-          is_keyboard_button(cfg.btn_map[j][i].code))
-      {
-        return true;
-      }
-    }
+    return true;
   }
 
   for(int i = 0; i < XBOX_AXIS_MAX; ++i)
@@ -64,20 +85,9 @@ uInput::need_keyboard_device()
 bool
 uInput::need_mouse_device()
 {
-  for(int j = 0; j < XBOX_BTN_MAX; ++j)
+  if (cfg.btn_map.contains(is_mouse_event))
   {
-    for(int i = 0; i < XBOX_BTN_MAX; ++i)
-    {
-      if (cfg.btn_map[j][i].type == EV_KEY &&
-          is_mouse_button(cfg.btn_map[j][i].code))
-      {
-        return true;
-      }
-      else if (cfg.btn_map[j][i].type == EV_REL)
-      {
-        return true;
-      }
-    }
+    return true;
   }
 
   for(int i = 0; i < XBOX_AXIS_MAX; ++i)
@@ -131,12 +141,9 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
     create_uinput_device(0);
   }
 
-  for(int j = 0; j < XBOX_BTN_MAX; ++j)
+  for(ButtonMap::iterator i = cfg.btn_map.begin(); i != cfg.btn_map.end(); ++i)
   {
-    for(int i = 0; i < XBOX_BTN_MAX; ++i)
-    {
-      cfg.btn_map[j][i].device_id = create_uinput_device(cfg.btn_map[j][i]);
-    }
+    (*i).device_id = create_uinput_device(*i);
   }
 
   for(int i = 0; i < XBOX_AXIS_MAX; ++i)
@@ -657,9 +664,9 @@ uInput::update(int msec_delta)
 
     if (i->time >= i->next_time)
     {
-      get_mouse_uinput()->send(EV_REL, cfg.btn_map[XBOX_BTN_UNKNOWN][i->button].code, 
-                               static_cast<int>(cfg.btn_map[XBOX_BTN_UNKNOWN][i->button].rel.value * button_state[i->button]));
-      i->next_time += cfg.btn_map[XBOX_BTN_UNKNOWN][i->button].rel.repeat;
+      get_mouse_uinput()->send(EV_REL, cfg.btn_map.lookup(i->button).code, 
+                               static_cast<int>(cfg.btn_map.lookup(i->button).rel.value * button_state[i->button]));
+      i->next_time += cfg.btn_map.lookup(i->button).rel.repeat;
       needs_syncronization = true;
     }
   }
@@ -680,7 +687,7 @@ uInput::send_button(int code, bool value)
   {
     button_state[code] = value;
 
-    const ButtonEvent& event = cfg.btn_map[XBOX_BTN_UNKNOWN][code];
+    const ButtonEvent& event = cfg.btn_map.lookup(code);
   
     send_key(event.device_id, event.code, value);
   }
@@ -803,7 +810,7 @@ uInput::add_axis(int code, int min, int max)
 void
 uInput::add_button(int code)
 {
-  const ButtonEvent& event = cfg.btn_map[XBOX_BTN_UNKNOWN][code];
+  const ButtonEvent& event = cfg.btn_map.lookup(code);
 
   if (event.type == EV_KEY)
   {

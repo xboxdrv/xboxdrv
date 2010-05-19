@@ -102,8 +102,9 @@ private:
   bool need_keyboard_device();
   bool need_joystick_device();
 
-  bool is_mouse_button(int ev_code);
-  bool is_keyboard_button(int ev_code);
+public:
+  static bool is_mouse_button(int ev_code);
+  static bool is_keyboard_button(int ev_code);
 };
 
 #endif

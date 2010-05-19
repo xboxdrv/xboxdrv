@@ -180,7 +180,7 @@ CommandLineOptions::CommandLineOptions() :
     .add_text("Report bugs to Ingo Ruhnke <grumbel@gmx.de>");
 }
 
-void set_ui_button_map(ButtonEvent* ui_button_map, const std::string& str)
+void set_ui_button_map(ButtonMap& ui_button_map, const std::string& str)
 {
   std::string::size_type i = str.find_first_of('=');
   if (i == std::string::npos)
@@ -196,7 +196,7 @@ void set_ui_button_map(ButtonEvent* ui_button_map, const std::string& str)
       
     if (btn != XBOX_BTN_UNKNOWN)
     {
-      ui_button_map[btn] = event;
+      ui_button_map.bind(btn, event);
     }
     else
     {
@@ -367,8 +367,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
 
       case OPTION_UI_CLEAR:
         std::fill_n(opts.uinput_config.axis_map, static_cast<int>(XBOX_AXIS_MAX), AxisEvent::invalid());
-        for(int i = 0; i < XBOX_BTN_MAX; ++i)
-          std::fill_n(opts.uinput_config.btn_map[i],  static_cast<int>(XBOX_BTN_MAX),  ButtonEvent::invalid());
+        opts.uinput_config.btn_map.clear();
         break;
 
       case OPTION_UI_AXISMAP:
@@ -376,7 +375,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
         break;
 
       case OPTION_UI_BUTTONMAP:
-        arg2apply(opt.argument, boost::bind(&set_ui_button_map, opts.uinput_config.btn_map[XBOX_BTN_UNKNOWN], _1));
+        arg2apply(opt.argument, boost::bind(&set_ui_button_map, opts.uinput_config.btn_map, _1));
         break;
 
       case OPTION_ID:

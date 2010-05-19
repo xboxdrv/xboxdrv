@@ -16,34 +16,47 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_UINPUT_CFG_HPP
-#define HEADER_XBOXDRV_UINPUT_CFG_HPP
-
-#include "axis_event.hpp"
-#include "button_event.hpp"
 #include "button_map.hpp"
-#include "xboxmsg.hpp"
 
-class uInputCfg
+ButtonMap::ButtonMap()
 {
-public:
-  std::string device_name;
-  bool trigger_as_button;
-  bool dpad_as_button;
-  bool trigger_as_zaxis;
-  bool dpad_only;
-  bool force_feedback;
-  bool extra_devices;
+  clear();
+}
 
-  ButtonMap btn_map;
-  AxisEvent axis_map[XBOX_AXIS_MAX];
+void
+ButtonMap::bind(int code, const ButtonEvent& event)
+{
+  btn_map[XBOX_BTN_UNKNOWN][code] = event;
+}
 
-  uInputCfg();
+void
+ButtonMap::bind(int shift_code, int code, const ButtonEvent& event)
+{
+  btn_map[shift_code][code] = event;
+}
 
-  /** Sets a button/axis mapping that is equal to the xpad kernel driver */
-  void mimic_xpad();
-};
+ButtonEvent
+ButtonMap::lookup(int code) const
+{
+  return btn_map[XBOX_BTN_UNKNOWN][code];
+}
 
-#endif
+ButtonEvent
+ButtonMap::lookup_shift(int shift_code, int code) const
+{
+  return btn_map[shift_code][code];
+}
+
+void
+ButtonMap::clear()
+{
+  for(int shift_code = 0; shift_code < XBOX_BTN_MAX; ++shift_code)
+  {
+    for(int code = 0; code < XBOX_BTN_MAX; ++code)
+    {
+      btn_map[shift_code][code] = ButtonEvent::invalid();
+    }
+  }
+}
 
 /* EOF */
