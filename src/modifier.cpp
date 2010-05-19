@@ -155,10 +155,6 @@ ButtonMapping::from_string(const std::string& str)
       ButtonMapping mapping;
       mapping.lhs = string2btn(std::string(str.begin(), i));
       mapping.rhs = string2btn(std::string(i+1, str.end()));
-          
-      if (mapping.lhs == XBOX_BTN_UNKNOWN ||
-          mapping.rhs == XBOX_BTN_UNKNOWN)
-        throw std::runtime_error("Couldn't convert string \"" + str + "\" to button mapping");
 
       return mapping;
     }

@@ -804,7 +804,7 @@ XboxButton string2btn(const std::string& str_)
     return XBOX_DPAD_RIGHT;
 
   else
-    return XBOX_BTN_UNKNOWN;
+    throw std::runtime_error("Couldn't convert string \"" + str + "\" to button");
 }
 
 XboxAxis string2axis(const std::string& str_)

@@ -687,8 +687,43 @@ uInput::send_button(int code, bool value)
   {
     button_state[code] = value;
 
+    // in case a shift button was changed, we have to clear all
+    // connected buttons
+    for(int i = 0; i < XBOX_BTN_MAX; ++i) // iterate over all buttons
+    {
+      if (button_state[i])
+      {
+        const ButtonEvent& event = cfg.btn_map.lookup(code, i);
+        if (event.is_valid())
+        {
+          for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
+          {
+            const ButtonEvent& event = cfg.btn_map.lookup(j, i);
+            send_key(event.device_id, event.code, false);
+          }
+        }
+      }
+    }
+
+    // Shifted button events
+    for(int i = 0; i < XBOX_BTN_MAX; ++i)
+    {
+      if (button_state[i]) // shift button is pressed
+      {
+        const ButtonEvent& event = cfg.btn_map.lookup(i, code);
+        if (event.is_valid())
+        {
+          send_key(event.device_id, event.code, value);
+
+          // exit after the first successful event, so we don't send
+          // multiple events for the same button
+          return;
+        }
+      }
+    }
+
+    // Non shifted button events
     const ButtonEvent& event = cfg.btn_map.lookup(code);
-  
     send_key(event.device_id, event.code, value);
   }
 }
@@ -810,24 +845,27 @@ uInput::add_axis(int code, int min, int max)
 void
 uInput::add_button(int code)
 {
-  const ButtonEvent& event = cfg.btn_map.lookup(code);
+  for(int i = 0; i < XBOX_BTN_MAX; ++i)
+  {
+    const ButtonEvent& event = cfg.btn_map.lookup(i, code);
 
-  if (event.type == EV_KEY)
-  {
-    add_key(event.device_id, event.code);
-  }
-  else if (event.type == EV_REL)
-  {
-    get_uinput(event.device_id)->add_rel(event.code);
+    if (event.type == EV_KEY)
+    {
+      add_key(event.device_id, event.code);
+    }
+    else if (event.type == EV_REL)
+    {
+      get_uinput(event.device_id)->add_rel(event.code);
 
-    RelButtonState rel_button_state;
-    rel_button_state.button = code;
-    rel_button_state.time = 0;
-    rel_button_state.next_time = 0;
-    rel_button.push_back(rel_button_state);
-  }
-  else if (event.type == EV_ABS)
-  {
+      RelButtonState rel_button_state;
+      rel_button_state.button = code;
+      rel_button_state.time = 0;
+      rel_button_state.next_time = 0;
+      rel_button.push_back(rel_button_state);
+    }
+    else if (event.type == EV_ABS)
+    {
+    }
   }
 }
 

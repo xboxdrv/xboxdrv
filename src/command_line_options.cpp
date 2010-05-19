@@ -182,7 +182,7 @@ CommandLineOptions::CommandLineOptions() :
 
 void set_ui_button_map(ButtonMap& ui_button_map, const std::string& str)
 {
-  std::string::size_type i = str.find_first_of('=');
+  std::string::size_type i = str.find('=');
   if (i == std::string::npos)
   {
     throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, '=' missing");
@@ -191,16 +191,22 @@ void set_ui_button_map(ButtonMap& ui_button_map, const std::string& str)
   {
     //std::cout << string2btn(str.substr(0, i)) << " -> " << str.substr(i+1, str.size()-i) << std::endl;
 
-    XboxButton  btn   = string2btn(str.substr(0, i));
+    std::string btn_str = str.substr(0, i);
     ButtonEvent event = ButtonEvent::from_string(str.substr(i+1, str.size()-i));
-      
-    if (btn != XBOX_BTN_UNKNOWN)
+
+    std::string::size_type j = btn_str.find('+');
+    if (j == std::string::npos)
     {
+      XboxButton  btn = string2btn(btn_str);
+
       ui_button_map.bind(btn, event);
     }
     else
     {
-      throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, Xbox button name not valid");
+      XboxButton shift = string2btn(btn_str.substr(0, j));
+      XboxButton btn   = string2btn(btn_str.substr(j+1));
+
+      ui_button_map.bind(shift, btn, event);
     }
   }
 }

@@ -42,7 +42,7 @@ ButtonMap::lookup(int code) const
 }
 
 ButtonEvent
-ButtonMap::lookup_shift(int shift_code, int code) const
+ButtonMap::lookup(int shift_code, int code) const
 {
   return btn_map[shift_code][code];
 }

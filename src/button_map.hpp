@@ -20,7 +20,6 @@
 #define HEADER_XBOXDRV_BUTTON_MAP_HPP
 
 #include <assert.h>
-#include <iostream>
 
 #include "button_event.hpp"
 #include "xboxmsg.hpp"
@@ -37,7 +36,7 @@ public:
   void bind(int shift_code, int code, const ButtonEvent& event);
 
   ButtonEvent lookup(int code) const;
-  ButtonEvent lookup_shift(int shift_code, int code) const;
+  ButtonEvent lookup(int shift_code, int code) const;
 
   void clear();
 
@@ -57,6 +56,8 @@ public:
     return false;
   }
 
+  // FIXME: use boost::iterator_apdator or a template to make this
+  // prettier and allow proper const, non-const versions
   struct iterator 
   {
     friend class ButtonMap;
