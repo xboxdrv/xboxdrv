@@ -21,9 +21,12 @@
 
 #include <string>
 
+#include "uinput_deviceid.hpp"
+
 struct AxisEvent
 {
-  static AxisEvent invalid() { return create(-1, -1); }
+  static AxisEvent invalid() { return create(DEVICEID_INVALID, -1, -1, 0, 0); }
+  static AxisEvent create(int device_id, int type, int code, int fuzz, int flat);
   static AxisEvent create(int type, int code, int fuzz = 0, int flat = 0);
   static AxisEvent from_string(const std::string& str);
 

@@ -127,27 +127,13 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
 
   for(int i = 0; i < XBOX_BTN_MAX; ++i)
   {
-    create_uinput_device(cfg.btn_map[i]);
+    cfg.btn_map[i].device_id = create_uinput_device(cfg.btn_map[i]);
   }
 
   for(int i = 0; i < XBOX_AXIS_MAX; ++i)
   {
-    create_uinput_device(cfg.axis_map[i]);
+    cfg.axis_map[i].device_id = create_uinput_device(cfg.axis_map[i]);
   }
-
-  /*  
-  joystick_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name, dev.idVendor, dev.idProduct));
-
-  if (cfg.extra_devices && need_mouse_device())
-  {
-    mouse_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Mouse Emulation", dev.idVendor, dev.idProduct));
-  }
-
-  if (cfg.extra_devices && need_keyboard_device())
-  {
-    keyboard_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Keyboard Emulation", dev.idVendor, dev.idProduct));
-  }
-  */
 
   switch(dev.type)
   {
@@ -175,13 +161,14 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
   }
 }
 
-void
+int
 uInput::create_uinput_device(int device_id)
 {
   uInputDevs::iterator it = uinput_devs.find(device_id);
   if (it != uinput_devs.end())
   {
     // device already exist, which is fine    
+    return device_id;
   }
   else
   {
@@ -203,82 +190,108 @@ uInput::create_uinput_device(int device_id)
 
     boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(dev_name.str(), m_dev.idVendor, m_dev.idProduct));
     uinput_devs.insert(std::pair<int, boost::shared_ptr<LinuxUinput> >(device_id, dev));
+
+    std::cout << "Creating uinput device: device_id: " << device_id << ", dev_name: " << dev_name.str() << std::endl;
+
+    return device_id;
   }
 }
 
-void
+int
 uInput::create_uinput_device(const AxisEvent& event)
 {
   if (event.is_valid())
   {
     if (event.device_id == DEVICEID_AUTO)
     {
-      if (event.type == EV_KEY)
+      if (cfg.extra_devices)
       {
-        if (is_mouse_button(event.code) || is_mouse_button(event.key.secondary_code))
+        if (event.type == EV_KEY)
         {
-          create_uinput_device(DEVICEID_MOUSE);
+          if (is_mouse_button(event.code) || is_mouse_button(event.key.secondary_code))
+          {
+            return create_uinput_device(DEVICEID_MOUSE);
+          }
+          else if (is_keyboard_button(event.code) || is_keyboard_button(event.key.secondary_code))
+          {
+            return create_uinput_device(DEVICEID_KEYBOARD);
+          }
+          else
+          {
+            return create_uinput_device(DEVICEID_JOYSTICK);
+          }
         }
-        else if (is_keyboard_button(event.code) || is_keyboard_button(event.key.secondary_code))
+        else if (event.type == EV_REL)
         {
-          create_uinput_device(DEVICEID_KEYBOARD);
+          return create_uinput_device(DEVICEID_MOUSE);
         }
         else
         {
-          create_uinput_device(DEVICEID_JOYSTICK);
+          return create_uinput_device(DEVICEID_JOYSTICK);
         }
-      }
-      else if (event.type == EV_REL)
-      {
-        create_uinput_device(DEVICEID_MOUSE);
       }
       else
       {
-        create_uinput_device(DEVICEID_JOYSTICK);
+        return create_uinput_device(DEVICEID_JOYSTICK);
       }
     }
     else
     {
-      create_uinput_device(event.device_id);
+      return create_uinput_device(event.device_id);
     }
+  }
+  else
+  {
+    return DEVICEID_INVALID;
   }
 }
 
-void
+int
 uInput::create_uinput_device(const ButtonEvent& event)
 {
   if (event.is_valid())
   {
     if (event.device_id == DEVICEID_AUTO)
     {
-      if (event.type == EV_KEY)
+      if (cfg.extra_devices)
       {
-        if (is_mouse_button(event.code))
+        if (event.type == EV_KEY)
         {
-          create_uinput_device(DEVICEID_MOUSE);
+          if (is_mouse_button(event.code))
+          {
+            return create_uinput_device(DEVICEID_MOUSE);
+          }
+          else if (is_keyboard_button(event.code))
+          {
+            return create_uinput_device(DEVICEID_KEYBOARD);
+          }
+          else
+          {
+            return create_uinput_device(DEVICEID_JOYSTICK);
+          }
         }
-        else if (is_keyboard_button(event.code))
+        else if (event.type == EV_REL)
         {
-          create_uinput_device(DEVICEID_KEYBOARD);
+          return create_uinput_device(DEVICEID_MOUSE);
         }
         else
         {
-          create_uinput_device(DEVICEID_JOYSTICK);
+          return create_uinput_device(DEVICEID_JOYSTICK);
         }
-      }
-      else if (event.type == EV_REL)
-      {
-        create_uinput_device(DEVICEID_MOUSE);
       }
       else
       {
-        create_uinput_device(DEVICEID_JOYSTICK);
+        return create_uinput_device(DEVICEID_JOYSTICK);
       }
     }
     else
     {
-      create_uinput_device(event.device_id);
+      return create_uinput_device(event.device_id);
     }
+  }
+  else
+  {
+    return DEVICEID_INVALID;
   }
 }
 
@@ -292,27 +305,27 @@ uInput::setup_xbox360_gamepad(GamepadType type)
   if (cfg.force_feedback)
     {
       // 
-      get_joystick_uinput()->add_ff(FF_RUMBLE);
-      get_joystick_uinput()->add_ff(FF_PERIODIC);
-      get_joystick_uinput()->add_ff(FF_CONSTANT);
-      get_joystick_uinput()->add_ff(FF_RAMP);
+      get_force_feedback_uinput()->add_ff(FF_RUMBLE);
+      get_force_feedback_uinput()->add_ff(FF_PERIODIC);
+      get_force_feedback_uinput()->add_ff(FF_CONSTANT);
+      get_force_feedback_uinput()->add_ff(FF_RAMP);
 
       // Periodic effect subtypes
-      get_joystick_uinput()->add_ff(FF_SINE);
-      get_joystick_uinput()->add_ff(FF_TRIANGLE);
-      get_joystick_uinput()->add_ff(FF_SQUARE);
-      get_joystick_uinput()->add_ff(FF_SAW_UP);
-      get_joystick_uinput()->add_ff(FF_SAW_DOWN);
-      get_joystick_uinput()->add_ff(FF_CUSTOM);
+      get_force_feedback_uinput()->add_ff(FF_SINE);
+      get_force_feedback_uinput()->add_ff(FF_TRIANGLE);
+      get_force_feedback_uinput()->add_ff(FF_SQUARE);
+      get_force_feedback_uinput()->add_ff(FF_SAW_UP);
+      get_force_feedback_uinput()->add_ff(FF_SAW_DOWN);
+      get_force_feedback_uinput()->add_ff(FF_CUSTOM);
 
       // Gain support
-      get_joystick_uinput()->add_ff(FF_GAIN);
+      get_force_feedback_uinput()->add_ff(FF_GAIN);
 
       // Unsupported effects
-      // get_joystick_uinput()->add_ff(FF_SPRING);
-      // get_joystick_uinput()->add_ff(FF_FRICTION);
-      // get_joystick_uinput()->add_ff(FF_DAMPER);
-      // get_joystick_uinput()->add_ff(FF_INERTIA);
+      // get_force_feedback_uinput()->add_ff(FF_SPRING);
+      // get_force_feedback_uinput()->add_ff(FF_FRICTION);
+      // get_force_feedback_uinput()->add_ff(FF_DAMPER);
+      // get_force_feedback_uinput()->add_ff(FF_INERTIA);
 
       // FF_GAIN     - relative strength of rumble
       // FF_RUMBLE   - basic rumble (delay, time)
@@ -655,7 +668,7 @@ uInput::update(int msec_delta)
   }
 
   // Update forcefeedback 
-  get_joystick_uinput()->update(msec_delta);
+  get_force_feedback_uinput()->update(msec_delta);
 }
 
 void
@@ -667,41 +680,29 @@ uInput::send_button(int code, bool value)
 
       const ButtonEvent& event = cfg.btn_map[code];
   
-      send_key(event.code, value);
+      send_key(event.device_id, event.code, value);
     }
 }
 
 void
 uInput::add_key(int device_id, int ev_code)
 {
-  if (is_keyboard_button(ev_code))
-    get_keyboard_uinput()->add_key(ev_code);
-  else if (is_mouse_button(ev_code))
-    get_mouse_uinput()->add_key(ev_code);
-  else
-    get_joystick_uinput()->add_key(ev_code);
+  get_uinput(device_id)->add_key(ev_code);
 }
 
 void
-uInput::send_key(int ev_code, bool value)
+uInput::send_key(int device_id, int ev_code, bool value)
 {
   if (ev_code == -1)
   {
     // pass
   }
-  else if (is_keyboard_button(ev_code))
-  {
-    get_keyboard_uinput()->send(EV_KEY, ev_code, value);
-    // FIXME: should sync only after all buttons are handled
-    get_keyboard_uinput()->send(EV_SYN, SYN_REPORT, 0); 
-  }
-  else if (is_mouse_button(ev_code))
-  {
-    get_mouse_uinput()->send(EV_KEY, ev_code, value);
-  }
   else
   {
-    get_joystick_uinput()->send(EV_KEY, ev_code, value);
+    get_uinput(device_id)->send(EV_KEY, ev_code, value);
+
+    // FIXME: should sync only after all buttons are handled
+    get_uinput(device_id)->send(EV_SYN, SYN_REPORT, 0); 
   }
 }
 
@@ -722,7 +723,7 @@ uInput::send_axis(int code, int32_t value)
 
           case EV_ABS:
             if (event.type == EV_ABS || event.type == EV_KEY)
-              get_joystick_uinput()->send(event.type, event.code, value);
+              get_uinput(event.device_id)->send(event.type, event.code, value);
             break;
 
           case EV_REL:
@@ -736,20 +737,20 @@ uInput::send_axis(int code, int32_t value)
               { // entering bigger then threshold zone
                 if (value < 0)
                   {
-                    send_key(event.key.secondary_code, false);
-                    send_key(event.code,               true);
+                    send_key(event.device_id, event.key.secondary_code, false);
+                    send_key(event.device_id, event.code,               true);
                   }
                 else // (value > 0)
                   { 
-                    send_key(event.code,               false);
-                    send_key(event.key.secondary_code, true);
+                    send_key(event.device_id, event.code,               false);
+                    send_key(event.device_id, event.key.secondary_code, true);
                   }
               }
             else if (abs(old_value) >= event.key.threshold &&
                      abs(value)     <  event.key.threshold)
               { // entering zero zone
-                send_key(event.code,               false);
-                send_key(event.key.secondary_code, false);
+                send_key(event.device_id, event.code,               false);
+                send_key(event.device_id, event.key.secondary_code, false);
               }
             break;
         }
@@ -764,17 +765,18 @@ uInput::add_axis(int code, int min, int max)
   switch(event.type)
     {
       case EV_ABS:
-        get_joystick_uinput()->add_abs(event.code, min, max, event.abs.fuzz, event.abs.flat);
+        get_uinput(event.device_id)->add_abs(event.code, min, max, event.abs.fuzz, event.abs.flat);
         break;
     
       case EV_REL:
         {
-          get_mouse_uinput()->add_rel(event.code);
+          get_uinput(event.device_id)->add_rel(event.code);
 
           RelAxisState rel_axis_state;
           rel_axis_state.axis = code;
           rel_axis_state.time = 0;
           rel_axis_state.next_time = 0;
+
           rel_axis.push_back(rel_axis_state);
         }
         break;
@@ -782,7 +784,9 @@ uInput::add_axis(int code, int min, int max)
       case EV_KEY:
         add_key(event.device_id, event.code);
         if (event.code != event.key.secondary_code)
+        {
           add_key(event.device_id, event.key.secondary_code);
+        }
         break;
 
       case -1:
@@ -805,7 +809,7 @@ uInput::add_button(int code)
     }
   else if (event.type == EV_REL)
     {
-      get_mouse_uinput()->add_rel(event.code);
+      get_uinput(event.device_id)->add_rel(event.code);
 
       RelButtonState rel_button_state;
       rel_button_state.button = code;
@@ -841,13 +845,7 @@ uInput::get_mouse_uinput() const
 }
 
 LinuxUinput*
-uInput::get_keyboard_uinput() const
-{
-  return get_uinput(DEVICEID_KEYBOARD);
-}
-
-LinuxUinput*
-uInput::get_joystick_uinput() const
+uInput::get_force_feedback_uinput() const
 {
   return get_uinput(0);
 }
@@ -855,7 +853,7 @@ uInput::get_joystick_uinput() const
 void
 uInput::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
 {
-  get_joystick_uinput()->set_ff_callback(callback);
+  get_force_feedback_uinput()->set_ff_callback(callback);
 }
 
 /* EOF */

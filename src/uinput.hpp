@@ -88,16 +88,15 @@ private:
   void send_axis(int code, int32_t value);
 
   void add_key(int device_id, int ev_code);
-  void send_key(int ev_code, bool value);
+  void send_key(int device_id, int ev_code, bool value);
 
   LinuxUinput* get_uinput(int device_id) const;
   LinuxUinput* get_mouse_uinput() const;
-  LinuxUinput* get_keyboard_uinput() const;
-  LinuxUinput* get_joystick_uinput() const;
+  LinuxUinput* get_force_feedback_uinput() const;
 
-  void create_uinput_device(int device_id);
-  void create_uinput_device(const AxisEvent& event);
-  void create_uinput_device(const ButtonEvent& event);
+  int create_uinput_device(int device_id);
+  int create_uinput_device(const AxisEvent& event);
+  int create_uinput_device(const ButtonEvent& event);
 
   bool need_mouse_device();
   bool need_keyboard_device();

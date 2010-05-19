@@ -25,11 +25,17 @@
 #include "evdev_helper.hpp"
 #include "uinput_deviceid.hpp"
 
-AxisEvent 
+AxisEvent
 AxisEvent::create(int type, int code, int fuzz, int flat)
 {
+  return create(DEVICEID_AUTO, type, code, fuzz, flat);
+}
+
+AxisEvent 
+AxisEvent::create(int device_id, int type, int code, int fuzz, int flat)
+{
   AxisEvent ev;
-  ev.device_id = DEVICEID_AUTO;
+  ev.device_id = device_id;
   ev.type = type;
   ev.code = code;
   
@@ -86,7 +92,7 @@ AxisEvent::from_string(const std::string& str)
             }
           else
             {
-              ev = AxisEvent::create(type, code);
+              ev = AxisEvent::create(ev.device_id, type, code, 0, 0);
             }
         }
       else
