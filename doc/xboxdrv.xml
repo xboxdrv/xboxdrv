@@ -531,7 +531,7 @@
               Note that the 'mouse' and 'keyboard' device_id names do
               not give you a mouse or keyboard device, these are just
               symbolic names for the devices into which xboxdrv will
-              short events that look like a mouse or keyboard
+              sort events that look like a mouse or keyboard
               event. The final determination of which device gets
               handled as what will be done by the Kernel or Xorg
               depending on what events a device provides.
