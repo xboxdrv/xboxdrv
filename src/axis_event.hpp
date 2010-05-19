@@ -27,6 +27,8 @@ struct AxisEvent
   static AxisEvent create(int type, int code, int fuzz = 0, int flat = 0);
   static AxisEvent from_string(const std::string& str);
 
+  int device_id;
+
   /** EV_KEY, EV_ABS, EV_REL */
   int type;
 
@@ -49,6 +51,8 @@ struct AxisEvent
       int threshold;
     } key;
   };
+
+  bool is_valid() const;
 };
 
 #endif

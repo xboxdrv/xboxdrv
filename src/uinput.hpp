@@ -20,8 +20,10 @@
 #define HEADER_UINPUT_HPP
 
 #include <vector>
+#include <map>
 #include <memory>
 #include <stdexcept>
+#include <boost/shared_ptr.hpp>
 
 #include "axis_event.hpp"
 #include "button_event.hpp"
@@ -38,9 +40,10 @@ class XboxMsg;
 class uInput
 {
 private:
-  std::auto_ptr<LinuxUinput> joystick_uinput_dev;
-  std::auto_ptr<LinuxUinput> keyboard_uinput_dev;
-  std::auto_ptr<LinuxUinput> mouse_uinput_dev;
+  XPadDevice m_dev;
+
+  typedef std::map<int, boost::shared_ptr<LinuxUinput> > uInputDevs;
+  uInputDevs uinput_devs;
   uInputCfg cfg;
 
   int  axis_state[XBOX_AXIS_MAX];
@@ -81,15 +84,20 @@ private:
   void add_axis(int code, int min, int max);
   void add_button(int code);
 
-  void add_key(int ev_code);
-  void send_key(int ev_code, bool value);
-
   void send_button(int code, bool value);
   void send_axis(int code, int32_t value);
 
+  void add_key(int device_id, int ev_code);
+  void send_key(int ev_code, bool value);
+
+  LinuxUinput* get_uinput(int device_id) const;
   LinuxUinput* get_mouse_uinput() const;
   LinuxUinput* get_keyboard_uinput() const;
   LinuxUinput* get_joystick_uinput() const;
+
+  void create_uinput_device(int device_id);
+  void create_uinput_device(const AxisEvent& event);
+  void create_uinput_device(const ButtonEvent& event);
 
   bool need_mouse_device();
   bool need_keyboard_device();

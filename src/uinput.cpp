@@ -31,6 +31,7 @@
 
 #include "xboxmsg.hpp"
 #include "uinput.hpp"
+#include "uinput_deviceid.hpp"
 
 bool
 uInput::need_keyboard_device()
@@ -110,9 +111,8 @@ uInput::is_keyboard_button(int ev_code)
 }
 
 uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
-  joystick_uinput_dev(),
-  keyboard_uinput_dev(),
-  mouse_uinput_dev(),
+  m_dev(dev),
+  uinput_devs(),
   cfg(config_),
   rel_axis(),
   rel_button()
@@ -120,6 +120,22 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
   std::fill_n(axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
   std::fill_n(button_state, static_cast<int>(XBOX_BTN_MAX),  false);
 
+  if (cfg.force_feedback)
+  {
+    create_uinput_device(0);
+  }
+
+  for(int i = 0; i < XBOX_BTN_MAX; ++i)
+  {
+    create_uinput_device(cfg.btn_map[i]);
+  }
+
+  for(int i = 0; i < XBOX_AXIS_MAX; ++i)
+  {
+    create_uinput_device(cfg.axis_map[i]);
+  }
+
+  /*  
   joystick_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name, dev.idVendor, dev.idProduct));
 
   if (cfg.extra_devices && need_mouse_device())
@@ -131,6 +147,7 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
   {
     keyboard_uinput_dev = std::auto_ptr<LinuxUinput>(new LinuxUinput(cfg.device_name + " - Keyboard Emulation", dev.idVendor, dev.idProduct));
   }
+  */
 
   switch(dev.type)
   {
@@ -152,10 +169,117 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
       break;
   }
 
-  joystick_uinput_dev->finish();
+  for(uInputDevs::iterator i = uinput_devs.begin(); i != uinput_devs.end(); ++i)
+  {
+    i->second->finish();
+  }
+}
 
-  if (keyboard_uinput_dev.get()) keyboard_uinput_dev->finish();
-  if (mouse_uinput_dev.get())    mouse_uinput_dev->finish();
+void
+uInput::create_uinput_device(int device_id)
+{
+  uInputDevs::iterator it = uinput_devs.find(device_id);
+  if (it != uinput_devs.end())
+  {
+    // device already exist, which is fine    
+  }
+  else
+  {
+    std::ostringstream dev_name;
+    dev_name << cfg.device_name;
+
+    if (device_id == DEVICEID_MOUSE)
+    {
+      dev_name << " - Mouse Emulation";
+    }
+    else if (device_id == DEVICEID_KEYBOARD)
+    {
+      dev_name << " - Keyboard Emulation";
+    }
+    else if (dev_name > 0)
+    {
+      dev_name << " - Joystick " << device_id+1;
+    }
+
+    boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(dev_name.str(), m_dev.idVendor, m_dev.idProduct));
+    uinput_devs.insert(std::pair<int, boost::shared_ptr<LinuxUinput> >(device_id, dev));
+  }
+}
+
+void
+uInput::create_uinput_device(const AxisEvent& event)
+{
+  if (event.is_valid())
+  {
+    if (event.device_id == DEVICEID_AUTO)
+    {
+      if (event.type == EV_KEY)
+      {
+        if (is_mouse_button(event.code) || is_mouse_button(event.key.secondary_code))
+        {
+          create_uinput_device(DEVICEID_MOUSE);
+        }
+        else if (is_keyboard_button(event.code) || is_keyboard_button(event.key.secondary_code))
+        {
+          create_uinput_device(DEVICEID_KEYBOARD);
+        }
+        else
+        {
+          create_uinput_device(DEVICEID_JOYSTICK);
+        }
+      }
+      else if (event.type == EV_REL)
+      {
+        create_uinput_device(DEVICEID_MOUSE);
+      }
+      else
+      {
+        create_uinput_device(DEVICEID_JOYSTICK);
+      }
+    }
+    else
+    {
+      create_uinput_device(event.device_id);
+    }
+  }
+}
+
+void
+uInput::create_uinput_device(const ButtonEvent& event)
+{
+  if (event.is_valid())
+  {
+    if (event.device_id == DEVICEID_AUTO)
+    {
+      if (event.type == EV_KEY)
+      {
+        if (is_mouse_button(event.code))
+        {
+          create_uinput_device(DEVICEID_MOUSE);
+        }
+        else if (is_keyboard_button(event.code))
+        {
+          create_uinput_device(DEVICEID_KEYBOARD);
+        }
+        else
+        {
+          create_uinput_device(DEVICEID_JOYSTICK);
+        }
+      }
+      else if (event.type == EV_REL)
+      {
+        create_uinput_device(DEVICEID_MOUSE);
+      }
+      else
+      {
+        create_uinput_device(DEVICEID_JOYSTICK);
+      }
+    }
+    else
+    {
+      create_uinput_device(event.device_id);
+    }
+  }
 }
 
 void
@@ -548,7 +672,7 @@ uInput::send_button(int code, bool value)
 }
 
 void
-uInput::add_key(int ev_code)
+uInput::add_key(int device_id, int ev_code)
 {
   if (is_keyboard_button(ev_code))
     get_keyboard_uinput()->add_key(ev_code);
@@ -656,9 +780,9 @@ uInput::add_axis(int code, int min, int max)
         break;
 
       case EV_KEY:
-        add_key(event.code);
+        add_key(event.device_id, event.code);
         if (event.code != event.key.secondary_code)
-          add_key(event.key.secondary_code);
+          add_key(event.device_id, event.key.secondary_code);
         break;
 
       case -1:
@@ -677,7 +801,7 @@ uInput::add_button(int code)
 
   if (event.type == EV_KEY)
     {
-      add_key(event.code);
+      add_key(event.device_id, event.code);
     }
   else if (event.type == EV_REL)
     {
@@ -695,27 +819,37 @@ uInput::add_button(int code)
 }
 
 LinuxUinput*
+uInput::get_uinput(int device_id) const
+{
+  uInputDevs::const_iterator it = uinput_devs.find(device_id);
+  if (it != uinput_devs.end())
+  {
+    return it->second.get();
+  }
+  else
+  {
+    std::ostringstream str;
+    str << "Couldn't find uinput device: " << device_id;
+    throw std::runtime_error(str.str());
+  }
+}
+
+LinuxUinput*
 uInput::get_mouse_uinput() const
 {
-  if (mouse_uinput_dev.get())
-    return mouse_uinput_dev.get();
-  else
-    return joystick_uinput_dev.get();
+  return get_uinput(DEVICEID_MOUSE);
 }
 
 LinuxUinput*
 uInput::get_keyboard_uinput() const
 {
-  if (keyboard_uinput_dev.get())
-    return keyboard_uinput_dev.get();
-  else
-    return joystick_uinput_dev.get();
+  return get_uinput(DEVICEID_KEYBOARD);
 }
 
 LinuxUinput*
 uInput::get_joystick_uinput() const
 {
-  return joystick_uinput_dev.get();
+  return get_uinput(0);
 }
 
 void

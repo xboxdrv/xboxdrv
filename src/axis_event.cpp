@@ -23,11 +23,13 @@
 
 #include "axis_event.hpp"
 #include "evdev_helper.hpp"
+#include "uinput_deviceid.hpp"
 
 AxisEvent 
 AxisEvent::create(int type, int code, int fuzz, int flat)
 {
   AxisEvent ev;
+  ev.device_id = DEVICEID_AUTO;
   ev.type = type;
   ev.code = code;
   
@@ -74,8 +76,11 @@ AxisEvent::from_string(const std::string& str)
     {
       if (j == 0)
         {
+          std::string event_str;
+          split_event_name(*i, &event_str, &ev.device_id);
+
           int type, code;
-          if (!str2event(*i, type, code))
+          if (!str2event(event_str, type, code))
             {
               throw std::runtime_error("Couldn't convert '" + str + "' to AxisEvent");
             }
@@ -115,6 +120,12 @@ AxisEvent::from_string(const std::string& str)
     }
     
   return ev;
+}
+
+bool
+AxisEvent::is_valid() const
+{
+  return device_id != DEVICEID_INVALID && type != -1 && code != -1;
 }
 
 /* EOF */

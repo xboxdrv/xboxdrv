@@ -24,11 +24,20 @@
 
 #include "button_event.hpp"
 #include "evdev_helper.hpp"
+#include "uinput_deviceid.hpp"
 
 ButtonEvent
 ButtonEvent::create(int type, int code)
 {
+  return ButtonEvent::create(DEVICEID_AUTO, type, code);
+}
+
+ButtonEvent
+ButtonEvent::create(int device_id, int type, int code)
+{
   ButtonEvent ev;
+
+  ev.device_id = device_id;
   ev.type = type;
   ev.code = code;
 
@@ -70,14 +79,18 @@ ButtonEvent::from_string(const std::string& str)
     {
       if (j == 0)
         {
+          std::string event_str;
+          split_event_name(*i, &event_str, &ev.device_id);
+
           int type, code;
-          if (!str2event(*i, type, code))
+          if (!str2event(event_str, type, code))
             {
               throw std::runtime_error("Couldn't convert '" + str + "' to ButtonEvent");
             }
           else
             {
-              ev = ButtonEvent::create(type, code);
+              // create the event via function call to get proper default values
+              ev = ButtonEvent::create(ev.device_id, type, code);
             }
         }
       else
@@ -95,6 +108,12 @@ ButtonEvent::from_string(const std::string& str)
     }
 
   return ev;
+}
+
+bool
+ButtonEvent::is_valid() const
+{
+  return device_id != DEVICEID_INVALID && type != -1 && code != -1;
 }
 
 /* EOF */

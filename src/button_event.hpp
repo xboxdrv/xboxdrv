@@ -21,11 +21,16 @@
 
 #include <string>
 
+#include "uinput_deviceid.hpp"
+
 struct ButtonEvent
 {
-  static ButtonEvent invalid() { return create(-1, -1); }
+  static ButtonEvent invalid() { return create(DEVICEID_INVALID, -1, -1); }
+  static ButtonEvent create(int device_id, int type, int code);
   static ButtonEvent create(int type, int code);
   static ButtonEvent from_string(const std::string& str);
+
+  int device_id;
 
   /** EV_KEY, EV_ABS, EV_REL */
   int type;
@@ -46,6 +51,8 @@ struct ButtonEvent
     struct {
     } key;
   };
+
+  bool is_valid() const;
 };
 
 #endif
