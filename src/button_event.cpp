@@ -42,26 +42,26 @@ ButtonEvent::create(int device_id, int type, int code)
   ev.code = code;
 
   switch (type)
-    {
-      case EV_REL:
-        ev.rel.repeat = 100;
-        ev.rel.value  = 3;
-        break;
+  {
+    case EV_REL:
+      ev.rel.repeat = 100;
+      ev.rel.value  = 3;
+      break;
 
-      case EV_ABS:
-        throw std::runtime_error("Using EV_ABS for ButtonEvent is currently not supported");
-        ev.abs.value  = 1;
-        break;
+    case EV_ABS:
+      throw std::runtime_error("Using EV_ABS for ButtonEvent is currently not supported");
+      ev.abs.value  = 1;
+      break;
 
-      case EV_KEY:
-        break;
+    case EV_KEY:
+      break;
 
-      case -1:
-        break;
+    case -1:
+      break;
 
-      default:
-        assert(!"This should never be reached");
-    }
+    default:
+      assert(!"This should never be reached");
+  }
 
   return ev;
 }
@@ -76,36 +76,36 @@ ButtonEvent::from_string(const std::string& str)
   int j = 0;
   tokenizer tokens(str, sep);
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+  {
+    if (j == 0)
     {
-      if (j == 0)
-        {
-          std::string event_str;
-          split_event_name(*i, &event_str, &ev.device_id);
+      std::string event_str;
+      split_event_name(*i, &event_str, &ev.device_id);
 
-          int type, code;
-          if (!str2event(event_str, type, code))
-            {
-              throw std::runtime_error("Couldn't convert '" + str + "' to ButtonEvent");
-            }
-          else
-            {
-              // create the event via function call to get proper default values
-              ev = ButtonEvent::create(ev.device_id, type, code);
-            }
-        }
+      int type, code;
+      if (!str2event(event_str, type, code))
+      {
+        throw std::runtime_error("Couldn't convert '" + str + "' to ButtonEvent");
+      }
       else
-        {
-          switch (ev.type)
-            {
-              case EV_REL:
-                switch(j) {
-                  case 1: ev.rel.value  = boost::lexical_cast<int>(*i); break;
-                  case 2: ev.rel.repeat = boost::lexical_cast<int>(*i); break;
-                }
-                break;
-            }
-        }
+      {
+        // create the event via function call to get proper default values
+        ev = ButtonEvent::create(ev.device_id, type, code);
+      }
     }
+    else
+    {
+      switch (ev.type)
+      {
+        case EV_REL:
+          switch(j) {
+            case 1: ev.rel.value  = boost::lexical_cast<int>(*i); break;
+            case 2: ev.rel.repeat = boost::lexical_cast<int>(*i); break;
+          }
+          break;
+      }
+    }
+  }
 
   return ev;
 }

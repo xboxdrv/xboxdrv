@@ -39,20 +39,20 @@ PrettyPrinter::print(const std::string& indent_str, const std::string& left, con
   const int width = terminal_width - indent_str.size() - 1;
 
   if (!left.empty())
+  {
+    if (left.size() < indent_str.size())
     {
-      if (left.size() < indent_str.size())
-        {
-          std::cout << left << std::string(indent_str.size() - left.size(), ' ');
-        }
-      else
-        {
-          std::cout << left << '\n' << indent_str;
-        }
+      std::cout << left << std::string(indent_str.size() - left.size(), ' ');
     }
+    else
+    {
+      std::cout << left << '\n' << indent_str;
+    }
+  }
   else
-    {
-      std::cout << indent_str;
-    }
+  {
+    std::cout << indent_str;
+  }
 
   // skip leading space
   std::string::size_type start = str.find_first_not_of(' ', 0);
@@ -62,65 +62,65 @@ PrettyPrinter::print(const std::string& indent_str, const std::string& left, con
   enum { SPACE, WORD } state = isspace(str[0]) ? SPACE : WORD;
 
   for(std::string::size_type i = start; i < str.size(); ++i)
-    {
-      const int word_length = i - word_begin;
+  {
+    const int word_length = i - word_begin;
 
-      { // flush a word or a space sequence to stdout when a state change occurs
-        switch(state)
-          {
-            case SPACE:            
-              if (!isspace(str[i]))
-                { // flush
-                  state = WORD;
+    { // flush a word or a space sequence to stdout when a state change occurs
+      switch(state)
+      {
+        case SPACE:            
+          if (!isspace(str[i]))
+          { // flush
+            state = WORD;
 
-                  if (word_begin_column == 0) 
-                    {
-                      // ignore space at the start of a new line
+            if (word_begin_column == 0) 
+            {
+              // ignore space at the start of a new line
 
-                      word_begin = i;
-                      word_begin_column = 0;
-                    }
-                  else
-                    {
-                      //std::cout << "(" << i - word_begin << "," << word_begin_column << ")";
+              word_begin = i;
+              word_begin_column = 0;
+            }
+            else
+            {
+              //std::cout << "(" << i - word_begin << "," << word_begin_column << ")";
 
-                      std::cout << str.substr(word_begin, i - word_begin);
+              std::cout << str.substr(word_begin, i - word_begin);
 
-                      word_begin = i;
-                      word_begin_column += word_length;
-                    }
-                }
-              break;
-
-            case WORD:
-              if (isspace(str[i]))
-                { // flush
-                  state = SPACE;
-
-                  //std::cout << "(" << i - word_begin << "," << word_begin_column << ")";
-
-                  std::cout << str.substr(word_begin, i - word_begin);
-                  word_begin = i;
-                  word_begin_column += word_length;
-                }
-              break;
+              word_begin = i;
+              word_begin_column += word_length;
+            }
           }
-      }
+          break;
 
-      { // process the current character           
-        if (str[i] == '\n')
-          {
-            std::cout << '\n' << indent_str;
-            word_begin = i+1;
-            word_begin_column = 0;
+        case WORD:
+          if (isspace(str[i]))
+          { // flush
+            state = SPACE;
+
+            //std::cout << "(" << i - word_begin << "," << word_begin_column << ")";
+
+            std::cout << str.substr(word_begin, i - word_begin);
+            word_begin = i;
+            word_begin_column += word_length;
           }
-        else if (word_begin_column + word_length >= width)
-          {
-            std::cout << '\n' << indent_str;
-            word_begin_column = 0;
-          }
+          break;
       }
     }
+
+    { // process the current character           
+      if (str[i] == '\n')
+      {
+        std::cout << '\n' << indent_str;
+        word_begin = i+1;
+        word_begin_column = 0;
+      }
+      else if (word_begin_column + word_length >= width)
+      {
+        std::cout << '\n' << indent_str;
+        word_begin_column = 0;
+      }
+    }
+  }
 
   std::cout << str.substr(word_begin);
   std::cout << std::endl;

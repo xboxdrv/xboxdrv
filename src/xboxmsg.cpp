@@ -28,103 +28,103 @@
 std::string gamepadtype_to_string(const GamepadType& type)
 {
   switch (type)
-    {
-      case GAMEPAD_XBOX360:
-        return "xbox360";
+  {
+    case GAMEPAD_XBOX360:
+      return "xbox360";
 
-      case GAMEPAD_XBOX360_WIRELESS:
-        return "xbox360-wireless";
+    case GAMEPAD_XBOX360_WIRELESS:
+      return "xbox360-wireless";
 
-      case GAMEPAD_XBOX:
-        return "xbox";
+    case GAMEPAD_XBOX:
+      return "xbox";
 
-      case GAMEPAD_XBOX_MAT:
-        return "xbox-mat";
+    case GAMEPAD_XBOX_MAT:
+      return "xbox-mat";
         
-      case GAMEPAD_XBOX360_GUITAR:
-        return "xbox360-guitar";
+    case GAMEPAD_XBOX360_GUITAR:
+      return "xbox360-guitar";
 
-      case GAMEPAD_FIRESTORM:
-        return "firestorm";
+    case GAMEPAD_FIRESTORM:
+      return "firestorm";
 
-      case GAMEPAD_FIRESTORM_VSB:
-        return "firestorm-vsb";
+    case GAMEPAD_FIRESTORM_VSB:
+      return "firestorm-vsb";
 
-      case GAMEPAD_SAITEK_P2500:
-        return "saitek-p2500";
+    case GAMEPAD_SAITEK_P2500:
+      return "saitek-p2500";
 
-      default:
-        assert(!"Unknown gamepad type supplied");
-    }
+    default:
+      assert(!"Unknown gamepad type supplied");
+  }
 }
 
 
 std::string gamepadtype_to_macro_string(const GamepadType& type)
 {
   switch (type)
-    {
-      case GAMEPAD_XBOX360: return "GAMEPAD_XBOX360";
-      case GAMEPAD_XBOX360_WIRELESS: return "GAMEPAD_XBOX360_WIRELESS";
-      case GAMEPAD_XBOX: return "GAMEPAD_XBOX";
-      case GAMEPAD_XBOX_MAT: return "GAMEPAD_XBOX_MAT";
-      case GAMEPAD_XBOX360_GUITAR: return "GAMEPAD_XBOX360_GUITAR";
-      case GAMEPAD_FIRESTORM: return "GAMEPAD_FIRESTORM";
-      case GAMEPAD_FIRESTORM_VSB: return "GAMEPAD_FIRESTORM_VSB";
-      case GAMEPAD_SAITEK_P2500: return "GAMEPAD_SAITEK_P2500";
-      default:
-        assert(!"Unknown gamepad type supplied");
-    }
+  {
+    case GAMEPAD_XBOX360: return "GAMEPAD_XBOX360";
+    case GAMEPAD_XBOX360_WIRELESS: return "GAMEPAD_XBOX360_WIRELESS";
+    case GAMEPAD_XBOX: return "GAMEPAD_XBOX";
+    case GAMEPAD_XBOX_MAT: return "GAMEPAD_XBOX_MAT";
+    case GAMEPAD_XBOX360_GUITAR: return "GAMEPAD_XBOX360_GUITAR";
+    case GAMEPAD_FIRESTORM: return "GAMEPAD_FIRESTORM";
+    case GAMEPAD_FIRESTORM_VSB: return "GAMEPAD_FIRESTORM_VSB";
+    case GAMEPAD_SAITEK_P2500: return "GAMEPAD_SAITEK_P2500";
+    default:
+      assert(!"Unknown gamepad type supplied");
+  }
 }
 
 std::ostream& operator<<(std::ostream& out, const GamepadType& type) 
 {
   switch (type)
-    {
-      case GAMEPAD_XBOX360:
-        return out << "Xbox360";
+  {
+    case GAMEPAD_XBOX360:
+      return out << "Xbox360";
 
-      case GAMEPAD_XBOX360_WIRELESS:
-        return out << "Xbox360 (wireless)";
+    case GAMEPAD_XBOX360_WIRELESS:
+      return out << "Xbox360 (wireless)";
 
-      case GAMEPAD_XBOX:
-        return out << "Xbox Classic";
+    case GAMEPAD_XBOX:
+      return out << "Xbox Classic";
 
-      case GAMEPAD_XBOX_MAT:
-        return out << "Xbox Dancepad";
+    case GAMEPAD_XBOX_MAT:
+      return out << "Xbox Dancepad";
         
-      case GAMEPAD_XBOX360_GUITAR:
-        return out << "Xbox360 Guitar";
+    case GAMEPAD_XBOX360_GUITAR:
+      return out << "Xbox360 Guitar";
 
-      case GAMEPAD_FIRESTORM:
-        return out << "Firestorm Dual Power";
+    case GAMEPAD_FIRESTORM:
+      return out << "Firestorm Dual Power";
 
-      case GAMEPAD_FIRESTORM_VSB:
-        return out << "Firestorm Dual Power (vsb)";
+    case GAMEPAD_FIRESTORM_VSB:
+      return out << "Firestorm Dual Power (vsb)";
 
-      case GAMEPAD_SAITEK_P2500:
-        return out << "Saitek P2500";
+    case GAMEPAD_SAITEK_P2500:
+      return out << "Saitek P2500";
 
-      default:
-        return out << "unknown" << std::endl;
-    }
+    default:
+      return out << "unknown" << std::endl;
+  }
 }
 
 std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg)
 {
   switch (msg.type)
-    {
-      case XBOX_MSG_XBOX:
-        return out << msg.xbox;
+  {
+    case XBOX_MSG_XBOX:
+      return out << msg.xbox;
         
-      case XBOX_MSG_XBOX360:
-        return out << msg.xbox360;
+    case XBOX_MSG_XBOX360:
+      return out << msg.xbox360;
       
-      case XBOX_MSG_XBOX360_GUITAR:
-        return out << msg.guitar;
+    case XBOX_MSG_XBOX360_GUITAR:
+      return out << msg.guitar;
   
-      default:
-        return out << "Error: Unhandled XboxGenericMsg type: " << msg.type;
-    }
+    default:
+      return out << "Error: Unhandled XboxGenericMsg type: " << msg.type;
+  }
 }
 
 std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg) 
@@ -146,22 +146,22 @@ std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg)
     % int(msg.orange);
 
   if (command_line_options->verbose)
-    {
-      out << boost::format("| dummy: %d %d %d %d %02hhx %02hhx %04hx %04hx %02x %02x")
-        % int(msg.thumb_l)
-        % int(msg.thumb_r)
-        % int(msg.rb)
-        % int(msg.dummy1)
+  {
+    out << boost::format("| dummy: %d %d %d %d %02hhx %02hhx %04hx %04hx %02x %02x")
+      % int(msg.thumb_l)
+      % int(msg.thumb_r)
+      % int(msg.rb)
+      % int(msg.dummy1)
 
-        % int(msg.lt)
-        % int(msg.rt)
+      % int(msg.lt)
+      % int(msg.rt)
 
-        % int16_t(msg.x1)
-        % int16_t(msg.y1)
+      % int16_t(msg.x1)
+      % int16_t(msg.y1)
 
-        % int(msg.dummy2)
-        % int(msg.dummy3);
-    }
+      % int(msg.dummy2)
+      % int(msg.dummy3);
+  }
  
   return out;
 }
@@ -247,295 +247,295 @@ std::ostream& operator<<(std::ostream& out, const XboxMsg& msg)
 int get_button(XboxGenericMsg& msg, XboxButton button)
 {
   switch(msg.type)
-    {
-      case XBOX_MSG_XBOX360:
-      case XBOX_MSG_XBOX360_GUITAR:
-        switch(button)
-          {
-            case XBOX_BTN_START:
-              return msg.xbox360.start;
-            case XBOX_BTN_GUIDE:
-              return msg.xbox360.guide;
-            case XBOX_BTN_BACK:
-              return msg.xbox360.back;
+  {
+    case XBOX_MSG_XBOX360:
+    case XBOX_MSG_XBOX360_GUITAR:
+      switch(button)
+      {
+        case XBOX_BTN_START:
+          return msg.xbox360.start;
+        case XBOX_BTN_GUIDE:
+          return msg.xbox360.guide;
+        case XBOX_BTN_BACK:
+          return msg.xbox360.back;
 
-            case XBOX_BTN_GREEN:
-            case XBOX_BTN_A:
-              return msg.xbox360.a;
-            case XBOX_BTN_RED:
-            case XBOX_BTN_B:
-              return msg.xbox360.b;
-            case XBOX_BTN_BLUE:
-            case XBOX_BTN_X:
-              return msg.xbox360.x;
-            case XBOX_BTN_YELLOW:
-            case XBOX_BTN_Y:
-              return msg.xbox360.y;
+        case XBOX_BTN_GREEN:
+        case XBOX_BTN_A:
+          return msg.xbox360.a;
+        case XBOX_BTN_RED:
+        case XBOX_BTN_B:
+          return msg.xbox360.b;
+        case XBOX_BTN_BLUE:
+        case XBOX_BTN_X:
+          return msg.xbox360.x;
+        case XBOX_BTN_YELLOW:
+        case XBOX_BTN_Y:
+          return msg.xbox360.y;
 
-            case XBOX_BTN_ORANGE:
-            case XBOX_BTN_LB:
-            case XBOX_BTN_WHITE:
-              return msg.xbox360.lb;
-            case XBOX_BTN_RB:
-            case XBOX_BTN_BLACK:
-              return msg.xbox360.rb;
+        case XBOX_BTN_ORANGE:
+        case XBOX_BTN_LB:
+        case XBOX_BTN_WHITE:
+          return msg.xbox360.lb;
+        case XBOX_BTN_RB:
+        case XBOX_BTN_BLACK:
+          return msg.xbox360.rb;
 
-            case XBOX_BTN_LT:
-              return msg.xbox360.lt;
-            case XBOX_BTN_RT:
-              return msg.xbox360.rt;
+        case XBOX_BTN_LT:
+          return msg.xbox360.lt;
+        case XBOX_BTN_RT:
+          return msg.xbox360.rt;
 
-            case XBOX_BTN_THUMB_L:
-              return msg.xbox360.thumb_l;
-            case XBOX_BTN_THUMB_R:
-              return msg.xbox360.thumb_r;
+        case XBOX_BTN_THUMB_L:
+          return msg.xbox360.thumb_l;
+        case XBOX_BTN_THUMB_R:
+          return msg.xbox360.thumb_r;
 
-            case XBOX_DPAD_UP:
-              return msg.xbox360.dpad_up;
-            case XBOX_DPAD_DOWN:
-              return msg.xbox360.dpad_down;
-            case XBOX_DPAD_LEFT:
-              return msg.xbox360.dpad_left;
-            case XBOX_DPAD_RIGHT:
-              return msg.xbox360.dpad_right;
+        case XBOX_DPAD_UP:
+          return msg.xbox360.dpad_up;
+        case XBOX_DPAD_DOWN:
+          return msg.xbox360.dpad_down;
+        case XBOX_DPAD_LEFT:
+          return msg.xbox360.dpad_left;
+        case XBOX_DPAD_RIGHT:
+          return msg.xbox360.dpad_right;
 
-            case XBOX_BTN_MAX:
-            case XBOX_BTN_UNKNOWN:
-              return 0;
-          }
-        break;
+        case XBOX_BTN_MAX:
+        case XBOX_BTN_UNKNOWN:
+          return 0;
+      }
+      break;
         
-      case XBOX_MSG_XBOX:
-        switch(button)
-          {
-            case XBOX_BTN_START:
-              return msg.xbox.start;
-            case XBOX_BTN_GUIDE:
-              return 0;
-            case XBOX_BTN_BACK:
-              return msg.xbox.back;
+    case XBOX_MSG_XBOX:
+      switch(button)
+      {
+        case XBOX_BTN_START:
+          return msg.xbox.start;
+        case XBOX_BTN_GUIDE:
+          return 0;
+        case XBOX_BTN_BACK:
+          return msg.xbox.back;
 
-            case XBOX_BTN_GREEN:
-            case XBOX_BTN_A:
-              return msg.xbox.a;
-            case XBOX_BTN_RED:
-            case XBOX_BTN_B:
-              return msg.xbox.b;
-            case XBOX_BTN_BLUE:
-            case XBOX_BTN_X:
-              return msg.xbox.x;
-            case XBOX_BTN_YELLOW:
-            case XBOX_BTN_Y:
-              return msg.xbox.y;
+        case XBOX_BTN_GREEN:
+        case XBOX_BTN_A:
+          return msg.xbox.a;
+        case XBOX_BTN_RED:
+        case XBOX_BTN_B:
+          return msg.xbox.b;
+        case XBOX_BTN_BLUE:
+        case XBOX_BTN_X:
+          return msg.xbox.x;
+        case XBOX_BTN_YELLOW:
+        case XBOX_BTN_Y:
+          return msg.xbox.y;
 
-            case XBOX_BTN_ORANGE:
-            case XBOX_BTN_LB:
-            case XBOX_BTN_WHITE:
-              return msg.xbox.white;
-            case XBOX_BTN_RB:
-            case XBOX_BTN_BLACK:
-              return msg.xbox.black;
+        case XBOX_BTN_ORANGE:
+        case XBOX_BTN_LB:
+        case XBOX_BTN_WHITE:
+          return msg.xbox.white;
+        case XBOX_BTN_RB:
+        case XBOX_BTN_BLACK:
+          return msg.xbox.black;
 
-            case XBOX_BTN_LT:
-              return msg.xbox.lt;
-            case XBOX_BTN_RT:
-              return msg.xbox.rt;
+        case XBOX_BTN_LT:
+          return msg.xbox.lt;
+        case XBOX_BTN_RT:
+          return msg.xbox.rt;
 
-            case XBOX_BTN_THUMB_L:
-              return msg.xbox.thumb_l;
-            case XBOX_BTN_THUMB_R:
-              return msg.xbox.thumb_r;
+        case XBOX_BTN_THUMB_L:
+          return msg.xbox.thumb_l;
+        case XBOX_BTN_THUMB_R:
+          return msg.xbox.thumb_r;
 
-            case XBOX_DPAD_UP:
-              return msg.xbox.dpad_up;
-            case XBOX_DPAD_DOWN:
-              return msg.xbox.dpad_down;
-            case XBOX_DPAD_LEFT:
-              return msg.xbox.dpad_left;
-            case XBOX_DPAD_RIGHT:
-              return msg.xbox.dpad_right;
+        case XBOX_DPAD_UP:
+          return msg.xbox.dpad_up;
+        case XBOX_DPAD_DOWN:
+          return msg.xbox.dpad_down;
+        case XBOX_DPAD_LEFT:
+          return msg.xbox.dpad_left;
+        case XBOX_DPAD_RIGHT:
+          return msg.xbox.dpad_right;
 
-            case XBOX_BTN_MAX:
-            case XBOX_BTN_UNKNOWN:
-              return 0;
-          }
-        break;
-    }
+        case XBOX_BTN_MAX:
+        case XBOX_BTN_UNKNOWN:
+          return 0;
+      }
+      break;
+  }
   return 0;
 }
 
 void set_button(XboxGenericMsg& msg, XboxButton button, int v)
 {
   switch(msg.type)
-    {
-      case XBOX_MSG_XBOX360_GUITAR:
-      case XBOX_MSG_XBOX360:
-        switch(button)
-          {
-            case XBOX_BTN_START:
-              msg.xbox360.start = v; break;
-            case XBOX_BTN_GUIDE:
-              msg.xbox360.guide = v; break;
-            case XBOX_BTN_BACK:
-              msg.xbox360.back = v; break;
+  {
+    case XBOX_MSG_XBOX360_GUITAR:
+    case XBOX_MSG_XBOX360:
+      switch(button)
+      {
+        case XBOX_BTN_START:
+          msg.xbox360.start = v; break;
+        case XBOX_BTN_GUIDE:
+          msg.xbox360.guide = v; break;
+        case XBOX_BTN_BACK:
+          msg.xbox360.back = v; break;
 
-            case XBOX_BTN_GREEN:
-            case XBOX_BTN_A:
-              msg.xbox360.a = v; break;
-            case XBOX_BTN_RED:
-            case XBOX_BTN_B:
-              msg.xbox360.b = v; break;
-            case XBOX_BTN_BLUE:
-            case XBOX_BTN_X:
-              msg.xbox360.x = v; break;
-            case XBOX_BTN_YELLOW:
-            case XBOX_BTN_Y:
-              msg.xbox360.y = v; break;
+        case XBOX_BTN_GREEN:
+        case XBOX_BTN_A:
+          msg.xbox360.a = v; break;
+        case XBOX_BTN_RED:
+        case XBOX_BTN_B:
+          msg.xbox360.b = v; break;
+        case XBOX_BTN_BLUE:
+        case XBOX_BTN_X:
+          msg.xbox360.x = v; break;
+        case XBOX_BTN_YELLOW:
+        case XBOX_BTN_Y:
+          msg.xbox360.y = v; break;
 
-            case XBOX_BTN_ORANGE:
-            case XBOX_BTN_LB:
-            case XBOX_BTN_WHITE:
-              msg.xbox360.lb = v; break;
-            case XBOX_BTN_RB:
-            case XBOX_BTN_BLACK:
-              msg.xbox360.rb = v; break;
+        case XBOX_BTN_ORANGE:
+        case XBOX_BTN_LB:
+        case XBOX_BTN_WHITE:
+          msg.xbox360.lb = v; break;
+        case XBOX_BTN_RB:
+        case XBOX_BTN_BLACK:
+          msg.xbox360.rb = v; break;
 
-            case XBOX_BTN_LT:
-              msg.xbox360.lt = v; break;
-            case XBOX_BTN_RT:
-              msg.xbox360.rt = v; break;
+        case XBOX_BTN_LT:
+          msg.xbox360.lt = v; break;
+        case XBOX_BTN_RT:
+          msg.xbox360.rt = v; break;
 
-            case XBOX_BTN_THUMB_L:
-              msg.xbox360.thumb_l = v; break;
-            case XBOX_BTN_THUMB_R:
-              msg.xbox360.thumb_r = v; break;
+        case XBOX_BTN_THUMB_L:
+          msg.xbox360.thumb_l = v; break;
+        case XBOX_BTN_THUMB_R:
+          msg.xbox360.thumb_r = v; break;
 
-            case XBOX_DPAD_UP:
-              msg.xbox360.dpad_up = v; break;
-            case XBOX_DPAD_DOWN:
-              msg.xbox360.dpad_down = v; break;
-            case XBOX_DPAD_LEFT:
-              msg.xbox360.dpad_left = v; break;
-            case XBOX_DPAD_RIGHT:
-              msg.xbox360.dpad_right = v; break;
+        case XBOX_DPAD_UP:
+          msg.xbox360.dpad_up = v; break;
+        case XBOX_DPAD_DOWN:
+          msg.xbox360.dpad_down = v; break;
+        case XBOX_DPAD_LEFT:
+          msg.xbox360.dpad_left = v; break;
+        case XBOX_DPAD_RIGHT:
+          msg.xbox360.dpad_right = v; break;
 
-            case XBOX_BTN_MAX:
-            case XBOX_BTN_UNKNOWN:
-              break;
-          }
-        break;
+        case XBOX_BTN_MAX:
+        case XBOX_BTN_UNKNOWN:
+          break;
+      }
+      break;
         
-      case XBOX_MSG_XBOX:
-        switch(button)
-          {
-            case XBOX_BTN_START:
-              msg.xbox.start = v; break;
-            case XBOX_BTN_GUIDE:
-              break;
-            case XBOX_BTN_BACK:
-              msg.xbox.back = v; break;
+    case XBOX_MSG_XBOX:
+      switch(button)
+      {
+        case XBOX_BTN_START:
+          msg.xbox.start = v; break;
+        case XBOX_BTN_GUIDE:
+          break;
+        case XBOX_BTN_BACK:
+          msg.xbox.back = v; break;
 
-            case XBOX_BTN_GREEN:
-            case XBOX_BTN_A:
-              msg.xbox.a = v; break;
-            case XBOX_BTN_RED:
-            case XBOX_BTN_B:
-              msg.xbox.b = v; break;
-            case XBOX_BTN_BLUE:
-            case XBOX_BTN_X:
-              msg.xbox.x = v; break;
-            case XBOX_BTN_YELLOW:
-            case XBOX_BTN_Y:
-              msg.xbox.y = v; break;
+        case XBOX_BTN_GREEN:
+        case XBOX_BTN_A:
+          msg.xbox.a = v; break;
+        case XBOX_BTN_RED:
+        case XBOX_BTN_B:
+          msg.xbox.b = v; break;
+        case XBOX_BTN_BLUE:
+        case XBOX_BTN_X:
+          msg.xbox.x = v; break;
+        case XBOX_BTN_YELLOW:
+        case XBOX_BTN_Y:
+          msg.xbox.y = v; break;
 
-            case XBOX_BTN_ORANGE:
-            case XBOX_BTN_LB:
-            case XBOX_BTN_WHITE:
-              msg.xbox.white = v; break;
-            case XBOX_BTN_RB:
-            case XBOX_BTN_BLACK:
-              msg.xbox.black = v; break;
+        case XBOX_BTN_ORANGE:
+        case XBOX_BTN_LB:
+        case XBOX_BTN_WHITE:
+          msg.xbox.white = v; break;
+        case XBOX_BTN_RB:
+        case XBOX_BTN_BLACK:
+          msg.xbox.black = v; break;
 
-            case XBOX_BTN_LT:
-              msg.xbox.lt = v; break;
-            case XBOX_BTN_RT:
-              msg.xbox.rt = v; break;
+        case XBOX_BTN_LT:
+          msg.xbox.lt = v; break;
+        case XBOX_BTN_RT:
+          msg.xbox.rt = v; break;
 
-            case XBOX_BTN_THUMB_L:
-              msg.xbox.thumb_l = v; break;
-            case XBOX_BTN_THUMB_R:
-              msg.xbox.thumb_r = v; break;
+        case XBOX_BTN_THUMB_L:
+          msg.xbox.thumb_l = v; break;
+        case XBOX_BTN_THUMB_R:
+          msg.xbox.thumb_r = v; break;
 
-            case XBOX_DPAD_UP:
-              msg.xbox.dpad_up = v; break;
-            case XBOX_DPAD_DOWN:
-              msg.xbox.dpad_down = v; break;
-            case XBOX_DPAD_LEFT:
-              msg.xbox.dpad_left = v; break;
-            case XBOX_DPAD_RIGHT:
-              msg.xbox.dpad_right = v; break;
+        case XBOX_DPAD_UP:
+          msg.xbox.dpad_up = v; break;
+        case XBOX_DPAD_DOWN:
+          msg.xbox.dpad_down = v; break;
+        case XBOX_DPAD_LEFT:
+          msg.xbox.dpad_left = v; break;
+        case XBOX_DPAD_RIGHT:
+          msg.xbox.dpad_right = v; break;
 
-            case XBOX_BTN_MAX:
-            case XBOX_BTN_UNKNOWN:
-              break;
-          }
-        break;
-    }
+        case XBOX_BTN_MAX:
+        case XBOX_BTN_UNKNOWN:
+          break;
+      }
+      break;
+  }
 }
 
 int get_axis(XboxGenericMsg& msg, XboxAxis axis)
 {
   switch(msg.type)
-    {
-      case XBOX_MSG_XBOX360_GUITAR:
-      case XBOX_MSG_XBOX360:
-        switch(axis)
-          {
-            case XBOX_AXIS_MAX:
-            case XBOX_AXIS_UNKNOWN:
-            case XBOX_AXIS_DPAD_X:
-            case XBOX_AXIS_DPAD_Y:
-            case XBOX_AXIS_TRIGGER:
-              return 0;
-            case XBOX_AXIS_X1:
-              return msg.xbox360.x1;
-            case XBOX_AXIS_Y1:
-              return msg.xbox360.y1;
-            case XBOX_AXIS_X2:
-              return msg.xbox360.x2;
-            case XBOX_AXIS_Y2:
-              return msg.xbox360.y2;
-            case XBOX_AXIS_LT:
-              return msg.xbox360.lt;
-            case XBOX_AXIS_RT:
-              return msg.xbox360.rt;
-          }
-        break;
+  {
+    case XBOX_MSG_XBOX360_GUITAR:
+    case XBOX_MSG_XBOX360:
+      switch(axis)
+      {
+        case XBOX_AXIS_MAX:
+        case XBOX_AXIS_UNKNOWN:
+        case XBOX_AXIS_DPAD_X:
+        case XBOX_AXIS_DPAD_Y:
+        case XBOX_AXIS_TRIGGER:
+          return 0;
+        case XBOX_AXIS_X1:
+          return msg.xbox360.x1;
+        case XBOX_AXIS_Y1:
+          return msg.xbox360.y1;
+        case XBOX_AXIS_X2:
+          return msg.xbox360.x2;
+        case XBOX_AXIS_Y2:
+          return msg.xbox360.y2;
+        case XBOX_AXIS_LT:
+          return msg.xbox360.lt;
+        case XBOX_AXIS_RT:
+          return msg.xbox360.rt;
+      }
+      break;
 
-      case XBOX_MSG_XBOX:
-        switch(axis)
-          {
-            case XBOX_AXIS_MAX:
-            case XBOX_AXIS_UNKNOWN:
-            case XBOX_AXIS_DPAD_X:
-            case XBOX_AXIS_DPAD_Y:
-            case XBOX_AXIS_TRIGGER:
-              return 0;
-            case XBOX_AXIS_X1:
-              return msg.xbox.x1;
-            case XBOX_AXIS_Y1:
-              return msg.xbox.y1;
-            case XBOX_AXIS_X2:
-              return msg.xbox.x2;
-            case XBOX_AXIS_Y2:
-              return msg.xbox.y2;
-            case XBOX_AXIS_LT:
-              return msg.xbox.lt;
-            case XBOX_AXIS_RT:
-              return msg.xbox.rt;
-          }
-        break;
-    }
+    case XBOX_MSG_XBOX:
+      switch(axis)
+      {
+        case XBOX_AXIS_MAX:
+        case XBOX_AXIS_UNKNOWN:
+        case XBOX_AXIS_DPAD_X:
+        case XBOX_AXIS_DPAD_Y:
+        case XBOX_AXIS_TRIGGER:
+          return 0;
+        case XBOX_AXIS_X1:
+          return msg.xbox.x1;
+        case XBOX_AXIS_Y1:
+          return msg.xbox.y1;
+        case XBOX_AXIS_X2:
+          return msg.xbox.x2;
+        case XBOX_AXIS_Y2:
+          return msg.xbox.y2;
+        case XBOX_AXIS_LT:
+          return msg.xbox.lt;
+        case XBOX_AXIS_RT:
+          return msg.xbox.rt;
+      }
+      break;
+  }
   return 0;
 }
 
@@ -576,171 +576,171 @@ uint8_t float_to_u8(float v)
 float get_axis_float(XboxGenericMsg& msg, XboxAxis axis)
 {
   switch(msg.type)
-    {
-      case XBOX_MSG_XBOX360_GUITAR:
-      case XBOX_MSG_XBOX360:
-        switch(axis)
-          {
-            case XBOX_AXIS_MAX:
-            case XBOX_AXIS_UNKNOWN:
-            case XBOX_AXIS_DPAD_X:
-            case XBOX_AXIS_DPAD_Y:
-            case XBOX_AXIS_TRIGGER:
-              // FIXME: Doesn't seem right
-              return 0.0f;
-            case XBOX_AXIS_X1:
-              return s16_to_float(msg.xbox360.x1);
-            case XBOX_AXIS_Y1:
-              return s16_to_float(msg.xbox360.y1);
-            case XBOX_AXIS_X2:
-              return s16_to_float(msg.xbox360.x2);
-            case XBOX_AXIS_Y2:
-              return s16_to_float(msg.xbox360.y2);
-            case XBOX_AXIS_LT:
-              return u8_to_float(msg.xbox360.lt);
-            case XBOX_AXIS_RT:
-              return u8_to_float(msg.xbox360.rt);
-          }
-        break;
+  {
+    case XBOX_MSG_XBOX360_GUITAR:
+    case XBOX_MSG_XBOX360:
+      switch(axis)
+      {
+        case XBOX_AXIS_MAX:
+        case XBOX_AXIS_UNKNOWN:
+        case XBOX_AXIS_DPAD_X:
+        case XBOX_AXIS_DPAD_Y:
+        case XBOX_AXIS_TRIGGER:
+          // FIXME: Doesn't seem right
+          return 0.0f;
+        case XBOX_AXIS_X1:
+          return s16_to_float(msg.xbox360.x1);
+        case XBOX_AXIS_Y1:
+          return s16_to_float(msg.xbox360.y1);
+        case XBOX_AXIS_X2:
+          return s16_to_float(msg.xbox360.x2);
+        case XBOX_AXIS_Y2:
+          return s16_to_float(msg.xbox360.y2);
+        case XBOX_AXIS_LT:
+          return u8_to_float(msg.xbox360.lt);
+        case XBOX_AXIS_RT:
+          return u8_to_float(msg.xbox360.rt);
+      }
+      break;
 
-      case XBOX_MSG_XBOX:
-        switch(axis)
-          {
-            case XBOX_AXIS_MAX:
-            case XBOX_AXIS_UNKNOWN:
-            case XBOX_AXIS_DPAD_X:
-            case XBOX_AXIS_DPAD_Y:
-            case XBOX_AXIS_TRIGGER:
-              return 0.0f;
-            case XBOX_AXIS_X1:
-              return s16_to_float(msg.xbox.x1);
-            case XBOX_AXIS_Y1:
-              return s16_to_float(msg.xbox.y1);
-            case XBOX_AXIS_X2:
-              return s16_to_float(msg.xbox.x2);
-            case XBOX_AXIS_Y2:
-              return s16_to_float(msg.xbox.y2);
-            case XBOX_AXIS_LT:
-              return u8_to_float(msg.xbox.lt);
-            case XBOX_AXIS_RT:
-              return u8_to_float(msg.xbox.rt);
-          }
-        break;
-    }
+    case XBOX_MSG_XBOX:
+      switch(axis)
+      {
+        case XBOX_AXIS_MAX:
+        case XBOX_AXIS_UNKNOWN:
+        case XBOX_AXIS_DPAD_X:
+        case XBOX_AXIS_DPAD_Y:
+        case XBOX_AXIS_TRIGGER:
+          return 0.0f;
+        case XBOX_AXIS_X1:
+          return s16_to_float(msg.xbox.x1);
+        case XBOX_AXIS_Y1:
+          return s16_to_float(msg.xbox.y1);
+        case XBOX_AXIS_X2:
+          return s16_to_float(msg.xbox.x2);
+        case XBOX_AXIS_Y2:
+          return s16_to_float(msg.xbox.y2);
+        case XBOX_AXIS_LT:
+          return u8_to_float(msg.xbox.lt);
+        case XBOX_AXIS_RT:
+          return u8_to_float(msg.xbox.rt);
+      }
+      break;
+  }
   return 0;
 }
 
 void set_axis_float(XboxGenericMsg& msg, XboxAxis axis, float v)
 {
   switch(msg.type)
-    {
-      case XBOX_MSG_XBOX360_GUITAR:
-      case XBOX_MSG_XBOX360:
-        switch(axis)
-          {
-            case XBOX_AXIS_MAX:
-            case XBOX_AXIS_UNKNOWN:
-            case XBOX_AXIS_DPAD_X:
-            case XBOX_AXIS_DPAD_Y:
-            case XBOX_AXIS_TRIGGER:
-              // FIXME: Doesn't seem right
-              break;
-            case XBOX_AXIS_X1:
-              msg.xbox360.x1 = float_to_s16(v); break;
-            case XBOX_AXIS_Y1:
-              msg.xbox360.y1 = float_to_s16(v); break;
-            case XBOX_AXIS_X2:
-              msg.xbox360.x2 = float_to_s16(v); break;
-            case XBOX_AXIS_Y2:
-              msg.xbox360.y2 = float_to_s16(v); break;
-            case XBOX_AXIS_LT:
-              msg.xbox360.lt = float_to_u8(v); break;
-            case XBOX_AXIS_RT:
-              msg.xbox360.rt = float_to_u8(v); break;
-          }
-        break;
+  {
+    case XBOX_MSG_XBOX360_GUITAR:
+    case XBOX_MSG_XBOX360:
+      switch(axis)
+      {
+        case XBOX_AXIS_MAX:
+        case XBOX_AXIS_UNKNOWN:
+        case XBOX_AXIS_DPAD_X:
+        case XBOX_AXIS_DPAD_Y:
+        case XBOX_AXIS_TRIGGER:
+          // FIXME: Doesn't seem right
+          break;
+        case XBOX_AXIS_X1:
+          msg.xbox360.x1 = float_to_s16(v); break;
+        case XBOX_AXIS_Y1:
+          msg.xbox360.y1 = float_to_s16(v); break;
+        case XBOX_AXIS_X2:
+          msg.xbox360.x2 = float_to_s16(v); break;
+        case XBOX_AXIS_Y2:
+          msg.xbox360.y2 = float_to_s16(v); break;
+        case XBOX_AXIS_LT:
+          msg.xbox360.lt = float_to_u8(v); break;
+        case XBOX_AXIS_RT:
+          msg.xbox360.rt = float_to_u8(v); break;
+      }
+      break;
 
-      case XBOX_MSG_XBOX:
-        switch(axis)
-          {
-            case XBOX_AXIS_MAX:
-            case XBOX_AXIS_UNKNOWN:
-            case XBOX_AXIS_DPAD_X:
-            case XBOX_AXIS_DPAD_Y:
-            case XBOX_AXIS_TRIGGER:
-              break;
-            case XBOX_AXIS_X1:
-              msg.xbox.x1 = float_to_s16(v); break;
-            case XBOX_AXIS_Y1:
-              msg.xbox.y1 = float_to_s16(v); break;
-            case XBOX_AXIS_X2:
-              msg.xbox.x2 = float_to_s16(v); break;
-            case XBOX_AXIS_Y2:
-              msg.xbox.y2 = float_to_s16(v); break;
-            case XBOX_AXIS_LT:
-              msg.xbox.lt = float_to_u8(v); break;
-            case XBOX_AXIS_RT:
-              msg.xbox.rt = float_to_u8(v); break;
-          }
-        break;
-    }
+    case XBOX_MSG_XBOX:
+      switch(axis)
+      {
+        case XBOX_AXIS_MAX:
+        case XBOX_AXIS_UNKNOWN:
+        case XBOX_AXIS_DPAD_X:
+        case XBOX_AXIS_DPAD_Y:
+        case XBOX_AXIS_TRIGGER:
+          break;
+        case XBOX_AXIS_X1:
+          msg.xbox.x1 = float_to_s16(v); break;
+        case XBOX_AXIS_Y1:
+          msg.xbox.y1 = float_to_s16(v); break;
+        case XBOX_AXIS_X2:
+          msg.xbox.x2 = float_to_s16(v); break;
+        case XBOX_AXIS_Y2:
+          msg.xbox.y2 = float_to_s16(v); break;
+        case XBOX_AXIS_LT:
+          msg.xbox.lt = float_to_u8(v); break;
+        case XBOX_AXIS_RT:
+          msg.xbox.rt = float_to_u8(v); break;
+      }
+      break;
+  }
 }
 
 void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
 {
   switch(msg.type)
-    {
-      case XBOX_MSG_XBOX360_GUITAR:
-      case XBOX_MSG_XBOX360:
-        switch(axis)
-          {
-            case XBOX_AXIS_MAX:
-            case XBOX_AXIS_UNKNOWN:
-            case XBOX_AXIS_DPAD_X:
-            case XBOX_AXIS_DPAD_Y:
-            case XBOX_AXIS_TRIGGER:
-              // FIXME: Doesn't seem right
-              break;
-            case XBOX_AXIS_X1:
-              msg.xbox360.x1 = v; break;
-            case XBOX_AXIS_Y1:
-              msg.xbox360.y1 = v; break;
-            case XBOX_AXIS_X2:
-              msg.xbox360.x2 = v; break;
-            case XBOX_AXIS_Y2:
-              msg.xbox360.y2 = v; break;
-            case XBOX_AXIS_LT:
-              msg.xbox360.lt = v; break;
-            case XBOX_AXIS_RT:
-              msg.xbox360.rt = v; break;
-          }
-        break;
+  {
+    case XBOX_MSG_XBOX360_GUITAR:
+    case XBOX_MSG_XBOX360:
+      switch(axis)
+      {
+        case XBOX_AXIS_MAX:
+        case XBOX_AXIS_UNKNOWN:
+        case XBOX_AXIS_DPAD_X:
+        case XBOX_AXIS_DPAD_Y:
+        case XBOX_AXIS_TRIGGER:
+          // FIXME: Doesn't seem right
+          break;
+        case XBOX_AXIS_X1:
+          msg.xbox360.x1 = v; break;
+        case XBOX_AXIS_Y1:
+          msg.xbox360.y1 = v; break;
+        case XBOX_AXIS_X2:
+          msg.xbox360.x2 = v; break;
+        case XBOX_AXIS_Y2:
+          msg.xbox360.y2 = v; break;
+        case XBOX_AXIS_LT:
+          msg.xbox360.lt = v; break;
+        case XBOX_AXIS_RT:
+          msg.xbox360.rt = v; break;
+      }
+      break;
 
-      case XBOX_MSG_XBOX:
-        switch(axis)
-          {
-            case XBOX_AXIS_MAX:
-            case XBOX_AXIS_UNKNOWN:
-            case XBOX_AXIS_DPAD_X:
-            case XBOX_AXIS_DPAD_Y:
-            case XBOX_AXIS_TRIGGER:
-              // FIXME: Doesn't seem right
-              break;
-            case XBOX_AXIS_X1:
-              msg.xbox.x1 = v; break;
-            case XBOX_AXIS_Y1:
-              msg.xbox.y1 = v; break;
-            case XBOX_AXIS_X2:
-              msg.xbox.x2 = v; break;
-            case XBOX_AXIS_Y2:
-              msg.xbox.y2 = v; break;
-            case XBOX_AXIS_LT:
-              msg.xbox.lt = v; break;
-            case XBOX_AXIS_RT:
-              msg.xbox.rt = v; break;
-          }
-        break;
-    }
+    case XBOX_MSG_XBOX:
+      switch(axis)
+      {
+        case XBOX_AXIS_MAX:
+        case XBOX_AXIS_UNKNOWN:
+        case XBOX_AXIS_DPAD_X:
+        case XBOX_AXIS_DPAD_Y:
+        case XBOX_AXIS_TRIGGER:
+          // FIXME: Doesn't seem right
+          break;
+        case XBOX_AXIS_X1:
+          msg.xbox.x1 = v; break;
+        case XBOX_AXIS_Y1:
+          msg.xbox.y1 = v; break;
+        case XBOX_AXIS_X2:
+          msg.xbox.x2 = v; break;
+        case XBOX_AXIS_Y2:
+          msg.xbox.y2 = v; break;
+        case XBOX_AXIS_LT:
+          msg.xbox.lt = v; break;
+        case XBOX_AXIS_RT:
+          msg.xbox.rt = v; break;
+      }
+      break;
+  }
 }
 
 XboxButton string2btn(const std::string& str_)
@@ -840,65 +840,65 @@ XboxAxis string2axis(const std::string& str_)
 std::string axis2string(XboxAxis axis)
 {
   switch(axis)
-    {
-      case XBOX_AXIS_MAX:
-      case XBOX_AXIS_UNKNOWN: return "unknown";
+  {
+    case XBOX_AXIS_MAX:
+    case XBOX_AXIS_UNKNOWN: return "unknown";
 
-      case XBOX_AXIS_TRIGGER: return "TRIGGER";
+    case XBOX_AXIS_TRIGGER: return "TRIGGER";
 
-      case XBOX_AXIS_DPAD_X: return "DPAD_X";
-      case XBOX_AXIS_DPAD_Y: return "DPAD_Y";
+    case XBOX_AXIS_DPAD_X: return "DPAD_X";
+    case XBOX_AXIS_DPAD_Y: return "DPAD_Y";
 
-      case XBOX_AXIS_X1: return "X1";
-      case XBOX_AXIS_Y1: return "Y1";
+    case XBOX_AXIS_X1: return "X1";
+    case XBOX_AXIS_Y1: return "Y1";
 
-      case XBOX_AXIS_X2: return "X2";
-      case XBOX_AXIS_Y2: return "Y2";
+    case XBOX_AXIS_X2: return "X2";
+    case XBOX_AXIS_Y2: return "Y2";
 
-      case XBOX_AXIS_LT: return "LT";
-      case XBOX_AXIS_RT: return "RT";
-    }
+    case XBOX_AXIS_LT: return "LT";
+    case XBOX_AXIS_RT: return "RT";
+  }
   return "unknown";
 }
 
 std::string btn2string(XboxButton btn)
 {
   switch (btn)
-    {
-      case XBOX_BTN_MAX:
-      case XBOX_BTN_UNKNOWN: return "unknown";
-      case XBOX_BTN_START: return "Start";
-      case XBOX_BTN_GUIDE: return "Guide";
-      case XBOX_BTN_BACK: return "Back";
+  {
+    case XBOX_BTN_MAX:
+    case XBOX_BTN_UNKNOWN: return "unknown";
+    case XBOX_BTN_START: return "Start";
+    case XBOX_BTN_GUIDE: return "Guide";
+    case XBOX_BTN_BACK: return "Back";
 
-      case XBOX_BTN_A: return "A";
-      case XBOX_BTN_B: return "B";
-      case XBOX_BTN_X: return "X";
-      case XBOX_BTN_Y: return "Y";
+    case XBOX_BTN_A: return "A";
+    case XBOX_BTN_B: return "B";
+    case XBOX_BTN_X: return "X";
+    case XBOX_BTN_Y: return "Y";
 
-      case XBOX_BTN_GREEN:  return "green";
-      case XBOX_BTN_RED:    return "red";
-      case XBOX_BTN_BLUE:   return "blue";
-      case XBOX_BTN_YELLOW: return "yellow";
-      case XBOX_BTN_ORANGE: return "orange";
+    case XBOX_BTN_GREEN:  return "green";
+    case XBOX_BTN_RED:    return "red";
+    case XBOX_BTN_BLUE:   return "blue";
+    case XBOX_BTN_YELLOW: return "yellow";
+    case XBOX_BTN_ORANGE: return "orange";
 
-      case XBOX_BTN_WHITE: return "White";
-      case XBOX_BTN_BLACK: return "Black";
+    case XBOX_BTN_WHITE: return "White";
+    case XBOX_BTN_BLACK: return "Black";
 
-      case XBOX_BTN_LB: return "LB";
-      case XBOX_BTN_RB: return "RB";
+    case XBOX_BTN_LB: return "LB";
+    case XBOX_BTN_RB: return "RB";
 
-      case XBOX_BTN_LT: return "LT";
-      case XBOX_BTN_RT: return "RT";
+    case XBOX_BTN_LT: return "LT";
+    case XBOX_BTN_RT: return "RT";
 
-      case XBOX_BTN_THUMB_L: return "TL";
-      case XBOX_BTN_THUMB_R: return "TR";
+    case XBOX_BTN_THUMB_L: return "TL";
+    case XBOX_BTN_THUMB_R: return "TR";
 
-      case XBOX_DPAD_UP:    return "DPAD_UP";
-      case XBOX_DPAD_DOWN:  return "DPAD_DOWN";
-      case XBOX_DPAD_LEFT:  return "DPAD_LEFT";
-      case XBOX_DPAD_RIGHT: return "DPAD_RIGHT";
-    }
+    case XBOX_DPAD_UP:    return "DPAD_UP";
+    case XBOX_DPAD_DOWN:  return "DPAD_DOWN";
+    case XBOX_DPAD_LEFT:  return "DPAD_LEFT";
+    case XBOX_DPAD_RIGHT: return "DPAD_RIGHT";
+  }
   return "unknown";
 }
   

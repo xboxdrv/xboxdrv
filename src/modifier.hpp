@@ -83,31 +83,31 @@ public:
     m_axis_state()
   {
     for(size_t i = 0; i < m_relative_axis_map.size(); ++i)
-      {
-        m_axis_state.push_back(0);
-      }
+    {
+      m_axis_state.push_back(0);
+    }
   }
 
   void update(int msec_delta, XboxGenericMsg& msg)
   {
     for(size_t i = 0; i < m_relative_axis_map.size(); ++i)
+    {
+      int value = get_axis(msg, m_relative_axis_map[i].axis);
+      if (abs(value) > 4000 ) // FIXME: add proper deadzone handling
       {
-        int value = get_axis(msg, m_relative_axis_map[i].axis);
-        if (abs(value) > 4000 ) // FIXME: add proper deadzone handling
-          {
-            m_axis_state[i] += ((m_relative_axis_map[i].speed * value) / 32768) * msec_delta / 1000;
-            if (m_axis_state[i] < -32768)
-              m_axis_state[i] = -32768;
-            else if (m_axis_state[i] > 32767)
-              m_axis_state[i] = 32767;
+        m_axis_state[i] += ((m_relative_axis_map[i].speed * value) / 32768) * msec_delta / 1000;
+        if (m_axis_state[i] < -32768)
+          m_axis_state[i] = -32768;
+        else if (m_axis_state[i] > 32767)
+          m_axis_state[i] = 32767;
 
-            set_axis(msg, m_relative_axis_map[i].axis, m_axis_state[i]);
-          }
-        else
-          {
-            set_axis(msg, m_relative_axis_map[i].axis, m_axis_state[i]);
-          }
+        set_axis(msg, m_relative_axis_map[i].axis, m_axis_state[i]);
       }
+      else
+      {
+        set_axis(msg, m_relative_axis_map[i].axis, m_axis_state[i]);
+      }
+    }
   }
 };
 
@@ -123,38 +123,38 @@ public:
     m_button_timer()
   {
     for(std::vector<AutoFireMapping>::const_iterator i = m_autofire_map.begin(); i != m_autofire_map.end(); ++i)
-      {
-        m_button_timer.push_back(0);
-      }
+    {
+      m_button_timer.push_back(0);
+    }
   }
 
   void update(int msec_delta, XboxGenericMsg& msg)
   {
     for(size_t i = 0; i < m_autofire_map.size(); ++i)
+    {
+      if (get_button(msg, m_autofire_map[i].button))
       {
-        if (get_button(msg, m_autofire_map[i].button))
-          {
-            m_button_timer[i] += msec_delta;
+        m_button_timer[i] += msec_delta;
 
-            if (m_button_timer[i] > m_autofire_map[i].frequency)
-              {
-                set_button(msg, m_autofire_map[i].button, 1);
-                m_button_timer[i] = 0; // FIXME: we ignoring the passed time
-              }
-            else if (m_button_timer[i] > m_autofire_map[i].frequency/2)
-              {
-                set_button(msg, m_autofire_map[i].button, 0);
-              }
-            else
-              {
-                set_button(msg, m_autofire_map[i].button, 1);
-              }
-          }
+        if (m_button_timer[i] > m_autofire_map[i].frequency)
+        {
+          set_button(msg, m_autofire_map[i].button, 1);
+          m_button_timer[i] = 0; // FIXME: we ignoring the passed time
+        }
+        else if (m_button_timer[i] > m_autofire_map[i].frequency/2)
+        {
+          set_button(msg, m_autofire_map[i].button, 0);
+        }
         else
-          {
-            m_button_timer[i] = 0;
-          }
+        {
+          set_button(msg, m_autofire_map[i].button, 1);
+        }
       }
+      else
+      {
+        m_button_timer[i] = 0;
+      }
+    }
   }
 };
 

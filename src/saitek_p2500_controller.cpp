@@ -94,18 +94,18 @@ SaitekP2500Controller::~SaitekP2500Controller()
 void
 SaitekP2500Controller::set_rumble(uint8_t left, uint8_t right)
 {
-/*
-  if (left_rumble  != left ||
-  right_rumble != right)
-  {
-  left_rumble  = left;
-  right_rumble = right;
+  /*
+    if (left_rumble  != left ||
+    right_rumble != right)
+    {
+    left_rumble  = left;
+    right_rumble = right;
 
-  char cmd[] = { left, right, 0x00, 0x00 };
+    char cmd[] = { left, right, 0x00, 0x00 };
 
-  usb_control_msg(handle, 0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd), 0);
-  }
-*/
+    usb_control_msg(handle, 0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd), 0);
+    }
+  */
 }
 
 void

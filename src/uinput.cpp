@@ -312,90 +312,90 @@ uInput::setup_xbox360_gamepad(GamepadType type)
   //ioctl(fd, UI_SET_LEDBIT, LED_MISC);
 
   if (cfg.force_feedback)
-    {
-      // 
-      get_force_feedback_uinput()->add_ff(FF_RUMBLE);
-      get_force_feedback_uinput()->add_ff(FF_PERIODIC);
-      get_force_feedback_uinput()->add_ff(FF_CONSTANT);
-      get_force_feedback_uinput()->add_ff(FF_RAMP);
+  {
+    // 
+    get_force_feedback_uinput()->add_ff(FF_RUMBLE);
+    get_force_feedback_uinput()->add_ff(FF_PERIODIC);
+    get_force_feedback_uinput()->add_ff(FF_CONSTANT);
+    get_force_feedback_uinput()->add_ff(FF_RAMP);
 
-      // Periodic effect subtypes
-      get_force_feedback_uinput()->add_ff(FF_SINE);
-      get_force_feedback_uinput()->add_ff(FF_TRIANGLE);
-      get_force_feedback_uinput()->add_ff(FF_SQUARE);
-      get_force_feedback_uinput()->add_ff(FF_SAW_UP);
-      get_force_feedback_uinput()->add_ff(FF_SAW_DOWN);
-      get_force_feedback_uinput()->add_ff(FF_CUSTOM);
+    // Periodic effect subtypes
+    get_force_feedback_uinput()->add_ff(FF_SINE);
+    get_force_feedback_uinput()->add_ff(FF_TRIANGLE);
+    get_force_feedback_uinput()->add_ff(FF_SQUARE);
+    get_force_feedback_uinput()->add_ff(FF_SAW_UP);
+    get_force_feedback_uinput()->add_ff(FF_SAW_DOWN);
+    get_force_feedback_uinput()->add_ff(FF_CUSTOM);
 
-      // Gain support
-      get_force_feedback_uinput()->add_ff(FF_GAIN);
+    // Gain support
+    get_force_feedback_uinput()->add_ff(FF_GAIN);
 
-      // Unsupported effects
-      // get_force_feedback_uinput()->add_ff(FF_SPRING);
-      // get_force_feedback_uinput()->add_ff(FF_FRICTION);
-      // get_force_feedback_uinput()->add_ff(FF_DAMPER);
-      // get_force_feedback_uinput()->add_ff(FF_INERTIA);
+    // Unsupported effects
+    // get_force_feedback_uinput()->add_ff(FF_SPRING);
+    // get_force_feedback_uinput()->add_ff(FF_FRICTION);
+    // get_force_feedback_uinput()->add_ff(FF_DAMPER);
+    // get_force_feedback_uinput()->add_ff(FF_INERTIA);
 
-      // FF_GAIN     - relative strength of rumble
-      // FF_RUMBLE   - basic rumble (delay, time)
-      // FF_CONSTANT - envelope, emulate with rumble
-      // FF_RAMP     - same as constant, except strength grows
-      // FF_PERIODIC - envelope
-      // |- FF_SINE      types of periodic effects
-      // |- FF_TRIANGLE
-      // |- FF_SQUARE
-      // |- FF_SAW_UP
-      // |- FF_SAW_DOWN
-      // '- FF_CUSTOM
-    }
+    // FF_GAIN     - relative strength of rumble
+    // FF_RUMBLE   - basic rumble (delay, time)
+    // FF_CONSTANT - envelope, emulate with rumble
+    // FF_RAMP     - same as constant, except strength grows
+    // FF_PERIODIC - envelope
+    // |- FF_SINE      types of periodic effects
+    // |- FF_TRIANGLE
+    // |- FF_SQUARE
+    // |- FF_SAW_UP
+    // |- FF_SAW_DOWN
+    // '- FF_CUSTOM
+  }
 
   if (cfg.dpad_only)
-    {
-      add_axis(XBOX_AXIS_X1, -1, 1);
-      add_axis(XBOX_AXIS_Y1, -1, 1);
-    }
+  {
+    add_axis(XBOX_AXIS_X1, -1, 1);
+    add_axis(XBOX_AXIS_Y1, -1, 1);
+  }
   else
-    {
-      add_axis(XBOX_AXIS_X1, -32768, 32767);
-      add_axis(XBOX_AXIS_Y1, -32768, 32767);
-    }
+  {
+    add_axis(XBOX_AXIS_X1, -32768, 32767);
+    add_axis(XBOX_AXIS_Y1, -32768, 32767);
+  }
 
   if (!cfg.dpad_only)
-    {  
-      add_axis(XBOX_AXIS_X2, -32768, 32767);
-      add_axis(XBOX_AXIS_Y2, -32768, 32767);
-    }
+  {  
+    add_axis(XBOX_AXIS_X2, -32768, 32767);
+    add_axis(XBOX_AXIS_Y2, -32768, 32767);
+  }
 
   if (cfg.trigger_as_button)
-    {
-      add_button(XBOX_BTN_LT);
-      add_button(XBOX_BTN_RT);
-    }
+  {
+    add_button(XBOX_BTN_LT);
+    add_button(XBOX_BTN_RT);
+  }
   else if (cfg.trigger_as_zaxis)
-    {
-      add_axis(XBOX_AXIS_TRIGGER, -255, 255);
-    }
+  {
+    add_axis(XBOX_AXIS_TRIGGER, -255, 255);
+  }
   else
-    {
-      add_axis(XBOX_AXIS_LT, 0, 255);
-      add_axis(XBOX_AXIS_RT, 0, 255);
-    }
+  {
+    add_axis(XBOX_AXIS_LT, 0, 255);
+    add_axis(XBOX_AXIS_RT, 0, 255);
+  }
 
   if (!cfg.dpad_only)
+  {
+    if (!cfg.dpad_as_button)
     {
-      if (!cfg.dpad_as_button)
-        {
-          add_axis(XBOX_AXIS_DPAD_X, -1, 1);
-          add_axis(XBOX_AXIS_DPAD_Y, -1, 1);
-        }
-      else
-        {
-          add_button(XBOX_DPAD_UP);
-          add_button(XBOX_DPAD_DOWN);
-          add_button(XBOX_DPAD_LEFT);
-          add_button(XBOX_DPAD_RIGHT);
-        }
+      add_axis(XBOX_AXIS_DPAD_X, -1, 1);
+      add_axis(XBOX_AXIS_DPAD_Y, -1, 1);
     }
+    else
+    {
+      add_button(XBOX_DPAD_UP);
+      add_button(XBOX_DPAD_DOWN);
+      add_button(XBOX_DPAD_LEFT);
+      add_button(XBOX_DPAD_RIGHT);
+    }
+  }
 
   add_button(XBOX_BTN_START);
   add_button(XBOX_BTN_BACK);
@@ -450,23 +450,23 @@ void
 uInput::send(XboxGenericMsg& msg)
 {
   switch(msg.type)
-    {
-      case XBOX_MSG_XBOX:
-        send(msg.xbox);
-        break;
+  {
+    case XBOX_MSG_XBOX:
+      send(msg.xbox);
+      break;
 
-      case XBOX_MSG_XBOX360:
-        send(msg.xbox360);
-        break;
+    case XBOX_MSG_XBOX360:
+      send(msg.xbox360);
+      break;
 
-      case XBOX_MSG_XBOX360_GUITAR:
-        send(msg.guitar);
-        break;
+    case XBOX_MSG_XBOX360_GUITAR:
+      send(msg.guitar);
+      break;
         
-      default:
-        std::cout << "XboxGenericMsg type: " << msg.type << std::endl;
-        assert(!"uInput: Unknown XboxGenericMsg type");
-    }
+    default:
+      std::cout << "XboxGenericMsg type: " << msg.type << std::endl;
+      assert(!"uInput: Unknown XboxGenericMsg type");
+  }
 }
 
 void
@@ -488,55 +488,55 @@ uInput::send(Xbox360Msg& msg)
   send_button(XBOX_BTN_Y, msg.y);
 
   if (cfg.trigger_as_zaxis)
-    {
-      send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
-    }
+  {
+    send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
+  }
   else if (cfg.trigger_as_button)
-    {
-      send_button(XBOX_BTN_LT, msg.lt);
-      send_button(XBOX_BTN_RT, msg.rt);
-    }
+  {
+    send_button(XBOX_BTN_LT, msg.lt);
+    send_button(XBOX_BTN_RT, msg.rt);
+  }
   else
-    {
-      send_axis(XBOX_AXIS_LT, msg.lt);
-      send_axis(XBOX_AXIS_RT, msg.rt);
-    }
+  {
+    send_axis(XBOX_AXIS_LT, msg.lt);
+    send_axis(XBOX_AXIS_RT, msg.rt);
+  }
 
   if (!cfg.dpad_only)
-    {
-      send_axis(XBOX_AXIS_X1,  msg.x1);
-      send_axis(XBOX_AXIS_Y1, -msg.y1);
+  {
+    send_axis(XBOX_AXIS_X1,  msg.x1);
+    send_axis(XBOX_AXIS_Y1, -msg.y1);
 
-      send_axis(XBOX_AXIS_X2,  msg.x2);
-      send_axis(XBOX_AXIS_Y2, -msg.y2);
-    }
+    send_axis(XBOX_AXIS_X2,  msg.x2);
+    send_axis(XBOX_AXIS_Y2, -msg.y2);
+  }
 
   if (cfg.dpad_as_button)
-    {
-      send_button(XBOX_DPAD_UP,    msg.dpad_up);
-      send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
-      send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
-      send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
-    }
+  {
+    send_button(XBOX_DPAD_UP,    msg.dpad_up);
+    send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
+    send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
+    send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
+  }
   else
-    {
-      int dpad_x = XBOX_AXIS_DPAD_X;
-      int dpad_y = XBOX_AXIS_DPAD_Y;
+  {
+    int dpad_x = XBOX_AXIS_DPAD_X;
+    int dpad_y = XBOX_AXIS_DPAD_Y;
       
-      if (cfg.dpad_only)
-        {
-          dpad_x = XBOX_AXIS_X1;
-          dpad_y = XBOX_AXIS_Y1;
-        }
-
-      if      (msg.dpad_up)    send_axis(dpad_y, -1);
-      else if (msg.dpad_down)  send_axis(dpad_y,  1);
-      else                     send_axis(dpad_y,  0);
-
-      if      (msg.dpad_left)  send_axis(dpad_x, -1);
-      else if (msg.dpad_right) send_axis(dpad_x,  1);
-      else                     send_axis(dpad_x,  0);
+    if (cfg.dpad_only)
+    {
+      dpad_x = XBOX_AXIS_X1;
+      dpad_y = XBOX_AXIS_Y1;
     }
+
+    if      (msg.dpad_up)    send_axis(dpad_y, -1);
+    else if (msg.dpad_down)  send_axis(dpad_y,  1);
+    else                     send_axis(dpad_y,  0);
+
+    if      (msg.dpad_left)  send_axis(dpad_x, -1);
+    else if (msg.dpad_right) send_axis(dpad_x,  1);
+    else                     send_axis(dpad_x,  0);
+  }
 }
 
 void
@@ -557,56 +557,56 @@ uInput::send(XboxMsg& msg)
   send_button(XBOX_BTN_Y, msg.y);
 
   if (cfg.trigger_as_zaxis)
-    {
-      send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
-    }
+  {
+    send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
+  }
   else if (cfg.trigger_as_button)
-    {
-      send_button(XBOX_BTN_LT, msg.lt);
-      send_button(XBOX_BTN_RT, msg.rt);
-    }
+  {
+    send_button(XBOX_BTN_LT, msg.lt);
+    send_button(XBOX_BTN_RT, msg.rt);
+  }
   else
-    {
-      send_axis(XBOX_AXIS_LT, msg.lt);
-      send_axis(XBOX_AXIS_RT,   msg.rt);
-    }
+  {
+    send_axis(XBOX_AXIS_LT, msg.lt);
+    send_axis(XBOX_AXIS_RT,   msg.rt);
+  }
 
 
   if (!cfg.dpad_only)
-    {
-      send_axis(XBOX_AXIS_X1,  msg.x1);
-      send_axis(XBOX_AXIS_Y1, -msg.y1);
+  {
+    send_axis(XBOX_AXIS_X1,  msg.x1);
+    send_axis(XBOX_AXIS_Y1, -msg.y1);
 
-      send_axis(XBOX_AXIS_X2,  msg.x2);
-      send_axis(XBOX_AXIS_Y2, -msg.y2);
-    }
+    send_axis(XBOX_AXIS_X2,  msg.x2);
+    send_axis(XBOX_AXIS_Y2, -msg.y2);
+  }
 
   if (cfg.dpad_as_button)
-    {
-      send_button(XBOX_DPAD_UP,    msg.dpad_up);
-      send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
-      send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
-      send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
-    }
+  {
+    send_button(XBOX_DPAD_UP,    msg.dpad_up);
+    send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
+    send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
+    send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
+  }
   else
-    {
-      int dpad_x = XBOX_AXIS_DPAD_X;
-      int dpad_y = XBOX_AXIS_DPAD_Y;
+  {
+    int dpad_x = XBOX_AXIS_DPAD_X;
+    int dpad_y = XBOX_AXIS_DPAD_Y;
       
-      if (cfg.dpad_only)
-        {
-          dpad_x = XBOX_AXIS_X1;
-          dpad_y = XBOX_AXIS_Y1;
-        }
-
-      if      (msg.dpad_up)    send_axis(dpad_y, -1);
-      else if (msg.dpad_down)  send_axis(dpad_y,  1);
-      else                     send_axis(dpad_y,  0);
-
-      if      (msg.dpad_left)  send_axis(dpad_x, -1);
-      else if (msg.dpad_right) send_axis(dpad_x,  1);
-      else                     send_axis(dpad_x,  0);
+    if (cfg.dpad_only)
+    {
+      dpad_x = XBOX_AXIS_X1;
+      dpad_y = XBOX_AXIS_Y1;
     }
+
+    if      (msg.dpad_up)    send_axis(dpad_y, -1);
+    else if (msg.dpad_down)  send_axis(dpad_y,  1);
+    else                     send_axis(dpad_y,  0);
+
+    if      (msg.dpad_left)  send_axis(dpad_x, -1);
+    else if (msg.dpad_right) send_axis(dpad_x,  1);
+    else                     send_axis(dpad_x,  0);
+  }
 }
 
 void
@@ -677,13 +677,13 @@ void
 uInput::send_button(int code, bool value)
 {
   if (button_state[code] != value)
-    {
-      button_state[code] = value;
+  {
+    button_state[code] = value;
 
-      const ButtonEvent& event = cfg.btn_map[XBOX_BTN_UNKNOWN][code];
+    const ButtonEvent& event = cfg.btn_map[XBOX_BTN_UNKNOWN][code];
   
-      send_key(event.device_id, event.code, value);
-    }
+    send_key(event.device_id, event.code, value);
+  }
 }
 
 void
@@ -712,51 +712,51 @@ void
 uInput::send_axis(int code, int32_t value)
 {
   if (axis_state[code] != value)
+  {
+    int old_value = axis_state[code];
+    axis_state[code] = value;
+
+    const AxisEvent& event = cfg.axis_map[code];
+
+    switch(event.type)
     {
-      int old_value = axis_state[code];
-      axis_state[code] = value;
+      case -1:
+        break;
 
-      const AxisEvent& event = cfg.axis_map[code];
+      case EV_ABS:
+        if (event.type == EV_ABS || event.type == EV_KEY)
+          get_uinput(event.device_id)->send(event.type, event.code, value);
+        break;
 
-      switch(event.type)
-        {
-          case -1:
-            break;
+      case EV_REL:
+        // Mouse events are handled in update() (which is wrong,
+        // since we miss the first click and introduce a delay)
+        break;
 
-          case EV_ABS:
-            if (event.type == EV_ABS || event.type == EV_KEY)
-              get_uinput(event.device_id)->send(event.type, event.code, value);
-            break;
-
-          case EV_REL:
-            // Mouse events are handled in update() (which is wrong,
-            // since we miss the first click and introduce a delay)
-            break;
-
-          case EV_KEY:
-            if (abs(old_value) <  event.key.threshold &&
-                abs(value)     >= event.key.threshold)
-              { // entering bigger then threshold zone
-                if (value < 0)
-                  {
-                    send_key(event.device_id, event.key.secondary_code, false);
-                    send_key(event.device_id, event.code,               true);
-                  }
-                else // (value > 0)
-                  { 
-                    send_key(event.device_id, event.code,               false);
-                    send_key(event.device_id, event.key.secondary_code, true);
-                  }
-              }
-            else if (abs(old_value) >= event.key.threshold &&
-                     abs(value)     <  event.key.threshold)
-              { // entering zero zone
-                send_key(event.device_id, event.code,               false);
-                send_key(event.device_id, event.key.secondary_code, false);
-              }
-            break;
+      case EV_KEY:
+        if (abs(old_value) <  event.key.threshold &&
+            abs(value)     >= event.key.threshold)
+        { // entering bigger then threshold zone
+          if (value < 0)
+          {
+            send_key(event.device_id, event.key.secondary_code, false);
+            send_key(event.device_id, event.code,               true);
+          }
+          else // (value > 0)
+          { 
+            send_key(event.device_id, event.code,               false);
+            send_key(event.device_id, event.key.secondary_code, true);
+          }
         }
+        else if (abs(old_value) >= event.key.threshold &&
+                 abs(value)     <  event.key.threshold)
+        { // entering zero zone
+          send_key(event.device_id, event.code,               false);
+          send_key(event.device_id, event.key.secondary_code, false);
+        }
+        break;
     }
+  }
 }
 
 void
@@ -765,39 +765,39 @@ uInput::add_axis(int code, int min, int max)
   const AxisEvent& event = cfg.axis_map[code];
 
   switch(event.type)
-    {
-      case EV_ABS:
-        get_uinput(event.device_id)->add_abs(event.code, min, max, event.abs.fuzz, event.abs.flat);
-        break;
+  {
+    case EV_ABS:
+      get_uinput(event.device_id)->add_abs(event.code, min, max, event.abs.fuzz, event.abs.flat);
+      break;
     
-      case EV_REL:
-        {
-          get_uinput(event.device_id)->add_rel(event.code);
+    case EV_REL:
+    {
+      get_uinput(event.device_id)->add_rel(event.code);
 
-          RelAxisState rel_axis_state;
-          rel_axis_state.axis = code;
-          rel_axis_state.time = 0;
-          rel_axis_state.next_time = 0;
+      RelAxisState rel_axis_state;
+      rel_axis_state.axis = code;
+      rel_axis_state.time = 0;
+      rel_axis_state.next_time = 0;
 
-          rel_axis.push_back(rel_axis_state);
-        }
-        break;
-
-      case EV_KEY:
-        add_key(event.device_id, event.code);
-        if (event.code != event.key.secondary_code)
-        {
-          add_key(event.device_id, event.key.secondary_code);
-        }
-        break;
-
-      case -1:
-        break;
-
-      default:
-        std::cout << "uInput: Unhandled event type: " << event.type << std::endl;
-        break;
+      rel_axis.push_back(rel_axis_state);
     }
+    break;
+
+    case EV_KEY:
+      add_key(event.device_id, event.code);
+      if (event.code != event.key.secondary_code)
+      {
+        add_key(event.device_id, event.key.secondary_code);
+      }
+      break;
+
+    case -1:
+      break;
+
+    default:
+      std::cout << "uInput: Unhandled event type: " << event.type << std::endl;
+      break;
+  }
 }
 
 void
@@ -806,22 +806,22 @@ uInput::add_button(int code)
   const ButtonEvent& event = cfg.btn_map[XBOX_BTN_UNKNOWN][code];
 
   if (event.type == EV_KEY)
-    {
-      add_key(event.device_id, event.code);
-    }
+  {
+    add_key(event.device_id, event.code);
+  }
   else if (event.type == EV_REL)
-    {
-      get_uinput(event.device_id)->add_rel(event.code);
+  {
+    get_uinput(event.device_id)->add_rel(event.code);
 
-      RelButtonState rel_button_state;
-      rel_button_state.button = code;
-      rel_button_state.time = 0;
-      rel_button_state.next_time = 0;
-      rel_button.push_back(rel_button_state);
-    }
+    RelButtonState rel_button_state;
+    rel_button_state.button = code;
+    rel_button_state.time = 0;
+    rel_button_state.next_time = 0;
+    rel_button.push_back(rel_button_state);
+  }
   else if (event.type == EV_ABS)
-    {
-    }
+  {
+  }
 }
 
 LinuxUinput*

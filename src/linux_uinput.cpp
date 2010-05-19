@@ -98,22 +98,22 @@ LinuxUinput::add_abs(uint16_t code, int min, int max, int fuzz, int flat)
   // std::cout << "add_abs: " << abs2str(code) << " (" << min << ", " << max << ") " << name << std::endl;
 
   if (!abs_lst[code])
+  {
+    abs_lst[code] = true;
+
+    if (!abs_bit)
     {
-      abs_lst[code] = true;
-
-      if (!abs_bit)
-        {
-          ioctl(fd, UI_SET_EVBIT, EV_ABS);
-          abs_bit = true;
-        }
-
-      ioctl(fd, UI_SET_ABSBIT, code);
-
-      user_dev.absmin[code] = min;
-      user_dev.absmax[code] = max; 
-      user_dev.absfuzz[code] = fuzz;
-      user_dev.absflat[code] = flat;
+      ioctl(fd, UI_SET_EVBIT, EV_ABS);
+      abs_bit = true;
     }
+
+    ioctl(fd, UI_SET_ABSBIT, code);
+
+    user_dev.absmin[code] = min;
+    user_dev.absmax[code] = max; 
+    user_dev.absfuzz[code] = fuzz;
+    user_dev.absflat[code] = flat;
+  }
 }
 
 void
@@ -122,17 +122,17 @@ LinuxUinput::add_rel(uint16_t code)
   // std::cout << "add_rel: " << rel2str(code) << " " << name << std::endl;
 
   if (!rel_lst[code])
+  {
+    rel_lst[code] = true;
+
+    if (!rel_bit)
     {
-      rel_lst[code] = true;
-
-      if (!rel_bit)
-        {
-          ioctl(fd, UI_SET_EVBIT, EV_REL);
-          rel_bit = true;
-        }
-
-      ioctl(fd, UI_SET_RELBIT, code);
+      ioctl(fd, UI_SET_EVBIT, EV_REL);
+      rel_bit = true;
     }
+
+    ioctl(fd, UI_SET_RELBIT, code);
+  }
 }
 
 void
@@ -141,36 +141,36 @@ LinuxUinput::add_key(uint16_t code)
   // std::cout << "add_key: " << btn2str(code) << " " << name << std::endl;
 
   if (!key_lst[code])
+  {
+    key_lst[code] = true;
+
+    if (!key_bit)
     {
-      key_lst[code] = true;
-
-      if (!key_bit)
-        {
-          ioctl(fd, UI_SET_EVBIT, EV_KEY);
-          key_bit = true;
-        }
-
-      ioctl(fd, UI_SET_KEYBIT, code);
+      ioctl(fd, UI_SET_EVBIT, EV_KEY);
+      key_bit = true;
     }
+
+    ioctl(fd, UI_SET_KEYBIT, code);
+  }
 }
 
 void
 LinuxUinput::add_ff(uint16_t code)
 {
   if (!ff_lst[code])
+  {
+    ff_lst[code] = true;
+
+    if (!ff_bit)
     {
-      ff_lst[code] = true;
+      ioctl(fd, UI_SET_EVBIT, EV_FF);
+      ff_bit = true;
+      assert(ff_handler == 0);
+      ff_handler = new ForceFeedbackHandler();
+    }
 
-      if (!ff_bit)
-        {
-          ioctl(fd, UI_SET_EVBIT, EV_FF);
-          ff_bit = true;
-          assert(ff_handler == 0);
-          ff_handler = new ForceFeedbackHandler();
-        }
-
-      ioctl(fd, UI_SET_FFBIT, code);
-    }  
+    ioctl(fd, UI_SET_FFBIT, code);
+  }  
 }
 
 void
@@ -197,11 +197,11 @@ LinuxUinput::finish()
     throw std::runtime_error("uinput:finish: " + name + strerror(errno));
 
   if (ioctl(fd, UI_DEV_CREATE))
-    {
-      std::ostringstream out;
-      out << "LinuxUinput: Unable to create UINPUT device: '" << name << "': " << strerror(errno);
-      throw std::runtime_error(out.str());
-    }
+  {
+    std::ostringstream out;
+    out << "LinuxUinput: Unable to create UINPUT device: '" << name << "': " << strerror(errno);
+    throw std::runtime_error(out.str());
+  }
 }
 
 void
@@ -226,115 +226,115 @@ void
 LinuxUinput::update(int msec_delta)
 {
   if (ff_bit)
+  {
+    assert(ff_handler);
+
+    ff_handler->update(msec_delta);
+
+    if (0)
+      std::cout << boost::format("%5d %5d") 
+        % ff_handler->get_weak_magnitude() 
+        % ff_handler->get_strong_magnitude() << std::endl;
+
+    if (ff_callback)
     {
-      assert(ff_handler);
-
-      ff_handler->update(msec_delta);
-
-      if (0)
-        std::cout << boost::format("%5d %5d") 
-          % ff_handler->get_weak_magnitude() 
-          % ff_handler->get_strong_magnitude() << std::endl;
-
-      if (ff_callback)
-        {
-          ff_callback(static_cast<unsigned char>(ff_handler->get_strong_magnitude() / 128),
-                      static_cast<unsigned char>(ff_handler->get_weak_magnitude()   / 128));
+      ff_callback(static_cast<unsigned char>(ff_handler->get_strong_magnitude() / 128),
+                  static_cast<unsigned char>(ff_handler->get_weak_magnitude()   / 128));
                       
-        }
-      
-      struct input_event ev;
-
-      int ret = read(fd, &ev, sizeof(ev));
-      if (ret < 0)
-        {
-          if (errno != EAGAIN)
-            std::cout << "Error: " << strerror(errno) << " " << ret << std::endl;
-        }
-      else if (ret == sizeof(ev))
-        { // successful read
-          //std::cout << "type: " << ev.type << " code: " << ev.code << " value: " << ev.value << std::endl;
-
-          switch(ev.type)
-            {
-              case EV_LED:
-                if (ev.code == LED_MISC)
-                  {
-                    // FIXME: implement this
-                    std::cout << "unimplemented: Set LED status: " << ev.value << std::endl;
-                  }
-                break;
-
-              case EV_FF:
-                switch(ev.code)
-                  {
-                    case FF_GAIN:
-                      ff_handler->set_gain(ev.value);
-                      break;
-
-                    default:
-                      if (ev.value)
-                        ff_handler->play(ev.code);
-                      else
-                        ff_handler->stop(ev.code);
-                  }
-                break;
-
-              case EV_UINPUT:
-                switch (ev.code)
-                  {
-                    case UI_FF_UPLOAD:
-                      {
-                        struct uinput_ff_upload upload;
-                        memset(&upload, 0, sizeof(upload));
-
-                        // *VERY* important, without this you break
-                        // the kernel and have to reboot due to dead
-                        // hanging process
-                        upload.request_id = ev.value;
-
-                        ioctl(fd, UI_BEGIN_FF_UPLOAD, &upload);
-                        ff_handler->upload(upload.effect);
-                        upload.retval = 0;
-                            
-                        ioctl(fd, UI_END_FF_UPLOAD, &upload);
-                      }
-                      break;
-
-                    case UI_FF_ERASE:
-                      {
-                        struct uinput_ff_erase erase;
-                        memset(&erase, 0, sizeof(erase));
-
-                        // *VERY* important, without this you break
-                        // the kernel and have to reboot due to dead
-                        // hanging process
-                        erase.request_id = ev.value;
-
-                        ioctl(fd, UI_BEGIN_FF_ERASE, &erase);
-                        ff_handler->erase(erase.effect_id);
-                        erase.retval = 0;
-                            
-                        ioctl(fd, UI_END_FF_ERASE, &erase);
-                      }
-                      break;
-
-                    default: 
-                      std::cout << "Unhandled event code read" << std::endl;
-                      break;
-                  }
-                break;
-
-              default:
-                std::cout << "Unhandled event type read: " << ev.type << std::endl;
-                break;
-            }
-        }
-      else
-        {
-          std::cout << "uInput::update: short read: " << ret << std::endl;
-        }
     }
+      
+    struct input_event ev;
+
+    int ret = read(fd, &ev, sizeof(ev));
+    if (ret < 0)
+    {
+      if (errno != EAGAIN)
+        std::cout << "Error: " << strerror(errno) << " " << ret << std::endl;
+    }
+    else if (ret == sizeof(ev))
+    { // successful read
+      //std::cout << "type: " << ev.type << " code: " << ev.code << " value: " << ev.value << std::endl;
+
+      switch(ev.type)
+      {
+        case EV_LED:
+          if (ev.code == LED_MISC)
+          {
+            // FIXME: implement this
+            std::cout << "unimplemented: Set LED status: " << ev.value << std::endl;
+          }
+          break;
+
+        case EV_FF:
+          switch(ev.code)
+          {
+            case FF_GAIN:
+              ff_handler->set_gain(ev.value);
+              break;
+
+            default:
+              if (ev.value)
+                ff_handler->play(ev.code);
+              else
+                ff_handler->stop(ev.code);
+          }
+          break;
+
+        case EV_UINPUT:
+          switch (ev.code)
+          {
+            case UI_FF_UPLOAD:
+            {
+              struct uinput_ff_upload upload;
+              memset(&upload, 0, sizeof(upload));
+
+              // *VERY* important, without this you break
+              // the kernel and have to reboot due to dead
+              // hanging process
+              upload.request_id = ev.value;
+
+              ioctl(fd, UI_BEGIN_FF_UPLOAD, &upload);
+              ff_handler->upload(upload.effect);
+              upload.retval = 0;
+                            
+              ioctl(fd, UI_END_FF_UPLOAD, &upload);
+            }
+            break;
+
+            case UI_FF_ERASE:
+            {
+              struct uinput_ff_erase erase;
+              memset(&erase, 0, sizeof(erase));
+
+              // *VERY* important, without this you break
+              // the kernel and have to reboot due to dead
+              // hanging process
+              erase.request_id = ev.value;
+
+              ioctl(fd, UI_BEGIN_FF_ERASE, &erase);
+              ff_handler->erase(erase.effect_id);
+              erase.retval = 0;
+                            
+              ioctl(fd, UI_END_FF_ERASE, &erase);
+            }
+            break;
+
+            default: 
+              std::cout << "Unhandled event code read" << std::endl;
+              break;
+          }
+          break;
+
+        default:
+          std::cout << "Unhandled event type read: " << ev.type << std::endl;
+          break;
+      }
+    }
+    else
+    {
+      std::cout << "uInput::update: short read: " << ret << std::endl;
+    }
+  }
 }
 
 

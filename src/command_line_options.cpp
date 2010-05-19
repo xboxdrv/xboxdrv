@@ -184,48 +184,48 @@ void set_ui_button_map(ButtonEvent* ui_button_map, const std::string& str)
 {
   std::string::size_type i = str.find_first_of('=');
   if (i == std::string::npos)
-    {
-      throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, '=' missing");
-    }
+  {
+    throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, '=' missing");
+  }
   else
-    {
-      //std::cout << string2btn(str.substr(0, i)) << " -> " << str.substr(i+1, str.size()-i) << std::endl;
+  {
+    //std::cout << string2btn(str.substr(0, i)) << " -> " << str.substr(i+1, str.size()-i) << std::endl;
 
-      XboxButton  btn   = string2btn(str.substr(0, i));
-      ButtonEvent event = ButtonEvent::from_string(str.substr(i+1, str.size()-i));
+    XboxButton  btn   = string2btn(str.substr(0, i));
+    ButtonEvent event = ButtonEvent::from_string(str.substr(i+1, str.size()-i));
       
-      if (btn != XBOX_BTN_UNKNOWN)
-        {
-          ui_button_map[btn] = event;
-        }
-      else
-        {
-          throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, Xbox button name not valid");
-        }
+    if (btn != XBOX_BTN_UNKNOWN)
+    {
+      ui_button_map[btn] = event;
     }
+    else
+    {
+      throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, Xbox button name not valid");
+    }
+  }
 }
 
 void set_ui_axis_map(AxisEvent* ui_axis_map, const std::string& str)
 {
   std::string::size_type i = str.find_first_of('=');
   if (i == std::string::npos)
+  {
+    throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-axis-mapping");
+  }
+  else
+  {
+    XboxAxis  axis  = string2axis(str.substr(0, i));
+    AxisEvent event = AxisEvent::from_string(str.substr(i+1, str.size()-i));
+            
+    if (axis != XBOX_AXIS_UNKNOWN)
+    {
+      ui_axis_map[axis] = event;
+    }
+    else
     {
       throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-axis-mapping");
-    }
-  else
-    {
-      XboxAxis  axis  = string2axis(str.substr(0, i));
-      AxisEvent event = AxisEvent::from_string(str.substr(i+1, str.size()-i));
-            
-      if (axis != XBOX_AXIS_UNKNOWN)
-        {
-          ui_axis_map[axis] = event;
-        }
-      else
-        {
-          throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-axis-mapping");
-        }      
-    }  
+    }      
+  }  
 }
 
 void
@@ -234,300 +234,300 @@ CommandLineOptions::parse_args(int argc, char** argv)
   ArgParser::ParsedOptions parsed = argp.parse_args(argc, argv);
 
   for(ArgParser::ParsedOptions::const_iterator i = parsed.begin(); i != parsed.end(); ++i)
+  {
+    CommandLineOptions& opts = *this;
+    const ArgParser::ParsedOption& opt = *i;
+
+    switch (i->key)
     {
-      CommandLineOptions& opts = *this;
-      const ArgParser::ParsedOption& opt = *i;
+      case OPTION_HELP:
+        opts.mode = PRINT_HELP;
+        break;
 
-      switch (i->key)
-        {
-          case OPTION_HELP:
-            opts.mode = PRINT_HELP;
-            break;
-
-          case OPTION_VERSION:
-            opts.mode = PRINT_VERSION;
-            break;
+      case OPTION_VERSION:
+        opts.mode = PRINT_VERSION;
+        break;
           
-          case OPTION_VERBOSE:
-            opts.verbose = true;
-            break;
+      case OPTION_VERBOSE:
+        opts.verbose = true;
+        break;
 
-          case OPTION_QUIET:
-            opts.quiet   = true;
-            break;
+      case OPTION_QUIET:
+        opts.quiet   = true;
+        break;
 
-          case OPTION_SILENT:
-            opts.silent = true;
-            break;
+      case OPTION_SILENT:
+        opts.silent = true;
+        break;
 
-          case OPTION_DAEMON:
-            opts.silent = true;
-            opts.mode = RUN_DAEMON;
-            break;
+      case OPTION_DAEMON:
+        opts.silent = true;
+        opts.mode = RUN_DAEMON;
+        break;
 
-          case OPTION_TEST_RUMBLE:
-            opts.rumble = true;
-            break;
+      case OPTION_TEST_RUMBLE:
+        opts.rumble = true;
+        break;
 
-          case OPTION_RUMBLE:
-            if (sscanf(opt.argument.c_str(), "%d,%d", &opts.rumble_l, &opts.rumble_r) == 2)
-              {
-                opts.rumble_l = std::max(0, std::min(255, opts.rumble_l));
-                opts.rumble_r = std::max(0, std::min(255, opts.rumble_r));
-              }
-            else
-              {
-                RAISE_EXCEPTION(opt.option << " expected an argument in form INT,INT");
-              }
-            break;
-
-          case OPTION_QUIT:
-            opts.instant_exit = true;
-            break;
-
-          case OPTION_NO_UINPUT:
-            opts.no_uinput = true;
-            break;
-
-          case OPTION_MIMIC_XPAD:
-            opts.uinput_config.mimic_xpad();
-            break;
-
-          case OPTION_NO_EXTRA_DEVICES:
-            opts.uinput_config.extra_devices = false;
-            break;
-
-          case OPTION_TYPE:
-            if (opt.argument == "xbox")
-              {
-                opts.gamepad_type = GAMEPAD_XBOX;
-              }
-            else if (opt.argument == "xbox-mat")
-              {
-                opts.gamepad_type = GAMEPAD_XBOX_MAT;
-              }
-            else if (opt.argument == "xbox360")
-              {
-                opts.gamepad_type = GAMEPAD_XBOX360;
-              }
-            else if (opt.argument == "xbox360-guitar")
-              {
-                opts.gamepad_type = GAMEPAD_XBOX360_GUITAR;
-              }
-            else if (opt.argument == "xbox360-wireless")
-              {
-                opts.gamepad_type = GAMEPAD_XBOX360_WIRELESS;
-              }
-            else if (opt.argument == "firestorm")
-              {
-                opts.gamepad_type = GAMEPAD_FIRESTORM;
-              }
-            else if (opt.argument == "firestorm-vsb")
-              {
-                opts.gamepad_type = GAMEPAD_FIRESTORM_VSB;
-              }
-            else if (opt.argument == "saitek-p2500")
-              {
-                opts.gamepad_type = GAMEPAD_SAITEK_P2500;
-              }
-            else
-              {
-                RAISE_EXCEPTION("unknown type: " << opt.argument << '\n'
-                                << "Possible types are:\n"
-                                << " * xbox\n"
-                                << " * xbox-mat\n"
-                                << " * xbox360\n"
-                                << " * xbox360-guitar\n"
-                                << " * xbox360-wireless\n"
-                                << " * firestorm\n"
-                                << " * firestorm-vsb\n"
-                                << " * saitek-p2500\n");
-              }
-            break;
-
-          case OPTION_FORCE_FEEDBACK:
-            opts.uinput_config.force_feedback = true;
-            break;
-
-          case OPTION_RUMBLE_GAIN:
-            opts.rumble_gain = to_number(255, opt.argument);
-            break;
-
-          case OPTION_BUTTONMAP:
-            arg2vector(opt.argument, opts.button_map, &ButtonMapping::from_string);
-            break;
-
-          case OPTION_AXISMAP:
-            arg2vector(opt.argument, opts.axis_map, &AxisMapping::from_string);
-            break;
-                    
-          case OPTION_NAME:
-            opts.uinput_config.device_name = opt.argument;
-            break;
-
-          case OPTION_UI_CLEAR:
-            std::fill_n(opts.uinput_config.axis_map, static_cast<int>(XBOX_AXIS_MAX), AxisEvent::invalid());
-            for(int i = 0; i < XBOX_BTN_MAX; ++i)
-              std::fill_n(opts.uinput_config.btn_map[i],  static_cast<int>(XBOX_BTN_MAX),  ButtonEvent::invalid());
-            break;
-
-          case OPTION_UI_AXISMAP:
-            arg2apply(opt.argument, boost::bind(&set_ui_axis_map, opts.uinput_config.axis_map, _1));
-            break;
-
-          case OPTION_UI_BUTTONMAP:
-            arg2apply(opt.argument, boost::bind(&set_ui_button_map, opts.uinput_config.btn_map[XBOX_BTN_UNKNOWN], _1));
-            break;
-
-          case OPTION_ID:
-            opts.controller_id = boost::lexical_cast<int>(opt.argument);
-            break;
-
-          case OPTION_WID:
-            opts.wireless_id = boost::lexical_cast<int>(opt.argument);
-            break;
-
-          case OPTION_LED:
-            if (opt.argument == "help")
-              {
-                opts.mode = PRINT_LED_HELP;
-              }
-            else
-              {
-                opts.led = boost::lexical_cast<int>(opt.argument);
-              }
-            break;
-            
-          case OPTION_DPAD_ONLY:
-            if (opts.uinput_config.dpad_as_button)
-              RAISE_EXCEPTION("Can't combine --dpad-as-button with --dpad-only");
-            
-            opts.uinput_config.dpad_only = true;
-            break;
-            
-          case OPTION_DPAD_AS_BUTTON:
-            if (opts.uinput_config.dpad_only)
-              throw std::runtime_error("Can't combine --dpad-as-button with --dpad-only");
-
-            opts.uinput_config.dpad_as_button = true;
-            break;
-
-          case OPTION_DEADZONE:
-            opts.deadzone = to_number(32767, opt.argument);
-            break;
-
-          case OPTION_DEADZONE_TRIGGER:
-            opts.deadzone_trigger = to_number(255, opt.argument);
-            break;
-
-          case OPTION_TRIGGER_AS_BUTTON:
-            if (opts.uinput_config.trigger_as_zaxis)
-              {
-                RAISE_EXCEPTION("Can't combine --trigger-as-button and --trigger-as-zaxis");
-              }
-            else
-              {
-                opts.uinput_config.trigger_as_button = true;
-              }
-            break;
-
-          case OPTION_AUTOFIRE:
-            arg2vector(opt.argument, opts.autofire_map, &AutoFireMapping::from_string);
-            break;
-
-          case OPTION_CALIBRARIOTION:
-            arg2vector(opt.argument, opts.calibration_map, &CalibrationMapping::from_string);
-            break;
-
-          case OPTION_RELATIVE_AXIS:
-            arg2vector(opt.argument, opts.relative_axis_map, &RelativeAxisMapping::from_string);
-            break;
-
-          case OPTION_AXIS_SENSITIVITY:
-            arg2vector(opt.argument, opts.axis_sensitivity_map, &AxisSensitivityMapping::from_string);
-            break;
-
-          case OPTION_FOUR_WAY_RESTRICTOR:
-            opts.four_way_restrictor = true;
-            break;
-
-          case OPTION_DPAD_ROTATION:
-          {
-            int degree = boost::lexical_cast<int>(opt.argument);
-            degree /= 45;
-            degree %= 8;
-            if (degree < 0) degree += 8;
-            opts.dpad_rotation = degree;
-          }
-          break;
-
-          case OPTION_SQUARE_AXIS:
-            opts.square_axis = true;
-            break;
-
-          case OPTION_TRIGGER_AS_ZAXIS:
-            if (opts.uinput_config.trigger_as_button)
-              {
-                RAISE_EXCEPTION("Can't combine --trigger-as-button and --trigger-as-zaxis");
-              }
-            else
-              {
-                opts.uinput_config.trigger_as_zaxis = true;
-              }
-            break;
-
-          case OPTION_HELP_LED:
-            opts.mode = PRINT_LED_HELP;
-            break;
-
-          case OPTION_DEVICE_BY_ID:
-            {
-              unsigned int tmp_product_id;
-              unsigned int tmp_vendor_id;
-              if (sscanf(opt.argument.c_str(), "%x:%x", &tmp_vendor_id, &tmp_product_id) == 2)
-                {
-                  opts.vendor_id  = tmp_vendor_id;
-                  opts.product_id = tmp_product_id;
-                }
-              else
-                {
-                  RAISE_EXCEPTION(opt.option << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)");
-                }
-              break;
-            }
-
-          case OPTION_DEVICE_BY_PATH:
-            if (sscanf(opt.argument.c_str(), "%3s:%3s", opts.busid, opts.devid) != 2)
-              {  
-                RAISE_EXCEPTION(opt.option << " expected an argument in form BUS:DEV (i.e. 006:003)");
-              }
-            break;
-
-          case OPTION_LIST_SUPPORTED_DEVICES:
-            opts.mode = RUN_LIST_SUPPORTED_DEVICES;
-            break;
-
-          case OPTION_LIST_SUPPORTED_DEVICES_XPAD:
-            opts.mode = RUN_LIST_SUPPORTED_DEVICES_XPAD;
-            break;
-
-          case OPTION_LIST_CONTROLLER:
-            opts.mode = RUN_LIST_CONTROLLER;
-            break;
-
-          case OPTION_HELP_DEVICES:
-            opts.mode = PRINT_HELP_DEVICES;
-            break;
-
-          case ArgParser::REST_ARG:
-            RAISE_EXCEPTION("unknown command line option: " << opt.argument);
-            break;
-
-          default:
-            RAISE_EXCEPTION("unknown command line option: " << opt.option);
-            break;
+      case OPTION_RUMBLE:
+        if (sscanf(opt.argument.c_str(), "%d,%d", &opts.rumble_l, &opts.rumble_r) == 2)
+        {
+          opts.rumble_l = std::max(0, std::min(255, opts.rumble_l));
+          opts.rumble_r = std::max(0, std::min(255, opts.rumble_r));
         }
+        else
+        {
+          RAISE_EXCEPTION(opt.option << " expected an argument in form INT,INT");
+        }
+        break;
+
+      case OPTION_QUIT:
+        opts.instant_exit = true;
+        break;
+
+      case OPTION_NO_UINPUT:
+        opts.no_uinput = true;
+        break;
+
+      case OPTION_MIMIC_XPAD:
+        opts.uinput_config.mimic_xpad();
+        break;
+
+      case OPTION_NO_EXTRA_DEVICES:
+        opts.uinput_config.extra_devices = false;
+        break;
+
+      case OPTION_TYPE:
+        if (opt.argument == "xbox")
+        {
+          opts.gamepad_type = GAMEPAD_XBOX;
+        }
+        else if (opt.argument == "xbox-mat")
+        {
+          opts.gamepad_type = GAMEPAD_XBOX_MAT;
+        }
+        else if (opt.argument == "xbox360")
+        {
+          opts.gamepad_type = GAMEPAD_XBOX360;
+        }
+        else if (opt.argument == "xbox360-guitar")
+        {
+          opts.gamepad_type = GAMEPAD_XBOX360_GUITAR;
+        }
+        else if (opt.argument == "xbox360-wireless")
+        {
+          opts.gamepad_type = GAMEPAD_XBOX360_WIRELESS;
+        }
+        else if (opt.argument == "firestorm")
+        {
+          opts.gamepad_type = GAMEPAD_FIRESTORM;
+        }
+        else if (opt.argument == "firestorm-vsb")
+        {
+          opts.gamepad_type = GAMEPAD_FIRESTORM_VSB;
+        }
+        else if (opt.argument == "saitek-p2500")
+        {
+          opts.gamepad_type = GAMEPAD_SAITEK_P2500;
+        }
+        else
+        {
+          RAISE_EXCEPTION("unknown type: " << opt.argument << '\n'
+                          << "Possible types are:\n"
+                          << " * xbox\n"
+                          << " * xbox-mat\n"
+                          << " * xbox360\n"
+                          << " * xbox360-guitar\n"
+                          << " * xbox360-wireless\n"
+                          << " * firestorm\n"
+                          << " * firestorm-vsb\n"
+                          << " * saitek-p2500\n");
+        }
+        break;
+
+      case OPTION_FORCE_FEEDBACK:
+        opts.uinput_config.force_feedback = true;
+        break;
+
+      case OPTION_RUMBLE_GAIN:
+        opts.rumble_gain = to_number(255, opt.argument);
+        break;
+
+      case OPTION_BUTTONMAP:
+        arg2vector(opt.argument, opts.button_map, &ButtonMapping::from_string);
+        break;
+
+      case OPTION_AXISMAP:
+        arg2vector(opt.argument, opts.axis_map, &AxisMapping::from_string);
+        break;
+                    
+      case OPTION_NAME:
+        opts.uinput_config.device_name = opt.argument;
+        break;
+
+      case OPTION_UI_CLEAR:
+        std::fill_n(opts.uinput_config.axis_map, static_cast<int>(XBOX_AXIS_MAX), AxisEvent::invalid());
+        for(int i = 0; i < XBOX_BTN_MAX; ++i)
+          std::fill_n(opts.uinput_config.btn_map[i],  static_cast<int>(XBOX_BTN_MAX),  ButtonEvent::invalid());
+        break;
+
+      case OPTION_UI_AXISMAP:
+        arg2apply(opt.argument, boost::bind(&set_ui_axis_map, opts.uinput_config.axis_map, _1));
+        break;
+
+      case OPTION_UI_BUTTONMAP:
+        arg2apply(opt.argument, boost::bind(&set_ui_button_map, opts.uinput_config.btn_map[XBOX_BTN_UNKNOWN], _1));
+        break;
+
+      case OPTION_ID:
+        opts.controller_id = boost::lexical_cast<int>(opt.argument);
+        break;
+
+      case OPTION_WID:
+        opts.wireless_id = boost::lexical_cast<int>(opt.argument);
+        break;
+
+      case OPTION_LED:
+        if (opt.argument == "help")
+        {
+          opts.mode = PRINT_LED_HELP;
+        }
+        else
+        {
+          opts.led = boost::lexical_cast<int>(opt.argument);
+        }
+        break;
+            
+      case OPTION_DPAD_ONLY:
+        if (opts.uinput_config.dpad_as_button)
+          RAISE_EXCEPTION("Can't combine --dpad-as-button with --dpad-only");
+            
+        opts.uinput_config.dpad_only = true;
+        break;
+            
+      case OPTION_DPAD_AS_BUTTON:
+        if (opts.uinput_config.dpad_only)
+          throw std::runtime_error("Can't combine --dpad-as-button with --dpad-only");
+
+        opts.uinput_config.dpad_as_button = true;
+        break;
+
+      case OPTION_DEADZONE:
+        opts.deadzone = to_number(32767, opt.argument);
+        break;
+
+      case OPTION_DEADZONE_TRIGGER:
+        opts.deadzone_trigger = to_number(255, opt.argument);
+        break;
+
+      case OPTION_TRIGGER_AS_BUTTON:
+        if (opts.uinput_config.trigger_as_zaxis)
+        {
+          RAISE_EXCEPTION("Can't combine --trigger-as-button and --trigger-as-zaxis");
+        }
+        else
+        {
+          opts.uinput_config.trigger_as_button = true;
+        }
+        break;
+
+      case OPTION_AUTOFIRE:
+        arg2vector(opt.argument, opts.autofire_map, &AutoFireMapping::from_string);
+        break;
+
+      case OPTION_CALIBRARIOTION:
+        arg2vector(opt.argument, opts.calibration_map, &CalibrationMapping::from_string);
+        break;
+
+      case OPTION_RELATIVE_AXIS:
+        arg2vector(opt.argument, opts.relative_axis_map, &RelativeAxisMapping::from_string);
+        break;
+
+      case OPTION_AXIS_SENSITIVITY:
+        arg2vector(opt.argument, opts.axis_sensitivity_map, &AxisSensitivityMapping::from_string);
+        break;
+
+      case OPTION_FOUR_WAY_RESTRICTOR:
+        opts.four_way_restrictor = true;
+        break;
+
+      case OPTION_DPAD_ROTATION:
+      {
+        int degree = boost::lexical_cast<int>(opt.argument);
+        degree /= 45;
+        degree %= 8;
+        if (degree < 0) degree += 8;
+        opts.dpad_rotation = degree;
+      }
+      break;
+
+      case OPTION_SQUARE_AXIS:
+        opts.square_axis = true;
+        break;
+
+      case OPTION_TRIGGER_AS_ZAXIS:
+        if (opts.uinput_config.trigger_as_button)
+        {
+          RAISE_EXCEPTION("Can't combine --trigger-as-button and --trigger-as-zaxis");
+        }
+        else
+        {
+          opts.uinput_config.trigger_as_zaxis = true;
+        }
+        break;
+
+      case OPTION_HELP_LED:
+        opts.mode = PRINT_LED_HELP;
+        break;
+
+      case OPTION_DEVICE_BY_ID:
+      {
+        unsigned int tmp_product_id;
+        unsigned int tmp_vendor_id;
+        if (sscanf(opt.argument.c_str(), "%x:%x", &tmp_vendor_id, &tmp_product_id) == 2)
+        {
+          opts.vendor_id  = tmp_vendor_id;
+          opts.product_id = tmp_product_id;
+        }
+        else
+        {
+          RAISE_EXCEPTION(opt.option << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)");
+        }
+        break;
+      }
+
+      case OPTION_DEVICE_BY_PATH:
+        if (sscanf(opt.argument.c_str(), "%3s:%3s", opts.busid, opts.devid) != 2)
+        {  
+          RAISE_EXCEPTION(opt.option << " expected an argument in form BUS:DEV (i.e. 006:003)");
+        }
+        break;
+
+      case OPTION_LIST_SUPPORTED_DEVICES:
+        opts.mode = RUN_LIST_SUPPORTED_DEVICES;
+        break;
+
+      case OPTION_LIST_SUPPORTED_DEVICES_XPAD:
+        opts.mode = RUN_LIST_SUPPORTED_DEVICES_XPAD;
+        break;
+
+      case OPTION_LIST_CONTROLLER:
+        opts.mode = RUN_LIST_CONTROLLER;
+        break;
+
+      case OPTION_HELP_DEVICES:
+        opts.mode = PRINT_HELP_DEVICES;
+        break;
+
+      case ArgParser::REST_ARG:
+        RAISE_EXCEPTION("unknown command line option: " << opt.argument);
+        break;
+
+      default:
+        RAISE_EXCEPTION("unknown command line option: " << opt.option);
+        break;
     }
+  }
 }
 
 void

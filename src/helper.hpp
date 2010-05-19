@@ -40,15 +40,15 @@ void arg2vector(const std::string& str, typename std::vector<C>& lst, Func func)
 {
   std::string::const_iterator start = str.begin();
   for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+  {
+    if (*i == ',')
     {
-      if (*i == ',')
-        {
-          if (i != start)
-            lst.push_back(func(std::string(start, i)));
+      if (i != start)
+        lst.push_back(func(std::string(start, i)));
           
-          start = i+1;
-        }
+      start = i+1;
     }
+  }
   
   if (start != str.end())
     lst.push_back(func(std::string(start, str.end())));

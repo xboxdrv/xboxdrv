@@ -30,21 +30,21 @@ XboxController::XboxController(struct usb_device* dev_) :
 {
   handle = usb_open(dev);
   if (!handle)
-    {
-      throw std::runtime_error("Error opening Xbox360 controller");
-    }
+  {
+    throw std::runtime_error("Error opening Xbox360 controller");
+  }
   else
+  {
+    // FIXME: bInterfaceNumber shouldn't be hardcoded
+    int err = usb_claim_interface(handle, 0);
+    if (err != 0) 
     {
-      // FIXME: bInterfaceNumber shouldn't be hardcoded
-      int err = usb_claim_interface(handle, 0);
-      if (err != 0) 
-        {
-          std::ostringstream out;
-          out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
-              << "Try to run 'rmmod xpad' and start xboxdrv again.";
-          throw std::runtime_error(out.str());
-        }
+      std::ostringstream out;
+      out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
+          << "Try to run 'rmmod xpad' and start xboxdrv again.";
+      throw std::runtime_error(out.str());
     }
+  }
 }
 
 XboxController::~XboxController()
@@ -74,21 +74,21 @@ XboxController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, reinterpret_cast<char*>(data), sizeof(data), timeout);
 
   if (ret == -ETIMEDOUT)
-    {
-      return false;
-    }
+  {
+    return false;
+  }
   else if (ret < 0)
-    { // Error
-      std::ostringstream str;
-      str << "USBError: " << ret << "\n" << usb_strerror();
-      throw std::runtime_error(str.str());
-    }
+  { // Error
+    std::ostringstream str;
+    str << "USBError: " << ret << "\n" << usb_strerror();
+    throw std::runtime_error(str.str());
+  }
   else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
-    {
-      msg.type = XBOX_MSG_XBOX;
-      memcpy(&msg.xbox, data, sizeof(XboxMsg));
-      return true;
-    }
+  {
+    msg.type = XBOX_MSG_XBOX;
+    memcpy(&msg.xbox, data, sizeof(XboxMsg));
+    return true;
+  }
   return false;
 }
 

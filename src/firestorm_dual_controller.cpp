@@ -91,23 +91,23 @@ FirestormDualController::FirestormDualController(struct usb_device* dev_, bool i
 {
   handle = usb_open(dev);
   if (!handle)
-    {
-      throw std::runtime_error("Error opening FirestormDualController");
-    }
+  {
+    throw std::runtime_error("Error opening FirestormDualController");
+  }
   else
-    {
-      // FIXME: Do not always do that unrequested
-      usb_detach_kernel_driver_np(handle, 0);
+  {
+    // FIXME: Do not always do that unrequested
+    usb_detach_kernel_driver_np(handle, 0);
 
-      int err = usb_claim_interface(handle, 0);
-      if (err != 0) 
-        {
-          std::ostringstream out;
-          out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
-              << "Try to run 'rmmod xpad' and start xboxdrv again.";
-          throw std::runtime_error(out.str());
-        }
+    int err = usb_claim_interface(handle, 0);
+    if (err != 0) 
+    {
+      std::ostringstream out;
+      out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
+          << "Try to run 'rmmod xpad' and start xboxdrv again.";
+      throw std::runtime_error(out.str());
     }
+  }
 }
 
 FirestormDualController::~FirestormDualController()
@@ -121,17 +121,17 @@ FirestormDualController::set_rumble(uint8_t left, uint8_t right)
 {
   if (left_rumble  != left ||
       right_rumble != right)
-    {
-      left_rumble  = left;
-      right_rumble = right;
+  {
+    left_rumble  = left;
+    right_rumble = right;
 
-      char cmd[] = { left, right, 0x00, 0x00 };
-      if (is_vsb)
-        usb_control_msg(handle, 0x21, 0x09, 0x0200, 0x00, cmd, sizeof(cmd), 0);
-      else
+    char cmd[] = { left, right, 0x00, 0x00 };
+    if (is_vsb)
+      usb_control_msg(handle, 0x21, 0x09, 0x0200, 0x00, cmd, sizeof(cmd), 0);
+    else
 
       usb_control_msg(handle, 0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd), 0);
-    }
+  }
 }
 
 void
@@ -156,78 +156,78 @@ FirestormDualController::read_vsb(XboxGenericMsg& msg, bool verbose, int timeout
   int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, reinterpret_cast<char*>(&data), sizeof(data), timeout);
 
   if (ret == -ETIMEDOUT)
-    {
-      return false;
-    }
+  {
+    return false;
+  }
   else if (ret < 0)
-    { // Error
-      std::ostringstream str;
-      str << "USBError: " << ret << "\n" << usb_strerror();
-      throw std::runtime_error(str.str());
-    }
+  { // Error
+    std::ostringstream str;
+    str << "USBError: " << ret << "\n" << usb_strerror();
+    throw std::runtime_error(str.str());
+  }
   else if (ret == sizeof(data))
-    {
-      if (0)
-        { // debug output
-          for(size_t i = 0; i < sizeof(data); ++i)
-            {
-              uint8_t v = reinterpret_cast<char*>(&data)[i];
-              std::cout << boost::format("0x%02x ") % static_cast<int>(v);
-            }
-          std::cout << std::endl;
-        }
-
-      memset(&msg, 0, sizeof(msg));
-      msg.type    = XBOX_MSG_XBOX360;
-
-      msg.xbox360.a = data.a;
-      msg.xbox360.b = data.b;
-      msg.xbox360.x = data.x;
-      msg.xbox360.y = data.y;
-
-      msg.xbox360.lb = data.lb;
-      msg.xbox360.rb = data.rb;
-
-      msg.xbox360.lt = static_cast<unsigned char>(data.lt * 255);
-      msg.xbox360.rt = static_cast<unsigned char>(data.rt * 255);
-
-      msg.xbox360.start = data.start;
-      msg.xbox360.back  = data.back;
-
-      msg.xbox360.thumb_l = data.thumb_l;
-      msg.xbox360.thumb_r = data.thumb_r;
-      
-      msg.xbox360.x1 = scale_8to16(data.x1);
-      msg.xbox360.y1 = scale_8to16(data.y1);
-
-      msg.xbox360.x2 = scale_8to16(data.x2);
-      msg.xbox360.y2 = scale_8to16(data.y2 - 128);
-
-      // Invert the axis
-      msg.xbox360.y1 = negate_16(msg.xbox360.y1);
-      msg.xbox360.y2 = negate_16(msg.xbox360.y2);
-
-      // data.dpad == 0xf0 -> dpad centered
-      // data.dpad == 0xe0 -> dpad-only mode is enabled
-
-      if (data.dpad == 0x0 || data.dpad == 0x7 || data.dpad == 0x1)
-        msg.xbox360.dpad_up   = 1;
-
-      if (data.dpad == 0x1 || data.dpad == 0x2 || data.dpad == 0x3)
-        msg.xbox360.dpad_right = 1;
-
-      if (data.dpad == 0x3 || data.dpad == 0x4 || data.dpad == 0x5)
-        msg.xbox360.dpad_down = 1;
-      
-      if (data.dpad == 0x5 || data.dpad == 0x6 || data.dpad == 0x7)
-        msg.xbox360.dpad_left  = 1;
-
-      return true;
+  {
+    if (0)
+    { // debug output
+      for(size_t i = 0; i < sizeof(data); ++i)
+      {
+        uint8_t v = reinterpret_cast<char*>(&data)[i];
+        std::cout << boost::format("0x%02x ") % static_cast<int>(v);
+      }
+      std::cout << std::endl;
     }
+
+    memset(&msg, 0, sizeof(msg));
+    msg.type    = XBOX_MSG_XBOX360;
+
+    msg.xbox360.a = data.a;
+    msg.xbox360.b = data.b;
+    msg.xbox360.x = data.x;
+    msg.xbox360.y = data.y;
+
+    msg.xbox360.lb = data.lb;
+    msg.xbox360.rb = data.rb;
+
+    msg.xbox360.lt = static_cast<unsigned char>(data.lt * 255);
+    msg.xbox360.rt = static_cast<unsigned char>(data.rt * 255);
+
+    msg.xbox360.start = data.start;
+    msg.xbox360.back  = data.back;
+
+    msg.xbox360.thumb_l = data.thumb_l;
+    msg.xbox360.thumb_r = data.thumb_r;
+      
+    msg.xbox360.x1 = scale_8to16(data.x1);
+    msg.xbox360.y1 = scale_8to16(data.y1);
+
+    msg.xbox360.x2 = scale_8to16(data.x2);
+    msg.xbox360.y2 = scale_8to16(data.y2 - 128);
+
+    // Invert the axis
+    msg.xbox360.y1 = negate_16(msg.xbox360.y1);
+    msg.xbox360.y2 = negate_16(msg.xbox360.y2);
+
+    // data.dpad == 0xf0 -> dpad centered
+    // data.dpad == 0xe0 -> dpad-only mode is enabled
+
+    if (data.dpad == 0x0 || data.dpad == 0x7 || data.dpad == 0x1)
+      msg.xbox360.dpad_up   = 1;
+
+    if (data.dpad == 0x1 || data.dpad == 0x2 || data.dpad == 0x3)
+      msg.xbox360.dpad_right = 1;
+
+    if (data.dpad == 0x3 || data.dpad == 0x4 || data.dpad == 0x5)
+      msg.xbox360.dpad_down = 1;
+      
+    if (data.dpad == 0x5 || data.dpad == 0x6 || data.dpad == 0x7)
+      msg.xbox360.dpad_left  = 1;
+
+    return true;
+  }
   else
-    {
-      return false;
-    }  
+  {
+    return false;
+  }  
 }
 
 bool
@@ -237,68 +237,68 @@ FirestormDualController::read_default(XboxGenericMsg& msg, bool verbose, int tim
   int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, reinterpret_cast<char*>(&data), sizeof(data), timeout);
 
   if (ret == -ETIMEDOUT)
-    {
-      return false;
-    }
+  {
+    return false;
+  }
   else if (ret < 0)
-    { // Error
-      std::ostringstream str;
-      str << "USBError: " << ret << "\n" << usb_strerror();
-      throw std::runtime_error(str.str());
-    }
+  { // Error
+    std::ostringstream str;
+    str << "USBError: " << ret << "\n" << usb_strerror();
+    throw std::runtime_error(str.str());
+  }
   else if (ret == sizeof(data))
-    {
-      memset(&msg, 0, sizeof(msg));
-      msg.type    = XBOX_MSG_XBOX360;
+  {
+    memset(&msg, 0, sizeof(msg));
+    msg.type    = XBOX_MSG_XBOX360;
 
-      msg.xbox360.a = data.a;
-      msg.xbox360.b = data.b;
-      msg.xbox360.x = data.x;
-      msg.xbox360.y = data.y;
+    msg.xbox360.a = data.a;
+    msg.xbox360.b = data.b;
+    msg.xbox360.x = data.x;
+    msg.xbox360.y = data.y;
 
-      msg.xbox360.lb = data.lb;
-      msg.xbox360.rb = data.rb;
+    msg.xbox360.lb = data.lb;
+    msg.xbox360.rb = data.rb;
 
-      msg.xbox360.lt = data.lt * 255;
-      msg.xbox360.rt = data.rt * 255;
+    msg.xbox360.lt = data.lt * 255;
+    msg.xbox360.rt = data.rt * 255;
 
-      msg.xbox360.start = data.start;
-      msg.xbox360.back  = data.back;
+    msg.xbox360.start = data.start;
+    msg.xbox360.back  = data.back;
 
-      msg.xbox360.thumb_l = data.thumb_l;
-      msg.xbox360.thumb_r = data.thumb_r;
+    msg.xbox360.thumb_l = data.thumb_l;
+    msg.xbox360.thumb_r = data.thumb_r;
       
-      msg.xbox360.x1 = scale_8to16(data.x1);
-      msg.xbox360.y1 = scale_8to16(data.y1);
+    msg.xbox360.x1 = scale_8to16(data.x1);
+    msg.xbox360.y1 = scale_8to16(data.y1);
 
-      msg.xbox360.x2 = scale_8to16(data.x2);
-      msg.xbox360.y2 = scale_8to16(data.y2 - 128);
+    msg.xbox360.x2 = scale_8to16(data.x2);
+    msg.xbox360.y2 = scale_8to16(data.y2 - 128);
 
-      // Invert the axis
-      msg.xbox360.y1 = negate_16(msg.xbox360.y1);
-      msg.xbox360.y2 = negate_16(msg.xbox360.y2);
+    // Invert the axis
+    msg.xbox360.y1 = negate_16(msg.xbox360.y1);
+    msg.xbox360.y2 = negate_16(msg.xbox360.y2);
 
-      // data.dpad == 0xf0 -> dpad centered
-      // data.dpad == 0xe0 -> dpad-only mode is enabled
+    // data.dpad == 0xf0 -> dpad centered
+    // data.dpad == 0xe0 -> dpad-only mode is enabled
 
-      if (data.dpad == 0x00 || data.dpad == 0x70 || data.dpad == 0x10)
-        msg.xbox360.dpad_up   = 1;
+    if (data.dpad == 0x00 || data.dpad == 0x70 || data.dpad == 0x10)
+      msg.xbox360.dpad_up   = 1;
 
-      if (data.dpad == 0x10 || data.dpad == 0x20 || data.dpad == 0x30)
-        msg.xbox360.dpad_right = 1;
+    if (data.dpad == 0x10 || data.dpad == 0x20 || data.dpad == 0x30)
+      msg.xbox360.dpad_right = 1;
 
-      if (data.dpad == 0x30 || data.dpad == 0x40 || data.dpad == 0x50)
-        msg.xbox360.dpad_down = 1;
+    if (data.dpad == 0x30 || data.dpad == 0x40 || data.dpad == 0x50)
+      msg.xbox360.dpad_down = 1;
       
-      if (data.dpad == 0x50 || data.dpad == 0x60 || data.dpad == 0x70)
-        msg.xbox360.dpad_left  = 1;
+    if (data.dpad == 0x50 || data.dpad == 0x60 || data.dpad == 0x70)
+      msg.xbox360.dpad_left  = 1;
 
-      return true;
-    }
+    return true;
+  }
   else
-    {
-      return false;
-    }
+  {
+    return false;
+  }
 }
 
 /* EOF */

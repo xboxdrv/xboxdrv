@@ -40,28 +40,28 @@ AxisEvent::create(int device_id, int type, int code, int fuzz, int flat)
   ev.code = code;
   
   switch (type)
-    {
-      case EV_REL:
-        ev.rel.repeat = 10;
-        ev.rel.value  = 5;
-        break;
+  {
+    case EV_REL:
+      ev.rel.repeat = 10;
+      ev.rel.value  = 5;
+      break;
 
-      case EV_ABS:
-        ev.abs.fuzz = fuzz;
-        ev.abs.flat = flat;
-        break;
+    case EV_ABS:
+      ev.abs.fuzz = fuzz;
+      ev.abs.flat = flat;
+      break;
 
-      case EV_KEY:
-        ev.key.secondary_code = code;
-        ev.key.threshold      = 8000;
-        break;
+    case EV_KEY:
+      ev.key.secondary_code = code;
+      ev.key.threshold      = 8000;
+      break;
 
-      case -1:
-        break;
+    case -1:
+      break;
         
-      default:
-        assert(!"This should never be reached");
-    }
+    default:
+      assert(!"This should never be reached");
+  }
 
   return ev;
 }
@@ -79,51 +79,51 @@ AxisEvent::from_string(const std::string& str)
 
   int j = 0;
   for(std::vector<std::string>::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+  {
+    if (j == 0)
     {
-      if (j == 0)
-        {
-          std::string event_str;
-          split_event_name(*i, &event_str, &ev.device_id);
+      std::string event_str;
+      split_event_name(*i, &event_str, &ev.device_id);
 
-          int type, code;
-          if (!str2event(event_str, type, code))
-            {
-              throw std::runtime_error("Couldn't convert '" + str + "' to AxisEvent");
-            }
-          else
-            {
-              ev = AxisEvent::create(ev.device_id, type, code, 0, 0);
-            }
-        }
+      int type, code;
+      if (!str2event(event_str, type, code))
+      {
+        throw std::runtime_error("Couldn't convert '" + str + "' to AxisEvent");
+      }
       else
-        {
-          switch (ev.type)
-            {
-              case EV_ABS:
-                break;
-
-              case EV_REL:
-                switch(j) {
-                  case 1:  ev.rel.value  = boost::lexical_cast<int>(*i); break;
-                  case 2:  ev.rel.repeat = boost::lexical_cast<int>(*i); break;
-                }
-                break;
-
-              case EV_KEY:
-                switch(j) {
-                  case 1: 
-                    { 
-                      int type;
-                      str2event(*i, type, ev.key.secondary_code);
-                      assert(type == EV_KEY);
-                    }
-                    break;
-                  case 2: ev.key.threshold = boost::lexical_cast<int>(*i); break;
-                }
-                break;
-            }
-        }
+      {
+        ev = AxisEvent::create(ev.device_id, type, code, 0, 0);
+      }
     }
+    else
+    {
+      switch (ev.type)
+      {
+        case EV_ABS:
+          break;
+
+        case EV_REL:
+          switch(j) {
+            case 1:  ev.rel.value  = boost::lexical_cast<int>(*i); break;
+            case 2:  ev.rel.repeat = boost::lexical_cast<int>(*i); break;
+          }
+          break;
+
+        case EV_KEY:
+          switch(j) {
+            case 1: 
+            { 
+              int type;
+              str2event(*i, type, ev.key.secondary_code);
+              assert(type == EV_KEY);
+            }
+            break;
+            case 2: ev.key.threshold = boost::lexical_cast<int>(*i); break;
+          }
+          break;
+      }
+    }
+  }
     
   return ev;
 }

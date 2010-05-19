@@ -44,30 +44,30 @@ void apply_axis_map(XboxGenericMsg& msg, const std::vector<AxisMapping>& lst)
   XboxGenericMsg newmsg = msg;
 
   for(std::vector<AxisMapping>::const_iterator i = lst.begin(); i != lst.end(); ++i)
-    {
-      set_axis(newmsg, i->lhs, 0);
-    }
+  {
+    set_axis(newmsg, i->lhs, 0);
+  }
 
   for(std::vector<AxisMapping>::const_iterator i = lst.begin(); i != lst.end(); ++i)
+  {
+    int lhs  = get_axis(msg,    i->lhs);
+    int nrhs = get_axis(newmsg, i->rhs);
+
+    if (i->invert)
     {
-      int lhs  = get_axis(msg,    i->lhs);
-      int nrhs = get_axis(newmsg, i->rhs);
-
-      if (i->invert)
-        {
-          if (i->lhs == XBOX_AXIS_LT ||
-              i->lhs == XBOX_AXIS_RT)
-            {
-              lhs = 255 - lhs;
-            }
-          else
-            {
-              lhs = -lhs;
-            }
-        }
-
-      set_axis(newmsg, i->rhs, std::max(std::min(nrhs + lhs, 32767), -32768));
+      if (i->lhs == XBOX_AXIS_LT ||
+          i->lhs == XBOX_AXIS_RT)
+      {
+        lhs = 255 - lhs;
+      }
+      else
+      {
+        lhs = -lhs;
+      }
     }
+
+    set_axis(newmsg, i->rhs, std::max(std::min(nrhs + lhs, 32767), -32768));
+  }
   msg = newmsg;
 }
 
@@ -75,52 +75,52 @@ CalibrationMapping CalibrationMapping::from_string(const std::string& str)
 {
   std::string::size_type epos = str.find_first_of('=');
   if (epos == std::string::npos)
-    {
-      throw std::runtime_error("Couldn't convert string \"" + str + "\" to CalibrationMapping");
-    }
+  {
+    throw std::runtime_error("Couldn't convert string \"" + str + "\" to CalibrationMapping");
+  }
   else
+  {
+    CalibrationMapping mapping; 
+    mapping.axis    = string2axis(str.substr(0, epos));
+    mapping.min     = -32768;
+    mapping.center  = 0;
+    mapping.max     = 32767;
+
+    boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+
+    std::string rhs = str.substr(epos+1);
+    tokenizer tokens(rhs, sep);
+    int j = 0;
+    for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
     {
-      CalibrationMapping mapping; 
-      mapping.axis    = string2axis(str.substr(0, epos));
-      mapping.min     = -32768;
-      mapping.center  = 0;
-      mapping.max     = 32767;
+      //std::cout << "Token: '" << *i << "'" << std::endl;
 
-      boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
-      typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-
-      std::string rhs = str.substr(epos+1);
-      tokenizer tokens(rhs, sep);
-      int j = 0;
-      for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+      if (!i->empty())
+      {
+        try 
         {
-          //std::cout << "Token: '" << *i << "'" << std::endl;
-
-          if (!i->empty())
-            {
-              try 
-                {
-                  if (j == 0) 
-                    mapping.min = boost::lexical_cast<int>(*i);
-                  else if (j == 1)
-                    mapping.center = boost::lexical_cast<int>(*i);
-                  else if (j == 2)
-                    mapping.max = boost::lexical_cast<int>(*i);
-                  else 
-                    throw std::runtime_error("--calibration: to many arguments given, syntax is 'AXIS=MIN:CENTER:MAX': " + str);
-                }
-              catch(boost::bad_lexical_cast&) 
-                {
-                  throw std::runtime_error("--calibration: couldn't convert '" + *i + "' to int");
-                }
-            }
+          if (j == 0) 
+            mapping.min = boost::lexical_cast<int>(*i);
+          else if (j == 1)
+            mapping.center = boost::lexical_cast<int>(*i);
+          else if (j == 2)
+            mapping.max = boost::lexical_cast<int>(*i);
+          else 
+            throw std::runtime_error("--calibration: to many arguments given, syntax is 'AXIS=MIN:CENTER:MAX': " + str);
         }
+        catch(boost::bad_lexical_cast&) 
+        {
+          throw std::runtime_error("--calibration: couldn't convert '" + *i + "' to int");
+        }
+      }
+    }
       
-      if (!(mapping.min <= mapping.center && mapping.center <= mapping.max))
-        throw std::runtime_error("Order wrong 'AXIS=MIN:CENTER:MAX': " + str);
+    if (!(mapping.min <= mapping.center && mapping.center <= mapping.max))
+      throw std::runtime_error("Order wrong 'AXIS=MIN:CENTER:MAX': " + str);
 
-      return mapping;
-    } 
+    return mapping;
+  } 
 }
 
 static int clamp(int lhs, int rhs, int v)
@@ -131,38 +131,38 @@ static int clamp(int lhs, int rhs, int v)
 void apply_calibration_map(XboxGenericMsg& msg, const std::vector<CalibrationMapping>& lst)
 {
   for(std::vector<CalibrationMapping>::const_iterator i = lst.begin(); i != lst.end(); ++i)
-    {
-      int value = get_axis(msg,  i->axis);
+  {
+    int value = get_axis(msg,  i->axis);
 
-      if (value < i->center)
-        value = 32768 * (value - i->center) / (i->center - i->min);
-      else if (value > i->center)
-        value = 32767 * (value - i->center) / (i->max - i->center);
-      else
-        value = 0;
+    if (value < i->center)
+      value = 32768 * (value - i->center) / (i->center - i->min);
+    else if (value > i->center)
+      value = 32767 * (value - i->center) / (i->max - i->center);
+    else
+      value = 0;
 
-      set_axis(msg, i->axis, clamp(-32768, 32767, value));
-    }
+    set_axis(msg, i->axis, clamp(-32768, 32767, value));
+  }
 }
 
 ButtonMapping 
 ButtonMapping::from_string(const std::string& str)
 {
   for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+  {
+    if (*i == '=')
     {
-      if (*i == '=')
-        {
-          ButtonMapping mapping;
-          mapping.lhs = string2btn(std::string(str.begin(), i));
-          mapping.rhs = string2btn(std::string(i+1, str.end()));
+      ButtonMapping mapping;
+      mapping.lhs = string2btn(std::string(str.begin(), i));
+      mapping.rhs = string2btn(std::string(i+1, str.end()));
           
-          if (mapping.lhs == XBOX_BTN_UNKNOWN ||
-              mapping.rhs == XBOX_BTN_UNKNOWN)
-            throw std::runtime_error("Couldn't convert string \"" + str + "\" to button mapping");
+      if (mapping.lhs == XBOX_BTN_UNKNOWN ||
+          mapping.rhs == XBOX_BTN_UNKNOWN)
+        throw std::runtime_error("Couldn't convert string \"" + str + "\" to button mapping");
 
-          return mapping;
-        }
+      return mapping;
     }
+  }
   throw std::runtime_error("Couldn't convert string \"" + str + "\" to button mapping");
 }
 
@@ -170,37 +170,37 @@ AxisMapping
 AxisMapping::from_string(const std::string& str)
 {
   for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+  {
+    if (*i == '=')
     {
-      if (*i == '=')
-        {
-          AxisMapping mapping;
+      AxisMapping mapping;
 
-          std::string lhs(str.begin(), i);
-          std::string rhs(i+1, str.end());
+      std::string lhs(str.begin(), i);
+      std::string rhs(i+1, str.end());
 
-          if (lhs.empty() || rhs.empty())
-            throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
+      if (lhs.empty() || rhs.empty())
+        throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
 
-          if (lhs[0] == '-')
-            {
-              mapping.invert = true;
-              mapping.lhs = string2axis(lhs.substr(1));
-            }
-          else
-            {
-              mapping.invert = false;
-              mapping.lhs = string2axis(lhs);
-            }
+      if (lhs[0] == '-')
+      {
+        mapping.invert = true;
+        mapping.lhs = string2axis(lhs.substr(1));
+      }
+      else
+      {
+        mapping.invert = false;
+        mapping.lhs = string2axis(lhs);
+      }
 
-          mapping.rhs = string2axis(rhs);
+      mapping.rhs = string2axis(rhs);
 
-          if (mapping.lhs == XBOX_AXIS_UNKNOWN ||
-              mapping.rhs == XBOX_AXIS_UNKNOWN)
-            throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
+      if (mapping.lhs == XBOX_AXIS_UNKNOWN ||
+          mapping.rhs == XBOX_AXIS_UNKNOWN)
+        throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
 
-          return mapping;
-        }
+      return mapping;
     }
+  }
   throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
 }
 
@@ -210,17 +210,17 @@ RelativeAxisMapping::from_string(const std::string& str)
   /* Format of str: A={SPEED} */
   std::string::size_type i = str.find('=');
   if (i == std::string::npos)
-    {
-      throw std::runtime_error("Couldn't convert string \"" + str + "\" to RelativeAxisMapping");
-    }
+  {
+    throw std::runtime_error("Couldn't convert string \"" + str + "\" to RelativeAxisMapping");
+  }
   else
-    {
-      RelativeAxisMapping mapping;
-      mapping.axis  = string2axis(str.substr(0, i));
-      mapping.speed = boost::lexical_cast<int>(str.substr(i+1, str.size()-i));
-      // FIXME: insert some error checking here
-      return mapping;
-    }
+  {
+    RelativeAxisMapping mapping;
+    mapping.axis  = string2axis(str.substr(0, i));
+    mapping.speed = boost::lexical_cast<int>(str.substr(i+1, str.size()-i));
+    // FIXME: insert some error checking here
+    return mapping;
+  }
 }
 
 AutoFireMapping 
@@ -232,16 +232,16 @@ AutoFireMapping::from_string(const std::string& str)
   */
   std::string::size_type i = str.find_first_of('=');
   if (i == std::string::npos)
-    {
-      throw std::runtime_error("Couldn't convert string \"" + str + "\" to AutoFireMapping");
-    }
+  {
+    throw std::runtime_error("Couldn't convert string \"" + str + "\" to AutoFireMapping");
+  }
   else
-    {
-      AutoFireMapping mapping; 
-      mapping.button    = string2btn(str.substr(0, i));
-      mapping.frequency = boost::lexical_cast<int>(str.substr(i+1, str.size()-i).c_str());
-      return mapping;
-    }
+  {
+    AutoFireMapping mapping; 
+    mapping.button    = string2btn(str.substr(0, i));
+    mapping.frequency = boost::lexical_cast<int>(str.substr(i+1, str.size()-i).c_str());
+    return mapping;
+  }
 }
 
 AxisSensitivityMapping 
@@ -254,7 +254,7 @@ AxisSensitivityMapping::from_string(const std::string& str)
   std::string::size_type i = str.find_first_of('=');
   if (i == std::string::npos)
   {
-      throw std::runtime_error("Couldn't convert string \"" + str + "\" to AxisSensitivityMapping");
+    throw std::runtime_error("Couldn't convert string \"" + str + "\" to AxisSensitivityMapping");
   }
   else
   {
@@ -268,90 +268,90 @@ AxisSensitivityMapping::from_string(const std::string& str)
 void squarify_axis_(int16_t& x_inout, int16_t& y_inout)
 {
   if (x_inout != 0 || y_inout != 0)
-    {
-      // Convert values to float
-      float x = (x_inout < 0) ? static_cast<float>(x_inout) / 32768.0f : static_cast<float>(x_inout) / 32767.0f;
-      float y = (y_inout < 0) ? static_cast<float>(y_inout) / 32768.0f : static_cast<float>(y_inout) / 32767.0f;
+  {
+    // Convert values to float
+    float x = (x_inout < 0) ? static_cast<float>(x_inout) / 32768.0f : static_cast<float>(x_inout) / 32767.0f;
+    float y = (y_inout < 0) ? static_cast<float>(y_inout) / 32768.0f : static_cast<float>(y_inout) / 32767.0f;
 
-      // Transform values to square range
-      float l = sqrtf(x*x + y*y);
-      float v = fabsf((fabsf(x) > fabsf(y)) ? l/x : l/y);
-      x *= v;
-      y *= v;
+    // Transform values to square range
+    float l = sqrtf(x*x + y*y);
+    float v = fabsf((fabsf(x) > fabsf(y)) ? l/x : l/y);
+    x *= v;
+    y *= v;
 
-      // Convert values to int16_t
-      x_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((x < 0) ? x * 32768 : x * 32767), 32767));
-      y_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((y < 0) ? y * 32768 : y * 32767), 32767));
-    }
+    // Convert values to int16_t
+    x_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((x < 0) ? x * 32768 : x * 32767), 32767));
+    y_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((y < 0) ? y * 32768 : y * 32767), 32767));
+  }
 }
 
 // Little hack to allow access to bitfield via reference
-#define squarify_axis(x, y) \
-{ \
-  int16_t x_ = x;         \
-  int16_t y_ = y;         \
-  squarify_axis_(x_, y_); \
-  x = x_;                 \
-  y = y_;                 \
-}
+#define squarify_axis(x, y)                     \
+  {                                             \
+    int16_t x_ = x;                             \
+    int16_t y_ = y;                             \
+    squarify_axis_(x_, y_);                     \
+    x = x_;                                     \
+    y = y_;                                     \
+  }
 
 void apply_square_axis(XboxGenericMsg& msg)
 {
   switch (msg.type)
-    {
-      case XBOX_MSG_XBOX:
-        squarify_axis(msg.xbox.x1, msg.xbox.y1);
-        squarify_axis(msg.xbox.x2, msg.xbox.y2);
-        break;
+  {
+    case XBOX_MSG_XBOX:
+      squarify_axis(msg.xbox.x1, msg.xbox.y1);
+      squarify_axis(msg.xbox.x2, msg.xbox.y2);
+      break;
 
-      case XBOX_MSG_XBOX360:
-        squarify_axis(msg.xbox360.x1, msg.xbox360.y1);
-        squarify_axis(msg.xbox360.x2, msg.xbox360.y2);
-        break;
+    case XBOX_MSG_XBOX360:
+      squarify_axis(msg.xbox360.x1, msg.xbox360.y1);
+      squarify_axis(msg.xbox360.x2, msg.xbox360.y2);
+      break;
         
-      case XBOX_MSG_XBOX360_GUITAR:
-        break;
-    }
+    case XBOX_MSG_XBOX360_GUITAR:
+      break;
+  }
 }
 
 void apply_deadzone(XboxGenericMsg& msg, const CommandLineOptions& opts)
 {
   switch (msg.type)
-    {
-      case XBOX_MSG_XBOX:
-        if (abs(msg.xbox.x1) < opts.deadzone)
-          msg.xbox.x1 = 0;
-        if (abs(msg.xbox.y1) < opts.deadzone)
-          msg.xbox.y1 = 0;
-        if (abs(msg.xbox.x2) < opts.deadzone)
-          msg.xbox.x2 = 0;
-        if (abs(msg.xbox.y2) < opts.deadzone)
-          msg.xbox.y2 = 0;
-        if (msg.xbox.lt < opts.deadzone_trigger)
-          msg.xbox.lt = 0;
-        if (msg.xbox.rt < opts.deadzone_trigger)
-          msg.xbox.rt = 0;
-        break;
+  {
+    case XBOX_MSG_XBOX:
+      if (abs(msg.xbox.x1) < opts.deadzone)
+        msg.xbox.x1 = 0;
+      if (abs(msg.xbox.y1) < opts.deadzone)
+        msg.xbox.y1 = 0;
+      if (abs(msg.xbox.x2) < opts.deadzone)
+        msg.xbox.x2 = 0;
+      if (abs(msg.xbox.y2) < opts.deadzone)
+        msg.xbox.y2 = 0;
+      if (msg.xbox.lt < opts.deadzone_trigger)
+        msg.xbox.lt = 0;
+      if (msg.xbox.rt < opts.deadzone_trigger)
+        msg.xbox.rt = 0;
+      break;
 
-      case XBOX_MSG_XBOX360:
-        if (abs(msg.xbox360.x1) < opts.deadzone)
-          msg.xbox360.x1 = 0;
-        if (abs(msg.xbox360.y1) < opts.deadzone)
-          msg.xbox360.y1 = 0;
-        if (abs(msg.xbox360.x2) < opts.deadzone)
-          msg.xbox360.x2 = 0;
-        if (abs(msg.xbox360.y2) < opts.deadzone)
-          msg.xbox360.y2 = 0;      
-        if (msg.xbox360.lt < opts.deadzone_trigger)
-          msg.xbox360.lt = 0;
-        if (msg.xbox360.rt < opts.deadzone_trigger)
-          msg.xbox360.rt = 0;
-        break;
+    case XBOX_MSG_XBOX360:
+      if (abs(msg.xbox360.x1) < opts.deadzone)
+        msg.xbox360.x1 = 0;
+      if (abs(msg.xbox360.y1) < opts.deadzone)
+        msg.xbox360.y1 = 0;
+      if (abs(msg.xbox360.x2) < opts.deadzone)
+        msg.xbox360.x2 = 0;
+      if (abs(msg.xbox360.y2) < opts.deadzone)
+        msg.xbox360.y2 = 0;      
+      if (msg.xbox360.lt < opts.deadzone_trigger)
+        msg.xbox360.lt = 0;
+      if (msg.xbox360.rt < opts.deadzone_trigger)
+        msg.xbox360.rt = 0;
+      break;
 
-      case XBOX_MSG_XBOX360_GUITAR:
-        // FIXME: any use for deadzone here?
-        break;
-    }
+    case XBOX_MSG_XBOX360_GUITAR:
+      // FIXME: any use for deadzone here?
+      break;
+  }
 }
 
 void apply_axis_sensitivity(XboxGenericMsg& msg, const CommandLineOptions& opts)

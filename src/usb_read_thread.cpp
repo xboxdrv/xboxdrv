@@ -85,25 +85,25 @@ USBReadThread::run()
   boost::shared_array<uint8_t> data(new uint8_t[m_read_length]);
   
   while(!m_stop)
+  {
+    int ret = usb_interrupt_read(m_handle, m_read_endpoint, reinterpret_cast<char*>(data.get()), m_read_length, 0 /*timeout*/);
+
+    if (ret != 0)
     {
-      int ret = usb_interrupt_read(m_handle, m_read_endpoint, reinterpret_cast<char*>(data.get()), m_read_length, 0 /*timeout*/);
+      boost::mutex::scoped_lock lock(m_read_buffer_mutex);
 
-      if (ret != 0)
-        {
-          boost::mutex::scoped_lock lock(m_read_buffer_mutex);
+      Paket paket;
 
-          Paket paket;
+      paket.data   = data;
+      paket.length = ret;
 
-          paket.data   = data;
-          paket.length = ret;
-
-          m_read_buffer.push_back(paket);
+      m_read_buffer.push_back(paket);
           
-          m_read_buffer_cond.notify_one();
+      m_read_buffer_cond.notify_one();
 
-          data = boost::shared_array<uint8_t>(new uint8_t[m_read_length]);
-        }
+      data = boost::shared_array<uint8_t>(new uint8_t[m_read_length]);
     }
+  }
 }
 
 /* EOF */

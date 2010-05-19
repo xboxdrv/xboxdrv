@@ -47,60 +47,60 @@ std::ostream& operator<<(std::ostream& out, const struct ff_effect& effect)
 {
   std::cout << "Effect(";
   switch (effect.type)
-    {
-      case FF_CONSTANT:
-        out << "FF_CONSTANT("
-            << "level:" << effect.u.constant.level
-            << ", envelope:" << effect.u.constant.envelope << ")";
-        break;
+  {
+    case FF_CONSTANT:
+      out << "FF_CONSTANT("
+          << "level:" << effect.u.constant.level
+          << ", envelope:" << effect.u.constant.envelope << ")";
+      break;
 
-      case FF_PERIODIC:
-        out << "FF_PERIODIC("
-            << ", waveform:" << effect.u.periodic.waveform
-            << ", period:" << effect.u.periodic.period
-            << ", magnitude:" << effect.u.periodic.magnitude
-            << ", offset:" << effect.u.periodic.offset
-            << ", phase:" << effect.u.periodic.phase
-            << ", envelope:" << effect.u.periodic.envelope << ")";
-        break;
+    case FF_PERIODIC:
+      out << "FF_PERIODIC("
+          << ", waveform:" << effect.u.periodic.waveform
+          << ", period:" << effect.u.periodic.period
+          << ", magnitude:" << effect.u.periodic.magnitude
+          << ", offset:" << effect.u.periodic.offset
+          << ", phase:" << effect.u.periodic.phase
+          << ", envelope:" << effect.u.periodic.envelope << ")";
+      break;
 
-      case FF_RAMP:
-        out << "FF_RAMP(" 
-            << "start_level:" << effect.u.ramp.start_level
-            << ", end_level:" << effect.u.ramp.end_level
-            << ", envelope:" <<  effect.u.ramp.envelope << ")";
-        break;
+    case FF_RAMP:
+      out << "FF_RAMP(" 
+          << "start_level:" << effect.u.ramp.start_level
+          << ", end_level:" << effect.u.ramp.end_level
+          << ", envelope:" <<  effect.u.ramp.envelope << ")";
+      break;
 
-      case FF_SPRING:
-        out << "FF_SPRING()";
-        break;
+    case FF_SPRING:
+      out << "FF_SPRING()";
+      break;
 
-      case FF_FRICTION:
-        out << "FF_FRICTION()";
-        break;
+    case FF_FRICTION:
+      out << "FF_FRICTION()";
+      break;
 
-      case FF_DAMPER:
-        out << "FF_DAMPER()";
-        break;
+    case FF_DAMPER:
+      out << "FF_DAMPER()";
+      break;
 
-      case FF_RUMBLE:
-        out << "FF_RUMBLE("
-            << "strong_magnitude:" << effect.u.rumble.strong_magnitude
-            << ", weak_magnitude:" << effect.u.rumble.weak_magnitude << ")";
-        break;
+    case FF_RUMBLE:
+      out << "FF_RUMBLE("
+          << "strong_magnitude:" << effect.u.rumble.strong_magnitude
+          << ", weak_magnitude:" << effect.u.rumble.weak_magnitude << ")";
+      break;
 
-      case FF_INERTIA:
-        out << "FF_INERTIA()";
-        break;
+    case FF_INERTIA:
+      out << "FF_INERTIA()";
+      break;
 
-      case FF_CUSTOM:
-        out << "FF_CUSTOM()";
-        break;
+    case FF_CUSTOM:
+      out << "FF_CUSTOM()";
+      break;
 
-      default:
-        out << "FF_<unknown>()";
-        break;
-    }
+    default:
+      out << "FF_<unknown>()";
+      break;
+  }
 
   out << ", direction:" << effect.direction
       << ", replay:" << effect.replay
@@ -217,42 +217,42 @@ void
 ForceFeedbackEffect::update(int msec_delta)
 {
   if (playing)
+  {
+    count += msec_delta;
+
+    if (count > delay)
     {
-      count += msec_delta;
-
-      if (count > delay)
-        {
-          int t = count - delay;
-          if (t < envelope.attack_length)
-            { // attack
-              strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
-              weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
+      int t = count - delay;
+      if (t < envelope.attack_length)
+      { // attack
+        strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
+        weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
               
-              // apply envelope
-              strong_magnitude = ((envelope.attack_level * t) + strong_magnitude * (envelope.attack_length - t)) / envelope.attack_length;
-              weak_magnitude   = ((envelope.attack_level * t) + weak_magnitude   * (envelope.attack_length - t)) / envelope.attack_length;
-            }
-          else if  (t < length - envelope.fade_length)
-            { // sustain
-              strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
-              weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
-            }
-          else if (t < length)
-            { // fade
-              strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
-              weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
+        // apply envelope
+        strong_magnitude = ((envelope.attack_level * t) + strong_magnitude * (envelope.attack_length - t)) / envelope.attack_length;
+        weak_magnitude   = ((envelope.attack_level * t) + weak_magnitude   * (envelope.attack_length - t)) / envelope.attack_length;
+      }
+      else if  (t < length - envelope.fade_length)
+      { // sustain
+        strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
+        weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
+      }
+      else if (t < length)
+      { // fade
+        strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
+        weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
 
-              // apply envelope
-              int dt = t - (length - envelope.fade_length);
-              strong_magnitude = ((envelope.fade_level * dt) + strong_magnitude * (envelope.fade_length - dt)) / envelope.fade_length;
-              weak_magnitude   = ((envelope.fade_level * dt) + weak_magnitude   * (envelope.fade_length - dt)) / envelope.fade_length;
-            }
-          else
-            { // effect ended
-              stop();
-            }
-        }
+        // apply envelope
+        int dt = t - (length - envelope.fade_length);
+        strong_magnitude = ((envelope.fade_level * dt) + strong_magnitude * (envelope.fade_length - dt)) / envelope.fade_length;
+        weak_magnitude   = ((envelope.fade_level * dt) + weak_magnitude   * (envelope.fade_length - dt)) / envelope.fade_length;
+      }
+      else
+      { // effect ended
+        stop();
+      }
     }
+  }
 }
 
 void
@@ -303,23 +303,23 @@ ForceFeedbackHandler::upload(const struct ff_effect& effect)
 
   std::map<int, ForceFeedbackEffect>::iterator i = effects.find(effect.id);
   if (i == effects.end())
-    {
-      effects[effect.id] = ForceFeedbackEffect(effect);
-    }
+  {
+    effects[effect.id] = ForceFeedbackEffect(effect);
+  }
   else
-    {
-      ForceFeedbackEffect old_effect = i->second;
-      ForceFeedbackEffect new_effect(effect);
+  {
+    ForceFeedbackEffect old_effect = i->second;
+    ForceFeedbackEffect new_effect(effect);
 
-      // We the copy state variables of the effect , so we can update
-      // the effect while it is playing
-      new_effect.playing          = old_effect.playing;
-      new_effect.count            = old_effect.count;
-      new_effect.weak_magnitude   = old_effect.weak_magnitude;
-      new_effect.strong_magnitude = old_effect.strong_magnitude;
+    // We the copy state variables of the effect , so we can update
+    // the effect while it is playing
+    new_effect.playing          = old_effect.playing;
+    new_effect.count            = old_effect.count;
+    new_effect.weak_magnitude   = old_effect.weak_magnitude;
+    new_effect.strong_magnitude = old_effect.strong_magnitude;
 
-      effects[effect.id] = effect;
-    }
+    effects[effect.id] = effect;
+  }
 }
 
 void
@@ -374,18 +374,18 @@ ForceFeedbackHandler::update(int msec_delta)
   strong_magnitude = 0;
 
   if (!effects.empty())
+  {
+    for(Effects::iterator i = effects.begin(); i != effects.end(); ++i)
     {
-      for(Effects::iterator i = effects.begin(); i != effects.end(); ++i)
-        {
-          i->second.update(msec_delta);
+      i->second.update(msec_delta);
 
-          weak_magnitude   += i->second.get_weak_magnitude();
-          strong_magnitude += i->second.get_strong_magnitude();
-        }
-
-      weak_magnitude   = std::min(weak_magnitude,   0x7fff);
-      strong_magnitude = std::min(strong_magnitude, 0x7fff);
+      weak_magnitude   += i->second.get_weak_magnitude();
+      strong_magnitude += i->second.get_strong_magnitude();
     }
+
+    weak_magnitude   = std::min(weak_magnitude,   0x7fff);
+    strong_magnitude = std::min(strong_magnitude, 0x7fff);
+  }
 }
 
 int

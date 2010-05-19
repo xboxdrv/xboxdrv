@@ -44,9 +44,9 @@ std::string to_lower(const std::string &str)
   for( std::string::iterator i = lower_impl.begin();
        i != lower_impl.end();
        ++i )
-    {
-      *i = static_cast<char>(tolower(*i));
-    }
+  {
+    *i = static_cast<char>(tolower(*i));
+  }
 
   return lower_impl;
 }
@@ -55,15 +55,15 @@ void arg2apply(const std::string& str, const boost::function<void (const std::st
 {
   std::string::const_iterator start = str.begin();
   for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+  {
+    if (*i == ',')
     {
-      if (*i == ',')
-        {
-          if (i != start)
-            func(std::string(start, i));
+      if (i != start)
+        func(std::string(start, i));
           
-          start = i+1;
-        }
+      start = i+1;
     }
+  }
   
   if (start != str.end())
     func(std::string(start, str.end()));
@@ -80,21 +80,21 @@ bool is_number(const std::string& str)
 int to_number(int range, const std::string& str)
 {
   if (str.empty())
-    {
-      return 0;
-    }
+  {
+    return 0;
+  }
   else
+  {
+    if (str[str.size() - 1] == '%')
     {
-      if (str[str.size() - 1] == '%')
-        {
-          int percent = boost::lexical_cast<int>(str.substr(0, str.size()-1));
-          return range * percent / 100;
-        }
-      else
-        {
-          return boost::lexical_cast<int>(str);
-        }
+      int percent = boost::lexical_cast<int>(str.substr(0, str.size()-1));
+      return range * percent / 100;
     }
+    else
+    {
+      return boost::lexical_cast<int>(str);
+    }
+  }
 }
 
 uint32_t get_time()
@@ -108,13 +108,13 @@ int get_terminal_width()
 {
   struct winsize w;
   if (ioctl(0, TIOCGWINSZ, &w) < 0)
-    {
-      return 80;
-    }
+  {
+    return 80;
+  }
   else
-    {
-      return w.ws_col;
-    }
+  {
+    return w.ws_col;
+  }
 }
 
 /* EOF */

@@ -101,96 +101,96 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   int ret = 0;
 
   if (read_thread.get())
-    {
-      ret = read_thread->read(data, sizeof(data), timeout);
-    }
+  {
+    ret = read_thread->read(data, sizeof(data), timeout);
+  }
   else
-    {
-      ret = usb_interrupt_read(handle, endpoint, reinterpret_cast<char*>(data), sizeof(data), timeout);
-    }
+  {
+    ret = usb_interrupt_read(handle, endpoint, reinterpret_cast<char*>(data), sizeof(data), timeout);
+  }
 
   if (ret == -ETIMEDOUT)
-    {
-      return false;
-    }
+  {
+    return false;
+  }
   else  if (ret < 0)
-    { // Error
-      std::ostringstream str;
-      str << "USBError: " << ret << "\n" << usb_strerror();
-      throw std::runtime_error(str.str());
-    }
+  { // Error
+    std::ostringstream str;
+    str << "USBError: " << ret << "\n" << usb_strerror();
+    throw std::runtime_error(str.str());
+  }
   else if (ret == 2 && data[0] == 0x08) 
-    { // Connection Status Message
-      if (data[1] == 0x00) 
-        {
-          std::cout << "Connection status: nothing" << std::endl;
-        } 
-      else if (data[1] == 0x80) 
-        {
-          std::cout << "Connection status: controller connected" << std::endl;
-          set_led(led_status);
-        } 
-      else if (data[1] == 0x40) 
-        {
-          std::cout << "Connection status: headset connected" << std::endl;
-        }
-      else if (data[1] == 0xc0) 
-        {
-          std::cout << "Connection status: controller and headset connected" << std::endl;
-          set_led(led_status);
-        }
-      else
-        {
-          std::cout << "Connection status: unknown" << std::endl;
-        }
+  { // Connection Status Message
+    if (data[1] == 0x00) 
+    {
+      std::cout << "Connection status: nothing" << std::endl;
+    } 
+    else if (data[1] == 0x80) 
+    {
+      std::cout << "Connection status: controller connected" << std::endl;
+      set_led(led_status);
+    } 
+    else if (data[1] == 0x40) 
+    {
+      std::cout << "Connection status: headset connected" << std::endl;
     }
+    else if (data[1] == 0xc0) 
+    {
+      std::cout << "Connection status: controller and headset connected" << std::endl;
+      set_led(led_status);
+    }
+    else
+    {
+      std::cout << "Connection status: unknown" << std::endl;
+    }
+  }
   else if (ret == 29)
-    {
-      if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
-        { // Initial Announc Message
-          serial = (boost::format("%2x:%2x:%2x:%2x:%2x:%2x:%2x")
-                    % int(data[7])
-                    % int(data[8])
-                    % int(data[9])
-                    % int(data[10])
-                    % int(data[11])
-                    % int(data[12])
-                    % int(data[13])).str();
-          battery_status = data[17];
-          std::cout << "Serial: " << serial << std::endl;
-          std::cout << "Battery Status: " << battery_status << std::endl;
-        }
-      else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
-        { // Event message
-          msg.type    = XBOX_MSG_XBOX360;
-          memcpy(&msg.xbox360, data+4, sizeof(Xbox360Msg));
-          return true;
-        }
-      else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
-        { // Battery status
-          battery_status = data[4];
-          std::cout << "Battery Status: " << battery_status << std::endl;
-        }
-      else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0xf0)
-        {
-          // 0x00 0x00 0x00 0xf0 0x00 ... is send after each button
-          // press, doesn't seem to contain any information
-        }
-      else
-        {
-          std::cout << "Unknown: ";
-          print_raw_data(std::cout, data, ret);
-        }
+  {
+    if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
+    { // Initial Announc Message
+      serial = (boost::format("%2x:%2x:%2x:%2x:%2x:%2x:%2x")
+                % int(data[7])
+                % int(data[8])
+                % int(data[9])
+                % int(data[10])
+                % int(data[11])
+                % int(data[12])
+                % int(data[13])).str();
+      battery_status = data[17];
+      std::cout << "Serial: " << serial << std::endl;
+      std::cout << "Battery Status: " << battery_status << std::endl;
     }
-  else if (ret == 0)
-    {
-      // ignore
+    else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
+    { // Event message
+      msg.type    = XBOX_MSG_XBOX360;
+      memcpy(&msg.xbox360, data+4, sizeof(Xbox360Msg));
+      return true;
     }
-  else
+    else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
+    { // Battery status
+      battery_status = data[4];
+      std::cout << "Battery Status: " << battery_status << std::endl;
+    }
+    else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0xf0)
+    {
+      // 0x00 0x00 0x00 0xf0 0x00 ... is send after each button
+      // press, doesn't seem to contain any information
+    }
+    else
     {
       std::cout << "Unknown: ";
       print_raw_data(std::cout, data, ret);
     }
+  }
+  else if (ret == 0)
+  {
+    // ignore
+  }
+  else
+  {
+    std::cout << "Unknown: ";
+    print_raw_data(std::cout, data, ret);
+  }
 
   return false;
 }
