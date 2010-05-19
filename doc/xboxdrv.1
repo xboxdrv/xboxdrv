@@ -415,6 +415,20 @@ An example configuration makeing use of device_id would look like this:
 In this example the left stick creates a joystick device
 and the right stick creates a separate joystick device.
 
+Instead of giving just a single button, it is also
+possible to give two buttons
+to \*(T<\fB\-\-ui\-buttonmap\fR\*(T> to allow shifting:
+
+.nf
+\*(T<xboxdrv \-s \e
+  \-\-ui\-clear \e
+  \-\-ui\-buttonmap A=JS_0,B=JS_1,LB+A=JS_2,LB+B=JS_3\*(T>
+.fi
+
+In this example LB acts as shift button, if A is pressed
+without LB it will send out a JS_0 event, but if LB is
+pressed it will send a JS_2 event instead.
+
 See the section KEYBOARD EMULATION below on how to
 resolve issues with Xorg not detecting the virtual
 keyboard that xboxdrv creates.
