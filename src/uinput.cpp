@@ -36,24 +36,27 @@
 bool
 uInput::need_keyboard_device()
 {
-  for(int i = 0; i < XBOX_BTN_MAX; ++i)
+  for(int j = 0; j < XBOX_BTN_MAX; ++j)
+  {
+    for(int i = 0; i < XBOX_BTN_MAX; ++i)
     {
-      if (cfg.btn_map[i].type == EV_KEY &&
-          is_keyboard_button(cfg.btn_map[i].code))
-        {
-          return true;
-        }
+      if (cfg.btn_map[j][i].type == EV_KEY &&
+          is_keyboard_button(cfg.btn_map[j][i].code))
+      {
+        return true;
+      }
     }
+  }
 
   for(int i = 0; i < XBOX_AXIS_MAX; ++i)
+  {
+    if (cfg.axis_map[i].type == EV_KEY &&
+        (is_keyboard_button(cfg.axis_map[i].code) ||
+         is_keyboard_button(cfg.axis_map[i].key.secondary_code)))
     {
-      if (cfg.axis_map[i].type == EV_KEY &&
-          (is_keyboard_button(cfg.axis_map[i].code) ||
-           is_keyboard_button(cfg.axis_map[i].key.secondary_code)))
-        {
-          return true;
-        }
+      return true;
     }
+  }
 
   return false;
 }
@@ -61,32 +64,35 @@ uInput::need_keyboard_device()
 bool
 uInput::need_mouse_device()
 {
-  for(int i = 0; i < XBOX_BTN_MAX; ++i)
+  for(int j = 0; j < XBOX_BTN_MAX; ++j)
+  {
+    for(int i = 0; i < XBOX_BTN_MAX; ++i)
     {
-      if (cfg.btn_map[i].type == EV_KEY &&
-          is_mouse_button(cfg.btn_map[i].code))
-        {
-          return true;
-        }
-      else if (cfg.btn_map[i].type == EV_REL)
-        {
-          return true;
-        }
+      if (cfg.btn_map[j][i].type == EV_KEY &&
+          is_mouse_button(cfg.btn_map[j][i].code))
+      {
+        return true;
+      }
+      else if (cfg.btn_map[j][i].type == EV_REL)
+      {
+        return true;
+      }
     }
+  }
 
   for(int i = 0; i < XBOX_AXIS_MAX; ++i)
+  {
+    if (cfg.axis_map[i].type == EV_KEY &&
+        (is_mouse_button(cfg.axis_map[i].code) ||
+         is_mouse_button(cfg.axis_map[i].key.secondary_code)))
     {
-      if (cfg.axis_map[i].type == EV_KEY &&
-          (is_mouse_button(cfg.axis_map[i].code) ||
-           is_mouse_button(cfg.axis_map[i].key.secondary_code)))
-        {
-          return true;
-        }
-      else if (cfg.axis_map[i].type == EV_REL)
-        {
-          return true;
-        }
+      return true;
     }
+    else if (cfg.axis_map[i].type == EV_REL)
+    {
+      return true;
+    }
+  }
 
   return false;
 }
@@ -125,9 +131,12 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
     create_uinput_device(0);
   }
 
-  for(int i = 0; i < XBOX_BTN_MAX; ++i)
+  for(int j = 0; j < XBOX_BTN_MAX; ++j)
   {
-    cfg.btn_map[i].device_id = create_uinput_device(cfg.btn_map[i]);
+    for(int i = 0; i < XBOX_BTN_MAX; ++i)
+    {
+      cfg.btn_map[j][i].device_id = create_uinput_device(cfg.btn_map[j][i]);
+    }
   }
 
   for(int i = 0; i < XBOX_AXIS_MAX; ++i)
@@ -648,16 +657,9 @@ uInput::update(int msec_delta)
 
     if (i->time >= i->next_time)
     {
-      if (0)
-        std::cout << i->button 
-                  << " " << cfg.btn_map[i->button].type
-                  << " " << cfg.btn_map[i->button].code
-                  << " " << cfg.btn_map[i->button].rel.value
-                  << " " << cfg.btn_map[i->button].rel.repeat << std::endl;
-
-      get_mouse_uinput()->send(EV_REL, cfg.btn_map[i->button].code, 
-                               static_cast<int>(cfg.btn_map[i->button].rel.value * button_state[i->button]));
-      i->next_time += cfg.btn_map[i->button].rel.repeat;
+      get_mouse_uinput()->send(EV_REL, cfg.btn_map[XBOX_BTN_UNKNOWN][i->button].code, 
+                               static_cast<int>(cfg.btn_map[XBOX_BTN_UNKNOWN][i->button].rel.value * button_state[i->button]));
+      i->next_time += cfg.btn_map[XBOX_BTN_UNKNOWN][i->button].rel.repeat;
       needs_syncronization = true;
     }
   }
@@ -678,7 +680,7 @@ uInput::send_button(int code, bool value)
     {
       button_state[code] = value;
 
-      const ButtonEvent& event = cfg.btn_map[code];
+      const ButtonEvent& event = cfg.btn_map[XBOX_BTN_UNKNOWN][code];
   
       send_key(event.device_id, event.code, value);
     }
@@ -801,7 +803,7 @@ uInput::add_axis(int code, int min, int max)
 void
 uInput::add_button(int code)
 {
-  const ButtonEvent& event = cfg.btn_map[code];
+  const ButtonEvent& event = cfg.btn_map[XBOX_BTN_UNKNOWN][code];
 
   if (event.type == EV_KEY)
     {

@@ -34,7 +34,7 @@ public:
   bool force_feedback;
   bool extra_devices;
 
-  ButtonEvent btn_map[XBOX_BTN_MAX];
+  ButtonEvent btn_map[XBOX_BTN_MAX][XBOX_BTN_MAX];
   AxisEvent   axis_map[XBOX_AXIS_MAX];
 
   uInputCfg();

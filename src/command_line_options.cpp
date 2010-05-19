@@ -367,7 +367,8 @@ CommandLineOptions::parse_args(int argc, char** argv)
 
           case OPTION_UI_CLEAR:
             std::fill_n(opts.uinput_config.axis_map, static_cast<int>(XBOX_AXIS_MAX), AxisEvent::invalid());
-            std::fill_n(opts.uinput_config.btn_map,  static_cast<int>(XBOX_BTN_MAX),  ButtonEvent::invalid());
+            for(int i = 0; i < XBOX_BTN_MAX; ++i)
+              std::fill_n(opts.uinput_config.btn_map[i],  static_cast<int>(XBOX_BTN_MAX),  ButtonEvent::invalid());
             break;
 
           case OPTION_UI_AXISMAP:
@@ -375,7 +376,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
             break;
 
           case OPTION_UI_BUTTONMAP:
-            arg2apply(opt.argument, boost::bind(&set_ui_button_map, opts.uinput_config.btn_map, _1));
+            arg2apply(opt.argument, boost::bind(&set_ui_button_map, opts.uinput_config.btn_map[XBOX_BTN_UNKNOWN], _1));
             break;
 
           case OPTION_ID:
