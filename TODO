@@ -19,6 +19,8 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
+* add --mouse that gives a usable mouse keyboard emulation
+
 * split xboxdrv-daemon into a separate .deb package
 
 * version number needs to be centralized, its currently in the man
@@ -39,8 +41,6 @@ Stuff to do before 0.5 release:
   http://ubuntuforums.org/showthread.php?p=7538167#post7538167
 
 * figure out a way to make userspace force feedback driver not become dead processes
-
-* add a --mimic-xpad option that behaves exactly like xpad
 
 * better keyboard emulation via analog sticks: axis must not be
   handled separately as this leads to issues with the diagonals (see
