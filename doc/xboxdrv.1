@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 2010-05-05 0.4.13 "User Commands"
+.TH "xboxdrv " 1 2010-05-05 0.4.14 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -384,6 +384,36 @@ The special 'void' event allows you to clear any
 existing bindings for a given button, which can be
 useful in cases when a game only supports a limited
 number of buttons.
+
+You can also prepend a device_id to the UIBUTTONSPEC
+which allows you to create multiple uinput devices. By
+default 'auto' is assumed as device_id which
+automatically try to do the right thing, sending
+keyboard events to a keyboard device and mouse events to
+a mouse device. Other possible values are 'mouse' and
+\&'keyboard'. A device_id of '0' refers to the first
+joystick device, values larger then 0 to the second,
+third, etc. 
+
+Note that the 'mouse' and 'keyboard' device_id names do
+not give you a mouse or keyboard device, these are just
+symbolic names for the devices into which xboxdrv will
+short events that look like a mouse or keyboard
+event. The final determination of which device gets
+handled as what will be done by the Kernel or Xorg
+depending on what events a device provides.
+
+An example configuration makeing use of device_id would look like this:
+
+.nf
+\*(T<xboxdrv \-s \e
+  \-\-ui\-clear \e
+  \-\-ui\-buttonmap A=0\-JS_0,B=0\-JS_1 \-\-ui\-axismap X2=1\-ABS_X,Y2=1\-ABS_Y
+  \-\-ui\-buttonmap X=1\-JS_0,Y=1\-JS_1 \-\-ui\-axismap X2=1\-ABS_X,Y2=1\-ABS_Y\*(T>
+.fi
+
+In this example the left stick creates a joystick device
+and the right stick creates a separate joystick device.
 
 See the section KEYBOARD EMULATION below on how to
 resolve issues with Xorg not detecting the virtual

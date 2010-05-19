@@ -1,3 +1,10 @@
+xboxdrv 0.4.14 - (??/Mai/2010)
+==============================
+
+* added device_id handling to --ui-buttonmap and --ui-axismap, allows
+  the creation of multiple input devices from a single controller
+
+
 xboxdrv 0.4.13 - (13/Mai/2010)
 ==============================
 

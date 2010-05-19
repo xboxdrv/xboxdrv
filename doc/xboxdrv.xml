@@ -11,8 +11,8 @@
       <application>xboxdrv</application>
     </refentrytitle>
     <manvolnum>1</manvolnum>
-    <refmiscinfo class="version">0.4.13</refmiscinfo>
-    <refmiscinfo class="author">0.4.13</refmiscinfo>
+    <refmiscinfo class="version">0.4.14</refmiscinfo>
+    <refmiscinfo class="author">0.4.14</refmiscinfo>
     <refmiscinfo class="manual">User Commands</refmiscinfo>
     <refmiscinfo class="source">xboxdrv</refmiscinfo>
   </refmeta>
@@ -515,6 +515,37 @@
               existing bindings for a given button, which can be
               useful in cases when a game only supports a limited
               number of buttons.
+            </para>
+            <para>
+              You can also prepend a device_id to the UIBUTTONSPEC
+              which allows you to create multiple uinput devices. By
+              default 'auto' is assumed as device_id which
+              automatically try to do the right thing, sending
+              keyboard events to a keyboard device and mouse events to
+              a mouse device. Other possible values are 'mouse' and
+              'keyboard'. A device_id of '0' refers to the first
+              joystick device, values larger then 0 to the second,
+              third, etc. 
+            </para>
+            <para>
+              Note that the 'mouse' and 'keyboard' device_id names do
+              not give you a mouse or keyboard device, these are just
+              symbolic names for the devices into which xboxdrv will
+              short events that look like a mouse or keyboard
+              event. The final determination of which device gets
+              handled as what will be done by the Kernel or Xorg
+              depending on what events a device provides.
+            </para>
+            <para>
+              An example configuration makeing use of device_id would look like this:
+            </para>
+            <programlisting><![CDATA[xboxdrv -s \
+  --ui-clear \
+  --ui-buttonmap A=0-JS_0,B=0-JS_1 --ui-axismap X2=1-ABS_X,Y2=1-ABS_Y
+  --ui-buttonmap X=1-JS_0,Y=1-JS_1 --ui-axismap X2=1-ABS_X,Y2=1-ABS_Y]]></programlisting>
+            <para>
+              In this example the left stick creates a joystick device
+              and the right stick creates a separate joystick device.
             </para>
             <para>
               See the section KEYBOARD EMULATION below on how to

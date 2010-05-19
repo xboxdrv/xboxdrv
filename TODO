@@ -3,7 +3,7 @@ Pre Release Testing:
 
 * check the version number
 
-VERSION="0.4.13"
+VERSION="0.4.14"
 TAG="v${VERSION}"
 git tag -s  "${TAG}" -m "xboxdrv ${TAG}" 
 

@@ -11,8 +11,8 @@
       <application>xboxdrv-daemon</application>
     </refentrytitle>
     <manvolnum>1</manvolnum>
-    <refmiscinfo class="version">0.4.13</refmiscinfo>
-    <refmiscinfo class="author">0.4.13</refmiscinfo>
+    <refmiscinfo class="version">0.4.14</refmiscinfo>
+    <refmiscinfo class="author">0.4.14</refmiscinfo>
     <refmiscinfo class="manual">User Commands</refmiscinfo>
     <refmiscinfo class="source">xboxdrv-daemon</refmiscinfo>
   </refmeta>
