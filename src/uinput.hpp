@@ -27,32 +27,13 @@
 #include "button_event.hpp"
 #include "evdev_helper.hpp"
 #include "linux_uinput.hpp"
+#include "uinput_cfg.hpp"
 #include "xboxdrv.hpp"
 #include "xpad_device.hpp"
 
 class Xbox360Msg;
 class Xbox360GuitarMsg;
 class XboxMsg;
-  
-class uInputCfg
-{
-public:
-  std::string device_name;
-  bool trigger_as_button;
-  bool dpad_as_button;
-  bool trigger_as_zaxis;
-  bool dpad_only;
-  bool force_feedback;
-  bool extra_devices;
-
-  ButtonEvent btn_map[XBOX_BTN_MAX];
-  AxisEvent   axis_map[XBOX_AXIS_MAX];
-
-  uInputCfg();
-
-  /** Sets a button/axis mapping that is equal to the xpad kernel driver */
-  void mimic_xpad();
-};
   
 class uInput
 {
