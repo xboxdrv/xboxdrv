@@ -375,7 +375,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
         break;
 
       case OPTION_UI_BUTTONMAP:
-        arg2apply(opt.argument, boost::bind(&set_ui_button_map, opts.uinput_config.btn_map, _1));
+        arg2apply(opt.argument, boost::bind(&set_ui_button_map, boost::ref(opts.uinput_config.btn_map), _1));
         break;
 
       case OPTION_ID:
