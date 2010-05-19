@@ -19,77 +19,20 @@
 #ifndef HEADER_UINPUT_HPP
 #define HEADER_UINPUT_HPP
 
-#include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
 #include <vector>
 #include <memory>
 #include <stdexcept>
 
-#include "xpad_device.hpp"
-#include "xboxdrv.hpp"
-#include "linux_uinput.hpp"
+#include "axis_event.hpp"
+#include "button_event.hpp"
 #include "evdev_helper.hpp"
+#include "linux_uinput.hpp"
+#include "xboxdrv.hpp"
+#include "xpad_device.hpp"
 
 class Xbox360Msg;
 class Xbox360GuitarMsg;
 class XboxMsg;
-
-struct ButtonEvent
-{
-  static ButtonEvent invalid() { return create(-1, -1); }
-  static ButtonEvent create(int type, int code);
-  static ButtonEvent from_string(const std::string& str);
-
-  /** EV_KEY, EV_ABS, EV_REL */
-  int type;
-
-  /** BTN_A, REL_X, ABS_X, ... */
-  int code;
-
-  union {
-    struct {
-      int  repeat;
-      int  value;
-    } rel;
-
-    struct {
-      int value;
-    } abs;
-
-    struct {
-    } key;
-  };
-};
-
-struct AxisEvent
-{
-  static AxisEvent invalid() { return create(-1, -1); }
-  static AxisEvent create(int type, int code, int fuzz = 0, int flat = 0);
-  static AxisEvent from_string(const std::string& str);
-
-  /** EV_KEY, EV_ABS, EV_REL */
-  int type;
-
-  /** BTN_A, REL_X, ABS_X, ... */
-  int code;
-
-  union {
-    struct {
-      int   repeat;
-      float value;
-    } rel;
-
-    struct {
-      int fuzz;
-      int flat;
-    } abs;
-
-    struct {
-      int secondary_code;
-      int threshold;
-    } key;
-  };
-};
   
 class uInputCfg
 {

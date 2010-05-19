@@ -16,11 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOX360_HPP
-#define HEADER_XBOX360_HPP
+#ifndef HEADER_XBOXDRV_XBOXDRV_HPP
+#define HEADER_XBOXDRV_XBOXDRV_HPP
 
 #include "xboxmsg.hpp"
 
+struct XPadDevice;
 class CommandLineOptions;
 class uInput;
 class XboxGenericController;
