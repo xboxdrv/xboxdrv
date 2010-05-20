@@ -868,8 +868,8 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
       you the <filename>/dev/input/jsX</filename> device:
     </para>
 
-    <programlisting><![CDATA[% modprobe uinput
-% modprobe joydev]]></programlisting>
+    <programlisting><![CDATA[$ modprobe uinput
+$ modprobe joydev]]></programlisting>
 
     <para>
       You also have to make sure that you have access rights to
@@ -1141,16 +1141,16 @@ joysticktype = ch]]></programlisting>
     </para>
 
     <programlisting><![CDATA[
-% SDL_LINUX_JOYSTICK="'Xbox Gamepad (userspace driver)' 6 1 0"
-% export SDL_LINUX_JOYSTICK]]></programlisting>
+$ SDL_LINUX_JOYSTICK="'Xbox Gamepad (userspace driver)' 6 1 0"
+$ export SDL_LINUX_JOYSTICK]]></programlisting>
 
     <para>
       You might also need in addition use this (depends on the way SDL was compiled):
     </para>
 
     <programlisting><![CDATA[
-% SDL_JOYSTICK_DEVICE="/dev/input/js0"
-% export SDL_JOYSTICK_DEVICE]]></programlisting>
+$ SDL_JOYSTICK_DEVICE="/dev/input/js0"
+$ export SDL_JOYSTICK_DEVICE]]></programlisting>
 
     <para>
       This will let the DPad act as Hat in SDL based application. For
@@ -1203,7 +1203,7 @@ joysticktype = ch]]></programlisting>
         and the idProduct numbers, which you can find out via:
       </para>
 
-      <programlisting><![CDATA[% lsusb -v]]></programlisting>
+      <programlisting><![CDATA[$ lsusb -v]]></programlisting>
 
       <para>Once done you can try to add them to this array in <filename>xpad_device.cpp</filename>:</para>
 
@@ -1235,7 +1235,7 @@ joysticktype = ch]]></programlisting>
         of:
       </para>
 
-      <programlisting><![CDATA[% lsusb -v]]></programlisting>
+      <programlisting><![CDATA[$ lsusb -v]]></programlisting>
 
       <para>Along with all the "Unknown data" lines you get. </para>
     </refsect2>
@@ -1343,8 +1343,8 @@ joysticktype = ch]]></programlisting>
         Second workaround works with xinput:
       </para>
 
-      <programlisting><![CDATA[% xinput list
- % xinput set-int-prop $DEVICEID 'Device Enabled' 32 0]]></programlisting>
+      <programlisting><![CDATA[$ xinput list
+$ xinput set-int-prop $DEVICEID 'Device Enabled' 32 0]]></programlisting>
     </refsect2>
 
     <refsect2>
