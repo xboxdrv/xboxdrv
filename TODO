@@ -21,6 +21,8 @@ Stuff to do before 0.5 release:
 
 * split xboxdrv-daemon into a separate .deb package
 
+* docu on how to write a wrapper script needs to be moved to xboxdrv manpage
+
 * version number needs to be centralized, its currently in the man
   pages, in xboxdrv, in the TODO and in xboxdrv-daemon
 
