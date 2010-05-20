@@ -306,14 +306,14 @@
             </para>
 
             <para>
-              <command>% xboxdrv --deadzone 4000</command>
+              <command>$ xboxdrv --deadzone 4000</command>
             </para>
 
             <para>A value of 4000 works quite well for most games.</para>
             
             <para>You can also give the deadzone in percentage:</para>
             
-            <para><command>% xboxdrv --deadzone 15%</command></para>
+            <para><command>$ xboxdrv --deadzone 15%</command></para>
           </listitem>
         </varlistentry>
         
@@ -324,7 +324,7 @@
               The left and right trigger have a separate deadzone value which can be
               specified with:
             </para>
-            <programlisting>% xboxdrv --deadzone-trigger 15%  </programlisting>
+            <programlisting>$ xboxdrv --deadzone-trigger 15%  </programlisting>
           </listitem>
         </varlistentry>
 
@@ -368,11 +368,11 @@
               to swap button A and B start with:
             </para>
 
-            <para><command>% xboxdrv --buttonmap A=B,B=A</command></para>
+            <para><command>$ xboxdrv --buttonmap A=B,B=A</command></para>
 
             <para>If you want all face buttons send out A button events:</para>
 
-            <para><command>% xboxdrv --buttonmap B=A,X=A,Y=A</command></para>
+            <para><command>$ xboxdrv --buttonmap B=A,X=A,Y=A</command></para>
 
             <para>Possible button names are (aliases are in parenthesis):</para>
 
@@ -445,13 +445,13 @@
               should be inverted. So if you want to invert the y1 axis start with:
             </para>
 
-            <programlisting>% xboxdrv --axismap -Y1=Y1</programlisting>
+            <programlisting>$ xboxdrv --axismap -Y1=Y1</programlisting>
 
             <para>
               If you want to swap the left and right stick start with:
             </para>
 
-            <programlisting>% xboxdrv --axismap X2=X1,Y2=Y1,X1=X2,Y1=Y2</programlisting>
+            <programlisting>$ xboxdrv --axismap X2=X1,Y2=Y1,X1=X2,Y1=Y2</programlisting>
 
             <para>
               Possible axis names are: x1, y1, x2, y2, lt, rt
@@ -496,7 +496,7 @@
               etc. macros the special name <keysym>JS_$NUM</keysym>, which sets the given button to
               the $NUMS joystick button, i.e.:
             </para>
-            <programlisting>% xboxdrv --ui-clear --ui-buttonmap A=JS_0,B=JS_1</programlisting>
+            <programlisting>$ xboxdrv --ui-clear --ui-buttonmap A=JS_0,B=JS_1</programlisting>
             <para>
               Note that this will only work if no other joystick
               button ids are in the way.
@@ -505,7 +505,7 @@
               You can also map a button to a <keysym>REL_</keysym>
               event. In that case you can supply additional paramaters in the form of:
             </para>
-            <programlisting>% xboxdrv --ui-buttonmap X=REL_???:VALUE:REPEAT</programlisting>
+            <programlisting>$ xboxdrv --ui-buttonmap X=REL_???:VALUE:REPEAT</programlisting>
             <para>
               <replaceable class="parameter">VALUE</replaceable> gives the value of the event (default: 10)
             </para>
@@ -583,7 +583,7 @@
               kernel for axes. The events that are available are the
               same as for <option>--ui-buttonmap</option>.
             </para>
-            <programlisting>% xboxdrv --ui-axismap X1=REL_???:VALUE:REPEAT</programlisting>
+            <programlisting>$ xboxdrv --ui-axismap X1=REL_???:VALUE:REPEAT</programlisting>
             <para>
               <replaceable class="parameter">VALUE</replaceable> gives the maximum value of the event (default: 10)
             </para>
@@ -593,7 +593,7 @@
               is fired again (default: 5)
             </para>
             
-            <programlisting>% xboxdrv --ui-axismap X1=KEY_UP:KEY_DOWN:THRESHOLD</programlisting>
+            <programlisting>$ xboxdrv --ui-axismap X1=KEY_UP:KEY_DOWN:THRESHOLD</programlisting>
             <para>
               <replaceable class="parameter">KEY_UP</replaceable> gives the keycode to be send when the axis is moved up
             </para>
@@ -624,7 +624,7 @@
             <para>
               Lets the controller act as a mouse. It is indendical to:
             </para>
-            <programlisting><![CDATA[% xboxdrv \
+            <programlisting><![CDATA[$ xboxdrv \
   --dpad-as-button
   --deadzone 4000
   --trigger-as-zaxis
@@ -713,7 +713,7 @@
           <listitem>
             <para>The sensitive of an axis can be adjusted via --axis-sensitivty:</para>
 
-            <para><command>% xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0</command></para>
+            <para><command>$ xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0</command></para>
 
             <para>A value of 0 gives you the default linear sensitivity, values larger
               then 0 will give you heigher sensitivity, while values smaller then 0
@@ -745,7 +745,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
               the <option>--axismap</option> function to reverse it.
             </para>
 
-            <para><command>% xboxdrv --relative-axis y2=64000 --axismap -y2=y2</command></para>
+            <para><command>$ xboxdrv --relative-axis y2=64000 --axismap -y2=y2</command></para>
           </listitem>
         </varlistentry>
 
@@ -755,12 +755,12 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
             <para>Autofire mapping allows you to let a button automatically fire with a
               given frequency in miliseconds:</para>
             
-            <para><command>% xboxdrv --autofire A=250</command></para>
+            <para><command>$ xboxdrv --autofire A=250</command></para>
 
             <para>Combining <option>--autofire</option> with button map allows you to have one button act
               as autofire while another one, emitting the same signal, acts normally.</para>
 
-            <para><command>% xboxdrv --autofire B=250 --buttonmap B=A</command></para>
+            <para><command>$ xboxdrv --autofire B=250 --buttonmap B=A</command></para>
           </listitem>
         </varlistentry>
 
@@ -772,7 +772,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
               centered properly you can fix that via the calibration options:
             </para>
 
-            <para><command>% xboxdrv --calibration X2=-32768:0:32767</command></para>
+            <para><command>$ xboxdrv --calibration X2=-32768:0:32767</command></para>
 
             <para>X2 is the axis name and the three values that follow are min, center
               and max. Simply insert the values that jstest reports when your axis
@@ -793,7 +793,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
           <listitem>
             <para>The sensitive of an axis can be adjusted via --axis-sensitivty:</para>
 
-            <para><command>% xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0</command></para>
+            <para><command>$ xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0</command></para>
 
             <para>A value of 0 gives you the default linear sensitivity, values larger
               then 0 will give you heigher sensitivity, while values smaller then 0
@@ -838,7 +838,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
           <listitem>
             <para>You can change the rumble strength via:</para>
 
-            <programlisting>% xboxdrv --rumble-gain 50%</programlisting>
+            <programlisting>$ xboxdrv --rumble-gain 50%</programlisting>
 
             <para>Values larger then 100% are possible as well.</para>
           </listitem>
@@ -853,7 +853,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
       Plug in your Xbox360 gamepad and then unload the xpad driver via:
     </para>
 
-    <programlisting>% rmmod xpad</programlisting>
+    <programlisting>$ rmmod xpad</programlisting>
 
     <para>
       If you want to permanently unload it add the following line to
@@ -882,14 +882,14 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
       start the userspace driver with:
     </para>
 
-    <programlisting>% xboxdrv</programlisting>
+    <programlisting>$ xboxdrv</programlisting>
 
     <para>
       Or in case you don't have the neccesary rights (being in group root
       should often be enough) start the driver as root via:
     </para>
 
-    <programlisting>% sudo xboxdrv</programlisting>
+    <programlisting>$ sudo xboxdrv</programlisting>
 
     <para>
       This will create /dev/input/js0 and allow you to access the gamepad
@@ -898,7 +898,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
       of the xboxdrv driver and append the -i argument like this:
     </para>
 
-    <programlisting>% xboxdrv -i 1</programlisting>
+    <programlisting>$ xboxdrv -i 1</programlisting>
 
     <para>
       If you have multiple wireless controller you need to start multiple
@@ -906,7 +906,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
       this:
     </para>
 
-    <programlisting>% xboxdrv --wid 1</programlisting>
+    <programlisting>$ xboxdrv --wid 1</programlisting>
 
     <para>
       You have to sync the wireless controller as usual.
@@ -915,12 +915,12 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
     <para>This will then use the second detected controller, see to see which id
       your controller has:</para>
 
-    <programlisting>% xboxdrv --list-controller</programlisting>
+    <programlisting>$ xboxdrv --list-controller</programlisting>
 
     <para>When everything works as expected it is recomment that you run xboxdrv
       with the silent option:</para>
 
-    <programlisting>% xboxdrv --silent</programlisting>
+    <programlisting>$ xboxdrv --silent</programlisting>
 
     <para>This will suppress the logging of events to the console and will
       gurantee that no uneccesarry CPU cycles are wasted.</para>
@@ -928,13 +928,13 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
     <para>If you want to abuse the led or rumble of the gamepad for notification
       in scripts you can do see via:</para>
 
-    <programlisting>% xboxdrv --led 10 --rumble 30,30 --quit</programlisting>
+    <programlisting>$ xboxdrv --led 10 --rumble 30,30 --quit</programlisting>
 
     <para>This will cause a mild rumble and the led to rotate, you can stop it
       again via, which also happens to be the command you can use to stop
       your Xbox360 controller from blinking:</para>
 
-    <programlisting>% xboxdrv ---led 0 --rumble 0,0 --quit</programlisting>
+    <programlisting>$ xboxdrv ---led 0 --rumble 0,0 --quit</programlisting>
 
     <para>For rumble to work make sure you have connected the
       controller to a USB port that has enough power, an unpowered USB
@@ -993,7 +993,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
         Currently available via:
       </para>
 
-      <programlisting>% svn co svn://svn.berlios.de/windstille/trunk/sdl-jstest</programlisting>
+      <programlisting>$ svn co svn://svn.berlios.de/windstille/trunk/sdl-jstest</programlisting>
     </refsect2>
 
     <refsect2>
@@ -1007,7 +1007,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
         xev is part of every Linux distribution, on Ubuntu its available via:
       </para>
 
-      <programlisting>% apt-get install x11-utils</programlisting>
+      <programlisting>$ apt-get install x11-utils</programlisting>
     </refsect2>
 
     <refsect2>
@@ -1044,7 +1044,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
         keyboard, like Flash games or games that don't support a joystick, you
         have to adjust the keybindings to fit the game:</para>
 
-      <programlisting><![CDATA[% xboxdrv \
+      <programlisting><![CDATA[$ xboxdrv \
   --ui-clear \
   --dpad-as-button \
   --ui-buttonmap a=XK_a,b=XK_b,x=XK_x,y=XK_y \
@@ -1060,7 +1060,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
         Start <command>xboxdrv</command> with:
       </para>
 
-      <programlisting><![CDATA[% xboxdrv --trigger-as-button -s ]]></programlisting>
+      <programlisting><![CDATA[$ xboxdrv --trigger-as-button -s ]]></programlisting>
 
       <para>The triggers are not regonized in these games when they
         are analog, so we have to handle them as buttons.</para>
@@ -1075,7 +1075,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
         attacks). Instead of using the native button names, the
         1,2,3,... aliases are used, which makes things easier to edit:</para>
 
-      <programlisting><![CDATA[% xboxdrv --dpad-only \
+      <programlisting><![CDATA[$ xboxdrv --dpad-only \
   --trigger-as-button  \
   --buttonmap lb=1,x=2,y=3,lt=4,a=5,b=6,rb=1,rb=2,rb=3,rt=4,rt=5,rt=6]]></programlisting>
     </refsect2>
@@ -1089,7 +1089,7 @@ joysticktype = ch]]></programlisting>
 
       <para>Start xboxdrv with:</para>
 
-      <programlisting><![CDATA[% xboxdrv -s \
+      <programlisting><![CDATA[$ xboxdrv -s \
   --trigger-as-zaxis --square-axis \
   --relative-axis y2=64000 --axismap -y2=x2,x2=y2]]></programlisting>
 
@@ -1106,7 +1106,7 @@ joysticktype = ch]]></programlisting>
         you have to do tweaking yourself.
       </para>
 
-      <programlisting><![CDATA[% xboxdrv \
+      <programlisting><![CDATA[$ xboxdrv \
   --ui-axismap x2=REL_X:10,y2=REL_Y:-10,x1=KEY_LEFT:KEY_RIGHT,y1=KEY_UP:KEY_DOWN \
   --ui-buttonmap a=BTN_RIGHT,b=BTN_LEFT,x=BTN_EXTRA \
   --ui-buttonmap rb=KEY_5,lb=KEY_6,lt=BTN_LEFT,rt=BTN_RIGHT \
@@ -1122,7 +1122,7 @@ joysticktype = ch]]></programlisting>
         configuration, you have to do tweaking yourself.
       </para>
 
-      <programlisting><![CDATA[% xboxdrv \
+      <programlisting><![CDATA[$ xboxdrv \
   --ui-axismap x2=REL_X:10,y2=REL_Y:-10,x1=KEY_A:KEY_D,y1=KEY_W:KEY_S \
   --ui-buttonmap a=KEY_LEFTSHIFT,b=BTN_C,x=BTN_EXTRA,y=KEY_C \
   --ui-buttonmap lb=BTN_RIGHT,rb=KEY_SPACE \
@@ -1251,7 +1251,7 @@ joysticktype = ch]]></programlisting>
         working correctly you can pass the -v option:
       </para>
 
-      <programlisting><![CDATA[% xboxdrv -v]]></programlisting>
+      <programlisting><![CDATA[$ xboxdrv -v]]></programlisting>
 
       <para>
         This will cause the driver to output all the events that it received
@@ -1271,7 +1271,7 @@ joysticktype = ch]]></programlisting>
         itself works with:
       </para>
 
-      <programlisting><![CDATA[% xboxdrv --no-uinput -v]]></programlisting>
+      <programlisting><![CDATA[$ xboxdrv --no-uinput -v]]></programlisting>
 
     </refsect2>
     
@@ -1330,11 +1330,11 @@ joysticktype = ch]]></programlisting>
         Get the device id from hal:
       </para>
 
-      <programlisting>% hal-find-by-property --key 'info.product' --string 'Xbox Gamepad (userspace driver)'</programlisting>
+      <programlisting>$ hal-find-by-property --key 'info.product' --string 'Xbox Gamepad (userspace driver)'</programlisting>
 
       <para>Then remove the device from hal with:</para>
 
-      <programlisting>% hal-device -r $DEVICEID</programlisting>
+      <programlisting>$ hal-device -r $DEVICEID</programlisting>
     </refsect2>
 
     <refsect2>
@@ -1402,7 +1402,7 @@ EndSection]]></programlisting>
       device js0 and replace it with a symbolic link js1 via:
     </para>
 
-    <programlisting>% sudo ln -sf /dev/input/js1 /dev/input/js0</programlisting>
+    <programlisting>$ sudo ln -sf /dev/input/js1 /dev/input/js0</programlisting>
 
     <para>
       This workaround will only last till the next reboot, since the device

@@ -79,8 +79,8 @@ automatically.
 .TP 
 \*(T<\fB\-i\fR\*(T>, \*(T<\fB\-\-id\fR\*(T> \fIN\fR
 Use controller with id N (default: 0),
-use \*(T<\fB\-\-list\-controller\fR\*(T> to obtain a list of
-available controller.
+use \*(T<\fB\-\-list\-controller\fR\*(T> to obtain a list
+of available controller.
 .TP 
 \*(T<\fB\-w\fR\*(T>, \*(T<\fB\-\-wid\fR\*(T> \fIN\fR
 Use wireless controller with wid N (default: 0).
@@ -114,6 +114,8 @@ xbox360-guitar
 .TP 
 \*(T<\fB\-l\fR\*(T>, \*(T<\fB\-\-led\fR\*(T> \fINUM\fR
 Set LED status. Possible values for \fINUM\fR are:
+
+\fBLED Status Codes\fR
 .TS
 r l.
 T{
@@ -257,6 +259,8 @@ If you want all face buttons send out A button events:
 \fB% xboxdrv --buttonmap B=A,X=A,Y=A\fR
 
 Possible button names are (aliases are in parenthesis):
+
+\fBButton Names\fR
 .TS
 allbox ;
 l l.
@@ -485,6 +489,10 @@ Lets the controller act as a mouse. It is indendical to:
 You can customize is by the usal means, just make sure
 that \*(T<\fB\-\-mouse\fR\*(T> comes before you
 customization options on the command line.
+
+Note that if you have your mouse buttons switched you must
+adjust the above to match your mouse configuration or the
+button events will come out wrong.
 .TP 
 \*(T<\fB\-\-name DEVNAME\fR\*(T>
 Changes the descriptive name the device will have
@@ -634,18 +642,18 @@ Plug in your Xbox360 gamepad and then unload the xpad driver via:
 .nf
 \*(T<% rmmod xpad\*(T>
 .fi
-
+.PP
 If you want to permanently unload it add the following line to
 \*(T<\fI/etc/modprobe.d/blacklist.conf\fR\*(T>:
-
+.PP
 .nf
 \*(T<blacklist xpad\*(T>
 .fi
-
+.PP
 Next you have to load the uinput kernel module which allows userspace
 programms to create input devices and the joydev module which gives
 you the \*(T<\fI/dev/input/jsX\fR\*(T> device:
-
+.PP
 .nf
 \*(T<% modprobe uinput
 % modprobe joydev\*(T>
@@ -659,14 +667,14 @@ Once ensured that xpad is out of the way and everything is in place
 start the userspace driver with:
 .PP
 .nf
-\*(T<% ./xboxdrv\*(T>
+\*(T<% xboxdrv\*(T>
 .fi
 .PP
 Or in case you don't have the neccesary rights (being in group root
 should often be enough) start the driver as root via:
 .PP
 .nf
-\*(T<% sudo ./xboxdrv\*(T>
+\*(T<% sudo xboxdrv\*(T>
 .fi
 .PP
 This will create /dev/input/js0 and allow you to access the gamepad
@@ -675,7 +683,7 @@ If you have multiple wired controllers you need to start multiple instances
 of the xboxdrv driver and append the -i argument like this:
 .PP
 .nf
-\*(T<% ./xboxdrv \-i 1\*(T>
+\*(T<% xboxdrv \-i 1\*(T>
 .fi
 .PP
 If you have multiple wireless controller you need to start multiple
@@ -683,7 +691,7 @@ instances of the xboxdrv driver and append the --wid argument like
 this:
 .PP
 .nf
-\*(T<% ./xboxdrv \-\-wid 1\*(T>
+\*(T<% xboxdrv \-\-wid 1\*(T>
 .fi
 .PP
 You have to sync the wireless controller as usual.
@@ -692,14 +700,14 @@ This will then use the second detected controller, see to see which id
 your controller has:
 .PP
 .nf
-\*(T<% ./xboxdrv \-\-list\-controller\*(T>
+\*(T<% xboxdrv \-\-list\-controller\*(T>
 .fi
 .PP
 When everything works as expected it is recomment that you run xboxdrv
 with the silent option:
 .PP
 .nf
-\*(T<% ./xboxdrv \-\-silent\*(T>
+\*(T<% xboxdrv \-\-silent\*(T>
 .fi
 .PP
 This will suppress the logging of events to the console and will
@@ -709,7 +717,7 @@ If you want to abuse the led or rumble of the gamepad for notification
 in scripts you can do see via:
 .PP
 .nf
-\*(T<% ./xboxdrv \-\-led 10 \-\-rumble 30,30 \-\-quit\*(T>
+\*(T<% xboxdrv \-\-led 10 \-\-rumble 30,30 \-\-quit\*(T>
 .fi
 .PP
 This will cause a mild rumble and the led to rotate, you can stop it
@@ -717,7 +725,7 @@ again via, which also happens to be the command you can use to stop
 your Xbox360 controller from blinking:
 .PP
 .nf
-\*(T<% ./xboxdrv \-\-\-led 0 \-\-rumble 0,0 \-\-quit\*(T>
+\*(T<% xboxdrv \-\-\-led 0 \-\-rumble 0,0 \-\-quit\*(T>
 .fi
 .PP
 For rumble to work make sure you have connected the
@@ -775,17 +783,13 @@ If the tools provide no output at all, this might not be due to a
 wrong configuration, but due to Xorg grabbing your event device and
 locking it, see Xorg section for possible fixes.
 .SH EXAMPLES
-.SS 
-Note that if you have your mouse buttons switched you must
-adjust the above to match your mouse configuration or the
-button events will come out wrong.
 .SS "KEYBOARD EMULATION"
 The following configuration works for games that are played with
 keyboard, like Flash games or games that don't support a joystick, you
 have to adjust the keybindings to fit the game:
 .PP
 .nf
-\*(T<% ./xboxdrv \e
+\*(T<% xboxdrv \e
   \-\-ui\-clear \e
   \-\-dpad\-as\-button \e
   \-\-ui\-buttonmap a=XK_a,b=XK_b,x=XK_x,y=XK_y \e
@@ -837,7 +841,7 @@ incomplete example, not a perfectly playable configuration,
 you have to do tweaking yourself.
 .PP
 .nf
-\*(T<% ./xboxdrv \e
+\*(T<% xboxdrv \e
   \-\-ui\-axismap x2=REL_X:10,y2=REL_Y:\-10,x1=KEY_LEFT:KEY_RIGHT,y1=KEY_UP:KEY_DOWN \e
   \-\-ui\-buttonmap a=BTN_RIGHT,b=BTN_LEFT,x=BTN_EXTRA \e
   \-\-ui\-buttonmap rb=KEY_5,lb=KEY_6,lt=BTN_LEFT,rt=BTN_RIGHT \e
@@ -849,7 +853,7 @@ Note: This is just an incomplete example, not a perfectly playable
 configuration, you have to do tweaking yourself.
 .PP
 .nf
-\*(T<% ./xboxdrv \e
+\*(T<% xboxdrv \e
   \-\-ui\-axismap x2=REL_X:10,y2=REL_Y:\-10,x1=KEY_A:KEY_D,y1=KEY_W:KEY_S \e
   \-\-ui\-buttonmap a=KEY_LEFTSHIFT,b=BTN_C,x=BTN_EXTRA,y=KEY_C \e
   \-\-ui\-buttonmap lb=BTN_RIGHT,rb=KEY_SPACE \e
@@ -875,12 +879,13 @@ You might also need in addition use this (depends on the way SDL was compiled):
 % SDL_JOYSTICK_DEVICE="/dev/input/js0"
 % export SDL_JOYSTICK_DEVICE\*(T>
 .fi
-
-This will let the DPad act as Hat in SDL based application. For many
-games the driver will work without this, but especially in Dosbox this
-variable is very important.
-If you use options in xboxdrv that change the number of axis you have
-to adjust the variable accordingly, see:
+.PP
+This will let the DPad act as Hat in SDL based application. For
+many games the driver will work without this, but especially in
+Dosbox this variable is very important.
+.PP
+If you use options in xboxdrv that change the number of axis you
+have to adjust the variable accordingly, see:
 .TP 0.2i
 \(bu
 \(laftp://ptah.lnf.kth.se/pub/misc/sdl-env-vars\(ra
@@ -904,14 +909,12 @@ and the idProduct numbers, which you can find out via:
 \*(T<% lsusb \-v\*(T>
 .fi
 .PP
-Once done you can try to add them to the array:
+Once done you can try to add them to this array in \*(T<\fIxpad_device.cpp\fR\*(T>:
 .PP
 .nf
 \*(T<XPadDevice xpad_devices[] = { ... }\*(T>
 .fi
-
-in \*(T<\fIxpad_device.cpp\fR\*(T>.
-
+.PP
 If you have success with that, send a patch
 to <\*(T<grumbel@gmx.de\*(T>>, if not, contact me too, I
 might be able to provide additional help.
@@ -943,7 +946,7 @@ tools/ subdirectory). Or in case you want just see if your driver is
 working correctly you can pass the -v option:
 .PP
 .nf
-\*(T<% ./xboxdrv \-v\*(T>
+\*(T<% xboxdrv \-v\*(T>
 .fi
 .PP
 This will cause the driver to output all the events that it received
@@ -957,7 +960,7 @@ Before reporting this as a bug make sure you have tested if the driver
 itself works with:
 .PP
 .nf
-\*(T<% ./xboxdrv \-\-no\-uinput \-v\*(T>
+\*(T<% xboxdrv \-\-no\-uinput \-v\*(T>
 .fi
 .SS "THE WIRELESS CONTROLLER DOESN'T WORK"
 You have to sync the controller befor it can be used, restart of the
