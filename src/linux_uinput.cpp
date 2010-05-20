@@ -44,7 +44,8 @@ LinuxUinput::LinuxUinput(const std::string& name_, uint16_t vendor_, uint16_t pr
   led_bit(false),
   ff_bit(false),
   ff_handler(0),
-  ff_callback()
+  ff_callback(),
+  needs_sync(true)
 {
   std::fill_n(abs_lst, ABS_CNT, false);
   std::fill_n(rel_lst, REL_CNT, false);
@@ -207,6 +208,8 @@ LinuxUinput::finish()
 void
 LinuxUinput::send(uint16_t type, uint16_t code, int32_t value)
 {
+  needs_sync = true;
+
   struct input_event ev;      
   memset(&ev, 0, sizeof(ev));
 
@@ -221,9 +224,19 @@ LinuxUinput::send(uint16_t type, uint16_t code, int32_t value)
   if (write(fd, &ev, sizeof(ev)) < 0)
     throw std::runtime_error(std::string("uinput:send_button: ") + strerror(errno)); 
 }
+
+void
+LinuxUinput::sync()
+{
+  if (needs_sync)
+  {
+    send(EV_SYN, SYN_REPORT, 0);
+    needs_sync = false;
+  }
+}
 
 void
-LinuxUinput::update(int msec_delta)
+LinuxUinput::update_force_feedback(int msec_delta)
 {
   if (ff_bit)
   {

@@ -199,9 +199,9 @@ uInput::create_uinput_device(int device_id)
     {
       dev_name << " - Keyboard Emulation";
     }
-    else if (dev_name > 0)
+    else if (device_id > 0)
     {
-      dev_name << " - Joystick " << device_id+1;
+      dev_name << " - 2" << device_id+1;
     }
 
     boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(dev_name.str(), m_dev.idVendor, m_dev.idProduct));
@@ -641,8 +641,6 @@ uInput::send(Xbox360GuitarMsg& msg)
 void
 uInput::update(int msec_delta)
 {
-  bool needs_syncronization = false;
-
   // Relative Motion emulation for axis
   for(std::vector<RelAxisState>::iterator i = rel_axis.begin(); i != rel_axis.end(); ++i)
   {
@@ -650,10 +648,17 @@ uInput::update(int msec_delta)
 
     if (i->time >= i->next_time)
     {
-      get_mouse_uinput()->send(EV_REL, cfg.axis_map[i->axis].code,
-                               static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 32767);
+      if (i->axis == XBOX_AXIS_TRIGGER)
+      { // dirty little hack, as we can't get the axis range easily by other means
+        get_mouse_uinput()->send(EV_REL, cfg.axis_map[i->axis].code,
+                                 static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 255);
+      }
+      else
+      {
+        get_mouse_uinput()->send(EV_REL, cfg.axis_map[i->axis].code,
+                                 static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 32767);
+      }
       i->next_time += cfg.axis_map[i->axis].rel.repeat;
-      needs_syncronization = true;
     }
   }
 
@@ -667,17 +672,15 @@ uInput::update(int msec_delta)
       get_mouse_uinput()->send(EV_REL, cfg.btn_map.lookup(i->button).code, 
                                static_cast<int>(cfg.btn_map.lookup(i->button).rel.value * button_state[i->button]));
       i->next_time += cfg.btn_map.lookup(i->button).rel.repeat;
-      needs_syncronization = true;
     }
   }
 
-  if (needs_syncronization)
-  {
-    get_mouse_uinput()->send(EV_SYN, SYN_REPORT, 0);
-  }
+  get_force_feedback_uinput()->update_force_feedback(msec_delta);
 
-  // Update forcefeedback 
-  get_force_feedback_uinput()->update(msec_delta);
+  for(uInputDevs::iterator i = uinput_devs.begin(); i != uinput_devs.end(); ++i)
+  {
+    i->second->sync();
+  }
 }
 
 void
@@ -744,9 +747,6 @@ uInput::send_key(int device_id, int ev_code, bool value)
   else
   {
     get_uinput(device_id)->send(EV_KEY, ev_code, value);
-
-    // FIXME: should sync only after all buttons are handled
-    get_uinput(device_id)->send(EV_SYN, SYN_REPORT, 0); 
   }
 }
 

@@ -49,6 +49,8 @@ private:
   ForceFeedbackHandler* ff_handler;
   boost::function<void (uint8_t, uint8_t)> ff_callback;
 
+  bool needs_sync;
+
 public:
   LinuxUinput(const std::string& name, uint16_t vendor, uint16_t product);
   ~LinuxUinput();
@@ -67,13 +69,16 @@ public:
 
   void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
 
-  /** Finish*/
+  /** Finalized the device creation */
   void finish();
   /*@}*/
 
   void send(uint16_t type, uint16_t code, int32_t value);
 
-  void update(int msec_delta);
+  /** Sends out a sync event if there is a need for it. */
+  void sync();
+
+  void update_force_feedback(int msec_delta);
 
 private:
   LinuxUinput (const LinuxUinput&);
