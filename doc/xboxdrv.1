@@ -655,8 +655,8 @@ programms to create input devices and the joydev module which gives
 you the \*(T<\fI/dev/input/jsX\fR\*(T> device:
 .PP
 .nf
-\*(T<% modprobe uinput
-% modprobe joydev\*(T>
+\*(T<$ modprobe uinput
+$ modprobe joydev\*(T>
 .fi
 .PP
 You also have to make sure that you have access rights to
@@ -868,16 +868,16 @@ you have to set an environment variable:
 .PP
 .nf
 \*(T<
-% SDL_LINUX_JOYSTICK="'Xbox Gamepad (userspace driver)' 6 1 0"
-% export SDL_LINUX_JOYSTICK\*(T>
+$ SDL_LINUX_JOYSTICK="'Xbox Gamepad (userspace driver)' 6 1 0"
+$ export SDL_LINUX_JOYSTICK\*(T>
 .fi
 .PP
 You might also need in addition use this (depends on the way SDL was compiled):
 .PP
 .nf
 \*(T<
-% SDL_JOYSTICK_DEVICE="/dev/input/js0"
-% export SDL_JOYSTICK_DEVICE\*(T>
+$ SDL_JOYSTICK_DEVICE="/dev/input/js0"
+$ export SDL_JOYSTICK_DEVICE\*(T>
 .fi
 .PP
 This will let the DPad act as Hat in SDL based application. For
@@ -906,7 +906,7 @@ recognized by the driver. To fix this you need to know the idVendor
 and the idProduct numbers, which you can find out via:
 .PP
 .nf
-\*(T<% lsusb \-v\*(T>
+\*(T<$ lsusb \-v\*(T>
 .fi
 .PP
 Once done you can try to add them to this array in \*(T<\fIxpad_device.cpp\fR\*(T>:
@@ -933,7 +933,7 @@ enginiering is required. Contact <\*(T<grumbel@gmx.de\*(T>> and include the outp
 of:
 .PP
 .nf
-\*(T<% lsusb \-v\*(T>
+\*(T<$ lsusb \-v\*(T>
 .fi
 .PP
 Along with all the "Unknown data" lines you get. 
@@ -1012,8 +1012,8 @@ Then remove the device from hal with:
 Second workaround works with xinput:
 .PP
 .nf
-\*(T<% xinput list
- % xinput set\-int\-prop $DEVICEID 'Device Enabled' 32 0\*(T>
+\*(T<$ xinput list
+$ xinput set\-int\-prop $DEVICEID 'Device Enabled' 32 0\*(T>
 .fi
 .SS "PERMANENT WORKAROUND USING .FDI FILES"
 The former two workarounds are just temporary and have to be redone
