@@ -427,7 +427,9 @@ to \*(T<\fB\-\-ui\-buttonmap\fR\*(T> to allow shifting:
 
 In this example LB acts as shift button, if A is pressed
 without LB it will send out a JS_0 event, but if LB is
-pressed it will send a JS_2 event instead.
+pressed it will send a JS_2 event instead. This allows
+you to multiply the number of available buttons on the
+controller.
 
 See the section KEYBOARD EMULATION below on how to
 resolve issues with Xorg not detecting the virtual
@@ -464,12 +466,25 @@ Removes all uinput mappings and will leave the driver in
 a blank state and only map those things you added
 yourself. If you only want to get rid of individual
 buttons you can use the 'void' event:
+.TP 
+\*(T<\fB\-\-mouse\fR\*(T>
+Lets the controller act as a mouse. It is indendical to:
 
 .nf
 \*(T<% xboxdrv \e
-  \-\-ui\-buttonmap tr=void,tl=void,lb=void,rb=void \e
-  \-\-ui\-axismap x2=void,y2=void,rt=void,lt=void,dpad_x=void,dpad_y=void\*(T>
+  \-\-dpad\-as\-button
+  \-\-deadzone 4000
+  \-\-trigger\-as\-zaxis
+  \-\-axismap "\-y2=y2,\-trigger=trigger"
+  \-\-ui\-axismap "x1=REL_X:15:20,y1=REL_Y:15:20,y2=REL_WHEEL:5:100,x2=REL_HWHEEL:5:100,trigger=REL_WHEEL:5:100"
+  \-\-ui\-buttonmap "a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER,rb=KEY_PAGEDOWN,lb=KEY_PAGEUP,"
+  \-\-ui\-buttonmap "dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN,"
+  \-\-ui\-buttonmap "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,tl=void,tr=void"\*(T>
 .fi
+
+And you can customize is by the usal means, just make
+sure that \*(T<\fB\-\-mouse\fR\*(T> comes before you
+customization options on the command line.
 .TP 
 \*(T<\fB\-\-name DEVNAME\fR\*(T>
 Changes the descriptive name the device will have
@@ -760,22 +775,7 @@ If the tools provide no output at all, this might not be due to a
 wrong configuration, but due to Xorg grabbing your event device and
 locking it, see Xorg section for possible fixes.
 .SH EXAMPLES
-.SS "MOUSE EMULATION"
-Mouse emulation can be done with something like this:
-.PP
-.nf
-\*(T<% ./xboxdrv \e
-   \-\-axismap \-y2=y2 \e
-   \-\-ui\-axismap x1=REL_X,y1=REL_Y,y2=REL_WHEEL:3:50 \e
-   \-\-ui\-buttonmap a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER \e
-   \-\-ui\-buttonmap rb=KEY_FORWARD,lb=KEY_BACK \e
-   \-\-ui\-buttonmap dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN \e
-   \-s \-\-deadzone 5000  \-\-dpad\-as\-button\*(T>
-.fi
-.PP
-This will map the dpad to cursor keys, left analogstick to mouse
-cursor and right analogstick to mouse wheel.
-.PP
+.SS 
 Note that if you have your mouse buttons switched you must
 adjust the above to match your mouse configuration or the
 button events will come out wrong.

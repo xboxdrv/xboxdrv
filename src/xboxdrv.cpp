@@ -382,7 +382,9 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
     }
 
     if (uinput)
+    {
       uinput->update(msec_delta);
+    }
   }
 }
 

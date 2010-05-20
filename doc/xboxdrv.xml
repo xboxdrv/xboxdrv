@@ -611,10 +611,29 @@
               yourself.  If you only want to get rid of individual
               buttons you can use the 'void' event:
             </para>
+          </listitem>
+        </varlistentry>
 
+        <varlistentry>
+          <term><option>--mouse</option></term>
+          <listitem>
+            <para>
+              Lets the controller act as a mouse. It is indendical to:
+            </para>
             <programlisting><![CDATA[% xboxdrv \
-  --ui-buttonmap tr=void,tl=void,lb=void,rb=void \
-  --ui-axismap x2=void,y2=void,rt=void,lt=void,dpad_x=void,dpad_y=void]]></programlisting>
+  --dpad-as-button
+  --deadzone 4000
+  --trigger-as-zaxis
+  --axismap "-y2=y2,-trigger=trigger"
+  --ui-axismap "x1=REL_X:15:20,y1=REL_Y:15:20,y2=REL_WHEEL:5:100,x2=REL_HWHEEL:5:100,trigger=REL_WHEEL:5:100"
+  --ui-buttonmap "a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER,rb=KEY_PAGEDOWN,lb=KEY_PAGEUP,"
+  --ui-buttonmap "dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN,"
+  --ui-buttonmap "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,tl=void,tr=void"]]></programlisting>
+            <para>
+              And you can customize is by the usal means, just make
+              sure that <option>--mouse</option> comes before you
+              customization options on the command line.
+            </para>
           </listitem>
         </varlistentry>
 
@@ -1001,24 +1020,6 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
   <refsect1>
     <title>EXAMPLES</title>
     <refsect2>
-      <title>Mouse Emulation</title>
-      <para>
-        Mouse emulation can be done with something like this:
-      </para>
-      
-      <programlisting><![CDATA[% ./xboxdrv \
-   --axismap -y2=y2 \
-   --ui-axismap x1=REL_X,y1=REL_Y,y2=REL_WHEEL:3:50 \
-   --ui-buttonmap a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER \
-   --ui-buttonmap rb=KEY_FORWARD,lb=KEY_BACK \
-   --ui-buttonmap dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN \
-   -s --deadzone 5000  --dpad-as-button]]></programlisting>
-
-      <para>
-        This will map the dpad to cursor keys, left analogstick to mouse
-        cursor and right analogstick to mouse wheel.
-      </para>
-
       <para>
         Note that if you have your mouse buttons switched you must
         adjust the above to match your mouse configuration or the
