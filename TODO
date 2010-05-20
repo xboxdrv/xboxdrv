@@ -24,21 +24,15 @@ Stuff to do before 0.5 release:
 * version number needs to be centralized, its currently in the man
   pages, in xboxdrv, in the TODO and in xboxdrv-daemon
 
-* improve syncronization handling in uinput
-
 * a mouse needs mouse buttons to be recognized as mouse:
 
  --ui-buttonmap a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER  
 
-* mouse feels sluggish and jumpy, tweaking value and repeat makes the problem
-  smaller, but not go away (already solved by sync?!)
-
-  --ui-axismap x1=REL_X:10:20,y1=REL_Y:10:20,y2
-
-  -> caused by flooding the device with to many events it seems
-
 * src/xbox_controller.cpp:71: Make endpoint variable
   http://ubuntuforums.org/showthread.php?p=7538167#post7538167
+
+* add a way to not create a joystick/event device
+
 
 * figure out a way to make userspace force feedback driver not become dead processes
 
@@ -53,8 +47,6 @@ Stuff to do before 0.5 release:
   requirements for each device (i.e. if a device is a
   joystick/mouse/keyboard is determined if it as certain button or
   axis).
-
-* add a way to not create a joystick/event device
 
 fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
 
