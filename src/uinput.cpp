@@ -207,6 +207,29 @@ uInput::create_uinput_device(int device_id)
     boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(dev_name.str(), m_dev.idVendor, m_dev.idProduct));
     uinput_devs.insert(std::pair<int, boost::shared_ptr<LinuxUinput> >(device_id, dev));
 
+    // Create some mandatory events that are needed for the kernel/Xorg
+    // to register the device as its proper type
+    switch(device_id)
+    {
+      case DEVICEID_KEYBOARD:
+        // do nothing, detection seems to be fine without
+        break;
+
+      case DEVICEID_MOUSE:
+        dev->add_rel(REL_X);
+        dev->add_rel(REL_Y);
+        dev->add_key(BTN_LEFT);
+        break;
+
+      case DEVICEID_JOYSTICK:
+        // do nothing, as we don't know yet the range of abs, unmapped
+        // buttons might also confuse some games
+        break;
+
+      default:
+        break;
+    }
+
     std::cout << "Creating uinput device: device_id: " << device_id << ", dev_name: " << dev_name.str() << std::endl;
 
     return device_id;
