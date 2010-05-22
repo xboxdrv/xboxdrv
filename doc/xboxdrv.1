@@ -54,7 +54,10 @@ List supported devices (used by xboxdrv-daemon.py).
 List supported devices in \*(T<\fIxpad.c\fR\*(T> style.
 .TP 
 \*(T<\fB\-R\fR\*(T>, \*(T<\fB\-\-test\-rumble\fR\*(T>
-map rumbling to LT and RT (for testing only)
+Pressing LT will move the left rumble motor and pressing
+RT will move the right one. Rumble motor strength
+depends on how hard you press. This is useful for
+testing the rumble motors.
 .TP 
 \*(T<\fB\-\-no\-uinput\fR\*(T>
 Do not try to start uinput event dispatching, useful for debugging.
@@ -218,13 +221,17 @@ might also cause trouble in some games in that the character or camera
 might move without moving the stick. To fix this one has to set the
 value to something higher:
 
-\fB$ xboxdrv --deadzone 4000\fR
+.nf
+\*(T<$ xboxdrv \-\-deadzone 4000\*(T>
+.fi
 
 A value of 4000 works quite well for most games.
 
 You can also give the deadzone in percentage:
 
-\fB$ xboxdrv --deadzone 15%\fR
+.nf
+\*(T<$ xboxdrv \-\-deadzone 15%\*(T>
+.fi
 .TP 
 \*(T<\fB\-\-deadzone\-trigger \fR\*(T>\fINUM\fR
 The left and right trigger have a separate deadzone value which can be
@@ -252,11 +259,15 @@ additional analog axis.
 Button remapping is available via the \*(T<\fB\-\-buttonmap\fR\*(T> option. If you want
 to swap button A and B start with:
 
-\fB$ xboxdrv --buttonmap A=B,B=A\fR
+.nf
+\*(T<$ xboxdrv \-\-buttonmap A=B,B=A\*(T>
+.fi
 
 If you want all face buttons send out A button events:
 
-\fB$ xboxdrv --buttonmap B=A,X=A,Y=A\fR
+.nf
+\*(T<$ xboxdrv \-\-buttonmap B=A,X=A,Y=A\*(T>
+.fi
 
 Possible button names are (aliases are in parenthesis):
 
@@ -537,7 +548,9 @@ character instead of your viewpoint.
 \*(T<\fB\-\-axis\-sensitivty \fR\*(T>\fIAXIS=SENSITIVITY\fR,...
 The sensitive of an axis can be adjusted via --axis-sensitivty:
 
-\fB$ xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0\fR
+.nf
+\*(T<$ xboxdrv \-\-axis\-sensitivty X1=\-2.0,Y1=\-2.0\*(T>
+.fi
 
 A value of 0 gives you the default linear sensitivity, values larger
 then 0 will give you heigher sensitivity, while values smaller then 0
@@ -563,24 +576,32 @@ for flightsim games.
 Since the axis might be upside down, you might want to use
 the \*(T<\fB\-\-axismap\fR\*(T> function to reverse it.
 
-\fB$ xboxdrv --relative-axis y2=64000 --axismap -y2=y2\fR
+.nf
+\*(T<$ xboxdrv \-\-relative\-axis y2=64000 \-\-axismap \-y2=y2\*(T>
+.fi
 .TP 
 \*(T<\fB\-\-autofire BUTTON=FREQUENCY\fR\*(T>
 Autofire mapping allows you to let a button automatically fire with a
 given frequency in miliseconds:
 
-\fB$ xboxdrv --autofire A=250\fR
+.nf
+\*(T<$ xboxdrv \-\-autofire A=250\*(T>
+.fi
 
 Combining \*(T<\fB\-\-autofire\fR\*(T> with button map allows you to have one button act
 as autofire while another one, emitting the same signal, acts normally.
 
-\fB$ xboxdrv --autofire B=250 --buttonmap B=A\fR
+.nf
+\*(T<$ xboxdrv \-\-autofire B=250 \-\-buttonmap B=A\*(T>
+.fi
 .TP 
 \*(T<\fB\-\-calibration \fR\*(T>\fICALIBRATIONSPEC\fR
 If your gamepad for some reason can't reach the maximum value or isn't
 centered properly you can fix that via the calibration options:
 
-\fB$ xboxdrv --calibration X2=-32768:0:32767\fR
+.nf
+\*(T<$ xboxdrv \-\-calibration X2=\-32768:0:32767\*(T>
+.fi
 
 X2 is the axis name and the three values that follow are min, center
 and max. Simply insert the values that jstest reports when your axis
@@ -589,7 +610,9 @@ is in the respective positions.
 You can also use the calibration option if you want to make your
 joystick more sensitive. A setting of:
 
-\fBxboxdrv --calibration AXIS=MIN:CENTER:MAX,...\fR
+.nf
+\*(T<xboxdrv \-\-calibration AXIS=MIN:CENTER:MAX,...\*(T>
+.fi
 
 Will cause the joystick device report maximum position when your
 stick is only moved half the way.
@@ -597,7 +620,9 @@ stick is only moved half the way.
 \*(T<\fB\-\-axis\-sensitivty \fR\*(T>\fIAXIS=SENSITIVITY\fR,...
 The sensitive of an axis can be adjusted via --axis-sensitivty:
 
-\fB$ xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0\fR
+.nf
+\*(T<$ xboxdrv \-\-axis\-sensitivty X1=\-2.0,Y1=\-2.0\*(T>
+.fi
 
 A value of 0 gives you the default linear sensitivity, values larger
 then 0 will give you heigher sensitivity, while values smaller then 0

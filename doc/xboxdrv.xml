@@ -34,7 +34,7 @@
   </refsynopsisdiv>
 
   <refsect1>
-    <title>DESCRIPTION</title>
+    <title>Description</title>
 
     <refsect2>
       <title>General Options</title>
@@ -126,7 +126,10 @@
           <term><option>-R</option>, <option>--test-rumble</option></term>
           <listitem>
             <para>
-              map rumbling to LT and RT (for testing only)
+              Pressing LT will move the left rumble motor and pressing
+              RT will move the right one. Rumble motor strength
+              depends on how hard you press. This is useful for
+              testing the rumble motors.
             </para>
           </listitem>
         </varlistentry>
@@ -305,15 +308,13 @@
               value to something higher:
             </para>
 
-            <para>
-              <command>$ xboxdrv --deadzone 4000</command>
-            </para>
+            <programlisting>$ xboxdrv --deadzone 4000</programlisting>
 
             <para>A value of 4000 works quite well for most games.</para>
             
             <para>You can also give the deadzone in percentage:</para>
             
-            <para><command>$ xboxdrv --deadzone 15%</command></para>
+            <programlisting>$ xboxdrv --deadzone 15%</programlisting>
           </listitem>
         </varlistentry>
         
@@ -368,11 +369,11 @@
               to swap button A and B start with:
             </para>
 
-            <para><command>$ xboxdrv --buttonmap A=B,B=A</command></para>
+            <programlisting>$ xboxdrv --buttonmap A=B,B=A</programlisting>
 
             <para>If you want all face buttons send out A button events:</para>
 
-            <para><command>$ xboxdrv --buttonmap B=A,X=A,Y=A</command></para>
+            <programlisting>$ xboxdrv --buttonmap B=A,X=A,Y=A</programlisting>
 
             <para>Possible button names are (aliases are in parenthesis):</para>
 
@@ -713,7 +714,7 @@
           <listitem>
             <para>The sensitive of an axis can be adjusted via --axis-sensitivty:</para>
 
-            <para><command>$ xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0</command></para>
+            <programlisting>$ xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0</programlisting>
 
             <para>A value of 0 gives you the default linear sensitivity, values larger
               then 0 will give you heigher sensitivity, while values smaller then 0
@@ -745,7 +746,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
               the <option>--axismap</option> function to reverse it.
             </para>
 
-            <para><command>$ xboxdrv --relative-axis y2=64000 --axismap -y2=y2</command></para>
+            <programlisting>$ xboxdrv --relative-axis y2=64000 --axismap -y2=y2</programlisting>
           </listitem>
         </varlistentry>
 
@@ -755,12 +756,12 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
             <para>Autofire mapping allows you to let a button automatically fire with a
               given frequency in miliseconds:</para>
             
-            <para><command>$ xboxdrv --autofire A=250</command></para>
+            <programlisting>$ xboxdrv --autofire A=250</programlisting>
 
             <para>Combining <option>--autofire</option> with button map allows you to have one button act
               as autofire while another one, emitting the same signal, acts normally.</para>
 
-            <para><command>$ xboxdrv --autofire B=250 --buttonmap B=A</command></para>
+            <programlisting>$ xboxdrv --autofire B=250 --buttonmap B=A</programlisting>
           </listitem>
         </varlistentry>
 
@@ -772,7 +773,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
               centered properly you can fix that via the calibration options:
             </para>
 
-            <para><command>$ xboxdrv --calibration X2=-32768:0:32767</command></para>
+            <programlisting>$ xboxdrv --calibration X2=-32768:0:32767</programlisting>
 
             <para>X2 is the axis name and the three values that follow are min, center
               and max. Simply insert the values that jstest reports when your axis
@@ -781,7 +782,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
             <para>You can also use the calibration option if you want to make your
               joystick more sensitive. A setting of:</para>
 
-            <para><command>xboxdrv --calibration AXIS=MIN:CENTER:MAX,...</command></para>
+            <programlisting>xboxdrv --calibration AXIS=MIN:CENTER:MAX,...</programlisting>
 
             <para>Will cause the joystick device report maximum position when your
               stick is only moved half the way.</para>
@@ -793,7 +794,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
           <listitem>
             <para>The sensitive of an axis can be adjusted via --axis-sensitivty:</para>
 
-            <para><command>$ xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0</command></para>
+            <programlisting>$ xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0</programlisting>
 
             <para>A value of 0 gives you the default linear sensitivity, values larger
               then 0 will give you heigher sensitivity, while values smaller then 0
@@ -1194,7 +1195,7 @@ $ export SDL_JOYSTICK_DEVICE]]></programlisting>
   </refsect1>
 
   <refsect1>
-    <title>TROUBLESHOOTING</title>
+    <title>Troubleshooting</title>
     <refsect2>
       <title>"No Xbox or Xbox360 controller found"</title>
       <para>
@@ -1480,7 +1481,7 @@ EndSection]]></programlisting>
   </refsect1>
 
   <refsect1>
-    <title>BUGS</title>
+    <title>Bugs</title>
     <para>
       X11 keysyms might not work correctly in <option>--ui-buttonmap a=XK_Foobar</option>
       when Foobar is mapped to multiple keycodes in the keymap. 
