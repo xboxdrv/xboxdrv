@@ -32,20 +32,24 @@ Stuff to do before 0.5 release:
 * add a way to not create a joystick/event device and figure out why
   it currently gets created at all
 
+* add a some general info to how xboxdrv works
+
+* improve output on which uinput devices are created
+
+* add key combinations to --ui-buttonmap X=KEY_SHIFT+KEY_A,A=KEY_SHIFT+KEY_CONTROL+KEY_A
+
+* uinput class needs a serious code review and rewrite
+
+* --ui-clear doesn't work properly
+
 
 * figure out a way to make userspace force feedback driver not become dead processes
 
 * better keyboard emulation via analog sticks: axis must not be
   handled separately as this leads to issues with the diagonals (see
-  mail from Matthew G <matt@remort.org>)
+  mail from Matthew G <matt@remort.org>) (maybe relative axis can help?)
 
 * test TR:Anniversary with max effect 16
-
-* create dummy joystick, mouse and keyboard buttons so that the
-  devices always act as they should, also figure out the exakt minimum
-  requirements for each device (i.e. if a device is a
-  joystick/mouse/keyboard is determined if it as certain button or
-  axis).
 
 fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
 

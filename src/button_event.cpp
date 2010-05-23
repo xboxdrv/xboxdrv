@@ -55,7 +55,7 @@ ButtonEvent::create(int device_id, int type, int code)
       break;
 
     case EV_KEY:
-      ev.key.modifier[0] = -1;
+      std::fill_n(ev.key.modifier, MAX_MODIFIER + 1, -1);
       break;
 
     case -1:
@@ -90,7 +90,6 @@ ButtonEvent::from_string(const std::string& str)
       tokenizer ev_tokens(event_str, plus_sep);
       for(tokenizer::iterator k = ev_tokens.begin(); k != ev_tokens.end(); ++k)
       {
-        std::cout << "XXX " << *k << std::endl;
         events.push_back(*k);
       }
 

@@ -50,7 +50,8 @@ struct ButtonEvent
     } abs;
 
     struct {
-      int modifier[MAX_MODIFIER];
+      // Array is terminated by -1
+      int modifier[MAX_MODIFIER+1];
     } key;
   };
 
