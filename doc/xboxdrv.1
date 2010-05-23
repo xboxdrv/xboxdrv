@@ -349,7 +349,19 @@ Possible axis names are: x1, y1, x2, y2, lt, rt
 Swaping lt or rt with x1, y1, x2, y2 will not work properly, since
 their range is different.
 .TP 
-\*(T<\fB\-\-ui\-buttonmap\fR\*(T> \fIBUTTON=UIBUTTONSPEC,...\fR
+\*(T<\fB\-\-ui\-buttonmap\fR\*(T> \fIUIBUTTONSPEC,...\fR
+.nf
+\*(T<UIBUTTONSPEC ::= BUTTON, [ "+", BUTTON ], "=", RELSPEC | BTNSPEC
+RELSPEC      ::= [ DEVICEID ], "REL_", [ ":", [ VALUE ], [ ":", REPEAT ] ]
+BTNSPEC      ::= [ DEVICEID ], "BTN_", NAME | "KEY_", NAME, { "+", BTNSPEC }
+BUTTON       ::= "a" | "b" | "x" | "y" | "lb" | "rb" | "lt" | "rt" | 
+                 "tl" | "tr" | "start" | "select" | "guide"
+NAME         ::= STRING
+VALUE        ::= NUMBER
+REPEAT       ::= NUMBER
+DEVICEID     ::= NUMBER\*(T>
+.fi
+
 Allows you to change the event code that is send to the
 kernel for buttons. The usage is similar to the normal button
 mapping, except that the right hand side is an event name from
@@ -450,7 +462,18 @@ See the section KEYBOARD EMULATION below on how to
 resolve issues with Xorg not detecting the virtual
 keyboard that xboxdrv creates.
 .TP 
-\*(T<\fB\-\-ui\-axismap\fR\*(T> \fIAXIS=UIAXISSPEC,...\fR
+\*(T<\fB\-\-ui\-axismap\fR\*(T> \fIUIAXISSPEC,...\fR
+.nf
+\*(T<UIAXISSPEC ::= AXIS, "=", RELSPEC | BTNSPEC | ABSSPEC
+BTNSPEC    ::= "KEY_", NAME, ":", "KEY_", NAME, ":", "THRESHOLD"
+RELSPEC    ::= "REL_", NAME, ":", VALUE, ":", "REPEAT"
+ABSSPEC    ::= "ABS_", NAME
+AXIS       ::= "x1", "y1", "x2", "y2", "z", "lt", "rt"
+VALUE      ::= NUMBER
+REPEAT     ::= NUMBER
+NAME       ::= STRING\*(T>
+.fi
+
 Similar to \*(T<\fB\-\-ui\-buttonmap\fR\*(T> this option
 allows you to change the event code that is send to the
 kernel for axes. The events that are available are the
