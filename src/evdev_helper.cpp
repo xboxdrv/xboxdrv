@@ -664,7 +664,7 @@ int xkeysym2keycode(const std::string& name)
 }
 
 bool str2event(const std::string& name, int& type, int& code)
-{
+{ // FIXME: this never returs false, but throws an exception!
   if (name == "void" || name == "none")
   {
     type = -1;

@@ -25,6 +25,7 @@
 
 struct ButtonEvent
 {
+  static const int MAX_MODIFIER = 2;
   static ButtonEvent invalid() { return create(DEVICEID_INVALID, -1, -1); }
   static ButtonEvent create(int device_id, int type, int code);
   static ButtonEvent create(int type, int code);
@@ -49,6 +50,7 @@ struct ButtonEvent
     } abs;
 
     struct {
+      int modifier[MAX_MODIFIER];
     } key;
   };
 

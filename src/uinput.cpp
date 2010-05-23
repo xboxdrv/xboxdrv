@@ -740,6 +740,12 @@ uInput::send_button(int code, bool value)
         if (event.is_valid())
         {
           send_key(event.device_id, event.code, value);
+          
+          // FIXME: should not recycle device_id
+          for(int j = 0; event.key.modifier[j] != -1; ++j)
+          {
+            send_key(event.device_id, event.key.modifier[j], value);
+          }
 
           // exit after the first successful event, so we don't send
           // multiple events for the same button
@@ -750,7 +756,26 @@ uInput::send_button(int code, bool value)
 
     // Non shifted button events
     const ButtonEvent& event = cfg.btn_map.lookup(code);
-    send_key(event.device_id, event.code, value);
+    if (value)
+    {
+      send_key(event.device_id, event.code, value);
+
+      // FIXME: should not recycle device_id
+      for(int j = 0; event.key.modifier[j] != -1; ++j)
+      {
+        send_key(event.device_id, event.key.modifier[j], value);
+      }
+    }
+    else
+    { // release keys in reverse order
+      // FIXME: should not recycle device_id
+      for(int j = 0; event.key.modifier[j] != -1; ++j)
+      {
+        send_key(event.device_id, event.key.modifier[j], value);
+      }
+
+      send_key(event.device_id, event.code, value);
+    }
   }
 }
 
@@ -875,6 +900,11 @@ uInput::add_button(int code)
     if (event.type == EV_KEY)
     {
       add_key(event.device_id, event.code);
+      // FIXME: should not require device_id, but have a new one for each modifier
+      for(int j = 0; event.key.modifier[j] != -1; ++j)
+      {
+        add_key(event.device_id, event.key.modifier[j]);
+      }
     }
     else if (event.type == EV_REL)
     {

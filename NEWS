@@ -5,9 +5,10 @@ xboxdrv 0.4.14 - (??/Mai/2010)
   the creation of multiple input devices from a single controller
 * added shifting to --ui-buttonmap, allows sending of different events
   when a shift button is pressed
+* added support to send keyboard combination from --ui-buttonmap
 * added --mouse, a simple shortcut to enable mouse emulation
 * added dummy events to the mouse device to let it register properly
-  by the kernel
+  by the kernel without messing with hal
 
 
 xboxdrv 0.4.13 - (13/Mai/2010)

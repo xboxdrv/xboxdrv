@@ -17,6 +17,7 @@
 */
 
 #include <assert.h>
+#include <iostream>
 #include <linux/input.h>
 #include <stdexcept>
 #include <boost/tokenizer.hpp>
@@ -54,6 +55,7 @@ ButtonEvent::create(int device_id, int type, int code)
       break;
 
     case EV_KEY:
+      ev.key.modifier[0] = -1;
       break;
 
     case -1:
@@ -82,8 +84,20 @@ ButtonEvent::from_string(const std::string& str)
       std::string event_str;
       split_event_name(*i, &event_str, &ev.device_id);
 
+      boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
+
+      std::vector<std::string> events;
+      tokenizer ev_tokens(event_str, plus_sep);
+      for(tokenizer::iterator k = ev_tokens.begin(); k != ev_tokens.end(); ++k)
+      {
+        std::cout << "XXX " << *k << std::endl;
+        events.push_back(*k);
+      }
+
+      assert(!events.empty()); // HACK
+
       int type, code;
-      if (!str2event(event_str, type, code))
+      if (!str2event(*events.begin(), type, code))
       {
         throw std::runtime_error("Couldn't convert '" + str + "' to ButtonEvent");
       }
@@ -91,6 +105,16 @@ ButtonEvent::from_string(const std::string& str)
       {
         // create the event via function call to get proper default values
         ev = ButtonEvent::create(ev.device_id, type, code);
+
+        int k = 0;
+        for(std::vector<std::string>::iterator m = events.begin() + 1; m != events.end(); ++m)
+        {
+          str2event(*m, type, code);
+          ev.key.modifier[k] = code;
+          k += 1;
+          if (k >= MAX_MODIFIER)
+            break;
+        }
       }
     }
     else
