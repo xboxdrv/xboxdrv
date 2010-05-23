@@ -468,15 +468,15 @@
         <varlistentry>
           <term><option>--ui-buttonmap</option> <replaceable class="parameter">UIBUTTONSPEC,...</replaceable></term>
           <listitem>
-            <programlisting><![CDATA[UIBUTTONSPEC ::= BUTTON, [ "+", BUTTON ], "=", RELSPEC | BTNSPEC
-RELSPEC      ::= [ DEVICEID ], "REL_", [ ":", [ VALUE ], [ ":", REPEAT ] ]
-BTNSPEC      ::= [ DEVICEID ], "BTN_", NAME | "KEY_", NAME, { "+", BTNSPEC }
-BUTTON       ::= "a" | "b" | "x" | "y" | "lb" | "rb" | "lt" | "rt" | 
-                 "tl" | "tr" | "start" | "select" | "guide"
-NAME         ::= STRING
-VALUE        ::= NUMBER
-REPEAT       ::= NUMBER
-DEVICEID     ::= NUMBER]]></programlisting>
+            <programlisting><![CDATA[UIBUTTONSPEC = XBOXBUTTON [ "+" XBOXBUTTON ] "=" ( RELSPEC | BTNSPEC ) ;
+RELSPEC      = [ DEVICEID "-" ] "REL_" [ ":" [ VALUE ] [ ":" REPEAT ] ] ;
+BTNSPEC      = [ DEVICEID "-" ] ( ( "BTN_" NAME ) | ( "KEY_" NAME ) ) { "+" BTNSPEC } ;
+XBOXBUTTON   = "a" | "b" | "x" | "y" | "lb" | "rb" | "lt" | "rt" | 
+               "tl" | "tr" | "start" | "select" | "back" | "guide" | "black" | "white" ;
+NAME         = STRING ;
+VALUE        = NUMBER ;
+REPEAT       = NUMBER ;
+DEVICEID     = NUMBER ;]]></programlisting>
             <para>
               Allows you to change the event code that is send to the
               kernel for buttons. The usage is similar to the normal button
@@ -587,15 +587,15 @@ DEVICEID     ::= NUMBER]]></programlisting>
         <varlistentry>
           <term><option>--ui-axismap</option> <replaceable class="parameter">UIAXISSPEC,...</replaceable></term>
           <listitem>
-            <programlisting><![CDATA[UIAXISSPEC ::= AXIS, "=", RELSPEC | BTNSPEC | ABSSPEC
-BTNSPEC    ::= "KEY_", NAME, ":", "KEY_", NAME, ":", THRESHOLD
-RELSPEC    ::= "REL_", NAME, ":", VALUE, ":", REPEAT
-ABSSPEC    ::= "ABS_", NAME
-AXIS       ::= "x1", "y1", "x2", "y2", "z", "lt", "rt"
-VALUE      ::= NUMBER
-REPEAT     ::= NUMBER
-THRESHOLD  ::= NUMBER
-NAME       ::= STRING]]></programlisting>
+            <programlisting><![CDATA[UIAXISSPEC = XBOXAXIS "=" ( RELSPEC | BTNSPEC | ABSSPEC ) ;
+BTNSPEC    = "KEY_" NAME ":" "KEY_" NAME ":" THRESHOLD ;
+RELSPEC    = "REL_" NAME ":" VALUE ":" REPEAT ;
+ABSSPEC    = "ABS_" NAME ;
+XBOXAXIS   = "x1" | "y1" | "x2" | "y2" | "z" | "lt" | "rt" | "dpad_x" | "dpad_y" ;
+VALUE      = NUMBER ;
+REPEAT     = NUMBER ;
+THRESHOLD  = NUMBER ;
+NAME       = STRING ;]]></programlisting>
             <para>
               Similar to <option>--ui-buttonmap</option> this option
               allows you to change the event code that is send to the
