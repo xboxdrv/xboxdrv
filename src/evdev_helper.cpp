@@ -23,63 +23,9 @@
 #include <sstream>
 #include <stdexcept>
 #include <map>
+
+#include "enum_box.hpp"
 #include "evdev_helper.hpp"
-
-template<class Enum>
-class EnumBox
-{
-protected:
-  std::string m_name;
-  std::map<Enum, std::string> m_enum2string;
-  std::map<std::string, Enum> m_string2enum;
-
-protected:
-  EnumBox(const std::string& name) :
-    m_name(name),
-    m_enum2string(),
-    m_string2enum()
-  {
-  }
-  
-  virtual ~EnumBox() {}
-
-  void add(Enum i, const std::string& name) 
-  {
-    m_enum2string[i] = name;
-    m_string2enum[name] = i;
-  }
-
-public:
-  Enum operator[](const std::string& str) const 
-  {
-    typename std::map<std::string, Enum>::const_iterator i = m_string2enum.find(str);
-    if (i == m_string2enum.end())
-    {
-      std::ostringstream out;
-      out << "Couldn't convert '" << str << "' to enum " << m_name << std::endl;
-      throw std::runtime_error(out.str());
-    }
-    else
-    {
-      return i->second;
-    }
-  }
-
-  std::string operator[](Enum v) const {
-    typename std::map<Enum, std::string>::const_iterator i = m_enum2string.find(v);
-    if (i == m_enum2string.end())
-    {
-      std::ostringstream out;
-      out << "Couldn't convert '" << v << "' to string" << std::endl;
-      throw std::runtime_error(out.str());
-    }
-    else
-    {
-      return i->second;
-    }
-  }
-};
-
 
 class EvDevRelEnum : public EnumBox<int>
 {
