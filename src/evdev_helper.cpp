@@ -609,48 +609,42 @@ int xkeysym2keycode(const std::string& name)
   }
 }
 
-bool str2event(const std::string& name, int& type, int& code)
+void str2event(const std::string& name, int& type, int& code)
 { // FIXME: this never returs false, but throws an exception!
   if (name == "void" || name == "none")
   {
     type = -1;
     code = -1;
-    return true;
   }
   else if (name.compare(0, 3, "REL") == 0)
   {
     type = EV_REL;
     code = evdev_rel_names[name];
-    return true;
   }
   else if (name.compare(0, 3, "ABS") == 0)
   {
     type = EV_ABS;
     code = evdev_abs_names[name];
-    return true;
   }
   else if (name.compare(0, 2, "XK") == 0)
   {
     type = EV_KEY;
     code = xkeysym2keycode(name);
-    return true;      
   }
   else if (name.compare(0, 2, "JS") == 0)
   {
     type = EV_KEY;
     code = BTN_JOYSTICK + boost::lexical_cast<int>(name.substr(3));
-    return true;
   }
   else if (name.compare(0, 3, "KEY") == 0 ||
            name.compare(0, 3, "BTN") == 0)
   {
     type = EV_KEY;
     code = evdev_btn_names[name];
-    return true;
   }
   else
   {
-    return false;
+    throw std::runtime_error("str2event(): unknown event type prefix: " + name);
   }
 }
 

@@ -86,14 +86,8 @@ AxisEvent::from_string(const std::string& str)
       split_event_name(*i, &event_str, &ev.device_id);
 
       int type, code;
-      if (!str2event(event_str, type, code))
-      {
-        throw std::runtime_error("Couldn't convert '" + str + "' to AxisEvent");
-      }
-      else
-      {
-        ev = AxisEvent::create(ev.device_id, type, code, 0, 0);
-      }
+      str2event(event_str, type, code);
+      ev = AxisEvent::create(ev.device_id, type, code, 0, 0);
     }
     else
     {

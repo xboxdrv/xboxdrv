@@ -96,24 +96,20 @@ ButtonEvent::from_string(const std::string& str)
       assert(!events.empty()); // HACK
 
       int type, code;
-      if (!str2event(*events.begin(), type, code))
-      {
-        throw std::runtime_error("Couldn't convert '" + str + "' to ButtonEvent");
-      }
-      else
-      {
-        // create the event via function call to get proper default values
-        ev = ButtonEvent::create(ev.device_id, type, code);
 
-        int k = 0;
-        for(std::vector<std::string>::iterator m = events.begin() + 1; m != events.end(); ++m)
-        {
-          str2event(*m, type, code);
-          ev.key.modifier[k] = code;
-          k += 1;
-          if (k >= MAX_MODIFIER)
-            break;
-        }
+      str2event(*events.begin(), type, code);
+
+      // create the event via function call to get proper default values
+      ev = ButtonEvent::create(ev.device_id, type, code);
+
+      int k = 0;
+      for(std::vector<std::string>::iterator m = events.begin() + 1; m != events.end(); ++m)
+      {
+        str2event(*m, type, code);
+        ev.key.modifier[k] = code;
+        k += 1;
+        if (k >= MAX_MODIFIER)
+          break;
       }
     }
     else
