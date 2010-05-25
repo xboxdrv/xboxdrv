@@ -607,11 +607,11 @@ uInput::send_axis(int code, int32_t value)
 {
   if (axis_state[code] != value)
   {
-    //int old_value = axis_state[code];
+    int old_value = axis_state[code];
     axis_state[code] = value;
 
     const AxisEvent& event = cfg.axis_map[code];
-    event.send(*this, value);
+    event.send(*this, old_value, value);
   }
 }
 

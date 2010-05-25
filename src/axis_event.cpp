@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
+#include <stdlib.h>
 
 #include "axis_event.hpp"
 #include "evdev_helper.hpp"
@@ -304,7 +305,7 @@ AxisEvent::init(uInput& uinput)
 }
 
 void
-AxisEvent::send(uInput& uinput, int value) const
+AxisEvent::send(uInput& uinput, int old_value, int value) const
 {
   if (is_valid())
   {
@@ -320,37 +321,35 @@ AxisEvent::send(uInput& uinput, int value) const
         break;
 
       case EV_KEY:
-#if 0
-        if (abs(old_value) <  key.threshold &&
-            abs(value)     >= key.threshold)
+        if (::abs(old_value) <  key.threshold &&
+            ::abs(value)     >= key.threshold)
         { // entering bigger then threshold zone
           if (value < 0)
           {
-            for(int i = 0; key.up_codes[i] != -1; ++i)
+            for(int i = 0; key.up_codes[i].is_valid(); ++i)
               uinput.send_key(key.down_codes[i].device_id, key.down_codes[i].code, false);
 
-            for(int i = 0; key.up_codes[i] != -1; ++i)
+            for(int i = 0; key.up_codes[i].is_valid(); ++i)
               uinput.send_key(key.up_codes[i].device_id, key.up_codes[i].code, true);
           }
           else // (value > 0)
           { 
-            for(int i = 0; key.up_codes[i] != -1; ++i)
+            for(int i = 0; key.up_codes[i].is_valid(); ++i)
               uinput.send_key(key.down_codes[i].device_id, key.down_codes[i].code, true);
 
-            for(int i = 0; key.up_codes[i] != -1; ++i)
+            for(int i = 0; key.up_codes[i].is_valid(); ++i)
               uinput.send_key(key.up_codes[i].device_id, key.up_codes[i].code, false);
           }
         }
-        else if (abs(old_value) >= key.threshold &&
-                 abs(value)     <  key.threshold)
+        else if (::abs(old_value) >= key.threshold &&
+                 ::abs(value)     <  key.threshold)
         { // entering zero zone
-          for(int i = 0; key.up_codes[i] != -1; ++i)
+          for(int i = 0; key.up_codes[i].is_valid(); ++i)
             uinput.send_key(key.down_codes[i].device_id, key.down_codes[i].code, false);
 
-          for(int i = 0; key.up_codes[i] != -1; ++i)
+          for(int i = 0; key.up_codes[i].is_valid(); ++i)
             uinput.send_key(key.up_codes[i].device_id, key.up_codes[i].code, false);
         }
-#endif
         break;
     }
   }

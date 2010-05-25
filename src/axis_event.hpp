@@ -74,7 +74,7 @@ public:
   };
 
   void init(uInput& uinput);
-  void send(uInput& uinput, int value) const;
+  void send(uInput& uinput, int old_value, int value) const;
 
   bool is_valid() const;
 };
