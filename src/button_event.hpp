@@ -23,37 +23,41 @@
 
 #include "uinput_deviceid.hpp"
 
+class uInput;
+
 struct ButtonEvent
 {
-  static const int MAX_MODIFIER = 2;
-  static ButtonEvent invalid() { return create(DEVICEID_INVALID, -1, -1); }
-  static ButtonEvent create(int device_id, int type, int code);
-  static ButtonEvent create(int type, int code);
+  static const int MAX_MODIFIER = 4;
+  static ButtonEvent invalid() { return create(-1); }
+  static ButtonEvent create(int type);
+  static ButtonEvent create_btn(int code);
+  static ButtonEvent create_btn();
+  static ButtonEvent create_rel(int code);
   static ButtonEvent from_string(const std::string& str);
-
-  int device_id;
 
   /** EV_KEY, EV_ABS, EV_REL */
   int type;
 
-  /** BTN_A, REL_X, ABS_X, ... */
-  int code;
-
   union {
     struct {
+      UIEvent code;
       int  repeat;
       int  value;
     } rel;
 
     struct {
+      UIEvent code;
       int value;
     } abs;
 
     struct {
-      // Array is terminated by -1
-      int modifier[MAX_MODIFIER+1];
+      // Array is terminated by !is_valid()
+      UIEvent codes[MAX_MODIFIER+1];
     } key;
   };
+
+  void init(uInput& uinput);
+  void send(uInput& uinput, bool value) const;
 
   bool is_valid() const;
 };

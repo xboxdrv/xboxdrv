@@ -87,6 +87,10 @@ private:
   void send_button(int code, bool value);
   void send_axis(int code, int32_t value);
 
+public:
+  void add_rel(int device_id, int ev_code);
+  void add_abs(int device_id, int ev_code, int min, int max, int fuzz, int flat);
+
   void add_key(int device_id, int ev_code);
   void send_key(int device_id, int ev_code, bool value);
 
@@ -94,13 +98,8 @@ private:
   LinuxUinput* get_mouse_uinput() const;
   LinuxUinput* get_force_feedback_uinput() const;
 
+public:
   int create_uinput_device(int device_id);
-  int create_uinput_device(const AxisEvent& event);
-  int create_uinput_device(const ButtonEvent& event);
-
-  bool need_mouse_device();
-  bool need_keyboard_device();
-  bool need_joystick_device();
 
 public:
   static bool is_mouse_button(int ev_code);

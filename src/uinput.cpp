@@ -33,87 +33,6 @@
 #include "uinput.hpp"
 #include "uinput_deviceid.hpp"
 
-bool is_keyboard_event(const ButtonEvent& event)
-{
-  if (event.type == EV_KEY && uInput::is_keyboard_button(event.code))
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-bool is_mouse_event(const ButtonEvent& event)
-{
-  if (event.type == EV_KEY && uInput::is_mouse_button(event.code))
-  {
-    return true;
-  }
-  else if (event.type == EV_REL)
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-bool
-uInput::need_keyboard_device()
-{
-  if (cfg.btn_map.contains(is_keyboard_event))
-  {
-    return true;
-  }
-
-  for(int i = 0; i < XBOX_AXIS_MAX; ++i)
-  {
-    if (cfg.axis_map[i].type == EV_KEY &&
-        (is_keyboard_button(cfg.axis_map[i].code) ||
-         is_keyboard_button(cfg.axis_map[i].key.secondary_code)))
-    {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-bool
-uInput::need_mouse_device()
-{
-  if (cfg.btn_map.contains(is_mouse_event))
-  {
-    return true;
-  }
-
-  for(int i = 0; i < XBOX_AXIS_MAX; ++i)
-  {
-    if (cfg.axis_map[i].type == EV_KEY &&
-        (is_mouse_button(cfg.axis_map[i].code) ||
-         is_mouse_button(cfg.axis_map[i].key.secondary_code)))
-    {
-      return true;
-    }
-    else if (cfg.axis_map[i].type == EV_REL)
-    {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-bool
-uInput::need_joystick_device()
-{
-  // FIXME: Implement me
-  return true;
-}
-
 bool
 uInput::is_mouse_button(int ev_code)
 {
@@ -138,17 +57,7 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
 
   if (cfg.force_feedback)
   {
-    create_uinput_device(0);
-  }
-
-  for(ButtonMap::iterator i = cfg.btn_map.begin(); i != cfg.btn_map.end(); ++i)
-  {
-    (*i).device_id = create_uinput_device(*i);
-  }
-
-  for(int i = 0; i < XBOX_AXIS_MAX; ++i)
-  {
-    cfg.axis_map[i].device_id = create_uinput_device(cfg.axis_map[i]);
+    create_uinput_device(DEVICEID_JOYSTICK);
   }
 
   switch(dev.type)
@@ -188,6 +97,9 @@ uInput::create_uinput_device(int device_id)
   }
   else
   {
+    if (!cfg.extra_devices)
+      device_id = DEVICEID_JOYSTICK;
+
     std::ostringstream dev_name;
     dev_name << cfg.device_name;
 
@@ -233,104 +145,6 @@ uInput::create_uinput_device(int device_id)
     std::cout << "Creating uinput device: device_id: " << device_id << ", dev_name: " << dev_name.str() << std::endl;
 
     return device_id;
-  }
-}
-
-int
-uInput::create_uinput_device(const AxisEvent& event)
-{
-  if (event.is_valid())
-  {
-    if (event.device_id == DEVICEID_AUTO)
-    {
-      if (cfg.extra_devices)
-      {
-        if (event.type == EV_KEY)
-        {
-          if (is_mouse_button(event.code) || is_mouse_button(event.key.secondary_code))
-          {
-            return create_uinput_device(DEVICEID_MOUSE);
-          }
-          else if (is_keyboard_button(event.code) || is_keyboard_button(event.key.secondary_code))
-          {
-            return create_uinput_device(DEVICEID_KEYBOARD);
-          }
-          else
-          {
-            return create_uinput_device(DEVICEID_JOYSTICK);
-          }
-        }
-        else if (event.type == EV_REL)
-        {
-          return create_uinput_device(DEVICEID_MOUSE);
-        }
-        else
-        {
-          return create_uinput_device(DEVICEID_JOYSTICK);
-        }
-      }
-      else
-      {
-        return create_uinput_device(DEVICEID_JOYSTICK);
-      }
-    }
-    else
-    {
-      return create_uinput_device(event.device_id);
-    }
-  }
-  else
-  {
-    return DEVICEID_INVALID;
-  }
-}
-
-int
-uInput::create_uinput_device(const ButtonEvent& event)
-{
-  if (event.is_valid())
-  {
-    if (event.device_id == DEVICEID_AUTO)
-    {
-      if (cfg.extra_devices)
-      {
-        if (event.type == EV_KEY)
-        {
-          if (is_mouse_button(event.code))
-          {
-            return create_uinput_device(DEVICEID_MOUSE);
-          }
-          else if (is_keyboard_button(event.code))
-          {
-            return create_uinput_device(DEVICEID_KEYBOARD);
-          }
-          else
-          {
-            return create_uinput_device(DEVICEID_JOYSTICK);
-          }
-        }
-        else if (event.type == EV_REL)
-        {
-          return create_uinput_device(DEVICEID_MOUSE);
-        }
-        else
-        {
-          return create_uinput_device(DEVICEID_JOYSTICK);
-        }
-      }
-      else
-      {
-        return create_uinput_device(DEVICEID_JOYSTICK);
-      }
-    }
-    else
-    {
-      return create_uinput_device(event.device_id);
-    }
-  }
-  else
-  {
-    return DEVICEID_INVALID;
   }
 }
 
@@ -669,6 +483,7 @@ uInput::update(int msec_delta)
   {
     i->time += msec_delta;
 
+#if 0
     if (i->time >= i->next_time)
     {
       if (i->axis == XBOX_AXIS_TRIGGER)
@@ -678,13 +493,15 @@ uInput::update(int msec_delta)
       }
       else
       {
-        get_mouse_uinput()->send(EV_REL, cfg.axis_map[i->axis].code,
+        get_mouse_uinput()->send(EV_REL, cfg.axis_map[i->axis].code.code,
                                  static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 32767);
       }
       i->next_time += cfg.axis_map[i->axis].rel.repeat;
     }
+#endif
   }
 
+#if 0
   // Relative Motion emulation for button
   for(std::vector<RelButtonState>::iterator i = rel_button.begin(); i != rel_button.end(); ++i)
   {
@@ -692,11 +509,12 @@ uInput::update(int msec_delta)
 
     if (i->time >= i->next_time)
     {
-      get_mouse_uinput()->send(EV_REL, cfg.btn_map.lookup(i->button).code, 
+      get_mouse_uinput()->send(EV_REL, cfg.btn_map.lookup(i->button).code,
                                static_cast<int>(cfg.btn_map.lookup(i->button).rel.value * button_state[i->button]));
       i->next_time += cfg.btn_map.lookup(i->button).rel.repeat;
     }
   }
+#endif
 
   get_force_feedback_uinput()->update_force_feedback(msec_delta);
 
@@ -725,7 +543,7 @@ uInput::send_button(int code, bool value)
           for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
           {
             const ButtonEvent& event = cfg.btn_map.lookup(j, i);
-            send_key(event.device_id, event.code, false);
+            event.send(*this, false);
           }
         }
       }
@@ -739,14 +557,7 @@ uInput::send_button(int code, bool value)
         const ButtonEvent& event = cfg.btn_map.lookup(i, code);
         if (event.is_valid())
         {
-          send_key(event.device_id, event.code, value);
-          
-          // FIXME: should not recycle device_id
-          for(int j = 0; event.key.modifier[j] != -1; ++j)
-          {
-            send_key(event.device_id, event.key.modifier[j], value);
-          }
-
+          event.send(*this, value);
           // exit after the first successful event, so we don't send
           // multiple events for the same button
           return;
@@ -756,26 +567,7 @@ uInput::send_button(int code, bool value)
 
     // Non shifted button events
     const ButtonEvent& event = cfg.btn_map.lookup(code);
-    if (value)
-    {
-      send_key(event.device_id, event.code, value);
-
-      // FIXME: should not recycle device_id
-      for(int j = 0; event.key.modifier[j] != -1; ++j)
-      {
-        send_key(event.device_id, event.key.modifier[j], value);
-      }
-    }
-    else
-    { // release keys in reverse order
-      // FIXME: should not recycle device_id
-      for(int j = 0; event.key.modifier[j] != -1; ++j)
-      {
-        send_key(event.device_id, event.key.modifier[j], value);
-      }
-
-      send_key(event.device_id, event.code, value);
-    }
+    event.send(*this, value);
   }
 }
 
@@ -783,6 +575,18 @@ void
 uInput::add_key(int device_id, int ev_code)
 {
   get_uinput(device_id)->add_key(ev_code);
+}
+
+void
+uInput::add_rel(int device_id, int ev_code)
+{
+  get_uinput(device_id)->add_rel(ev_code);
+}
+
+void
+uInput::add_abs(int device_id, int ev_code, int min, int max, int fuzz, int flat)
+{
+  get_uinput(device_id)->add_abs(ev_code, min, max, fuzz, flat);
 }
 
 void
@@ -803,49 +607,11 @@ uInput::send_axis(int code, int32_t value)
 {
   if (axis_state[code] != value)
   {
-    int old_value = axis_state[code];
+    //int old_value = axis_state[code];
     axis_state[code] = value;
 
     const AxisEvent& event = cfg.axis_map[code];
-
-    switch(event.type)
-    {
-      case -1:
-        break;
-
-      case EV_ABS:
-        if (event.type == EV_ABS || event.type == EV_KEY)
-          get_uinput(event.device_id)->send(event.type, event.code, value);
-        break;
-
-      case EV_REL:
-        // Mouse events are handled in update() (which is wrong,
-        // since we miss the first click and introduce a delay)
-        break;
-
-      case EV_KEY:
-        if (abs(old_value) <  event.key.threshold &&
-            abs(value)     >= event.key.threshold)
-        { // entering bigger then threshold zone
-          if (value < 0)
-          {
-            send_key(event.device_id, event.key.secondary_code, false);
-            send_key(event.device_id, event.code,               true);
-          }
-          else // (value > 0)
-          { 
-            send_key(event.device_id, event.code,               false);
-            send_key(event.device_id, event.key.secondary_code, true);
-          }
-        }
-        else if (abs(old_value) >= event.key.threshold &&
-                 abs(value)     <  event.key.threshold)
-        { // entering zero zone
-          send_key(event.device_id, event.code,               false);
-          send_key(event.device_id, event.key.secondary_code, false);
-        }
-        break;
-    }
+    event.send(*this, value);
   }
 }
 
@@ -853,41 +619,7 @@ void
 uInput::add_axis(int code, int min, int max)
 {
   const AxisEvent& event = cfg.axis_map[code];
-
-  switch(event.type)
-  {
-    case EV_ABS:
-      get_uinput(event.device_id)->add_abs(event.code, min, max, event.abs.fuzz, event.abs.flat);
-      break;
-    
-    case EV_REL:
-    {
-      get_uinput(event.device_id)->add_rel(event.code);
-
-      RelAxisState rel_axis_state;
-      rel_axis_state.axis = code;
-      rel_axis_state.time = 0;
-      rel_axis_state.next_time = 0;
-
-      rel_axis.push_back(rel_axis_state);
-    }
-    break;
-
-    case EV_KEY:
-      add_key(event.device_id, event.code);
-      if (event.code != event.key.secondary_code)
-      {
-        add_key(event.device_id, event.key.secondary_code);
-      }
-      break;
-
-    case -1:
-      break;
-
-    default:
-      std::cout << "uInput: Unhandled event type: " << event.type << std::endl;
-      break;
-  }
+  event.init(*this);
 }
 
 void
@@ -896,29 +628,7 @@ uInput::add_button(int code)
   for(int i = 0; i < XBOX_BTN_MAX; ++i)
   {
     const ButtonEvent& event = cfg.btn_map.lookup(i, code);
-
-    if (event.type == EV_KEY)
-    {
-      add_key(event.device_id, event.code);
-      // FIXME: should not require device_id, but have a new one for each modifier
-      for(int j = 0; event.key.modifier[j] != -1; ++j)
-      {
-        add_key(event.device_id, event.key.modifier[j]);
-      }
-    }
-    else if (event.type == EV_REL)
-    {
-      get_uinput(event.device_id)->add_rel(event.code);
-
-      RelButtonState rel_button_state;
-      rel_button_state.button = code;
-      rel_button_state.time = 0;
-      rel_button_state.next_time = 0;
-      rel_button.push_back(rel_button_state);
-    }
-    else if (event.type == EV_ABS)
-    {
-    }
+    event.init(*this);
   }
 }
 

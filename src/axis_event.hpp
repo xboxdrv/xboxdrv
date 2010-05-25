@@ -23,37 +23,58 @@
 
 #include "uinput_deviceid.hpp"
 
-struct AxisEvent
+class uInput;
+
+class AxisEvent
 {
-  static AxisEvent invalid() { return create(DEVICEID_INVALID, -1, -1, 0, 0); }
-  static AxisEvent create(int device_id, int type, int code, int fuzz, int flat);
-  static AxisEvent create(int type, int code, int fuzz = 0, int flat = 0);
+public:
+  static const int MAX_MODIFIER = 4;
+
+  static AxisEvent invalid();
+  static AxisEvent create(int type);
+  static AxisEvent create_abs(int device_id, int code, int fuzz = 0, int flat = 0);
+  static AxisEvent create_rel(int device_id, int code, int repeat = 10, float value = 5);
+
+  static AxisEvent create_key();
+  static AxisEvent create_rel();
+  static AxisEvent create_abs();
+
   static AxisEvent from_string(const std::string& str);
 
-  int device_id;
+private:
+  static AxisEvent abs_from_string(const std::string& str);
+  static AxisEvent rel_from_string(const std::string& str);
+  static AxisEvent key_from_string(const std::string& str);
 
+public:
   /** EV_KEY, EV_ABS, EV_REL */
   int type;
 
-  /** BTN_A, REL_X, ABS_X, ... */
-  int code;
-
   union {
     struct {
+      UIEvent code;
       int   repeat;
-      float value;
+      float value; // FIXME: Why is this float?
     } rel;
 
     struct {
+      UIEvent code;
+      int min;
+      int max;
       int fuzz;
       int flat;
     } abs;
 
     struct {
-      int secondary_code;
+      // Array is terminated by -1
+      UIEvent up_codes[MAX_MODIFIER+1];
+      UIEvent down_codes[MAX_MODIFIER+1];
       int threshold;
     } key;
   };
+
+  void init(uInput& uinput);
+  void send(uInput& uinput, int value) const;
 
   bool is_valid() const;
 };

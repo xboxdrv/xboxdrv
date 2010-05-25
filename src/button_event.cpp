@@ -25,23 +25,16 @@
 
 #include "button_event.hpp"
 #include "evdev_helper.hpp"
+#include "uinput.hpp"
 #include "uinput_deviceid.hpp"
 
 ButtonEvent
-ButtonEvent::create(int type, int code)
-{
-  return ButtonEvent::create(DEVICEID_AUTO, type, code);
-}
-
-ButtonEvent
-ButtonEvent::create(int device_id, int type, int code)
+ButtonEvent::create(int type)
 {
   ButtonEvent ev;
 
-  ev.device_id = device_id;
   ev.type = type;
-  ev.code = code;
-
+  
   switch (type)
   {
     case EV_REL:
@@ -55,7 +48,7 @@ ButtonEvent::create(int device_id, int type, int code)
       break;
 
     case EV_KEY:
-      std::fill_n(ev.key.modifier, MAX_MODIFIER + 1, -1);
+      std::fill_n(ev.key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
       break;
 
     case -1:
@@ -65,6 +58,33 @@ ButtonEvent::create(int device_id, int type, int code)
       assert(!"This should never be reached");
   }
 
+  return ev;
+}
+
+ButtonEvent
+ButtonEvent::create_btn(int code)
+{
+  ButtonEvent ev = create(EV_KEY);
+  std::fill_n(ev.key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
+  ev.key.codes[0] = UIEvent::create(DEVICEID_AUTO, code);
+  return ev;
+}
+
+ButtonEvent
+ButtonEvent::create_btn()
+{
+  ButtonEvent ev = create(EV_KEY);
+  std::fill_n(ev.key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
+  return ev;
+}
+
+ButtonEvent
+ButtonEvent::create_rel(int code)
+{
+  ButtonEvent ev = create(EV_REL);
+  ev.rel.code   = UIEvent::create(DEVICEID_AUTO, code);
+  ev.rel.repeat = 100;
+  ev.rel.value  = 3;
   return ev;
 }
 
@@ -81,34 +101,28 @@ ButtonEvent::from_string(const std::string& str)
   {
     if (j == 0)
     {
-      std::string event_str;
-      split_event_name(*i, &event_str, &ev.device_id);
-
-      boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
-
-      std::vector<std::string> events;
-      tokenizer ev_tokens(event_str, plus_sep);
-      for(tokenizer::iterator k = ev_tokens.begin(); k != ev_tokens.end(); ++k)
+      switch(get_event_type(*i))
       {
-        events.push_back(*k);
-      }
+        case EV_KEY: {
+          ev = ButtonEvent::create_btn();
 
-      assert(!events.empty()); // HACK
+          boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
+          tokenizer ev_tokens(*i, plus_sep);
+          int k = 0;
+          for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
+          {
+            // create the event via function call to get proper default values
+            ev.key.codes[k] = str2btn_event(*m);
+          }
+          break;
+        }
 
-      int type, code;
+        case EV_REL:
+          ev = ButtonEvent::create_rel(-1); // FIXME: Hack
+          ev.rel.code = str2rel_event(*i);
+          break;
 
-      str2event(*events.begin(), type, code);
-
-      // create the event via function call to get proper default values
-      ev = ButtonEvent::create(ev.device_id, type, code);
-
-      int k = 0;
-      for(std::vector<std::string>::iterator m = events.begin() + 1; m != events.end(); ++m)
-      {
-        str2event(*m, type, code);
-        ev.key.modifier[k] = code;
-        k += 1;
-        if (k >= MAX_MODIFIER)
+        case EV_ABS:
           break;
       }
     }
@@ -129,10 +143,92 @@ ButtonEvent::from_string(const std::string& str)
   return ev;
 }
 
+void
+ButtonEvent::init(uInput& uinput)
+{
+  if (is_valid())
+  {
+    switch(type)
+    {
+      case EV_KEY:
+        for(int i = 0; key.codes[i].is_valid(); ++i)
+        {
+          if (uinput.is_mouse_button(key.codes[i].code))
+          {
+            key.codes[i].device_id = uinput.create_uinput_device(DEVICEID_MOUSE);
+          }
+          else if (uinput.is_keyboard_button(key.codes[i].code))
+          {
+            key.codes[i].device_id = uinput.create_uinput_device(DEVICEID_KEYBOARD);
+          }
+          else
+          {
+            key.codes[i].device_id = uinput.create_uinput_device(DEVICEID_JOYSTICK);
+          }
+
+          uinput.add_key(key.codes[i].device_id, key.codes[i].code);
+        }
+        break;
+
+      case EV_REL:
+        if (rel.code.device_id == DEVICEID_AUTO)
+        {
+          rel.code.device_id = uinput.create_uinput_device(DEVICEID_MOUSE);
+        }
+        else
+        {
+          rel.code.device_id = uinput.create_uinput_device(rel.code.device_id);
+        }
+
+        uinput.get_uinput(rel.code.device_id)->add_rel(rel.code.code);
+
+        // RelButtonState rel_button_state;
+        // rel_button_state.button = code;
+        // rel_button_state.time = 0;
+        // rel_button_state.next_time = 0;
+        // rel_button.push_back(rel_button_state);
+        break;
+
+      default:
+        abs.code.device_id = uinput.create_uinput_device(DEVICEID_JOYSTICK);
+        break;
+    }
+  }
+}
+
+void
+ButtonEvent::send(uInput& uinput, bool value) const
+{
+  switch(type)
+  {
+    case EV_KEY:
+      for(int i = 0; key.codes[i].is_valid(); ++i)
+      {
+        uinput.send_key(key.codes[i].device_id, key.codes[i].code, value);
+      }
+      break;
+
+    case EV_REL:
+      if (value)
+      {
+        uinput.get_uinput(rel.code.device_id)->send(EV_REL, rel.code.code, rel.value);
+      }
+      break;
+
+
+    case EV_ABS:
+      if (value)
+      {
+        uinput.get_uinput(abs.code.device_id)->send(EV_ABS, abs.code.code, abs.value);
+      }
+      break;
+  }
+}
+
 bool
 ButtonEvent::is_valid() const
 {
-  return device_id != DEVICEID_INVALID && type != -1 && code != -1;
+  return type != -1;
 }
 
 /* EOF */

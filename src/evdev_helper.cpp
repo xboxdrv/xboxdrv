@@ -648,6 +648,64 @@ void str2event(const std::string& name, int& type, int& code)
   }
 }
 
+int get_event_type(const std::string& name)
+{
+  if (name == "void" || name == "none")
+  {
+    return -1;
+  }
+  else if (name.compare(0, 3, "REL") == 0)
+  {
+    return EV_REL;
+  }
+  else if (name.compare(0, 3, "ABS") == 0)
+  {
+    return EV_ABS;
+  }
+  else if (name.compare(0, 3, "KEY") == 0 ||
+           name.compare(0, 3, "BTN") == 0 ||
+           name.compare(0, 2, "JS")  == 0 ||
+           name.compare(0, 2, "XK")  == 0)
+  {
+    return EV_KEY;
+  }
+  else
+  {
+    throw std::runtime_error("str2event(): unknown event type prefix: " + name);
+  }
+}
+
+int str2btn(const std::string& name)
+{
+  return evdev_abs_names[name];
+}
+
+int str2abs(const std::string& name)
+{
+  if (name.compare(0, 2, "XK") == 0)
+  {
+    return xkeysym2keycode(name);
+  }
+  else if (name.compare(0, 2, "JS") == 0)
+  {
+    return BTN_JOYSTICK + boost::lexical_cast<int>(name.substr(3));
+  }
+  else if (name.compare(0, 3, "KEY") == 0 ||
+           name.compare(0, 3, "BTN") == 0)
+  {
+    return evdev_btn_names[name];
+  }
+  else
+  {
+    throw std::runtime_error("str2abs: couldn't convert string: " + name);
+  }
+}
+
+int str2rel(const std::string& name)
+{
+  return evdev_rel_names[name];
+}
+
 std::string btn2str(int i)
 {
   return evdev_btn_names[i];
@@ -662,6 +720,32 @@ std::string rel2str(int i)
 {
   return evdev_rel_names[i];
 }
+
+UIEvent str2btn_event(const std::string& str)
+{
+  UIEvent ev;
+  std::string rest;
+  split_event_name(str, &rest, &ev.device_id);
+  ev.code = str2btn(rest);
+  return ev;
+}
+
+UIEvent str2rel_event(const std::string& str)
+{
+  UIEvent ev;
+  std::string rest;
+  split_event_name(str, &rest, &ev.device_id);
+  ev.code = str2rel(rest);
+  return ev;
+}
+
+UIEvent str2abs_event(const std::string& str)
+{
+  UIEvent ev;
+  std::string rest;
+  split_event_name(str, &rest, &ev.device_id);
+  ev.code = str2abs(rest);
+  return ev;
+}
 
 /* EOF */
-

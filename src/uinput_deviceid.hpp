@@ -29,6 +29,34 @@ enum {
   DEVICEID_JOYSTICK =  0
 };
 
+struct UIEvent 
+{
+  static UIEvent create(int device_id, int code) 
+  {
+    UIEvent ev;
+    ev.device_id = device_id;
+    ev.code      = code;
+    return ev;
+  }
+
+  static UIEvent invalid()
+  {
+    UIEvent ev;
+    ev.device_id = DEVICEID_INVALID;
+    ev.code      = -1;
+    return ev;    
+  }
+
+  bool is_valid() const {
+    return 
+      device_id == DEVICEID_INVALID || 
+      code == -1;
+  }
+
+  int device_id;
+  int code;
+};
+
 /** Takes "1-BTN_A" splits it into "1", "BTN_A" */
 inline void split_event_name(const std::string& str, std::string* event_str, int* device_id)
 {
@@ -59,6 +87,20 @@ inline void split_event_name(const std::string& str, std::string* event_str, int
     {
       *device_id = boost::lexical_cast<int>(device);
     }
+  }
+}
+
+inline void split_string_at(const std::string& str, char c, std::string* lhs, std::string* rhs)
+{
+  std::string::size_type p = str.find(c);
+  if (p == std::string::npos)
+  {
+    *lhs = str;
+  }
+  else
+  {
+    *lhs = str.substr(0, p);
+    *rhs = str.substr(p+1);
   }
 }
 
