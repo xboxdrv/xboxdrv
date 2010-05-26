@@ -87,7 +87,7 @@ AxisEvent::create_abs()
   AxisEvent ev;
   ev.type = EV_ABS;
   ev.abs.code = UIEvent::invalid();
-  ev.abs.min  = -32768;
+  ev.abs.min  = -32768; // FIXME: this must be properly set
   ev.abs.max  =  32767;
   ev.abs.fuzz = 0;
   ev.abs.flat = 0;

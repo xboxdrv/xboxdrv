@@ -46,6 +46,12 @@ private:
   static AxisEvent key_from_string(const std::string& str);
 
 public:
+  void init(uInput& uinput) const;
+  void send(uInput& uinput, int old_value, int value) const;
+
+  bool is_valid() const;
+
+public:
   /** EV_KEY, EV_ABS, EV_REL */
   int type;
 
@@ -71,11 +77,6 @@ public:
       int threshold;
     } key;
   };
-
-  void init(uInput& uinput) const;
-  void send(uInput& uinput, int old_value, int value) const;
-
-  bool is_valid() const;
 };
 
 #endif

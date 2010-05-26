@@ -27,13 +27,22 @@ class uInput;
 
 struct ButtonEvent
 {
+public:
   static const int MAX_MODIFIER = 4;
+
   static ButtonEvent invalid();
   static ButtonEvent create_btn(int code);
   static ButtonEvent create_btn();
   static ButtonEvent create_rel(int code);
   static ButtonEvent from_string(const std::string& str);
 
+public:
+  void init(uInput& uinput) const;
+  void send(uInput& uinput, bool value) const;
+
+  bool is_valid() const;
+
+public:
   /** EV_KEY, EV_ABS, EV_REL */
   int type;
 
@@ -54,11 +63,6 @@ struct ButtonEvent
       UIEvent codes[MAX_MODIFIER+1];
     } key;
   };
-
-  void init(uInput& uinput) const;
-  void send(uInput& uinput, bool value) const;
-
-  bool is_valid() const;
 };
 
 #endif

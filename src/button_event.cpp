@@ -101,6 +101,7 @@ ButtonEvent::from_string(const std::string& str)
           break;
 
         case EV_ABS:
+          // FIXME: Need magic to detect min/max of the axis
           break;
       }
     }
@@ -154,29 +155,36 @@ ButtonEvent::init(uInput& uinput) const
 void
 ButtonEvent::send(uInput& uinput, bool value) const
 {
-  switch(type)
+  if (is_valid())
   {
-    case EV_KEY:
-      for(int i = 0; key.codes[i].is_valid(); ++i)
-      {
-        uinput.send_key(key.codes[i].device_id, key.codes[i].code, value);
-      }
-      break;
+    switch(type)
+    {
+      case EV_KEY:
+        for(int i = 0; key.codes[i].is_valid(); ++i)
+        {
+          uinput.send_key(key.codes[i].device_id, key.codes[i].code, value);
+        }
+        break;
 
-    case EV_REL:
-      if (value)
-      {
-        uinput.send_rel_repetitive(rel.code, rel.value, rel.repeat);
-      }
-      break;
+      case EV_REL:
+        if (value)
+        {
+          uinput.send_rel_repetitive(rel.code, rel.value, rel.repeat);
+        }
+        else
+        {
+          uinput.send_rel_repetitive(rel.code, rel.value, -1);
+        }
+        break;
 
 
-    case EV_ABS:
-      if (value)
-      {
-        uinput.get_uinput(abs.code.device_id)->send(EV_ABS, abs.code.code, abs.value);
-      }
-      break;
+      case EV_ABS:
+        if (value)
+        {
+          uinput.get_uinput(abs.code.device_id)->send(EV_ABS, abs.code.code, abs.value);
+        }
+        break;
+    }
   }
 }
 
