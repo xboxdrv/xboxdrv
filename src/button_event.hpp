@@ -31,8 +31,8 @@ public:
   static const int MAX_MODIFIER = 4;
 
   static ButtonEvent invalid();
-  static ButtonEvent create_btn(int code);
-  static ButtonEvent create_btn();
+  static ButtonEvent create_key(int code);
+  static ButtonEvent create_key();
   static ButtonEvent create_rel(int code);
   static ButtonEvent from_string(const std::string& str);
 

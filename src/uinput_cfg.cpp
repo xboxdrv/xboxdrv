@@ -33,37 +33,37 @@ uInputCfg::uInputCfg() :
   std::fill_n(axis_map, static_cast<int>(XBOX_AXIS_MAX), AxisEvent::invalid());
 
   // Button Mapping
-  btn_map.bind(XBOX_BTN_START, ButtonEvent::create_btn(BTN_START));
-  btn_map.bind(XBOX_BTN_GUIDE, ButtonEvent::create_btn(BTN_MODE));
-  btn_map.bind(XBOX_BTN_BACK, ButtonEvent::create_btn(BTN_SELECT));
+  btn_map.bind(XBOX_BTN_START, ButtonEvent::create_key(BTN_START));
+  btn_map.bind(XBOX_BTN_GUIDE, ButtonEvent::create_key(BTN_MODE));
+  btn_map.bind(XBOX_BTN_BACK, ButtonEvent::create_key(BTN_SELECT));
 
-  btn_map.bind(XBOX_BTN_A, ButtonEvent::create_btn(BTN_A));
-  btn_map.bind(XBOX_BTN_B, ButtonEvent::create_btn(BTN_B));
-  btn_map.bind(XBOX_BTN_X, ButtonEvent::create_btn(BTN_X));
-  btn_map.bind(XBOX_BTN_Y, ButtonEvent::create_btn(BTN_Y));
+  btn_map.bind(XBOX_BTN_A, ButtonEvent::create_key(BTN_A));
+  btn_map.bind(XBOX_BTN_B, ButtonEvent::create_key(BTN_B));
+  btn_map.bind(XBOX_BTN_X, ButtonEvent::create_key(BTN_X));
+  btn_map.bind(XBOX_BTN_Y, ButtonEvent::create_key(BTN_Y));
 
-  btn_map.bind(XBOX_BTN_GREEN, ButtonEvent::create_btn(BTN_0));
-  btn_map.bind(XBOX_BTN_RED, ButtonEvent::create_btn(BTN_1));
-  btn_map.bind(XBOX_BTN_YELLOW, ButtonEvent::create_btn(BTN_2));
-  btn_map.bind(XBOX_BTN_BLUE, ButtonEvent::create_btn(BTN_3));
-  btn_map.bind(XBOX_BTN_ORANGE, ButtonEvent::create_btn(BTN_4));
+  btn_map.bind(XBOX_BTN_GREEN, ButtonEvent::create_key(BTN_0));
+  btn_map.bind(XBOX_BTN_RED, ButtonEvent::create_key(BTN_1));
+  btn_map.bind(XBOX_BTN_YELLOW, ButtonEvent::create_key(BTN_2));
+  btn_map.bind(XBOX_BTN_BLUE, ButtonEvent::create_key(BTN_3));
+  btn_map.bind(XBOX_BTN_ORANGE, ButtonEvent::create_key(BTN_4));
 
-  btn_map.bind(XBOX_BTN_WHITE, ButtonEvent::create_btn(BTN_TL));
-  btn_map.bind(XBOX_BTN_BLACK, ButtonEvent::create_btn(BTN_TR));
+  btn_map.bind(XBOX_BTN_WHITE, ButtonEvent::create_key(BTN_TL));
+  btn_map.bind(XBOX_BTN_BLACK, ButtonEvent::create_key(BTN_TR));
 
-  btn_map.bind(XBOX_BTN_LB, ButtonEvent::create_btn(BTN_TL));
-  btn_map.bind(XBOX_BTN_RB, ButtonEvent::create_btn(BTN_TR));
+  btn_map.bind(XBOX_BTN_LB, ButtonEvent::create_key(BTN_TL));
+  btn_map.bind(XBOX_BTN_RB, ButtonEvent::create_key(BTN_TR));
 
-  btn_map.bind(XBOX_BTN_LT, ButtonEvent::create_btn(BTN_TL2));
-  btn_map.bind(XBOX_BTN_RT, ButtonEvent::create_btn(BTN_TR2));
+  btn_map.bind(XBOX_BTN_LT, ButtonEvent::create_key(BTN_TL2));
+  btn_map.bind(XBOX_BTN_RT, ButtonEvent::create_key(BTN_TR2));
 
-  btn_map.bind(XBOX_BTN_THUMB_L, ButtonEvent::create_btn(BTN_THUMBL));
-  btn_map.bind(XBOX_BTN_THUMB_R, ButtonEvent::create_btn(BTN_THUMBR));
+  btn_map.bind(XBOX_BTN_THUMB_L, ButtonEvent::create_key(BTN_THUMBL));
+  btn_map.bind(XBOX_BTN_THUMB_R, ButtonEvent::create_key(BTN_THUMBR));
   
-  btn_map.bind(XBOX_DPAD_UP, ButtonEvent::create_btn(BTN_BASE));
-  btn_map.bind(XBOX_DPAD_DOWN, ButtonEvent::create_btn(BTN_BASE2));
-  btn_map.bind(XBOX_DPAD_LEFT, ButtonEvent::create_btn(BTN_BASE3));
-  btn_map.bind(XBOX_DPAD_RIGHT, ButtonEvent::create_btn(BTN_BASE4));
+  btn_map.bind(XBOX_DPAD_UP, ButtonEvent::create_key(BTN_BASE));
+  btn_map.bind(XBOX_DPAD_DOWN, ButtonEvent::create_key(BTN_BASE2));
+  btn_map.bind(XBOX_DPAD_LEFT, ButtonEvent::create_key(BTN_BASE3));
+  btn_map.bind(XBOX_DPAD_RIGHT, ButtonEvent::create_key(BTN_BASE4));
 
   // Axis Mapping
   axis_map[XBOX_AXIS_X1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -32768, 32767, 0, 0); 
@@ -84,37 +84,37 @@ uInputCfg::mimic_xpad()
 
   extra_devices = false;
 
-  btn_map.bind(XBOX_BTN_START, ButtonEvent::create_btn(BTN_START));
-  btn_map.bind(XBOX_BTN_GUIDE, ButtonEvent::create_btn(BTN_MODE));
-  btn_map.bind(XBOX_BTN_BACK, ButtonEvent::create_btn(BTN_BACK));
+  btn_map.bind(XBOX_BTN_START, ButtonEvent::create_key(BTN_START));
+  btn_map.bind(XBOX_BTN_GUIDE, ButtonEvent::create_key(BTN_MODE));
+  btn_map.bind(XBOX_BTN_BACK, ButtonEvent::create_key(BTN_BACK));
 
-  btn_map.bind(XBOX_BTN_A, ButtonEvent::create_btn(BTN_A));
-  btn_map.bind(XBOX_BTN_B, ButtonEvent::create_btn(BTN_B));
-  btn_map.bind(XBOX_BTN_X, ButtonEvent::create_btn(BTN_X));
-  btn_map.bind(XBOX_BTN_Y, ButtonEvent::create_btn(BTN_Y));
+  btn_map.bind(XBOX_BTN_A, ButtonEvent::create_key(BTN_A));
+  btn_map.bind(XBOX_BTN_B, ButtonEvent::create_key(BTN_B));
+  btn_map.bind(XBOX_BTN_X, ButtonEvent::create_key(BTN_X));
+  btn_map.bind(XBOX_BTN_Y, ButtonEvent::create_key(BTN_Y));
 
-  btn_map.bind(XBOX_BTN_GREEN, ButtonEvent::create_btn(BTN_0));
-  btn_map.bind(XBOX_BTN_RED, ButtonEvent::create_btn(BTN_1));
-  btn_map.bind(XBOX_BTN_YELLOW, ButtonEvent::create_btn(BTN_2));
-  btn_map.bind(XBOX_BTN_BLUE, ButtonEvent::create_btn(BTN_3));
-  btn_map.bind(XBOX_BTN_ORANGE, ButtonEvent::create_btn(BTN_4));
+  btn_map.bind(XBOX_BTN_GREEN, ButtonEvent::create_key(BTN_0));
+  btn_map.bind(XBOX_BTN_RED, ButtonEvent::create_key(BTN_1));
+  btn_map.bind(XBOX_BTN_YELLOW, ButtonEvent::create_key(BTN_2));
+  btn_map.bind(XBOX_BTN_BLUE, ButtonEvent::create_key(BTN_3));
+  btn_map.bind(XBOX_BTN_ORANGE, ButtonEvent::create_key(BTN_4));
 
-  btn_map.bind(XBOX_BTN_WHITE, ButtonEvent::create_btn(BTN_TL));
-  btn_map.bind(XBOX_BTN_BLACK, ButtonEvent::create_btn(BTN_TR));
+  btn_map.bind(XBOX_BTN_WHITE, ButtonEvent::create_key(BTN_TL));
+  btn_map.bind(XBOX_BTN_BLACK, ButtonEvent::create_key(BTN_TR));
 
-  btn_map.bind(XBOX_BTN_LB, ButtonEvent::create_btn(BTN_TL));
-  btn_map.bind(XBOX_BTN_RB, ButtonEvent::create_btn(BTN_TR));
+  btn_map.bind(XBOX_BTN_LB, ButtonEvent::create_key(BTN_TL));
+  btn_map.bind(XBOX_BTN_RB, ButtonEvent::create_key(BTN_TR));
             
-  btn_map.bind(XBOX_BTN_LT, ButtonEvent::create_btn(BTN_TL2));
-  btn_map.bind(XBOX_BTN_RT, ButtonEvent::create_btn(BTN_TR2));
+  btn_map.bind(XBOX_BTN_LT, ButtonEvent::create_key(BTN_TL2));
+  btn_map.bind(XBOX_BTN_RT, ButtonEvent::create_key(BTN_TR2));
             
-  btn_map.bind(XBOX_BTN_THUMB_L, ButtonEvent::create_btn(BTN_THUMBL));
-  btn_map.bind(XBOX_BTN_THUMB_R, ButtonEvent::create_btn(BTN_THUMBR));
+  btn_map.bind(XBOX_BTN_THUMB_L, ButtonEvent::create_key(BTN_THUMBL));
+  btn_map.bind(XBOX_BTN_THUMB_R, ButtonEvent::create_key(BTN_THUMBR));
             
-  btn_map.bind(XBOX_DPAD_UP, ButtonEvent::create_btn(BTN_BASE));
-  btn_map.bind(XBOX_DPAD_DOWN, ButtonEvent::create_btn(BTN_BASE2));
-  btn_map.bind(XBOX_DPAD_LEFT, ButtonEvent::create_btn(BTN_BASE3));
-  btn_map.bind(XBOX_DPAD_RIGHT, ButtonEvent::create_btn(BTN_BASE4));
+  btn_map.bind(XBOX_DPAD_UP, ButtonEvent::create_key(BTN_BASE));
+  btn_map.bind(XBOX_DPAD_DOWN, ButtonEvent::create_key(BTN_BASE2));
+  btn_map.bind(XBOX_DPAD_LEFT, ButtonEvent::create_key(BTN_BASE3));
+  btn_map.bind(XBOX_DPAD_RIGHT, ButtonEvent::create_key(BTN_BASE4));
 
   // Axis Mapping
   axis_map[XBOX_AXIS_X1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_X,  -32768, 32767, 16, 128);

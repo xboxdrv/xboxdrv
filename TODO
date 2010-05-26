@@ -44,6 +44,8 @@ Stuff to do before 0.5 release:
 
 * --extra_devices is broken (no longer implemented)
 
+* add -m as shortcut for --mouse
+
 
 * figure out a way to make userspace force feedback driver not become dead processes
 

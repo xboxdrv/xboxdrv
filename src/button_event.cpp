@@ -37,7 +37,7 @@ ButtonEvent::invalid()
 }
 
 ButtonEvent
-ButtonEvent::create_btn(int code)
+ButtonEvent::create_key(int code)
 {
   ButtonEvent ev;
   ev.type = EV_KEY;
@@ -47,7 +47,7 @@ ButtonEvent::create_btn(int code)
 }
 
 ButtonEvent
-ButtonEvent::create_btn()
+ButtonEvent::create_key()
 {
   ButtonEvent ev;
   ev.type = EV_KEY;
@@ -82,7 +82,7 @@ ButtonEvent::from_string(const std::string& str)
       switch(get_event_type(*i))
       {
         case EV_KEY: {
-          ev = ButtonEvent::create_btn();
+          ev = ButtonEvent::create_key();
 
           boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
           tokenizer ev_tokens(*i, plus_sep);
