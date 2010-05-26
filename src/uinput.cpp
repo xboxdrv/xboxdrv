@@ -519,7 +519,8 @@ uInput::send_button(int code, bool value)
           for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
           {
             const ButtonEvent& event = cfg.btn_map.lookup(j, i);
-            event.send(*this, false);
+            if (event.is_valid())
+              event.send(*this, false);
           }
         }
       }
