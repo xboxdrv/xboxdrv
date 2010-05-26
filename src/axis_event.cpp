@@ -31,7 +31,7 @@ AxisEvent
 AxisEvent::invalid() 
 { 
   AxisEvent ev;
-  ev.type      = -1;
+  ev.type = -1;
   return ev;
 }
 
@@ -73,6 +73,9 @@ AxisEvent::create_rel()
 {
   AxisEvent ev;
   ev.type = EV_REL;
+  ev.rel.code = UIEvent::invalid();
+  ev.rel.repeat = 10;
+  ev.rel.value  = 5;
   return ev;
 }
   
@@ -81,41 +84,11 @@ AxisEvent::create_abs()
 {
   AxisEvent ev;
   ev.type = EV_ABS;
-  return ev;
-}
-
-AxisEvent 
-AxisEvent::create(int type)
-{
-  AxisEvent ev;
-
-  ev.type = type;
-  
-  switch (ev.type)
-  {
-    case EV_REL:
-      ev.rel.repeat = 10;
-      ev.rel.value  = 5;
-      break;
-
-    case EV_ABS:
-      ev.abs.fuzz = 0;
-      ev.abs.flat = 0;
-      break;
-
-    case EV_KEY:
-      std::fill_n(ev.key.up_codes,   MAX_MODIFIER+1, UIEvent::invalid());
-      std::fill_n(ev.key.down_codes, MAX_MODIFIER+1, UIEvent::invalid());
-      ev.key.threshold      = 8000;
-      break;
-
-    case -1:
-      break;
-        
-    default:
-      assert(!"This should never be reached");
-  }
-
+  ev.abs.code = UIEvent::invalid();
+  ev.abs.min  = -32768;
+  ev.abs.max  =  32767;
+  ev.abs.fuzz = 0;
+  ev.abs.flat = 0;
   return ev;
 }
 
