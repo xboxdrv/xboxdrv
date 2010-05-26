@@ -42,6 +42,8 @@ Stuff to do before 0.5 release:
 
 * --ui-clear doesn't work properly
 
+* --extra_devices is broken (no longer implemented)
+
 
 * figure out a way to make userspace force feedback driver not become dead processes
 
