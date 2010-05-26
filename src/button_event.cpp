@@ -181,12 +181,6 @@ ButtonEvent::init(uInput& uinput)
         }
 
         uinput.get_uinput(rel.code.device_id)->add_rel(rel.code.code);
-
-        // RelButtonState rel_button_state;
-        // rel_button_state.button = code;
-        // rel_button_state.time = 0;
-        // rel_button_state.next_time = 0;
-        // rel_button.push_back(rel_button_state);
         break;
 
       default:
@@ -211,7 +205,7 @@ ButtonEvent::send(uInput& uinput, bool value) const
     case EV_REL:
       if (value)
       {
-        uinput.get_uinput(rel.code.device_id)->send(EV_REL, rel.code.code, rel.value);
+        uinput.send_rel_repetitive(rel.code, rel.value, rel.repeat);
       }
       break;
 

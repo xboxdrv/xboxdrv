@@ -49,21 +49,15 @@ private:
   int  axis_state[XBOX_AXIS_MAX];
   bool button_state[XBOX_BTN_MAX];
 
-  struct RelAxisState {
-    int axis;
-    int time;
-    int next_time;
+  struct RelRepeat 
+  {
+    UIEvent code;
+    int value;
+    int countdown;
+    int repeat_interval;
   };
 
-  struct RelButtonState {
-    int button;
-    int time;
-    int next_time;
-  };
-
-  // rel_axis[XBOx_AXIS_??] = ...
-  std::vector<RelAxisState>   rel_axis;
-  std::vector<RelButtonState> rel_button;
+  std::map<UIEvent, RelRepeat> rel_repeat_lst;
 
 public:
   uInput(const XPadDevice& dev, uInputCfg cfg = uInputCfg());
@@ -90,9 +84,10 @@ private:
 public:
   void add_rel(int device_id, int ev_code);
   void add_abs(int device_id, int ev_code, int min, int max, int fuzz, int flat);
-
   void add_key(int device_id, int ev_code);
+
   void send_key(int device_id, int ev_code, bool value);
+  void send_rel_repetitive(const UIEvent& code, int value, int repeat_interval);
 
   LinuxUinput* get_uinput(int device_id) const;
   LinuxUinput* get_mouse_uinput() const;

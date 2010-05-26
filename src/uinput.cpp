@@ -49,8 +49,7 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
   m_dev(dev),
   uinput_devs(),
   cfg(config_),
-  rel_axis(),
-  rel_button()
+  rel_repeat_lst()
 {
   std::fill_n(axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
   std::fill_n(button_state, static_cast<int>(XBOX_BTN_MAX),  false);
@@ -311,6 +310,11 @@ uInput::send(XboxGenericMsg& msg)
       std::cout << "XboxGenericMsg type: " << msg.type << std::endl;
       assert(!"uInput: Unknown XboxGenericMsg type");
   }
+
+  for(uInputDevs::iterator i = uinput_devs.begin(); i != uinput_devs.end(); ++i)
+  {
+    i->second->sync();
+  }
 }
 
 void
@@ -478,43 +482,15 @@ uInput::send(Xbox360GuitarMsg& msg)
 void
 uInput::update(int msec_delta)
 {
-  // Relative Motion emulation for axis
-  for(std::vector<RelAxisState>::iterator i = rel_axis.begin(); i != rel_axis.end(); ++i)
+  for(std::map<UIEvent, RelRepeat>::iterator i = rel_repeat_lst.begin(); i != rel_repeat_lst.end(); ++i)
   {
-    i->time += msec_delta;
-
-#if 0
-    if (i->time >= i->next_time)
+    i->second.countdown -= msec_delta;
+    while (i->second.countdown < 0)
     {
-      if (i->axis == XBOX_AXIS_TRIGGER)
-      { // dirty little hack, as we can't get the axis range easily by other means
-        get_mouse_uinput()->send(EV_REL, cfg.axis_map[i->axis].code,
-                                 static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 255);
-      }
-      else
-      {
-        get_mouse_uinput()->send(EV_REL, cfg.axis_map[i->axis].code.code,
-                                 static_cast<int>(cfg.axis_map[i->axis].rel.value * axis_state[i->axis]) / 32767);
-      }
-      i->next_time += cfg.axis_map[i->axis].rel.repeat;
-    }
-#endif
-  }
-
-#if 0
-  // Relative Motion emulation for button
-  for(std::vector<RelButtonState>::iterator i = rel_button.begin(); i != rel_button.end(); ++i)
-  {
-    i->time += msec_delta;
-
-    if (i->time >= i->next_time)
-    {
-      get_mouse_uinput()->send(EV_REL, cfg.btn_map.lookup(i->button).code,
-                               static_cast<int>(cfg.btn_map.lookup(i->button).rel.value * button_state[i->button]));
-      i->next_time += cfg.btn_map.lookup(i->button).rel.repeat;
+      get_uinput(i->second.code.device_id)->send(EV_REL, i->second.code.code, i->second.value);
+      i->second.countdown += i->second.repeat_interval;
     }
   }
-#endif
 
   get_force_feedback_uinput()->update_force_feedback(msec_delta);
 
@@ -599,6 +575,40 @@ uInput::send_key(int device_id, int ev_code, bool value)
   else
   {
     get_uinput(device_id)->send(EV_KEY, ev_code, value);
+  }
+}
+
+void
+uInput::send_rel_repetitive(const UIEvent& code, int value, int repeat_interval)
+{
+  if (repeat_interval < 0)
+  { // remove rel_repeats from list
+    rel_repeat_lst.erase(code);
+    // no need to send a event for rel, as it defaults to 0 anyway
+  }
+  else
+  { // add rel_repeats to list
+    std::map<UIEvent, RelRepeat>::iterator it = rel_repeat_lst.find(code);
+
+    if (it == rel_repeat_lst.end())
+    {
+      RelRepeat rel_rep;
+      rel_rep.code  = code;
+      rel_rep.value = value;
+      rel_rep.countdown = repeat_interval;
+      rel_rep.repeat_interval = repeat_interval;
+      rel_repeat_lst.insert(std::pair<UIEvent, RelRepeat>(code, rel_rep));
+    }
+    else
+    {
+      it->second.code  = code;
+      it->second.value = value;
+      it->second.countdown = repeat_interval;
+      it->second.repeat_interval = repeat_interval;
+    }
+    
+    // Send the event once
+    get_uinput(code.device_id)->send(EV_REL, code.code, value);
   }
 }
 

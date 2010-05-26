@@ -316,8 +316,8 @@ AxisEvent::send(uInput& uinput, int old_value, int value) const
         break;
 
       case EV_REL:
-        // Mouse events are handled in update() (which is wrong,
-        // since we miss the first click and introduce a delay)
+        // FIXME: Need to now the min/max of value
+        uinput.send_rel_repetitive(rel.code, rel.value * value / 32767, rel.repeat);
         break;
 
       case EV_KEY:

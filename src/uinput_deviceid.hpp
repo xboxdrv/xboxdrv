@@ -47,10 +47,27 @@ struct UIEvent
     return ev;    
   }
 
-  bool is_valid() const {
+  bool is_valid() const 
+  {
     return 
       device_id == DEVICEID_INVALID || 
       code == -1;
+  }
+
+  bool operator<(const UIEvent& rhs)  const
+  {
+    if (device_id == rhs.device_id)
+    {
+      return code < rhs.code;
+    }
+    else if (device_id > rhs.device_id)
+    {
+      return false;
+    }
+    else // (device_id < rhs.device_id)
+    {
+      return true;
+    }
   }
 
   int device_id;
