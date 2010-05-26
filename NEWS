@@ -1,4 +1,4 @@
-xboxdrv 0.4.14 - (??/Mai/2010)
+xboxdrv 0.4.14 - (??/May/2010)
 ==============================
 
 * added device_id handling to --ui-buttonmap and --ui-axismap, allows
@@ -11,14 +11,14 @@ xboxdrv 0.4.14 - (??/Mai/2010)
   by the kernel without messing with hal
 
 
-xboxdrv 0.4.13 - (13/Mai/2010)
+xboxdrv 0.4.13 - (13/May/2010)
 ==============================
 
 * added --mimic-xpad
 * added --no-extra-devices
 
 
-xboxdrv 0.4.12 - (08/Mai/2010)
+xboxdrv 0.4.12 - (08/May/2010)
 ==============================
 
 * added --four-way-restrictor
@@ -26,7 +26,7 @@ xboxdrv 0.4.12 - (08/Mai/2010)
 * added proper man pages for xboxdrv and xboxdrv-daemon
 
 
-xboxdrv 0.4.11 - (01/Mai/2010)
+xboxdrv 0.4.11 - (01/May/2010)
 ==============================
 
 * added --axis-sensitivity
