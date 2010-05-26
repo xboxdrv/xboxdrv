@@ -85,20 +85,18 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
   }
 }
 
-int
+void
 uInput::create_uinput_device(int device_id)
 {
+  assert(device_id != DEVICEID_AUTO);
+
   uInputDevs::iterator it = uinput_devs.find(device_id);
   if (it != uinput_devs.end())
   {
     // device already exist, which is fine    
-    return device_id;
   }
   else
   {
-    if (!cfg.extra_devices)
-      device_id = DEVICEID_JOYSTICK;
-
     std::ostringstream dev_name;
     dev_name << cfg.device_name;
 
@@ -142,8 +140,6 @@ uInput::create_uinput_device(int device_id)
     }
 
     std::cout << "Creating uinput device: device_id: " << device_id << ", dev_name: " << dev_name.str() << std::endl;
-
-    return device_id;
   }
 }
 

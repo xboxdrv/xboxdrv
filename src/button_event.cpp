@@ -66,7 +66,7 @@ ButtonEvent::create_btn(int code)
 {
   ButtonEvent ev = create(EV_KEY);
   std::fill_n(ev.key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
-  ev.key.codes[0] = UIEvent::create(DEVICEID_AUTO, code);
+  ev.key.codes[0] = UIEvent::create(DEVICEID_AUTO, EV_KEY, code);
   return ev;
 }
 
@@ -82,7 +82,7 @@ ButtonEvent
 ButtonEvent::create_rel(int code)
 {
   ButtonEvent ev = create(EV_REL);
-  ev.rel.code   = UIEvent::create(DEVICEID_AUTO, code);
+  ev.rel.code   = UIEvent::create(DEVICEID_AUTO, EV_REL, code);
   ev.rel.repeat = 100;
   ev.rel.value  = 3;
   return ev;
@@ -144,7 +144,7 @@ ButtonEvent::from_string(const std::string& str)
 }
 
 void
-ButtonEvent::init(uInput& uinput)
+ButtonEvent::init(uInput& uinput) const
 {
   if (is_valid())
   {
@@ -153,39 +153,22 @@ ButtonEvent::init(uInput& uinput)
       case EV_KEY:
         for(int i = 0; key.codes[i].is_valid(); ++i)
         {
-          if (uinput.is_mouse_button(key.codes[i].code))
-          {
-            key.codes[i].device_id = uinput.create_uinput_device(DEVICEID_MOUSE);
-          }
-          else if (uinput.is_keyboard_button(key.codes[i].code))
-          {
-            key.codes[i].device_id = uinput.create_uinput_device(DEVICEID_KEYBOARD);
-          }
-          else
-          {
-            key.codes[i].device_id = uinput.create_uinput_device(DEVICEID_JOYSTICK);
-          }
-
+          uinput.create_uinput_device(key.codes[i].device_id);
           uinput.add_key(key.codes[i].device_id, key.codes[i].code);
         }
         break;
 
       case EV_REL:
-        if (rel.code.device_id == DEVICEID_AUTO)
-        {
-          rel.code.device_id = uinput.create_uinput_device(DEVICEID_MOUSE);
-        }
-        else
-        {
-          rel.code.device_id = uinput.create_uinput_device(rel.code.device_id);
-        }
-
+        uinput.create_uinput_device(rel.code.device_id);
         uinput.get_uinput(rel.code.device_id)->add_rel(rel.code.code);
         break;
 
-      default:
-        abs.code.device_id = uinput.create_uinput_device(DEVICEID_JOYSTICK);
+      case EV_ABS:
+        uinput.create_uinput_device(abs.code.device_id);
         break;
+
+      default:
+        assert(!"ButtonEvent::init(): never reached");
     }
   }
 }

@@ -39,7 +39,8 @@ AxisEvent
 AxisEvent::create_abs(int device_id, int code, int fuzz, int flat)
 {
   AxisEvent ev;
-  ev.type      = EV_REL;
+  ev.type      = EV_ABS;
+  ev.abs.code  = UIEvent::create(device_id, EV_ABS, code);
   ev.abs.fuzz  = fuzz;
   ev.abs.flat  = flat;
   return ev;
@@ -50,6 +51,7 @@ AxisEvent::create_rel(int device_id, int code, int repeat, float value)
 {
   AxisEvent ev;
   ev.type       = EV_REL;
+  ev.rel.code   = UIEvent::create(device_id, EV_REL, code);
   ev.rel.repeat = repeat;
   ev.rel.value  = value;
   return ev;  
@@ -60,6 +62,9 @@ AxisEvent::create_key()
 {
   AxisEvent ev;
   ev.type = EV_KEY;
+  std::fill_n(ev.key.up_codes,   MAX_MODIFIER+1, UIEvent::invalid());
+  std::fill_n(ev.key.down_codes, MAX_MODIFIER+1, UIEvent::invalid());
+  ev.key.threshold      = 8000;
   return ev;
 }
 
@@ -251,7 +256,7 @@ AxisEvent::is_valid() const
 }
 
 void
-AxisEvent::init(uInput& uinput)
+AxisEvent::init(uInput& uinput) const
 {
   if (is_valid())
   {
@@ -260,43 +265,24 @@ AxisEvent::init(uInput& uinput)
       case EV_KEY:
         for(int i = 0; key.up_codes[i].is_valid(); ++i)
         {
-          if (uinput.is_mouse_button(key.up_codes[i].code))
-            key.up_codes[i].device_id = uinput.create_uinput_device(DEVICEID_MOUSE);
-          else if (uinput.is_keyboard_button(key.up_codes[i].code))
-            key.up_codes[i].device_id = uinput.create_uinput_device(DEVICEID_KEYBOARD);
-          else
-            key.up_codes[i].device_id = uinput.create_uinput_device(DEVICEID_JOYSTICK);
-
+          uinput.create_uinput_device(key.up_codes[i].device_id);
           uinput.add_key(key.up_codes[i].device_id, key.up_codes[i].code);
         }
 
         for(int i = 0; key.down_codes[i].is_valid(); ++i)
         {
-          if (uinput.is_mouse_button(key.down_codes[i].code))
-            key.down_codes[i].device_id = uinput.create_uinput_device(DEVICEID_MOUSE);
-          else if (uinput.is_keyboard_button(key.down_codes[i].code))
-            key.down_codes[i].device_id = uinput.create_uinput_device(DEVICEID_KEYBOARD);
-          else
-            key.down_codes[i].device_id = uinput.create_uinput_device(DEVICEID_JOYSTICK);
-
+          uinput.create_uinput_device(key.down_codes[i].device_id);
           uinput.add_key(key.down_codes[i].device_id, key.down_codes[i].code);
         }
         break;
 
       case EV_REL:
-        rel.code.device_id = uinput.create_uinput_device(DEVICEID_MOUSE);
+        uinput.create_uinput_device(rel.code.device_id);
         uinput.add_rel(rel.code.device_id, rel.code.code);
-
-        // RelAxisState rel_axis_state;
-        // rel_axis_state.axis = code;
-        // rel_axis_state.time = 0;
-        // rel_axis_state.next_time = 0;
-
-        // rel_axis.push_back(rel_axis_state);
         break;
 
       case EV_ABS:
-        rel.code.device_id = uinput.create_uinput_device(DEVICEID_JOYSTICK);
+        uinput.create_uinput_device(abs.code.device_id);
         uinput.add_abs(abs.code.device_id, abs.code.code, 
                        abs.min, abs.max, abs.fuzz, abs.flat);
         break;

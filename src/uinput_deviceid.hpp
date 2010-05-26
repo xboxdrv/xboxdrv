@@ -31,46 +31,15 @@ enum {
 
 struct UIEvent 
 {
-  static UIEvent create(int device_id, int code) 
-  {
-    UIEvent ev;
-    ev.device_id = device_id;
-    ev.code      = code;
-    return ev;
-  }
+  static UIEvent create(int device_id, int type, int code);
+  static UIEvent invalid();
 
-  static UIEvent invalid()
-  {
-    UIEvent ev;
-    ev.device_id = DEVICEID_INVALID;
-    ev.code      = -1;
-    return ev;    
-  }
-
-  bool is_valid() const 
-  {
-    return 
-      device_id == DEVICEID_INVALID || 
-      code == -1;
-  }
-
-  bool operator<(const UIEvent& rhs)  const
-  {
-    if (device_id == rhs.device_id)
-    {
-      return code < rhs.code;
-    }
-    else if (device_id > rhs.device_id)
-    {
-      return false;
-    }
-    else // (device_id < rhs.device_id)
-    {
-      return true;
-    }
-  }
+  void resolve_device_id();
+  bool is_valid() const;
+  bool operator<(const UIEvent& rhs)  const;
 
   int device_id;
+  int type;
   int code;
 };
 

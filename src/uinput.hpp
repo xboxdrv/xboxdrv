@@ -94,7 +94,7 @@ public:
   LinuxUinput* get_force_feedback_uinput() const;
 
 public:
-  int create_uinput_device(int device_id);
+  void create_uinput_device(int device_id);
 
 public:
   static bool is_mouse_button(int ev_code);

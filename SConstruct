@@ -49,6 +49,7 @@ env = conf.Finish()
 env.Program('xboxdrv', ['src/xboxdrv.cpp', 
                         'src/xboxmsg.cpp',
                         'src/uinput.cpp',
+                        'src/uinput_deviceid.cpp',
                         'src/uinput_cfg.cpp',
                         'src/button_event.cpp',
                         'src/axis_event.cpp',
