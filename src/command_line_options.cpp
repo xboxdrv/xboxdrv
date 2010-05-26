@@ -164,7 +164,7 @@ CommandLineOptions::CommandLineOptions() :
     .add_option(OPTION_UI_CLEAR,           0, "ui-clear",         "",     "Removes all existing uinput bindings")
     .add_option(OPTION_UI_BUTTONMAP,       0, "ui-buttonmap",     "MAP",  "Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)")
     .add_option(OPTION_UI_AXISMAP,         0, "ui-axismap",       "MAP",  "Changes the uinput events send when moving a axis (example: X1=ABS_X2)")
-    .add_option(OPTION_MOUSE,              0, "mouse",            "",     "Enable mouse emulation")
+    .add_option(OPTION_MOUSE,            'm', "mouse",            "",     "Enable mouse emulation")
     .add_option(OPTION_SQUARE_AXIS,        0, "square-axis",      "",     "Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)")
     .add_option(OPTION_FOUR_WAY_RESTRICTOR,0, "four-way-restrictor", "",  "Restrict axis movement to one axis at a time")
     .add_option(OPTION_DPAD_ROTATION,      0, "dpad-rotation",    "DEGREE", "Rotate the dpad by the given DEGREE, must be a multiple of 45")
@@ -386,7 +386,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
 
       case OPTION_MOUSE:
         opts.uinput_config.dpad_as_button = true;
-        opts.deadzone = 5000;
+        opts.deadzone = 4000;
         opts.uinput_config.trigger_as_zaxis = true;
         arg2vector("-y2=y2,-trigger=trigger", opts.axis_map, &AxisMapping::from_string);
         // send events only every 20msec, lower values cause a jumpy pointer

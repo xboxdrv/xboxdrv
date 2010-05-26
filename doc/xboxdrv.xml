@@ -638,7 +638,7 @@ NAME       = STRING ;]]></programlisting>
         </varlistentry>
 
         <varlistentry>
-          <term><option>--mouse</option></term>
+          <term><option>-m, --mouse</option></term>
           <listitem>
             <para>
               Lets the controller act as a mouse. It is indendical to:
