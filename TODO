@@ -7,16 +7,12 @@ VERSION="$(cat VERSION)"
 TAG="v${VERSION}"
 git tag -s  "${TAG}" -m "xboxdrv ${TAG}" 
 
-# Debian
-git archive --format=tar --prefix="xboxdrv-${VERSION}-3/" ${TAG} | gzip -c > /tmp/xboxdrv_${VERSION}-3.orig.tar.gz
-
-
 # Normal Source
 git archive --format=tar --prefix="xboxdrv-linux-${VERSION}/" ${TAG} | bzip2 -c > /tmp/xboxdrv-linux-${VERSION}.tar.bz2
 
 git push --tags
 
-Stuff to do before 0.5 release:
+Stuff to do before 0.5.1 release:
 ===============================
 
 Docu
@@ -34,23 +30,14 @@ Packaging
 Cleanup
 =======
 
-* version number needs to be centralized, its currently in the man
-  pages, in xboxdrv, in the TODO and in xboxdrv-daemon
-
 * improve output on which uinput devices are created
 
 Feature
 =======
 
-* src/xbox_controller.cpp:71: Make endpoint variable
-  http://ubuntuforums.org/showthread.php?p=7538167#post7538167
-
-
-Bugs
-====
-
 * --extra_devices is broken (no longer implemented and somewhat tricky to reimplement)
 
+* add --list-keys --list-x11-keys --list-axis --list-rel etc.
 
 
 * figure out a way to make userspace force feedback driver not become dead processes
