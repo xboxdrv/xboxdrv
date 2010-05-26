@@ -28,8 +28,7 @@ class uInput;
 struct ButtonEvent
 {
   static const int MAX_MODIFIER = 4;
-  static ButtonEvent invalid() { return create(-1); }
-  static ButtonEvent create(int type);
+  static ButtonEvent invalid();
   static ButtonEvent create_btn(int code);
   static ButtonEvent create_btn();
   static ButtonEvent create_rel(int code);

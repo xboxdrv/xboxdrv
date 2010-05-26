@@ -29,42 +29,18 @@
 #include "uinput_deviceid.hpp"
 
 ButtonEvent
-ButtonEvent::create(int type)
+ButtonEvent::invalid()
 {
   ButtonEvent ev;
-
-  ev.type = type;
-  
-  switch (type)
-  {
-    case EV_REL:
-      ev.rel.repeat = 100;
-      ev.rel.value  = 3;
-      break;
-
-    case EV_ABS:
-      throw std::runtime_error("Using EV_ABS for ButtonEvent is currently not supported");
-      ev.abs.value  = 1;
-      break;
-
-    case EV_KEY:
-      std::fill_n(ev.key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
-      break;
-
-    case -1:
-      break;
-
-    default:
-      assert(!"This should never be reached");
-  }
-
+  ev.type = -1;
   return ev;
 }
 
 ButtonEvent
 ButtonEvent::create_btn(int code)
 {
-  ButtonEvent ev = create(EV_KEY);
+  ButtonEvent ev;
+  ev.type = EV_KEY;
   std::fill_n(ev.key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
   ev.key.codes[0] = UIEvent::create(DEVICEID_AUTO, EV_KEY, code);
   return ev;
@@ -73,7 +49,8 @@ ButtonEvent::create_btn(int code)
 ButtonEvent
 ButtonEvent::create_btn()
 {
-  ButtonEvent ev = create(EV_KEY);
+  ButtonEvent ev;
+  ev.type = EV_KEY;
   std::fill_n(ev.key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
   return ev;
 }
@@ -81,7 +58,8 @@ ButtonEvent::create_btn()
 ButtonEvent
 ButtonEvent::create_rel(int code)
 {
-  ButtonEvent ev = create(EV_REL);
+  ButtonEvent ev;
+  ev.type       = EV_REL;
   ev.rel.code   = UIEvent::create(DEVICEID_AUTO, EV_REL, code);
   ev.rel.repeat = 100;
   ev.rel.value  = 3;
