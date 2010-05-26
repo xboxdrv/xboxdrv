@@ -386,7 +386,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
 
       case OPTION_MOUSE:
         opts.uinput_config.dpad_as_button = true;
-        opts.deadzone = 4000;
+        opts.deadzone = 5000;
         opts.uinput_config.trigger_as_zaxis = true;
         arg2vector("-y2=y2,-trigger=trigger", opts.axis_map, &AxisMapping::from_string);
         // send events only every 20msec, lower values cause a jumpy pointer

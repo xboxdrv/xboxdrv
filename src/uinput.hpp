@@ -53,7 +53,7 @@ private:
   {
     UIEvent code;
     int value;
-    int countdown;
+    int time_count;
     int repeat_interval;
   };
 
