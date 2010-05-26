@@ -42,7 +42,7 @@ public:
 
   bool is_valid() const;
 
-public:
+private:
   /** EV_KEY, EV_ABS, EV_REL */
   int type;
 
