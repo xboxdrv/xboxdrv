@@ -30,7 +30,12 @@ class XboxController : public XboxGenericController
 private:
   struct usb_device* dev;
   struct usb_dev_handle* handle;
+
+  int endpoint_in;
+  int endpoint_out;
   
+  void find_endpoints();
+
 public:
   XboxController(struct usb_device* dev);
   virtual ~XboxController();

@@ -16,18 +16,22 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <string.h>
 #include <errno.h>
-#include <stdexcept>
+#include <iostream>
 #include <sstream>
+#include <stdexcept>
+#include <string.h>
+
 #include "xboxmsg.hpp"
 #include "xbox_controller.hpp"
 
 XboxController::XboxController(struct usb_device* dev_) :
   dev(dev_),
-  handle()
-
+  handle(),
+  endpoint_in(1),
+  endpoint_out(2)
 {
+  find_endpoints();
   handle = usb_open(dev);
   if (!handle)
   {
@@ -54,10 +58,59 @@ XboxController::~XboxController()
 }
 
 void
+XboxController::find_endpoints()
+{
+  bool debug_print = false;
+
+  for(struct usb_config_descriptor* config = dev->config;
+      config != dev->config + dev->descriptor.bNumConfigurations;
+      ++config)
+  {
+    if (debug_print) std::cout << "Config: " << static_cast<int>(config->bConfigurationValue) << std::endl;
+
+    for(struct usb_interface* interface = config->interface;
+        interface != config->interface + config->bNumInterfaces;
+        ++interface)
+    {
+      for(struct usb_interface_descriptor* altsetting = interface->altsetting;
+          altsetting != interface->altsetting + interface->num_altsetting;
+          ++altsetting)
+      {
+        if (debug_print) std::cout << "  Interface: " << static_cast<int>(altsetting->bInterfaceNumber) << std::endl;
+          
+        for(struct usb_endpoint_descriptor* endpoint = altsetting->endpoint; 
+            endpoint != altsetting->endpoint + altsetting->bNumEndpoints; 
+            ++endpoint)
+        {
+          if (debug_print) 
+            std::cout << "    Endpoint: " << int(endpoint->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK)
+                      << "(" << ((endpoint->bEndpointAddress & USB_ENDPOINT_DIR_MASK) ? "IN" : "OUT") << ")"
+                      << std::endl;
+
+          if (altsetting->bInterfaceClass    == USB_CLASS_VENDOR_SPEC &&
+              altsetting->bInterfaceSubClass == 93 &&
+              altsetting->bInterfaceProtocol == 1)
+          {
+            if (endpoint->bEndpointAddress & USB_ENDPOINT_DIR_MASK)
+            {
+              endpoint_in = int(endpoint->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK);
+            }
+            else
+            {
+              endpoint_out = int(endpoint->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+void
 XboxController::set_rumble(uint8_t left, uint8_t right)
 {
   char rumblecmd[] = { 0x00, 0x06, 0x00, left, 0x00, right };
-  usb_interrupt_write(handle, 2, rumblecmd, sizeof(rumblecmd), 0);
+  usb_interrupt_write(handle, endpoint_out, rumblecmd, sizeof(rumblecmd), 0);
 }
 
 void
@@ -71,7 +124,7 @@ XboxController::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   // FIXME: Add tracking for duplicate data packages (send by logitech controller)
   uint8_t data[32];
-  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, reinterpret_cast<char*>(data), sizeof(data), timeout);
+  int ret = usb_interrupt_read(handle, endpoint_in, reinterpret_cast<char*>(data), sizeof(data), timeout);
 
   if (ret == -ETIMEDOUT)
   {
