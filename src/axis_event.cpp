@@ -36,11 +36,13 @@ AxisEvent::invalid()
 }
 
 AxisEvent
-AxisEvent::create_abs(int device_id, int code, int fuzz, int flat)
+AxisEvent::create_abs(int device_id, int code, int min, int max, int fuzz, int flat)
 {
   AxisEvent ev;
   ev.type      = EV_ABS;
   ev.abs.code  = UIEvent::create(device_id, EV_ABS, code);
+  ev.abs.min   = min;
+  ev.abs.max   = max;
   ev.abs.fuzz  = fuzz;
   ev.abs.flat  = flat;
   return ev;
@@ -275,7 +277,7 @@ AxisEvent::send(uInput& uinput, int old_value, int value) const
         break;
 
       case EV_REL:
-        // FIXME: Need to now the min/max of value
+        // FIXME: Need to know the min/max of value
         uinput.send_rel_repetitive(rel.code, rel.value * value / 32767, rel.repeat);
         break;
 

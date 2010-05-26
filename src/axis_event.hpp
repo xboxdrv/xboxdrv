@@ -31,7 +31,7 @@ public:
   static const int MAX_MODIFIER = 4;
 
   static AxisEvent invalid();
-  static AxisEvent create_abs(int device_id, int code, int fuzz = 0, int flat = 0);
+  static AxisEvent create_abs(int device_id, int code, int min, int max, int fuzz, int flat);
   static AxisEvent create_rel(int device_id, int code, int repeat = 10, float value = 5);
 
   static AxisEvent create_key();

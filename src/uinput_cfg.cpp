@@ -66,15 +66,15 @@ uInputCfg::uInputCfg() :
   btn_map.bind(XBOX_DPAD_RIGHT, ButtonEvent::create_btn(BTN_BASE4));
 
   // Axis Mapping
-  axis_map[XBOX_AXIS_X1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_X); 
-  axis_map[XBOX_AXIS_Y1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y); 
-  axis_map[XBOX_AXIS_X2]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_RX);
-  axis_map[XBOX_AXIS_Y2]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_RY);
-  axis_map[XBOX_AXIS_LT]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_BRAKE);
-  axis_map[XBOX_AXIS_RT]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_GAS); 
-  axis_map[XBOX_AXIS_TRIGGER] = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z);
-  axis_map[XBOX_AXIS_DPAD_X]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0X);
-  axis_map[XBOX_AXIS_DPAD_Y]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0Y);
+  axis_map[XBOX_AXIS_X1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -32768, 32767, 0, 0); 
+  axis_map[XBOX_AXIS_Y1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -32768, 32767, 0, 0); 
+  axis_map[XBOX_AXIS_X2]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_RX, -32768, 32767, 0, 0);
+  axis_map[XBOX_AXIS_Y2]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_RY, -32768, 32767, 0, 0);
+  axis_map[XBOX_AXIS_LT]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_BRAKE, 0, 255, 0, 0);
+  axis_map[XBOX_AXIS_RT]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_GAS, 0, 255, 0, 0); 
+  axis_map[XBOX_AXIS_TRIGGER] = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0);
+  axis_map[XBOX_AXIS_DPAD_X]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0X, -1, 1, 0, 0);
+  axis_map[XBOX_AXIS_DPAD_Y]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0Y, -1, 1, 0, 0);
 }
 
 void
@@ -117,15 +117,15 @@ uInputCfg::mimic_xpad()
   btn_map.bind(XBOX_DPAD_RIGHT, ButtonEvent::create_btn(BTN_BASE4));
 
   // Axis Mapping
-  axis_map[XBOX_AXIS_X1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, 16, 128);
-  axis_map[XBOX_AXIS_Y1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, 16, 128);
-  axis_map[XBOX_AXIS_X2]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_RX, 16, 128);
-  axis_map[XBOX_AXIS_Y2]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_RY, 16, 128);
-  axis_map[XBOX_AXIS_LT]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z);
-  axis_map[XBOX_AXIS_RT]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_RZ);
-  axis_map[XBOX_AXIS_TRIGGER] = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z);
-  axis_map[XBOX_AXIS_DPAD_X]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0X);
-  axis_map[XBOX_AXIS_DPAD_Y]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0Y);
+  axis_map[XBOX_AXIS_X1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_X,  -32768, 32767, 16, 128);
+  axis_map[XBOX_AXIS_Y1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y,  -32768, 32767, 16, 128);
+  axis_map[XBOX_AXIS_X2]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_RX, -32768, 32767, 16, 128);
+  axis_map[XBOX_AXIS_Y2]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_RY, -32768, 32767, 16, 128);
+  axis_map[XBOX_AXIS_LT]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z,  0, 255, 0, 0);
+  axis_map[XBOX_AXIS_RT]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_RZ, 0, 255, 0, 0);
+  axis_map[XBOX_AXIS_TRIGGER] = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0);
+  axis_map[XBOX_AXIS_DPAD_X]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0X, -1, 1, 0, 0);
+  axis_map[XBOX_AXIS_DPAD_Y]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0Y, -1, 1, 0, 0);
 }
 
 /* EOF */
