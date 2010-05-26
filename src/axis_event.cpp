@@ -200,11 +200,11 @@ AxisEvent::key_from_string(const std::string& str)
     switch(j)
     {
       case 0:
-        ev.key.up_codes[0] = str2btn_event(*i);
+        ev.key.up_codes[0] = str2key_event(*i);
         break;
 
       case 1:
-        ev.key.down_codes[0] = str2btn_event(*i);
+        ev.key.down_codes[0] = str2key_event(*i);
         break;
 
       case 2:

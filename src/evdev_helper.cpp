@@ -87,10 +87,10 @@ public:
   }
 } evdev_abs_names;
 
-class EvDevBtnEnum : public EnumBox<int>
+class EvDevKeyEnum : public EnumBox<int>
 {
 public:
-  EvDevBtnEnum() 
+  EvDevKeyEnum() 
     : EnumBox<int>("EV_KEY")
   {
     // File.new("/usr/include/linux/input.h")
@@ -531,7 +531,7 @@ public:
     add(KEY_BRL_DOT10,       "KEY_BRL_DOT10");
     add(KEY_MIN_INTERESTING, "KEY_MIN_INTERESTING");
   }
-} evdev_btn_names;
+} evdev_key_names;
 
 class Keysym2Keycode
 {
@@ -604,7 +604,7 @@ int xkeysym2keycode(const std::string& name)
   {
     if (0)
       std::cout << name << " -> " << keysym << " -> " << XKeysymToString(keysym) 
-                << " -> " << btn2str(i->second) << "(" << i->second << ")" << std::endl;
+                << " -> " << key2str(i->second) << "(" << i->second << ")" << std::endl;
     return i->second;
   }
 }
@@ -640,7 +640,7 @@ void str2event(const std::string& name, int& type, int& code)
            name.compare(0, 3, "BTN") == 0)
   {
     type = EV_KEY;
-    code = evdev_btn_names[name];
+    code = evdev_key_names[name];
   }
   else
   {
@@ -675,7 +675,7 @@ int get_event_type(const std::string& name)
   }
 }
 
-int str2btn(const std::string& name)
+int str2key(const std::string& name)
 {
   return evdev_abs_names[name];
 }
@@ -693,7 +693,7 @@ int str2abs(const std::string& name)
   else if (name.compare(0, 3, "KEY") == 0 ||
            name.compare(0, 3, "BTN") == 0)
   {
-    return evdev_btn_names[name];
+    return evdev_key_names[name];
   }
   else
   {
@@ -706,9 +706,9 @@ int str2rel(const std::string& name)
   return evdev_rel_names[name];
 }
 
-std::string btn2str(int i)
+std::string key2str(int i)
 {
-  return evdev_btn_names[i];
+  return evdev_key_names[i];
 }
 
 std::string abs2str(int i)
@@ -721,31 +721,28 @@ std::string rel2str(int i)
   return evdev_rel_names[i];
 }
 
-UIEvent str2btn_event(const std::string& str)
+UIEvent str2key_event(const std::string& str)
 {
-  UIEvent ev;
+  int device_id;
   std::string rest;
-  split_event_name(str, &rest, &ev.device_id);
-  ev.code = str2btn(rest);
-  return ev;
+  split_event_name(str, &rest, &device_id);
+  return UIEvent::create(device_id, EV_KEY, str2key(rest));
 }
 
 UIEvent str2rel_event(const std::string& str)
 {
-  UIEvent ev;
+  int device_id;
   std::string rest;
-  split_event_name(str, &rest, &ev.device_id);
-  ev.code = str2rel(rest);
-  return ev;
+  split_event_name(str, &rest, &device_id);
+  return UIEvent::create(device_id, EV_REL, str2rel(rest));
 }
 
 UIEvent str2abs_event(const std::string& str)
 {
-  UIEvent ev;
+  int device_id;
   std::string rest;
-  split_event_name(str, &rest, &ev.device_id);
-  ev.code = str2abs(rest);
-  return ev;
+  split_event_name(str, &rest, &device_id);
+  return UIEvent::create(device_id, EV_ABS, str2abs(rest));
 }
 
 /* EOF */

@@ -26,17 +26,13 @@
 void str2event(const std::string& name, int& type, int& code);
 int  get_event_type(const std::string& str);
 
-int str2btn(const std::string& str);
-int str2abs(const std::string& str);
-int str2rel(const std::string& str);
-
-std::string btn2str(int i);
+std::string key2str(int i);
 std::string abs2str(int i);
 std::string rel2str(int i);
 
-UIEvent str2btn_event(const std::string& str);
-UIEvent str2rel_event(const std::string& str);
 UIEvent str2key_event(const std::string& str);
+UIEvent str2rel_event(const std::string& str);
+UIEvent str2abs_event(const std::string& str);
 
 #endif
 

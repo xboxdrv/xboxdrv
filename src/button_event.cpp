@@ -90,7 +90,7 @@ ButtonEvent::from_string(const std::string& str)
           for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
           {
             // create the event via function call to get proper default values
-            ev.key.codes[k] = str2btn_event(*m);
+            ev.key.codes[k] = str2key_event(*m);
           }
           break;
         }
