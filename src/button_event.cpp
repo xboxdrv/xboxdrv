@@ -36,6 +36,16 @@ ButtonEvent::invalid()
   return ev;
 }
 
+ButtonEvent 
+ButtonEvent::create_abs(int code)
+{
+  ButtonEvent ev;
+  ev.type  = EV_ABS;
+  ev.abs.code  = UIEvent::create(DEVICEID_AUTO, EV_ABS, code);
+  ev.abs.value = 1;
+  return ev;
+}
+
 ButtonEvent
 ButtonEvent::create_key(int code)
 {
@@ -89,7 +99,6 @@ ButtonEvent::from_string(const std::string& str)
           int k = 0;
           for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
           {
-            // create the event via function call to get proper default values
             ev.key.codes[k] = str2key_event(*m);
           }
           break;
@@ -101,8 +110,17 @@ ButtonEvent::from_string(const std::string& str)
           break;
 
         case EV_ABS:
+          assert(!"Not implemented");
+          ev = ButtonEvent::create_abs(-1);
           // FIXME: Need magic to detect min/max of the axis
           break;
+
+        case -1: // void/none
+          ev = ButtonEvent::invalid();
+          break;
+
+        default:
+          assert(!"Unknown type");
       }
     }
     else
@@ -115,11 +133,19 @@ ButtonEvent::from_string(const std::string& str)
             case 2: ev.rel.repeat = boost::lexical_cast<int>(*i); break;
           }
           break;
+
+        case EV_ABS:
+          break;
       }
     }
   }
 
   return ev;
+}
+
+ButtonEvent::ButtonEvent() :
+  type(0xdeadbeaf)
+{
 }
 
 void
@@ -147,6 +173,7 @@ ButtonEvent::init(uInput& uinput) const
       break;
 
     default:
+      std::cout << "ButtonEvent::init(): invalid type: " << type << std::endl;
       assert(!"ButtonEvent::init(): never reached");
   }
 }

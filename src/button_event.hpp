@@ -33,10 +33,13 @@ public:
   static ButtonEvent invalid();
   static ButtonEvent create_key(int code);
   static ButtonEvent create_key();
+  static ButtonEvent create_abs(int code);
   static ButtonEvent create_rel(int code);
   static ButtonEvent from_string(const std::string& str);
 
 public:
+  ButtonEvent();
+  
   void init(uInput& uinput) const;
   void send(uInput& uinput, bool value) const;
 
