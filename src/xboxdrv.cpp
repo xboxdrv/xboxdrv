@@ -530,6 +530,9 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
     { // Only set rumble when explicitly requested
       controller->set_rumble(opts.rumble_l, opts.rumble_r);
     }
+
+    if (!opts.quiet)
+      std::cout << std::endl;
       
     if (opts.instant_exit)
     {
@@ -541,11 +544,9 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
       if (!opts.no_uinput)
       {
         if (!opts.quiet)
-          std::cout << "\nStarting with uinput... " << std::flush;
+          std::cout << "Starting with uinput" << std::flush;
         uinput = std::auto_ptr<uInput>(new uInput(dev_type, opts.uinput_config));
         uinput->set_ff_callback(boost::bind(&set_rumble,  controller.get(), opts.rumble_gain, _1, _2));
-        if (!opts.quiet)
-          std::cout << "done" << std::endl;
       }
       else
       {
