@@ -211,11 +211,27 @@ AxisEvent::key_from_string(const std::string& str)
     switch(j)
     {
       case 0:
-        ev.key.up_codes[0] = str2key_event(*i);
+        {
+          boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
+          tokenizer ev_tokens(*i, plus_sep);
+          int k = 0;
+          for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
+          {
+            ev.key.up_codes[k] = str2key_event(*m);
+          }         
+        }
         break;
 
       case 1:
-        ev.key.down_codes[0] = str2key_event(*i);
+        {
+          boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
+          tokenizer ev_tokens(*i, plus_sep);
+          int k = 0;
+          for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
+          {
+            ev.key.down_codes[k] = str2key_event(*m);
+          }         
+        }
         break;
 
       case 2:
