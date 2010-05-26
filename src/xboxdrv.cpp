@@ -546,7 +546,10 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
         if (!opts.quiet)
           std::cout << "Starting with uinput" << std::endl;
         uinput = std::auto_ptr<uInput>(new uInput(dev_type, opts.uinput_config));
-        uinput->set_ff_callback(boost::bind(&set_rumble,  controller.get(), opts.rumble_gain, _1, _2));
+        if (opts.uinput_config.force_feedback)
+        {
+          uinput->set_ff_callback(boost::bind(&set_rumble,  controller.get(), opts.rumble_gain, _1, _2));
+        }
       }
       else
       {

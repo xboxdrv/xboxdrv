@@ -488,7 +488,10 @@ uInput::update(int msec_delta)
     }
   }
 
-  get_force_feedback_uinput()->update_force_feedback(msec_delta);
+  if (cfg.force_feedback)
+  {
+    get_force_feedback_uinput()->update_force_feedback(msec_delta);
+  }
 
   for(uInputDevs::iterator i = uinput_devs.begin(); i != uinput_devs.end(); ++i)
   {
@@ -652,6 +655,7 @@ uInput::get_uinput(int device_id) const
   }
   else
   {
+    assert(0);
     std::ostringstream str;
     str << "Couldn't find uinput device: " << device_id;
     throw std::runtime_error(str.str());
