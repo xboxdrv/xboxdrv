@@ -9,6 +9,7 @@ xboxdrv 0.4.14 - (??/May/2010)
 * added --mouse, a simple shortcut to enable mouse emulation
 * added dummy events to the mouse device to let it register properly
   by the kernel without messing with hal
+* auto-detect USB endpoints on Xbox1 controller
 
 
 xboxdrv 0.4.13 - (13/May/2010)
