@@ -125,66 +125,64 @@ ButtonEvent::from_string(const std::string& str)
 void
 ButtonEvent::init(uInput& uinput) const
 {
-  if (is_valid())
+  assert(is_valid());
+
+  switch(type)
   {
-    switch(type)
-    {
-      case EV_KEY:
-        for(int i = 0; key.codes[i].is_valid(); ++i)
-        {
-          uinput.create_uinput_device(key.codes[i].device_id);
-          uinput.add_key(key.codes[i].device_id, key.codes[i].code);
-        }
-        break;
+    case EV_KEY:
+      for(int i = 0; key.codes[i].is_valid(); ++i)
+      {
+        uinput.create_uinput_device(key.codes[i].device_id);
+        uinput.add_key(key.codes[i].device_id, key.codes[i].code);
+      }
+      break;
 
-      case EV_REL:
-        uinput.create_uinput_device(rel.code.device_id);
-        uinput.get_uinput(rel.code.device_id)->add_rel(rel.code.code);
-        break;
+    case EV_REL:
+      uinput.create_uinput_device(rel.code.device_id);
+      uinput.get_uinput(rel.code.device_id)->add_rel(rel.code.code);
+      break;
 
-      case EV_ABS:
-        uinput.create_uinput_device(abs.code.device_id);
-        break;
+    case EV_ABS:
+      uinput.create_uinput_device(abs.code.device_id);
+      break;
 
-      default:
-        assert(!"ButtonEvent::init(): never reached");
-    }
+    default:
+      assert(!"ButtonEvent::init(): never reached");
   }
 }
 
 void
 ButtonEvent::send(uInput& uinput, bool value) const
 {
-  if (is_valid())
+  assert(is_valid());
+
+  switch(type)
   {
-    switch(type)
-    {
-      case EV_KEY:
-        for(int i = 0; key.codes[i].is_valid(); ++i)
-        {
-          uinput.send_key(key.codes[i].device_id, key.codes[i].code, value);
-        }
-        break;
+    case EV_KEY:
+      for(int i = 0; key.codes[i].is_valid(); ++i)
+      {
+        uinput.send_key(key.codes[i].device_id, key.codes[i].code, value);
+      }
+      break;
 
-      case EV_REL:
-        if (value)
-        {
-          uinput.send_rel_repetitive(rel.code, rel.value, rel.repeat);
-        }
-        else
-        {
-          uinput.send_rel_repetitive(rel.code, rel.value, -1);
-        }
-        break;
+    case EV_REL:
+      if (value)
+      {
+        uinput.send_rel_repetitive(rel.code, rel.value, rel.repeat);
+      }
+      else
+      {
+        uinput.send_rel_repetitive(rel.code, rel.value, -1);
+      }
+      break;
 
 
-      case EV_ABS:
-        if (value)
-        {
-          uinput.get_uinput(abs.code.device_id)->send(EV_ABS, abs.code.code, abs.value);
-        }
-        break;
-    }
+    case EV_ABS:
+      if (value)
+      {
+        uinput.get_uinput(abs.code.device_id)->send(EV_ABS, abs.code.code, abs.value);
+      }
+      break;
   }
 }
 

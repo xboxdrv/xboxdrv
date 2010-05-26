@@ -233,86 +233,84 @@ AxisEvent::is_valid() const
 void
 AxisEvent::init(uInput& uinput) const
 {
-  if (is_valid())
+  assert(is_valid());
+
+  switch(type)
   {
-    switch(type)
-    {
-      case EV_KEY:
-        for(int i = 0; key.up_codes[i].is_valid(); ++i)
-        {
-          uinput.create_uinput_device(key.up_codes[i].device_id);
-          uinput.add_key(key.up_codes[i].device_id, key.up_codes[i].code);
-        }
+    case EV_KEY:
+      for(int i = 0; key.up_codes[i].is_valid(); ++i)
+      {
+        uinput.create_uinput_device(key.up_codes[i].device_id);
+        uinput.add_key(key.up_codes[i].device_id, key.up_codes[i].code);
+      }
 
-        for(int i = 0; key.down_codes[i].is_valid(); ++i)
-        {
-          uinput.create_uinput_device(key.down_codes[i].device_id);
-          uinput.add_key(key.down_codes[i].device_id, key.down_codes[i].code);
-        }
-        break;
+      for(int i = 0; key.down_codes[i].is_valid(); ++i)
+      {
+        uinput.create_uinput_device(key.down_codes[i].device_id);
+        uinput.add_key(key.down_codes[i].device_id, key.down_codes[i].code);
+      }
+      break;
 
-      case EV_REL:
-        uinput.create_uinput_device(rel.code.device_id);
-        uinput.add_rel(rel.code.device_id, rel.code.code);
-        break;
+    case EV_REL:
+      uinput.create_uinput_device(rel.code.device_id);
+      uinput.add_rel(rel.code.device_id, rel.code.code);
+      break;
 
-      case EV_ABS:
-        uinput.create_uinput_device(abs.code.device_id);
-        uinput.add_abs(abs.code.device_id, abs.code.code, 
-                       abs.min, abs.max, abs.fuzz, abs.flat);
-        break;
-    }
+    case EV_ABS:
+      uinput.create_uinput_device(abs.code.device_id);
+      uinput.add_abs(abs.code.device_id, abs.code.code, 
+                     abs.min, abs.max, abs.fuzz, abs.flat);
+      break;
   }
 }
 
 void
 AxisEvent::send(uInput& uinput, int old_value, int value) const
 {
-  if (is_valid())
+  assert(is_valid());
+
+  switch(type)
   {
-    switch(type)
-    {
-      case EV_ABS:
-        uinput.get_uinput(abs.code.device_id)->send(type, abs.code.code, value);
-        break;
+    case EV_ABS:
+      uinput.get_uinput(abs.code.device_id)->send(type, abs.code.code, value);
+      break;
 
-      case EV_REL:
-        // FIXME: Need to know the min/max of value
-        uinput.send_rel_repetitive(rel.code, rel.value * value / 32767, rel.repeat);
-        break;
+    case EV_REL:
+      // FIXME: Need to know the min/max of value
+      uinput.send_rel_repetitive(rel.code, rel.value * value / 32767, rel.repeat);
+      break;
 
-      case EV_KEY:
-        if (::abs(old_value) <  key.threshold &&
-            ::abs(value)     >= key.threshold)
-        { // entering bigger then threshold zone
-          if (value < 0)
-          {
-            for(int i = 0; key.up_codes[i].is_valid(); ++i)
-              uinput.send_key(key.down_codes[i].device_id, key.down_codes[i].code, false);
-
-            for(int i = 0; key.up_codes[i].is_valid(); ++i)
-              uinput.send_key(key.up_codes[i].device_id, key.up_codes[i].code, true);
-          }
-          else // (value > 0)
-          { 
-            for(int i = 0; key.up_codes[i].is_valid(); ++i)
-              uinput.send_key(key.down_codes[i].device_id, key.down_codes[i].code, true);
-
-            for(int i = 0; key.up_codes[i].is_valid(); ++i)
-              uinput.send_key(key.up_codes[i].device_id, key.up_codes[i].code, false);
-          }
-        }
-        else if (::abs(old_value) >= key.threshold &&
-                 ::abs(value)     <  key.threshold)
-        { // entering zero zone
+    case EV_KEY:
+      if (::abs(old_value) <  key.threshold &&
+          ::abs(value)     >= key.threshold)
+      { // entering bigger then threshold zone
+        if (value < 0)
+        {
           for(int i = 0; key.up_codes[i].is_valid(); ++i)
             uinput.send_key(key.down_codes[i].device_id, key.down_codes[i].code, false);
 
           for(int i = 0; key.up_codes[i].is_valid(); ++i)
+            uinput.send_key(key.up_codes[i].device_id, key.up_codes[i].code, true);
+        }
+        else // (value > 0)
+        { 
+          for(int i = 0; key.up_codes[i].is_valid(); ++i)
+            uinput.send_key(key.down_codes[i].device_id, key.down_codes[i].code, true);
+
+          for(int i = 0; key.up_codes[i].is_valid(); ++i)
             uinput.send_key(key.up_codes[i].device_id, key.up_codes[i].code, false);
         }
-        break;
-    }
+      }
+      else if (::abs(old_value) >= key.threshold &&
+               ::abs(value)     <  key.threshold)
+      { // entering zero zone
+        for(int i = 0; key.up_codes[i].is_valid(); ++i)
+          uinput.send_key(key.down_codes[i].device_id, key.down_codes[i].code, false);
+
+        for(int i = 0; key.up_codes[i].is_valid(); ++i)
+          uinput.send_key(key.up_codes[i].device_id, key.up_codes[i].code, false);
+      }
+      break;
   }
 }
 

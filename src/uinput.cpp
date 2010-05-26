@@ -539,7 +539,8 @@ uInput::send_button(int code, bool value)
 
     // Non shifted button events
     const ButtonEvent& event = cfg.btn_map.lookup(code);
-    event.send(*this, value);
+    if (event.is_valid())
+      event.send(*this, value);
   }
 }
 
@@ -617,7 +618,8 @@ uInput::send_axis(int code, int32_t value)
     axis_state[code] = value;
 
     const AxisEvent& event = cfg.axis_map[code];
-    event.send(*this, old_value, value);
+    if (event.is_valid())
+      event.send(*this, old_value, value);
   }
 }
 
@@ -625,7 +627,8 @@ void
 uInput::add_axis(int code, int min, int max)
 {
   const AxisEvent& event = cfg.axis_map[code];
-  event.init(*this);
+  if (event.is_valid())
+    event.init(*this);
 }
 
 void
@@ -634,7 +637,8 @@ uInput::add_button(int code)
   for(int i = 0; i < XBOX_BTN_MAX; ++i)
   {
     const ButtonEvent& event = cfg.btn_map.lookup(i, code);
-    event.init(*this);
+    if (event.is_valid())
+      event.init(*this);
   }
 }
 
