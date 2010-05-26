@@ -46,9 +46,9 @@ bool
 UIEvent::is_valid() const 
 {
   return 
-    device_id == DEVICEID_INVALID || 
-    type == -1 ||
-    code == -1;
+    device_id != DEVICEID_INVALID &&
+    type != -1 &&
+    code != -1;
 }
 
 bool
