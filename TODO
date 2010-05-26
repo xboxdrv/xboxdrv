@@ -3,7 +3,7 @@ Pre Release Testing:
 
 * check the version number
 
-VERSION="0.4.14"
+VERSION="$(cat VERSION)"
 TAG="v${VERSION}"
 git tag -s  "${TAG}" -m "xboxdrv ${TAG}" 
 
@@ -19,32 +19,38 @@ git push --tags
 Stuff to do before 0.5 release:
 ===============================
 
-* split xboxdrv-daemon into a separate .deb package
+Docu
+====
 
 * docu on how to write a wrapper script needs to be moved to xboxdrv manpage
+
+* add a some general info to how xboxdrv works
+
+Packaging
+=========
+
+* split xboxdrv-daemon into a separate .deb package
+
+Cleanup
+=======
 
 * version number needs to be centralized, its currently in the man
   pages, in xboxdrv, in the TODO and in xboxdrv-daemon
 
+* improve output on which uinput devices are created
+
+Feature
+=======
+
 * src/xbox_controller.cpp:71: Make endpoint variable
   http://ubuntuforums.org/showthread.php?p=7538167#post7538167
 
-* add a way to not create a joystick/event device and figure out why
-  it currently gets created at all
 
-* add a some general info to how xboxdrv works
+Bugs
+====
 
-* improve output on which uinput devices are created
+* --extra_devices is broken (no longer implemented and somewhat tricky to reimplement)
 
-* add key combinations to --ui-buttonmap X=KEY_SHIFT+KEY_A,A=KEY_SHIFT+KEY_CONTROL+KEY_A
-
-* uinput class needs a serious code review and rewrite
-
-* --ui-clear doesn't work properly
-
-* --extra_devices is broken (no longer implemented)
-
-* add -m as shortcut for --mouse
 
 
 * figure out a way to make userspace force feedback driver not become dead processes

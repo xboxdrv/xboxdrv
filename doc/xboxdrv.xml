@@ -1,6 +1,9 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-          "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+          "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+          <!ENTITY % xboxdrvstuff SYSTEM "xboxdrv.ent">
+          %xboxdrvstuff;
+]>
 <refentry id="xboxdrv">
   <refentryinfo>
     <date>2010-05-05</date>
@@ -11,8 +14,8 @@
       <application>xboxdrv</application>
     </refentrytitle>
     <manvolnum>1</manvolnum>
-    <refmiscinfo class="version">0.4.14</refmiscinfo>
-    <refmiscinfo class="author">0.4.14</refmiscinfo>
+    <refmiscinfo class="version">&xboxdrv_version;</refmiscinfo>
+    <refmiscinfo class="author">&xboxdrv_version;</refmiscinfo>
     <refmiscinfo class="manual">User Commands</refmiscinfo>
     <refmiscinfo class="source">xboxdrv</refmiscinfo>
   </refmeta>
@@ -1537,8 +1540,30 @@ EndSection]]></programlisting>
   <refsect1>
     <title>See also</title>
     <para>
-      xboxdrv-daemon(1), evtest(1), jstest(1), xev(1), fftest(1), lsusb(1)
+      <citerefentry>
+        <refentrytitle>xboxdrv-daemon</refentrytitle>
+        <manvolnum>1</manvolnum>
+      </citerefentry>, 
+      <citerefentry>
+        <refentrytitle>evtest</refentrytitle>
+        <manvolnum>1</manvolnum>
+      </citerefentry>, 
+      <citerefentry>
+        <refentrytitle>jstest</refentrytitle>
+        <manvolnum>1</manvolnum>
+      </citerefentry>, 
+      <citerefentry>
+        <refentrytitle>xev</refentrytitle>
+        <manvolnum>1</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>fftest</refentrytitle>
+        <manvolnum>1</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>lsusb</refentrytitle>
+        <manvolnum>1</manvolnum>
+      </citerefentry>
     </para>
   </refsect1>
-
 </refentry>

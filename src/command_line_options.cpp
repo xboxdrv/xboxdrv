@@ -586,7 +586,7 @@ void
 CommandLineOptions::print_version() const
 {
   std::cout
-    << "xboxdrv 0.4.14\n"
+    << "xboxdrv " PACKAGE_VERSION "\n"
     << "Copyright (C) 2008-2010 Ingo Ruhnke <grumbel@gmx.de>\n"
     << "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
     << "This is free software: you are free to change and redistribute it.\n"

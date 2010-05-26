@@ -18,6 +18,13 @@ else:
                                   "-Winit-self", # only works with >= -O1
                                   "-Wno-unused-parameter",
                                   ])
+
+f = open("VERSION")
+package_version = f.read()
+f.close()
+    
+env.Append(CPPDEFINES={ 'PACKAGE_VERSION': "'\"%s\"'" % package_version})
+
 conf = Configure(env)
 
 if not conf.env['CXX']:
