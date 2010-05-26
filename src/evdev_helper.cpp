@@ -602,9 +602,8 @@ int xkeysym2keycode(const std::string& name)
   }
   else
   {
-    if (0)
-      std::cout << name << " -> " << keysym << " -> " << XKeysymToString(keysym) 
-                << " -> " << key2str(i->second) << "(" << i->second << ")" << std::endl;
+    //std::cout << name << " -> " << keysym << " -> " << XKeysymToString(keysym) 
+    //          << " -> " << key2str(i->second) << "(" << i->second << ")" << std::endl;
     return i->second;
   }
 }
@@ -704,21 +703,6 @@ int str2abs(const std::string& name)
 int str2rel(const std::string& name)
 {
   return evdev_rel_names[name];
-}
-
-std::string key2str(int i)
-{
-  return evdev_key_names[i];
-}
-
-std::string abs2str(int i)
-{
-  return evdev_abs_names[i];
-}
-
-std::string rel2str(int i)
-{
-  return evdev_rel_names[i];
 }
 
 UIEvent str2key_event(const std::string& str)
