@@ -224,6 +224,11 @@ AxisEvent::key_from_string(const std::string& str)
   return ev;
 }
 
+AxisEvent::AxisEvent() :
+  type(-1)
+{
+}
+
 bool
 AxisEvent::is_valid() const
 {
