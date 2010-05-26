@@ -45,6 +45,8 @@ public:
 
   bool is_valid() const;
 
+  std::string str() const;
+
 private:
   /** EV_KEY, EV_ABS, EV_REL */
   int type;
@@ -52,8 +54,8 @@ private:
   union {
     struct {
       UIEvent code;
-      int  repeat;
       int  value;
+      int  repeat;
     } rel;
 
     struct {

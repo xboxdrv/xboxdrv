@@ -21,6 +21,7 @@
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <stdlib.h>
+#include <iostream>
 
 #include "axis_event.hpp"
 #include "evdev_helper.hpp"
@@ -54,8 +55,8 @@ AxisEvent::create_rel(int device_id, int code, int repeat, float value)
   AxisEvent ev;
   ev.type       = EV_REL;
   ev.rel.code   = UIEvent::create(device_id, EV_REL, code);
-  ev.rel.repeat = repeat;
   ev.rel.value  = value;
+  ev.rel.repeat = repeat;
   return ev;  
 }
 
@@ -66,7 +67,7 @@ AxisEvent::create_key()
   ev.type = EV_KEY;
   std::fill_n(ev.key.up_codes,   MAX_MODIFIER+1, UIEvent::invalid());
   std::fill_n(ev.key.down_codes, MAX_MODIFIER+1, UIEvent::invalid());
-  ev.key.threshold      = 8000;
+  ev.key.threshold = 8000;
   return ev;
 }
 
@@ -76,8 +77,8 @@ AxisEvent::create_rel()
   AxisEvent ev;
   ev.type = EV_REL;
   ev.rel.code = UIEvent::invalid();
-  ev.rel.repeat = 10;
   ev.rel.value  = 5;
+  ev.rel.repeat = 10;
   return ev;
 }
   
@@ -97,23 +98,32 @@ AxisEvent::create_abs()
 AxisEvent
 AxisEvent::from_string(const std::string& str)
 {
+  AxisEvent ev;
+
   switch (get_event_type(str))
   {
     case EV_ABS:
-      return abs_from_string(str);
+      ev = abs_from_string(str);
+      break;
 
     case EV_REL:
-      return rel_from_string(str);
+      ev = rel_from_string(str);
+      break;
 
     case EV_KEY:
       return key_from_string(str);
 
     case -1:
-      return invalid();
+      ev = invalid();
+      break;
 
     default:
       assert(!"AxisEvent::from_string(): should never be reached");
   }
+
+  std::cout << "AxisEvent::from_string():\n  in:  " << str << "\n  out: " << ev.str() << std::endl;
+
+  return ev;
 }
 
 AxisEvent
@@ -165,7 +175,7 @@ AxisEvent::rel_from_string(const std::string& str)
         break;
 
       case 1:
-        ev.rel.value  = boost::lexical_cast<int>(*i); 
+        ev.rel.value = boost::lexical_cast<int>(*i); 
         break;
 
       case 2:
@@ -279,10 +289,16 @@ AxisEvent::send(uInput& uinput, int old_value, int value) const
     case EV_ABS:
       uinput.get_uinput(abs.code.device_id)->send(type, abs.code.code, value);
       break;
-
+      
     case EV_REL:
-      // FIXME: Need to know the min/max of value
-      uinput.send_rel_repetitive(rel.code, rel.value * value / 32767, rel.repeat);
+      {
+        // FIXME: Need to know the min/max of value
+        int v = rel.value * value / 32767;
+        if (v == 0)
+          uinput.send_rel_repetitive(rel.code, v, -1);
+        else
+          uinput.send_rel_repetitive(rel.code, v, rel.repeat);
+      }
       break;
 
     case EV_KEY:
@@ -317,6 +333,47 @@ AxisEvent::send(uInput& uinput, int old_value, int value) const
       }
       break;
   }
+}
+
+std::string
+AxisEvent::str() const
+{
+  std::ostringstream out;
+  switch(type)
+  {
+    case EV_ABS:
+      out << abs.code.device_id << "-" << abs.code.code << ":" << abs.min << ":" << abs.max << ":" << abs.fuzz << ":" << abs.flat;
+      break;
+
+    case EV_REL:
+      out << rel.code.device_id << "-" << rel.code.code << ":" << rel.value << ":" << rel.repeat;
+      break;
+
+    case EV_KEY:
+      for(int i = 0; key.up_codes[i].is_valid();)
+      {
+        out << key.up_codes[i].device_id << "-" << key.up_codes[i].code;
+
+        ++i;
+        if (key.up_codes[i].is_valid())
+          out << "+";
+      }
+      
+      out << ":";
+
+      for(int i = 0; key.down_codes[i].is_valid();)
+      {
+        out << key.down_codes[i].device_id << "-" << key.down_codes[i].code;
+
+        ++i;
+        if (key.down_codes[i].is_valid())
+          out << "+";
+      }
+
+      out << ":" << key.threshold;
+      break;
+  }
+  return out.str();
 }
 
 /* EOF */

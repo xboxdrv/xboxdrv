@@ -71,8 +71,8 @@ ButtonEvent::create_rel(int code)
   ButtonEvent ev;
   ev.type       = EV_REL;
   ev.rel.code   = UIEvent::create(DEVICEID_AUTO, EV_REL, code);
-  ev.rel.repeat = 100;
   ev.rel.value  = 3;
+  ev.rel.repeat = 100;
   return ev;
 }
 
@@ -140,11 +140,13 @@ ButtonEvent::from_string(const std::string& str)
     }
   }
 
+  std::cout << "ButtonEvent::from_string():\n  in:  " << str << "\n  out: " << ev.str() << std::endl;
+
   return ev;
 }
 
 ButtonEvent::ButtonEvent() :
-  type(0xdeadbeaf)
+  type(-1)
 {
 }
 
@@ -217,6 +219,43 @@ bool
 ButtonEvent::is_valid() const
 {
   return type != -1;
+}
+
+std::string
+ButtonEvent::str() const
+{
+  std::ostringstream out;
+  
+  switch(type)
+  {
+    case EV_KEY:
+      for(int i = 0; key.codes[i].is_valid();)
+      {
+        out << key.codes[i].device_id << "-" << key.codes[i].code;
+
+        ++i;
+        if (key.codes[i].is_valid())
+          out << "+";
+      }
+      break;
+
+    case EV_REL:
+      out << rel.code.device_id << "-" << rel.code.code << ":" << rel.value << ":" << rel.repeat;
+      break;
+
+    case EV_ABS:
+      out << abs.code.device_id << "-" << abs.code.code << ":" << abs.value;
+      break;
+
+    case -1:
+      out << "void";
+      break;
+
+    default:
+      assert(!"Never reached");
+  }
+
+  return out.str();
 }
 
 /* EOF */
