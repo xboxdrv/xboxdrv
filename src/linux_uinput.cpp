@@ -195,7 +195,7 @@ LinuxUinput::finish()
   //std::cout << "Finalizing uinput: '" << user_dev.name << "'" << std::endl;
 
   if (write(fd, &user_dev, sizeof(user_dev)) < 0)
-    throw std::runtime_error("uinput:finish: " + name + strerror(errno));
+    throw std::runtime_error("uinput:finish: " + name + ": " + strerror(errno));
 
   if (ioctl(fd, UI_DEV_CREATE))
   {
