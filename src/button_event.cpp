@@ -140,7 +140,8 @@ ButtonEvent::from_string(const std::string& str)
     }
   }
 
-  std::cout << "ButtonEvent::from_string():\n  in:  " << str << "\n  out: " << ev.str() << std::endl;
+  if (false)
+    std::cout << "ButtonEvent::from_string():\n  in:  " << str << "\n  out: " << ev.str() << std::endl;
 
   return ev;
 }
