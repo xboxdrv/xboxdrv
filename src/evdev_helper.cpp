@@ -674,12 +674,12 @@ int get_event_type(const std::string& name)
   }
 }
 
-int str2key(const std::string& name)
+int str2abs(const std::string& name)
 {
   return evdev_abs_names[name];
 }
 
-int str2abs(const std::string& name)
+int str2key(const std::string& name)
 {
   if (name.compare(0, 2, "XK") == 0)
   {
