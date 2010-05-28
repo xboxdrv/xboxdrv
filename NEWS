@@ -1,4 +1,13 @@
-xboxdrv 0.4.14 - (??/May/2010)
+xboxdrv 0.6.0 - (??/Jun/2010)
+==============================
+
+* support for reading from evdev, this allows the use of regular
+  regular PC joysticks with xboxdrv, useful if you need
+  configurability or joy2key like functionality, but don't have a
+  Xbox360 gamepad
+
+
+xboxdrv 0.5.0 - (26/May/2010)
 ==============================
 
 * added device_id handling to --ui-buttonmap and --ui-axismap, allows
