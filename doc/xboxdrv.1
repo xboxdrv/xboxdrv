@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 2010-05-05 0.5.0 "User Commands"
+.TH "xboxdrv " 1 2010-05-05 0.6.0 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -21,6 +21,28 @@ xboxdrv
 .ad b
 'hy
 .SH DESCRIPTION
+\fBxboxdrv\fR is a driver for Xbox and Xbox360
+gamepads. It works by reading the raw data from the controller
+with the userspace library libusb and then passes the
+interpreted data to the kernel via uinput. This
+allows \fBxboxdrv\fR to provide regular joystick
+and event devices, which makes it compatible with all Linux
+software.
+.PP
+Aside from the pure driver, \fBxboxdrv\fR also
+includes a rich set of configuration options that allow you to
+tweak the abilities of the virtual input devices that xboxdrv
+will create. This includes basic button and axis remapping, as
+well as more complicated things like mouse and keyboard emulation,
+auto-fire and throttle control emulation.
+.PP
+It is also possible for \fBxboxdrv\fR to read input
+data directly from an event device, this allows you to use the
+configurability of \fBxboxdrv\fR on regular PC
+joysticks and thus lets \fBxboxdrv\fR serve a
+similar purpose as \fBjoy2key\fR. See the
+option \*(T<\fB\-\-evdev\fR\*(T> below for more information.
+.SH OPTIONS
 .SS "GENERAL OPTIONS"
 .TP 
 \*(T<\fB\-h\fR\*(T>, \*(T<\fB\-\-help\fR\*(T>
@@ -113,6 +135,55 @@ xbox360-wireless
 \(bu
 xbox360-guitar
 .RE
+.TP 
+\*(T<\fB\-\-evdev\fR\*(T> \fIDEVICE\fR
+Allows you to read input data from a regular event
+device. This allows you to
+use \fBxboxdrv\fR on regular PC
+joysticks. The data that is read from the event device
+is converted internally into a XboxMsg object and then
+passed through the same configuration pipeline as it
+would be for a regular Xbox360 controller. This allows
+you to make use of all the regular configurability, but
+limits you to the number of axis and buttons that an
+Xbox360 controller provides.
+
+As a regular PC joystick will most likely already create
+a \*(T<\fI/dev/input/jsX\fR\*(T> device by itself,
+you might need to get rid of that so that a game will
+properly detect the joystick device created
+by \fBxboxdrv\fR. The easiest way to
+accomplish that is to simply delete the old joystick and
+rename the device that \fBxboxdrv\fR
+created to \*(T<\fI/dev/input/js0\fR\*(T>. When you
+use udev, this operation should be harmless and
+automatically reverse itself when you remove the
+controller and plug it back in or when you reboot the
+computer.
+.TP 
+\*(T<\fB\-\-evdev\-absmap\fR\*(T> \fIABSMAP\fR
+Sets how evdev events are mapped to Xbox controller
+events. An example configuration would look like this:
+
+.nf
+\*(T<\-\-evdev\-absmap ABS_X=x1,ABS_Y=y1,ABS_RZ=x2,ABS_THROTTLE=y2,ABS_HAT0X=dpad_x,ABS_HAT0Y=dpad_y\*(T>
+.fi
+
+\fBxboxdrv\fR will output on start a full
+list of event names that the given event device
+supports.
+.TP 
+\*(T<\fB\-\-evdev\-keymap\fR\*(T> \fIKEYMAP\fR
+Sets how evdev events are mapped to Xbox controller
+events. An example configuration would look like this:
+
+.nf
+\*(T<\-\-evdev\-keymap BTN_TRIGGER=a,BTN_THUMB=b,BTN_THUMB2=x\*(T>
+.fi
+
+\fBxboxdrv\fR will output on start a full
+list of event names that the given event device
+supports.
 .SS "STATUS OPTIONS"
 .TP 
 \*(T<\fB\-l\fR\*(T>, \*(T<\fB\-\-led\fR\*(T> \fINUM\fR
