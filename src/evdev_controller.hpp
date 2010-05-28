@@ -29,20 +29,19 @@
 class EvdevController : public XboxGenericController
 {
 private:
-  int fd;
-  std::string name;
-  int abs2idx[ABS_MAX];
-  int rel2idx[REL_MAX];
-  int key2idx[KEY_MAX];
+  int m_fd;
+  std::string m_name;
 
   typedef std::map<int, XboxAxis> AbsMap;
-  AbsMap abs_map;
+  AbsMap m_absmap;
 
   typedef std::map<int, XboxButton> KeyMap;
-  KeyMap key_map;
+  KeyMap m_keymap;
 
 public:
-  EvdevController(const std::string& filename);
+  EvdevController(const std::string& filename, 
+                  const std::map<int, XboxAxis>&   AbsMap,
+                  const std::map<int, XboxButton>& KeyMap);
 
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);

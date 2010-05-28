@@ -20,6 +20,7 @@
 #define HEADER_COMMAND_LINE_OPTIONS_HPP
 
 #include <vector>
+#include <map>
 
 #include "modifier.hpp"
 #include "xboxmsg.hpp"
@@ -75,6 +76,10 @@ public:
   bool square_axis;
   bool four_way_restrictor;
   int  dpad_rotation;
+  std::string evdev_device;
+  std::map<int, XboxAxis>   evdev_absmap;
+  std::map<int, XboxButton> evdev_keymap;
+
   ArgParser argp;
 
 public:

@@ -26,6 +26,14 @@
 void str2event(const std::string& name, int& type, int& code);
 int  get_event_type(const std::string& str);
 
+std::string key2str(int v);
+std::string abs2str(int v);
+std::string rel2str(int v);
+
+int str2key(const std::string& str);
+int str2abs(const std::string& str);
+int str2rel(const std::string& str);
+
 UIEvent str2key_event(const std::string& str);
 UIEvent str2rel_event(const std::string& str);
 UIEvent str2abs_event(const std::string& str);

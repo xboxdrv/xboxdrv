@@ -696,7 +696,7 @@ int str2key(const std::string& name)
   }
   else
   {
-    throw std::runtime_error("str2abs: couldn't convert string: " + name);
+    throw std::runtime_error("str2key: couldn't convert string: '" + name + "'");
   }
 }
 
@@ -727,6 +727,21 @@ UIEvent str2abs_event(const std::string& str)
   std::string rest;
   split_event_name(str, &rest, &device_id);
   return UIEvent::create(device_id, EV_ABS, str2abs(rest));
+}
+
+std::string key2str(int v)
+{
+  return evdev_key_names[v];
+}
+
+std::string abs2str(int v)
+{
+  return evdev_abs_names[v];
+}
+
+std::string rel2str(int v)
+{
+  return evdev_rel_names[v];
 }
 
 /* EOF */

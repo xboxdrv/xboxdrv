@@ -27,6 +27,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#include "evdev_helper.hpp"
+
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
 #define OFF(x)  ((x)%BITS_PER_LONG)
@@ -34,31 +36,32 @@
 #define LONG(x) ((x)/BITS_PER_LONG)
 #define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
 
-EvdevController::EvdevController(const std::string& filename) :
-  fd(-1)
+EvdevController::EvdevController(const std::string& filename,
+                                 const std::map<int, XboxAxis>&   absmap,
+                                 const std::map<int, XboxButton>& keymap) :
+  m_fd(-1),
+  m_name(),
+  m_absmap(absmap),
+  m_keymap(keymap)
 {
-  memset(abs2idx, 0, sizeof(abs2idx));
-  memset(rel2idx, 0, sizeof(rel2idx));
-  memset(key2idx, 0, sizeof(key2idx));
+  m_fd = open(filename.c_str(), O_RDONLY | O_NONBLOCK);
 
-  fd = open(filename.c_str(), O_RDONLY | O_NONBLOCK);
-
-  if (fd == -1)
+  if (m_fd == -1)
   {
     throw std::runtime_error(filename + ": " + std::string(strerror(errno)));
   }
 
   { // Get the human readable name
     char c_name[1024] = "unknown";
-    ioctl(fd, EVIOCGNAME(sizeof(c_name)), c_name);
-    name = c_name;
-    std::cout << "Name: " << name << std::endl;
+    ioctl(m_fd, EVIOCGNAME(sizeof(c_name)), c_name);
+    m_name = c_name;
+    std::cout << "Name: " << m_name << std::endl;
   }
 
   { // Read in how many btn/abs/rel the device has
     unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
     memset(bit, 0, sizeof(bit));
-    ioctl(fd, EVIOCGBIT(0, EV_MAX), bit[0]);
+    ioctl(m_fd, EVIOCGBIT(0, EV_MAX), bit[0]);
 
     unsigned long abs_bit[NBITS(ABS_MAX)];
     unsigned long rel_bit[NBITS(REL_MAX)];
@@ -68,17 +71,17 @@ EvdevController::EvdevController(const std::string& filename) :
     memset(rel_bit, 0, sizeof(rel_bit));
     memset(key_bit, 0, sizeof(key_bit));
 
-    ioctl(fd, EVIOCGBIT(EV_ABS, ABS_MAX), abs_bit);
-    ioctl(fd, EVIOCGBIT(EV_REL, REL_MAX), rel_bit);
-    ioctl(fd, EVIOCGBIT(EV_KEY, KEY_MAX), key_bit);
+    ioctl(m_fd, EVIOCGBIT(EV_ABS, ABS_MAX), abs_bit);
+    ioctl(m_fd, EVIOCGBIT(EV_REL, REL_MAX), rel_bit);
+    ioctl(m_fd, EVIOCGBIT(EV_KEY, KEY_MAX), key_bit);
 
     for(int i = 0; i < ABS_MAX; ++i)
       {
         if (test_bit(i, abs_bit))
           {
             struct input_absinfo absinfo;
-            ioctl(fd, EVIOCGABS(i), &absinfo);
-            std::cout << "Abs: " << i << " min: " << absinfo.minimum << " max: " << absinfo.maximum << std::endl;
+            ioctl(m_fd, EVIOCGABS(i), &absinfo);
+            std::cout << "Abs: " << abs2str(i) << " min: " << absinfo.minimum << " max: " << absinfo.maximum << std::endl;
             //abs2idx[i] = abs_port_out.size();
             //abs_port_out.push_back(new AbsPortOut("EvdevDriver:abs", absinfo.minimum, absinfo.maximum));
           }
@@ -88,7 +91,7 @@ EvdevController::EvdevController(const std::string& filename) :
       {
         if (test_bit(i, rel_bit))
           {
-            std::cout << "Rel: " << i << std::endl;
+            std::cout << "Rel: " << rel2str(i) << std::endl;
             //rel2idx[i] = rel_port_out.size();
             //rel_port_out.push_back(new RelPortOut("EvdevDriver:rel"));
           }
@@ -98,6 +101,7 @@ EvdevController::EvdevController(const std::string& filename) :
       {
         if (test_bit(i, key_bit))
           {
+            std::cout << "Key: " << key2str(i) << std::endl;
             //key2idx[i] = btn_port_out.size();
             //btn_port_out.push_back(new BtnPortOut("EvdevDriver:btn"));
           }
@@ -120,12 +124,14 @@ EvdevController::set_led(uint8_t status)
 bool
 EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
 {
+  //std::cout << ev.type << " " << ev.code << " " << ev.value << std::endl;
+
   switch(ev.type)
   {
     case EV_KEY:
       {
-        KeyMap::iterator it = key_map.find(ev.code);
-        if (it != key_map.end())
+        KeyMap::iterator it = m_keymap.find(ev.code);
+        if (it != m_keymap.end())
         {
           set_button(msg, it->second, ev.value);
           return true;
@@ -139,8 +145,8 @@ EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
 
     case EV_ABS:
       {
-        AbsMap::iterator it = abs_map.find(ev.code);
-        if (it != abs_map.end())
+        AbsMap::iterator it = m_absmap.find(ev.code);
+        if (it != m_absmap.end())
         {
           // FIXME: need to normalise the value to the proper range
           set_axis(msg, it->second, ev.value);
@@ -171,7 +177,7 @@ EvdevController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   // instantly, as we might miss events otherwise, do joysticks send
   // out 'sync'?
   int rd = 0;
-  while((rd = ::read(fd, ev, sizeof(struct input_event) * 128)) > 0)
+  while((rd = ::read(m_fd, ev, sizeof(struct input_event) * 128)) > 0)
   {
     for (int i = 0; i < rd / (int)sizeof(struct input_event); ++i)
     {

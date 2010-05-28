@@ -40,7 +40,9 @@ class XboxMsg;
 class uInput
 {
 private:
-  XPadDevice m_dev;
+  GamepadType m_type;
+  int m_vendor_id;
+  int m_product_id;
 
   typedef std::map<int, boost::shared_ptr<LinuxUinput> > uInputDevs;
   uInputDevs uinput_devs;
@@ -60,7 +62,7 @@ private:
   std::map<UIEvent, RelRepeat> rel_repeat_lst;
 
 public:
-  uInput(const XPadDevice& dev, uInputCfg cfg = uInputCfg());
+  uInput(GamepadType type, int vendor_id, int product_id, uInputCfg cfg = uInputCfg());
   ~uInput();
 
   void send(XboxGenericMsg& msg); 

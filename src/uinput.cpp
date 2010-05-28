@@ -45,8 +45,10 @@ uInput::is_keyboard_button(int ev_code)
   return (ev_code < 256);
 }
 
-uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
-  m_dev(dev),
+uInput::uInput(GamepadType type, int vendor_id, int product_id, uInputCfg config_) :
+  m_type(type),
+  m_vendor_id(vendor_id),
+  m_product_id(product_id),
   uinput_devs(),
   cfg(config_),
   rel_repeat_lst()
@@ -59,14 +61,14 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
     create_uinput_device(DEVICEID_JOYSTICK);
   }
 
-  switch(dev.type)
+  switch(m_type)
   {
     case GAMEPAD_XBOX360:
     case GAMEPAD_XBOX:
     case GAMEPAD_XBOX360_WIRELESS:
     case GAMEPAD_FIRESTORM:
     case GAMEPAD_FIRESTORM_VSB:
-      setup_xbox360_gamepad(dev.type);
+      setup_xbox360_gamepad(m_type);
       break;
 
     case GAMEPAD_XBOX360_GUITAR:
@@ -74,7 +76,7 @@ uInput::uInput(const XPadDevice& dev, uInputCfg config_) :
       break;
 
     default:
-      std::cout << "Unhandled type: " << dev.type << std::endl;
+      std::cout << "Unhandled type: " << m_type << std::endl;
       exit(EXIT_FAILURE);
       break;
   }
@@ -113,7 +115,7 @@ uInput::create_uinput_device(int device_id)
       dev_name << " - 2" << device_id+1;
     }
 
-    boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(dev_name.str(), m_dev.idVendor, m_dev.idProduct));
+    boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(dev_name.str(), m_vendor_id, m_product_id));
     uinput_devs.insert(std::pair<int, boost::shared_ptr<LinuxUinput> >(device_id, dev));
 
     // Create some mandatory events that are needed for the kernel/Xorg

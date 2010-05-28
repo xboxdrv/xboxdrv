@@ -25,6 +25,7 @@
 
 #include "arg_parser.hpp"
 #include "helper.hpp"
+#include "uinput_deviceid.hpp"
 #include "command_line_options.hpp"
 
 // See http://stackoverflow.com/questions/303562/c-format-macro-inline-ostringstream
@@ -77,6 +78,9 @@ enum {
   OPTION_LIST_SUPPORTED_DEVICES_XPAD,
   OPTION_LIST_CONTROLLER,
   OPTION_MOUSE,
+  OPTION_EVDEV,
+  OPTION_EVDEV_ABSMAP,
+  OPTION_EVDEV_KEYMAP,
   OPTION_HELP_DEVICES
 };
 
@@ -109,6 +113,7 @@ CommandLineOptions::CommandLineOptions() :
   square_axis(false),
   four_way_restrictor(false),
   dpad_rotation(0),
+  evdev_device(),
   argp()
 {
   busid[0] = '\0';
@@ -142,7 +147,10 @@ CommandLineOptions::CommandLineOptions() :
     .add_option(OPTION_WID,          'w', "wid",     "N", "use wireless controller with wid N (default: 0)")
     .add_option(OPTION_DEVICE_BY_PATH, 0, "device-by-path", "BUS:DEV", "Use device BUS:DEV, do not do any scanning")
     .add_option(OPTION_DEVICE_BY_ID,   0, "device-by-id",   "VENDOR:PRODUCT", "Use device that matches VENDOR:PRODUCT (as returned by lsusb)")
-    .add_option(OPTION_TYPE,               0, "type",             "TYPE", "Ignore autodetection and enforce controller type (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)")
+    .add_option(OPTION_TYPE,           0, "type",    "TYPE", "Ignore autodetection and enforce controller type (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)")
+    .add_option(OPTION_EVDEV,          0, "evdev",   "DEVICE", "Read events from a evdev device, instead of USB")
+    .add_option(OPTION_EVDEV_ABSMAP, 0, "evdev-absmap", "MAP", "Map evdev key events to Xbox360 button events")
+    .add_option(OPTION_EVDEV_KEYMAP, 0, "evdev-keymap", "MAP", "Map evdev abs events to Xbox360 axis events")
     .add_newline()
 
     .add_text("Status Options: ")
@@ -232,6 +240,20 @@ void set_ui_axis_map(AxisEvent* ui_axis_map, const std::string& str)
       throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-axis-mapping");
     }      
   }  
+}
+
+void set_evdev_absmap(std::map<int, XboxAxis>& absmap, const std::string& str)
+{
+  std::string lhs, rhs;
+  split_string_at(str, '=', &lhs, &rhs);
+  absmap[str2abs(lhs)] = string2axis(rhs);
+}
+
+void set_evdev_keymap(std::map<int, XboxButton>& keymap, const std::string& str)
+{
+  std::string lhs, rhs;
+  split_string_at(str, '=', &lhs, &rhs);
+  keymap[str2key(lhs)] = string2btn(rhs);
 }
 
 void
@@ -399,6 +421,18 @@ CommandLineOptions::parse_args(int argc, char** argv)
                   "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,"
                   "tl=void,tr=void",
                   boost::bind(&set_ui_button_map, boost::ref(opts.uinput_config.btn_map), _1));
+        break;
+
+      case OPTION_EVDEV:
+        opts.evdev_device = opt.argument;
+        break;
+        
+      case OPTION_EVDEV_ABSMAP:
+        arg2apply(opt.argument, boost::bind(&set_evdev_absmap, boost::ref(opts.evdev_absmap), _1));
+        break;
+
+      case OPTION_EVDEV_KEYMAP:
+        arg2apply(opt.argument, boost::bind(&set_evdev_keymap, boost::ref(opts.evdev_keymap), _1));
         break;
 
       case OPTION_ID:
