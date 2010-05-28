@@ -42,7 +42,8 @@ EvdevController::EvdevController(const std::string& filename,
   m_fd(-1),
   m_name(),
   m_absmap(absmap),
-  m_keymap(keymap)
+  m_keymap(keymap),
+  m_absinfo(ABS_MAX)
 {
   m_fd = open(filename.c_str(), O_RDONLY | O_NONBLOCK);
 
@@ -76,36 +77,37 @@ EvdevController::EvdevController(const std::string& filename,
     ioctl(m_fd, EVIOCGBIT(EV_KEY, KEY_MAX), key_bit);
 
     for(int i = 0; i < ABS_MAX; ++i)
+    {
+      if (test_bit(i, abs_bit))
       {
-        if (test_bit(i, abs_bit))
-          {
-            struct input_absinfo absinfo;
-            ioctl(m_fd, EVIOCGABS(i), &absinfo);
-            std::cout << "Abs: " << abs2str(i) << " min: " << absinfo.minimum << " max: " << absinfo.maximum << std::endl;
-            //abs2idx[i] = abs_port_out.size();
-            //abs_port_out.push_back(new AbsPortOut("EvdevDriver:abs", absinfo.minimum, absinfo.maximum));
-          }
+        struct input_absinfo absinfo;
+        ioctl(m_fd, EVIOCGABS(i), &absinfo);
+        std::cout << "Abs: " << abs2str(i) << " min: " << absinfo.minimum << " max: " << absinfo.maximum << std::endl;
+        m_absinfo[i] = absinfo;
+        //abs2idx[i] = abs_port_out.size();
+        //abs_port_out.push_back(new AbsPortOut("EvdevDriver:abs", absinfo.minimum, absinfo.maximum));
       }
+    }
 
     for(int i = 0; i < REL_MAX; ++i)
+    {
+      if (test_bit(i, rel_bit))
       {
-        if (test_bit(i, rel_bit))
-          {
-            std::cout << "Rel: " << rel2str(i) << std::endl;
-            //rel2idx[i] = rel_port_out.size();
-            //rel_port_out.push_back(new RelPortOut("EvdevDriver:rel"));
-          }
+        std::cout << "Rel: " << rel2str(i) << std::endl;
+        //rel2idx[i] = rel_port_out.size();
+        //rel_port_out.push_back(new RelPortOut("EvdevDriver:rel"));
       }
+    }
 
     for(int i = 0; i < KEY_MAX; ++i)
+    {
+      if (test_bit(i, key_bit))
       {
-        if (test_bit(i, key_bit))
-          {
-            std::cout << "Key: " << key2str(i) << std::endl;
-            //key2idx[i] = btn_port_out.size();
-            //btn_port_out.push_back(new BtnPortOut("EvdevDriver:btn"));
-          }
+        std::cout << "Key: " << key2str(i) << std::endl;
+        //key2idx[i] = btn_port_out.size();
+        //btn_port_out.push_back(new BtnPortOut("EvdevDriver:btn"));
       }
+    }
   }
 }
 
@@ -148,8 +150,9 @@ EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
         AbsMap::iterator it = m_absmap.find(ev.code);
         if (it != m_absmap.end())
         {
-          // FIXME: need to normalise the value to the proper range
-          set_axis(msg, it->second, ev.value);
+          const struct input_absinfo& absinfo = m_absinfo[ev.code];
+          set_axis_float(msg, it->second, 
+                         static_cast<float>(ev.value) / static_cast<float>(absinfo.maximum - absinfo.minimum) * 2.0f - 1.0f);
           return true;
         }
         else

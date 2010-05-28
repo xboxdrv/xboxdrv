@@ -22,6 +22,7 @@
 #include <linux/input.h>
 #include <string>
 #include <map>
+#include <vector>
 
 #include "xboxmsg.hpp"
 #include "xbox_generic_controller.hpp"
@@ -37,6 +38,8 @@ private:
 
   typedef std::map<int, XboxButton> KeyMap;
   KeyMap m_keymap;
+
+  std::vector<struct input_absinfo> m_absinfo;
 
 public:
   EvdevController(const std::string& filename, 
