@@ -152,7 +152,7 @@ EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
         {
           const struct input_absinfo& absinfo = m_absinfo[ev.code];
           set_axis_float(msg, it->second, 
-                         static_cast<float>(ev.value) / static_cast<float>(absinfo.maximum - absinfo.minimum) * 2.0f - 1.0f);
+                         static_cast<float>(ev.value - absinfo.minimum) / static_cast<float>(absinfo.maximum - absinfo.minimum) * 2.0f - 1.0f);
           return true;
         }
         else
@@ -175,6 +175,8 @@ EvdevController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   bool successfull_read = false;
 
   struct input_event ev[128];
+
+  msg.type = XBOX_MSG_XBOX360;
 
   // FIXME: We might need to temporary buffer events and not send them
   // instantly, as we might miss events otherwise, do joysticks send
