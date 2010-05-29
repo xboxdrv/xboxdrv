@@ -22,7 +22,7 @@
 #include <linux/input.h>
 #include <string>
 #include <map>
-#include <vector>
+#include <queue>
 
 #include "xboxmsg.hpp"
 #include "xbox_generic_controller.hpp"
@@ -40,6 +40,10 @@ private:
   KeyMap m_keymap;
 
   std::vector<struct input_absinfo> m_absinfo;
+  typedef std::queue<struct input_event> EventBuffer;
+  EventBuffer m_event_buffer;
+
+  XboxGenericMsg m_msg;
 
 public:
   EvdevController(const std::string& filename, 
@@ -54,6 +58,7 @@ public:
 
 private:
   bool apply(XboxGenericMsg& msg, const struct input_event& ev);
+  void read_data_to_buffer();
 
 private:
   EvdevController(const EvdevController&);

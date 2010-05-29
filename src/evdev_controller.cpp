@@ -43,8 +43,13 @@ EvdevController::EvdevController(const std::string& filename,
   m_name(),
   m_absmap(absmap),
   m_keymap(keymap),
-  m_absinfo(ABS_MAX)
+  m_absinfo(ABS_MAX),
+  m_event_buffer(),
+  m_msg()
 {
+  memset(&m_msg, 0, sizeof(m_msg));
+  m_msg.type = XBOX_MSG_XBOX360;
+
   m_fd = open(filename.c_str(), O_RDONLY | O_NONBLOCK);
 
   if (m_fd == -1)
@@ -169,28 +174,42 @@ EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
   }
 }
 
-bool
-EvdevController::read(XboxGenericMsg& msg, bool verbose, int timeout)
+void
+EvdevController::read_data_to_buffer()
 {
-  bool successfull_read = false;
-
   struct input_event ev[128];
-
-  msg.type = XBOX_MSG_XBOX360;
-
-  // FIXME: We might need to temporary buffer events and not send them
-  // instantly, as we might miss events otherwise, do joysticks send
-  // out 'sync'?
   int rd = 0;
   while((rd = ::read(m_fd, ev, sizeof(struct input_event) * 128)) > 0)
   {
     for (int i = 0; i < rd / (int)sizeof(struct input_event); ++i)
     {
-      successfull_read |= apply(msg, ev[i]);
+      m_event_buffer.push(ev[i]);
+    }
+  }
+}
+
+bool
+EvdevController::read(XboxGenericMsg& msg, bool verbose, int timeout)
+{
+  read_data_to_buffer();
+
+  while(!m_event_buffer.empty())
+  {
+    struct input_event ev = m_event_buffer.front();
+    m_event_buffer.pop();
+
+    if (ev.type == EV_SYN)
+    {
+      msg = m_msg;
+      return true;
+    }
+    else
+    {
+      apply(m_msg, ev);
     }
   }
 
-  return successfull_read;
+  return false;
 }
 
 /* EOF */
