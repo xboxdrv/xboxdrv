@@ -23,8 +23,9 @@
 #include "autofire_button.hpp"
 #include "join_axis.hpp"
 #include "btn_to_abs.hpp"
-#include "file_reader.hpp"
+//#include "file_reader.hpp"
 #include "control_factory.hpp"
+#include "abs_to_btn.hpp"
 
 ControlFactory::ControlFactory()
 {
@@ -32,7 +33,7 @@ ControlFactory::ControlFactory()
 }
 
 Control*
-ControlFactory::create(const std::string& name, FileReader reader)
+ControlFactory::create(const std::string& name)
 {
   if (name == "join-abs")
     {
@@ -45,7 +46,7 @@ ControlFactory::create(const std::string& name, FileReader reader)
   else if (name == "abs-to-btn")
     {
       int threshold = 0;
-      reader.get("threshold", threshold);      
+      //reader.get("threshold", threshold);      
       return new AbsToBtn(threshold);
     }
   else

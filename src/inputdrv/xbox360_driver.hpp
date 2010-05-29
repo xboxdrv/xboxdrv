@@ -20,6 +20,8 @@
 #define HEADER_XBOX360_DRIVER_HPP
 
 #include <vector>
+#include <stdint.h>
+
 #include "../xboxdrv.hpp"
 #include "control.hpp"
 

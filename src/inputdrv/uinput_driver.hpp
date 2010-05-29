@@ -20,6 +20,8 @@
 #define HEADER_UINPUT_DRIVER_HPP
 
 #include <linux/uinput.h>
+#include <stdint.h>
+
 #include "control.hpp"
 
 /** */
