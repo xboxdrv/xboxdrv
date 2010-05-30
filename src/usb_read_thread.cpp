@@ -73,7 +73,7 @@ USBReadThread::read(uint8_t* data, int len, int timeout)
     Paket paket = m_read_buffer.front();
 
     memcpy(data, paket.data.get(), m_read_length);
-    m_read_buffer.pop_front();
+    m_read_buffer.pop();
 
     return paket.length;
   }
@@ -97,7 +97,7 @@ USBReadThread::run()
       paket.data   = data;
       paket.length = ret;
 
-      m_read_buffer.push_back(paket);
+      m_read_buffer.push(paket);
           
       m_read_buffer_cond.notify_one();
 

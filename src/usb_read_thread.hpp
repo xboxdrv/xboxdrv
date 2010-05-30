@@ -24,7 +24,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/thread/condition.hpp>
 #include <boost/shared_array.hpp>
-#include <list>
+#include <queue>
 
 class USBReadThread
 {
@@ -44,7 +44,7 @@ private:
     {}
   };
 
-  typedef std::list<Paket> Buffer;
+  typedef std::queue<Paket> Buffer;
   Buffer m_read_buffer;
   boost::mutex m_read_buffer_mutex;
   boost::condition m_read_buffer_cond;
