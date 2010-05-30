@@ -257,6 +257,7 @@ void set_evdev_keymap(std::map<int, XboxButton>& keymap, const std::string& str)
   std::string lhs, rhs;
   split_string_at(str, '=', &lhs, &rhs);
   keymap[str2key(lhs)] = string2btn(rhs);
+  std::cout << "KEY: " << str2key(lhs) << std::endl;
 }
 
 void

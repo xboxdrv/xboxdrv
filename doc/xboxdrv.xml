@@ -594,6 +594,11 @@ DEVICEID     = NUMBER ;]]></programlisting>
               codes for <option>--ui-buttonmap</option>.
             </para>
             <para>
+              Aside from the named keys, you can also give the input
+              code directly as number via the
+              syntax <keysym>KEY_#<replaceable>NUM</replaceable></keysym>.
+            </para>
+            <para>
               Instead of the low level <keysym>KEY_</keysym> names,
               which represent keycodes, you can also use the higher
               level X11 keysyms <keysym>XK_</keysym>, the keysyms have

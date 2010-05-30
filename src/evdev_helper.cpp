@@ -675,21 +675,16 @@ int get_event_type(const std::string& name)
   }
 }
 
-bool is_number_(const std::string& name)
-{
-  for(std::string::const_iterator i = name.begin(); i != name.end(); ++i)
-  {
-    if (!isdigit(*i))
-    {
-      return false;
-    }
-  }
-  return true;
-}
-
 int str2abs(const std::string& name)
 {
-  return evdev_abs_names[name];
+  if (name.compare(0, 5, "ABS_#") == 0)
+  {
+    return boost::lexical_cast<int>(name.substr(5));
+  }
+  else
+  {
+    return evdev_abs_names[name];
+  }
 }
 
 int str2key(const std::string& name)
@@ -702,14 +697,14 @@ int str2key(const std::string& name)
   {
     return BTN_JOYSTICK + boost::lexical_cast<int>(name.substr(3));
   }
+  else if (name.compare(0, 5, "KEY_#") == 0)
+  {
+    return boost::lexical_cast<int>(name.substr(5));
+  }
   else if (name.compare(0, 3, "KEY") == 0 ||
            name.compare(0, 3, "BTN") == 0)
   {
     return evdev_key_names[name];
-  }
-  else if (is_number_(name))
-  {
-    return boost::lexical_cast<int>(name);
   }
   else
   {
@@ -719,7 +714,14 @@ int str2key(const std::string& name)
 
 int str2rel(const std::string& name)
 {
-  return evdev_rel_names[name];
+  if (name.compare(0, 5, "REL_#") == 0)
+  {
+    return boost::lexical_cast<int>(name.substr(5));
+  }
+  else
+  {
+    return evdev_rel_names[name];
+  }
 }
 
 UIEvent str2key_event(const std::string& str)

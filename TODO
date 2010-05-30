@@ -15,10 +15,6 @@ git push --tags
 Stuff to do before 0.6.0 release:
 =================================
 
-* need support for numbers, not just names in evdev_helper, need special syntax to get the type:
-
-  KEY_1 is not unique, maybe: KEYNUM_1, ABSNUM_1, ...
-
 * axis-min/max range must be transmitted to AxisEvent (maybe normalize to float)
 
 * match by protocol not, just vendor/product, from xpad.c:
@@ -42,8 +38,6 @@ Docu
 ====
 
 * docu on how to write a wrapper script needs to be moved to xboxdrv manpage
-
-* add a some general info to how xboxdrv works
 
 Packaging
 =========
