@@ -16,8 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/bind.hpp>
 #include "autofire_button.hpp"
+
+#include <boost/bind.hpp>
+
+#include "btn_port_in.hpp"
+#include "btn_port_out.hpp"
 
 AutofireButton::AutofireButton(int rate)
   : rate(rate),

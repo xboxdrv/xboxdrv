@@ -16,9 +16,15 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/bind.hpp>
 #include "abs_to_btn.hpp"
-
+
+#include <boost/bind.hpp>
+
+#include "abs_port_in.hpp"
+#include "abs_port_out.hpp"
+#include "btn_port_in.hpp"
+#include "btn_port_out.hpp"
+
 AbsToBtn::AbsToBtn(int threshold)
   : threshold(threshold)
 {
@@ -56,5 +62,5 @@ void
 AbsToBtn::update(float delta)
 {
 }
-
+
 /* EOF */

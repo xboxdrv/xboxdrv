@@ -16,13 +16,22 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "uinput_driver.hpp"
+
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <linux/uinput.h>
 #include <boost/bind.hpp>
-#include "uinput_driver.hpp"
+
+#include "abs_port_in.hpp"
+#include "abs_port_out.hpp"
+#include "btn_port_in.hpp"
+#include "btn_port_out.hpp"
+#include "rel_port_in.hpp"
+#include "rel_port_out.hpp"
+
 
 UInputDriver::UInputDriver(const std::string& name)
   : abs_bit(false),

@@ -17,21 +17,34 @@
 */
 
 #include "control.hpp"
-
-void
-BtnPortOut::connect(BtnPortIn* in)
+
+#include "abs_port_in.hpp"
+#include "abs_port_out.hpp"
+#include "btn_port_in.hpp"
+#include "btn_port_out.hpp"
+#include "rel_port_in.hpp"
+#include "rel_port_out.hpp"
+
+Control::Control()
 {
-  if (in)
-    {
-      in->out_port = this;
-      sig_change.connect(in->on_change);
-    }
 }
 
-void
-BtnPortOut::connect(boost::function<void(BtnPortOut*)> func)
+Control::~Control() 
 {
-  sig_change.connect(func);
+  for(std::vector<BtnPortIn*>::iterator i = btn_port_in.begin(); i != btn_port_in.end(); ++i)
+    delete *i;
+  for(std::vector<BtnPortOut*>::iterator i = btn_port_out.begin(); i != btn_port_out.end(); ++i)
+    delete *i;
+
+  for(std::vector<AbsPortIn*>::iterator i = abs_port_in.begin(); i != abs_port_in.end(); ++i)
+    delete *i;
+  for(std::vector<AbsPortOut*>::iterator i = abs_port_out.begin(); i != abs_port_out.end(); ++i)
+    delete *i;
+
+  for(std::vector<RelPortIn*>::iterator i = rel_port_in.begin(); i != rel_port_in.end(); ++i)
+    delete *i;
+  for(std::vector<RelPortOut*>::iterator i = rel_port_out.begin(); i != rel_port_out.end(); ++i)
+    delete *i;
 }
 
 BtnPortIn*
@@ -50,22 +63,6 @@ Control::get_btn_port_out(int idx)
     return btn_port_out[idx]; 
   else
     return 0;
-}
-
-void
-AbsPortOut::connect(AbsPortIn* in)
-{
-  if (in)
-    {
-      in->out_port = this;
-      sig_change.connect(in->on_change);
-    }
-}
-
-void
-AbsPortOut::connect(boost::function<void(AbsPortOut*)> func)
-{
-  sig_change.connect(func);
 }
 
 AbsPortIn*
@@ -90,22 +87,6 @@ Control::get_abs_port_out(int idx)
       LOG("Couldn't find abs-out port " << idx);
       return 0;
     }
-}
-
-void
-RelPortOut::connect(RelPortIn* in)
-{
-  if (in)
-    {
-      in->out_port = this;
-      sig_change.connect(in->on_change);
-    }
-}
-
-void
-RelPortOut::connect(boost::function<void(RelPortOut*)> func)
-{
-  sig_change.connect(func);
 }
 
 RelPortIn*
@@ -142,7 +123,7 @@ void connect_btn(Control* lhs_ctrl, int lhs_i, Control* rhs_ctrl, int rhs_i)
   else
     LOG("Couldn't establish connection between " << lhs_ctrl << " and " << rhs_ctrl);
 }
-
+
 void connect_abs(Control* lhs_ctrl, int lhs_i, Control* rhs_ctrl, int rhs_i)
 {
   AbsPortOut* out = lhs_ctrl->get_abs_port_out(lhs_i);
@@ -153,7 +134,7 @@ void connect_abs(Control* lhs_ctrl, int lhs_i, Control* rhs_ctrl, int rhs_i)
   else
     LOG("Couldn't establish connection between " << lhs_ctrl << " and " << rhs_ctrl);
 }
-
+
 void connect_rel(Control* lhs_ctrl, int lhs_i, Control* rhs_ctrl, int rhs_i)
 {
   RelPortOut* out = lhs_ctrl->get_rel_port_out(lhs_i);

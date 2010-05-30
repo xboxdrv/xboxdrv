@@ -22,17 +22,25 @@
 #include <sstream>
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
-#include "xbox360_driver.hpp"
-#include "uinput_driver.hpp"
+
 #include "abs_to_rel.hpp"
-#include "toggle_button.hpp"
 #include "autofire_button.hpp"
-#include "join_axis.hpp"
 #include "btn_to_abs.hpp"
-#include "throttle.hpp"
-#include "evdev_driver.hpp"
 #include "control.hpp"
+#include "evdev_driver.hpp"
 #include "inputdrv.hpp"
+#include "join_axis.hpp"
+#include "throttle.hpp"
+#include "toggle_button.hpp"
+#include "uinput_driver.hpp"
+#include "xbox360_driver.hpp"
+
+#include "abs_port_in.hpp"
+#include "abs_port_out.hpp"
+#include "btn_port_in.hpp"
+#include "btn_port_out.hpp"
+#include "rel_port_in.hpp"
+#include "rel_port_out.hpp"
 
 void btn_change(BtnPortOut* port)
 {
