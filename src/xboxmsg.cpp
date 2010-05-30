@@ -364,7 +364,7 @@ int get_button(XboxGenericMsg& msg, XboxButton button)
   return 0;
 }
 
-void set_button(XboxGenericMsg& msg, XboxButton button, int v)
+void set_button(XboxGenericMsg& msg, XboxButton button, bool v)
 {
   switch(msg.type)
   {
