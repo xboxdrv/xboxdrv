@@ -37,7 +37,7 @@ private:
   void find_endpoints();
 
 public:
-  XboxController(struct usb_device* dev);
+  XboxController(struct usb_device* dev, bool try_detach);
   virtual ~XboxController();
 
   void set_rumble(uint8_t left, uint8_t right);

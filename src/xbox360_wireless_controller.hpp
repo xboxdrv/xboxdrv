@@ -22,6 +22,7 @@
 #include "xbox_generic_controller.hpp"
 
 class USBReadThread;
+class XboxGenericMsg;
 struct XPadDevice;
 
 /** */
@@ -39,8 +40,7 @@ private:
   std::auto_ptr<USBReadThread> read_thread;
 
 public:
-  Xbox360WirelessController(struct usb_device* dev,
-                            int controller_id);
+  Xbox360WirelessController(struct usb_device* dev, int controller_id, bool try_detach);
   virtual ~Xbox360WirelessController();
 
   void set_rumble(uint8_t left, uint8_t right);

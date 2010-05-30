@@ -81,6 +81,7 @@ enum {
   OPTION_EVDEV,
   OPTION_EVDEV_ABSMAP,
   OPTION_EVDEV_KEYMAP,
+  OPTION_DETACH_KERNEL_DRIVER,
   OPTION_HELP_DEVICES
 };
 
@@ -144,6 +145,7 @@ CommandLineOptions::CommandLineOptions() :
     .add_newline()
 
     .add_text("Device Options: ")
+    .add_option(OPTION_DETACH_KERNEL_DRIVER, 'd', "detach-kernel-driver", "", "Detaches the kernel driver currently associated with the device")
     .add_option(OPTION_ID,           'i', "id",      "N", "use controller with id N (default: 0)")
     .add_option(OPTION_WID,          'w', "wid",     "N", "use wireless controller with wid N (default: 0)")
     .add_option(OPTION_DEVICE_BY_PATH, 0, "device-by-path", "BUS:DEV", "Use device BUS:DEV, do not do any scanning")
@@ -422,6 +424,10 @@ CommandLineOptions::parse_args(int argc, char** argv)
                   "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,"
                   "tl=void,tr=void",
                   boost::bind(&set_ui_button_map, boost::ref(opts.uinput_config.btn_map), _1));
+        break;
+
+      case OPTION_DETACH_KERNEL_DRIVER:
+        opts.detach_kernel_driver = true;
         break;
 
       case OPTION_EVDEV:

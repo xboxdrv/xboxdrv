@@ -215,6 +215,18 @@
       <title>Device Options</title>
       <variablelist>
         <varlistentry>
+          <term><option>-d</option>, <option>--detach-kernel-driver</option></term>
+          <listitem>
+            <para>
+              Detaches the kernel driver that is currently associated
+              with the given device. This is useful when you have the
+              xpad module loaded and want to use xboxdrv without
+              unloading it.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>-i</option>, <option>--id</option> <replaceable class="parameter">N</replaceable></term>
           <listitem>
             <para>

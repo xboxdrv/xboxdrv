@@ -12,8 +12,31 @@ git archive --format=tar --prefix="xboxdrv-linux-${VERSION}/" ${TAG} | bzip2 -c 
 
 git push --tags
 
-Stuff to do before 0.5.1 release:
-===============================
+Stuff to do before 0.6.0 release:
+=================================
+
+* need support for numbers, not just names in evdev_helper, need special syntax to get the type:
+
+  KEY_1 is not unique, maybe: KEYNUM_1, ABSNUM_1, ...
+
+* axis-min/max range must be transmitted to AxisEvent (maybe normalize to float)
+
+* match by protocol not, just vendor/product, from xpad.c:
+
+/* Xbox 360 has a vendor-specific class, so we cannot match it with only
+ * USB_INTERFACE_INFO (also specifically refused by USB subsystem), so we
+ * match against vendor id as well. Wired Xbox 360 devices have protocol 1,
+ * wireless controllers have protocol 129. */
+#define XPAD_XBOX360_VENDOR_PROTOCOL(vend,pr) \
+        .match_flags = USB_DEVICE_ID_MATCH_VENDOR | USB_DEVICE_ID_MATCH_INT_INFO, \
+        .idVendor = (vend), \
+        .bInterfaceClass = USB_CLASS_VENDOR_SPEC, \
+        .bInterfaceSubClass = 93, \
+        .bInterfaceProtocol = (pr)
+#define XPAD_XBOX360_VENDOR(vend) \
+        { XPAD_XBOX360_VENDOR_PROTOCOL(vend,1) }, \
+        { XPAD_XBOX360_VENDOR_PROTOCOL(vend,129) }
+
 
 Docu
 ====

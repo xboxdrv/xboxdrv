@@ -25,13 +25,14 @@
 #include <boost/format.hpp>
 #include <stdexcept>
 
-#include "usb_read_thread.hpp"
 #include "helper.hpp"
-#include "xboxmsg.hpp"
+#include "usb_helper.hpp"
+#include "usb_read_thread.hpp"
 #include "xbox360_wireless_controller.hpp"
+#include "xboxmsg.hpp"
 
-Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev_,
-                                                     int controller_id) :
+Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev_, int controller_id, 
+                                                     bool try_detach) :
   dev(dev_),
   handle(),
   endpoint(),
@@ -54,12 +55,12 @@ Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev_,
   }
   else
   {
-    int err = usb_claim_interface(handle, interface);
+    int err = usb_claim_n_detach_interface(handle, interface, try_detach);
     if (err != 0) 
     {
       std::ostringstream out;
       out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
-          << "Try to run 'rmmod xpad' and start xboxdrv again.";
+          << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
       throw std::runtime_error(out.str());
     }
   }

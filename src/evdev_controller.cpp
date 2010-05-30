@@ -209,6 +209,8 @@ EvdevController::read(XboxGenericMsg& msg, bool verbose, int timeout)
     }
   }
 
+  usleep(timeout * 1000);
+
   return false;
 }
 

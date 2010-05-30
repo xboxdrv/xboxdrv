@@ -102,6 +102,12 @@ a way to launch \fBxboxdrv\fR
 automatically.
 .SS "DEVICE OPTIONS"
 .TP 
+\*(T<\fB\-d\fR\*(T>, \*(T<\fB\-\-detach\-kernel\-driver\fR\*(T>
+Detaches the kernel driver that is currently associated
+with the given device. This is useful when you have the
+xpad module loaded and want to use xboxdrv without
+unloading it.
+.TP 
 \*(T<\fB\-i\fR\*(T>, \*(T<\fB\-\-id\fR\*(T> \fIN\fR
 Use controller with id N (default: 0),
 use \*(T<\fB\-\-list\-controller\fR\*(T> to obtain a list

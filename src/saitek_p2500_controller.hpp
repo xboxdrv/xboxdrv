@@ -33,7 +33,7 @@ private:
   int right_rumble;
 
 public:
-  SaitekP2500Controller(struct usb_device* dev);
+  SaitekP2500Controller(struct usb_device* dev, bool try_detach);
   ~SaitekP2500Controller();
 
   void set_rumble(uint8_t left, uint8_t right);

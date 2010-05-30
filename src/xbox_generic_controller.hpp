@@ -21,6 +21,8 @@
 
 #include <stdint.h>
 
+class XboxGenericMsg;
+
 class XboxGenericController
 {
 private:

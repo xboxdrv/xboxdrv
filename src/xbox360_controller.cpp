@@ -56,7 +56,7 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev_, bool is_guitar_, b
     {
       std::ostringstream out;
       out << "Error set USB configuration: " << usb_strerror() << std::endl
-          << "Try to run 'rmmod xpad' and start xboxdrv again.";
+          << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
       throw std::runtime_error(out.str());
     }
   }
@@ -73,7 +73,7 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev_, bool is_guitar_, b
     {
       std::ostringstream out;
       out << " Error couldn't claim the USB interface: " << usb_strerror() << std::endl
-          << "Try to run 'rmmod xpad' and start xboxdrv again.";
+          << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
       throw std::runtime_error(out.str());
     }
   }

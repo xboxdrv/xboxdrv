@@ -101,8 +101,8 @@ FirestormDualController::FirestormDualController(struct usb_device* dev_, bool i
     if (err != 0) 
     {
       std::ostringstream out;
-      out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
-          << "Try to run 'rmmod xpad' and start xboxdrv again.";
+      out << "Error couldn't claim the USB interface: " << usb_strerror() << std::endl
+          << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
       throw std::runtime_error(out.str());
     }
   }

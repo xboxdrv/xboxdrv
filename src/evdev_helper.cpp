@@ -23,6 +23,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <map>
+#include <ctype.h>
 
 #include "enum_box.hpp"
 #include "evdev_helper.hpp"
@@ -674,6 +675,18 @@ int get_event_type(const std::string& name)
   }
 }
 
+bool is_number_(const std::string& name)
+{
+  for(std::string::const_iterator i = name.begin(); i != name.end(); ++i)
+  {
+    if (!isdigit(*i))
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 int str2abs(const std::string& name)
 {
   return evdev_abs_names[name];
@@ -693,6 +706,10 @@ int str2key(const std::string& name)
            name.compare(0, 3, "BTN") == 0)
   {
     return evdev_key_names[name];
+  }
+  else if (is_number_(name))
+  {
+    return boost::lexical_cast<int>(name);
   }
   else
   {

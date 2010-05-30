@@ -22,10 +22,11 @@
 #include <stdexcept>
 #include <string.h>
 
+#include "usb_helper.hpp"
 #include "xboxmsg.hpp"
 #include "xbox_controller.hpp"
 
-XboxController::XboxController(struct usb_device* dev_) :
+XboxController::XboxController(struct usb_device* dev_, bool try_detach) :
   dev(dev_),
   handle(),
   endpoint_in(1),
@@ -40,12 +41,12 @@ XboxController::XboxController(struct usb_device* dev_) :
   else
   {
     // FIXME: bInterfaceNumber shouldn't be hardcoded
-    int err = usb_claim_interface(handle, 0);
+    int err = usb_claim_n_detach_interface(handle, 0, try_detach);
     if (err != 0) 
     {
       std::ostringstream out;
       out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
-          << "Try to run 'rmmod xpad' and start xboxdrv again.";
+          << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
       throw std::runtime_error(out.str());
     }
   }
