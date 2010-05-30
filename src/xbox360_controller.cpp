@@ -24,20 +24,21 @@
 #include <iostream>
 #include <boost/format.hpp>
 
-#include "usb_read_thread.hpp"
 #include "command_line_options.hpp"
-#include "xboxmsg.hpp"
 #include "helper.hpp"
+#include "usb_helper.hpp"
+#include "usb_read_thread.hpp"
 #include "xbox360_controller.hpp"
+#include "xboxmsg.hpp"
 
-Xbox360Controller::Xbox360Controller(struct usb_device* dev_, bool is_guitar_)
-  : dev(dev_),
-    is_guitar(is_guitar_),
-    dev_type(),
-    handle(),
-    endpoint_in(1),
-    endpoint_out(2),
-    read_thread()
+Xbox360Controller::Xbox360Controller(struct usb_device* dev_, bool is_guitar_, bool try_detach) :
+  dev(dev_),
+  is_guitar(is_guitar_),
+  dev_type(),
+  handle(),
+  endpoint_in(1),
+  endpoint_out(2),
+  read_thread()
 {
   find_endpoints();
   if (0)
@@ -54,7 +55,7 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev_, bool is_guitar_)
     if ((err = usb_set_configuration(handle, 0)) < 0)
     {
       std::ostringstream out;
-      out << "Error set USB configuration: " << strerror(-err) << std::endl
+      out << "Error set USB configuration: " << usb_strerror() << std::endl
           << "Try to run 'rmmod xpad' and start xboxdrv again.";
       throw std::runtime_error(out.str());
     }
@@ -67,11 +68,11 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev_, bool is_guitar_)
   else
   {
     // FIXME: bInterfaceNumber shouldn't be hardcoded
-    int err = usb_claim_interface(handle, 0);
+    int err = usb_claim_n_detach_interface(handle, 0, try_detach);
     if (err != 0) 
     {
       std::ostringstream out;
-      out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
+      out << " Error couldn't claim the USB interface: " << usb_strerror() << std::endl
           << "Try to run 'rmmod xpad' and start xboxdrv again.";
       throw std::runtime_error(out.str());
     }

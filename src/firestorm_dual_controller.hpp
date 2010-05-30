@@ -34,7 +34,7 @@ private:
   int right_rumble;
 
 public:
-  FirestormDualController(struct usb_device* dev, bool is_vsb);
+  FirestormDualController(struct usb_device* dev, bool is_vsb, bool try_detach);
   ~FirestormDualController();
 
   void set_rumble(uint8_t left, uint8_t right);

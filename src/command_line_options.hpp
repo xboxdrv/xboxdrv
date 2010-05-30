@@ -55,6 +55,7 @@ public:
   int  wireless_id;
   bool instant_exit;
   bool no_uinput;
+  bool detach_kernel_driver;
 
   GamepadType gamepad_type;
   

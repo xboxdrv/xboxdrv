@@ -504,11 +504,11 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
           break;
 
         case GAMEPAD_XBOX360_GUITAR:
-          controller = std::auto_ptr<XboxGenericController>(new Xbox360Controller(dev, true));
+          controller = std::auto_ptr<XboxGenericController>(new Xbox360Controller(dev, true, opts.detach_kernel_driver));
           break;
 
         case GAMEPAD_XBOX360:
-          controller = std::auto_ptr<XboxGenericController>(new Xbox360Controller(dev, false));
+          controller = std::auto_ptr<XboxGenericController>(new Xbox360Controller(dev, false, opts.detach_kernel_driver));
           break;
 
         case GAMEPAD_XBOX360_WIRELESS:
@@ -516,11 +516,11 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
           break;
 
         case GAMEPAD_FIRESTORM:
-          controller = std::auto_ptr<XboxGenericController>(new FirestormDualController(dev, false));
+          controller = std::auto_ptr<XboxGenericController>(new FirestormDualController(dev, false, opts.detach_kernel_driver));
           break;
 
         case GAMEPAD_FIRESTORM_VSB:
-          controller = std::auto_ptr<XboxGenericController>(new FirestormDualController(dev, true));
+          controller = std::auto_ptr<XboxGenericController>(new FirestormDualController(dev, true, opts.detach_kernel_driver));
           break;
 
         case GAMEPAD_SAITEK_P2500:

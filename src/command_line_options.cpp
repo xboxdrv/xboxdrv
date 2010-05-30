@@ -98,6 +98,7 @@ CommandLineOptions::CommandLineOptions() :
   wireless_id(0),
   instant_exit(false),
   no_uinput(false),
+  detach_kernel_driver(),
   gamepad_type(GAMEPAD_UNKNOWN),
   vendor_id(-1),
   product_id(-1),
