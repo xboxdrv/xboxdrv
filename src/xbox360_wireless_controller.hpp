@@ -22,7 +22,7 @@
 #include "xbox_generic_controller.hpp"
 
 class USBReadThread;
-class XboxGenericMsg;
+struct XboxGenericMsg;
 struct XPadDevice;
 
 /** */

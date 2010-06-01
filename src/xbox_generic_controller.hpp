@@ -21,7 +21,7 @@
 
 #include <stdint.h>
 
-class XboxGenericMsg;
+struct XboxGenericMsg;
 
 class XboxGenericController
 {

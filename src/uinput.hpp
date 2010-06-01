@@ -33,9 +33,9 @@
 #include "xboxdrv.hpp"
 #include "xpad_device.hpp"
 
-class Xbox360Msg;
-class Xbox360GuitarMsg;
-class XboxMsg;
+struct Xbox360Msg;
+struct XboxMsg;
+struct Xbox360GuitarMsg;
   
 class uInput
 {

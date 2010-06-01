@@ -28,8 +28,11 @@
 #include "uinput_deviceid.hpp"
 #include "command_line_options.hpp"
 
-// See http://stackoverflow.com/questions/303562/c-format-macro-inline-ostringstream
-#define RAISE_EXCEPTION(x) throw std::runtime_error(static_cast<std::ostringstream&>(std::ostringstream().seekp(0, std::ios_base::cur) << x).str())
+#define RAISE_EXCEPTION(x) do { \
+  std::ostringstream kiJk8f08d4oMX; \
+  kiJk8f08d4oMX << x; \
+  throw std::runtime_error(kiJk8f08d4oMX.str()); \
+} while(0)
 
 CommandLineOptions* command_line_options = 0;
 
