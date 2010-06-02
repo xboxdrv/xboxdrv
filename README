@@ -41,11 +41,11 @@ Required libraries and tools:
 
 Once everything installed, you can compile by typing:
 
- % scons
+ $ scons
 
 On Ubuntu 10.04 you can install all the required libraries via:
 
- % sudo apt-get install \
+ $ sudo apt-get install \
      g++ \
      libboost1.40-dev \
      libboost-thread1.40-dev \
@@ -59,7 +59,7 @@ On Ubuntu 10.04 you can install all the required libraries via:
 To load the uinput kernel module automatically on boot add it
 /etc/modules, to load it manually type:
 
- % sudo modprobe uinput
+ $ sudo modprobe uinput
 
 On other distributions exact install instructions might be
 slightly different.
@@ -70,11 +70,11 @@ slightly different.
 
 Once the compilation process is complete you can install xboxdrv with:
 
- % ./install.sh
+ $ make install
 
-You can change the install prefix with:
+You can also change the install PREFIX and DESTDIR as usual with:
 
- % ./install.sh --prefix /usr
+ $ make install PREFIX=/usr DESTDIR=/tmp
 
 Note that there is no need to install xboxdrv, you can run it directly
 from the source directory if you prefer.
@@ -87,12 +87,12 @@ Extensive documentation on running xboxdrv can be found in the RUNNING
 XBOXDRV section of the xboxdrv manpage. When you haven't installed
 xboxdrv the man page can be found in doc/xboxdrv.1 and be read with:
 
- % man -l doc/xboxdrv.1
+ $ man -l doc/xboxdrv.1
 
 Documentation on xboxdrv-daemon, a daemon that will automatically
 launch xboxdrv when a pad is plugged in can be read via:
 
- % man -l doc/xboxdrv-daemon.1
+ $ man -l doc/xboxdrv-daemon.1
 
 
 # EOF #
