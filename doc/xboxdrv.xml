@@ -791,17 +791,20 @@ NAME       = STRING ;]]></programlisting>
           <term><option>--square-axis</option></term>
           <listitem>
             <para>
-              The Xbox360 gamepad, as most other current day gamepads, features a
-              circular movment range, which restricts the movement so that the
-              distance to the center never gets beyond 1. This means that when you
-              have the controller at the top/left the value reported is (0.7, 0.7)
-              (i.e. length 1, angle 45) instead of (1,1). This behaviour is
-              different then most classic joysticks, which had a square range and
-              allowed x and y to be handled completly indepened.
+              The Xbox360 gamepad, as most other current day gamepads,
+              features a circular movement range, which restricts the
+              movement so that the distance to the center never gets
+              beyond 1. This means that when you have the controller
+              at the top/left the value reported is (0.7, 0.7)
+              (i.e. length 1, angle 45) instead of (1,1). This
+              behaviour is different then most classic PC joysticks,
+              which had a square range and would report (1,1) when
+              hold in the top/left corner.
             </para>
 
-            <para>Some old games (i.e. DOS stuff) require a square movement range and
-              will thus not function properly with the Xbox360 gamepad. Via the
+            <para>Some old games (i.e. mostly DOS stuff) require a
+              square movement range and will not function properly
+              with the Xbox360 gamepad. Via the
               <option>--square-axis</option> option you can work around this issue and diagonals will
               be reported as (1,1).</para>
           </listitem>
