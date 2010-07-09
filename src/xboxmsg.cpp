@@ -35,6 +35,9 @@ std::string gamepadtype_to_string(const GamepadType& type)
     case GAMEPAD_XBOX360_WIRELESS:
       return "xbox360-wireless";
 
+    case GAMEPAD_XBOX360_PLAY_N_CHARGE: 
+      return "xbox360-playncharge";
+
     case GAMEPAD_XBOX:
       return "xbox";
 
@@ -65,6 +68,7 @@ std::string gamepadtype_to_macro_string(const GamepadType& type)
   {
     case GAMEPAD_XBOX360: return "GAMEPAD_XBOX360";
     case GAMEPAD_XBOX360_WIRELESS: return "GAMEPAD_XBOX360_WIRELESS";
+    case GAMEPAD_XBOX360_PLAY_N_CHARGE: return "GAMEPAD_XBOX360_PLAY_N_CHARGE";
     case GAMEPAD_XBOX: return "GAMEPAD_XBOX";
     case GAMEPAD_XBOX_MAT: return "GAMEPAD_XBOX_MAT";
     case GAMEPAD_XBOX360_GUITAR: return "GAMEPAD_XBOX360_GUITAR";
@@ -85,6 +89,9 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
 
     case GAMEPAD_XBOX360_WIRELESS:
       return out << "Xbox360 (wireless)";
+
+    case GAMEPAD_XBOX360_PLAY_N_CHARGE: 
+      return out << "Xbox360 Play&Charge";
 
     case GAMEPAD_XBOX:
       return out << "Xbox Classic";

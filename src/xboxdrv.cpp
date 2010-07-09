@@ -498,6 +498,13 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
 
       switch (dev_type.type)
       {
+        case GAMEPAD_XBOX360_PLAY_N_CHARGE: 
+          throw std::runtime_error("The Xbox360 Play&Charge cable is for recharging only, it does not transmit data, "
+                                   "thus xboxdrv can't support it. You have to get a wireless receiver:\n"
+                                   "\n"
+                                   "  * http://www.xbox.com/en-ca/hardware/x/xbox360wirelessgamingreceiver/");
+          break;
+
         case GAMEPAD_XBOX:
         case GAMEPAD_XBOX_MAT:
           controller = std::auto_ptr<XboxGenericController>(new XboxController(dev, opts.detach_kernel_driver));
@@ -809,9 +816,10 @@ Xboxdrv::main(int argc, char** argv)
         break;
     }
   }
-  catch(std::exception& err)
+  catch(const std::exception& err)
   {
-    std::cout << "Error: " << err.what() << std::endl;
+    std::cout << "\n-- [ ERROR ] ------------------------------------------------------\n"
+              << err.what() << std::endl;
   }
 
   return 0;
