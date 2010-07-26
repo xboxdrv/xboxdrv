@@ -1,0 +1,97 @@
+#!/usr/bin/env python
+
+import os, sys
+import ConfigParser
+from subprocess import check_call, Popen, PIPE
+from signal import SIGINT
+
+class RunXBoxDrv(object):
+    def __init__(self, configfile, appandparams=[]):
+        self.configfile = configfile
+        self.appandparams = appandparams
+
+    @staticmethod
+    def checkminusvalue(key, value):
+        if value.startswith("-"):
+            valstr = value[1:]
+            try:
+                number = float(valstr)
+            except ValueError:
+                return ("-%s" % key, valstr)
+        return (key, value)
+
+    @staticmethod
+    def getNext(myProc):
+        out = ""
+        while out == "":
+            out = myProc.read()
+        buf = out
+        while out != "":
+            out = myProc.read()
+            buf = "%s%s" % (buf, out)
+        return buf
+
+    def process(self):
+        parser = ConfigParser.ConfigParser()
+        parser.optionxform = str
+    
+        if not parser.read(self.configfile):
+            raise Exception("XBoxDrv game config not found: " + self.configfile)
+    
+        cfg = dict([(s, dict(parser.items(s))) for s in parser.sections()])
+        commandlist = ["xboxdrv"]
+        for sectionname in cfg:
+            section = cfg[sectionname]
+            if sectionname == "options":
+                for inkey in section:
+                    key, value = self.checkminusvalue(inkey, section[inkey])
+                    if value == "true":
+                        commandlist.append("--%s" % key)
+                    else:
+                        commandlist.append("--%s=%s" % (key, value))
+                continue
+            paramline = ""
+            for inkey in section:
+                key, value = self.checkminusvalue(inkey, section[inkey])
+                paramline = "%s%s=%s," % (paramline, key, value)
+            if paramline.endswith(","):
+                commandlist.append("--%s" % sectionname)
+                commandlist.append(paramline[:-1])
+        print commandlist        
+        myProc = Process(commandlist)
+        out = ""
+        while out.lower().find("quit") == -1:
+            out = self.getNext(myProc)
+            print out
+        if len(self.appandparams) == 0:
+            print("WARNING: No path to application specified!")
+        else:
+            print(self.appandparams)
+            check_call(self.appandparams)
+        print "Sending SIGINT"
+        myProc.kill(SIGINT)
+        try:
+            with_timeout(1, myProc.wait)
+            sys.exit(0)
+        except Timeout:
+            pass
+        print "Sending SIGINT again"
+        myProc.kill(SIGINT)
+        try:
+            with_timeout(1, myProc.wait)
+            sys.exit(0)
+        except Timeout:
+            pass
+        print "Killing"
+        myProc.terminate()
+
+def main():
+    # parse command line options
+    if len(sys.argv) < 2:
+        print "Usage: runxboxdrv configfile [path to app] [app parameters]"
+        sys.exit(-1)
+    runxboxdrv = RunXBoxDrv(sys.argv[1], sys.argv[2:])
+    runxboxdrv.process()
+
+if __name__ == "__main__":
+    main()
