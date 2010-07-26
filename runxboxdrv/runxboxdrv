@@ -2,15 +2,43 @@
 
 import os, sys
 import fcntl
+import time
 import ConfigParser
 from subprocess import check_call, Popen, PIPE
-from signal import SIGINT
+from signal import SIGINT, SIGKILL
 from asyncproc import Process, with_timeout, Timeout
+
+XBOXDRVNAME = "xboxdrv"
+LOADEDTEXT = "quit"
 
 class RunXBoxDrv(object):
     def __init__(self, configfile, appandparams=[]):
         self.configfile = configfile
         self.appandparams = appandparams
+        if self.killExistingXBoxDrv(SIGINT, "SIGINT"):
+            time.sleep(1)
+        if self.killExistingXBoxDrv(SIGINT, "SIGINT again"):
+            time.sleep(1)
+        if self.killExistingXBoxDrv(SIGKILL, "SIGKILL"):
+            time.sleep(1)
+
+    @staticmethod
+    def killExistingXBoxDrv(sig, signame):
+        callps = Popen("ps", shell=True, stdout=PIPE)
+        outputps = callps.communicate()
+        print outputps
+        lines = outputps[0].split("\n")
+        for line in lines:
+            fields = line.split()
+            if len(fields) < 4:
+                continue
+            pid = fields[0]
+            process = fields[3]
+            if process.find(XBOXDRVNAME) != -1:
+                print "Using %s on existing %s" % (signame, XBOXDRVNAME)
+                os.kill(int(pid), sig)
+                return True
+        return False
 
     @staticmethod
     def checkminusvalue(key, value):
@@ -33,6 +61,13 @@ class RunXBoxDrv(object):
             buf = "%s%s" % (buf, out)
         return buf
 
+    @staticmethod
+    def checkLoaded(myProc):
+        out = ""
+        while out.lower().find(LOADEDTEXT) == -1:
+            out = RunXBoxDrv.getNext(myProc)
+            print out
+        
     def process(self):
         parser = ConfigParser.ConfigParser()
         parser.optionxform = str
@@ -41,7 +76,7 @@ class RunXBoxDrv(object):
             raise Exception("XBoxDrv game config not found: " + self.configfile)
     
         cfg = dict([(s, dict(parser.items(s))) for s in parser.sections()])
-        commandlist = ["xboxdrv"]
+        commandlist = [XBOXDRVNAME]
         for sectionname in cfg:
             section = cfg[sectionname]
             if sectionname == "options":
@@ -61,10 +96,7 @@ class RunXBoxDrv(object):
                 commandlist.append(paramline[:-1])
         print commandlist        
         myProc = Process(commandlist)
-        out = ""
-        while out.lower().find("quit") == -1:
-            out = self.getNext(myProc)
-            print out
+        with_timeout(1, self.checkLoaded, myProc)        
         if len(self.appandparams) == 0:
             print("WARNING: No path to application specified!")
         else:
