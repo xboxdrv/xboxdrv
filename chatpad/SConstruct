@@ -1,0 +1,11 @@
+env = Environment(CXXFLAGS=["-Werror", "-Wall"], LIBS=["usb", "boost_thread"])
+env.Program("chatpad", ["chatpad.cpp"])
+
+env = Environment(CXXFLAGS=["-Werror", "-Wall"], LIBS=["usb-1.0", "boost_thread"])
+env.Program("chatpad2", ["chatpad2.cpp"])
+
+env = Environment(CXXFLAGS=["-Werror", "-Wall"], LIBS=["usb-1.0", "boost_thread"])
+env.Program("reset", ["reset.cpp"])
+
+# EOF #
+
