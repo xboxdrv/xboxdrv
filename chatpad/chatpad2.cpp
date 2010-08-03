@@ -15,12 +15,15 @@ private:
   uint8_t old_buttons;
   uint8_t old_dpad;
 
+  bool m_running;
+
 public:
   Main() :
     m_ctx(0),
     m_handle(0),
     old_buttons(0),
-    old_dpad(0)
+    old_dpad(0),
+    m_running(false)
   {}
 
   ~Main()
@@ -42,6 +45,8 @@ public:
   {
     m_handle = libusb_open_device_with_vid_pid(m_ctx, 0x045e, 0x028e);
 
+    set_configuration();
+
     std::cout << "handle: " << m_handle << std::endl;
     if (!m_handle)
     {
@@ -53,6 +58,39 @@ public:
 
     err = libusb_claim_interface(m_handle, 0);
     std::cout << "Claim: " << err << std::endl;
+
+    m_running = true;
+  }
+
+  void set_configuration()
+  {
+    old_buttons = 0;
+    old_dpad    = 0;
+
+    if (m_running)
+    {
+      libusb_release_interface(m_handle, 0);
+      libusb_release_interface(m_handle, 2);
+    }
+
+    int ret = libusb_set_configuration(m_handle, 1);
+
+    switch(ret)
+    {
+      case 0:
+        std::cout << "set_configuration(): success" << std::endl;
+        break;
+
+      default:
+        std::cout << "set_configuration(): " << ret << std::endl;
+        break;
+    }
+
+    if (m_running)
+    {
+      libusb_claim_interface(m_handle, 0);
+      libusb_claim_interface(m_handle, 2);
+    }
   }
 
   void reset()
@@ -60,9 +98,13 @@ public:
     std::cout << "reset()" << std::endl;
     libusb_reset_device(m_handle);
     libusb_close(m_handle);
+    libusb_exit(m_ctx);
     m_handle = 0;
-    sleep(1);
-    init_device_handle();
+    m_ctx    = 0;
+    old_buttons = 0;
+    old_dpad    = 0;
+
+    execl("./chatpad2", "./chatpad2", NULL);
   }
 
   void ctrl_msg(uint8_t value)
@@ -153,6 +195,9 @@ public:
             {
               callback(data.get());
             }
+            
+            //            if (endpoint == 6)
+            //  std::cout << "Clear Halt: " << libusb_clear_halt(m_handle, endpoint) << std::endl;
           }
           break;
 
@@ -172,6 +217,10 @@ public:
           std::cout << "read_thread: no device" << std::endl;
           break;
         
+        case LIBUSB_ERROR_OTHER: // happens on reset
+          std::cout << "read_thread: other error" << std::endl;
+          break;
+
         default:
           std::cout << "read_thread: unknown: " << ret << std::endl;
           break;
@@ -194,21 +243,26 @@ public:
     switch(dpad)
     {
       case 0x04: // left
+        ctrl_msg(0x08);
         break;
 
       case 0x08: // right
+        ctrl_msg(0x09);
         break;
 
       case 0x01: // up        
+        ctrl_msg(0x0a);
         break;
 
       case 0x02: // down
+        ctrl_msg(0x0b);
         break;
 
       case 0x20: // back
         break;
 
       case 0x10: // start
+        set_configuration();
         break;
 
       case 0x40: // left stick
@@ -245,7 +299,7 @@ public:
         break;
 
       case 0x04: // guide
-        ctrl_msg(0x17);
+        reset();
         break;
     }
   }
