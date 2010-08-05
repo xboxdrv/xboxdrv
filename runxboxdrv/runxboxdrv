@@ -457,14 +457,18 @@ XBOXDRVNAME = "xboxdrv"
 MODULELOAD = ("uinput", "joydev")
 MODULEUNLOAD = ("xpad",)
 UINPUT_LOCATIONS = ("/dev/input/uinput", "/dev/misc/uinput", "/dev/uinput")
+SUDO_COMMANDS = ("gksu", "kdesu", "sudo")
 
 class RunXBoxDrv(object):
-    def __init__(self, configfile=None, xboxdrvpath=None, appandparams=[]):
+    sudo_command = None
+
+    def __init__(self, configfile=None, xboxdrvpath=None, sudo_command=None, appandparams=[]):
         self.configfile = configfile
         if xboxdrvpath is None:
             self.xboxdrvpath = XBOXDRVNAME
         else:
             self.xboxdrvpath = xboxdrvpath
+        RunXBoxDrv.sudo_command = sudo_command
         self.appandparams = appandparams
         if self.killExistingXBoxDrv(SIGINT, "SIGINT"):
             time.sleep(1)
@@ -475,15 +479,46 @@ class RunXBoxDrv(object):
         self.checkDependentModules()
         self.checkUInputDevice()
 
+
     @staticmethod
     def runCommandAndGetOutput(command):
+        print command
         callcommand = Popen(command, shell=True, stdout=PIPE)
         outputcommand = callcommand.communicate()
         return outputcommand[0].split("\n")
         
     @staticmethod
+    def which(program):
+        import os
+        def is_exe(fpath):
+            return os.path.exists(fpath) and os.access(fpath, os.X_OK)
+
+        fpath, fname = os.path.split(program)
+        if fpath:
+            if is_exe(program):
+                return program
+        else:
+            for path in os.environ["PATH"].split(os.pathsep):
+                exe_file = os.path.join(path, program)
+                if is_exe(exe_file):
+                    return exe_file
+
+        return None
+
+    @staticmethod
     def runCommandAsRoot(command):
-        callcommand = Popen("sudo %s" % command, shell=True, stdout=PIPE)
+        if RunXBoxDrv.sudo_command is None:
+            for sudo_command in SUDO_COMMANDS:
+                if RunXBoxDrv.which(sudo_command) is not None:
+                    RunXBoxDrv.sudo_command = sudo_command
+                    break
+            if RunXBoxDrv.sudo_command is None:
+                raise Exception("Cannot find one of: %s!" % str(SUDO_COMMANDS))
+        if RunXBoxDrv.which(RunXBoxDrv.sudo_command) is None:
+            raise Exception("Cannot find %s!" % RunXBoxDrv.sudo_command)
+        commandline = "%s %s" % (RunXBoxDrv.sudo_command, command)
+        print commandline
+        callcommand = Popen(commandline, shell=True, stdout=PIPE)
         outputcommand = callcommand.communicate()
         return outputcommand[0]
         
@@ -541,7 +576,7 @@ class RunXBoxDrv(object):
                 location = nextlocation
                 break
         if location is None:
-            raise Exception("Cannot find one of: " % str(UINPUT_LOCATIONS))
+            raise Exception("Cannot find one of: %s!" % str(UINPUT_LOCATIONS))
 
         if not os.access(location, os.W_OK):
             print "Trying to change permissions of: %s" % location
@@ -552,7 +587,7 @@ class RunXBoxDrv(object):
         else:
             raise Exception("Could not set write permissions on %s" % location)
 
-     
+
     @staticmethod
     def checkminusvalue(key, value):
         if value.startswith("-"):
@@ -646,9 +681,10 @@ def main():
 
     parser.add_option("--cfg", help="xboxdrv configuration")
     parser.add_option("--xboxdrv", help="full path to xboxdrv")
+    parser.add_option("--sudo", help="sudo command to use")
     (options, args) = parser.parse_args()
 
-    runxboxdrv = RunXBoxDrv(options.cfg, options.xboxdrv, args)
+    runxboxdrv = RunXBoxDrv(options.cfg, options.xboxdrv, options.sudo, args)
     runxboxdrv.process()
 
 if __name__ == "__main__":
