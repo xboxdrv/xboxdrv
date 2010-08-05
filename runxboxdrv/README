@@ -1,0 +1,49 @@
+[[ runxboxdrv ]]
+================
+
+runxboxdrv was written by Mike Rans <rans@email.com>, some info can be
+found at:
+
+,--[ http://ubuntuforums.org/showthread.php?p=9676862#post9676862 ]
+|  
+|  I have completed a wrapper around xboxdrv called runxboxdrv. It is run using:
+|  runxboxdrv --cfg=/home/mike/oolite.cfg /usr/bin/oolite
+|  
+|  It handles:
+|  1. Shutting cleanly any existing xboxdrv process
+|  2. Checking and unloading if necessary xpad.
+|  3. Checking and loading if necesary uinput and joydev
+|  4. Checking and changing if necessary uinput device permissions
+|  5. Loading a configuration file and converting its contents to xboxdrv
+|  command line arguments
+|  6. Running xboxdrv with said arguments
+|  7. Running game once xboxdrv outputs "Press CTRL-C to quit"
+|  8. Shutting cleanly xboxdrv after user shuts down game
+|  
+|  Oolite.cfg (the gamepad configuration) looks like this:
+|  [options]
+|  silent=true
+|  trigger-as-button=true
+|  dpad-as-button=true
+|  led=0
+|  
+|  [axis-sensitivity]
+|  X1=-1.0
+|  X2=-1.0
+|  Y2=-1.0
+|  
+|  [axismap]
+|  Y2=-Y2
+|  
+|  [ui-axismap]
+|  Y1=XK_1:XK_2
+|  
+|  [ui-buttonmap]
+|  # speed
+|  du=XK_Up
+|  dd=XK_Down
+|  ...
+`--
+
+# EOF #
+
