@@ -1,6 +1,6 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2010 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,37 +16,17 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_COMMAND_LINE_OPTIONS_HPP
-#define HEADER_COMMAND_LINE_OPTIONS_HPP
+#ifndef HEADER_XBOXDRV_INI_BUILDER_HPP
+#define HEADER_XBOXDRV_INI_BUILDER_HPP
 
-#include <vector>
-#include <map>
-
-#include "modifier.hpp"
-#include "xboxmsg.hpp"
-#include "uinput.hpp"
-#include "arg_parser.hpp"
-
-class Xboxdrv;
-
-class CommandLineParser 
+class INIBuilder
 {
 public:
-  ArgParser argp;
-
-public:
-  CommandLineParser();
-
-  void parse_args(int argc, char** argv, Options* options);
-
-  void print_help() const;
-  void print_led_help() const;
-  void print_version() const;
-  void create_ini_schema();
+  virtual ~INIBuilder() {}
+  virtual void send_section(const std::string& section) =0;
+  virtual void send_pair(const std::string& name, const std::string& value) =0;
 };
 
-extern Options* g_options;
-
 #endif
 
 /* EOF */

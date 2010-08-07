@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include <math.h>
 
-#include "command_line_options.hpp"
+#include "options.hpp"
 #include "helper.hpp"
 #include "modifier.hpp"
 
@@ -310,7 +310,7 @@ void apply_square_axis(XboxGenericMsg& msg)
   }
 }
 
-void apply_deadzone(XboxGenericMsg& msg, const CommandLineOptions& opts)
+void apply_deadzone(XboxGenericMsg& msg, const Options& opts)
 {
   switch (msg.type)
   {
@@ -350,7 +350,7 @@ void apply_deadzone(XboxGenericMsg& msg, const CommandLineOptions& opts)
   }
 }
 
-void apply_axis_sensitivity(XboxGenericMsg& msg, const CommandLineOptions& opts)
+void apply_axis_sensitivity(XboxGenericMsg& msg, const Options& opts)
 {
   for(std::vector<AxisSensitivityMapping>::const_iterator i = opts.axis_sensitivity_map.begin();
       i != opts.axis_sensitivity_map.end(); ++i)
@@ -371,7 +371,7 @@ void apply_axis_sensitivity(XboxGenericMsg& msg, const CommandLineOptions& opts)
   }
 }
 
-void apply_four_way_restrictor(XboxGenericMsg& msg, const CommandLineOptions& opts)
+void apply_four_way_restrictor(XboxGenericMsg& msg, const Options& opts)
 {
   // left Stick
   if (abs(get_axis(msg, XBOX_AXIS_X1)) > abs(get_axis(msg, XBOX_AXIS_Y1)))
@@ -402,7 +402,7 @@ void apply_four_way_restrictor(XboxGenericMsg& msg, const CommandLineOptions& op
   }
 }
 
-void apply_dpad_rotator(XboxGenericMsg& msg, const CommandLineOptions& opts)
+void apply_dpad_rotator(XboxGenericMsg& msg, const Options& opts)
 {
   int up    = get_button(msg, XBOX_DPAD_UP);
   int down  = get_button(msg, XBOX_DPAD_DOWN);

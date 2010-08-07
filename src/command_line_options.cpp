@@ -16,6 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "command_line_options.hpp"
+
 #include <stdio.h>
 #include <iostream>
 #include <stdexcept>
@@ -26,7 +28,8 @@
 #include "arg_parser.hpp"
 #include "helper.hpp"
 #include "uinput_deviceid.hpp"
-#include "command_line_options.hpp"
+#include "options.hpp"
+#include "ini_schema.hpp"
 
 #define RAISE_EXCEPTION(x) do { \
   std::ostringstream kiJk8f08d4oMX; \
@@ -34,7 +37,7 @@
   throw std::runtime_error(kiJk8f08d4oMX.str()); \
 } while(0)
 
-CommandLineOptions* command_line_options = 0;
+Options* g__options = 0;
 
 enum {
   OPTION_HELP,
@@ -88,42 +91,9 @@ enum {
   OPTION_HELP_DEVICES
 };
 
-CommandLineOptions::CommandLineOptions() :
-  mode(RUN_DEFAULT),
-  verbose(false),
-  silent (false),
-  quiet  (false),
-  rumble (false),
-  led    (-1),
-  rumble_l(-1),
-  rumble_r(-1),
-  rumble_gain(255),
-  controller_id(0),
-  wireless_id(0),
-  instant_exit(false),
-  no_uinput(false),
-  detach_kernel_driver(),
-  gamepad_type(GAMEPAD_UNKNOWN),
-  vendor_id(-1),
-  product_id(-1),
-  uinput_config(),
-  deadzone(0),
-  deadzone_trigger(0),
-  button_map(),
-  axis_map(),
-  autofire_map(),
-  relative_axis_map(),
-  calibration_map(),
-  axis_sensitivity_map(),
-  square_axis(false),
-  four_way_restrictor(false),
-  dpad_rotation(0),
-  evdev_device(),
+CommandLineParser::CommandLineParser() :
   argp()
 {
-  busid[0] = '\0';
-  devid[0] = '\0';
-
   argp
     .add_usage("[OPTION]...")
     .add_text("Xbox360 USB Gamepad Userspace Driver")
@@ -264,23 +234,23 @@ void set_evdev_keymap(std::map<int, XboxButton>& keymap, const std::string& str)
 }
 
 void
-CommandLineOptions::parse_args(int argc, char** argv)
+CommandLineParser::parse_args(int argc, char** argv, Options* options)
 {  
   ArgParser::ParsedOptions parsed = argp.parse_args(argc, argv);
 
   for(ArgParser::ParsedOptions::const_iterator i = parsed.begin(); i != parsed.end(); ++i)
   {
-    CommandLineOptions& opts = *this;
+    Options& opts = *options;
     const ArgParser::ParsedOption& opt = *i;
 
     switch (i->key)
     {
       case OPTION_HELP:
-        opts.mode = PRINT_HELP;
+        opts.mode = Options::PRINT_HELP;
         break;
 
       case OPTION_VERSION:
-        opts.mode = PRINT_VERSION;
+        opts.mode = Options::PRINT_VERSION;
         break;
           
       case OPTION_VERBOSE:
@@ -297,7 +267,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
 
       case OPTION_DAEMON:
         opts.silent = true;
-        opts.mode = RUN_DAEMON;
+        opts.mode = Options::RUN_DAEMON;
         break;
 
       case OPTION_TEST_RUMBLE:
@@ -457,7 +427,7 @@ CommandLineOptions::parse_args(int argc, char** argv)
       case OPTION_LED:
         if (opt.argument == "help")
         {
-          opts.mode = PRINT_LED_HELP;
+          opts.mode = Options::PRINT_LED_HELP;
         }
         else
         {
@@ -519,14 +489,14 @@ CommandLineOptions::parse_args(int argc, char** argv)
         break;
 
       case OPTION_DPAD_ROTATION:
-      {
-        int degree = boost::lexical_cast<int>(opt.argument);
-        degree /= 45;
-        degree %= 8;
-        if (degree < 0) degree += 8;
-        opts.dpad_rotation = degree;
-      }
-      break;
+        {
+          int degree = boost::lexical_cast<int>(opt.argument);
+          degree /= 45;
+          degree %= 8;
+          if (degree < 0) degree += 8;
+          opts.dpad_rotation = degree;
+        }
+        break;
 
       case OPTION_SQUARE_AXIS:
         opts.square_axis = true;
@@ -544,46 +514,56 @@ CommandLineOptions::parse_args(int argc, char** argv)
         break;
 
       case OPTION_HELP_LED:
-        opts.mode = PRINT_LED_HELP;
+        opts.mode = Options::PRINT_LED_HELP;
         break;
 
       case OPTION_DEVICE_BY_ID:
-      {
-        unsigned int tmp_product_id;
-        unsigned int tmp_vendor_id;
-        if (sscanf(opt.argument.c_str(), "%x:%x", &tmp_vendor_id, &tmp_product_id) == 2)
         {
-          opts.vendor_id  = tmp_vendor_id;
-          opts.product_id = tmp_product_id;
+          unsigned int tmp_product_id;
+          unsigned int tmp_vendor_id;
+          if (sscanf(opt.argument.c_str(), "%x:%x", &tmp_vendor_id, &tmp_product_id) == 2)
+          {
+            opts.vendor_id  = tmp_vendor_id;
+            opts.product_id = tmp_product_id;
+          }
+          else
+          {
+            RAISE_EXCEPTION(opt.option << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)");
+          }
+          break;
         }
-        else
-        {
-          RAISE_EXCEPTION(opt.option << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)");
-        }
-        break;
-      }
 
       case OPTION_DEVICE_BY_PATH:
-        if (sscanf(opt.argument.c_str(), "%3s:%3s", opts.busid, opts.devid) != 2)
-        {  
-          RAISE_EXCEPTION(opt.option << " expected an argument in form BUS:DEV (i.e. 006:003)");
+        {
+          char busid[4] = { '\0' };
+          char devid[4] = { '\0' };
+
+          if (sscanf(opt.argument.c_str(), "%3s:%3s", busid, devid) != 2)
+          {  
+            RAISE_EXCEPTION(opt.option << " expected an argument in form BUS:DEV (i.e. 006:003)");
+          }
+          else
+          {
+            opts.busid = busid;
+            opts.devid = devid;
+          }
         }
         break;
 
       case OPTION_LIST_SUPPORTED_DEVICES:
-        opts.mode = RUN_LIST_SUPPORTED_DEVICES;
+        opts.mode = Options::RUN_LIST_SUPPORTED_DEVICES;
         break;
 
       case OPTION_LIST_SUPPORTED_DEVICES_XPAD:
-        opts.mode = RUN_LIST_SUPPORTED_DEVICES_XPAD;
+        opts.mode = Options::RUN_LIST_SUPPORTED_DEVICES_XPAD;
         break;
 
       case OPTION_LIST_CONTROLLER:
-        opts.mode = RUN_LIST_CONTROLLER;
+        opts.mode = Options::RUN_LIST_CONTROLLER;
         break;
 
       case OPTION_HELP_DEVICES:
-        opts.mode = PRINT_HELP_DEVICES;
+        opts.mode = Options::PRINT_HELP_DEVICES;
         break;
 
       case ArgParser::REST_ARG:
@@ -598,13 +578,13 @@ CommandLineOptions::parse_args(int argc, char** argv)
 }
 
 void
-CommandLineOptions::print_help() const
+CommandLineParser::print_help() const
 {
   argp.print_help(std::cout);
 }
 
 void
-CommandLineOptions::print_led_help() const
+CommandLineParser::print_led_help() const
 {
   std::cout << 
     "Possible values for '--led VALUE' are:\n\n"
@@ -628,7 +608,7 @@ CommandLineOptions::print_led_help() const
 }
   
 void
-CommandLineOptions::print_version() const
+CommandLineParser::print_version() const
 {
   std::cout
     << "xboxdrv " PACKAGE_VERSION " - http://pingus.seul.org/~grumbel/xboxdrv/\n"
@@ -636,6 +616,57 @@ CommandLineOptions::print_version() const
     << "Licensed under GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
     << "This program comes with ABSOLUTELY NO WARRANTY.\n"
     << "This is free software, and you are welcome to redistribute it under certain conditions; see the file COPYING for details.\n";
+}
+
+void
+CommandLineParser::create_ini_schema()
+{
+  // INISchema ini;
+
+  // ini.section("general")
+  //   ("verbose", &verbose)
+  //   ("silent",  &silent)
+  //   ("quiet",   &quiet)
+  //   ("rumble",  &rumble)
+  //   ("led",  &led)
+  //   ("rumble_l",  &rumble_l)
+  //   ("rumble_r",  &rumble_r)
+  //   ("rumble_gain",  &rumble_gain)
+  //   ("controller-id",  &controller_id)
+  //   ("wireless-id",  &wireless_id)
+  //   ("instant-exit",  &instant_exit)
+  //   ("no-uinput",  &no_uinput)
+  //   ("detach-kernel-driver",  &detach_kernel_driver);
+
+  // char busid[4];
+  // char devid[4];
+  // int deadzone;
+  // int deadzone_trigger;
+
+  // int vendor_id;
+  // int product_id;
+
+  // bool square_axis;
+  // bool four_way_restrictor;
+  // int  dpad_rotation;
+  // std::string evdev_device;
+
+  // uInputCfg uinput_config;
+  //ini.section("ui-buttonmap",  ui_buttonmap_cb);
+  //ini.section("ui-axismap", ui_buttonmap_cb);
+
+  // std::vector<ButtonMapping> button_map;
+  //ini.section("buttonmap", buttonmap_cb);
+
+  // std::vector<AxisMapping>   axis_map;
+  //ini.section("axismap", axismap_cb);
+
+  // std::vector<AutoFireMapping> autofire_map;
+  // std::vector<RelativeAxisMapping> relative_axis_map;
+  // std::vector<CalibrationMapping> calibration_map;
+  // std::vector<AxisSensitivityMapping> axis_sensitivity_map;
+  // std::map<int, XboxAxis>   evdev_absmap;
+  // std::map<int, XboxButton> evdev_keymap;
 }
 
 /* EOF */

@@ -22,15 +22,16 @@
 #include "xboxmsg.hpp"
 
 struct XPadDevice;
-class CommandLineOptions;
+class Options;
+class Options;
 class uInput;
 class XboxGenericController;
 
 class Xboxdrv
 {
 private:
-  void run_main(const CommandLineOptions& opts);
-  void run_daemon(const CommandLineOptions& opts);
+  void run_main(const Options& opts);
+  void run_daemon(const Options& opts);
   void run_list_supported_devices();
   void run_list_supported_devices_xpad();
   void run_help_devices();
@@ -38,16 +39,16 @@ private:
 
   void print_info(struct usb_device* dev,
                   const XPadDevice& dev_type,
-                  const CommandLineOptions& opts) const;
+                  const Options& opts) const;
   void controller_loop(GamepadType type, uInput* uinput,
                        XboxGenericController* controller, 
-                       const CommandLineOptions& opts);
-  void apply_modifier(XboxGenericMsg& msg, int msec_delta, const CommandLineOptions& opts) const;
+                       const Options& opts);
+  void apply_modifier(XboxGenericMsg& msg, int msec_delta, const Options& opts) const;
 
-  bool find_controller_by_path(const char* busid, const char* devid,struct usb_device** xbox_device) const;
+  bool find_controller_by_path(const std::string& busid, const std::string& devid,struct usb_device** xbox_device) const;
   void find_controller(struct usb_device*& dev,
                        XPadDevice&         dev_type,
-                       const CommandLineOptions& opts) const;
+                       const Options& opts) const;
   int  find_jsdev_number() const;
   int  find_evdev_number() const;
   bool find_controller_by_id(int id, int vendor_id, int product_id, struct usb_device** xbox_device) const;

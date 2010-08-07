@@ -20,6 +20,7 @@
 #define HEADER_ARG_PARSER_HPP
 
 #include <string>
+#include <iostream>
 #include <vector>
 
 class ArgParser

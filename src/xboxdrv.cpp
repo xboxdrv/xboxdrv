@@ -44,6 +44,7 @@
 #include "helper.hpp"
 #include "evdev_helper.hpp"
 #include "command_line_options.hpp"
+#include "options.hpp"
 #include "xbox_generic_controller.hpp"
 
 #include "xboxdrv.hpp"
@@ -56,13 +57,13 @@ void on_sigint(int)
 {
   if (global_exit_xboxdrv)
   {
-    if (!command_line_options->quiet)
+    if (!g_options->quiet)
       std::cout << "Ctrl-c pressed twice, exiting hard" << std::endl;
     exit(EXIT_SUCCESS);
   }
   else
   {
-    if (!command_line_options->quiet)
+    if (!g_options->quiet)
       std::cout << "Shutdown initiated, press Ctrl-c again if nothing is happening" << std::endl;
 
     global_exit_xboxdrv = true; 
@@ -73,7 +74,7 @@ void on_sigint(int)
 
 void on_sigterm(int)
 {
-  if (!command_line_options->quiet)
+  if (!g_options->quiet)
     std::cout << "Shutdown initiated by SIGTERM" << std::endl;
 
   if (global_controller)
@@ -149,17 +150,17 @@ Xboxdrv::run_list_controller()
 }
 
 bool
-Xboxdrv::find_controller_by_path(const char* busid, const char* devid,struct usb_device** xbox_device) const
+Xboxdrv::find_controller_by_path(const std::string& busid, const std::string& devid,struct usb_device** xbox_device) const
 {
   struct usb_bus* busses = usb_get_busses();
 
   for (struct usb_bus* bus = busses; bus; bus = bus->next)
   {
-    if (strcmp(bus->dirname, busid) == 0)
+    if (bus->dirname == busid)
     {
       for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
       {
-        if (strcmp(dev->filename, devid) == 0)
+        if (dev->filename == devid)
         {
           *xbox_device = dev;
           return true;
@@ -272,7 +273,7 @@ Xboxdrv::find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDe
 }
 
 void
-Xboxdrv::apply_modifier(XboxGenericMsg& msg, int msec_delta, const CommandLineOptions& opts) const
+Xboxdrv::apply_modifier(XboxGenericMsg& msg, int msec_delta, const Options& opts) const
 {
   apply_calibration_map(msg, opts.calibration_map);
 
@@ -293,7 +294,7 @@ Xboxdrv::apply_modifier(XboxGenericMsg& msg, int msec_delta, const CommandLineOp
 }
 
 void
-Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController* controller, const CommandLineOptions& opts)
+Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController* controller, const Options& opts)
 {
   int timeout = 0; // 0 == no timeout
   XboxGenericMsg oldmsg; // last data send to uinput
@@ -392,7 +393,7 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
 void
 Xboxdrv::find_controller(struct usb_device*& dev,
                          XPadDevice&         dev_type,
-                         const CommandLineOptions& opts) const
+                         const Options& opts) const
 {
   if (opts.busid[0] != '\0' && opts.devid[0] != '\0')
   {
@@ -453,11 +454,16 @@ Xboxdrv::find_controller(struct usb_device*& dev,
 }
 
 void
-Xboxdrv::run_main(const CommandLineOptions& opts)
+Xboxdrv::run_main(const Options& opts)
 {
   if (!opts.quiet)
   {
-    opts.print_version();
+    std::cout
+      << "xboxdrv " PACKAGE_VERSION " - http://pingus.seul.org/~grumbel/xboxdrv/\n"
+      << "Copyright © 2008-2010 Ingo Ruhnke <grumbel@gmx.de>\n"
+      << "Licensed under GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
+      << "This program comes with ABSOLUTELY NO WARRANTY.\n"
+      << "This is free software, and you are welcome to redistribute it under certain conditions; see the file COPYING for details.\n";
     std::cout << std::endl;
   }
 
@@ -601,7 +607,7 @@ Xboxdrv::run_main(const CommandLineOptions& opts)
 void
 Xboxdrv::print_info(struct usb_device* dev,
                     const XPadDevice& dev_type,
-                    const CommandLineOptions& opts) const
+                    const Options& opts) const
 {
   std::cout << "USB Device:        " << dev->bus->dirname << ":" << dev->filename << std::endl;
   std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
@@ -748,7 +754,7 @@ Xboxdrv::run_help_devices()
 }
 
 void
-Xboxdrv::run_daemon(const CommandLineOptions& opts)
+Xboxdrv::run_daemon(const Options& opts)
 {
   pid_t pid = fork();
 
@@ -773,45 +779,47 @@ Xboxdrv::main(int argc, char** argv)
     signal(SIGINT,  on_sigint);
     signal(SIGTERM, on_sigterm);
 
-    CommandLineOptions opts;
-    opts.parse_args(argc, argv);
-    command_line_options = &opts;
+    Options opts;
+    g_options = &opts;
+
+    CommandLineParser cmd_parser;
+    cmd_parser.parse_args(argc, argv, &opts);
 
     switch(opts.mode)
     {
-      case CommandLineOptions::PRINT_HELP_DEVICES:
+      case Options::PRINT_HELP_DEVICES:
         run_help_devices();
         break;
 
-      case CommandLineOptions::RUN_LIST_SUPPORTED_DEVICES:
+      case Options::RUN_LIST_SUPPORTED_DEVICES:
         run_list_supported_devices();
         break;
 
-      case CommandLineOptions::RUN_LIST_SUPPORTED_DEVICES_XPAD:
+      case Options::RUN_LIST_SUPPORTED_DEVICES_XPAD:
         run_list_supported_devices_xpad();
         break;
 
-      case CommandLineOptions::PRINT_VERSION:
-        opts.print_version();
+      case Options::PRINT_VERSION:
+        cmd_parser.print_version();
         break;
 
-      case CommandLineOptions::PRINT_HELP:
-        opts.print_help();
+      case Options::PRINT_HELP:
+        cmd_parser.print_help();
         break;
 
-      case CommandLineOptions::PRINT_LED_HELP:
-        opts.print_led_help();
+      case Options::PRINT_LED_HELP:
+        cmd_parser.print_led_help();
         break;
 
-      case CommandLineOptions::RUN_DEFAULT:
+      case Options::RUN_DEFAULT:
         run_main(opts);
         break;
 
-      case CommandLineOptions::RUN_DAEMON:
+      case Options::RUN_DAEMON:
         run_daemon(opts);
         break;
 
-      case CommandLineOptions::RUN_LIST_CONTROLLER:
+      case Options::RUN_LIST_CONTROLLER:
         run_list_controller();
         break;
     }

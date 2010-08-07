@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <assert.h>
-#include "command_line_options.hpp"
+#include "options.hpp"
 #include "force_feedback_handler.hpp"
 
 std::ostream& operator<<(std::ostream& out, const struct ff_envelope& envelope)
@@ -294,7 +294,7 @@ ForceFeedbackHandler::get_max_effects()
 void
 ForceFeedbackHandler::upload(const struct ff_effect& effect)
 {
-  if (command_line_options->verbose)
+  if (g_options->verbose)
     std::cout << "FF_UPLOAD("
               << "effect_id:" << effect.id
               << ", effect_type:" << effect.type
@@ -325,7 +325,7 @@ ForceFeedbackHandler::upload(const struct ff_effect& effect)
 void
 ForceFeedbackHandler::erase(int id)
 {
-  if (command_line_options->verbose)
+  if (g_options->verbose)
     std::cout << "FF_ERASE(effect_id:" << id << ")" << std::endl;
 
   std::map<int, ForceFeedbackEffect>::iterator i = effects.find(id);
@@ -338,7 +338,7 @@ ForceFeedbackHandler::erase(int id)
 void
 ForceFeedbackHandler::play(int id)
 {
-  if (command_line_options->verbose)
+  if (g_options->verbose)
     std::cout << "FFPlay(effect_id:" << id << ")" << std::endl;
 
   std::map<int, ForceFeedbackEffect>::iterator i = effects.find(id);
@@ -351,7 +351,7 @@ ForceFeedbackHandler::play(int id)
 void
 ForceFeedbackHandler::stop(int id)
 {
-  if (command_line_options->verbose)
+  if (g_options->verbose)
     std::cout << "FFStop(effect_id:" << id << ")" << std::endl;
 
   std::map<int, ForceFeedbackEffect>::iterator i = effects.find(id);

@@ -24,7 +24,7 @@
 #include <iostream>
 #include <boost/format.hpp>
 
-#include "command_line_options.hpp"
+#include "options.hpp"
 #include "helper.hpp"
 #include "usb_helper.hpp"
 #include "usb_read_thread.hpp"
@@ -228,7 +228,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else if (ret == 3 && data[0] == 0x08 && data[1] == 0x03)
   {
-    if (!command_line_options->quiet)
+    if (!g_options->quiet)
     {
       if (data[2] == 0x00)
         std::cout << "Headset: none";

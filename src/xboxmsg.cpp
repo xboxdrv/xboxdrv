@@ -22,7 +22,7 @@
 #include <algorithm>
 
 #include "helper.hpp"
-#include "command_line_options.hpp"
+#include "options.hpp"
 #include "xboxmsg.hpp"
 
 std::string gamepadtype_to_string(const GamepadType& type)
@@ -152,7 +152,7 @@ std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg)
     % int(msg.blue)
     % int(msg.orange);
 
-  if (command_line_options->verbose)
+  if (g_options->verbose)
   {
     out << boost::format("| dummy: %d %d %d %d %02hhx %02hhx %04hx %04hx %02x %02x")
       % int(msg.thumb_l)
@@ -205,7 +205,7 @@ std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg)
   out << boost::format("  LT:%3d RT:%3d")
     % int(msg.lt) % int(msg.rt);
 
-  if (command_line_options->verbose)
+  if (g_options->verbose)
     out << " Dummy: " << msg.dummy1 << " " << msg.dummy2 << " " << msg.dummy3;
 
   return out;
@@ -245,7 +245,7 @@ std::ostream& operator<<(std::ostream& out, const XboxMsg& msg)
     % int(msg.lt) 
     % int(msg.rt);
 
-  if (command_line_options->verbose)
+  if (g_options->verbose)
     out << " Dummy: " << msg.dummy;
 
   return out;
