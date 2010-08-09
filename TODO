@@ -15,6 +15,26 @@ git push --tags
 Stuff to do before 0.6.0 release:
 =================================
 
+* ini support
+
+* endpoints can be taken directly from the usb configuration, thus
+  avoiding issues with nummeric endpoints
+
+* bcdDevice (product release version) seem to indicate type:
+
+new controller with merged endpoints: bcdDevice: 0x0114
+old ones: 1.10
+
+better way then to check for endpoints maybe
+
+* give a hint in the documentation on how to do multi line comments:
+
+xboxdrv \
+ --buttonmap A=X,X=A `# swap A and X` \
+ --buttonmap B=Y,Y=B `# swap B and Y`
+
+* 045e:028f is the play&charge kit, give an error message when somebody tries to use that
+
 * axis-min/max range must be transmitted to AxisEvent (maybe normalize to float)
 
 * match by protocol not, just vendor/product, from xpad.c:

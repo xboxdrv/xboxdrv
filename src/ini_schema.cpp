@@ -18,10 +18,13 @@
 
 #include "ini_schema.hpp"
 
+#include <sstream>
+
 class INIPairSchema
 {
 public:
   virtual ~INIPairSchema() {}
+  virtual std::string str() const = 0;
 };
 
 class INIPairSchemaBool : public INIPairSchema
@@ -46,8 +49,20 @@ public:
       throw std::runtime_error("unable to convert '" + value + "' to bool");
     }
   }
-};
 
+  std::string str() const 
+  {
+    if (m_data)
+    {
+      return "true";
+    }
+    else
+    {
+      return "false";
+    }
+  }
+};
+
 class INIPairSchemaInt : public INIPairSchema
 {
 private:
@@ -59,8 +74,15 @@ public:
   {
     *m_data = atoi(value.c_str());
   }
-};
 
+  std::string str() const 
+  {
+    std::ostringstream str;
+    str << *m_data;
+    return str.str();
+  }
+};
+
 class INIPairSchemaFloat : public INIPairSchema
 {
 private:
@@ -72,8 +94,15 @@ public:
   {
     *m_data = atoi(value.c_str());
   }
-};
 
+  std::string str() const 
+  {
+    std::ostringstream str;
+    str << *m_data;
+    return str.str();
+  }
+};
+
 class INIPairSchemaString : public INIPairSchema
 {
 private:
@@ -85,8 +114,14 @@ public:
   {
     *m_data = value;
   }
-};
 
+  std::string str() const 
+  {
+    // FIXME: implement proper escaping
+    return *m_data;
+  }
+};
+
 class INIPairSchemaCallback : public INIPairSchema
 {
 private:
@@ -99,8 +134,14 @@ public:
     if (m_callback)
       m_callback(value);
   }
-};
 
+  std::string str() const 
+  {
+    // FIXME: implement me
+    return "<not implemented>";
+  }
+};
+
 INISchemaSection::INISchemaSection()
 {
 }
@@ -163,6 +204,15 @@ INISchemaSection::operator()(const std::string& name, boost::function<void (cons
   return *this;
 }
 
+void
+INISchemaSection::save(std::ostream& out)
+{
+  for(Schema::iterator i = m_schema.begin(); i != m_schema.end(); ++i)
+  {
+    out << i->first << " = " << i->second->str() << std::endl;
+  }
+}
+
 INISchema::INISchema() :
   m_sections()
 {
@@ -170,10 +220,17 @@ INISchema::INISchema() :
 
 INISchema::~INISchema()
 {
+  clear();
+}
+
+void
+INISchema::clear()
+{
   for(Sections::iterator i = m_sections.begin(); i != m_sections.end(); ++i)
   {
     delete i->second;
   }
+  m_sections.clear();
 }
 
 INISchemaSection&
@@ -203,6 +260,18 @@ INISchema::get_section(const std::string& name)
   {
     return 0;
   }
+}
+
+void
+INISchema::save(std::ostream& out)
+{
+  for(Sections::iterator i = m_sections.begin(); i != m_sections.end(); ++i)
+  {
+    out << "[" << i->first << "]" << std::endl;
+    i->second->save(out);
+    out << std::endl;
+  }
+  out << "\n# EOF #" << std::endl;
 }
 
 /* EOF */

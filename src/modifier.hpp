@@ -27,14 +27,14 @@
 class Options;
 
 struct ButtonMapping {
-  static ButtonMapping from_string(const std::string& str);
+  static ButtonMapping from_string(const std::string& lhs, const std::string& rhs);
 
   XboxButton lhs;
   XboxButton rhs;
 };
 
 struct AxisMapping {
-  static AxisMapping from_string(const std::string& str);
+  static AxisMapping from_string(const std::string& lhs, const std::string& rhs);
 
   XboxAxis lhs;
   XboxAxis rhs;
@@ -42,21 +42,21 @@ struct AxisMapping {
 };
 
 struct AutoFireMapping {
-  static AutoFireMapping from_string(const std::string&);
+  static AutoFireMapping from_string(const std::string& lhs, const std::string& rhs);
 
   XboxButton button;
   int        frequency;
 };
 
 struct RelativeAxisMapping {
-  static RelativeAxisMapping from_string(const std::string&);
+  static RelativeAxisMapping from_string(const std::string& lhs, const std::string& rhs);
 
   XboxAxis axis;
   int      speed;
 };
 
 struct CalibrationMapping {
-  static CalibrationMapping from_string(const std::string&);
+  static CalibrationMapping from_string(const std::string& lhs, const std::string& rhs);
 
   XboxAxis axis;
   int min;
@@ -65,7 +65,7 @@ struct CalibrationMapping {
 };
 
 struct AxisSensitivityMapping {
-  static AxisSensitivityMapping from_string(const std::string&);
+  static AxisSensitivityMapping from_string(const std::string& lhs, const std::string& rhs);
 
   XboxAxis axis;
   float sensitivity;

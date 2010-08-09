@@ -71,56 +71,47 @@ void apply_axis_map(XboxGenericMsg& msg, const std::vector<AxisMapping>& lst)
   msg = newmsg;
 }
 
-CalibrationMapping CalibrationMapping::from_string(const std::string& str)
+CalibrationMapping CalibrationMapping::from_string(const std::string& lhs, const std::string& rhs)
 {
-  std::string::size_type epos = str.find_first_of('=');
-  if (epos == std::string::npos)
-  {
-    throw std::runtime_error("Couldn't convert string \"" + str + "\" to CalibrationMapping");
-  }
-  else
-  {
-    CalibrationMapping mapping; 
-    mapping.axis    = string2axis(str.substr(0, epos));
-    mapping.min     = -32768;
-    mapping.center  = 0;
-    mapping.max     = 32767;
+  CalibrationMapping mapping; 
+  mapping.axis    = string2axis(lhs);
+  mapping.min     = -32768;
+  mapping.center  = 0;
+  mapping.max     = 32767;
 
-    boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
-    std::string rhs = str.substr(epos+1);
-    tokenizer tokens(rhs, sep);
-    int j = 0;
-    for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+  tokenizer tokens(rhs, sep);
+  int j = 0;
+  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+  {
+    //std::cout << "Token: '" << *i << "'" << std::endl;
+
+    if (!i->empty())
     {
-      //std::cout << "Token: '" << *i << "'" << std::endl;
-
-      if (!i->empty())
+      try 
       {
-        try 
-        {
-          if (j == 0) 
-            mapping.min = boost::lexical_cast<int>(*i);
-          else if (j == 1)
-            mapping.center = boost::lexical_cast<int>(*i);
-          else if (j == 2)
-            mapping.max = boost::lexical_cast<int>(*i);
-          else 
-            throw std::runtime_error("--calibration: to many arguments given, syntax is 'AXIS=MIN:CENTER:MAX': " + str);
-        }
-        catch(boost::bad_lexical_cast&) 
-        {
-          throw std::runtime_error("--calibration: couldn't convert '" + *i + "' to int");
-        }
+        if (j == 0) 
+          mapping.min = boost::lexical_cast<int>(*i);
+        else if (j == 1)
+          mapping.center = boost::lexical_cast<int>(*i);
+        else if (j == 2)
+          mapping.max = boost::lexical_cast<int>(*i);
+        else 
+          throw std::runtime_error("--calibration: to many arguments given, syntax is 'AXIS=MIN:CENTER:MAX'");
+      }
+      catch(boost::bad_lexical_cast&) 
+      {
+        throw std::runtime_error("--calibration: couldn't convert '" + *i + "' to int");
       }
     }
+  }
       
-    if (!(mapping.min <= mapping.center && mapping.center <= mapping.max))
-      throw std::runtime_error("Order wrong 'AXIS=MIN:CENTER:MAX': " + str);
+  if (!(mapping.min <= mapping.center && mapping.center <= mapping.max))
+    throw std::runtime_error("Order wrong 'AXIS=MIN:CENTER:MAX'");
 
-    return mapping;
-  } 
+  return mapping;
 }
 
 static int clamp(int lhs, int rhs, int v)
@@ -146,119 +137,77 @@ void apply_calibration_map(XboxGenericMsg& msg, const std::vector<CalibrationMap
 }
 
 ButtonMapping 
-ButtonMapping::from_string(const std::string& str)
+ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
 {
-  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
-  {
-    if (*i == '=')
-    {
-      ButtonMapping mapping;
-      mapping.lhs = string2btn(std::string(str.begin(), i));
-      mapping.rhs = string2btn(std::string(i+1, str.end()));
-
-      return mapping;
-    }
-  }
-  throw std::runtime_error("Couldn't convert string \"" + str + "\" to button mapping");
+  ButtonMapping mapping;
+  mapping.lhs = string2btn(lhs);
+  mapping.rhs = string2btn(rhs);
+  return mapping;
 }
 
 AxisMapping
-AxisMapping::from_string(const std::string& str)
+AxisMapping::from_string(const std::string& lhs, const std::string& rhs)
 {
-  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+  assert(!lhs.empty());
+  assert(!rhs.empty());
+
+  AxisMapping mapping;
+
+  if (lhs[0] == '-')
   {
-    if (*i == '=')
-    {
-      AxisMapping mapping;
-
-      std::string lhs(str.begin(), i);
-      std::string rhs(i+1, str.end());
-
-      if (lhs.empty() || rhs.empty())
-        throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
-
-      if (lhs[0] == '-')
-      {
-        mapping.invert = true;
-        mapping.lhs = string2axis(lhs.substr(1));
-      }
-      else
-      {
-        mapping.invert = false;
-        mapping.lhs = string2axis(lhs);
-      }
-
-      mapping.rhs = string2axis(rhs);
-
-      if (mapping.lhs == XBOX_AXIS_UNKNOWN ||
-          mapping.rhs == XBOX_AXIS_UNKNOWN)
-        throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
-
-      return mapping;
-    }
-  }
-  throw std::runtime_error("Couldn't convert string \"" + str + "\" to axis mapping");
-}
-
-RelativeAxisMapping
-RelativeAxisMapping::from_string(const std::string& str)
-{
-  /* Format of str: A={SPEED} */
-  std::string::size_type i = str.find('=');
-  if (i == std::string::npos)
-  {
-    throw std::runtime_error("Couldn't convert string \"" + str + "\" to RelativeAxisMapping");
+    mapping.invert = true;
+    mapping.lhs = string2axis(lhs.substr(1));
   }
   else
   {
-    RelativeAxisMapping mapping;
-    mapping.axis  = string2axis(str.substr(0, i));
-    mapping.speed = boost::lexical_cast<int>(str.substr(i+1, str.size()-i));
-    // FIXME: insert some error checking here
-    return mapping;
+    mapping.invert = false;
+    mapping.lhs = string2axis(lhs);
   }
+
+  mapping.rhs = string2axis(rhs);
+
+  if (mapping.lhs == XBOX_AXIS_UNKNOWN ||
+      mapping.rhs == XBOX_AXIS_UNKNOWN)
+    throw std::runtime_error("Couldn't convert string \"" + lhs + "=" + rhs + "\" to axis mapping");
+
+  return mapping;
+}
+
+RelativeAxisMapping
+RelativeAxisMapping::from_string(const std::string& lhs, const std::string& rhs)
+{
+  /* Format of str: A={SPEED} */
+  RelativeAxisMapping mapping;
+  mapping.axis  = string2axis(lhs);
+  mapping.speed = boost::lexical_cast<int>(rhs);
+  // FIXME: insert some error checking here
+  return mapping;
 }
 
 AutoFireMapping 
-AutoFireMapping::from_string(const std::string& str)
+AutoFireMapping::from_string(const std::string& lhs, const std::string& rhs)
 {
   /* Format of str: A={ON-DELAY}[:{OFF-DELAY}]
      Examples: A=10 or A=10:50 
      if OFF-DELAY == nil then ON-DELAY = OFF-DELAY 
   */
-  std::string::size_type i = str.find_first_of('=');
-  if (i == std::string::npos)
-  {
-    throw std::runtime_error("Couldn't convert string \"" + str + "\" to AutoFireMapping");
-  }
-  else
-  {
-    AutoFireMapping mapping; 
-    mapping.button    = string2btn(str.substr(0, i));
-    mapping.frequency = boost::lexical_cast<int>(str.substr(i+1, str.size()-i).c_str());
-    return mapping;
-  }
+  AutoFireMapping mapping; 
+  mapping.button    = string2btn(lhs);
+  mapping.frequency = boost::lexical_cast<int>(rhs);
+  return mapping;
 }
 
 AxisSensitivityMapping 
-AxisSensitivityMapping::from_string(const std::string& str)
+AxisSensitivityMapping::from_string(const std::string& lhs, const std::string& rhs)
 {
   /* 
      Format of str: X1=SENSITIVITY
      Example: X1=2.0
   */
-  std::string::size_type i = str.find_first_of('=');
-  if (i == std::string::npos)
-  {
-    throw std::runtime_error("Couldn't convert string \"" + str + "\" to AxisSensitivityMapping");
-  }
-  else
-  {
-    AxisSensitivityMapping mapping;
-    mapping.axis = string2axis(str.substr(0, i));
-    mapping.sensitivity = boost::lexical_cast<float>(str.substr(i+1, str.size()-i).c_str());
-    return mapping;
-  }
+  AxisSensitivityMapping mapping;
+  mapping.axis = string2axis(lhs);
+  mapping.sensitivity = boost::lexical_cast<float>(rhs);
+  return mapping;
 }
 
 void squarify_axis_(int16_t& x_inout, int16_t& y_inout)

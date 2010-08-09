@@ -196,8 +196,8 @@ public:
               callback(data.get());
             }
             
-            //            if (endpoint == 6)
-            //  std::cout << "Clear Halt: " << libusb_clear_halt(m_handle, endpoint) << std::endl;
+            if (endpoint == 6)
+              std::cout << "Clear Halt: " << libusb_clear_halt(m_handle, LIBUSB_ENDPOINT_IN | endpoint) << std::endl;
           }
           break;
 

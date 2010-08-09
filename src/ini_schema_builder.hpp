@@ -16,17 +16,27 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_INI_BUILDER_HPP
-#define HEADER_XBOXDRV_INI_BUILDER_HPP
+#ifndef HEADER_XBOXDRV_INI_SCHEMA_BUILDER_HPP
+#define HEADER_XBOXDRV_INI_SCHEMA_BUILDER_HPP
 
-#include <string>
+#include "ini_builder.hpp"
 
-class INIBuilder
+class INISchema;
+
+class INISchemaBuilder : public INIBuilder
 {
+private:
+  const INISchema& m_schema;
+
 public:
-  virtual ~INIBuilder() {}
-  virtual void send_section(const std::string& section) =0;
-  virtual void send_pair(const std::string& name, const std::string& value) =0;
+  INISchemaBuilder(const INISchema& schema);
+
+  void send_section(const std::string& section);
+  void send_pair(const std::string& name, const std::string& value);
+
+private:
+  INISchemaBuilder(const INISchemaBuilder&);
+  INISchemaBuilder& operator=(const INISchemaBuilder&);
 };
 
 #endif

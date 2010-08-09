@@ -13,10 +13,15 @@ static struct usb_device_id chatpad_table [] = {
   { }
 };
 
-MODULE_DEVICE_TABLE (usb, chatpad_table);
+MODULE_DEVICE_TABLE(usb, chatpad_table);
+
+//unsigned char init_sequence[] = { 0x1f, 0x1e, 0x1b, 0x1b, 0x1f, 0x18, 0x10, 0x13 };
+//unsigned char init_sequence[] = { 0x1f, 0x1b, 0x1b, 0x1f, 0x18, 0x10, 0x13 };
+unsigned char init_sequence[] = { 0x1f, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b };
 
 struct usb_chatpad {
   struct usb_device* udev;
+  struct usb_interface* intf;
 
   struct urb*    chatpad_urb;
   unsigned char* chatpad_idata;
@@ -28,11 +33,13 @@ struct usb_chatpad {
   struct delayed_work worker;
 
   int ctrl_ready;
-  int flip_flop;
+  int counter;
 };
 
-static void chatpad_chatpad_cb(struct urb *urb)
+static void chatpad_idata_cb(struct urb *urb)
 {
+  struct usb_chatpad* chatpad = urb->context;
+
   printk(KERN_INFO "chatpad_chatpad_cb()\n");
   switch (urb->status) 
   {
@@ -60,11 +67,53 @@ static void chatpad_chatpad_cb(struct urb *urb)
   }
 
   {
+    //struct usb_endpoint_descriptor* ep = &chatpad->intf->cur_altsetting->endpoint[0].desc;
+    //usb_reset_endpoint(urb->dev, usb_rcvintpipe(urb->dev, ep->bEndpointAddress));
+
+    //extern int usb_clear_halt(struct usb_device *dev, int pipe);
+    int retval = usb_reset_configuration(chatpad->udev);
+    printk(KERN_INFO "usb_reset(): %d\n", retval);
+  }
+
+  {
     int retval = usb_submit_urb(urb, GFP_ATOMIC);
     if (retval)
       err("%s - usb_submit_urb failed with result %d",
           __func__, retval);
   }
+}
+
+static void chatpad_control_cb(struct urb *urb)
+{
+  struct usb_chatpad* chatpad = urb->context;
+
+  printk(KERN_INFO "chatpad_control_cb()\n");
+  switch (urb->status) 
+  {
+    case 0:
+      {
+        int i = 0;
+        printk(KERN_INFO "chatpad_control_cb(): XXXX------------XXXXX %d - ", urb->actual_length);
+        for(i = 0; i < urb->actual_length; ++i)
+        {
+          printk("0x%02x ", (int)(((unsigned char*)urb->transfer_buffer)[i]));
+        }
+        printk("\n");
+      }
+      break;
+
+    case -ECONNRESET:
+    case -ENOENT:
+    case -ESHUTDOWN: // triggered when the module get unloaded or device disconnected
+      printk(KERN_INFO "chatpad_chatpad_cb(): fail1 %d\n", urb->status);
+      return;
+
+    default:
+      printk(KERN_INFO "chatpad_chatpad_cb(): fail2 %d\n", urb->status);
+      break;
+  }
+  
+  schedule_delayed_work(&chatpad->worker, msecs_to_jiffies(1000));
 }
 
 static void chatpad_setup_chatpad_readloop(struct usb_chatpad* chatpad, struct usb_interface *intf)
@@ -83,7 +132,7 @@ static void chatpad_setup_chatpad_readloop(struct usb_chatpad* chatpad, struct u
     usb_fill_int_urb(chatpad->chatpad_urb, udev,
                      usb_rcvintpipe(udev, ep->bEndpointAddress),
                      chatpad->chatpad_idata, 32,
-                     chatpad_chatpad_cb, chatpad, ep->bInterval);
+                     chatpad_idata_cb, chatpad, ep->bInterval);
 
     chatpad->chatpad_urb->transfer_dma = chatpad->chatpad_idata_dma;
     chatpad->chatpad_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
@@ -126,41 +175,30 @@ static void chatpad_send_ctrl_msg(struct usb_chatpad* chatpad, int value)
   }
 }
 
-static void chatpad_send_ctrl_msg_cb(struct urb *urb)
-{
-  printk(KERN_INFO "chatpad_send_ctrl_msg_cb()\n");
-
-  switch (urb->status) 
-  {
-    default:
-      printk(KERN_INFO "chatpad_send_ctrl_msg_cb(): status = %d\n", urb->status);
-  break;
-  }
-}
-
 static void chatpad_send_ctrl_msg_async(struct usb_chatpad* chatpad, int value)
 {
+  printk(KERN_INFO "chatpad_sending: 0x%x\n", value);
+
   chatpad->control_cr.bRequestType = USB_TYPE_VENDOR | USB_RECIP_INTERFACE;
   chatpad->control_cr.bRequest     = USB_REQ_GET_STATUS;
   chatpad->control_cr.wValue       = cpu_to_le16(value);
   chatpad->control_cr.wIndex       = cpu_to_le16(2);
   chatpad->control_cr.wLength      = cpu_to_le16(0);
 
-  // FIXME: must use different urb!
   usb_fill_control_urb(chatpad->control_urb,
                        chatpad->udev,
                        usb_sndctrlpipe(chatpad->udev, 0),
                        (unsigned char*)&chatpad->control_cr,
                        NULL, // transfer_buffer
                        0,    // buffer_length
-                       chatpad_send_ctrl_msg_cb,
+                       chatpad_control_cb,
                        chatpad);
 
   {
     int retval = usb_submit_urb(chatpad->control_urb, GFP_ATOMIC);
     if (retval)
     {
-      printk(KERN_INFO "RETVAL: %d\n", retval);
+      printk(KERN_INFO "chatpad_send_ctrl_msg_async: retval = %d\n", retval);
     }
   }
 }
@@ -169,20 +207,17 @@ static void chatpad_chatpad_keepalive(struct work_struct *work)
 {
   struct usb_chatpad* chatpad =  container_of(work, struct usb_chatpad, worker.work);
 
-  if (chatpad->flip_flop)
+  if (chatpad->counter < sizeof(init_sequence))
   {
-    printk(KERN_INFO "chatpad_sending: 0x1f()\n");
-    chatpad_send_ctrl_msg(chatpad, 0x1f);
+    chatpad_send_ctrl_msg_async(chatpad, init_sequence[chatpad->counter]);
   }
   else
   {
-    printk(KERN_INFO "chatpad_sending: 0x1e()\n");
-    chatpad_send_ctrl_msg(chatpad, 0x1e);
+    chatpad_send_ctrl_msg_async(chatpad, (chatpad->counter % 2) ? 0x1f : 0x1e);
   }
+  chatpad->counter += 1;
 
-  chatpad->flip_flop = !chatpad->flip_flop;
-
-  schedule_delayed_work(&chatpad->worker, msecs_to_jiffies(1000));
+  printk(KERN_INFO "chatpad_chatpad_keepalive: waiting for reply\n");
 }
 
 static void chatpad_setup_chatpad_keepalive(struct usb_chatpad* chatpad, struct usb_interface *intf)
@@ -202,6 +237,8 @@ static void chatpad_setup_chatpad_keepalive(struct usb_chatpad* chatpad, struct 
 static int chatpad_probe(struct usb_interface *intf, const struct usb_device_id *id)
 {
   struct usb_device *udev = interface_to_usbdev(intf);
+  
+  printk(KERN_INFO "chatpad_probe() -------------------------------------------------------------\n");
 
   printk(KERN_INFO "chatpad_probe() called: %04x:%04x - %d - %d %d %d\n",
          (int)id->idVendor, (int)id->idProduct, intf->minor,
@@ -213,6 +250,7 @@ static int chatpad_probe(struct usb_interface *intf, const struct usb_device_id 
   {
     struct usb_chatpad* chatpad = kzalloc(sizeof(struct usb_chatpad), GFP_KERNEL);
     chatpad->udev = udev;
+    chatpad->intf = intf;
     usb_set_intfdata(intf, chatpad);
     
     chatpad_setup_chatpad_readloop(chatpad, intf);
@@ -253,7 +291,7 @@ static struct usb_driver chatpad_driver = {
 };
 
 static int __init usb_chatpad_init(void)
-{ 
+{
   // FIXME: called once for each interface?!
   int result = usb_register(&chatpad_driver);
 

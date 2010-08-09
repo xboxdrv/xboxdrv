@@ -41,6 +41,8 @@ public:
   INISchemaSection& operator()(const std::string& name, std::string* value);
   INISchemaSection& operator()(const std::string& name, boost::function<void (const std::string&)> callback);
 
+  void save(std::ostream& out);
+
 private:
   INISchemaSection& add(const std::string& name, INIPairSchema* schema);
 
@@ -59,11 +61,15 @@ public:
   INISchema();
   ~INISchema();
 
+  void clear();
+
   INISchemaSection& section(const std::string& name, 
                             boost::function<void (const std::string&, const std::string&)> callback 
                             = boost::function<void (const std::string&, const std::string&)>());
 
   INISchemaSection* get_section(const std::string& name);
+
+  void save(std::ostream& out);
 
 private:
   INISchema(const INISchema&);

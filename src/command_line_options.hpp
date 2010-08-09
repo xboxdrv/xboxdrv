@@ -22,18 +22,21 @@
 #include <vector>
 #include <map>
 
-#include "modifier.hpp"
-#include "xboxmsg.hpp"
-#include "uinput.hpp"
 #include "arg_parser.hpp"
+#include "ini_schema.hpp"
+#include "modifier.hpp"
+#include "uinput.hpp"
+#include "xboxmsg.hpp"
 
 class Xboxdrv;
 
 class CommandLineParser 
 {
 public:
-  ArgParser argp;
-
+  ArgParser m_argp;
+  INISchema m_ini;
+  Options*  m_options;
+  
 public:
   CommandLineParser();
 
@@ -42,7 +45,29 @@ public:
   void print_help() const;
   void print_led_help() const;
   void print_version() const;
-  void create_ini_schema();
+  void create_ini_schema(Options* opts);
+
+private:
+  void set_ui_axismap_from_string(const std::string& str);
+
+private:
+  void set_ui_axismap(const std::string& name, const std::string& value);
+  void set_ui_buttonmap(const std::string& name, const std::string& value);
+
+  void set_axismap(const std::string& name, const std::string& value);
+  void set_buttonmap(const std::string& name, const std::string& value);
+
+  void set_evdev_absmap(const std::string& name, const std::string& value);
+  void set_evdev_keymap(const std::string& name, const std::string& value);
+
+  void set_relative_axis(const std::string& name, const std::string& value);
+  void set_autofire(const std::string& name, const std::string& value);
+  void set_calibration(const std::string& name, const std::string& value);
+  void set_axis_sensitivity(const std::string& name, const std::string& value);
+
+private:
+  void init_argp();
+  void init_ini(Options* opts);
 };
 
 extern Options* g_options;

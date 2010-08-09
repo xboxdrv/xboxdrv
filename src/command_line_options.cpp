@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
@@ -27,15 +28,16 @@
 
 #include "arg_parser.hpp"
 #include "helper.hpp"
-#include "uinput_deviceid.hpp"
+#include "ini_schema_builder.hpp"
+#include "ini_parser.hpp"
 #include "options.hpp"
-#include "ini_schema.hpp"
+#include "uinput_deviceid.hpp"
 
-#define RAISE_EXCEPTION(x) do { \
-  std::ostringstream kiJk8f08d4oMX; \
-  kiJk8f08d4oMX << x; \
-  throw std::runtime_error(kiJk8f08d4oMX.str()); \
-} while(0)
+#define RAISE_EXCEPTION(x) do {                         \
+    std::ostringstream kiJk8f08d4oMX;                   \
+    kiJk8f08d4oMX << x;                                 \
+    throw std::runtime_error(kiJk8f08d4oMX.str());      \
+  } while(0)
 
 Options* g__options = 0;
 
@@ -46,6 +48,8 @@ enum {
   OPTION_QUIET,
   OPTION_SILENT,
   OPTION_DAEMON,
+  OPTION_CONFIG,
+  OPTION_WRITE_CONFIG,
   OPTION_TEST_RUMBLE,
   OPTION_RUMBLE,
   OPTION_QUIT,
@@ -92,9 +96,16 @@ enum {
 };
 
 CommandLineParser::CommandLineParser() :
-  argp()
+  m_argp(),
+  m_ini()
 {
-  argp
+  init_argp();
+}
+
+void
+CommandLineParser::init_argp()
+{
+  m_argp
     .add_usage("[OPTION]...")
     .add_text("Xbox360 USB Gamepad Userspace Driver")
     .add_newline()
@@ -115,6 +126,8 @@ CommandLineParser::CommandLineParser() :
     .add_option(OPTION_NO_EXTRA_DEVICES, 0,  "no-extra-devices",  "", "Do not create keyboard and mouse devices, just use a single device")
     .add_option(OPTION_MIMIC_XPAD,    0,  "mimic-xpad",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver")
     .add_option(OPTION_DAEMON,       'D', "daemon",      "", "run as daemon")
+    .add_option(OPTION_CONFIG,       'c', "config",      "FILE", "read configuration from FILE")
+    .add_option(OPTION_WRITE_CONFIG,  0, "write-config",      "FILE", "write an example configuration to FILE")
     .add_newline()
 
     .add_text("Device Options: ")
@@ -163,7 +176,66 @@ CommandLineParser::CommandLineParser() :
     .add_newline()
 
     .add_text("See README for more documentation and examples.")
-    .add_text("Report bugs to Ingo Ruhnke <grumbel@gmx.de>");
+    .add_text("Report bugs to Ingo Ruhnke <grumbel@gmx.de>"); 
+}
+
+void
+CommandLineParser::init_ini(Options* opts)
+{
+  m_ini.clear();
+
+  m_ini.section("xboxdrv")
+    ("verbose", &opts->verbose)
+    ("silent", &opts->silent)
+    ("quiet",  &opts->quiet)
+    ("rumble", &opts->rumble)
+    ("led", &opts->led)
+    ("rumble-l", &opts->rumble_l)
+    ("rumble-r", &opts->rumble_r)
+    ("rumble-gain", &opts->rumble_gain)
+    ("controller-id", &opts->controller_id)
+    ("wireless-id", &opts->wireless_id)
+    ("instant-exit", &opts->instant_exit)
+    ("no-uinput", &opts->no_uinput)
+    ("detach-kernel-driver", &opts->detach_kernel_driver)
+    ("busid", &opts->busid)
+    ("devid", &opts->devid)
+    ("deadzone", &opts->deadzone)
+    ("deadzone-trigger", &opts->deadzone_trigger)
+    ("vendor-id", &opts->vendor_id)
+    ("product-id", &opts->product_id)
+    
+    ("square-axis", &opts->square_axis)
+    ("four-way-restrictor", &opts->four_way_restrictor)
+    ("dpad-rotation", &opts->dpad_rotation)
+    ("evdev-device", &opts->evdev_device);
+
+  m_ini.section("uinput")
+    ("device-name", &opts->uinput_config.device_name)
+    ("trigger-as-button", &opts->uinput_config.trigger_as_button)
+    ("trigger-as-zaxis", &opts->uinput_config.trigger_as_zaxis)
+    ("dpad-as-button", &opts->uinput_config.dpad_as_button)
+    ("dpad-only", &opts->uinput_config.dpad_only)
+    ("force-feedback", &opts->uinput_config.force_feedback)
+    ("extra-devices", &opts->uinput_config.extra_devices)
+    // mimic_xpad()
+    // btn_map
+    // axis_map
+    ;
+
+  m_ini.section("ui-buttonmap", boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
+  m_ini.section("ui-axismap",   boost::bind(&CommandLineParser::set_ui_axismap, this, _1, _2));
+
+  m_ini.section("buttonmap", boost::bind(&CommandLineParser::set_buttonmap, this, _1, _2));
+  m_ini.section("axismap",   boost::bind(&CommandLineParser::set_axismap, this, _1, _2));
+
+  m_ini.section("autofire",   boost::bind(&CommandLineParser::set_autofire, this, _1, _2));
+  m_ini.section("relative-axis",   boost::bind(&CommandLineParser::set_relative_axis, this, _1, _2));
+  m_ini.section("calibration",   boost::bind(&CommandLineParser::set_calibration, this, _1, _2));
+  m_ini.section("axis-sensitivity",   boost::bind(&CommandLineParser::set_calibration, this, _1, _2));
+
+  m_ini.section("evdev-absmap", boost::bind(&CommandLineParser::set_evdev_absmap, this, _1, _2));
+  m_ini.section("evdev-keymap", boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
 }
 
 void set_ui_button_map(ButtonMap& ui_button_map, const std::string& str)
@@ -195,7 +267,8 @@ void set_ui_button_map(ButtonMap& ui_button_map, const std::string& str)
   }
 }
 
-void set_ui_axis_map(AxisEvent* ui_axis_map, const std::string& str)
+void
+CommandLineParser::set_ui_axismap_from_string(const std::string& str)
 {
   std::string::size_type i = str.find_first_of('=');
   if (i == std::string::npos)
@@ -204,18 +277,9 @@ void set_ui_axis_map(AxisEvent* ui_axis_map, const std::string& str)
   }
   else
   {
-    XboxAxis  axis  = string2axis(str.substr(0, i));
-    AxisEvent event = AxisEvent::from_string(str.substr(i+1, str.size()-i));
-            
-    if (axis != XBOX_AXIS_UNKNOWN)
-    {
-      ui_axis_map[axis] = event;
-    }
-    else
-    {
-      throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-axis-mapping");
-    }      
-  }  
+    set_axismap(str.substr(0, i),
+                str.substr(i+1, str.size()-i));
+  }
 }
 
 void set_evdev_absmap(std::map<int, XboxAxis>& absmap, const std::string& str)
@@ -233,10 +297,40 @@ void set_evdev_keymap(std::map<int, XboxButton>& keymap, const std::string& str)
   std::cout << "KEY: " << str2key(lhs) << std::endl;
 }
 
+template<class C, class Func>
+void arg2vector2(const std::string& str, typename std::vector<C>& lst, Func func)
+{
+  std::string::const_iterator start = str.begin();
+  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+  {
+    if (*i == ',')
+    {
+      if (i != start)
+      {
+        std::string lhs, rhs;
+        split_string_at(std::string(start, i), '=', &lhs, &rhs);
+        lst.push_back(func(lhs, rhs));
+      }
+          
+      start = i+1;
+    }
+  }
+  
+  if (start != str.end())
+  {
+    std::string lhs, rhs;
+    split_string_at(std::string(start, str.end()), '=', &lhs, &rhs);
+    lst.push_back(func(lhs, rhs));
+  }
+}
+
 void
 CommandLineParser::parse_args(int argc, char** argv, Options* options)
 {  
-  ArgParser::ParsedOptions parsed = argp.parse_args(argc, argv);
+  init_ini(options);
+  m_options = options;
+
+  ArgParser::ParsedOptions parsed = m_argp.parse_args(argc, argv);
 
   for(ArgParser::ParsedOptions::const_iterator i = parsed.begin(); i != parsed.end(); ++i)
   {
@@ -268,6 +362,43 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
       case OPTION_DAEMON:
         opts.silent = true;
         opts.mode = Options::RUN_DAEMON;
+        break;
+
+      case OPTION_WRITE_CONFIG:
+        {
+          opts.instant_exit = true;
+
+          std::ofstream out(opt.argument.c_str());
+          if (!out)
+          {
+            std::ostringstream str;
+            str << "Couldn't create " << opt.argument;
+            throw std::runtime_error(str.str());
+          }
+          else
+          {
+            // FIXME: implement me
+            m_ini.save(out);
+          }
+        }
+      break;
+
+      case OPTION_CONFIG:
+        {
+          std::ifstream in(opt.argument.c_str());
+          if (!in)
+          {
+            std::ostringstream str;
+            str << "Couldn't open " << opt.argument;
+            throw std::runtime_error(str.str());
+          }
+          else
+          {
+            INISchemaBuilder builder(m_ini);
+            INIParser parser(in, builder, opt.argument);
+            parser.run();
+          }
+        }
         break;
 
       case OPTION_TEST_RUMBLE:
@@ -359,11 +490,11 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_BUTTONMAP:
-        arg2vector(opt.argument, opts.button_map, &ButtonMapping::from_string);
+        arg2vector2(opt.argument, opts.button_map, &ButtonMapping::from_string);
         break;
 
       case OPTION_AXISMAP:
-        arg2vector(opt.argument, opts.axis_map, &AxisMapping::from_string);
+        arg2vector2(opt.argument, opts.axis_map, &AxisMapping::from_string);
         break;
                     
       case OPTION_NAME:
@@ -376,7 +507,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_UI_AXISMAP:
-        arg2apply(opt.argument, boost::bind(&set_ui_axis_map, opts.uinput_config.axis_map, _1));
+        arg2apply(opt.argument, boost::bind(&CommandLineParser::set_ui_axismap_from_string, this, _1));
         break;
 
       case OPTION_UI_BUTTONMAP:
@@ -387,12 +518,12 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         opts.uinput_config.dpad_as_button = true;
         opts.deadzone = 4000;
         opts.uinput_config.trigger_as_zaxis = true;
-        arg2vector("-y2=y2,-trigger=trigger", opts.axis_map, &AxisMapping::from_string);
+        arg2vector2("-y2=y2,-trigger=trigger", opts.axis_map, &AxisMapping::from_string);
         // send events only every 20msec, lower values cause a jumpy pointer
         arg2apply("x1=REL_X:15:20,y1=REL_Y:15:20,"
                   "y2=REL_WHEEL:5:100,x2=REL_HWHEEL:5:100,"
                   "trigger=REL_WHEEL:5:100",
-                  boost::bind(&set_ui_axis_map, opts.uinput_config.axis_map, _1));
+                  boost::bind(&CommandLineParser::set_ui_axismap_from_string, this, _1));
         arg2apply("a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER,rb=KEY_PAGEDOWN,lb=KEY_PAGEUP,"
                   "dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN,"
                   "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,"
@@ -409,11 +540,11 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
         
       case OPTION_EVDEV_ABSMAP:
-        arg2apply(opt.argument, boost::bind(&set_evdev_absmap, boost::ref(opts.evdev_absmap), _1));
+        arg2apply(opt.argument, boost::bind(&::set_evdev_absmap, boost::ref(opts.evdev_absmap), _1));
         break;
 
       case OPTION_EVDEV_KEYMAP:
-        arg2apply(opt.argument, boost::bind(&set_evdev_keymap, boost::ref(opts.evdev_keymap), _1));
+        arg2apply(opt.argument, boost::bind(&::set_evdev_keymap, boost::ref(opts.evdev_keymap), _1));
         break;
 
       case OPTION_ID:
@@ -469,19 +600,19 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_AUTOFIRE:
-        arg2vector(opt.argument, opts.autofire_map, &AutoFireMapping::from_string);
+        arg2vector2(opt.argument, opts.autofire_map, &AutoFireMapping::from_string);
         break;
 
       case OPTION_CALIBRARIOTION:
-        arg2vector(opt.argument, opts.calibration_map, &CalibrationMapping::from_string);
+        arg2vector2(opt.argument, opts.calibration_map, &CalibrationMapping::from_string);
         break;
 
       case OPTION_RELATIVE_AXIS:
-        arg2vector(opt.argument, opts.relative_axis_map, &RelativeAxisMapping::from_string);
+        arg2vector2(opt.argument, opts.relative_axis_map, &RelativeAxisMapping::from_string);
         break;
 
       case OPTION_AXIS_SENSITIVITY:
-        arg2vector(opt.argument, opts.axis_sensitivity_map, &AxisSensitivityMapping::from_string);
+        arg2vector2(opt.argument, opts.axis_sensitivity_map, &AxisSensitivityMapping::from_string);
         break;
 
       case OPTION_FOUR_WAY_RESTRICTOR:
@@ -580,7 +711,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 void
 CommandLineParser::print_help() const
 {
-  argp.print_help(std::cout);
+  m_argp.print_help(std::cout);
 }
 
 void
@@ -619,54 +750,98 @@ CommandLineParser::print_version() const
 }
 
 void
-CommandLineParser::create_ini_schema()
+CommandLineParser::set_ui_axismap(const std::string& name, const std::string& value)
 {
-  // INISchema ini;
+  XboxAxis  axis  = string2axis(name);
+  AxisEvent event = AxisEvent::from_string(value);
+  if (axis != XBOX_AXIS_UNKNOWN)
+  {
+    m_options->uinput_config.axis_map[axis] = event;
+  }
+  else
+  {
+    throw std::runtime_error("Couldn't convert string \"" + name + "=" + value + "\" to ui-axis-mapping");
+  }      
+}
 
-  // ini.section("general")
-  //   ("verbose", &verbose)
-  //   ("silent",  &silent)
-  //   ("quiet",   &quiet)
-  //   ("rumble",  &rumble)
-  //   ("led",  &led)
-  //   ("rumble_l",  &rumble_l)
-  //   ("rumble_r",  &rumble_r)
-  //   ("rumble_gain",  &rumble_gain)
-  //   ("controller-id",  &controller_id)
-  //   ("wireless-id",  &wireless_id)
-  //   ("instant-exit",  &instant_exit)
-  //   ("no-uinput",  &no_uinput)
-  //   ("detach-kernel-driver",  &detach_kernel_driver);
+void
+CommandLineParser::set_ui_buttonmap(const std::string& name, const std::string& value)
+{
+  std::string btn_str = name;
+  ButtonEvent event = ButtonEvent::from_string(value);
 
-  // char busid[4];
-  // char devid[4];
-  // int deadzone;
-  // int deadzone_trigger;
+  std::string::size_type j = btn_str.find('+');
+  if (j == std::string::npos)
+  {
+    XboxButton  btn = string2btn(btn_str);
 
-  // int vendor_id;
-  // int product_id;
+    m_options->uinput_config.btn_map.bind(btn, event);
+  }
+  else
+  {
+    XboxButton shift = string2btn(btn_str.substr(0, j));
+    XboxButton btn   = string2btn(btn_str.substr(j+1));
 
-  // bool square_axis;
-  // bool four_way_restrictor;
-  // int  dpad_rotation;
-  // std::string evdev_device;
+    m_options->uinput_config.btn_map.bind(shift, btn, event);
+  }
+}
 
-  // uInputCfg uinput_config;
-  //ini.section("ui-buttonmap",  ui_buttonmap_cb);
-  //ini.section("ui-axismap", ui_buttonmap_cb);
+void
+CommandLineParser::set_axismap(const std::string& name, const std::string& value)
+{
+  XboxAxis  axis  = string2axis(name);
+  AxisEvent event = AxisEvent::from_string(value);
+            
+  if (axis != XBOX_AXIS_UNKNOWN)
+  {
+    m_options->uinput_config.axis_map[axis] = event;
+  }
+  else
+  {
+    throw std::runtime_error("Couldn't convert string \"" + value + "\" to ui-axis-mapping");
+  }      
+}
 
-  // std::vector<ButtonMapping> button_map;
-  //ini.section("buttonmap", buttonmap_cb);
+void
+CommandLineParser::set_buttonmap(const std::string& name, const std::string& value)
+{
+  m_options->button_map.push_back(ButtonMapping::from_string(name, value));
+}
 
-  // std::vector<AxisMapping>   axis_map;
-  //ini.section("axismap", axismap_cb);
+void
+CommandLineParser::set_evdev_absmap(const std::string& name, const std::string& value)
+{
+  m_options->evdev_absmap[str2abs(name)] = string2axis(value);
+}
 
-  // std::vector<AutoFireMapping> autofire_map;
-  // std::vector<RelativeAxisMapping> relative_axis_map;
-  // std::vector<CalibrationMapping> calibration_map;
-  // std::vector<AxisSensitivityMapping> axis_sensitivity_map;
-  // std::map<int, XboxAxis>   evdev_absmap;
-  // std::map<int, XboxButton> evdev_keymap;
+void
+CommandLineParser::set_evdev_keymap(const std::string& name, const std::string& value)
+{
+  m_options->evdev_keymap[str2key(name)] = string2btn(value);
+}
+
+void
+CommandLineParser::set_relative_axis(const std::string& name, const std::string& value)
+{
+  m_options->relative_axis_map.push_back(RelativeAxisMapping::from_string(name, value));
+}
+
+void
+CommandLineParser::set_autofire(const std::string& name, const std::string& value)
+{
+  m_options->autofire_map.push_back(AutoFireMapping::from_string(name, value));
+}
+
+void
+CommandLineParser::set_calibration(const std::string& name, const std::string& value)
+{
+  m_options->calibration_map.push_back(CalibrationMapping::from_string(name, value));
+}
+
+void
+CommandLineParser::set_axis_sensitivity(const std::string& name, const std::string& value)
+{
+  m_options->axis_sensitivity_map.push_back(AxisSensitivityMapping::from_string(name, value));
 }
 
 /* EOF */
