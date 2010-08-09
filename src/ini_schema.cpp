@@ -20,13 +20,6 @@
 
 #include <sstream>
 
-class INIPairSchema
-{
-public:
-  virtual ~INIPairSchema() {}
-  virtual std::string str() const = 0;
-};
-
 class INIPairSchemaBool : public INIPairSchema
 {
 private:
@@ -128,7 +121,10 @@ private:
   boost::function<void (const std::string&)> m_callback;
   
 public:
-  INIPairSchemaCallback(boost::function<void (const std::string&)> callback) : m_callback(callback) {}
+  INIPairSchemaCallback(boost::function<void (const std::string&)> callback) : 
+    m_callback(callback) 
+  {}
+
   void call(const std::string& value)
   {
     if (m_callback)
@@ -142,7 +138,8 @@ public:
   }
 };
 
-INISchemaSection::INISchemaSection()
+INISchemaSection::INISchemaSection(boost::function<void (const std::string&, const std::string&)> callback) :
+  m_callback(callback)
 {
 }
 
@@ -204,6 +201,20 @@ INISchemaSection::operator()(const std::string& name, boost::function<void (cons
   return *this;
 }
 
+INIPairSchema*
+INISchemaSection::get(const std::string& name) const
+{
+  Schema::const_iterator i = m_schema.find(name);
+  if (i == m_schema.end())
+  {
+    return 0;
+  }
+  else
+  {
+    return i->second;
+  }
+}
+
 void
 INISchemaSection::save(std::ostream& out)
 {
@@ -243,15 +254,15 @@ INISchema::section(const std::string& name,
     delete i->second;
   }
 
-  INISchemaSection* section = new INISchemaSection();
+  INISchemaSection* section = new INISchemaSection(callback);
   m_sections.insert(std::pair<std::string, INISchemaSection*>(name, section));
   return *section;
 }
 
 INISchemaSection*
-INISchema::get_section(const std::string& name)
+INISchema::get_section(const std::string& name) const
 {
-  Sections::iterator i = m_sections.find(name);
+  Sections::const_iterator i = m_sections.find(name);
   if (i != m_sections.end())
   {
     return i->second;

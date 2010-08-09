@@ -671,7 +671,7 @@ int get_event_type(const std::string& name)
   }
   else
   {
-    throw std::runtime_error("str2event(): unknown event type prefix: " + name);
+    throw std::runtime_error("get_event_type(): unknown event type prefix: " + name);
   }
 }
 

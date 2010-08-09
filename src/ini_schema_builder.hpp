@@ -27,6 +27,7 @@ class INISchemaBuilder : public INIBuilder
 {
 private:
   const INISchema& m_schema;
+  std::string m_current_section;  
 
 public:
   INISchemaBuilder(const INISchema& schema);

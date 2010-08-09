@@ -23,7 +23,14 @@
 #include <string>
 #include <boost/function.hpp>
 
-class INIPairSchema;
+class INIPairSchema
+{
+public:
+  INIPairSchema() {}
+  virtual ~INIPairSchema() {}
+  virtual std::string str() const =0;
+  virtual void call(const std::string& value) =0;
+};
 
 class INISchemaSection
 {
@@ -32,7 +39,10 @@ private:
   Schema m_schema;
 
 public:
-  INISchemaSection();
+  boost::function<void (const std::string&, const std::string&)> m_callback;
+
+public:
+  INISchemaSection(boost::function<void (const std::string&, const std::string&)> callback);
   ~INISchemaSection();
 
   INISchemaSection& operator()(const std::string& name, bool*  value);
@@ -40,6 +50,8 @@ public:
   INISchemaSection& operator()(const std::string& name, float* value);
   INISchemaSection& operator()(const std::string& name, std::string* value);
   INISchemaSection& operator()(const std::string& name, boost::function<void (const std::string&)> callback);
+
+  INIPairSchema* get(const std::string& name) const;
 
   void save(std::ostream& out);
 
@@ -67,7 +79,7 @@ public:
                             boost::function<void (const std::string&, const std::string&)> callback 
                             = boost::function<void (const std::string&, const std::string&)>());
 
-  INISchemaSection* get_section(const std::string& name);
+  INISchemaSection* get_section(const std::string& name) const;
 
   void save(std::ostream& out);
 

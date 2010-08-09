@@ -218,9 +218,7 @@ CommandLineParser::init_ini(Options* opts)
     ("dpad-only", &opts->uinput_config.dpad_only)
     ("force-feedback", &opts->uinput_config.force_feedback)
     ("extra-devices", &opts->uinput_config.extra_devices)
-    // mimic_xpad()
-    // btn_map
-    // axis_map
+    // FIXME: mimic_xpad()
     ;
 
   m_ini.section("ui-buttonmap", boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
@@ -277,8 +275,8 @@ CommandLineParser::set_ui_axismap_from_string(const std::string& str)
   }
   else
   {
-    set_axismap(str.substr(0, i),
-                str.substr(i+1, str.size()-i));
+    set_ui_axismap(str.substr(0, i),
+                   str.substr(i+1, str.size()-i));
   }
 }
 
@@ -789,17 +787,7 @@ CommandLineParser::set_ui_buttonmap(const std::string& name, const std::string& 
 void
 CommandLineParser::set_axismap(const std::string& name, const std::string& value)
 {
-  XboxAxis  axis  = string2axis(name);
-  AxisEvent event = AxisEvent::from_string(value);
-            
-  if (axis != XBOX_AXIS_UNKNOWN)
-  {
-    m_options->uinput_config.axis_map[axis] = event;
-  }
-  else
-  {
-    throw std::runtime_error("Couldn't convert string \"" + value + "\" to ui-axis-mapping");
-  }      
+  m_options->axis_map.push_back(AxisMapping::from_string(name, value));
 }
 
 void
