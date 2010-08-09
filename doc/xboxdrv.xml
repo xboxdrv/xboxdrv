@@ -766,7 +766,7 @@ NAME       = STRING ;]]></programlisting>
   --ui-buttonmap "dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN,"
   --ui-buttonmap "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,tl=void,tr=void"]]></programlisting>
             <para>
-              You can customize is by the usal means, just make sure
+              You can customize it by the usual means, just make sure
               that <option>--mouse</option> comes before you
               customization options on the command line.
             </para>
