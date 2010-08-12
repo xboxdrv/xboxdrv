@@ -366,8 +366,8 @@ uInput::send(Xbox360Msg& msg)
   }
   else
   {
-    int dpad_x = XBOX_AXIS_DPAD_X;
-    int dpad_y = XBOX_AXIS_DPAD_Y;
+    XboxAxis dpad_x = XBOX_AXIS_DPAD_X;
+    XboxAxis dpad_y = XBOX_AXIS_DPAD_Y;
       
     if (cfg.dpad_only)
     {
@@ -414,7 +414,7 @@ uInput::send(XboxMsg& msg)
   else
   {
     send_axis(XBOX_AXIS_LT, msg.lt);
-    send_axis(XBOX_AXIS_RT,   msg.rt);
+    send_axis(XBOX_AXIS_RT, msg.rt);
   }
 
 
@@ -436,8 +436,8 @@ uInput::send(XboxMsg& msg)
   }
   else
   {
-    int dpad_x = XBOX_AXIS_DPAD_X;
-    int dpad_y = XBOX_AXIS_DPAD_Y;
+    XboxAxis dpad_x = XBOX_AXIS_DPAD_X;
+    XboxAxis dpad_y = XBOX_AXIS_DPAD_Y;
       
     if (cfg.dpad_only)
     {
@@ -503,7 +503,7 @@ uInput::update(int msec_delta)
 }
 
 void
-uInput::send_button(int code, bool value)
+uInput::send_button(XboxButton code, bool value)
 {
   if (button_state[code] != value)
   {
@@ -515,12 +515,13 @@ uInput::send_button(int code, bool value)
     {
       if (button_state[i])
       {
-        const ButtonEvent& event = cfg.btn_map.lookup(code, i);
+        const ButtonEvent& event = cfg.btn_map.lookup(code, static_cast<XboxButton>(i));
         if (event.is_valid())
         {
           for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
           {
-            const ButtonEvent& event = cfg.btn_map.lookup(j, i);
+            const ButtonEvent& event = cfg.btn_map.lookup(static_cast<XboxButton>(j),
+                                                          static_cast<XboxButton>(i));
             if (event.is_valid())
               event.send(*this, false);
           }
@@ -533,7 +534,7 @@ uInput::send_button(int code, bool value)
     {
       if (button_state[i]) // shift button is pressed
       {
-        const ButtonEvent& event = cfg.btn_map.lookup(i, code);
+        const ButtonEvent& event = cfg.btn_map.lookup(static_cast<XboxButton>(i), code);
         if (event.is_valid())
         {
           event.send(*this, value);
@@ -617,7 +618,7 @@ uInput::send_rel_repetitive(const UIEvent& code, int value, int repeat_interval)
 }
 
 void
-uInput::send_axis(int code, int32_t value)
+uInput::send_axis(XboxAxis code, int32_t value)
 {
   if (axis_state[code] != value)
   {
@@ -631,7 +632,7 @@ uInput::send_axis(int code, int32_t value)
 }
 
 void
-uInput::add_axis(int code, int min, int max)
+uInput::add_axis(XboxAxis code, int min, int max)
 {
   const AxisEvent& event = cfg.axis_map[code];
   if (event.is_valid())
@@ -639,11 +640,11 @@ uInput::add_axis(int code, int min, int max)
 }
 
 void
-uInput::add_button(int code)
+uInput::add_button(XboxButton code)
 {
   for(int i = 0; i < XBOX_BTN_MAX; ++i)
   {
-    const ButtonEvent& event = cfg.btn_map.lookup(i, code);
+    const ButtonEvent& event = cfg.btn_map.lookup(static_cast<XboxButton>(i), code);
     if (event.is_valid())
       event.init(*this);
   }

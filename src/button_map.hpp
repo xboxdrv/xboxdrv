@@ -32,11 +32,11 @@ private:
 public:
   ButtonMap();
 
-  void bind(int code, const ButtonEvent& event);
-  void bind(int shift_code, int code, const ButtonEvent& event);
+  void bind(XboxButton code, const ButtonEvent& event);
+  void bind(XboxButton shift_code, XboxButton code, const ButtonEvent& event);
 
-  ButtonEvent lookup(int code) const;
-  ButtonEvent lookup(int shift_code, int code) const;
+  ButtonEvent lookup(XboxButton code) const;
+  ButtonEvent lookup(XboxButton shift_code, XboxButton code) const;
 
   void clear();
 

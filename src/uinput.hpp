@@ -77,11 +77,11 @@ private:
   void send(Xbox360GuitarMsg& msg);
   void send(XboxMsg& msg);
 
-  void add_axis(int code, int min, int max);
-  void add_button(int code);
+  void add_axis(XboxAxis code, int min, int max);
+  void add_button(XboxButton code);
 
-  void send_button(int code, bool value);
-  void send_axis(int code, int32_t value);
+  void send_button(XboxButton code, bool value);
+  void send_axis(XboxAxis code, int32_t value);
 
 public:
   void add_rel(int device_id, int ev_code);

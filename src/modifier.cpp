@@ -65,7 +65,6 @@ void apply_axis_map(XboxGenericMsg& msg, const std::vector<AxisMapping>& lst)
         lhs = -lhs;
       }
     }
-
     set_axis(newmsg, i->rhs, std::max(std::min(nrhs + lhs, 32767), -32768));
   }
   msg = newmsg;
@@ -400,10 +399,13 @@ void apply_dpad_rotator(XboxGenericMsg& msg, const Options& opts)
     if (direction < 0)
       direction += 8;
 
-    set_button(msg, XBOX_DPAD_UP, 0);
-    set_button(msg, XBOX_DPAD_DOWN, 0);
-    set_button(msg, XBOX_DPAD_LEFT, 0);
+    // set everything to zero
+    set_button(msg, XBOX_DPAD_UP,    0);
+    set_button(msg, XBOX_DPAD_DOWN,  0);
+    set_button(msg, XBOX_DPAD_LEFT,  0);
     set_button(msg, XBOX_DPAD_RIGHT, 0);
+
+    // apply the given direction
     switch(direction)
     {
       case 0:
