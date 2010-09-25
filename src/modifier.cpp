@@ -258,38 +258,57 @@ void apply_square_axis(XboxGenericMsg& msg)
   }
 }
 
+static int16_t scale_deadzone(int16_t value, const int deadzone)
+{
+  float rv = value;
+  if (value < -deadzone) {
+    const float scale = 32768 / (32768 - deadzone);
+    rv += deadzone;
+    rv *= scale;
+    rv -= 0.5;
+  } else if (value > deadzone) {
+    const float scale = 32767 / (32767 - deadzone);
+    rv -= deadzone;
+    rv *= scale;
+    rv += 0.5;
+  } else {
+    return 0;
+  }
+  return clamp(-32768, static_cast<int>(rv), 32767);
+}
+
+static uint8_t scale_trigger_deadzone(uint8_t value, int deadzone)
+{
+  const float scale = 255 / (255 - deadzone);
+    if (value <= deadzone) {
+        return 0;
+    } else {
+        value -= deadzone;
+        float rv = value * scale;
+        return clamp(0, static_cast<int>(rv+0.5), 255);
+    }
+}
+
 void apply_deadzone(XboxGenericMsg& msg, const Options& opts)
 {
   switch (msg.type)
   {
     case XBOX_MSG_XBOX:
-      if (abs(msg.xbox.x1) < opts.deadzone)
-        msg.xbox.x1 = 0;
-      if (abs(msg.xbox.y1) < opts.deadzone)
-        msg.xbox.y1 = 0;
-      if (abs(msg.xbox.x2) < opts.deadzone)
-        msg.xbox.x2 = 0;
-      if (abs(msg.xbox.y2) < opts.deadzone)
-        msg.xbox.y2 = 0;
-      if (msg.xbox.lt < opts.deadzone_trigger)
-        msg.xbox.lt = 0;
-      if (msg.xbox.rt < opts.deadzone_trigger)
-        msg.xbox.rt = 0;
+      msg.xbox.x1 = scale_deadzone(msg.xbox.x1, opts.deadzone);
+      msg.xbox.y1 = scale_deadzone(msg.xbox.y1, opts.deadzone);
+      msg.xbox.x2 = scale_deadzone(msg.xbox.x2, opts.deadzone);
+      msg.xbox.y2 = scale_deadzone(msg.xbox.y2, opts.deadzone);
+      msg.xbox.lt = scale_trigger_deadzone(msg.xbox.lt, opts.deadzone_trigger);
+      msg.xbox.rt = scale_trigger_deadzone(msg.xbox.rt, opts.deadzone_trigger);
       break;
 
     case XBOX_MSG_XBOX360:
-      if (abs(msg.xbox360.x1) < opts.deadzone)
-        msg.xbox360.x1 = 0;
-      if (abs(msg.xbox360.y1) < opts.deadzone)
-        msg.xbox360.y1 = 0;
-      if (abs(msg.xbox360.x2) < opts.deadzone)
-        msg.xbox360.x2 = 0;
-      if (abs(msg.xbox360.y2) < opts.deadzone)
-        msg.xbox360.y2 = 0;      
-      if (msg.xbox360.lt < opts.deadzone_trigger)
-        msg.xbox360.lt = 0;
-      if (msg.xbox360.rt < opts.deadzone_trigger)
-        msg.xbox360.rt = 0;
+      msg.xbox360.x1 = scale_deadzone(msg.xbox360.x1, opts.deadzone);
+      msg.xbox360.y1 = scale_deadzone(msg.xbox360.y1, opts.deadzone);
+      msg.xbox360.x2 = scale_deadzone(msg.xbox360.x2, opts.deadzone);
+      msg.xbox360.y2 = scale_deadzone(msg.xbox360.y2, opts.deadzone);
+      msg.xbox360.lt = scale_trigger_deadzone(msg.xbox360.lt, opts.deadzone_trigger);
+      msg.xbox360.rt = scale_trigger_deadzone(msg.xbox360.rt, opts.deadzone_trigger);
       break;
 
     case XBOX_MSG_XBOX360_GUITAR:
