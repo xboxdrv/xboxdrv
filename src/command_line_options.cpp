@@ -207,9 +207,9 @@ CommandLineParser::init_ini(Options* opts)
     ("square-axis", &opts->square_axis)
     ("four-way-restrictor", &opts->four_way_restrictor)
     ("dpad-rotation", &opts->dpad_rotation)
-    ("evdev-device", &opts->evdev_device);
+    ("evdev-device", &opts->evdev_device)
 
-  m_ini.section("uinput")
+    // uinput stuff
     ("device-name", &opts->uinput_config.device_name)
     ("trigger-as-button", &opts->uinput_config.trigger_as_button)
     ("trigger-as-zaxis", &opts->uinput_config.trigger_as_zaxis)
@@ -550,6 +550,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_WID:
         opts.wireless_id = boost::lexical_cast<int>(opt.argument);
+        if (opts.wireless_id < 0 || opts.wireless_id > 3)
+        {
+          throw std::runtime_error("wireless id must be within 0 and 3");
+        }
         break;
 
       case OPTION_LED:

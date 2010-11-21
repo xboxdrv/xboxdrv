@@ -167,7 +167,7 @@ INIParser::get_value()
   std::ostringstream str;
   while(peek() != ' ' && peek() != '\t' && peek() != '\n')
   {
-    str << (char)peek();
+    str << static_cast<char>(peek());
     next();
   }
   return str.str();
@@ -179,7 +179,7 @@ INIParser::get_ident()
   std::ostringstream str;
   while(peek() != '=' && peek() != ' ' && peek() != '\t')
   {
-    str << (char)peek();
+    str << static_cast<char>(peek());
     next();
   }
   return str.str();
@@ -203,12 +203,12 @@ INIParser::get_string()
         case 't': str << '\t'; break;
         case 'r': str << '\r'; break;
         case 'n': str << '\n'; break;
-        default: str << '\\' << (char)peek(); break;
+        default: str << '\\' << static_cast<char>(peek()); break;
       }
     }
     else
     {
-      str << (char)peek();
+      str << static_cast<char>(peek());
     }
     next();
   }
@@ -243,7 +243,7 @@ INIParser::get_section()
   std::ostringstream str;
   while(peek() != ']')
   {
-    str << (char)peek(); 
+    str << static_cast<char>(peek()); 
     next();
   }
   return str.str();

@@ -181,7 +181,7 @@ EvdevController::read_data_to_buffer()
   int rd = 0;
   while((rd = ::read(m_fd, ev, sizeof(struct input_event) * 128)) > 0)
   {
-    for (int i = 0; i < rd / (int)sizeof(struct input_event); ++i)
+    for (size_t i = 0; i < rd / sizeof(struct input_event); ++i)
     {
       m_event_buffer.push(ev[i]);
     }

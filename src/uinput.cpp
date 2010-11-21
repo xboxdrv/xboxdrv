@@ -520,10 +520,10 @@ uInput::send_button(XboxButton code, bool value)
         {
           for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
           {
-            const ButtonEvent& event = cfg.btn_map.lookup(static_cast<XboxButton>(j),
+            const ButtonEvent& event2 = cfg.btn_map.lookup(static_cast<XboxButton>(j),
                                                           static_cast<XboxButton>(i));
-            if (event.is_valid())
-              event.send(*this, false);
+            if (event2.is_valid())
+              event2.send(*this, false);
           }
         }
       }

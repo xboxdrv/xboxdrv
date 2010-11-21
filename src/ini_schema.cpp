@@ -70,9 +70,9 @@ public:
 
   std::string str() const 
   {
-    std::ostringstream str;
-    str << *m_data;
-    return str.str();
+    std::ostringstream out;
+    out << *m_data;
+    return out.str();
   }
 };
 
@@ -90,9 +90,9 @@ public:
 
   std::string str() const 
   {
-    std::ostringstream str;
-    str << *m_data;
-    return str.str();
+    std::ostringstream out;
+    out << *m_data;
+    return out.str();
   }
 };
 
@@ -254,9 +254,9 @@ INISchema::section(const std::string& name,
     delete i->second;
   }
 
-  INISchemaSection* section = new INISchemaSection(callback);
-  m_sections.insert(std::pair<std::string, INISchemaSection*>(name, section));
-  return *section;
+  INISchemaSection* sec = new INISchemaSection(callback);
+  m_sections.insert(std::pair<std::string, INISchemaSection*>(name, sec));
+  return *sec;
 }
 
 INISchemaSection*
