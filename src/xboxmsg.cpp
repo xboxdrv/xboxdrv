@@ -577,7 +577,7 @@ int16_t float_to_s16(float v)
 
 uint8_t float_to_u8(float v)
 {
-  return static_cast<uint8_t>(Math::clamp(0.0f, 1.0f, v) * 255.0f);
+  return static_cast<uint8_t>(Math::clamp(0.0f, v, 1.0f) * 255.0f);
 }
 
 float get_axis_float(XboxGenericMsg& msg, XboxAxis axis)
