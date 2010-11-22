@@ -52,9 +52,7 @@ public:
     typename std::map<std::string, Enum>::const_iterator i = m_string2enum.find(str);
     if (i == m_string2enum.end())
     {
-      std::ostringstream out;
-      out << "Couldn't convert '" << str << "' to enum " << m_name << std::endl;
-      throw std::runtime_error(out.str());
+      return static_cast<Enum>(boost::lexical_cast<int>(str));
     }
     else
     {
@@ -67,8 +65,8 @@ public:
     if (i == m_enum2string.end())
     {
       std::ostringstream out;
-      out << "Couldn't convert '" << v << "' to string" << std::endl;
-      throw std::runtime_error(out.str());
+      out << v; 
+      return out.str();
     }
     else
     {
