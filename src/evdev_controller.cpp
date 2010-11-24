@@ -64,6 +64,15 @@ EvdevController::EvdevController(const std::string& filename,
     std::cout << "Name: " << m_name << std::endl;
   }
 
+  { // grab the device, so it doesn't broadcast events into the wild
+    int ret = ioctl(m_fd, EVIOCGRAB, 1);
+    if ( ret == -1 )
+    {
+      close(m_fd);
+      throw std::runtime_error(strerror(errno));
+    }
+  }
+
   { // Read in how many btn/abs/rel the device has
     unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
     memset(bit, 0, sizeof(bit));
