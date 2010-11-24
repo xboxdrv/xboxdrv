@@ -291,11 +291,11 @@ public:
         break;
 
       case 0x01: // lb
-        ctrl_msg(0x05);
+        ctrl_msg(0x08);
         break;
 
       case 0x02: // rb
-        ctrl_msg(0x06);
+        ctrl_msg(0x09);
         break;
 
       case 0x04: // guide
