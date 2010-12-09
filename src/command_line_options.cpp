@@ -279,11 +279,26 @@ CommandLineParser::set_ui_axismap_from_string(const std::string& str)
   }
 }
 
-void set_evdev_absmap(std::map<int, XboxAxis>& absmap, const std::string& str)
+void set_evdev_absmap(EvdevAbsMap& absmap, const std::string& str)
 {
   std::string lhs, rhs;
   split_string_at(str, '=', &lhs, &rhs);
-  absmap[str2abs(lhs)] = string2axis(rhs);
+  
+  if (!lhs.empty())
+  {
+    XboxAxis axis = string2axis(rhs);
+
+    switch (*lhs.rbegin())
+    {
+      case '-': absmap.bind_minus( str2abs(lhs.substr(0, lhs.length()-1)), axis ); break;
+      case '+': absmap.bind_plus ( str2abs(lhs.substr(0, lhs.length()-1)), axis ); break;
+      default:  absmap.bind_both ( str2abs(lhs), axis ); break;
+    }
+  }
+  else
+  {
+    throw std::runtime_error("incorrect --evdev-absmap argument '" + str + "'");
+  }
 }
 
 void set_evdev_keymap(std::map<int, XboxButton>& keymap, const std::string& str)
@@ -802,7 +817,7 @@ CommandLineParser::set_buttonmap(const std::string& name, const std::string& val
 void
 CommandLineParser::set_evdev_absmap(const std::string& name, const std::string& value)
 {
-  m_options->evdev_absmap[str2abs(name)] = string2axis(value);
+  //FIXME:m_options->evdev_absmap[str2abs(name)] = string2axis(value);
 }
 
 void

@@ -25,7 +25,10 @@
 #include <queue>
 
 #include "xboxmsg.hpp"
+#include "evdev_absmap.hpp"
 #include "xbox_generic_controller.hpp"
+
+class EvdevAbsMap;
 
 class EvdevController : public XboxGenericController
 {
@@ -33,8 +36,7 @@ private:
   int m_fd;
   std::string m_name;
 
-  typedef std::map<int, XboxAxis> AbsMap;
-  AbsMap m_absmap;
+  EvdevAbsMap m_absmap;
 
   typedef std::map<int, XboxButton> KeyMap;
   KeyMap m_keymap;
@@ -47,8 +49,8 @@ private:
 
 public:
   EvdevController(const std::string& filename, 
-                  const std::map<int, XboxAxis>&   AbsMap,
-                  const std::map<int, XboxButton>& KeyMap);
+                  const EvdevAbsMap&  absmap,
+                  const std::map<int, XboxButton>& keyMap);
 
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);

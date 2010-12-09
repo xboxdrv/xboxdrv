@@ -558,9 +558,13 @@ float s16_to_float(int16_t value)
   }
 }
 
+/**
+   input:  [0, 255]
+   output: [ -1.0f, 1.0f ] 
+*/
 float u8_to_float(uint8_t value)
 {
-  return static_cast<float>(value) / 255.0f;
+  return static_cast<float>(value) / 255.0f * 2.0f - 1.0f;
 }
 
 int16_t float_to_s16(float v)
@@ -575,9 +579,13 @@ int16_t float_to_s16(float v)
   }
 }
 
+/**
+   input:  [ -1.0f, 1.0f ] 
+   output: [0, 255]
+*/
 uint8_t float_to_u8(float v)
 {
-  return static_cast<uint8_t>(Math::clamp(0.0f, v, 1.0f) * 255.0f);
+  return static_cast<uint8_t>(Math::clamp(0.0f, (v + 1.0f) / 2.0f, 1.0f) * 255.0f);
 }
 
 float get_axis_float(XboxGenericMsg& msg, XboxAxis axis)
@@ -912,7 +920,7 @@ XboxAxis string2axis(const std::string& str_)
   else if (str == "dpad_y")
     return XBOX_AXIS_DPAD_Y;
 
-  else if (str == "trigger")
+  else if (str == "trigger" || str == "z" || str == "rudder")
     return XBOX_AXIS_TRIGGER;
 
   else

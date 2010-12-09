@@ -37,7 +37,7 @@
 #define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
 
 EvdevController::EvdevController(const std::string& filename,
-                                 const std::map<int, XboxAxis>&   absmap,
+                                 const EvdevAbsMap& absmap,
                                  const std::map<int, XboxButton>& keymap) :
   m_fd(-1),
   m_name(),
@@ -141,7 +141,6 @@ bool
 EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
 {
   //std::cout << ev.type << " " << ev.code << " " << ev.value << std::endl;
-
   switch(ev.type)
   {
     case EV_KEY:
@@ -161,20 +160,11 @@ EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
 
     case EV_ABS:
       {
-        AbsMap::iterator it = m_absmap.find(ev.code);
-        if (it != m_absmap.end())
-        {
-          const struct input_absinfo& absinfo = m_absinfo[ev.code];
-          set_axis_float(msg, it->second, 
-                         static_cast<float>(ev.value - absinfo.minimum) / static_cast<float>(absinfo.maximum - absinfo.minimum) * 2.0f - 1.0f);
-          return true;
-        }
-        else
-        {
-          return false;
-        }
+        const struct input_absinfo& absinfo = m_absinfo[ev.code];
+        m_absmap.process(msg, ev.code, ev.value, absinfo.minimum, absinfo.maximum);
+        return true; // FIXME: wrong
+        break;
       }
-      break;
 
     default:
       // not supported event

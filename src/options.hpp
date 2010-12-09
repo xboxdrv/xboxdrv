@@ -26,6 +26,7 @@
 #include "xpad_device.hpp"
 #include "uinput_cfg.hpp"
 #include "modifier.hpp"
+#include "evdev_absmap.hpp"
 
 class Options
 {
@@ -76,7 +77,7 @@ public:
   bool four_way_restrictor;
   int  dpad_rotation;
   std::string evdev_device;
-  std::map<int, XboxAxis>   evdev_absmap;
+  EvdevAbsMap evdev_absmap;
   std::map<int, XboxButton> evdev_keymap;
 
   Options();
