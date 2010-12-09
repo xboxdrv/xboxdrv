@@ -102,17 +102,23 @@ uInput::create_uinput_device(int device_id)
     std::ostringstream dev_name;
     dev_name << cfg.device_name;
 
-    if (device_id == DEVICEID_MOUSE)
+    switch (device_id)
     {
-      dev_name << " - Mouse Emulation";
-    }
-    else if (device_id == DEVICEID_KEYBOARD)
-    {
-      dev_name << " - Keyboard Emulation";
-    }
-    else if (device_id > 0)
-    {
-      dev_name << " - 2" << device_id+1;
+      case DEVICEID_JOYSTICK:
+        dev_name << " - Mouse Emulation";
+        break;
+
+      case DEVICEID_MOUSE:
+        dev_name << " - Mouse Emulation";
+        break;
+      
+      case DEVICEID_KEYBOARD:
+        dev_name << " - Keyboard Emulation";
+        break;
+
+      default:
+        dev_name << " - " << device_id+1;
+        break;
     }
 
     boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(dev_name.str(), m_vendor_id, m_product_id));
@@ -133,8 +139,8 @@ uInput::create_uinput_device(int device_id)
         break;
 
       case DEVICEID_JOYSTICK:
-        // do nothing, as we don't know yet the range of abs, unmapped
-        // buttons might also confuse some games
+        // FIXME: do nothing, as we don't know yet the range of abs,
+        // unmapped buttons might also confuse some games
         break;
 
       default:
@@ -665,12 +671,6 @@ uInput::get_uinput(int device_id) const
     str << "Couldn't find uinput device: " << device_id;
     throw std::runtime_error(str.str());
   }
-}
-
-LinuxUinput*
-uInput::get_mouse_uinput() const
-{
-  return get_uinput(DEVICEID_MOUSE);
 }
 
 LinuxUinput*

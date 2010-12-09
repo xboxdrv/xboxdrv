@@ -92,7 +92,6 @@ public:
   void send_rel_repetitive(const UIEvent& code, int value, int repeat_interval);
 
   LinuxUinput* get_uinput(int device_id) const;
-  LinuxUinput* get_mouse_uinput() const;
   LinuxUinput* get_force_feedback_uinput() const;
 
 public:
