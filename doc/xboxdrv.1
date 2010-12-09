@@ -167,17 +167,31 @@ automatically reverse itself when you remove the
 controller and plug it back in or when you reboot the
 computer.
 .TP 
-\*(T<\fB\-\-evdev\-absmap\fR\*(T> \fIABSMAP\fR
-Sets how evdev events are mapped to Xbox controller
+\*(T<\fB\-\-evdev\-absmap\fR\*(T> \fIABSMAP,...\fR
+.nf
+\*(T<ABSMAP = EVDEV_ABS [ "+", "\-" ] "=" XBOXAXIS ;\*(T>
+.fi
+
+Sets how evdev events are mapped to Xbox axis
 events. An example configuration would look like this:
 
 .nf
 \*(T<\-\-evdev\-absmap ABS_X=x1,ABS_Y=y1,ABS_RZ=x2,ABS_THROTTLE=y2,ABS_HAT0X=dpad_x,ABS_HAT0Y=dpad_y\*(T>
 .fi
 
-\fBxboxdrv\fR will output on start a full
+\fBxboxdrv\fR will output on startup a full
 list of event names that the given event device
-supports.
+supports and that can be used in place of \fIEVDEV_ABS\fR.
+
+It is also possible to map half-axis with a command like:
+
+.nf
+\*(T<\-\-evdev\-absmap ABS_Y+=LT,ABS_Y\-=RT\*(T>
+.fi
+
+This will map the upward movement of the Y axis to the
+left trigger and the downward movement to the right
+trigger. 
 .TP 
 \*(T<\fB\-\-evdev\-keymap\fR\*(T> \fIKEYMAP\fR
 Sets how evdev events are mapped to Xbox controller
@@ -602,7 +616,7 @@ Lets the controller act as a mouse. It is indendical to:
   \-\-ui\-buttonmap "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,tl=void,tr=void"\*(T>
 .fi
 
-You can customize is by the usal means, just make sure
+You can customize it by the usual means, just make sure
 that \*(T<\fB\-\-mouse\fR\*(T> comes before you
 customization options on the command line.
 
@@ -1214,13 +1228,12 @@ With the content:
 When using the Xbox360 gamepad in Wine it is not specially handled as
 Xbox360 gamepad, this means games will not display the proper button
 labels, but just numbers (i.e. 'Btn1' instead of 'A' for
-example). Asside from that it should work fine.
+example). Aside from that it should work fine.
 .PP
-Xinput support (the DirectInput replacment, not the Xorg xinput) might
-not work properly or not at all.
-.PP
-It is currently unknown if this can be fixed by xboxdrv or if it
-requires patches to Wine.
+XInput support (the DirectInput replacment, not the Xorg xinput)
+is as of August 2010 not implemented in Wine, so games that
+require XInput and don't have an DirectInput fallback will not
+work with a Xbox360 controller, unofficial patches however do exist.
 .SH "FORCE FEEDBACK PROGRAMMING"
 For documentation on the FF interface see:
 .TP 0.2i

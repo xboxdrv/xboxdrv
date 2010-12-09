@@ -313,17 +313,27 @@
         </varlistentry>
 
         <varlistentry>
-          <term><option>--evdev-absmap</option> <replaceable class="parameter">ABSMAP</replaceable></term>
+          <term><option>--evdev-absmap</option> <replaceable class="parameter">ABSMAP,...</replaceable></term>
           <listitem>
+            <programlisting><![CDATA[ABSMAP = EVDEV_ABS [ "+", "-" ] "=" XBOXAXIS ;]]></programlisting>
             <para>
-              Sets how evdev events are mapped to Xbox controller
+              Sets how evdev events are mapped to Xbox axis
               events. An example configuration would look like this:
             </para>
             <programlisting>--evdev-absmap ABS_X=x1,ABS_Y=y1,ABS_RZ=x2,ABS_THROTTLE=y2,ABS_HAT0X=dpad_x,ABS_HAT0Y=dpad_y</programlisting>
             <para>
-              <command>xboxdrv</command> will output on start a full
+              <command>xboxdrv</command> will output on startup a full
               list of event names that the given event device
-              supports.
+              supports and that can be used in place of <replaceable>EVDEV_ABS</replaceable>.
+            </para>
+            <para>
+              It is also possible to map half-axis with a command like:
+            </para>
+            <programlisting>--evdev-absmap ABS_Y+=LT,ABS_Y-=RT</programlisting>
+            <para>
+              This will map the upward movement of the Y axis to the
+              left trigger and the downward movement to the right
+              trigger. <!-- FIXME: directions might be wrong -->
             </para>
           </listitem>
         </varlistentry>
@@ -1569,15 +1579,13 @@ EndSection]]></programlisting>
       When using the Xbox360 gamepad in Wine it is not specially handled as
       Xbox360 gamepad, this means games will not display the proper button
       labels, but just numbers (i.e. 'Btn1' instead of 'A' for
-      example). Asside from that it should work fine.
+      example). Aside from that it should work fine.
     </para>
     <para>
-      Xinput support (the DirectInput replacment, not the Xorg xinput) might
-      not work properly or not at all.
-    </para>
-    <para>
-      It is currently unknown if this can be fixed by xboxdrv or if it
-      requires patches to Wine.
+      XInput support (the DirectInput replacment, not the Xorg xinput)
+      is as of August 2010 not implemented in Wine, so games that
+      require XInput and don't have an DirectInput fallback will not
+      work with a Xbox360 controller, unofficial patches however do exist.
     </para>
   </refsect1>
 
