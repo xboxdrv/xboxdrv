@@ -817,7 +817,21 @@ CommandLineParser::set_buttonmap(const std::string& name, const std::string& val
 void
 CommandLineParser::set_evdev_absmap(const std::string& name, const std::string& value)
 {
-  //FIXME:m_options->evdev_absmap[str2abs(name)] = string2axis(value);
+  if (!name.empty())
+  {
+    XboxAxis axis = string2axis(value);
+
+    switch (*name.rbegin())
+    {
+      case '-': m_options->evdev_absmap.bind_minus( str2abs(name.substr(0, name.length()-1)), axis ); break;
+      case '+': m_options->evdev_absmap.bind_plus ( str2abs(name.substr(0, name.length()-1)), axis ); break;
+      default:  m_options->evdev_absmap.bind_both ( str2abs(name), axis ); break;
+    }
+  }
+  else
+  {
+    throw std::runtime_error("invalid evdev-absmap argument: " + name + "=" + value);
+  }
 }
 
 void
