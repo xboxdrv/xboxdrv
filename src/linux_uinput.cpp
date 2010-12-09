@@ -32,7 +32,8 @@
 #include "force_feedback_handler.hpp"
 #include "linux_uinput.hpp"
 
-LinuxUinput::LinuxUinput(const std::string& name_, uint16_t vendor_, uint16_t product_) :
+LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, uint16_t vendor_, uint16_t product_) :
+  m_device_type(device_type),
   name(name_),
   vendor(vendor_),
   product(product_),
@@ -183,6 +184,37 @@ LinuxUinput::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& cal
 void
 LinuxUinput::finish()
 {
+  // Create some mandatory events that are needed for the kernel/Xorg
+  // to register the device as its proper type
+  switch(m_device_type)
+  {
+    case kGenericDevice:
+      // nothing to be done
+      break;
+
+    case kMouseDevice:
+      add_rel(REL_X);
+      add_rel(REL_Y);
+      add_key(BTN_LEFT);
+      break;
+
+    case kJoystickDevice:
+      if (!key_lst[BTN_JOYSTICK] &&
+          !key_lst[BTN_GAMEPAD] &&
+          !key_lst[BTN_TRIGGER_HAPPY] &&
+          
+          !abs_lst[ABS_THROTTLE] &&
+          !abs_lst[ABS_WHEEL] &&
+          !abs_lst[ABS_X])
+      {
+        // using BTN_TRIGGER_HAPPY instead of more common BTN_JOYSTICK
+        // as it should end up as last joystick button instead of
+        // first
+        add_key(BTN_TRIGGER_HAPPY);
+      }
+      break;
+  }
+
   strncpy(user_dev.name, name.c_str(), UINPUT_MAX_NAME_SIZE);
   user_dev.id.version = 0x114; // FIXME: whats this for?
   user_dev.id.bustype = BUS_USB;

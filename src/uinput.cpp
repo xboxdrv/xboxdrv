@@ -99,20 +99,23 @@ uInput::create_uinput_device(int device_id)
   }
   else
   {
+    LinuxUinput::DeviceType device_type = LinuxUinput::kGenericDevice;
     std::ostringstream dev_name;
     dev_name << cfg.device_name;
 
     switch (device_id)
     {
       case DEVICEID_JOYSTICK:
-        dev_name << " - Mouse Emulation";
+        device_type = LinuxUinput::kJoystickDevice;
         break;
 
       case DEVICEID_MOUSE:
+        device_type = LinuxUinput::kMouseDevice;
         dev_name << " - Mouse Emulation";
         break;
       
       case DEVICEID_KEYBOARD:
+        device_type = LinuxUinput::kGenericDevice;
         dev_name << " - Keyboard Emulation";
         break;
 
@@ -121,31 +124,8 @@ uInput::create_uinput_device(int device_id)
         break;
     }
 
-    boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(dev_name.str(), m_vendor_id, m_product_id));
+    boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(device_type, dev_name.str(), m_vendor_id, m_product_id));
     uinput_devs.insert(std::pair<int, boost::shared_ptr<LinuxUinput> >(device_id, dev));
-
-    // Create some mandatory events that are needed for the kernel/Xorg
-    // to register the device as its proper type
-    switch(device_id)
-    {
-      case DEVICEID_KEYBOARD:
-        // do nothing, detection seems to be fine without
-        break;
-
-      case DEVICEID_MOUSE:
-        dev->add_rel(REL_X);
-        dev->add_rel(REL_Y);
-        dev->add_key(BTN_LEFT);
-        break;
-
-      case DEVICEID_JOYSTICK:
-        // FIXME: do nothing, as we don't know yet the range of abs,
-        // unmapped buttons might also confuse some games
-        break;
-
-      default:
-        break;
-    }
 
     std::cout << "Creating uinput device: device_id: " << device_id << ", dev_name: " << dev_name.str() << std::endl;
   }

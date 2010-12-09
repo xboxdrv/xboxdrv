@@ -28,7 +28,11 @@ class ForceFeedbackHandler;
 
 class LinuxUinput
 {
+public:
+  enum DeviceType { kGenericDevice, kMouseDevice, kJoystickDevice };
+
 private:
+  DeviceType  m_device_type;
   std::string name;
   uint16_t    vendor;
   uint16_t    product;
@@ -52,7 +56,7 @@ private:
   bool needs_sync;
 
 public:
-  LinuxUinput(const std::string& name, uint16_t vendor, uint16_t product);
+  LinuxUinput(DeviceType device_type, const std::string& name, uint16_t vendor, uint16_t product);
   ~LinuxUinput();
 
   /*@{*/
