@@ -38,6 +38,7 @@ public:
   static AxisEvent create_rel();
   static AxisEvent create_abs();
 
+  /** If an AbsAxisEvent gets created the user has to set min/max! */ 
   static AxisEvent from_string(const std::string& str);
 
 private:
@@ -54,6 +55,8 @@ public:
   bool is_valid() const;
 
   std::string str() const;
+
+  void set_axis_range(int min, int max);
 
 private:
   /** EV_KEY, EV_ABS, EV_REL */

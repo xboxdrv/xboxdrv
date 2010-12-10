@@ -256,6 +256,9 @@ XboxAxis   string2axis(const std::string& str_);
 std::string btn2string(XboxButton btn);
 std::string axis2string(XboxAxis axis);
 
+int get_axis_min(XboxAxis axis);
+int get_axis_max(XboxAxis axis);
+
 std::string gamepadtype_to_string(const GamepadType& type);
 std::string gamepadtype_to_macro_string(const GamepadType& type);
 

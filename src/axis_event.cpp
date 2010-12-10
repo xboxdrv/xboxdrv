@@ -111,9 +111,10 @@ AxisEvent::from_string(const std::string& str)
       break;
 
     case EV_KEY:
-      return key_from_string(str);
+      ev = key_from_string(str);
 
     case -1:
+      std::cout << "--------- invalid --------------" << std::endl;
       ev = invalid();
       break;
 
@@ -121,8 +122,7 @@ AxisEvent::from_string(const std::string& str)
       assert(!"AxisEvent::from_string(): should never be reached");
   }
 
-  if (false)
-    std::cout << "AxisEvent::from_string():\n  in:  " << str << "\n  out: " << ev.str() << std::endl;
+  std::cout << "AxisEvent::from_string():\n  in:  " << str << "\n  out: " << ev.str() << std::endl;
 
   return ev;
 }
@@ -134,14 +134,14 @@ AxisEvent::abs_from_string(const std::string& str)
   boost::tokenizer<boost::char_separator<char> > tokens(str, sep);
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
-  AxisEvent ev = create_key();
-
   int j = 0;
+  int code = -1;
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
   {
     switch(j)
     {
       case 0:
+        code = str2abs(*i);
         break;
 
       default: 
@@ -153,8 +153,15 @@ AxisEvent::abs_from_string(const std::string& str)
   {
     throw std::runtime_error("AxisEvent::abs_from_string(): at least one argument required: " + str);
   }
-
-  return ev;
+  else if (j > 1)
+  {
+    throw std::runtime_error("AxisEvent::abs_from_string(): invalid extra arguments in " + str);
+  }
+  else
+  {
+    AxisEvent ev = create_abs(DEVICEID_AUTO, code, -1, -1, 0, 0);
+    return ev;
+  }
 }
 
 AxisEvent
@@ -352,6 +359,16 @@ AxisEvent::send(uInput& uinput, int old_value, int value) const
   }
 }
 
+void
+AxisEvent::set_axis_range(int min, int max)
+{
+  if (type == EV_ABS)
+  {
+    abs.min = min;
+    abs.max = max;
+  }
+}
+
 std::string
 AxisEvent::str() const
 {
@@ -359,7 +376,9 @@ AxisEvent::str() const
   switch(type)
   {
     case EV_ABS:
-      out << abs.code.device_id << "-" << abs.code.code << ":" << abs.min << ":" << abs.max << ":" << abs.fuzz << ":" << abs.flat;
+      out << abs.code.device_id << "-" << abs.code.code << ":" 
+          << abs.min << ":" << abs.max << ":" 
+          << abs.fuzz << ":" << abs.flat;
       break;
 
     case EV_REL:

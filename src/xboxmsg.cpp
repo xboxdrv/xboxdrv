@@ -991,5 +991,49 @@ std::string btn2string(XboxButton btn)
   }
   return "unknown";
 }
+
+int get_axis_min(XboxAxis axis)
+{
+  switch(axis)
+  {
+    case XBOX_AXIS_X1: return -32768;
+    case XBOX_AXIS_Y1: return -32768;
+    
+    case XBOX_AXIS_X2: return -32768;
+    case XBOX_AXIS_Y2: return -32768;
+
+    case XBOX_AXIS_LT: return 0;
+    case XBOX_AXIS_RT: return 0;
+
+    case XBOX_AXIS_DPAD_X: return -1;
+    case XBOX_AXIS_DPAD_Y: return -1;
+
+    case XBOX_AXIS_TRIGGER: return -255;
+
+    default: assert(!"never reached");
+  }
+}
+
+int get_axis_max(XboxAxis axis)
+{
+  switch(axis)
+  {
+    case XBOX_AXIS_X1: return 32767;
+    case XBOX_AXIS_Y1: return 32767;
+    
+    case XBOX_AXIS_X2: return 32767;
+    case XBOX_AXIS_Y2: return 32767;
+
+    case XBOX_AXIS_LT: return 255;
+    case XBOX_AXIS_RT: return 255;
+
+    case XBOX_AXIS_DPAD_X: return 1;
+    case XBOX_AXIS_DPAD_Y: return 1;
+
+    case XBOX_AXIS_TRIGGER: return 255;
+
+    default: assert(!"never reached");
+  }
+}
   
 /* EOF */

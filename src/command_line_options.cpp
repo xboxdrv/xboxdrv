@@ -770,8 +770,14 @@ CommandLineParser::set_ui_axismap(const std::string& name, const std::string& va
 {
   XboxAxis  axis  = string2axis(name);
   AxisEvent event = AxisEvent::from_string(value);
+
   if (axis != XBOX_AXIS_UNKNOWN)
   {
+    event.set_axis_range(get_axis_min(axis),
+                         get_axis_max(axis));
+
+    std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
+
     m_options->uinput_config.axis_map[axis] = event;
   }
   else

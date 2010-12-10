@@ -66,8 +66,8 @@ uInputCfg::uInputCfg() :
   btn_map.bind(XBOX_DPAD_RIGHT, ButtonEvent::create_key(BTN_BASE4));
 
   // Axis Mapping
-  axis_map[XBOX_AXIS_X1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -32768, 32767, 0, 0); 
-  axis_map[XBOX_AXIS_Y1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -32768, 32767, 0, 0); 
+  axis_map[XBOX_AXIS_X1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -32768, 32767, 0, 0);
+  axis_map[XBOX_AXIS_Y1]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -32768, 32767, 0, 0);
   axis_map[XBOX_AXIS_X2]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_RX, -32768, 32767, 0, 0);
   axis_map[XBOX_AXIS_Y2]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_RY, -32768, 32767, 0, 0);
   axis_map[XBOX_AXIS_LT]      = AxisEvent::create_abs(DEVICEID_AUTO, ABS_BRAKE, 0, 255, 0, 0);
