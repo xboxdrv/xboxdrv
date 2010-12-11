@@ -199,18 +199,21 @@ LinuxUinput::finish()
       break;
 
     case kJoystickDevice:
-      if (!key_lst[BTN_JOYSTICK] &&
-          !key_lst[BTN_GAMEPAD] &&
-          !key_lst[BTN_TRIGGER_HAPPY] &&
-          
-          !abs_lst[ABS_THROTTLE] &&
-          !abs_lst[ABS_WHEEL] &&
-          !abs_lst[ABS_X])
+      // FIXME: the kernel and SDL have different rules for joystick
+      // detection, so this is more a hack then a proper solution
+      if (!key_lst[BTN_A])
       {
-        // using BTN_TRIGGER_HAPPY instead of more common BTN_JOYSTICK
-        // as it should end up as last joystick button instead of
-        // first
-        add_key(BTN_TRIGGER_HAPPY);
+        add_key(BTN_A);
+      }
+
+      if (!abs_lst[ABS_X])
+      {
+        add_abs(ABS_X, -1, 1, 0, 0);
+      }
+
+      if (!abs_lst[ABS_Y])
+      {
+        add_abs(ABS_Y, -1, 1, 0, 0);
       }
       break;
   }
