@@ -1,7 +1,7 @@
 [xboxdrv]
-dpad-as-button=true
 deadzone=4000
 trigger-as-zaxis=true
+dpad-as-button=true
 
 [axismap]
 -y2=y2

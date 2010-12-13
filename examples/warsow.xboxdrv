@@ -30,7 +30,8 @@ dr=KEY_2
 du=REL_WHEEL:-1:150
 dd=REL_WHEEL:1:150
 
-[ui-buttonmap back=KEY_TAB]
+[ui-buttonmap]
+back=KEY_TAB
 start=KEY_ESC
 
 # EOF #
