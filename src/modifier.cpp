@@ -45,27 +45,20 @@ void apply_axis_map(XboxGenericMsg& msg, const std::vector<AxisMapping>& lst)
 
   for(std::vector<AxisMapping>::const_iterator i = lst.begin(); i != lst.end(); ++i)
   {
-    set_axis(newmsg, i->lhs, 0);
+    set_axis_float(newmsg, i->lhs, 0);
   }
 
   for(std::vector<AxisMapping>::const_iterator i = lst.begin(); i != lst.end(); ++i)
   {
-    int lhs  = get_axis(msg,    i->lhs);
-    int nrhs = get_axis(newmsg, i->rhs);
+    float lhs  = get_axis_float(msg,    i->lhs);
+    float nrhs = get_axis_float(newmsg, i->rhs);
 
     if (i->invert)
     {
-      if (i->lhs == XBOX_AXIS_LT ||
-          i->lhs == XBOX_AXIS_RT)
-      {
-        lhs = 255 - lhs;
-      }
-      else
-      {
-        lhs = -lhs;
-      }
+      lhs = -lhs;
     }
-    set_axis(newmsg, i->rhs, std::max(std::min(nrhs + lhs, 32767), -32768));
+
+    set_axis_float(newmsg, i->rhs, std::max(std::min(nrhs + lhs, 1.0f), -1.0f));
   }
   msg = newmsg;
 }
