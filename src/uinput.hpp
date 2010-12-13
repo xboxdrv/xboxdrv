@@ -77,7 +77,7 @@ private:
   void send(Xbox360GuitarMsg& msg);
   void send(XboxMsg& msg);
 
-  void add_axis(XboxAxis code, int min, int max);
+  void add_axis(XboxAxis code);
   void add_button(XboxButton code);
 
   void send_button(XboxButton code, bool value);

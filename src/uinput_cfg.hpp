@@ -29,12 +29,6 @@ class uInputCfg
 public:
   std::string device_name;
 
-  bool trigger_as_button;
-  bool trigger_as_zaxis;
-
-  bool dpad_as_button;
-  bool dpad_only;
-
   bool force_feedback;
   bool extra_devices;
 

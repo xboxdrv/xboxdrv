@@ -211,10 +211,10 @@ CommandLineParser::init_ini(Options* opts)
 
     // uinput stuff
     ("device-name", &opts->uinput_config.device_name)
-    ("trigger-as-button", &opts->uinput_config.trigger_as_button)
-    ("trigger-as-zaxis", &opts->uinput_config.trigger_as_zaxis)
-    ("dpad-as-button", &opts->uinput_config.dpad_as_button)
-    ("dpad-only", &opts->uinput_config.dpad_only)
+    //FIXME("trigger-as-button", &opts->uinput_config.trigger_as_button)
+    //FIXME("trigger-as-zaxis", &opts->uinput_config.trigger_as_zaxis)
+    //FIXME("dpad-as-button", &opts->uinput_config.dpad_as_button)
+    //FIXME("dpad-only", &opts->uinput_config.dpad_only)
     ("force-feedback", &opts->uinput_config.force_feedback)
     ("extra-devices", &opts->uinput_config.extra_devices)
     // FIXME: mimic_xpad()
@@ -527,9 +527,9 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_MOUSE:
-        opts.uinput_config.dpad_as_button = true;
+        //FIXME:opts.uinput_config.dpad_as_button = true;
         opts.deadzone = 4000;
-        opts.uinput_config.trigger_as_zaxis = true;
+        //FIXME:opts.uinput_config.trigger_as_zaxis = true;
         arg2vector2("-y2=y2,-trigger=trigger", opts.axis_map, &AxisMapping::from_string);
         // send events only every 20msec, lower values cause a jumpy pointer
         arg2apply("x1=REL_X:15:20,y1=REL_Y:15:20,"
@@ -583,17 +583,23 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
             
       case OPTION_DPAD_ONLY:
-        if (opts.uinput_config.dpad_as_button)
-          RAISE_EXCEPTION("Can't combine --dpad-as-button with --dpad-only");
-            
-        opts.uinput_config.dpad_only = true;
+        opts.uinput_config.axis_map[XBOX_AXIS_X1] = AxisEvent::invalid();
+        opts.uinput_config.axis_map[XBOX_AXIS_Y1] = AxisEvent::invalid();
+        opts.uinput_config.axis_map[XBOX_AXIS_X2] = AxisEvent::invalid();
+        opts.uinput_config.axis_map[XBOX_AXIS_Y2] = AxisEvent::invalid();
+
+        opts.uinput_config.axis_map[XBOX_AXIS_DPAD_X]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -1, 1, 0, 0);
+        opts.uinput_config.axis_map[XBOX_AXIS_DPAD_Y]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -1, 1, 0, 0);
         break;
             
       case OPTION_DPAD_AS_BUTTON:
-        if (opts.uinput_config.dpad_only)
-          throw std::runtime_error("Can't combine --dpad-as-button with --dpad-only");
+        opts.uinput_config.btn_map.bind(XBOX_DPAD_UP,    ButtonEvent::create_key(BTN_BASE));
+        opts.uinput_config.btn_map.bind(XBOX_DPAD_DOWN,  ButtonEvent::create_key(BTN_BASE2));
+        opts.uinput_config.btn_map.bind(XBOX_DPAD_LEFT,  ButtonEvent::create_key(BTN_BASE3));
+        opts.uinput_config.btn_map.bind(XBOX_DPAD_RIGHT, ButtonEvent::create_key(BTN_BASE4));
 
-        opts.uinput_config.dpad_as_button = true;
+        opts.uinput_config.axis_map[XBOX_AXIS_DPAD_X]  = AxisEvent::invalid();
+        opts.uinput_config.axis_map[XBOX_AXIS_DPAD_Y]  = AxisEvent::invalid();
         break;
 
       case OPTION_DEADZONE:
@@ -605,14 +611,16 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_TRIGGER_AS_BUTTON:
-        if (opts.uinput_config.trigger_as_zaxis)
-        {
-          RAISE_EXCEPTION("Can't combine --trigger-as-button and --trigger-as-zaxis");
-        }
-        else
-        {
-          opts.uinput_config.trigger_as_button = true;
-        }
+        opts.uinput_config.axis_map[XBOX_AXIS_LT] = AxisEvent::invalid();
+        opts.uinput_config.axis_map[XBOX_AXIS_RT] = AxisEvent::invalid();
+        opts.uinput_config.btn_map.bind(XBOX_BTN_LT, ButtonEvent::create_key(BTN_TL2));
+        opts.uinput_config.btn_map.bind(XBOX_BTN_RT, ButtonEvent::create_key(BTN_TR2));
+        break;
+        
+      case OPTION_TRIGGER_AS_ZAXIS:
+        opts.uinput_config.axis_map[XBOX_AXIS_TRIGGER] = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0);
+        opts.uinput_config.axis_map[XBOX_AXIS_LT] = AxisEvent::invalid();
+        opts.uinput_config.axis_map[XBOX_AXIS_RT] = AxisEvent::invalid();
         break;
 
       case OPTION_AUTOFIRE:
@@ -647,17 +655,6 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_SQUARE_AXIS:
         opts.square_axis = true;
-        break;
-
-      case OPTION_TRIGGER_AS_ZAXIS:
-        if (opts.uinput_config.trigger_as_button)
-        {
-          RAISE_EXCEPTION("Can't combine --trigger-as-button and --trigger-as-zaxis");
-        }
-        else
-        {
-          opts.uinput_config.trigger_as_zaxis = true;
-        }
         break;
 
       case OPTION_HELP_LED:

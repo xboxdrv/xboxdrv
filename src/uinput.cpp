@@ -176,52 +176,34 @@ uInput::setup_xbox360_gamepad(GamepadType type)
     // '- FF_CUSTOM
   }
 
-  if (cfg.dpad_only)
   {
-    add_axis(XBOX_AXIS_X1, -1, 1);
-    add_axis(XBOX_AXIS_Y1, -1, 1);
-  }
-  else
-  {
-    add_axis(XBOX_AXIS_X1, -32768, 32767);
-    add_axis(XBOX_AXIS_Y1, -32768, 32767);
+    add_axis(XBOX_AXIS_X1);
+    add_axis(XBOX_AXIS_Y1);
+
+    add_axis(XBOX_AXIS_X2);
+    add_axis(XBOX_AXIS_Y2);
   }
 
-  if (!cfg.dpad_only)
-  {  
-    add_axis(XBOX_AXIS_X2, -32768, 32767);
-    add_axis(XBOX_AXIS_Y2, -32768, 32767);
-  }
-
-  if (cfg.trigger_as_button)
-  {
+  { // trigger
     add_button(XBOX_BTN_LT);
     add_button(XBOX_BTN_RT);
-  }
-  else if (cfg.trigger_as_zaxis)
-  {
-    add_axis(XBOX_AXIS_TRIGGER, -255, 255);
-  }
-  else
-  {
-    add_axis(XBOX_AXIS_LT, 0, 255);
-    add_axis(XBOX_AXIS_RT, 0, 255);
+
+    add_axis(XBOX_AXIS_TRIGGER);
+
+    add_axis(XBOX_AXIS_LT);
+    add_axis(XBOX_AXIS_RT);
   }
 
-  if (!cfg.dpad_only)
   {
-    if (!cfg.dpad_as_button)
-    {
-      add_axis(XBOX_AXIS_DPAD_X, -1, 1);
-      add_axis(XBOX_AXIS_DPAD_Y, -1, 1);
-    }
-    else
-    {
-      add_button(XBOX_DPAD_UP);
-      add_button(XBOX_DPAD_DOWN);
-      add_button(XBOX_DPAD_LEFT);
-      add_button(XBOX_DPAD_RIGHT);
-    }
+    add_axis(XBOX_AXIS_DPAD_X);
+    add_axis(XBOX_AXIS_DPAD_Y);
+  }
+
+  {
+    add_button(XBOX_DPAD_UP);
+    add_button(XBOX_DPAD_DOWN);
+    add_button(XBOX_DPAD_LEFT);
+    add_button(XBOX_DPAD_RIGHT);
   }
 
   add_button(XBOX_BTN_START);
@@ -247,8 +229,8 @@ void
 uInput::setup_xbox360_guitar()
 {
   // Whammy and Tilt
-  add_axis(XBOX_AXIS_X1, -32768, 32767);
-  add_axis(XBOX_AXIS_Y1, -32768, 32767);
+  add_axis(XBOX_AXIS_X1);
+  add_axis(XBOX_AXIS_Y1);
 
   // Dpad
   add_button(XBOX_DPAD_UP);
@@ -319,22 +301,14 @@ uInput::send(Xbox360Msg& msg)
   send_button(XBOX_BTN_X, msg.x);
   send_button(XBOX_BTN_Y, msg.y);
 
-  if (cfg.trigger_as_zaxis)
-  {
-    send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
-  }
-  else if (cfg.trigger_as_button)
-  {
-    send_button(XBOX_BTN_LT, msg.lt);
-    send_button(XBOX_BTN_RT, msg.rt);
-  }
-  else
-  {
-    send_axis(XBOX_AXIS_LT, msg.lt);
-    send_axis(XBOX_AXIS_RT, msg.rt);
-  }
+  send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
 
-  if (!cfg.dpad_only)
+  send_button(XBOX_BTN_LT, msg.lt);
+  send_button(XBOX_BTN_RT, msg.rt);
+
+  send_axis(XBOX_AXIS_LT, msg.lt);
+  send_axis(XBOX_AXIS_RT, msg.rt);
+
   {
     send_axis(XBOX_AXIS_X1,  msg.x1);
     send_axis(XBOX_AXIS_Y1, -msg.y1);
@@ -343,31 +317,21 @@ uInput::send(Xbox360Msg& msg)
     send_axis(XBOX_AXIS_Y2, -msg.y2);
   }
 
-  if (cfg.dpad_as_button)
   {
     send_button(XBOX_DPAD_UP,    msg.dpad_up);
     send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
     send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
     send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
   }
-  else
+
   {
-    XboxAxis dpad_x = XBOX_AXIS_DPAD_X;
-    XboxAxis dpad_y = XBOX_AXIS_DPAD_Y;
-      
-    if (cfg.dpad_only)
-    {
-      dpad_x = XBOX_AXIS_X1;
-      dpad_y = XBOX_AXIS_Y1;
-    }
+    if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
+    else if (msg.dpad_down)  send_axis(XBOX_AXIS_DPAD_Y,  1);
+    else                     send_axis(XBOX_AXIS_DPAD_Y,  0);
 
-    if      (msg.dpad_up)    send_axis(dpad_y, -1);
-    else if (msg.dpad_down)  send_axis(dpad_y,  1);
-    else                     send_axis(dpad_y,  0);
-
-    if      (msg.dpad_left)  send_axis(dpad_x, -1);
-    else if (msg.dpad_right) send_axis(dpad_x,  1);
-    else                     send_axis(dpad_x,  0);
+    if      (msg.dpad_left)  send_axis(XBOX_AXIS_DPAD_X, -1);
+    else if (msg.dpad_right) send_axis(XBOX_AXIS_DPAD_X,  1);
+    else                     send_axis(XBOX_AXIS_DPAD_X,  0);
   }
 }
 
@@ -388,23 +352,14 @@ uInput::send(XboxMsg& msg)
   send_button(XBOX_BTN_X, msg.x);
   send_button(XBOX_BTN_Y, msg.y);
 
-  if (cfg.trigger_as_zaxis)
-  {
-    send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
-  }
-  else if (cfg.trigger_as_button)
-  {
-    send_button(XBOX_BTN_LT, msg.lt);
-    send_button(XBOX_BTN_RT, msg.rt);
-  }
-  else
-  {
-    send_axis(XBOX_AXIS_LT, msg.lt);
-    send_axis(XBOX_AXIS_RT, msg.rt);
-  }
+  send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
 
+  send_button(XBOX_BTN_LT, msg.lt);
+  send_button(XBOX_BTN_RT, msg.rt);
 
-  if (!cfg.dpad_only)
+  send_axis(XBOX_AXIS_LT, msg.lt);
+  send_axis(XBOX_AXIS_RT, msg.rt);
+
   {
     send_axis(XBOX_AXIS_X1,  msg.x1);
     send_axis(XBOX_AXIS_Y1, -msg.y1);
@@ -413,31 +368,21 @@ uInput::send(XboxMsg& msg)
     send_axis(XBOX_AXIS_Y2, -msg.y2);
   }
 
-  if (cfg.dpad_as_button)
-  {
+  { // dpad as button
     send_button(XBOX_DPAD_UP,    msg.dpad_up);
     send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
     send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
     send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
   }
-  else
-  {
-    XboxAxis dpad_x = XBOX_AXIS_DPAD_X;
-    XboxAxis dpad_y = XBOX_AXIS_DPAD_Y;
-      
-    if (cfg.dpad_only)
-    {
-      dpad_x = XBOX_AXIS_X1;
-      dpad_y = XBOX_AXIS_Y1;
-    }
 
-    if      (msg.dpad_up)    send_axis(dpad_y, -1);
-    else if (msg.dpad_down)  send_axis(dpad_y,  1);
-    else                     send_axis(dpad_y,  0);
+  { // dpad as axis
+    if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
+    else if (msg.dpad_down)  send_axis(XBOX_AXIS_DPAD_Y,  1);
+    else                     send_axis(XBOX_AXIS_DPAD_Y,  0);
 
-    if      (msg.dpad_left)  send_axis(dpad_x, -1);
-    else if (msg.dpad_right) send_axis(dpad_x,  1);
-    else                     send_axis(dpad_x,  0);
+    if      (msg.dpad_left)  send_axis(XBOX_AXIS_DPAD_X, -1);
+    else if (msg.dpad_right) send_axis(XBOX_AXIS_DPAD_X,  1);
+    else                     send_axis(XBOX_AXIS_DPAD_X,  0);
   }
 }
 
@@ -618,7 +563,7 @@ uInput::send_axis(XboxAxis code, int32_t value)
 }
 
 void
-uInput::add_axis(XboxAxis code, int min, int max)
+uInput::add_axis(XboxAxis code)
 {
   const AxisEvent& event = cfg.axis_map[code];
   if (event.is_valid())
