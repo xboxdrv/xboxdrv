@@ -663,7 +663,7 @@ float get_axis_float(XboxGenericMsg& msg, XboxAxis axis)
           {
             return -1;
           }
-          else if (msg.xbox360.dpad_down)
+          else if (msg.xbox360.dpad_right)
           {
             return 1;
           }
@@ -716,7 +716,7 @@ float get_axis_float(XboxGenericMsg& msg, XboxAxis axis)
           {
             return -1;
           }
-          else if (msg.xbox.dpad_down)
+          else if (msg.xbox.dpad_right)
           {
             return 1;
           }
