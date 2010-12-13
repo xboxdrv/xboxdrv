@@ -1,4 +1,4 @@
-xboxdrv 0.6.0 - (??/Jun/2010)
+xboxdrv 0.6.0 - (??/Aug/2010)
 ==============================
 
 * support for reading from evdev, this allows the use of regular
@@ -7,6 +7,7 @@ xboxdrv 0.6.0 - (??/Jun/2010)
   Xbox360 gamepad
 * added KEY_#num, ABS_#num and REL_#num to allow refering to events by
   number instead of name
+* support for reading configuration from a config file
 
 
 xboxdrv 0.5.0 - (26/May/2010)

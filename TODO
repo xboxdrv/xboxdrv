@@ -15,12 +15,105 @@ git push --tags
 Stuff to do before 0.6.0 release:
 =================================
 
+* gives weird not helpful error message: --ui-axismap x1=ABS_X2
+
+* output information for evdev must output KEY_#342 instead of just 342
+
+* Add: --evdev-absmap ABS_X2+=RT,-ABS_X2+=LT to allow mapping of
+  half-axes (syntax is inconsistent with axis inverting)
+
+  - write man page entry
+
+* evdev handling needs to handle [-1,1] axis differently from [0,1] axis
+  http://ps3.jim.sh/sixaxis/usb/
+  see evdev_controller.cpp:165
+
+* allow separate deadzone for each axis
+
+* create dummy joystick axis for the joystick device, see:
+  /usr/src/linux-source-2.6.35/drivers/input/joydev.c
+  /usr/src/linux-source-2.6.35/drivers/input/mousedev.c
+
+* make evdev grab optional:
+
+  --evdev-grab
+
+    Takes exclusive ownership of the event device, all events are
+    directed to xboxdrv and no other application will be able to
+    receive events.
+
+  --evdev-no-grab
+
+* allow binding of scripts to a button
+
+* --ui-axismap LT=KEY_A:KEY_B:1 
+
+Here KEY_B is the key you want to send and KEY_A is a random other key
+that you don't need. It's a hack as mapping both to KEY_B seems to
+cause some trouble with automatic key repeat for some reason. Note
+that you must not combine this with --trigger-as-zaxis as that will
+disable LT and RT
+
+* should actually send everything, not just the onces that are needed,
+  rest could be handled by ButtonMap/AxisMap:
+
+  if (cfg.trigger_as_zaxis)
+  {
+    send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
+  }
+  else if (cfg.trigger_as_button)
+  {
+    send_button(XBOX_BTN_LT, msg.lt);
+    send_button(XBOX_BTN_RT, msg.rt);
+  }
+  else
+  {
+    send_axis(XBOX_AXIS_LT, msg.lt);
+    send_axis(XBOX_AXIS_RT, msg.rt);
+  }
+
+* axismap doesn't hamonize with axismap:
+
+  --ui-axismap LT=KEY_A:KEY_A:1
+
+* invert y axis on --evdev
+
+* add Playstation3 controller config to examples
+
+ ./xboxdrv  \
+  --evdev /dev/input/event6 \
+  --evdev-absmap ABS_X=x1,ABS_Y=y1 \
+  --evdev-absmap ABS_Z=x2,ABS_RZ=y2 \
+  --evdev-absmap ABS_#48=lt,ABS_#49=rt \
+  --evdev-keymap BTN_THUMB=tl,BTN_THUMB2=tr \
+  --evdev-keymap BTN_BASE5=lb,BTN_BASE6=rb  \
+  --evdev-keymap KEY_#302=a,KEY_#301=b,BTN_DEAD=x,KEY_#300=y \
+  --evdev-keymap BTN_TRIGGER=back,KEY_#720=guide,BTN_TOP=start \
+  --evdev-keymap BTN_TOP2=du,BTN_PINKIE=dr,BTN_BASE=dd,BTN_BASE2=dl
+
+* review error handling on missing enums in: src/enum_box.hpp, revert
+  last change and solve the issue in str2key/key2str
+
+* allow --type to work even when --device-by-id is not given
+
+* axis emulation
+
+  --ui-axisemulation A:B=ABS_X:5
+
+* rewrite to use no floats:
+
+scale_deadzone(int16_t value, const int deadzone)
+scale_trigger_deadzone(uint8_t value, int deadzone)
+
+* documentation on keyboard combinations for axis seems lacking
+
 * ini support
 
 * endpoints can be taken directly from the usb configuration, thus
   avoiding issues with nummeric endpoints
 
-* bcdDevice (product release version) seem to indicate type:
+* bcdDevice (product release version) seem to indicate type (to many
+  possible versions, not enough data):
 
 new controller with merged endpoints: bcdDevice: 0x0114
 old ones: 1.10
@@ -92,6 +185,8 @@ http://msdn.microsoft.com/en-us/library/bb219655(VS.85).aspx
 
 Later versions:
 ===============
+
+* complex macro programming, i.e. complete evdev sequences, not just key combinations
 
 * The World Tour wireless guitar have 5 buttons and a
   slide. Currently, the slide is mapped to the x axis, but I don't
