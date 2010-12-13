@@ -15,6 +15,8 @@ git push --tags
 Stuff to do before 0.6.0 release:
 =================================
 
+* axis-map must take range into account
+
 * gives weird not helpful error message: --ui-axismap x1=ABS_X2
 
 * output information for evdev must output KEY_#342 instead of just 342
