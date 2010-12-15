@@ -562,14 +562,38 @@ uInput::send_rel_repetitive(const UIEvent& code, int value, int repeat_interval)
 void
 uInput::send_axis(XboxAxis code, int32_t value)
 {
+  // FIXME: should be sending updates when the shift button changes,
+  // not just when the axis changed
   if (axis_state[code] != value)
   {
     int old_value = axis_state[code];
     axis_state[code] = value;
 
-    const AxisEvent& event = cfg.get_axis_map().lookup(code);
-    if (event.is_valid())
-      event.send(*this, old_value, value);
+    bool event_send = false;
+
+    // send all shifted stuff
+    for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
+    {    
+      if (button_state[shift])
+      {
+        const AxisEvent& event = cfg.get_axis_map().lookup(static_cast<XboxButton>(shift), code);
+        if (event.is_valid())
+        {
+          event.send(*this, old_value, value);
+          event_send = true;
+        }
+      }
+    }
+
+    // sending regular axis, if no shifted events where send
+    if (!event_send)
+    {
+      const AxisEvent& event = cfg.get_axis_map().lookup(code);
+      if (event.is_valid())
+      {
+        event.send(*this, old_value, value);
+      }
+    }
   }
 }
 
@@ -578,9 +602,12 @@ uInput::add_axis(XboxAxis code)
 {
   for(int n = 0; n < cfg.input_mapping_count(); ++n)
   {
-    const AxisEvent& event = cfg.get_axis_map(n).lookup(code);
-    if (event.is_valid())
-      event.init(*this);
+    for(int shift = 0; shift < XBOX_BTN_MAX; ++shift)
+    {
+      const AxisEvent& event = cfg.get_axis_map(n).lookup(static_cast<XboxButton>(shift), code);
+      if (event.is_valid())
+        event.init(*this);
+    }
   }
 }
 

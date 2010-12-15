@@ -781,21 +781,45 @@ CommandLineParser::print_version() const
 void
 CommandLineParser::set_ui_axismap(const std::string& name, const std::string& value)
 {
-  XboxAxis  axis  = string2axis(name);
   AxisEvent event = AxisEvent::from_string(value);
 
-  if (axis != XBOX_AXIS_UNKNOWN)
+  std::string::size_type j = name.find('+');
+  if (j == std::string::npos)
   {
-    event.set_axis_range(get_axis_min(axis),
-                         get_axis_max(axis));
+    XboxAxis  axis  = string2axis(name);
 
-    std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
+    if (axis != XBOX_AXIS_UNKNOWN)
+    {
+      event.set_axis_range(get_axis_min(axis),
+                           get_axis_max(axis));
 
-    m_options->uinput_config.get_axis_map().bind(axis, event);
+      std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
+
+      m_options->uinput_config.get_axis_map().bind(axis, event);
+    }
+    else
+    {
+      throw std::runtime_error("Couldn't convert string \"" + name + "=" + value + "\" to ui-axis-mapping");
+    }
   }
   else
   {
-    throw std::runtime_error("Couldn't convert string \"" + name + "=" + value + "\" to ui-axis-mapping");
+    XboxButton shift = string2btn(name.substr(0, j));
+    XboxAxis   axis  = string2axis(name.substr(j+1));
+
+    if (axis != XBOX_AXIS_UNKNOWN)
+    {
+      event.set_axis_range(get_axis_min(axis),
+                           get_axis_max(axis));
+
+      std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
+
+      m_options->uinput_config.get_axis_map().bind(shift, axis, event);
+    }
+    else
+    {
+      throw std::runtime_error("Couldn't convert string \"" + name + "=" + value + "\" to ui-axis-mapping");
+    }    
   }      
 }
 
