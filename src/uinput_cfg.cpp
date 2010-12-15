@@ -59,8 +59,8 @@ uInputCfg::get_axis_map(int n)
 void
 uInputCfg::add_input_mapping()
 {
-  current_input_map = map.size()-1;
   map.push_back(InputMapping());
+  current_input_map = map.size()-1;
   set_defaults();
 }
 
