@@ -15,7 +15,9 @@ git push --tags
 Stuff to do before 0.6.0 release:
 =================================
 
-* axis-map must take range into account
+* --ui-new must reset events to neutral when switching input mapping
+
+* unifiy guitar mappings
 
 * gives weird not helpful error message: --ui-axismap x1=ABS_X2
 
@@ -25,10 +27,6 @@ Stuff to do before 0.6.0 release:
   half-axes (syntax is inconsistent with axis inverting)
 
   - write man page entry
-
-* evdev handling needs to handle [-1,1] axis differently from [0,1] axis
-  http://ps3.jim.sh/sixaxis/usb/
-  see evdev_controller.cpp:165
 
 * allow separate deadzone for each axis
 
@@ -55,24 +53,6 @@ that you don't need. It's a hack as mapping both to KEY_B seems to
 cause some trouble with automatic key repeat for some reason. Note
 that you must not combine this with --trigger-as-zaxis as that will
 disable LT and RT
-
-* should actually send everything, not just the onces that are needed,
-  rest could be handled by ButtonMap/AxisMap:
-
-  if (cfg.trigger_as_zaxis)
-  {
-    send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
-  }
-  else if (cfg.trigger_as_button)
-  {
-    send_button(XBOX_BTN_LT, msg.lt);
-    send_button(XBOX_BTN_RT, msg.rt);
-  }
-  else
-  {
-    send_axis(XBOX_AXIS_LT, msg.lt);
-    send_axis(XBOX_AXIS_RT, msg.rt);
-  }
 
 * axismap doesn't hamonize with axismap:
 
@@ -121,12 +101,6 @@ new controller with merged endpoints: bcdDevice: 0x0114
 old ones: 1.10
 
 better way then to check for endpoints maybe
-
-* give a hint in the documentation on how to do multi line comments:
-
-xboxdrv \
- --buttonmap A=X,X=A `# swap A and X` \
- --buttonmap B=Y,Y=B `# swap B and Y`
 
 * 045e:028f is the play&charge kit, give an error message when somebody tries to use that
 

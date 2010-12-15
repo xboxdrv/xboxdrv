@@ -46,7 +46,6 @@ uInput::is_keyboard_button(int ev_code)
 }
 
 uInput::uInput(GamepadType type, int vendor_id, int product_id, uInputCfg config_) :
-  m_type(type),
   m_vendor_id(vendor_id),
   m_product_id(product_id),
   uinput_devs(),
@@ -61,14 +60,14 @@ uInput::uInput(GamepadType type, int vendor_id, int product_id, uInputCfg config
     create_uinput_device(DEVICEID_JOYSTICK);
   }
 
-  switch(m_type)
+  switch(type)
   {
     case GAMEPAD_XBOX360:
     case GAMEPAD_XBOX:
     case GAMEPAD_XBOX360_WIRELESS:
     case GAMEPAD_FIRESTORM:
     case GAMEPAD_FIRESTORM_VSB:
-      setup_xbox360_gamepad(m_type);
+      setup_xbox360_gamepad(type);
       break;
 
     case GAMEPAD_XBOX360_GUITAR:
@@ -76,7 +75,7 @@ uInput::uInput(GamepadType type, int vendor_id, int product_id, uInputCfg config
       break;
 
     default:
-      std::cout << "Unhandled type: " << m_type << std::endl;
+      std::cout << "Unhandled type: " << type << std::endl;
       exit(EXIT_FAILURE);
       break;
   }
@@ -211,7 +210,9 @@ uInput::setup_xbox360_gamepad(GamepadType type)
         
   if (type == GAMEPAD_XBOX360 || 
       type == GAMEPAD_XBOX360_WIRELESS)
+  {
     add_button(XBOX_BTN_GUIDE);
+  }
 
   add_button(XBOX_BTN_A);
   add_button(XBOX_BTN_B);
@@ -440,19 +441,24 @@ uInput::send_button(XboxButton code, bool value)
   {
     button_state[code] = value;
 
+    if (value && code == XBOX_BTN_GUIDE)
+    {
+      cfg.next_input_mapping();
+    }
+
     // in case a shift button was changed, we have to clear all
     // connected buttons
     for(int i = 0; i < XBOX_BTN_MAX; ++i) // iterate over all buttons
     {
       if (button_state[i])
       {
-        const ButtonEvent& event = cfg.btn_map.lookup(code, static_cast<XboxButton>(i));
+        const ButtonEvent& event = cfg.get_btn_map().lookup(code, static_cast<XboxButton>(i));
         if (event.is_valid())
         {
           for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
           {
-            const ButtonEvent& event2 = cfg.btn_map.lookup(static_cast<XboxButton>(j),
-                                                          static_cast<XboxButton>(i));
+            const ButtonEvent& event2 = cfg.get_btn_map().lookup(static_cast<XboxButton>(j),
+                                                           static_cast<XboxButton>(i));
             if (event2.is_valid())
               event2.send(*this, false);
           }
@@ -465,7 +471,7 @@ uInput::send_button(XboxButton code, bool value)
     {
       if (button_state[i]) // shift button is pressed
       {
-        const ButtonEvent& event = cfg.btn_map.lookup(static_cast<XboxButton>(i), code);
+        const ButtonEvent& event = cfg.get_btn_map().lookup(static_cast<XboxButton>(i), code);
         if (event.is_valid())
         {
           event.send(*this, value);
@@ -477,7 +483,7 @@ uInput::send_button(XboxButton code, bool value)
     }
 
     // Non shifted button events
-    const ButtonEvent& event = cfg.btn_map.lookup(code);
+    const ButtonEvent& event = cfg.get_btn_map().lookup(code);
     if (event.is_valid())
       event.send(*this, value);
   }
@@ -556,7 +562,7 @@ uInput::send_axis(XboxAxis code, int32_t value)
     int old_value = axis_state[code];
     axis_state[code] = value;
 
-    const AxisEvent& event = cfg.axis_map[code];
+    const AxisEvent& event = cfg.get_axis_map()[code];
     if (event.is_valid())
       event.send(*this, old_value, value);
   }
@@ -565,19 +571,25 @@ uInput::send_axis(XboxAxis code, int32_t value)
 void
 uInput::add_axis(XboxAxis code)
 {
-  const AxisEvent& event = cfg.axis_map[code];
-  if (event.is_valid())
-    event.init(*this);
+  for(int n = 0; n < cfg.input_mapping_count(); ++n)
+  {
+    const AxisEvent& event = cfg.get_axis_map(n)[code];
+    if (event.is_valid())
+      event.init(*this);
+  }
 }
 
 void
 uInput::add_button(XboxButton code)
 {
-  for(int i = 0; i < XBOX_BTN_MAX; ++i)
+  for(int n = 0; n < cfg.input_mapping_count(); ++n)
   {
-    const ButtonEvent& event = cfg.btn_map.lookup(static_cast<XboxButton>(i), code);
-    if (event.is_valid())
-      event.init(*this);
+    for(int i = 0; i < XBOX_BTN_MAX; ++i)
+    {
+      const ButtonEvent& event = cfg.get_btn_map(n).lookup(static_cast<XboxButton>(i), code);
+      if (event.is_valid())
+        event.init(*this);
+    }
   }
 }
 

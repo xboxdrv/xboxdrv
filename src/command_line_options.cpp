@@ -62,6 +62,7 @@ enum {
   OPTION_BUTTONMAP,
   OPTION_AXISMAP,
   OPTION_NAME,
+  OPTION_UI_NEW,
   OPTION_UI_CLEAR,
   OPTION_UI_AXISMAP,
   OPTION_UI_BUTTONMAP,
@@ -158,6 +159,7 @@ CommandLineParser::init_argp()
     .add_option(OPTION_BUTTONMAP,         'b', "buttonmap",      "MAP",   "Remap the buttons as specified by MAP (example: B=A,X=A,Y=A)")
     .add_option(OPTION_AXISMAP,           'a', "axismap",        "MAP",   "Remap the axis as specified by MAP (example: -Y1=Y1,X1=X2)")
     .add_option(OPTION_NAME,               0, "name",             "DEVNAME", "Changes the descriptive name the device will have")
+    .add_option(OPTION_UI_NEW,             0, "ui-new",           "",     "Create a new uinput configuration")
     .add_option(OPTION_UI_CLEAR,           0, "ui-clear",         "",     "Removes all existing uinput bindings")
     .add_option(OPTION_UI_BUTTONMAP,       0, "ui-buttonmap",     "MAP",  "Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)")
     .add_option(OPTION_UI_AXISMAP,         0, "ui-axismap",       "MAP",  "Changes the uinput events send when moving a axis (example: X1=ABS_X2)")
@@ -513,9 +515,13 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         opts.uinput_config.device_name = opt.argument;
         break;
 
+      case OPTION_UI_NEW:
+        opts.uinput_config.add_input_mapping();
+        break;
+
       case OPTION_UI_CLEAR:
-        std::fill_n(opts.uinput_config.axis_map, static_cast<int>(XBOX_AXIS_MAX), AxisEvent::invalid());
-        opts.uinput_config.btn_map.clear();
+        std::fill_n(opts.uinput_config.get_axis_map(), static_cast<int>(XBOX_AXIS_MAX), AxisEvent::invalid());
+        opts.uinput_config.get_btn_map().clear();
         break;
 
       case OPTION_UI_AXISMAP:
@@ -523,7 +529,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_UI_BUTTONMAP:
-        arg2apply(opt.argument, boost::bind(&set_ui_button_map, boost::ref(opts.uinput_config.btn_map), _1));
+        arg2apply(opt.argument, boost::bind(&set_ui_button_map, boost::ref(opts.uinput_config.get_btn_map()), _1));
         break;
 
       case OPTION_MOUSE:
@@ -540,7 +546,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
                   "dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN,"
                   "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,"
                   "tl=void,tr=void",
-                  boost::bind(&set_ui_button_map, boost::ref(opts.uinput_config.btn_map), _1));
+                  boost::bind(&set_ui_button_map, boost::ref(opts.uinput_config.get_btn_map()), _1));
         break;
 
       case OPTION_DETACH_KERNEL_DRIVER:
@@ -583,23 +589,23 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
             
       case OPTION_DPAD_ONLY:
-        opts.uinput_config.axis_map[XBOX_AXIS_X1] = AxisEvent::invalid();
-        opts.uinput_config.axis_map[XBOX_AXIS_Y1] = AxisEvent::invalid();
-        opts.uinput_config.axis_map[XBOX_AXIS_X2] = AxisEvent::invalid();
-        opts.uinput_config.axis_map[XBOX_AXIS_Y2] = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_X1] = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_Y1] = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_X2] = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_Y2] = AxisEvent::invalid();
 
-        opts.uinput_config.axis_map[XBOX_AXIS_DPAD_X]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -1, 1, 0, 0);
-        opts.uinput_config.axis_map[XBOX_AXIS_DPAD_Y]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -1, 1, 0, 0);
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_DPAD_X]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -1, 1, 0, 0);
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_DPAD_Y]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -1, 1, 0, 0);
         break;
             
       case OPTION_DPAD_AS_BUTTON:
-        opts.uinput_config.btn_map.bind(XBOX_DPAD_UP,    ButtonEvent::create_key(BTN_BASE));
-        opts.uinput_config.btn_map.bind(XBOX_DPAD_DOWN,  ButtonEvent::create_key(BTN_BASE2));
-        opts.uinput_config.btn_map.bind(XBOX_DPAD_LEFT,  ButtonEvent::create_key(BTN_BASE3));
-        opts.uinput_config.btn_map.bind(XBOX_DPAD_RIGHT, ButtonEvent::create_key(BTN_BASE4));
+        opts.uinput_config.get_btn_map().bind(XBOX_DPAD_UP,    ButtonEvent::create_key(BTN_BASE));
+        opts.uinput_config.get_btn_map().bind(XBOX_DPAD_DOWN,  ButtonEvent::create_key(BTN_BASE2));
+        opts.uinput_config.get_btn_map().bind(XBOX_DPAD_LEFT,  ButtonEvent::create_key(BTN_BASE3));
+        opts.uinput_config.get_btn_map().bind(XBOX_DPAD_RIGHT, ButtonEvent::create_key(BTN_BASE4));
 
-        opts.uinput_config.axis_map[XBOX_AXIS_DPAD_X]  = AxisEvent::invalid();
-        opts.uinput_config.axis_map[XBOX_AXIS_DPAD_Y]  = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_DPAD_X]  = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_DPAD_Y]  = AxisEvent::invalid();
         break;
 
       case OPTION_DEADZONE:
@@ -611,16 +617,16 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_TRIGGER_AS_BUTTON:
-        opts.uinput_config.axis_map[XBOX_AXIS_LT] = AxisEvent::invalid();
-        opts.uinput_config.axis_map[XBOX_AXIS_RT] = AxisEvent::invalid();
-        opts.uinput_config.btn_map.bind(XBOX_BTN_LT, ButtonEvent::create_key(BTN_TL2));
-        opts.uinput_config.btn_map.bind(XBOX_BTN_RT, ButtonEvent::create_key(BTN_TR2));
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_LT] = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_RT] = AxisEvent::invalid();
+        opts.uinput_config.get_btn_map().bind(XBOX_BTN_LT, ButtonEvent::create_key(BTN_TL2));
+        opts.uinput_config.get_btn_map().bind(XBOX_BTN_RT, ButtonEvent::create_key(BTN_TR2));
         break;
         
       case OPTION_TRIGGER_AS_ZAXIS:
-        opts.uinput_config.axis_map[XBOX_AXIS_TRIGGER] = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0);
-        opts.uinput_config.axis_map[XBOX_AXIS_LT] = AxisEvent::invalid();
-        opts.uinput_config.axis_map[XBOX_AXIS_RT] = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_TRIGGER] = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0);
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_LT] = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map()[XBOX_AXIS_RT] = AxisEvent::invalid();
         break;
 
       case OPTION_AUTOFIRE:
@@ -775,7 +781,7 @@ CommandLineParser::set_ui_axismap(const std::string& name, const std::string& va
 
     std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
 
-    m_options->uinput_config.axis_map[axis] = event;
+    m_options->uinput_config.get_axis_map()[axis] = event;
   }
   else
   {
@@ -794,14 +800,14 @@ CommandLineParser::set_ui_buttonmap(const std::string& name, const std::string& 
   {
     XboxButton  btn = string2btn(btn_str);
 
-    m_options->uinput_config.btn_map.bind(btn, event);
+    m_options->uinput_config.get_btn_map().bind(btn, event);
   }
   else
   {
     XboxButton shift = string2btn(btn_str.substr(0, j));
     XboxButton btn   = string2btn(btn_str.substr(j+1));
 
-    m_options->uinput_config.btn_map.bind(shift, btn, event);
+    m_options->uinput_config.get_btn_map().bind(shift, btn, event);
   }
 }
 

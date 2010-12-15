@@ -19,6 +19,8 @@
 #ifndef HEADER_XBOXDRV_UINPUT_CFG_HPP
 #define HEADER_XBOXDRV_UINPUT_CFG_HPP
 
+#include <vector>
+
 #include "axis_event.hpp"
 #include "button_event.hpp"
 #include "button_map.hpp"
@@ -32,13 +34,32 @@ public:
   bool force_feedback;
   bool extra_devices;
 
-  ButtonMap btn_map;
-  AxisEvent axis_map[XBOX_AXIS_MAX];
+private:
+  struct InputMapping
+  {
+    ButtonMap btn_map;
+    AxisEvent axis_map[XBOX_AXIS_MAX];
+  };
 
+  std::vector<InputMapping> map;
+  int current_input_map;
+
+public:
   uInputCfg();
 
+  ButtonMap& get_btn_map();
+  AxisEvent* get_axis_map();
+
+  ButtonMap& get_btn_map(int n);
+  AxisEvent* get_axis_map(int n);
+  int input_mapping_count() const { return static_cast<int>(map.size()); }
+
+  void add_input_mapping();
+  void next_input_mapping();
+    
   /** Sets a button/axis mapping that is equal to the xpad kernel driver */
   void mimic_xpad();
+  void set_defaults();
 };
 
 #endif
