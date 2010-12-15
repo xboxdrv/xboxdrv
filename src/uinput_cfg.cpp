@@ -25,6 +25,7 @@ uInputCfg::uInputCfg() :
   device_name("Xbox Gamepad (userspace driver)"),
   force_feedback(false),
   extra_devices(true),
+  config_toggle_button(XBOX_BTN_UNKNOWN),
   map(),
   current_input_map(0)
 {

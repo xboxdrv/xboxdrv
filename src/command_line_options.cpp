@@ -64,6 +64,7 @@ enum {
   OPTION_NAME,
   OPTION_UI_NEW,
   OPTION_UI_CLEAR,
+  OPTION_UI_TOGGLE,
   OPTION_UI_AXISMAP,
   OPTION_UI_BUTTONMAP,
   OPTION_ID,
@@ -161,6 +162,7 @@ CommandLineParser::init_argp()
     .add_option(OPTION_NAME,               0, "name",             "DEVNAME", "Changes the descriptive name the device will have")
     .add_option(OPTION_UI_NEW,             0, "ui-new",           "",     "Create a new uinput configuration")
     .add_option(OPTION_UI_CLEAR,           0, "ui-clear",         "",     "Removes all existing uinput bindings")
+    .add_option(OPTION_UI_TOGGLE,          0, "ui-toggle",        "BTN",  "Set button to use for toggling between configs")
     .add_option(OPTION_UI_BUTTONMAP,       0, "ui-buttonmap",     "MAP",  "Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)")
     .add_option(OPTION_UI_AXISMAP,         0, "ui-axismap",       "MAP",  "Changes the uinput events send when moving a axis (example: X1=ABS_X2)")
     .add_option(OPTION_MOUSE,            'm', "mouse",            "",     "Enable mouse emulation")
@@ -517,6 +519,14 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_UI_NEW:
         opts.uinput_config.add_input_mapping();
+        if (opts.uinput_config.config_toggle_button == XBOX_BTN_UNKNOWN)
+        {
+          opts.uinput_config.config_toggle_button = XBOX_BTN_GUIDE;
+        }
+        break;
+
+      case OPTION_UI_TOGGLE:
+        opts.uinput_config.config_toggle_button = string2btn(opt.argument);
         break;
 
       case OPTION_UI_CLEAR:

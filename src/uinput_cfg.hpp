@@ -33,6 +33,7 @@ public:
 
   bool force_feedback;
   bool extra_devices;
+  XboxButton config_toggle_button; 
 
 private:
   struct InputMapping
@@ -43,7 +44,7 @@ private:
 
   std::vector<InputMapping> map;
   int current_input_map;
-
+  
 public:
   uInputCfg();
 

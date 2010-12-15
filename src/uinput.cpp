@@ -441,51 +441,56 @@ uInput::send_button(XboxButton code, bool value)
   {
     button_state[code] = value;
 
-    if (value && code == XBOX_BTN_GUIDE)
+    if (code == cfg.config_toggle_button)
     {
-      cfg.next_input_mapping();
-    }
-
-    // in case a shift button was changed, we have to clear all
-    // connected buttons
-    for(int i = 0; i < XBOX_BTN_MAX; ++i) // iterate over all buttons
-    {
-      if (button_state[i])
+      if (value)
       {
-        const ButtonEvent& event = cfg.get_btn_map().lookup(code, static_cast<XboxButton>(i));
-        if (event.is_valid())
+        cfg.next_input_mapping();
+      }
+    }
+    else
+    {
+      // in case a shift button was changed, we have to clear all
+      // connected buttons
+      for(int i = 0; i < XBOX_BTN_MAX; ++i) // iterate over all buttons
+      {
+        if (button_state[i])
         {
-          for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
+          const ButtonEvent& event = cfg.get_btn_map().lookup(code, static_cast<XboxButton>(i));
+          if (event.is_valid())
           {
-            const ButtonEvent& event2 = cfg.get_btn_map().lookup(static_cast<XboxButton>(j),
-                                                           static_cast<XboxButton>(i));
-            if (event2.is_valid())
-              event2.send(*this, false);
+            for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
+            {
+              const ButtonEvent& event2 = cfg.get_btn_map().lookup(static_cast<XboxButton>(j),
+                                                                   static_cast<XboxButton>(i));
+              if (event2.is_valid())
+                event2.send(*this, false);
+            }
           }
         }
       }
-    }
 
-    // Shifted button events
-    for(int i = 0; i < XBOX_BTN_MAX; ++i)
-    {
-      if (button_state[i]) // shift button is pressed
+      // Shifted button events
+      for(int i = 0; i < XBOX_BTN_MAX; ++i)
       {
-        const ButtonEvent& event = cfg.get_btn_map().lookup(static_cast<XboxButton>(i), code);
-        if (event.is_valid())
+        if (button_state[i]) // shift button is pressed
         {
-          event.send(*this, value);
-          // exit after the first successful event, so we don't send
-          // multiple events for the same button
-          return;
+          const ButtonEvent& event = cfg.get_btn_map().lookup(static_cast<XboxButton>(i), code);
+          if (event.is_valid())
+          {
+            event.send(*this, value);
+            // exit after the first successful event, so we don't send
+            // multiple events for the same button
+            return;
+          }
         }
       }
-    }
 
-    // Non shifted button events
-    const ButtonEvent& event = cfg.get_btn_map().lookup(code);
-    if (event.is_valid())
-      event.send(*this, value);
+      // Non shifted button events
+      const ButtonEvent& event = cfg.get_btn_map().lookup(code);
+      if (event.is_valid())
+        event.send(*this, value);
+    }
   }
 }
 
