@@ -530,7 +530,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_UI_CLEAR:
-        std::fill_n(opts.uinput_config.get_axis_map(), static_cast<int>(XBOX_AXIS_MAX), AxisEvent::invalid());
+        opts.uinput_config.get_axis_map().clear();
         opts.uinput_config.get_btn_map().clear();
         break;
 
@@ -599,13 +599,13 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
             
       case OPTION_DPAD_ONLY:
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_X1] = AxisEvent::invalid();
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_Y1] = AxisEvent::invalid();
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_X2] = AxisEvent::invalid();
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_Y2] = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_X1, AxisEvent::invalid());
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_Y1, AxisEvent::invalid());
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_X2, AxisEvent::invalid());
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_Y2, AxisEvent::invalid());
 
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_DPAD_X]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -1, 1, 0, 0);
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_DPAD_Y]  = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -1, 1, 0, 0);
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -1, 1, 0, 0));
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -1, 1, 0, 0));
         break;
             
       case OPTION_DPAD_AS_BUTTON:
@@ -614,8 +614,8 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         opts.uinput_config.get_btn_map().bind(XBOX_DPAD_LEFT,  ButtonEvent::create_key(BTN_BASE3));
         opts.uinput_config.get_btn_map().bind(XBOX_DPAD_RIGHT, ButtonEvent::create_key(BTN_BASE4));
 
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_DPAD_X]  = AxisEvent::invalid();
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_DPAD_Y]  = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::invalid());
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::invalid());
         break;
 
       case OPTION_DEADZONE:
@@ -627,16 +627,16 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_TRIGGER_AS_BUTTON:
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_LT] = AxisEvent::invalid();
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_RT] = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::invalid());
         opts.uinput_config.get_btn_map().bind(XBOX_BTN_LT, ButtonEvent::create_key(BTN_TL2));
         opts.uinput_config.get_btn_map().bind(XBOX_BTN_RT, ButtonEvent::create_key(BTN_TR2));
         break;
         
       case OPTION_TRIGGER_AS_ZAXIS:
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_TRIGGER] = AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0);
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_LT] = AxisEvent::invalid();
-        opts.uinput_config.get_axis_map()[XBOX_AXIS_RT] = AxisEvent::invalid();
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_TRIGGER, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0));
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
+        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::invalid());
         break;
 
       case OPTION_AUTOFIRE:
@@ -791,7 +791,7 @@ CommandLineParser::set_ui_axismap(const std::string& name, const std::string& va
 
     std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
 
-    m_options->uinput_config.get_axis_map()[axis] = event;
+    m_options->uinput_config.get_axis_map().bind(axis, event);
   }
   else
   {

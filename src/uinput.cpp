@@ -567,7 +567,7 @@ uInput::send_axis(XboxAxis code, int32_t value)
     int old_value = axis_state[code];
     axis_state[code] = value;
 
-    const AxisEvent& event = cfg.get_axis_map()[code];
+    const AxisEvent& event = cfg.get_axis_map().lookup(code);
     if (event.is_valid())
       event.send(*this, old_value, value);
   }
@@ -578,7 +578,7 @@ uInput::add_axis(XboxAxis code)
 {
   for(int n = 0; n < cfg.input_mapping_count(); ++n)
   {
-    const AxisEvent& event = cfg.get_axis_map(n)[code];
+    const AxisEvent& event = cfg.get_axis_map(n).lookup(code);
     if (event.is_valid())
       event.init(*this);
   }

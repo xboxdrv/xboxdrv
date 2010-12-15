@@ -24,6 +24,7 @@
 #include "axis_event.hpp"
 #include "button_event.hpp"
 #include "button_map.hpp"
+#include "axis_map.hpp"
 #include "xboxmsg.hpp"
 
 class uInputCfg
@@ -39,7 +40,7 @@ private:
   struct InputMapping
   {
     ButtonMap btn_map;
-    AxisEvent axis_map[XBOX_AXIS_MAX];
+    AxisMap   axis_map;
   };
 
   std::vector<InputMapping> map;
@@ -49,10 +50,10 @@ public:
   uInputCfg();
 
   ButtonMap& get_btn_map();
-  AxisEvent* get_axis_map();
+  AxisMap&   get_axis_map();
 
   ButtonMap& get_btn_map(int n);
-  AxisEvent* get_axis_map(int n);
+  AxisMap&   get_axis_map(int n);
   int input_mapping_count() const { return static_cast<int>(map.size()); }
 
   void add_input_mapping();
