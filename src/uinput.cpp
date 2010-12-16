@@ -175,36 +175,32 @@ uInput::setup_xbox360_gamepad(GamepadType type)
     // '- FF_CUSTOM
   }
 
-  {
-    add_axis(XBOX_AXIS_X1);
-    add_axis(XBOX_AXIS_Y1);
+  // analog sticks
+  add_axis(XBOX_AXIS_X1);
+  add_axis(XBOX_AXIS_Y1);
 
-    add_axis(XBOX_AXIS_X2);
-    add_axis(XBOX_AXIS_Y2);
-  }
+  add_axis(XBOX_AXIS_X2);
+  add_axis(XBOX_AXIS_Y2);
 
-  { // trigger
-    add_button(XBOX_BTN_LT);
-    add_button(XBOX_BTN_RT);
+  // trigger
+  add_button(XBOX_BTN_LT);
+  add_button(XBOX_BTN_RT);
 
-    add_axis(XBOX_AXIS_TRIGGER);
+  add_axis(XBOX_AXIS_TRIGGER);
 
-    add_axis(XBOX_AXIS_LT);
-    add_axis(XBOX_AXIS_RT);
-  }
+  add_axis(XBOX_AXIS_LT);
+  add_axis(XBOX_AXIS_RT);
 
-  {
-    add_axis(XBOX_AXIS_DPAD_X);
-    add_axis(XBOX_AXIS_DPAD_Y);
-  }
+  // dpad
+  add_axis(XBOX_AXIS_DPAD_X);
+  add_axis(XBOX_AXIS_DPAD_Y);
+  
+  add_button(XBOX_DPAD_UP);
+  add_button(XBOX_DPAD_DOWN);
+  add_button(XBOX_DPAD_LEFT);
+  add_button(XBOX_DPAD_RIGHT);
 
-  {
-    add_button(XBOX_DPAD_UP);
-    add_button(XBOX_DPAD_DOWN);
-    add_button(XBOX_DPAD_LEFT);
-    add_button(XBOX_DPAD_RIGHT);
-  }
-
+  // start/back button
   add_button(XBOX_BTN_START);
   add_button(XBOX_BTN_BACK);
         
@@ -214,14 +210,17 @@ uInput::setup_xbox360_gamepad(GamepadType type)
     add_button(XBOX_BTN_GUIDE);
   }
 
+  // face button
   add_button(XBOX_BTN_A);
   add_button(XBOX_BTN_B);
   add_button(XBOX_BTN_X);
   add_button(XBOX_BTN_Y);
 
+  // shoulder button
   add_button(XBOX_BTN_LB);
   add_button(XBOX_BTN_RB);
 
+  // analog stick button
   add_button(XBOX_BTN_THUMB_L);
   add_button(XBOX_BTN_THUMB_R);
 }
@@ -287,104 +286,106 @@ uInput::send(XboxGenericMsg& msg)
 void
 uInput::send(Xbox360Msg& msg)
 {
+  // analog stick button
   send_button(XBOX_BTN_THUMB_L, msg.thumb_l);
   send_button(XBOX_BTN_THUMB_R, msg.thumb_r);
 
+  // shoulder button
   send_button(XBOX_BTN_LB, msg.lb);
   send_button(XBOX_BTN_RB, msg.rb);
 
+  // start/back button
   send_button(XBOX_BTN_START, msg.start);
   send_button(XBOX_BTN_GUIDE, msg.guide);
   send_button(XBOX_BTN_BACK, msg.back);
 
+  // face button
   send_button(XBOX_BTN_A, msg.a);
   send_button(XBOX_BTN_B, msg.b);
   send_button(XBOX_BTN_X, msg.x);
   send_button(XBOX_BTN_Y, msg.y);
 
-  send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
-
-  send_button(XBOX_BTN_LT, msg.lt);
+  // trigger
+  send_button(XBOX_BTN_LT, msg.lt); // FIXME: no deadzone handling here
   send_button(XBOX_BTN_RT, msg.rt);
 
   send_axis(XBOX_AXIS_LT, msg.lt);
   send_axis(XBOX_AXIS_RT, msg.rt);
 
-  {
-    send_axis(XBOX_AXIS_X1,  msg.x1);
-    send_axis(XBOX_AXIS_Y1, -msg.y1);
+  send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
 
-    send_axis(XBOX_AXIS_X2,  msg.x2);
-    send_axis(XBOX_AXIS_Y2, -msg.y2);
-  }
+  // analog sticks
+  send_axis(XBOX_AXIS_X1,  msg.x1);
+  send_axis(XBOX_AXIS_Y1, -msg.y1);
+  
+  send_axis(XBOX_AXIS_X2,  msg.x2);
+  send_axis(XBOX_AXIS_Y2, -msg.y2);
 
-  {
-    send_button(XBOX_DPAD_UP,    msg.dpad_up);
-    send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
-    send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
-    send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
-  }
+  // dpad
+  send_button(XBOX_DPAD_UP,    msg.dpad_up);
+  send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
+  send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
+  send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
 
-  {
-    if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
-    else if (msg.dpad_down)  send_axis(XBOX_AXIS_DPAD_Y,  1);
-    else                     send_axis(XBOX_AXIS_DPAD_Y,  0);
+  if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
+  else if (msg.dpad_down)  send_axis(XBOX_AXIS_DPAD_Y,  1);
+  else                     send_axis(XBOX_AXIS_DPAD_Y,  0);
 
-    if      (msg.dpad_left)  send_axis(XBOX_AXIS_DPAD_X, -1);
-    else if (msg.dpad_right) send_axis(XBOX_AXIS_DPAD_X,  1);
-    else                     send_axis(XBOX_AXIS_DPAD_X,  0);
-  }
+  if      (msg.dpad_left)  send_axis(XBOX_AXIS_DPAD_X, -1);
+  else if (msg.dpad_right) send_axis(XBOX_AXIS_DPAD_X,  1);
+  else                     send_axis(XBOX_AXIS_DPAD_X,  0);
 }
 
 void
 uInput::send(XboxMsg& msg)
 {
+  // analog stick button
   send_button(XBOX_BTN_THUMB_L, msg.thumb_l);
   send_button(XBOX_BTN_THUMB_R, msg.thumb_r);
 
-  send_button(XBOX_BTN_WHITE, msg.white);
-  send_button(XBOX_BTN_BLACK, msg.black);
-
+  // start/back button
   send_button(XBOX_BTN_START, msg.start);
   send_button(XBOX_BTN_BACK,  msg.back);
 
+  // face button
   send_button(XBOX_BTN_A, msg.a);
   send_button(XBOX_BTN_B, msg.b);
   send_button(XBOX_BTN_X, msg.x);
   send_button(XBOX_BTN_Y, msg.y);
 
-  send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
+  send_button(XBOX_BTN_WHITE, msg.white);
+  send_button(XBOX_BTN_BLACK, msg.black);
 
+  // trigger
   send_button(XBOX_BTN_LT, msg.lt);
   send_button(XBOX_BTN_RT, msg.rt);
 
   send_axis(XBOX_AXIS_LT, msg.lt);
   send_axis(XBOX_AXIS_RT, msg.rt);
 
-  {
-    send_axis(XBOX_AXIS_X1,  msg.x1);
-    send_axis(XBOX_AXIS_Y1, -msg.y1);
+  send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
 
-    send_axis(XBOX_AXIS_X2,  msg.x2);
-    send_axis(XBOX_AXIS_Y2, -msg.y2);
-  }
+  // analog sticks
+  send_axis(XBOX_AXIS_X1,  msg.x1);
+  send_axis(XBOX_AXIS_Y1, -msg.y1);
 
-  { // dpad as button
-    send_button(XBOX_DPAD_UP,    msg.dpad_up);
-    send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
-    send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
-    send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
-  }
+  send_axis(XBOX_AXIS_X2,  msg.x2);
+  send_axis(XBOX_AXIS_Y2, -msg.y2);
 
-  { // dpad as axis
-    if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
-    else if (msg.dpad_down)  send_axis(XBOX_AXIS_DPAD_Y,  1);
-    else                     send_axis(XBOX_AXIS_DPAD_Y,  0);
+  // dpad as button
+  send_button(XBOX_DPAD_UP,    msg.dpad_up);
+  send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
+  send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
+  send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
 
-    if      (msg.dpad_left)  send_axis(XBOX_AXIS_DPAD_X, -1);
-    else if (msg.dpad_right) send_axis(XBOX_AXIS_DPAD_X,  1);
-    else                     send_axis(XBOX_AXIS_DPAD_X,  0);
-  }
+  // dpad as axis
+  if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
+  else if (msg.dpad_down)  send_axis(XBOX_AXIS_DPAD_Y,  1);
+  else                     send_axis(XBOX_AXIS_DPAD_Y,  0);
+
+  if      (msg.dpad_left)  send_axis(XBOX_AXIS_DPAD_X, -1);
+  else if (msg.dpad_right) send_axis(XBOX_AXIS_DPAD_X,  1);
+  else                     send_axis(XBOX_AXIS_DPAD_X,  0);
 }
 
 void
@@ -445,6 +446,7 @@ uInput::send_button(XboxButton code, bool value)
     {
       if (value)
       {
+        reset_all_outputs();
         cfg.next_input_mapping();
       }
     }
@@ -492,6 +494,15 @@ uInput::send_button(XboxButton code, bool value)
         event.send(*this, value);
     }
   }
+}
+
+void
+uInput::reset_all_outputs()
+{
+  // FIXME: kind of a hack
+  Xbox360Msg msg;
+  memset(&msg, 0, sizeof(msg));
+  send(msg);
 }
 
 void

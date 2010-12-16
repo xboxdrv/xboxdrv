@@ -97,6 +97,8 @@ private:
 
   void send_button(XboxButton code, bool value);
   void send_axis(XboxAxis code, int32_t value);
+
+  void reset_all_outputs();
 };
 
 #endif
