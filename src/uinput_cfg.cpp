@@ -181,4 +181,45 @@ uInputCfg::set_defaults()
   get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0Y, -1, 1, 0, 0));
 }
 
+void
+uInputCfg::trigger_as_button()
+{
+  get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
+  get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::invalid());
+  get_btn_map().bind(XBOX_BTN_LT, ButtonEvent::create_key(BTN_TL2));
+  get_btn_map().bind(XBOX_BTN_RT, ButtonEvent::create_key(BTN_TR2));
+}
+
+void
+uInputCfg::trigger_as_zaxis()
+{
+  get_axis_map().bind(XBOX_AXIS_TRIGGER, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0));
+  get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
+  get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::invalid());
+}
+
+void
+uInputCfg::dpad_as_button()
+{
+  get_btn_map().bind(XBOX_DPAD_UP,    ButtonEvent::create_key(BTN_BASE));
+  get_btn_map().bind(XBOX_DPAD_DOWN,  ButtonEvent::create_key(BTN_BASE2));
+  get_btn_map().bind(XBOX_DPAD_LEFT,  ButtonEvent::create_key(BTN_BASE3));
+  get_btn_map().bind(XBOX_DPAD_RIGHT, ButtonEvent::create_key(BTN_BASE4));
+
+  get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::invalid());
+  get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::invalid());
+}
+
+void
+uInputCfg::dpad_only()
+{
+  get_axis_map().bind(XBOX_AXIS_X1, AxisEvent::invalid());
+  get_axis_map().bind(XBOX_AXIS_Y1, AxisEvent::invalid());
+  get_axis_map().bind(XBOX_AXIS_X2, AxisEvent::invalid());
+  get_axis_map().bind(XBOX_AXIS_Y2, AxisEvent::invalid());
+
+  get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -1, 1, 0, 0));
+  get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -1, 1, 0, 0));
+}
+
 /* EOF */

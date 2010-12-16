@@ -65,6 +65,9 @@ private:
   void set_calibration(const std::string& name, const std::string& value);
   void set_axis_sensitivity(const std::string& name, const std::string& value);
 
+  void read_config_file(Options* opts, const std::string& filename);
+  void read_alt_config_file(Options* opts, const std::string& filename);
+
 private:
   void init_argp();
   void init_ini(Options* opts);

@@ -1,4 +1,4 @@
-Pre Release Testing:
+angrPre Release Testing:
 ====================
 
 * check the version number
@@ -15,7 +15,11 @@ git push --tags
 Stuff to do before 0.6.0 release:
 =================================
 
-* add shifting to axis
+* add support for Xbox1 analog face button
+
+* support for Playstation button names maybe? cross, triangle, circle, square, R3, L3, ...?
+
+* add documentation to shifted axis
 
 * write documentation for --ui-new
 
@@ -34,9 +38,7 @@ Stuff to do before 0.6.0 release:
 
 * allow separate deadzone for each axis
 
-* create dummy joystick axis for the joystick device, see:
-  /usr/src/linux-source-2.6.35/drivers/input/joydev.c
-  /usr/src/linux-source-2.6.35/drivers/input/mousedev.c
+* make dummy joystick axis creation optional
 
 * make evdev grab optional:
 

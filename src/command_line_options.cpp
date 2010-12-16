@@ -49,6 +49,7 @@ enum {
   OPTION_SILENT,
   OPTION_DAEMON,
   OPTION_CONFIG,
+  OPTION_ALT_CONFIG,
   OPTION_WRITE_CONFIG,
   OPTION_TEST_RUMBLE,
   OPTION_RUMBLE,
@@ -129,7 +130,8 @@ CommandLineParser::init_argp()
     .add_option(OPTION_MIMIC_XPAD,    0,  "mimic-xpad",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver")
     .add_option(OPTION_DAEMON,       'D', "daemon",      "", "run as daemon")
     .add_option(OPTION_CONFIG,       'c', "config",      "FILE", "read configuration from FILE")
-    .add_option(OPTION_WRITE_CONFIG,  0, "write-config",      "FILE", "write an example configuration to FILE")
+    .add_option(OPTION_ALT_CONFIG,    0, "alt-config",   "FILE", "read alternative configuration from FILE ")
+    .add_option(OPTION_WRITE_CONFIG,  0, "write-config", "FILE", "write an example configuration to FILE")
     .add_newline()
 
     .add_text("Device Options: ")
@@ -212,16 +214,18 @@ CommandLineParser::init_ini(Options* opts)
     ("four-way-restrictor", &opts->four_way_restrictor)
     ("dpad-rotation", &opts->dpad_rotation)
     ("evdev-device", &opts->evdev_device)
+    ("config", boost::bind(&CommandLineParser::read_config_file, this, opts, _1))
+    ("alt-config", boost::bind(&CommandLineParser::read_alt_config_file, this, opts, _1))
 
     // uinput stuff
     ("device-name", &opts->uinput_config.device_name)
-    //FIXME("trigger-as-button", &opts->uinput_config.trigger_as_button)
-    //FIXME("trigger-as-zaxis", &opts->uinput_config.trigger_as_zaxis)
-    //FIXME("dpad-as-button", &opts->uinput_config.dpad_as_button)
-    //FIXME("dpad-only", &opts->uinput_config.dpad_only)
+    ("trigger-as-button", boost::bind(&uInputCfg::trigger_as_button, boost::ref(opts->uinput_config)), boost::function<void ()>())
+    ("trigger-as-zaxis", boost::bind(&uInputCfg::trigger_as_zaxis, boost::ref(opts->uinput_config)), boost::function<void ()>())
+    ("dpad-as-button", boost::bind(&uInputCfg::dpad_as_button, boost::ref(opts->uinput_config)), boost::function<void ()>())
+    ("dpad-only", boost::bind(&uInputCfg::dpad_only, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ("force-feedback", &opts->uinput_config.force_feedback)
     ("extra-devices", &opts->uinput_config.extra_devices)
-    // FIXME: mimic_xpad()
+    ("mimic-xpad", boost::bind(&uInputCfg::mimic_xpad, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ;
 
   m_ini.section("ui-buttonmap", boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
@@ -397,24 +401,14 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
             m_ini.save(out);
           }
         }
-      break;
+        break;
 
       case OPTION_CONFIG:
-        {
-          std::ifstream in(opt.argument.c_str());
-          if (!in)
-          {
-            std::ostringstream str;
-            str << "Couldn't open " << opt.argument;
-            throw std::runtime_error(str.str());
-          }
-          else
-          {
-            INISchemaBuilder builder(m_ini);
-            INIParser parser(in, builder, opt.argument);
-            parser.run();
-          }
-        }
+        read_config_file(&opts, opt.argument);
+        break;
+
+      case OPTION_ALT_CONFIG:
+        read_alt_config_file(&opts, opt.argument);
         break;
 
       case OPTION_TEST_RUMBLE:
@@ -543,9 +537,9 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_MOUSE:
-        //FIXME:opts.uinput_config.dpad_as_button = true;
+        opts.uinput_config.dpad_as_button();
         opts.deadzone = 4000;
-        //FIXME:opts.uinput_config.trigger_as_zaxis = true;
+        opts.uinput_config.trigger_as_zaxis();
         arg2vector2("-y2=y2,-trigger=trigger", opts.axis_map, &AxisMapping::from_string);
         // send events only every 20msec, lower values cause a jumpy pointer
         arg2apply("x1=REL_X:15:20,y1=REL_Y:15:20,"
@@ -599,23 +593,11 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
             
       case OPTION_DPAD_ONLY:
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_X1, AxisEvent::invalid());
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_Y1, AxisEvent::invalid());
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_X2, AxisEvent::invalid());
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_Y2, AxisEvent::invalid());
-
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -1, 1, 0, 0));
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -1, 1, 0, 0));
+        opts.uinput_config.dpad_only();
         break;
             
       case OPTION_DPAD_AS_BUTTON:
-        opts.uinput_config.get_btn_map().bind(XBOX_DPAD_UP,    ButtonEvent::create_key(BTN_BASE));
-        opts.uinput_config.get_btn_map().bind(XBOX_DPAD_DOWN,  ButtonEvent::create_key(BTN_BASE2));
-        opts.uinput_config.get_btn_map().bind(XBOX_DPAD_LEFT,  ButtonEvent::create_key(BTN_BASE3));
-        opts.uinput_config.get_btn_map().bind(XBOX_DPAD_RIGHT, ButtonEvent::create_key(BTN_BASE4));
-
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::invalid());
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::invalid());
+        opts.uinput_config.dpad_as_button();
         break;
 
       case OPTION_DEADZONE:
@@ -627,16 +609,11 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_TRIGGER_AS_BUTTON:
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::invalid());
-        opts.uinput_config.get_btn_map().bind(XBOX_BTN_LT, ButtonEvent::create_key(BTN_TL2));
-        opts.uinput_config.get_btn_map().bind(XBOX_BTN_RT, ButtonEvent::create_key(BTN_TR2));
+        opts.uinput_config.trigger_as_button();
         break;
         
       case OPTION_TRIGGER_AS_ZAXIS:
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_TRIGGER, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0));
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
-        opts.uinput_config.get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::invalid());
+        opts.uinput_config.trigger_as_zaxis();
         break;
 
       case OPTION_AUTOFIRE:
@@ -905,6 +882,32 @@ void
 CommandLineParser::set_axis_sensitivity(const std::string& name, const std::string& value)
 {
   m_options->axis_sensitivity_map.push_back(AxisSensitivityMapping::from_string(name, value));
+}
+
+void
+CommandLineParser::read_config_file(Options* opts, const std::string& filename)
+{
+  std::cout << "CommandLineParser::read_config_file: " << filename << std::endl;
+  std::ifstream in(filename.c_str());
+  if (!in)
+  {
+    std::ostringstream str;
+    str << "Couldn't open " << filename;
+    throw std::runtime_error(str.str());
+  }
+  else
+  {
+    INISchemaBuilder builder(m_ini);
+    INIParser parser(in, builder, filename);
+    parser.run();
+  }
+}
+
+void
+CommandLineParser::read_alt_config_file(Options* opts, const std::string& filename)
+{
+  opts->uinput_config.add_input_mapping();
+  read_config_file(opts, filename);
 }
 
 /* EOF */

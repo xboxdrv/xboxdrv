@@ -50,6 +50,9 @@ public:
   INISchemaSection& operator()(const std::string& name, float* value);
   INISchemaSection& operator()(const std::string& name, std::string* value);
   INISchemaSection& operator()(const std::string& name, boost::function<void (const std::string&)> callback);
+  INISchemaSection& operator()(const std::string& name, 
+                               boost::function<void ()> true_callback,
+                               boost::function<void ()> false_callback);
 
   INIPairSchema* get(const std::string& name) const;
 

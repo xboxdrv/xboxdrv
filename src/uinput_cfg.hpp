@@ -62,6 +62,12 @@ public:
   /** Sets a button/axis mapping that is equal to the xpad kernel driver */
   void mimic_xpad();
   void set_defaults();
+
+  void trigger_as_button();
+  void trigger_as_zaxis();
+
+  void dpad_as_button();
+  void dpad_only();
 };
 
 #endif

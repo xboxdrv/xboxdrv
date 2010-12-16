@@ -19,7 +19,53 @@
 #include "ini_schema.hpp"
 
 #include <sstream>
+
+class INIPairSchemaBoolCallback : public INIPairSchema
+{
+private:
+  boost::function<void ()> m_true_callback;
+  boost::function<void ()> m_false_callback;
+  
+public:
+  INIPairSchemaBoolCallback(boost::function<void ()> true_callback,
+                            boost::function<void ()> false_callback) :
+    m_true_callback(true_callback),
+    m_false_callback(false_callback) 
+  {}
 
+  void call(const std::string& value)
+  {
+    bool v = false;
+    if (value == "yes" || value == "true" || value == "1")
+    {
+      v = true;
+    }
+    else if (value == "no" || value == "false" || value == "0")
+    {
+      v = false;
+    }
+    else
+    {
+      throw std::runtime_error("unable to convert '" + value + "' to bool");
+    }
+
+    if (v)
+    {
+      if (m_true_callback) m_true_callback();
+    }
+    else
+    {
+      if (m_false_callback) m_false_callback();
+    }
+  }
+
+  std::string str() const 
+  {
+    // FIXME: implement me
+    return "<not implemented>";
+  }
+};
+
 class INIPairSchemaBool : public INIPairSchema
 {
 private:
@@ -192,6 +238,15 @@ INISchemaSection::operator()(const std::string& name, std::string* value)
 {
   add(name, new INIPairSchemaString(value));
   return *this;
+}
+
+INISchemaSection&
+INISchemaSection::operator()(const std::string& name, 
+                             boost::function<void ()> true_callback,
+                             boost::function<void ()> false_callback)
+{
+  add(name, new INIPairSchemaBoolCallback(true_callback, false_callback));
+  return *this;  
 }
 
 INISchemaSection& 
