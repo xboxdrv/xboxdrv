@@ -18,6 +18,7 @@
 
 #include "evdev_controller.hpp"
 
+#include <boost/format.hpp>
 #include <linux/input.h>
 #include <stdexcept>
 #include <string.h>
@@ -96,7 +97,8 @@ EvdevController::EvdevController(const std::string& filename,
       {
         struct input_absinfo absinfo;
         ioctl(m_fd, EVIOCGABS(i), &absinfo);
-        std::cout << "Abs: " << abs2str(i) << " min: " << absinfo.minimum << " max: " << absinfo.maximum << std::endl;
+        
+        std::cout << boost::format("abs: %-20s min: %6d max: %6d") % abs2str(i) % absinfo.minimum % absinfo.maximum << std::endl;
         m_absinfo[i] = absinfo;
         //abs2idx[i] = abs_port_out.size();
         //abs_port_out.push_back(new AbsPortOut("EvdevDriver:abs", absinfo.minimum, absinfo.maximum));
@@ -107,7 +109,7 @@ EvdevController::EvdevController(const std::string& filename,
     {
       if (test_bit(i, rel_bit))
       {
-        std::cout << "Rel: " << rel2str(i) << std::endl;
+        std::cout << "rel: " << rel2str(i) << std::endl;
         //rel2idx[i] = rel_port_out.size();
         //rel_port_out.push_back(new RelPortOut("EvdevDriver:rel"));
       }
@@ -117,7 +119,7 @@ EvdevController::EvdevController(const std::string& filename,
     {
       if (test_bit(i, key_bit))
       {
-        std::cout << "Key: " << key2str(i) << std::endl;
+        std::cout << "key: " << key2str(i) << std::endl;
         //key2idx[i] = btn_port_out.size();
         //btn_port_out.push_back(new BtnPortOut("EvdevDriver:btn"));
       }
