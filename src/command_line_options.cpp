@@ -126,7 +126,7 @@ CommandLineParser::init_argp()
     .add_option(OPTION_LIST_SUPPORTED_DEVICES_XPAD, 0, "list-supported-devices-xpad", "", "list supported devices in xpad.c style")
     .add_option(OPTION_TEST_RUMBLE,  'R', "test-rumble", "", "map rumbling to LT and RT (for testing only)")
     .add_option(OPTION_NO_UINPUT,     0,  "no-uinput",   "", "do not try to start uinput event dispatching")
-    .add_option(OPTION_NO_EXTRA_DEVICES, 0,  "no-extra-devices",  "", "Do not create keyboard and mouse devices, just use a single device")
+    .add_option(OPTION_NO_EXTRA_DEVICES, 0,  "no-extra-devices",  "", "Do not create separate virtual keyboard and mouse devices, just use a single virtual device")
     .add_option(OPTION_MIMIC_XPAD,    0,  "mimic-xpad",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver")
     .add_option(OPTION_DAEMON,       'D', "daemon",      "", "run as daemon")
     .add_option(OPTION_CONFIG,       'c', "config",      "FILE", "read configuration from FILE")
@@ -224,7 +224,6 @@ CommandLineParser::init_ini(Options* opts)
     ("dpad-as-button", boost::bind(&uInputCfg::dpad_as_button, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ("dpad-only", boost::bind(&uInputCfg::dpad_only, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ("force-feedback", &opts->uinput_config.force_feedback)
-    ("extra-devices", &opts->uinput_config.extra_devices)
     ("mimic-xpad", boost::bind(&uInputCfg::mimic_xpad, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ;
 
@@ -437,10 +436,6 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_MIMIC_XPAD:
         opts.uinput_config.mimic_xpad();
-        break;
-
-      case OPTION_NO_EXTRA_DEVICES:
-        opts.uinput_config.extra_devices = false;
         break;
 
       case OPTION_TYPE:

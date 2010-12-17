@@ -33,7 +33,6 @@ public:
   std::string device_name;
 
   bool force_feedback;
-  bool extra_devices;
   XboxButton config_toggle_button; 
 
 private:

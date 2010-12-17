@@ -24,7 +24,6 @@
 uInputCfg::uInputCfg() :
   device_name("Xbox Gamepad (userspace driver)"),
   force_feedback(false),
-  extra_devices(true),
   config_toggle_button(XBOX_BTN_UNKNOWN),
   map(),
   current_input_map(0)
@@ -78,8 +77,6 @@ void
 uInputCfg::mimic_xpad()
 {
   device_name = "Microsoft X-Box 360 pad";
-
-  extra_devices = false;
 
   get_btn_map().bind(XBOX_BTN_START, ButtonEvent::create_key(BTN_START));
   get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEvent::create_key(BTN_MODE));
