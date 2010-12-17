@@ -213,7 +213,7 @@ CommandLineParser::init_ini(Options* opts)
     ("square-axis", &opts->square_axis)
     ("four-way-restrictor", &opts->four_way_restrictor)
     ("dpad-rotation", &opts->dpad_rotation)
-    ("evdev-device", &opts->evdev_device)
+    ("evdev", &opts->evdev_device)
     ("config", boost::bind(&CommandLineParser::read_config_file, this, opts, _1))
     ("alt-config", boost::bind(&CommandLineParser::read_alt_config_file, this, opts, _1))
 
