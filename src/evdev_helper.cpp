@@ -143,12 +143,12 @@ void str2event(const std::string& name, int& type, int& code)
   else if (name.compare(0, 3, "REL") == 0)
   {
     type = EV_REL;
-    code = evdev_rel_names[name];
+    code = str2rel(name);
   }
   else if (name.compare(0, 3, "ABS") == 0)
   {
     type = EV_ABS;
-    code = evdev_abs_names[name];
+    code = str2abs(name);
   }
   else if (name.compare(0, 2, "XK") == 0)
   {
@@ -164,7 +164,7 @@ void str2event(const std::string& name, int& type, int& code)
            name.compare(0, 3, "BTN") == 0)
   {
     type = EV_KEY;
-    code = evdev_key_names[name];
+    code = str2key(name);
   }
   else
   {
@@ -274,17 +274,44 @@ UIEvent str2abs_event(const std::string& str)
 
 std::string key2str(int v)
 {
-  return evdev_key_names[v];
+  try 
+  {
+    return evdev_key_names[v];
+  } 
+  catch(const std::exception& err) 
+  {
+    std::ostringstream str;
+    str << "KEY_#" << v;
+    return str.str();
+  }
 }
 
 std::string abs2str(int v)
 {
-  return evdev_abs_names[v];
+  try 
+  {
+    return evdev_abs_names[v];
+  } 
+  catch(const std::exception& err) 
+  {
+    std::ostringstream str;
+    str << "ABS_#" << v;
+    return str.str();    
+  }
 }
 
 std::string rel2str(int v)
 {
-  return evdev_rel_names[v];
+  try 
+  {
+    return evdev_rel_names[v];
+  } 
+  catch(const std::exception& err) 
+  {
+    std::ostringstream str;
+    str << "REL_#" << v;
+    return str.str();
+  }
 }
 
 /* EOF */
