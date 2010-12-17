@@ -12,29 +12,16 @@ git archive --format=tar --prefix="xboxdrv-linux-${VERSION}/" ${TAG} | bzip2 -c 
 
 git push --tags
 
-Stuff to do before 0.6.0 release:
+Stuff to do before 0.6.1 release:
 =================================
+
+* add extra checks to make sure the evdev buttons and axis given exist on the current device
 
 * add support for Xbox1 analog face button
 
 * support for Playstation button names maybe? cross, triangle, circle, square, R3, L3, ...?
 
-* add documentation to shifted axis
-
-* write documentation for --ui-new
-
-* --ui-new must reset events to neutral when switching input mapping
-
 * unifiy guitar mappings
-
-* gives weird not helpful error message: --ui-axismap x1=ABS_X2
-
-* output information for evdev must output KEY_#342 instead of just 342
-
-* Add: --evdev-absmap ABS_X2+=RT,-ABS_X2+=LT to allow mapping of
-  half-axes (syntax is inconsistent with axis inverting)
-
-  - write man page entry
 
 * allow separate deadzone for each axis
 
@@ -50,8 +37,6 @@ Stuff to do before 0.6.0 release:
 
   --evdev-no-grab
 
-* allow binding of scripts to a button
-
 * --ui-axismap LT=KEY_A:KEY_B:1 
 
 Here KEY_B is the key you want to send and KEY_A is a random other key
@@ -60,27 +45,9 @@ cause some trouble with automatic key repeat for some reason. Note
 that you must not combine this with --trigger-as-zaxis as that will
 disable LT and RT
 
-* axismap doesn't hamonize with axismap:
-
-  --ui-axismap LT=KEY_A:KEY_A:1
+* allow binding of scripts to a button
 
 * invert y axis on --evdev
-
-* add Playstation3 controller config to examples
-
- ./xboxdrv  \
-  --evdev /dev/input/event6 \
-  --evdev-absmap ABS_X=x1,ABS_Y=y1 \
-  --evdev-absmap ABS_Z=x2,ABS_RZ=y2 \
-  --evdev-absmap ABS_#48=lt,ABS_#49=rt \
-  --evdev-keymap BTN_THUMB=tl,BTN_THUMB2=tr \
-  --evdev-keymap BTN_BASE5=lb,BTN_BASE6=rb  \
-  --evdev-keymap KEY_#302=a,KEY_#301=b,BTN_DEAD=x,KEY_#300=y \
-  --evdev-keymap BTN_TRIGGER=back,KEY_#720=guide,BTN_TOP=start \
-  --evdev-keymap BTN_TOP2=du,BTN_PINKIE=dr,BTN_BASE=dd,BTN_BASE2=dl
-
-* review error handling on missing enums in: src/enum_box.hpp, revert
-  last change and solve the issue in str2key/key2str
 
 * allow --type to work even when --device-by-id is not given
 
@@ -92,10 +59,6 @@ disable LT and RT
 
 scale_deadzone(int16_t value, const int deadzone)
 scale_trigger_deadzone(uint8_t value, int deadzone)
-
-* documentation on keyboard combinations for axis seems lacking
-
-* ini support
 
 * endpoints can be taken directly from the usb configuration, thus
   avoiding issues with nummeric endpoints
@@ -109,8 +72,6 @@ old ones: 1.10
 better way then to check for endpoints maybe
 
 * 045e:028f is the play&charge kit, give an error message when somebody tries to use that
-
-* axis-min/max range must be transmitted to AxisEvent (maybe normalize to float)
 
 * match by protocol not, just vendor/product, from xpad.c:
 
@@ -128,11 +89,11 @@ better way then to check for endpoints maybe
         { XPAD_XBOX360_VENDOR_PROTOCOL(vend,1) }, \
         { XPAD_XBOX360_VENDOR_PROTOCOL(vend,129) }
 
+* --ui-new must reset events to neutral when switching input mapping (done, but a hack)
 
-Docu
-====
+* --ui-axismap doesn't work when same key name is given twice, either give warning or fix the issue:
 
-* docu on how to write a wrapper script needs to be moved to xboxdrv manpage
+  --ui-axismap LT=KEY_A:KEY_A:1
 
 Packaging
 =========
@@ -147,10 +108,7 @@ Cleanup
 Feature
 =======
 
-* --extra_devices is broken (no longer implemented and somewhat tricky to reimplement)
-
-* add --list-keys --list-x11-keys --list-axis --list-rel etc.
-
+* add --list-keys --list-x11-keys --list-abs --list-rel --list-button --list-axis etc.
 
 * figure out a way to make userspace force feedback driver not become dead processes
 
@@ -159,6 +117,37 @@ Feature
   mail from Matthew G <matt@remort.org>) (maybe relative axis can help?)
 
 * test TR:Anniversary with max effect 16
+
+Stuff to do before 0.6.0 release:
+=================================
+
+[man page]
+* add documentation to shifted axis
+
+* write man page entry for: --evdev-absmap ABS_X2+=RT,-ABS_X2+=LT to allow mapping of
+  half-axes (syntax is inconsistent with axis inverting)
+
+* write documentation for --ui-new and --alt-config
+
+* documentation on keyboard combinations for axis seems lacking
+
+* docu on how to write a wrapper script needs to be moved to xboxdrv manpage
+
+[polish]
+* add Playstation3 controller config to examples, convert to ini (done)
+  needs new config for bluetooth mode
+
+ ./xboxdrv  \
+  --evdev /dev/input/event6 \
+  --evdev-absmap ABS_X=x1,ABS_Y=y1 \
+  --evdev-absmap ABS_Z=x2,ABS_RZ=y2 \
+  --evdev-absmap ABS_#48=lt,ABS_#49=rt \
+  --evdev-keymap BTN_THUMB=tl,BTN_THUMB2=tr \
+  --evdev-keymap BTN_BASE5=lb,BTN_BASE6=rb  \
+  --evdev-keymap KEY_#302=a,KEY_#301=b,BTN_DEAD=x,KEY_#300=y \
+  --evdev-keymap BTN_TRIGGER=back,KEY_#720=guide,BTN_TOP=start \
+  --evdev-keymap BTN_TOP2=du,BTN_PINKIE=dr,BTN_BASE=dd,BTN_BASE2=dl
+
 
 fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
 
