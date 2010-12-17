@@ -53,7 +53,7 @@ public:
     if (i == m_string2enum.end())
     {
       std::ostringstream out;
-      out << "Couldn't convert '" << str << "' to enum " << m_name << std::endl;
+      out << "couldn't convert '" << str << "' to enum, not a member of " << m_name << std::endl;
       throw std::runtime_error(out.str());
     }
     else
@@ -67,7 +67,7 @@ public:
     if (i == m_enum2string.end())
     {
       std::ostringstream out;
-      out << "Couldn't convert '" << v << "' to string" << std::endl;
+      out << "couldn't convert '" << v << "' to string, not a member of " << m_name << std::endl;
       throw std::runtime_error(out.str());
     }
     else
