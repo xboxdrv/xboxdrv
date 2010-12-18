@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Example configuration for the Playstation 3 controller
+#
+# Note this only works when connected with USB, when using Bluetooth a
+# different configuration is required. 
+
+./xboxdrv  \
+  --evdev /dev/input/by-id/usb-Sony_PLAYSTATION_R_3_Controller-event-joystick \
+  \
+  --evdev-absmap ABS_X=x1,ABS_Y=y1 \
+  --evdev-absmap ABS_Z=x2,ABS_RZ=y2 \
+  --evdev-absmap ABS_#48=lt,ABS_#49=rt \
+  \
+  --evdev-keymap BTN_THUMB=tl,BTN_THUMB2=tr \
+  --evdev-keymap BTN_BASE5=lb,BTN_BASE6=rb  \
+  --evdev-keymap KEY_#302=a,KEY_#301=b,BTN_DEAD=x,KEY_#300=y \
+  --evdev-keymap BTN_TRIGGER=back,KEY_#720=guide,BTN_TOP=start \
+  --evdev-keymap BTN_TOP2=du,BTN_PINKIE=dr,BTN_BASE=dd,BTN_BASE2=dl \
+  \
+  --axismap -y1=y1,-y2=y2 \
+  "$@"
+
+# EOF #
