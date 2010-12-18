@@ -129,8 +129,6 @@ Stuff to do before 0.6.0 release:
 
 * write documentation for --ui-new and --alt-config
 
-* documentation on keyboard combinations for axis seems lacking
-
 [polish]
 
 * allow both ';' and '#' as comment character, compatibilty with

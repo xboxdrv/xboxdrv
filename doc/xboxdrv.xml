@@ -712,10 +712,11 @@ DEVICEID     = NUMBER ;]]></programlisting>
         <varlistentry>
           <term><option>--ui-axismap</option> <replaceable class="parameter">UIAXISSPEC,...</replaceable></term>
           <listitem>
-            <programlisting><![CDATA[UIAXISSPEC = XBOXAXIS "=" ( RELSPEC | BTNSPEC | ABSSPEC ) ;
+            <programlisting><![CDATA[UIAXISSPEC = [ XBOXBTN "+" ] XBOXAXIS "=" ( RELSPEC | BTNSPEC | ABSSPEC ) ;
 BTNSPEC    = "KEY_" NAME ":" "KEY_" NAME ":" THRESHOLD ;
 RELSPEC    = "REL_" NAME ":" VALUE ":" REPEAT ;
 ABSSPEC    = "ABS_" NAME ;
+XBOXBTN    = "a" | "b" | "x" | "y" | "start" | "back" | "guide" | "lb" | "rb" | ...
 XBOXAXIS   = "x1" | "y1" | "x2" | "y2" | "z" | "lt" | "rt" | "dpad_x" | "dpad_y" ;
 VALUE      = NUMBER ;
 REPEAT     = NUMBER ;
@@ -746,6 +747,16 @@ NAME       = STRING ;]]></programlisting>
             </para>
             <para>
               <replaceable class="parameter">THRESHOLD</replaceable> gives the threshold that triggers the sending of an event
+            </para>
+
+            <para>
+              Just like <option>--ui-buttonmap</option>, you can
+              also use shift keys in place of the XBOXAXIS:
+            </para>
+            <programlisting>$ xboxdrv --ui-axismap X1=ABS_X,LB+X1=ABS_RX</programlisting>
+            <para>
+              This allows you to send ABS_X events normally and ABS_RX
+              events when the LB button is held down.
             </para>
           </listitem>
         </varlistentry>

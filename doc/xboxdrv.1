@@ -561,10 +561,11 @@ keyboard that xboxdrv creates.
 .TP 
 \*(T<\fB\-\-ui\-axismap\fR\*(T> \fIUIAXISSPEC,...\fR
 .nf
-\*(T<UIAXISSPEC = XBOXAXIS "=" ( RELSPEC | BTNSPEC | ABSSPEC ) ;
+\*(T<UIAXISSPEC = [ XBOXBTN "+" ] XBOXAXIS "=" ( RELSPEC | BTNSPEC | ABSSPEC ) ;
 BTNSPEC    = "KEY_" NAME ":" "KEY_" NAME ":" THRESHOLD ;
 RELSPEC    = "REL_" NAME ":" VALUE ":" REPEAT ;
 ABSSPEC    = "ABS_" NAME ;
+XBOXBTN    = "a" | "b" | "x" | "y" | "start" | "back" | "guide" | "lb" | "rb" | ...
 XBOXAXIS   = "x1" | "y1" | "x2" | "y2" | "z" | "lt" | "rt" | "dpad_x" | "dpad_y" ;
 VALUE      = NUMBER ;
 REPEAT     = NUMBER ;
@@ -596,6 +597,16 @@ is fired again (default: 5)
 \fIKEY_DOWN\fR gives the keycode to be send when the axis is moved down
 
 \fITHRESHOLD\fR gives the threshold that triggers the sending of an event
+
+Just like \*(T<\fB\-\-ui\-buttonmap\fR\*(T>, you can
+also use shift keys in place of the XBOXAXIS:
+
+.nf
+\*(T<$ xboxdrv \-\-ui\-axismap X1=ABS_X,LB+X1=ABS_RX\*(T>
+.fi
+
+This allows you to send ABS_X events normally and ABS_RX
+events when the LB button is held down.
 .TP 
 \*(T<\fB\-\-ui\-clear\fR\*(T>
 Removes all uinput mappings and will leave the driver in
@@ -1288,8 +1299,8 @@ wait $XBOXPID
 # EOF #\*(T>
 .fi
 .PP
-That way you can individually configure every game and still not have
-to worry about launching xboxdrv manually.
+That way you can individually configure every game and not
+have to worry about launching xboxdrv manually.
 .SH BUGS
 X11 keysyms might not work correctly in \*(T<\fB\-\-ui\-buttonmap a=XK_Foobar\fR\*(T>
 when Foobar is mapped to multiple keycodes in the keymap. 
