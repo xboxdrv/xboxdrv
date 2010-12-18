@@ -126,15 +126,6 @@ Feature
 Stuff to do before 0.6.0 release:
 =================================
 
-[man page]
-* write man page entry for: --evdev-absmap ABS_X2+=RT,-ABS_X2+=LT to allow mapping of
-  half-axes (syntax is inconsistent with axis inverting)
-
-[polish]
-
-* allow both ';' and '#' as comment character, compatibilty with
-  KEY_#34 should work by requiring a space before a comment
-
 * add Playstation3 controller config to examples, convert to ini (done)
   needs new config for bluetooth mode
 

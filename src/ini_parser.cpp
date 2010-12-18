@@ -47,7 +47,7 @@ INIParser::run()
       m_builder.send_section(get_section());
       expect(']');
       whitespace();
-      if (accept(';'))
+      if (accept(';') || accept('#'))
         eat_rest_of_line();
       newline();
     }
@@ -55,7 +55,7 @@ INIParser::run()
     {
       // eat whitespace
     }
-    else if (accept(';'))
+    else if (accept(';') || accept('#'))
     {
       eat_rest_of_line();
       newline();
@@ -69,7 +69,7 @@ INIParser::run()
       whitespace();
       expect('=');
       whitespace();
-      if (accept(';'))
+      if (accept(';') || accept('#'))
       { // "foobar = ; comment here, value empty"
         eat_rest_of_line();
         newline();
@@ -87,7 +87,7 @@ INIParser::run()
         }
 
         whitespace();
-        if (accept(';'))
+        if (accept(';') || accept('#'))
           eat_rest_of_line();
         newline();
       }
