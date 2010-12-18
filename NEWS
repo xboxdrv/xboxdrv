@@ -1,24 +1,24 @@
-xboxdrv 0.6.0 - (??/Dec/2010)
+xboxdrv 0.6.0 - (18/Dec/2010)
 ==============================
 
 * support for reading from evdev, this allows the use of regular
-  regular PC joysticks or the Playstation 3 controller with xboxdrv,
+  regular PC joysticks or the Playstation 3 controllers with xboxdrv,
   useful if you need configurability or joy2key-like functionality,
   but don't have a Xbox360 gamepad
 * added KEY_#num, ABS_#num and REL_#num to allow refering to events by
   number instead of name
-* support for reading configuration from a config file
+* support for reading configuration from a INI configuration file
 * cleaned up uinput mapping, --dpad-as-button, --dpad-only, etc. are now
   simple mappings instead of special case hackery
 * --ui-axismap and --ui-buttonmap now work with all axis and button
-* Saitek Cyborg Rumble Pad support added
-* Gamestop Xbox 360 Controller support added
 * smooth deadzone handling without jumps 
 * added --detach-kernel-driver
 * automatically insert dummy events to make input device register as joystick
 * added ability to have multiple configs running at the same time with --ui-new
 * added shifting to --ui-axismap, allows sending of different events
   when a shift button is pressed
+* Saitek Cyborg Rumble Pad support added
+* Gamestop Xbox 360 Controller support added
 
 
 xboxdrv 0.5.0 - (26/May/2010)
