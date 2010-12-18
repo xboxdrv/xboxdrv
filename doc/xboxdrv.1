@@ -84,15 +84,69 @@ testing the rumble motors.
 \*(T<\fB\-\-no\-uinput\fR\*(T>
 Do not try to start uinput event dispatching, useful for debugging.
 .TP 
+\*(T<\fB\-\-config\fR\*(T> \fIFILE\fR
+Reads configuration information from \fIFILE\fR.
+Configurations from file are handling as if they would
+be command line options at the position
+of \*(T<\fB\-\-config\fR\*(T> \fIFILE\fR.
+
+The syntax
+of \fIFILE\fR is
+the familiar INI syntax used for many configuration
+files. Regular key/value pairs must go into the
+[xboxdrv] section. '#' and ';' can be used for commets.
+Key names have for most part the same name as command
+line options. Command line options that take a list of
+input mappings (--ui-buttonmap, --ui-axismap,
+--evdev-absmap, ...) can be split of into their own
+section for better readability.
+
+The \*(T<\fIexamples/\fR\*(T> directory contains
+some example configuration files.
+
+.nf
+\*(T<
+[xboxdrv]
+silent=true
+deadzone=6000
+dpad\-as\-button=true
+trigger\-as\-button=true
+
+[ui\-axismap]
+x2=REL_X:10
+y2=REL_Y:\-10
+x1=KEY_A:KEY_D
+y1=KEY_W:KEY_S
+
+[ui\-buttonmap]
+a=KEY_LEFTSHIFT
+b=BTN_C
+x=BTN_EXTRA
+y=KEY_C
+
+[ui\-buttonmap]
+lb=BTN_RIGHT
+rb=KEY_SPACE
+
+[ui\-buttonmap]
+lt=KEY_Z
+rt=BTN_LEFT
+
+[ui\-buttonmap]
+dl=KEY_4
+dr=KEY_2
+du=REL_WHEEL:\-1:150
+dd=REL_WHEEL:1:150
+
+[ui\-buttonmap]
+back=KEY_TAB
+start=KEY_ESC
+
+# EOF #\*(T>
+.fi
+.TP 
 \*(T<\fB\-\-mimic\-xpad\fR\*(T>
 Causes xboxdrv to use the same axis and button names as the xpad kernel driver.
-.TP 
-\*(T<\fB\-\-no\-extra\-devices\fR\*(T>
-Normally xboxdrv will create an extra device for
-keyboard emulation and mouse emulation when it detects a
-button mapping that requires that. If this option is
-set, it will not do that and instead dump all the
-buttons into the joystick device.
 .TP 
 \*(T<\fB\-D\fR\*(T>, \*(T<\fB\-\-daemon\fR\*(T>
 Run as daemon. In most situations this is not very
@@ -627,8 +681,8 @@ pressing the ui-toggle button (defaults to guide).
     \-\-mouse \e
   \-\-ui\-new 
     \-\-ui\-axismap X1=ABS_X,Y1=ABS_Y \e
-    \-\-ui\-buttonmap A=JS_0,B=JS_1
-\*(T>.fi
+    \-\-ui\-buttonmap A=JS_0,B=JS_1\*(T>
+.fi
 
 The above configuration would install mouse emulation as
 first configuration and a simple joystick emulation as

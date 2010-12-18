@@ -95,6 +95,11 @@ better way then to check for endpoints maybe
 
   --ui-axismap LT=KEY_A:KEY_A:1
 
+* in INI files allow:
+
+  [xboxdrv]
+  ui-buttonmap = A=BTN_A,B=BTN_B,...
+
 Packaging
 =========
 
