@@ -1264,6 +1264,32 @@ normal when rumble is disabled.
 .PP
 "Tomb Raider: Anniversary" running in Wine seems to work together with
 xboxdrv and rumble, but hasn't been intensivly tested.
+.SH "WRITING START-UP SCRIPTS FOR GAMES"
+When you want configurability and automatic launching, it is recomment
+that you write little startup scripts for your games, such as this:
+.PP
+.nf
+\*(T<#!/bin/sh
+
+# Start xboxdrv and remember its PID in the variable XBOXPID
+xboxdrv \-\-trigger\-as\-button \-s &amp;
+XBOXPID=$!
+
+# Give xboxdrv a second to startup and create the device
+sleep 1
+
+# Launch your favorite game
+your_favorite_game
+
+# Kill xboxdrv and wait for it to finish
+kill $XBOXPID
+wait $XBOXPID
+
+# EOF #\*(T>
+.fi
+.PP
+That way you can individually configure every game and still not have
+to worry about launching xboxdrv manually.
 .SH BUGS
 X11 keysyms might not work correctly in \*(T<\fB\-\-ui\-buttonmap a=XK_Foobar\fR\*(T>
 when Foobar is mapped to multiple keycodes in the keymap. 

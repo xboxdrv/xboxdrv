@@ -3,7 +3,7 @@
           "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
           <!ENTITY % xboxdrvstuff SYSTEM "xboxdrv.ent">
           %xboxdrvstuff;
-]>
+          ]>
 <refentry id="xboxdrv">
   <refentryinfo>
     <date>2010-05-05</date>
@@ -1622,6 +1622,33 @@ EndSection]]></programlisting>
 
     <para>"Tomb Raider: Anniversary" running in Wine seems to work together with
       xboxdrv and rumble, but hasn't been intensivly tested.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Writing Start-Up Scripts for Games</title>
+    <para>When you want configurability and automatic launching, it is recomment
+      that you write little startup scripts for your games, such as this:</para>
+
+    <programlisting><![CDATA[#!/bin/sh
+
+# Start xboxdrv and remember its PID in the variable XBOXPID
+xboxdrv --trigger-as-button -s &amp;
+XBOXPID=$!
+
+# Give xboxdrv a second to startup and create the device
+sleep 1
+
+# Launch your favorite game
+your_favorite_game
+
+# Kill xboxdrv and wait for it to finish
+kill $XBOXPID
+wait $XBOXPID
+
+# EOF #]]></programlisting>
+
+    <para>That way you can individually configure every game and not
+      have to worry about launching xboxdrv manually.</para>
   </refsect1>
 
   <refsect1>
