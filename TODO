@@ -122,12 +122,8 @@ Stuff to do before 0.6.0 release:
 =================================
 
 [man page]
-* add documentation to shifted axis
-
 * write man page entry for: --evdev-absmap ABS_X2+=RT,-ABS_X2+=LT to allow mapping of
   half-axes (syntax is inconsistent with axis inverting)
-
-* write documentation for --ui-new and --alt-config
 
 [polish]
 

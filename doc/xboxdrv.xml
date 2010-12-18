@@ -762,13 +762,64 @@ NAME       = STRING ;]]></programlisting>
         </varlistentry>
 
         <varlistentry>
+          <term><option>--alt-config</option> <replaceable class="parameter">FILE</replaceable></term>
+          <listitem>
+            <para>
+              A shortcut for writing <option>--ui-new</option> <option>--config</option> <replaceable class="parameter">FILE</replaceable>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>--ui-clear</option></term>
           <listitem>
             <para>
               Removes all uinput mappings and will leave the driver in
               a blank state and only map those things you added
               yourself.  If you only want to get rid of individual
-              buttons you can use the 'void' event:
+              buttons you can use the 'void' event.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--ui-new</option></term>
+          <listitem>
+            <para>
+              Allows the creation of an alternative uinput
+              configuration to which one can toggle at runtime by
+              pressing the ui-toggle button (defaults to guide).
+            </para>
+            <programlisting><![CDATA[$ xboxdrv \
+    --mouse \
+  --ui-new 
+    --ui-axismap X1=ABS_X,Y1=ABS_Y \
+    --ui-buttonmap A=JS_0,B=JS_1
+]]></programlisting>
+            <para>
+              The above configuration would install mouse emulation as
+              first configuration and a simple joystick emulation as
+              second configuration. Allowing toggling between mouse
+              emulation and joystick handling by pressing the guide
+              button.
+            </para>
+            <para>
+              Not that <option>--ui-new</option> is currently limited
+              to only configurations done
+              with <option>--ui-buttonmap</option>
+              and <option>--ui-axismap</option>, autofire, throttle
+              emulation, deadzones and all other things can currently
+              not be switched at runtime.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--ui-toggle</option> <replaceable class="parameter">XBOXBTN</replaceable></term>
+          <listitem>
+            <para>
+              Sets the button that will be used to toggle between
+              different uinput configurations.
             </para>
           </listitem>
         </varlistentry>
