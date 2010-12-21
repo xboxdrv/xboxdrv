@@ -765,7 +765,7 @@ CommandLineParser::set_ui_axismap(const std::string& name, const std::string& va
       event.set_axis_range(get_axis_min(axis),
                            get_axis_max(axis));
 
-      std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
+      //std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
 
       m_options->uinput_config.get_axis_map().bind(axis, event);
     }
@@ -784,7 +784,7 @@ CommandLineParser::set_ui_axismap(const std::string& name, const std::string& va
       event.set_axis_range(get_axis_min(axis),
                            get_axis_max(axis));
 
-      std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
+      //std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
 
       m_options->uinput_config.get_axis_map().bind(shift, axis, event);
     }
