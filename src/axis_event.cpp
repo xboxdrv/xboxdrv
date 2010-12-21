@@ -123,7 +123,7 @@ AxisEvent::from_string(const std::string& str)
       assert(!"AxisEvent::from_string(): should never be reached");
   }
 
-  std::cout << "AxisEvent::from_string():\n  in:  " << str << "\n  out: " << ev.str() << std::endl;
+  //std::cout << "AxisEvent::from_string():\n  in:  " << str << "\n  out: " << ev.str() << std::endl;
 
   return ev;
 }
