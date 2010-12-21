@@ -112,6 +112,7 @@ AxisEvent::from_string(const std::string& str)
 
     case EV_KEY:
       ev = key_from_string(str);
+      break;
 
     case -1:
       std::cout << "--------- invalid --------------" << std::endl;
