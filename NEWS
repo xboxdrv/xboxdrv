@@ -1,3 +1,10 @@
+xboxdrv 0.6.1 - (21/Dec/2010)
+==============================
+
+* fixed bug in axis to key mapping
+* removed debugging output
+
+
 xboxdrv 0.6.0 - (18/Dec/2010)
 ==============================
 
