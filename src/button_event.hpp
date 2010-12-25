@@ -48,8 +48,6 @@ public:
   void init(uInput& uinput) const;
   void send(uInput& uinput, bool value) const;
 
-  bool is_valid() const;
-
   std::string str() const;
 
 private:

@@ -459,13 +459,13 @@ uInput::send_button(XboxButton code, bool value)
         if (button_state[i])
         {
           const ButtonEventPtr& event = cfg.get_btn_map().lookup(code, static_cast<XboxButton>(i));
-          if (event->is_valid())
+          if (event)
           {
             for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
             {
               const ButtonEventPtr& event2 = cfg.get_btn_map().lookup(static_cast<XboxButton>(j),
                                                                    static_cast<XboxButton>(i));
-              if (event2->is_valid())
+              if (event2)
                 event2->send(*this, false);
             }
           }
@@ -478,7 +478,7 @@ uInput::send_button(XboxButton code, bool value)
         if (button_state[i]) // shift button is pressed
         {
           const ButtonEventPtr& event = cfg.get_btn_map().lookup(static_cast<XboxButton>(i), code);
-          if (event->is_valid())
+          if (event)
           {
             event->send(*this, value);
             // exit after the first successful event, so we don't send
@@ -490,7 +490,7 @@ uInput::send_button(XboxButton code, bool value)
 
       // Non shifted button events
       const ButtonEventPtr& event = cfg.get_btn_map().lookup(code);
-      if (event->is_valid())
+      if (event)
         event->send(*this, value);
     }
   }
@@ -630,7 +630,7 @@ uInput::add_button(XboxButton code)
     for(int i = 0; i < XBOX_BTN_MAX; ++i)
     {
       const ButtonEventPtr& event = cfg.get_btn_map(n).lookup(static_cast<XboxButton>(i), code);
-      if (event->is_valid())
+      if (event)
         event->init(*this);
     }
   }

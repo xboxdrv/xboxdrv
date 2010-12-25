@@ -152,8 +152,6 @@ ButtonEvent::ButtonEvent() :
 void
 ButtonEvent::init(uInput& uinput) const
 {
-  assert(is_valid());
-
   switch(type)
   {
     case EV_KEY:
@@ -182,8 +180,6 @@ ButtonEvent::init(uInput& uinput) const
 void
 ButtonEvent::send(uInput& uinput, bool value) const
 {
-  assert(is_valid());
-
   switch(type)
   {
     case EV_KEY:
@@ -212,12 +208,6 @@ ButtonEvent::send(uInput& uinput, bool value) const
       }
       break;
   }
-}
-
-bool
-ButtonEvent::is_valid() const
-{
-  return type != -1;
 }
 
 std::string
