@@ -641,11 +641,12 @@ start=KEY_ESC
         <varlistentry>
           <term><option>--ui-buttonmap</option> <replaceable class="parameter">UIBUTTONSPEC,...</replaceable></term>
           <listitem>
-            <programlisting><![CDATA[UIBUTTONSPEC = XBOXBUTTON [ "+" XBOXBUTTON ] "=" ( RELSPEC | BTNSPEC ) ;
+            <programlisting><![CDATA[UIBUTTONSPEC = XBOXBUTTON [ "+" XBOXBUTTON ] [ "^" FILTER ] ... "=" ( RELSPEC | BTNSPEC ) ;
 RELSPEC      = [ DEVICEID "-" ] "REL_" [ ":" [ VALUE ] [ ":" REPEAT ] ] ;
 BTNSPEC      = [ DEVICEID "-" ] ( ( "BTN_" NAME ) | ( "KEY_" NAME ) ) { "+" BTNSPEC } ;
 XBOXBUTTON   = "a" | "b" | "x" | "y" | "lb" | "rb" | "lt" | "rt" | 
                "tl" | "tr" | "start" | "select" | "back" | "guide" | "black" | "white" ;
+FILTER       = "toggle" | "invert" ;
 NAME         = STRING ;
 VALUE        = NUMBER ;
 REPEAT       = NUMBER ;
@@ -758,6 +759,23 @@ DEVICEID     = NUMBER ;]]></programlisting>
               See the section KEYBOARD EMULATION below on how to
               resolve issues with Xorg not detecting the virtual
               keyboard that xboxdrv creates.
+            </para>
+            <para>
+              You can also apply filters to button events:
+            </para>
+            <programlisting><![CDATA[xboxdrv -s \
+  --ui-buttonmap A^toggle=JS_0]]></programlisting>
+            <para>
+              The toggle filter will turn the button into a toggle
+              button, clicking the button will set it to pressed state
+              and pressing it again will unpress it. Useful for games
+              where you might want to permanently run or duck without
+              holding the button pressed.
+            </para>
+            <para>
+              The invert filter will keep the button in pressed state
+              when it is not pressed and in unpressed state when it is
+              pressed.
             </para>
           </listitem>
         </varlistentry>

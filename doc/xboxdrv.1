@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 2010-05-05 0.6.0 "User Commands"
+.TH "xboxdrv " 1 2010-05-05 0.6.2 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -94,7 +94,7 @@ The syntax
 of \fIFILE\fR is
 the familiar INI syntax used for many configuration
 files. Regular key/value pairs must go into the
-[xboxdrv] section. '#' and ';' can be used for commets.
+[xboxdrv] section. '#' and ';' can be used for comments.
 Key names have for most part the same name as command
 line options. Command line options that take a list of
 input mappings (--ui-buttonmap, --ui-axismap,
@@ -498,11 +498,12 @@ their range is different.
 .TP 
 \*(T<\fB\-\-ui\-buttonmap\fR\*(T> \fIUIBUTTONSPEC,...\fR
 .nf
-\*(T<UIBUTTONSPEC = XBOXBUTTON [ "+" XBOXBUTTON ] "=" ( RELSPEC | BTNSPEC ) ;
+\*(T<UIBUTTONSPEC = XBOXBUTTON [ "+" XBOXBUTTON ] [ "^" FILTER ] ... "=" ( RELSPEC | BTNSPEC ) ;
 RELSPEC      = [ DEVICEID "\-" ] "REL_" [ ":" [ VALUE ] [ ":" REPEAT ] ] ;
 BTNSPEC      = [ DEVICEID "\-" ] ( ( "BTN_" NAME ) | ( "KEY_" NAME ) ) { "+" BTNSPEC } ;
 XBOXBUTTON   = "a" | "b" | "x" | "y" | "lb" | "rb" | "lt" | "rt" | 
                "tl" | "tr" | "start" | "select" | "back" | "guide" | "black" | "white" ;
+FILTER       = "toggle" | "invert" ;
 NAME         = STRING ;
 VALUE        = NUMBER ;
 REPEAT       = NUMBER ;
@@ -612,6 +613,23 @@ controller.
 See the section KEYBOARD EMULATION below on how to
 resolve issues with Xorg not detecting the virtual
 keyboard that xboxdrv creates.
+
+You can also apply filters to button events:
+
+.nf
+\*(T<xboxdrv \-s \e
+  \-\-ui\-buttonmap A^toggle=JS_0\*(T>
+.fi
+
+The toggle filter will turn the button into a toggle
+button, clicking the button will set it to pressed state
+and pressing it again will unpress it. Useful for games
+where you might want to permanently run or duck without
+holding the button pressed.
+
+The invert filter will keep the button in pressed state
+when it is not pressed and in unpressed state when it is
+pressed.
 .TP 
 \*(T<\fB\-\-ui\-axismap\fR\*(T> \fIUIAXISSPEC,...\fR
 .nf
@@ -746,7 +764,7 @@ be reported as (1,1).
 .TP 
 \*(T<\fB\-\-four\-way\-restrictor\fR\*(T>
 The \*(T<\fB\-\-four\-way\-restrictor\fR\*(T> option allows to
-to limit the movement on both analogsticks to only four
+limit the movement on both analogsticks to only four
 directions (up, down, left, right), the diagonals (up/left,
 up/right, down/left, down/right) are filtered out from the
 output. This option is useful for games such as Tetris, that
