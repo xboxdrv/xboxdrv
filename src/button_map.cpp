@@ -95,4 +95,19 @@ ButtonMap::init(uInput& uinput) const
   }
 }
 
+void
+ButtonMap::update(uInput& uinput, int msec_delta)
+{
+  for(int shift_code = 0; shift_code < XBOX_BTN_MAX; ++shift_code)
+  {
+    for(int code = 0; code < XBOX_BTN_MAX; ++code)
+    {
+      if (btn_map[shift_code][code])
+      {
+        btn_map[shift_code][code]->update(uinput, msec_delta);
+      }
+    }
+  }  
+}
+
 /* EOF */

@@ -42,6 +42,7 @@ public:
 
   bool send(uInput& uinput, XboxButton code, bool value) const;
   bool send(uInput& uinput, XboxButton shift_code, XboxButton code, bool value) const;
+  void update(uInput& uinput, int msec_delta);
 
   void clear();
 };

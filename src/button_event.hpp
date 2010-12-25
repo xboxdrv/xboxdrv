@@ -49,7 +49,8 @@ protected:
 
 public: 
   virtual void init(uInput& uinput) const =0;
-  virtual void send(uInput& uinput, bool value) const =0;
+  virtual void send(uInput& uinput, bool value) =0;
+  virtual void update(uInput& uinput, int msec_delta) =0;
 
   void set_filters(const std::vector<ButtonFilterPtr>& filters);
 
@@ -69,15 +70,20 @@ public:
   KeyButtonEvent(int code);
 
   void init(uInput& uinput) const;
-  void send(uInput& uinput, bool value) const;
+  void send(uInput& uinput, bool value);
+  void update(uInput& uinput, int msec_delta);
 
   std::string str() const;
   
 private:
   static const int MAX_MODIFIER = 4;
 
+  bool m_state;
   // Array is terminated by !is_valid()
   UIEvent m_codes[MAX_MODIFIER+1];
+  UIEvent m_secondary_codes[MAX_MODIFIER+1];
+  int m_hold_threshold;
+  int m_hold_counter;
 };
 
 class AbsButtonEvent : public ButtonEvent
@@ -89,7 +95,8 @@ public:
   AbsButtonEvent(int code);
 
   void init(uInput& uinput) const;
-  void send(uInput& uinput, bool value) const;
+  void send(uInput& uinput, bool value);
+  void update(uInput& uinput, int msec_delta) {}
 
   std::string str() const;
 
@@ -107,12 +114,14 @@ public:
   RelButtonEvent(const UIEvent& code);
 
   void init(uInput& uinput) const;
-  void send(uInput& uinput, bool value) const;
+  void send(uInput& uinput, bool value);
+  void update(uInput& uinput, int msec_delta) {}
 
   std::string str() const;
 
 private:
   UIEvent m_code;
+
   int  m_value;
   int  m_repeat;
 };

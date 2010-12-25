@@ -78,6 +78,7 @@ public:
 
   void send_key(int device_id, int ev_code, bool value);
   void send_rel_repetitive(const UIEvent& code, int value, int repeat_interval);
+  void sync();
 
   LinuxUinput* get_uinput(int device_id) const;
   LinuxUinput* get_force_feedback_uinput() const;

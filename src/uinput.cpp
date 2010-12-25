@@ -320,6 +320,8 @@ uInput::send(Xbox360GuitarMsg& msg)
 void
 uInput::update(int msec_delta)
 {
+  cfg.get_btn_map().update(*this, msec_delta);
+
   for(std::map<UIEvent, RelRepeat>::iterator i = rel_repeat_lst.begin(); i != rel_repeat_lst.end(); ++i)
   {
     i->second.time_count += msec_delta;
@@ -435,6 +437,15 @@ uInput::send_key(int device_id, int ev_code, bool value)
   else
   {
     get_uinput(device_id)->send(EV_KEY, ev_code, value);
+  }
+}
+
+void
+uInput::sync()
+{
+  for(uInputDevs::iterator i = uinput_devs.begin(); i != uinput_devs.end(); ++i)
+  {
+    i->second->sync();
   }
 }
 

@@ -1,3 +1,12 @@
+xboxdrv 0.6.2 - (??/???/????)
+==============================
+
+* added ability to do toggle buttons
+* added ability to invert buttons
+* added ability to send different events depending on how long a
+  button was pressed
+
+
 xboxdrv 0.6.1 - (21/Dec/2010)
 ==============================
 
