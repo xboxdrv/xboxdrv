@@ -30,12 +30,10 @@ class uInput;
 class ButtonEvent;
 
 typedef boost::shared_ptr<ButtonEvent> ButtonEventPtr;
-
+
 class ButtonEvent
 {
 public:
-  static const int MAX_MODIFIER = 4;
-
   static ButtonEventPtr invalid();
   static ButtonEventPtr create_key(int code);
   static ButtonEventPtr create_key();
@@ -43,42 +41,82 @@ public:
   static ButtonEventPtr create_rel(int code);
   static ButtonEventPtr from_string(const std::string& str);
 
-private:
+protected:
   ButtonEvent();
+  virtual ~ButtonEvent() {}
+
+  bool apply_filter(bool value) const;
 
 public: 
+  virtual void init(uInput& uinput) const =0;
+  virtual void send(uInput& uinput, bool value) const =0;
+
+  void set_filters(const std::vector<ButtonFilterPtr>& filters);
+
+  virtual std::string str() const =0;
+
+private:
+  std::vector<ButtonFilterPtr> m_filters;
+};
+
+class KeyButtonEvent : public ButtonEvent
+{
+public:
+  static ButtonEventPtr from_string(const std::string& str);
+
+public:
+  KeyButtonEvent();
+  KeyButtonEvent(int code);
+
   void init(uInput& uinput) const;
   void send(uInput& uinput, bool value) const;
 
-  void set_filters(const std::vector<ButtonFilterPtr>& filters);
+  std::string str() const;
+  
+private:
+  static const int MAX_MODIFIER = 4;
+
+  // Array is terminated by !is_valid()
+  UIEvent m_codes[MAX_MODIFIER+1];
+};
+
+class AbsButtonEvent : public ButtonEvent
+{
+public:
+  static ButtonEventPtr from_string(const std::string& str);
+
+public:
+  AbsButtonEvent(int code);
+
+  void init(uInput& uinput) const;
+  void send(uInput& uinput, bool value) const;
 
   std::string str() const;
 
 private:
-  /** EV_KEY, EV_ABS, EV_REL */
-  int m_type;
-
-  union {
-    struct {
-      UIEvent code;
-      int  value;
-      int  repeat;
-    } rel;
-
-    struct {
-      UIEvent code;
-      int value;
-    } abs;
-
-    struct {
-      // Array is terminated by !is_valid()
-      UIEvent codes[MAX_MODIFIER+1];
-    } key;
-  };
-
-  std::vector<ButtonFilterPtr> m_filters;
+  UIEvent m_code;
+  int m_value;
 };
+
+class RelButtonEvent : public ButtonEvent
+{
+public:
+  static ButtonEventPtr from_string(const std::string& str);
 
+public:
+  RelButtonEvent(const UIEvent& code);
+
+  void init(uInput& uinput) const;
+  void send(uInput& uinput, bool value) const;
+
+  std::string str() const;
+
+private:
+  UIEvent m_code;
+  int  m_value;
+  int  m_repeat;
+};
+
 #endif
 
 /* EOF */

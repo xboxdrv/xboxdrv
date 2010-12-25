@@ -68,7 +68,7 @@ void
 uInputCfg::next_input_mapping()
 {
   current_input_map += 1;
-  if (current_input_map >= (int)map.size())
+  if (current_input_map >= static_cast<int>(map.size()))
     current_input_map = 0;
   std::cout << "uInputCfg::next_input_mapping(): " << current_input_map << std::endl;
 }

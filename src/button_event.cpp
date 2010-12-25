@@ -23,11 +23,12 @@
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include "helper.hpp"
 #include "button_event.hpp"
 #include "evdev_helper.hpp"
 #include "uinput.hpp"
 #include "uinput_deviceid.hpp"
-
+
 ButtonEventPtr
 ButtonEvent::invalid()
 {
@@ -37,182 +38,62 @@ ButtonEvent::invalid()
 ButtonEventPtr
 ButtonEvent::create_abs(int code)
 {
-  ButtonEventPtr ev(new ButtonEvent);
-  ev->m_type  = EV_ABS;
-  ev->abs.code  = UIEvent::create(DEVICEID_AUTO, EV_ABS, code);
-  ev->abs.value = 1;
-  return ev;
+  return ButtonEventPtr(new AbsButtonEvent(code));
 }
 
 ButtonEventPtr
 ButtonEvent::create_key(int code)
 {
-  ButtonEventPtr ev(new ButtonEvent);
-  ev->m_type = EV_KEY;
-  std::fill_n(ev->key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
-  ev->key.codes[0] = UIEvent::create(DEVICEID_AUTO, EV_KEY, code);
-  return ev;
+  return ButtonEventPtr(new KeyButtonEvent(code));
 }
 
 ButtonEventPtr
 ButtonEvent::create_key()
 {
-  ButtonEventPtr ev(new ButtonEvent);
-  ev->m_type = EV_KEY;
-  std::fill_n(ev->key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
-  return ev;
+  return ButtonEventPtr(new KeyButtonEvent);
 }
 
 ButtonEventPtr
 ButtonEvent::create_rel(int code)
 {
-  ButtonEventPtr ev(new ButtonEvent);
-  ev->m_type       = EV_REL;
-  ev->rel.code   = UIEvent::create(DEVICEID_AUTO, EV_REL, code);
-  ev->rel.value  = 3;
-  ev->rel.repeat = 100;
-  return ev;
+  return ButtonEventPtr(new RelButtonEvent(UIEvent::create(DEVICEID_AUTO, EV_REL, code)));
 }
 
 ButtonEventPtr
 ButtonEvent::from_string(const std::string& str)
 {
-  ButtonEventPtr ev;
+  std::string::size_type p = str.find(':');
+  const std::string& token = str.substr(0, p);
 
-  int j = 0;
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+  if (token == "abs")
   {
-    if (j == 0)
+    return AbsButtonEvent::from_string(str.substr(p+1));
+  }
+  else if (token == "rel")
+  {
+    return RelButtonEvent::from_string(str.substr(p+1));
+  }
+  else if (token == "key")
+  {
+    return KeyButtonEvent::from_string(str.substr(p+1));
+  }
+  else
+  {
+    // try to guess the type of event on the type of the first event code
+    switch(get_event_type(token))
     {
-      switch(get_event_type(*i))
-      {
-        case EV_KEY: {
-          ev = ButtonEvent::create_key();
-
-          boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
-          tokenizer ev_tokens(*i, plus_sep);
-          int k = 0;
-          for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
-          {
-            ev->key.codes[k] = str2key_event(*m);
-          }
-          break;
-        }
-
-        case EV_REL:
-          ev = ButtonEvent::create_rel(-1); // FIXME: Hack
-          ev->rel.code = str2rel_event(*i);
-          break;
-
-        case EV_ABS:
-          assert(!"Not implemented");
-          ev = ButtonEvent::create_abs(-1);
-          // FIXME: Need magic to detect min/max of the axis
-          break;
-
-        case -1: // void/none
-          ev = ButtonEvent::invalid();
-          break;
-
-        default:
-          assert(!"Unknown type");
-      }
-    }
-    else
-    {
-      switch (ev->m_type)
-      {
-        case EV_REL:
-          switch(j) {
-            case 1: ev->rel.value  = boost::lexical_cast<int>(*i); break;
-            case 2: ev->rel.repeat = boost::lexical_cast<int>(*i); break;
-          }
-          break;
-
-        case EV_ABS:
-          break;
-      }
+      case EV_KEY: return KeyButtonEvent::from_string(str);
+      case EV_REL: return RelButtonEvent::from_string(str);
+      case EV_ABS: return AbsButtonEvent::from_string(str);
+      case     -1: return ButtonEvent::invalid();
+      default: assert(!"unknown type");
     }
   }
-
-  if (false)
-    std::cout << "ButtonEvent::from_string():\n  in:  " << str << "\n  out: " << ev->str() << std::endl;
-
-  return ev;
 }
-
+
 ButtonEvent::ButtonEvent() :
-  m_type(-1),
   m_filters()
 {
-}
-
-void
-ButtonEvent::init(uInput& uinput) const
-{
-  switch(m_type)
-  {
-    case EV_KEY:
-      for(int i = 0; key.codes[i].is_valid(); ++i)
-      {
-        uinput.create_uinput_device(key.codes[i].device_id);
-        uinput.add_key(key.codes[i].device_id, key.codes[i].code);
-      }
-      break;
-
-    case EV_REL:
-      uinput.create_uinput_device(rel.code.device_id);
-      uinput.get_uinput(rel.code.device_id)->add_rel(rel.code.code);
-      break;
-
-    case EV_ABS:
-      uinput.create_uinput_device(abs.code.device_id);
-      break;
-
-    default:
-      std::cout << "ButtonEvent::init(): invalid type: " << m_type << std::endl;
-      assert(!"ButtonEvent::init(): never reached");
-  }
-}
-
-void
-ButtonEvent::send(uInput& uinput, bool value) const
-{
-  for(std::vector<ButtonFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
-  {
-    value = (*i)->filter(value);
-  }
-
-  switch(m_type)
-  {
-    case EV_KEY:
-      for(int i = 0; key.codes[i].is_valid(); ++i)
-      {
-        uinput.send_key(key.codes[i].device_id, key.codes[i].code, value);
-      }
-      break;
-
-    case EV_REL:
-      if (value)
-      {
-        uinput.send_rel_repetitive(rel.code, rel.value, rel.repeat);
-      }
-      else
-      {
-        uinput.send_rel_repetitive(rel.code, rel.value, -1);
-      }
-      break;
-
-
-    case EV_ABS:
-      if (value)
-      {
-        uinput.get_uinput(abs.code.device_id)->send(EV_ABS, abs.code.code, abs.value);
-      }
-      break;
-  }
 }
 
 void
@@ -221,41 +102,200 @@ ButtonEvent::set_filters(const std::vector<ButtonFilterPtr>& filters)
   m_filters = filters;
 }
 
-std::string
-ButtonEvent::str() const
+bool
+ButtonEvent::apply_filter(bool value) const
 {
-  std::ostringstream out;
-  
-  switch(m_type)
+  for(std::vector<ButtonFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
   {
-    case EV_KEY:
-      for(int i = 0; key.codes[i].is_valid();)
+    value = (*i)->filter(value);
+  }
+  return value;
+}
+
+ButtonEventPtr
+KeyButtonEvent::from_string(const std::string& str)
+{
+  //std::cout << " KeyButtonEvent::from_string: " << str << std::endl;
+
+  boost::shared_ptr<KeyButtonEvent> ev;
+
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  int j = 0;
+  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+  {
+    if (j == 0)
+    {
+      ev.reset(new KeyButtonEvent());
+
+      boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
+      tokenizer ev_tokens(*i, plus_sep);
+      int k = 0;
+      for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
       {
-        out << key.codes[i].device_id << "-" << key.codes[i].code;
-
-        ++i;
-        if (key.codes[i].is_valid())
-          out << "+";
+        ev->m_codes[k] = str2key_event(*m);
       }
-      break;
-
-    case EV_REL:
-      out << rel.code.device_id << "-" << rel.code.code << ":" << rel.value << ":" << rel.repeat;
-      break;
-
-    case EV_ABS:
-      out << abs.code.device_id << "-" << abs.code.code << ":" << abs.value;
-      break;
-
-    case -1:
-      out << "void";
-      break;
-
-    default:
-      assert(!"Never reached");
+    }
   }
 
-  return out.str();
+  return ev;
 }
 
+KeyButtonEvent::KeyButtonEvent() :
+  m_codes()
+{
+  std::fill_n(m_codes, MAX_MODIFIER + 1, UIEvent::invalid());
+}
+
+KeyButtonEvent::KeyButtonEvent(int code) :
+  m_codes()
+{
+  std::fill_n(m_codes, MAX_MODIFIER + 1, UIEvent::invalid());
+  m_codes[0] = UIEvent::create(DEVICEID_AUTO, EV_KEY, code);
+}
+
+void
+KeyButtonEvent::init(uInput& uinput) const
+{
+  for(int i = 0; m_codes[i].is_valid(); ++i)
+  {
+    uinput.create_uinput_device(m_codes[i].device_id);
+    uinput.add_key(m_codes[i].device_id, m_codes[i].code);
+  }
+}
+
+void
+KeyButtonEvent::send(uInput& uinput, bool value) const
+{
+  value = apply_filter(value);
+
+  // FIXME: should key releases in return
+  for(int i = 0; m_codes[i].is_valid(); ++i)
+  {
+    uinput.send_key(m_codes[i].device_id, m_codes[i].code, value);
+  }
+}
+
+std::string
+KeyButtonEvent::str() const
+{
+  std::ostringstream out;
+  for(int i = 0; m_codes[i].is_valid();)
+  {
+    out << m_codes[i].device_id << "-" << m_codes[i].code;
+
+    ++i;
+    if (m_codes[i].is_valid())
+      out << "+";
+  }
+  return out.str();
+}
+
+ButtonEventPtr
+AbsButtonEvent::from_string(const std::string& str)
+{
+  // FIXME: Need magic to detect min/max of the axis
+  assert(!"not implemented");
+}
+
+AbsButtonEvent::AbsButtonEvent(int code) :
+  m_code(UIEvent::invalid()),
+  m_value()
+{
+  assert(!"Not implemented");
+  // FIXME: Need magic to detect min/max of the axis
+}
+
+void
+AbsButtonEvent::init(uInput& uinput) const
+{
+  uinput.create_uinput_device(m_code.device_id);
+}
+
+void
+AbsButtonEvent::send(uInput& uinput, bool value) const
+{
+  value = apply_filter(value);
+
+  if (value)
+  {
+    uinput.get_uinput(m_code.device_id)->send(EV_ABS, m_code.code, m_value);
+  }
+}
+
+std::string
+AbsButtonEvent::str() const
+{
+  std::ostringstream out;
+  out << "abs: " << m_code.device_id << "-" << m_code.code << ":" << m_value; 
+  return out.str();
+}
+
+ButtonEventPtr
+RelButtonEvent::from_string(const std::string& str)
+{
+  boost::shared_ptr<RelButtonEvent> ev;
+
+  int idx = 0;
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+
+  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++idx)
+  {
+    switch(idx)
+    {
+      case 0:
+        ev.reset(new RelButtonEvent(str2rel_event(*i)));
+        break;
+
+      case 1: 
+        ev->m_value  = boost::lexical_cast<int>(*i);
+        break;
+        
+      case 2: 
+        ev->m_repeat = boost::lexical_cast<int>(*i); 
+        break;
+    }
+  }
+
+  return ev;
+}
+
+RelButtonEvent::RelButtonEvent(const UIEvent& code) :
+  m_code(code),
+  m_value(3),
+  m_repeat(100)
+{
+}
+
+void
+RelButtonEvent::init(uInput& uinput) const
+{
+  uinput.create_uinput_device(m_code.device_id);
+  uinput.get_uinput(m_code.device_id)->add_rel(m_code.code);
+}
+
+void
+RelButtonEvent::send(uInput& uinput, bool value) const
+{
+  value = apply_filter(value);
+
+  if (value)
+  {
+    uinput.send_rel_repetitive(m_code, m_value, m_repeat);
+  }
+  else
+  {
+    uinput.send_rel_repetitive(m_code, m_value, -1);
+  } 
+}
+
+std::string
+RelButtonEvent::str() const
+{
+  std::ostringstream out;
+  out << "rel:" << m_code.device_id << "-" << m_code.code << ":" << m_value << ":" << m_repeat;
+  return out.str();
+}
+
 /* EOF */

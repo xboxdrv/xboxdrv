@@ -253,7 +253,8 @@ AxisEvent::key_from_string(const std::string& str)
 }
 
 AxisEvent::AxisEvent() :
-  type(-1)
+  type(-1),
+  m_filters()
 {
 }
 
@@ -292,6 +293,11 @@ AxisEvent::init(uInput& uinput) const
 void
 AxisEvent::send(uInput& uinput, int old_value, int value) const
 {
+  for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
+  {
+    value = (*i)->filter(old_value, value);
+  }
+
   switch(type)
   {
     case EV_ABS:

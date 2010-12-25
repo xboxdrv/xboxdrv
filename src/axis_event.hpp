@@ -19,9 +19,11 @@
 #ifndef HEADER_XBOXDRV_AXIS_EVENT_HPP
 #define HEADER_XBOXDRV_AXIS_EVENT_HPP
 
-#include <string>
 #include <boost/shared_ptr.hpp>
+#include <string>
+#include <vector>
 
+#include "axis_filter.hpp"
 #include "uinput_deviceid.hpp"
 
 class uInput;
@@ -86,6 +88,8 @@ private:
       int threshold;
     } key;
   };
+
+  std::vector<AxisFilterPtr> m_filters;
 };
 
 #endif

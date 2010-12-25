@@ -45,6 +45,10 @@ ButtonFilter::from_string(const std::string& str)
   {
     return ButtonFilterPtr(new ToggleButtonFilter);
   }
+  else if (filtername == "invert")
+  {
+    return ButtonFilterPtr(new InvertButtonFilter);
+  }
   else
   {
     std::ostringstream out;
@@ -68,5 +72,11 @@ ToggleButtonFilter::filter(bool value)
    
   return m_state;
 }   
+
+bool
+InvertButtonFilter::filter(bool value)
+{
+  return !value;
+}
 
 /* EOF */

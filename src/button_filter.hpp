@@ -48,6 +48,14 @@ private:
   bool m_state;
 };
 
+class InvertButtonFilter : public ButtonFilter
+{
+public:
+  InvertButtonFilter() {}
+
+  bool filter(bool value);
+};
+
 #endif
 
 /* EOF */
