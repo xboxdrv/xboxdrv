@@ -60,4 +60,19 @@ AxisMap::clear()
   }
 }
 
+void
+AxisMap::init(uInput& uinput) const
+{
+  for(int shift_code = 0; shift_code < XBOX_BTN_MAX; ++shift_code)
+  {
+    for(int code = 0; code < XBOX_AXIS_MAX; ++code)
+    {
+      if (m_axis_map[shift_code][code])
+      {
+        m_axis_map[shift_code][code]->init(uinput);
+      }
+    }
+  }
+}
+
 /* EOF */

@@ -129,10 +129,9 @@ AxisEvent::from_string(const std::string& str)
 AxisEventPtr
 AxisEvent::abs_from_string(const std::string& str)
 {
-  boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
-  boost::tokenizer<boost::char_separator<char> > tokens(str, sep);
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-
+  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  
   int j = 0;
   int code = -1;
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
@@ -166,9 +165,8 @@ AxisEvent::abs_from_string(const std::string& str)
 AxisEventPtr
 AxisEvent::rel_from_string(const std::string& str)
 {
-  boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
-  boost::tokenizer<boost::char_separator<char> > tokens(str, sep);
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
 
   AxisEventPtr ev = create_rel();
 
@@ -205,9 +203,8 @@ AxisEvent::rel_from_string(const std::string& str)
 AxisEventPtr
 AxisEvent::key_from_string(const std::string& str)
 {
-  boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
-  boost::tokenizer<boost::char_separator<char> > tokens(str, sep);
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
 
   AxisEventPtr ev = create_key();
 
@@ -218,9 +215,8 @@ AxisEvent::key_from_string(const std::string& str)
     {
       case 0:
         {
-          boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
-          tokenizer ev_tokens(*i, plus_sep);
           int k = 0;
+          tokenizer ev_tokens(*i, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
           for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
           {
             ev->key.up_codes[k] = str2key_event(*m);
@@ -230,13 +226,12 @@ AxisEvent::key_from_string(const std::string& str)
 
       case 1:
         {
-          boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
-          tokenizer ev_tokens(*i, plus_sep);
+          tokenizer ev_tokens(*i, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
           int k = 0;
           for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
           {
             ev->key.down_codes[k] = str2key_event(*m);
-          }         
+          }
         }
         break;
 

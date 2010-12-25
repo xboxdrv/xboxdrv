@@ -242,107 +242,6 @@ CommandLineParser::init_ini(Options* opts)
   m_ini.section("evdev-keymap", boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
 }
 
-void set_ui_button_map(ButtonMap& ui_button_map, const std::string& str)
-{
-  std::string::size_type i = str.find('=');
-  if (i == std::string::npos)
-  {
-    throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-button-mapping, '=' missing");
-  }
-  else
-  {
-    std::string btn_str = str.substr(0, i);
-    ButtonEventPtr event = ButtonEvent::from_string(str.substr(i+1, str.size()-i));
-
-    std::string::size_type j = btn_str.find('+');
-    if (j == std::string::npos)
-    {
-      XboxButton  btn = string2btn(btn_str);
-
-      ui_button_map.bind(btn, event);
-    }
-    else
-    {
-      XboxButton shift = string2btn(btn_str.substr(0, j));
-      XboxButton btn   = string2btn(btn_str.substr(j+1));
-
-      ui_button_map.bind(shift, btn, event);
-    }
-  }
-}
-
-void
-CommandLineParser::set_ui_axismap_from_string(const std::string& str)
-{
-  std::string::size_type i = str.find_first_of('=');
-  if (i == std::string::npos)
-  {
-    throw std::runtime_error("Couldn't convert string \"" + str + "\" to ui-axis-mapping");
-  }
-  else
-  {
-    set_ui_axismap(str.substr(0, i),
-                   str.substr(i+1, str.size()-i));
-  }
-}
-
-void set_evdev_absmap(EvdevAbsMap& absmap, const std::string& str)
-{
-  std::string lhs, rhs;
-  split_string_at(str, '=', &lhs, &rhs);
-  
-  if (!lhs.empty())
-  {
-    XboxAxis axis = string2axis(rhs);
-
-    switch (*lhs.rbegin())
-    {
-      case '-': absmap.bind_minus( str2abs(lhs.substr(0, lhs.length()-1)), axis ); break;
-      case '+': absmap.bind_plus ( str2abs(lhs.substr(0, lhs.length()-1)), axis ); break;
-      default:  absmap.bind_both ( str2abs(lhs), axis ); break;
-    }
-  }
-  else
-  {
-    throw std::runtime_error("incorrect --evdev-absmap argument '" + str + "'");
-  }
-}
-
-void set_evdev_keymap(std::map<int, XboxButton>& keymap, const std::string& str)
-{
-  std::string lhs, rhs;
-  split_string_at(str, '=', &lhs, &rhs);
-  keymap[str2key(lhs)] = string2btn(rhs);
-  std::cout << "KEY: " << str2key(lhs) << std::endl;
-}
-
-template<class C, class Func>
-void arg2vector2(const std::string& str, typename std::vector<C>& lst, Func func)
-{
-  std::string::const_iterator start = str.begin();
-  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
-  {
-    if (*i == ',')
-    {
-      if (i != start)
-      {
-        std::string lhs, rhs;
-        split_string_at(std::string(start, i), '=', &lhs, &rhs);
-        lst.push_back(func(lhs, rhs));
-      }
-          
-      start = i+1;
-    }
-  }
-  
-  if (start != str.end())
-  {
-    std::string lhs, rhs;
-    split_string_at(std::string(start, str.end()), '=', &lhs, &rhs);
-    lst.push_back(func(lhs, rhs));
-  }
-}
-
 void
 CommandLineParser::parse_args(int argc, char** argv, Options* options)
 {  
@@ -495,11 +394,11 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_BUTTONMAP:
-        arg2vector2(opt.argument, opts.button_map, &ButtonMapping::from_string);
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_buttonmap, this, _1, _2));
         break;
 
       case OPTION_AXISMAP:
-        arg2vector2(opt.argument, opts.axis_map, &AxisMapping::from_string);
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_axismap, this, _1, _2));
         break;
                     
       case OPTION_NAME:
@@ -524,28 +423,28 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_UI_AXISMAP:
-        arg2apply(opt.argument, boost::bind(&CommandLineParser::set_ui_axismap_from_string, this, _1));
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_axismap, this, _1, _2));
         break;
 
       case OPTION_UI_BUTTONMAP:
-        arg2apply(opt.argument, boost::bind(&set_ui_button_map, boost::ref(opts.uinput_config.get_btn_map()), _1));
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
         break;
 
       case OPTION_MOUSE:
         opts.uinput_config.dpad_as_button();
         opts.deadzone = 4000;
         opts.uinput_config.trigger_as_zaxis();
-        arg2vector2("-y2=y2,-trigger=trigger", opts.axis_map, &AxisMapping::from_string);
+        process_name_value_string("-y2=y2,-trigger=trigger", boost::bind(&CommandLineParser::set_axismap, this, _1, _2));
         // send events only every 20msec, lower values cause a jumpy pointer
-        arg2apply("x1=REL_X:15:20,y1=REL_Y:15:20,"
-                  "y2=REL_WHEEL:5:100,x2=REL_HWHEEL:5:100,"
-                  "trigger=REL_WHEEL:5:100",
-                  boost::bind(&CommandLineParser::set_ui_axismap_from_string, this, _1));
-        arg2apply("a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER,rb=KEY_PAGEDOWN,lb=KEY_PAGEUP,"
-                  "dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN,"
-                  "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,"
-                  "tl=void,tr=void",
-                  boost::bind(&set_ui_button_map, boost::ref(opts.uinput_config.get_btn_map()), _1));
+        process_name_value_string("x1=REL_X:15:20,y1=REL_Y:15:20,"
+                                  "y2=REL_WHEEL:5:100,x2=REL_HWHEEL:5:100,"
+                                  "trigger=REL_WHEEL:5:100",
+                                  boost::bind(&CommandLineParser::set_ui_axismap, this, _1, _2));
+        process_name_value_string("a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER,rb=KEY_PAGEDOWN,lb=KEY_PAGEUP,"
+                                  "dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN,"
+                                  "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,"
+                                  "tl=void,tr=void",
+                                  boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
         break;
 
       case OPTION_DETACH_KERNEL_DRIVER:
@@ -557,11 +456,11 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
         
       case OPTION_EVDEV_ABSMAP:
-        arg2apply(opt.argument, boost::bind(&::set_evdev_absmap, boost::ref(opts.evdev_absmap), _1));
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_evdev_absmap, this, _1, _2));
         break;
 
       case OPTION_EVDEV_KEYMAP:
-        arg2apply(opt.argument, boost::bind(&::set_evdev_keymap, boost::ref(opts.evdev_keymap), _1));
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
         break;
 
       case OPTION_ID:
@@ -612,19 +511,19 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_AUTOFIRE:
-        arg2vector2(opt.argument, opts.autofire_map, &AutoFireMapping::from_string);
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_autofire, this, _1, _2));
         break;
 
       case OPTION_CALIBRARIOTION:
-        arg2vector2(opt.argument, opts.calibration_map, &CalibrationMapping::from_string);
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_calibration, this, _1, _2));
         break;
 
       case OPTION_RELATIVE_AXIS:
-        arg2vector2(opt.argument, opts.relative_axis_map, &RelativeAxisMapping::from_string);
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_relative_axis, this, _1, _2));
         break;
 
       case OPTION_AXIS_SENSITIVITY:
-        arg2vector2(opt.argument, opts.axis_sensitivity_map, &AxisSensitivityMapping::from_string);
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_axis_sensitivity, this, _1, _2));
         break;
 
       case OPTION_FOUR_WAY_RESTRICTOR:

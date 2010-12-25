@@ -188,7 +188,7 @@
               of <replaceable class="parameter">FILE</replaceable> is
               the familiar INI syntax used for many configuration
               files. Regular key/value pairs must go into the
-              [xboxdrv] section. '#' and ';' can be used for commets.
+              [xboxdrv] section. '#' and ';' can be used for comments.
               Key names have for most part the same name as command
               line options. Command line options that take a list of
               input mappings (--ui-buttonmap, --ui-axismap,
@@ -941,7 +941,7 @@ NAME       = STRING ;]]></programlisting>
           <listitem>
             <para>
               The <option>--four-way-restrictor</option> option allows to
-              to limit the movement on both analogsticks to only four
+              limit the movement on both analogsticks to only four
               directions (up, down, left, right), the diagonals (up/left,
               up/right, down/left, down/right) are filtered out from the
               output. This option is useful for games such as Tetris, that

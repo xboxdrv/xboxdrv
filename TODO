@@ -27,6 +27,10 @@ $ dput my-ppa xboxdrv_0.6.1_source.changes
 Stuff to do before 0.6.1 release:
 =================================
 
+* remove guide button from default mapping when its an Xbox1 controller
+
+* fixup guitar
+
 * add an --evdev debug mode that displays events
 
 * support for Playstation button names maybe? cross, triangle, circle, square, R3, L3, ...?

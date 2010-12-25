@@ -160,7 +160,9 @@ AxisMapping::from_string(const std::string& lhs, const std::string& rhs)
 
   if (mapping.lhs == XBOX_AXIS_UNKNOWN ||
       mapping.rhs == XBOX_AXIS_UNKNOWN)
+  {
     throw std::runtime_error("Couldn't convert string \"" + lhs + "=" + rhs + "\" to axis mapping");
+  }
 
   return mapping;
 }

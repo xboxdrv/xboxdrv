@@ -78,11 +78,10 @@ ButtonEventPtr
 ButtonEvent::from_string(const std::string& str)
 {
   ButtonEventPtr ev;
-  boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
   int j = 0;
-  tokenizer tokens(str, sep);
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
   {
     if (j == 0)

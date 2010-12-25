@@ -76,20 +76,6 @@ inline void split_event_name(const std::string& str, std::string* event_str, int
   }
 }
 
-inline void split_string_at(const std::string& str, char c, std::string* lhs, std::string* rhs)
-{
-  std::string::size_type p = str.find(c);
-  if (p == std::string::npos)
-  {
-    *lhs = str;
-  }
-  else
-  {
-    *lhs = str.substr(0, p);
-    *rhs = str.substr(p+1);
-  }
-}
-
 #endif
 
 /* EOF */

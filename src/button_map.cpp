@@ -47,6 +47,27 @@ ButtonMap::lookup(XboxButton shift_code, XboxButton code) const
   return btn_map[shift_code][code];
 }
 
+bool
+ButtonMap::send(uInput& uinput, XboxButton code, bool value) const
+{
+  return send(uinput, XBOX_BTN_UNKNOWN, code, value);
+}
+
+bool
+ButtonMap::send(uInput& uinput, XboxButton shift_code, XboxButton code, bool value) const
+{
+  const ButtonEventPtr& event = lookup(shift_code, code);
+  if (event)
+  {
+    event->send(uinput, value);
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
 void
 ButtonMap::clear()
 {
@@ -55,6 +76,21 @@ ButtonMap::clear()
     for(int code = 0; code < XBOX_BTN_MAX; ++code)
     {
       btn_map[shift_code][code] = ButtonEvent::invalid();
+    }
+  }
+}
+
+void
+ButtonMap::init(uInput& uinput) const
+{
+  for(int shift_code = 0; shift_code < XBOX_BTN_MAX; ++shift_code)
+  {
+    for(int code = 0; code < XBOX_BTN_MAX; ++code)
+    {
+      if (btn_map[shift_code][code])
+      {
+        btn_map[shift_code][code]->init(uinput);
+      }
     }
   }
 }

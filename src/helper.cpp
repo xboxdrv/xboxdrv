@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <boost/format.hpp>
+#include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <sys/time.h>
 #include <stdlib.h>
@@ -51,6 +52,33 @@ std::string to_lower(const std::string &str)
   return lower_impl;
 }
 
+void split_string_at(const std::string& str, char c, std::string* lhs, std::string* rhs)
+{
+  std::string::size_type p = str.find(c);
+  if (p == std::string::npos)
+  {
+    *lhs = str;
+  }
+  else
+  {
+    *lhs = str.substr(0, p);
+    *rhs = str.substr(p+1);
+  }
+}
+
+void process_name_value_string(const std::string& str, const boost::function<void (const std::string&, const std::string&)>& func)
+{
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(str, boost::char_separator<char>(",", "", boost::keep_empty_tokens));
+
+  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i)
+  {
+    std::string lhs, rhs;
+    split_string_at(*i, '=', &lhs, &rhs);
+    func(lhs, rhs);
+  }
+}
+
 void arg2apply(const std::string& str, const boost::function<void (const std::string&)>& func)
 {
   std::string::const_iterator start = str.begin();

@@ -39,6 +39,9 @@ public:
   AxisEventPtr lookup(XboxButton shift_code, XboxAxis code) const;
 
   void clear();
+
+  void init(uInput& uinput) const;
+
 };
 
 #endif
