@@ -592,8 +592,15 @@ Xboxdrv::run_main(const Options& opts)
       std::cout << "\nYour Xbox/Xbox360 controller should now be available as:" << std::endl
                 << "  /dev/input/js" << jsdev_number << std::endl
                 << "  /dev/input/event" << evdev_number << std::endl;
-          
-      std::cout << "\nPress Ctrl-c to quit\n" << std::endl;
+
+      if (opts.silent)
+      {          
+        std::cout << "\nPress Ctrl-c to quit\n" << std::endl;
+      }
+      else
+      {
+        std::cout << "\nPress Ctrl-c to quit, use '--silent' to suppress the event output\n" << std::endl;
+      }
     }
 
     global_exit_xboxdrv = false;
