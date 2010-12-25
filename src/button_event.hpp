@@ -20,26 +20,31 @@
 #define HEADER_XBOXDRV_BUTTON_EVENT_HPP
 
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 #include "uinput_deviceid.hpp"
 
 class uInput;
+class ButtonEvent;
 
-struct ButtonEvent
+typedef boost::shared_ptr<ButtonEvent> ButtonEventPtr;
+
+class ButtonEvent
 {
 public:
   static const int MAX_MODIFIER = 4;
 
-  static ButtonEvent invalid();
-  static ButtonEvent create_key(int code);
-  static ButtonEvent create_key();
-  static ButtonEvent create_abs(int code);
-  static ButtonEvent create_rel(int code);
-  static ButtonEvent from_string(const std::string& str);
+  static ButtonEventPtr invalid();
+  static ButtonEventPtr create_key(int code);
+  static ButtonEventPtr create_key();
+  static ButtonEventPtr create_abs(int code);
+  static ButtonEventPtr create_rel(int code);
+  static ButtonEventPtr from_string(const std::string& str);
 
-public:
+private:
   ButtonEvent();
-  
+
+public: 
   void init(uInput& uinput) const;
   void send(uInput& uinput, bool value) const;
 

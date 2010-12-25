@@ -25,24 +25,24 @@ AxisMap::AxisMap() :
 }
 
 void
-AxisMap::bind(XboxAxis code, const AxisEvent& event)
+AxisMap::bind(XboxAxis code, AxisEventPtr event)
 {
   m_axis_map[XBOX_BTN_UNKNOWN][code] = event;
 }
 
 void
-AxisMap::bind(XboxButton shift_code, XboxAxis code, const AxisEvent& event)
+AxisMap::bind(XboxButton shift_code, XboxAxis code, AxisEventPtr event)
 {
   m_axis_map[shift_code][code] = event;
 }
 
-AxisEvent
+AxisEventPtr
 AxisMap::lookup(XboxAxis code) const
 {
   return m_axis_map[XBOX_BTN_UNKNOWN][code];
 }
 
-AxisEvent
+AxisEventPtr
 AxisMap::lookup(XboxButton shift_code, XboxAxis code) const
 {
   return m_axis_map[shift_code][code];

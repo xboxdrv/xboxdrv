@@ -252,7 +252,7 @@ void set_ui_button_map(ButtonMap& ui_button_map, const std::string& str)
   else
   {
     std::string btn_str = str.substr(0, i);
-    ButtonEvent event = ButtonEvent::from_string(str.substr(i+1, str.size()-i));
+    ButtonEventPtr event = ButtonEvent::from_string(str.substr(i+1, str.size()-i));
 
     std::string::size_type j = btn_str.find('+');
     if (j == std::string::npos)
@@ -753,7 +753,7 @@ CommandLineParser::print_version() const
 void
 CommandLineParser::set_ui_axismap(const std::string& name, const std::string& value)
 {
-  AxisEvent event = AxisEvent::from_string(value);
+  AxisEventPtr event = AxisEvent::from_string(value);
 
   std::string::size_type j = name.find('+');
   if (j == std::string::npos)
@@ -762,8 +762,8 @@ CommandLineParser::set_ui_axismap(const std::string& name, const std::string& va
 
     if (axis != XBOX_AXIS_UNKNOWN)
     {
-      event.set_axis_range(get_axis_min(axis),
-                           get_axis_max(axis));
+      event->set_axis_range(get_axis_min(axis),
+                            get_axis_max(axis));
 
       //std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
 
@@ -781,8 +781,8 @@ CommandLineParser::set_ui_axismap(const std::string& name, const std::string& va
 
     if (axis != XBOX_AXIS_UNKNOWN)
     {
-      event.set_axis_range(get_axis_min(axis),
-                           get_axis_max(axis));
+      event->set_axis_range(get_axis_min(axis),
+                            get_axis_max(axis));
 
       //std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
 
@@ -799,7 +799,7 @@ void
 CommandLineParser::set_ui_buttonmap(const std::string& name, const std::string& value)
 {
   std::string btn_str = name;
-  ButtonEvent event = ButtonEvent::from_string(value);
+  ButtonEventPtr event = ButtonEvent::from_string(value);
 
   std::string::size_type j = btn_str.find('+');
   if (j == std::string::npos)

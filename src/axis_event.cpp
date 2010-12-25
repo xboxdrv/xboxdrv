@@ -28,77 +28,75 @@
 #include "uinput.hpp"
 #include "uinput_deviceid.hpp"
 
-AxisEvent
+AxisEventPtr
 AxisEvent::invalid() 
 { 
-  AxisEvent ev;
-  ev.type = -1;
-  return ev;
+  return AxisEventPtr();
 }
 
-AxisEvent
+AxisEventPtr
 AxisEvent::create_abs(int device_id, int code, int min, int max, int fuzz, int flat)
 {
-  AxisEvent ev;
-  ev.type      = EV_ABS;
-  ev.abs.code  = UIEvent::create(device_id, EV_ABS, code);
-  ev.abs.min   = min;
-  ev.abs.max   = max;
-  ev.abs.fuzz  = fuzz;
-  ev.abs.flat  = flat;
+  AxisEventPtr ev(new AxisEvent);
+  ev->type      = EV_ABS;
+  ev->abs.code  = UIEvent::create(device_id, EV_ABS, code);
+  ev->abs.min   = min;
+  ev->abs.max   = max;
+  ev->abs.fuzz  = fuzz;
+  ev->abs.flat  = flat;
   return ev;
 }
 
-AxisEvent
+AxisEventPtr
 AxisEvent::create_rel(int device_id, int code, int repeat, float value)
 {
-  AxisEvent ev;
-  ev.type       = EV_REL;
-  ev.rel.code   = UIEvent::create(device_id, EV_REL, code);
-  ev.rel.value  = value;
-  ev.rel.repeat = repeat;
+  AxisEventPtr ev(new AxisEvent);
+  ev->type       = EV_REL;
+  ev->rel.code   = UIEvent::create(device_id, EV_REL, code);
+  ev->rel.value  = value;
+  ev->rel.repeat = repeat;
   return ev;  
 }
 
-AxisEvent
+AxisEventPtr
 AxisEvent::create_key()
 {
-  AxisEvent ev;
-  ev.type = EV_KEY;
-  std::fill_n(ev.key.up_codes,   MAX_MODIFIER+1, UIEvent::invalid());
-  std::fill_n(ev.key.down_codes, MAX_MODIFIER+1, UIEvent::invalid());
-  ev.key.threshold = 8000;
+  AxisEventPtr ev(new AxisEvent);
+  ev->type = EV_KEY;
+  std::fill_n(ev->key.up_codes,   MAX_MODIFIER+1, UIEvent::invalid());
+  std::fill_n(ev->key.down_codes, MAX_MODIFIER+1, UIEvent::invalid());
+  ev->key.threshold = 8000;
   return ev;
 }
 
-AxisEvent
+AxisEventPtr
 AxisEvent::create_rel()
 {
-  AxisEvent ev;
-  ev.type = EV_REL;
-  ev.rel.code = UIEvent::invalid();
-  ev.rel.value  = 5;
-  ev.rel.repeat = 10;
+  AxisEventPtr ev(new AxisEvent);
+  ev->type = EV_REL;
+  ev->rel.code = UIEvent::invalid();
+  ev->rel.value  = 5;
+  ev->rel.repeat = 10;
   return ev;
 }
   
-AxisEvent
+AxisEventPtr
 AxisEvent::create_abs()
 {
-  AxisEvent ev;
-  ev.type = EV_ABS;
-  ev.abs.code = UIEvent::invalid();
-  ev.abs.min  = -32768; // FIXME: this must be properly set
-  ev.abs.max  =  32767;
-  ev.abs.fuzz = 0;
-  ev.abs.flat = 0;
+  AxisEventPtr ev(new AxisEvent);
+  ev->type = EV_ABS;
+  ev->abs.code = UIEvent::invalid();
+  ev->abs.min  = -32768; // FIXME: this must be properly set
+  ev->abs.max  =  32767;
+  ev->abs.fuzz = 0;
+  ev->abs.flat = 0;
   return ev;
 }
 
-AxisEvent
+AxisEventPtr
 AxisEvent::from_string(const std::string& str)
 {
-  AxisEvent ev;
+  AxisEventPtr ev(new AxisEvent);
 
   switch (get_event_type(str))
   {
@@ -123,12 +121,12 @@ AxisEvent::from_string(const std::string& str)
       assert(!"AxisEvent::from_string(): should never be reached");
   }
 
-  //std::cout << "AxisEvent::from_string():\n  in:  " << str << "\n  out: " << ev.str() << std::endl;
+  //std::cout << "AxisEvent::from_string():\n  in:  " << str << "\n  out: " << ev->str() << std::endl;
 
   return ev;
 }
 
-AxisEvent
+AxisEventPtr
 AxisEvent::abs_from_string(const std::string& str)
 {
   boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
@@ -160,19 +158,19 @@ AxisEvent::abs_from_string(const std::string& str)
   }
   else
   {
-    AxisEvent ev = create_abs(DEVICEID_AUTO, code, -1, -1, 0, 0);
+    AxisEventPtr ev = create_abs(DEVICEID_AUTO, code, -1, -1, 0, 0);
     return ev;
   }
 }
 
-AxisEvent
+AxisEventPtr
 AxisEvent::rel_from_string(const std::string& str)
 {
   boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
   boost::tokenizer<boost::char_separator<char> > tokens(str, sep);
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
-  AxisEvent ev = create_rel();
+  AxisEventPtr ev = create_rel();
 
   int j = 0;
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
@@ -180,15 +178,15 @@ AxisEvent::rel_from_string(const std::string& str)
     switch(j)
     {
       case 0:
-        ev.rel.code = str2rel_event(*i);
+        ev->rel.code = str2rel_event(*i);
         break;
 
       case 1:
-        ev.rel.value = boost::lexical_cast<int>(*i); 
+        ev->rel.value = boost::lexical_cast<int>(*i); 
         break;
 
       case 2:
-        ev.rel.repeat = boost::lexical_cast<int>(*i); 
+        ev->rel.repeat = boost::lexical_cast<int>(*i); 
         break;
 
       default: 
@@ -204,14 +202,14 @@ AxisEvent::rel_from_string(const std::string& str)
   return ev;
 }
 
-AxisEvent
+AxisEventPtr
 AxisEvent::key_from_string(const std::string& str)
 {
   boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
   boost::tokenizer<boost::char_separator<char> > tokens(str, sep);
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
-  AxisEvent ev = create_key();
+  AxisEventPtr ev = create_key();
 
   int j = 0;
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
@@ -225,7 +223,7 @@ AxisEvent::key_from_string(const std::string& str)
           int k = 0;
           for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
           {
-            ev.key.up_codes[k] = str2key_event(*m);
+            ev->key.up_codes[k] = str2key_event(*m);
           }         
         }
         break;
@@ -237,13 +235,13 @@ AxisEvent::key_from_string(const std::string& str)
           int k = 0;
           for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
           {
-            ev.key.down_codes[k] = str2key_event(*m);
+            ev->key.down_codes[k] = str2key_event(*m);
           }         
         }
         break;
 
       case 2:
-        ev.key.threshold = boost::lexical_cast<int>(*i);
+        ev->key.threshold = boost::lexical_cast<int>(*i);
         break;
         
       default: 
@@ -264,17 +262,9 @@ AxisEvent::AxisEvent() :
 {
 }
 
-bool
-AxisEvent::is_valid() const
-{
-  return type != -1;
-}
-
 void
 AxisEvent::init(uInput& uinput) const
 {
-  assert(is_valid());
-
   switch(type)
   {
     case EV_KEY:
@@ -307,8 +297,6 @@ AxisEvent::init(uInput& uinput) const
 void
 AxisEvent::send(uInput& uinput, int old_value, int value) const
 {
-  assert(is_valid());
-
   switch(type)
   {
     case EV_ABS:

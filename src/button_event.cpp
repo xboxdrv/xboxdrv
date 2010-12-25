@@ -28,58 +28,56 @@
 #include "uinput.hpp"
 #include "uinput_deviceid.hpp"
 
-ButtonEvent
+ButtonEventPtr
 ButtonEvent::invalid()
 {
-  ButtonEvent ev;
-  ev.type = -1;
-  return ev;
+  return ButtonEventPtr();
 }
 
-ButtonEvent 
+ButtonEventPtr
 ButtonEvent::create_abs(int code)
 {
-  ButtonEvent ev;
-  ev.type  = EV_ABS;
-  ev.abs.code  = UIEvent::create(DEVICEID_AUTO, EV_ABS, code);
-  ev.abs.value = 1;
+  ButtonEventPtr ev(new ButtonEvent);
+  ev->type  = EV_ABS;
+  ev->abs.code  = UIEvent::create(DEVICEID_AUTO, EV_ABS, code);
+  ev->abs.value = 1;
   return ev;
 }
 
-ButtonEvent
+ButtonEventPtr
 ButtonEvent::create_key(int code)
 {
-  ButtonEvent ev;
-  ev.type = EV_KEY;
-  std::fill_n(ev.key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
-  ev.key.codes[0] = UIEvent::create(DEVICEID_AUTO, EV_KEY, code);
+  ButtonEventPtr ev(new ButtonEvent);
+  ev->type = EV_KEY;
+  std::fill_n(ev->key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
+  ev->key.codes[0] = UIEvent::create(DEVICEID_AUTO, EV_KEY, code);
   return ev;
 }
 
-ButtonEvent
+ButtonEventPtr
 ButtonEvent::create_key()
 {
-  ButtonEvent ev;
-  ev.type = EV_KEY;
-  std::fill_n(ev.key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
+  ButtonEventPtr ev(new ButtonEvent);
+  ev->type = EV_KEY;
+  std::fill_n(ev->key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
   return ev;
 }
 
-ButtonEvent
+ButtonEventPtr
 ButtonEvent::create_rel(int code)
 {
-  ButtonEvent ev;
-  ev.type       = EV_REL;
-  ev.rel.code   = UIEvent::create(DEVICEID_AUTO, EV_REL, code);
-  ev.rel.value  = 3;
-  ev.rel.repeat = 100;
+  ButtonEventPtr ev(new ButtonEvent);
+  ev->type       = EV_REL;
+  ev->rel.code   = UIEvent::create(DEVICEID_AUTO, EV_REL, code);
+  ev->rel.value  = 3;
+  ev->rel.repeat = 100;
   return ev;
 }
 
-ButtonEvent
+ButtonEventPtr
 ButtonEvent::from_string(const std::string& str)
 {
-  ButtonEvent ev;
+  ButtonEventPtr ev;
   boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
@@ -99,14 +97,14 @@ ButtonEvent::from_string(const std::string& str)
           int k = 0;
           for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
           {
-            ev.key.codes[k] = str2key_event(*m);
+            ev->key.codes[k] = str2key_event(*m);
           }
           break;
         }
 
         case EV_REL:
           ev = ButtonEvent::create_rel(-1); // FIXME: Hack
-          ev.rel.code = str2rel_event(*i);
+          ev->rel.code = str2rel_event(*i);
           break;
 
         case EV_ABS:
@@ -125,12 +123,12 @@ ButtonEvent::from_string(const std::string& str)
     }
     else
     {
-      switch (ev.type)
+      switch (ev->type)
       {
         case EV_REL:
           switch(j) {
-            case 1: ev.rel.value  = boost::lexical_cast<int>(*i); break;
-            case 2: ev.rel.repeat = boost::lexical_cast<int>(*i); break;
+            case 1: ev->rel.value  = boost::lexical_cast<int>(*i); break;
+            case 2: ev->rel.repeat = boost::lexical_cast<int>(*i); break;
           }
           break;
 
@@ -141,7 +139,7 @@ ButtonEvent::from_string(const std::string& str)
   }
 
   if (false)
-    std::cout << "ButtonEvent::from_string():\n  in:  " << str << "\n  out: " << ev.str() << std::endl;
+    std::cout << "ButtonEvent::from_string():\n  in:  " << str << "\n  out: " << ev->str() << std::endl;
 
   return ev;
 }

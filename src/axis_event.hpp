@@ -20,43 +20,45 @@
 #define HEADER_XBOXDRV_AXIS_EVENT_HPP
 
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 #include "uinput_deviceid.hpp"
 
 class uInput;
+class AxisEvent;
+
+typedef boost::shared_ptr<AxisEvent> AxisEventPtr;
 
 class AxisEvent
 {
 public:
   static const int MAX_MODIFIER = 4;
 
-  static AxisEvent invalid();
-  static AxisEvent create_abs(int device_id, int code, int min, int max, int fuzz, int flat);
-  static AxisEvent create_rel(int device_id, int code, int repeat = 10, float value = 5);
+  static AxisEventPtr invalid();
+  static AxisEventPtr create_abs(int device_id, int code, int min, int max, int fuzz, int flat);
+  static AxisEventPtr create_rel(int device_id, int code, int repeat = 10, float value = 5);
 
-  static AxisEvent create_key();
-  static AxisEvent create_rel();
-  static AxisEvent create_abs();
+  static AxisEventPtr create_key();
+  static AxisEventPtr create_rel();
+  static AxisEventPtr create_abs();
 
-  /** If an AbsAxisEvent gets created the user has to set min/max! */ 
-  static AxisEvent from_string(const std::string& str);
+  /** If an AxisEvent gets created the user has to set min/max with set_axis_range() */ 
+  static AxisEventPtr from_string(const std::string& str);
 
 private:
-  static AxisEvent abs_from_string(const std::string& str);
-  static AxisEvent rel_from_string(const std::string& str);
-  static AxisEvent key_from_string(const std::string& str);
+  static AxisEventPtr abs_from_string(const std::string& str);
+  static AxisEventPtr rel_from_string(const std::string& str);
+  static AxisEventPtr key_from_string(const std::string& str);
 
 public:
   AxisEvent();
 
+  void set_axis_range(int min, int max);
+
   void init(uInput& uinput) const;
   void send(uInput& uinput, int old_value, int value) const;
 
-  bool is_valid() const;
-
   std::string str() const;
-
-  void set_axis_range(int min, int max);
 
 private:
   /** EV_KEY, EV_ABS, EV_REL */

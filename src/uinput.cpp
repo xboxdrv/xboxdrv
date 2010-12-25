@@ -458,15 +458,15 @@ uInput::send_button(XboxButton code, bool value)
       {
         if (button_state[i])
         {
-          const ButtonEvent& event = cfg.get_btn_map().lookup(code, static_cast<XboxButton>(i));
-          if (event.is_valid())
+          const ButtonEventPtr& event = cfg.get_btn_map().lookup(code, static_cast<XboxButton>(i));
+          if (event->is_valid())
           {
             for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
             {
-              const ButtonEvent& event2 = cfg.get_btn_map().lookup(static_cast<XboxButton>(j),
+              const ButtonEventPtr& event2 = cfg.get_btn_map().lookup(static_cast<XboxButton>(j),
                                                                    static_cast<XboxButton>(i));
-              if (event2.is_valid())
-                event2.send(*this, false);
+              if (event2->is_valid())
+                event2->send(*this, false);
             }
           }
         }
@@ -477,10 +477,10 @@ uInput::send_button(XboxButton code, bool value)
       {
         if (button_state[i]) // shift button is pressed
         {
-          const ButtonEvent& event = cfg.get_btn_map().lookup(static_cast<XboxButton>(i), code);
-          if (event.is_valid())
+          const ButtonEventPtr& event = cfg.get_btn_map().lookup(static_cast<XboxButton>(i), code);
+          if (event->is_valid())
           {
-            event.send(*this, value);
+            event->send(*this, value);
             // exit after the first successful event, so we don't send
             // multiple events for the same button
             return;
@@ -489,9 +489,9 @@ uInput::send_button(XboxButton code, bool value)
       }
 
       // Non shifted button events
-      const ButtonEvent& event = cfg.get_btn_map().lookup(code);
-      if (event.is_valid())
-        event.send(*this, value);
+      const ButtonEventPtr& event = cfg.get_btn_map().lookup(code);
+      if (event->is_valid())
+        event->send(*this, value);
     }
   }
 }
@@ -587,10 +587,10 @@ uInput::send_axis(XboxAxis code, int32_t value)
     {    
       if (button_state[shift])
       {
-        const AxisEvent& event = cfg.get_axis_map().lookup(static_cast<XboxButton>(shift), code);
-        if (event.is_valid())
+        const AxisEventPtr& event = cfg.get_axis_map().lookup(static_cast<XboxButton>(shift), code);
+        if (event)
         {
-          event.send(*this, old_value, value);
+          event->send(*this, old_value, value);
           event_send = true;
         }
       }
@@ -599,10 +599,10 @@ uInput::send_axis(XboxAxis code, int32_t value)
     // sending regular axis, if no shifted events where send
     if (!event_send)
     {
-      const AxisEvent& event = cfg.get_axis_map().lookup(code);
-      if (event.is_valid())
+      const AxisEventPtr& event = cfg.get_axis_map().lookup(code);
+      if (event)
       {
-        event.send(*this, old_value, value);
+        event->send(*this, old_value, value);
       }
     }
   }
@@ -615,9 +615,9 @@ uInput::add_axis(XboxAxis code)
   {
     for(int shift = 0; shift < XBOX_BTN_MAX; ++shift)
     {
-      const AxisEvent& event = cfg.get_axis_map(n).lookup(static_cast<XboxButton>(shift), code);
-      if (event.is_valid())
-        event.init(*this);
+      const AxisEventPtr& event = cfg.get_axis_map(n).lookup(static_cast<XboxButton>(shift), code);
+      if (event)
+        event->init(*this);
     }
   }
 }
@@ -629,9 +629,9 @@ uInput::add_button(XboxButton code)
   {
     for(int i = 0; i < XBOX_BTN_MAX; ++i)
     {
-      const ButtonEvent& event = cfg.get_btn_map(n).lookup(static_cast<XboxButton>(i), code);
-      if (event.is_valid())
-        event.init(*this);
+      const ButtonEventPtr& event = cfg.get_btn_map(n).lookup(static_cast<XboxButton>(i), code);
+      if (event->is_valid())
+        event->init(*this);
     }
   }
 }

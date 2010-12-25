@@ -1,5 +1,5 @@
-angrPre Release Testing:
-====================
+Pre Release Testing:
+=====================
 
 * check the version number
 
@@ -11,15 +11,35 @@ git tag -s  "${TAG}" -m "xboxdrv ${TAG}"
 git archive --format=tar --prefix="xboxdrv-linux-${VERSION}/" ${TAG} | bzip2 -c > /tmp/xboxdrv-linux-${VERSION}.tar.bz2
 
 git push --tags
+
+
+Ubuntu Package:
+===============
+
+$ cd ../debian/
+$ git-import-orig -u 0.6.1 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.6.1.tar.bz2 
+$ dch -v "0.6.1" "New Ubuntu release"
+$ git-buildpackage --git-tag --git-builder="debuild -S"
+$ sudo pbuilder --build xboxdrv_0.6.1.dsc
+$ dput my-ppa xboxdrv_0.6.1_source.changes
+
 
 Stuff to do before 0.6.1 release:
+=================================
+
+* add an --evdev debug mode that displays events
+
+* support for Playstation button names maybe? cross, triangle, circle, square, R3, L3, ...?
+
+* add more example scripts
+
+
+Stuff to do before 0.7.0 release:
 =================================
 
 * add extra checks to make sure the evdev buttons and axis given exist on the current device
 
 * add support for Xbox1 analog face button
-
-* support for Playstation button names maybe? cross, triangle, circle, square, R3, L3, ...?
 
 * unifiy guitar mappings
 

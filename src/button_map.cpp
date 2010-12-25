@@ -24,24 +24,24 @@ ButtonMap::ButtonMap()
 }
 
 void
-ButtonMap::bind(XboxButton code, const ButtonEvent& event)
+ButtonMap::bind(XboxButton code, ButtonEventPtr event)
 {
   btn_map[XBOX_BTN_UNKNOWN][code] = event;
 }
 
 void
-ButtonMap::bind(XboxButton shift_code, XboxButton code, const ButtonEvent& event)
+ButtonMap::bind(XboxButton shift_code, XboxButton code, ButtonEventPtr event)
 {
   btn_map[shift_code][code] = event;
 }
 
-ButtonEvent
+ButtonEventPtr
 ButtonMap::lookup(XboxButton code) const
 {
   return btn_map[XBOX_BTN_UNKNOWN][code];
 }
 
-ButtonEvent
+ButtonEventPtr
 ButtonMap::lookup(XboxButton shift_code, XboxButton code) const
 {
   return btn_map[shift_code][code];
