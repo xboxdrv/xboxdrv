@@ -27,7 +27,6 @@
 void print_raw_data(std::ostream& out, uint8_t* buffer, int len);
 std::string to_lower(const std::string &str);
 bool is_number(const std::string& str);
-void arg2apply(const std::string& str, const boost::function<void (const std::string&)>& func);
 
 /** Splits apart a string of the form NAME=VALUE,... and calls func(NAME, VALUE) on each */
 void process_name_value_string(const std::string& str, const boost::function<void (const std::string&, const std::string&)>& func);

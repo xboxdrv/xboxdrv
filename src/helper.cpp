@@ -78,24 +78,6 @@ void process_name_value_string(const std::string& str, const boost::function<voi
     func(lhs, rhs);
   }
 }
-
-void arg2apply(const std::string& str, const boost::function<void (const std::string&)>& func)
-{
-  std::string::const_iterator start = str.begin();
-  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
-  {
-    if (*i == ',')
-    {
-      if (i != start)
-        func(std::string(start, i));
-          
-      start = i+1;
-    }
-  }
-  
-  if (start != str.end())
-    func(std::string(start, str.end()));
-}
 
 bool is_number(const std::string& str)
 {
