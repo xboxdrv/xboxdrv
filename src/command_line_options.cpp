@@ -24,12 +24,14 @@
 #include <stdexcept>
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
 #include <boost/format.hpp>
 
 #include "arg_parser.hpp"
+#include "button_filter.hpp"
 #include "helper.hpp"
-#include "ini_schema_builder.hpp"
 #include "ini_parser.hpp"
+#include "ini_schema_builder.hpp"
 #include "options.hpp"
 #include "uinput_deviceid.hpp"
 
@@ -697,8 +699,28 @@ CommandLineParser::set_ui_axismap(const std::string& name, const std::string& va
 void
 CommandLineParser::set_ui_buttonmap(const std::string& name, const std::string& value)
 {
-  std::string btn_str = name;
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  int k = 0;
+  std::string lhs;
+
+  std::vector<ButtonFilterPtr> filters;
+
+  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++k)
+  {
+    if (k == 0)
+    { // shift+key
+      lhs = *t;
+    }
+    else
+    { // filter
+      filters.push_back(ButtonFilter::from_string(*t));
+    }
+  }
+
+  std::string btn_str = lhs;
   ButtonEventPtr event = ButtonEvent::from_string(value);
+  event->set_filters(filters);
 
   std::string::size_type j = btn_str.find('+');
   if (j == std::string::npos)

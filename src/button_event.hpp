@@ -19,9 +19,11 @@
 #ifndef HEADER_XBOXDRV_BUTTON_EVENT_HPP
 #define HEADER_XBOXDRV_BUTTON_EVENT_HPP
 
-#include <string>
 #include <boost/shared_ptr.hpp>
+#include <string>
+#include <vector>
 
+#include "button_filter.hpp"
 #include "uinput_deviceid.hpp"
 
 class uInput;
@@ -48,11 +50,13 @@ public:
   void init(uInput& uinput) const;
   void send(uInput& uinput, bool value) const;
 
+  void set_filters(const std::vector<ButtonFilterPtr>& filters);
+
   std::string str() const;
 
 private:
   /** EV_KEY, EV_ABS, EV_REL */
-  int type;
+  int m_type;
 
   union {
     struct {
@@ -71,6 +75,8 @@ private:
       UIEvent codes[MAX_MODIFIER+1];
     } key;
   };
+
+  std::vector<ButtonFilterPtr> m_filters;
 };
 
 #endif

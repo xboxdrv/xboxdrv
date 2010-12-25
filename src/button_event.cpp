@@ -38,7 +38,7 @@ ButtonEventPtr
 ButtonEvent::create_abs(int code)
 {
   ButtonEventPtr ev(new ButtonEvent);
-  ev->type  = EV_ABS;
+  ev->m_type  = EV_ABS;
   ev->abs.code  = UIEvent::create(DEVICEID_AUTO, EV_ABS, code);
   ev->abs.value = 1;
   return ev;
@@ -48,7 +48,7 @@ ButtonEventPtr
 ButtonEvent::create_key(int code)
 {
   ButtonEventPtr ev(new ButtonEvent);
-  ev->type = EV_KEY;
+  ev->m_type = EV_KEY;
   std::fill_n(ev->key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
   ev->key.codes[0] = UIEvent::create(DEVICEID_AUTO, EV_KEY, code);
   return ev;
@@ -58,7 +58,7 @@ ButtonEventPtr
 ButtonEvent::create_key()
 {
   ButtonEventPtr ev(new ButtonEvent);
-  ev->type = EV_KEY;
+  ev->m_type = EV_KEY;
   std::fill_n(ev->key.codes, MAX_MODIFIER + 1, UIEvent::invalid());
   return ev;
 }
@@ -67,7 +67,7 @@ ButtonEventPtr
 ButtonEvent::create_rel(int code)
 {
   ButtonEventPtr ev(new ButtonEvent);
-  ev->type       = EV_REL;
+  ev->m_type       = EV_REL;
   ev->rel.code   = UIEvent::create(DEVICEID_AUTO, EV_REL, code);
   ev->rel.value  = 3;
   ev->rel.repeat = 100;
@@ -122,7 +122,7 @@ ButtonEvent::from_string(const std::string& str)
     }
     else
     {
-      switch (ev->type)
+      switch (ev->m_type)
       {
         case EV_REL:
           switch(j) {
@@ -144,14 +144,15 @@ ButtonEvent::from_string(const std::string& str)
 }
 
 ButtonEvent::ButtonEvent() :
-  type(-1)
+  m_type(-1),
+  m_filters()
 {
 }
 
 void
 ButtonEvent::init(uInput& uinput) const
 {
-  switch(type)
+  switch(m_type)
   {
     case EV_KEY:
       for(int i = 0; key.codes[i].is_valid(); ++i)
@@ -171,7 +172,7 @@ ButtonEvent::init(uInput& uinput) const
       break;
 
     default:
-      std::cout << "ButtonEvent::init(): invalid type: " << type << std::endl;
+      std::cout << "ButtonEvent::init(): invalid type: " << m_type << std::endl;
       assert(!"ButtonEvent::init(): never reached");
   }
 }
@@ -179,7 +180,12 @@ ButtonEvent::init(uInput& uinput) const
 void
 ButtonEvent::send(uInput& uinput, bool value) const
 {
-  switch(type)
+  for(std::vector<ButtonFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
+  {
+    value = (*i)->filter(value);
+  }
+
+  switch(m_type)
   {
     case EV_KEY:
       for(int i = 0; key.codes[i].is_valid(); ++i)
@@ -209,12 +215,18 @@ ButtonEvent::send(uInput& uinput, bool value) const
   }
 }
 
+void
+ButtonEvent::set_filters(const std::vector<ButtonFilterPtr>& filters)
+{
+  m_filters = filters;
+}
+
 std::string
 ButtonEvent::str() const
 {
   std::ostringstream out;
   
-  switch(type)
+  switch(m_type)
   {
     case EV_KEY:
       for(int i = 0; key.codes[i].is_valid();)
