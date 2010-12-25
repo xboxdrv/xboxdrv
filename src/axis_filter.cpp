@@ -18,10 +18,32 @@
 
 #include "axis_filter.hpp"
 
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
+
 AxisFilterPtr
 AxisFilter::from_string(const std::string& str)
 {
-  return AxisFilterPtr();
-}
+  std::string::size_type p = str.find(':');
+  const std::string& filtername = str.substr(0, p);
 
+  if (filtername == "invert")
+  {
+    return AxisFilterPtr(new InvertAxisFilter);
+  }
+  else
+  {
+    std::ostringstream out;
+    out << "unknown AxisFilter '" << filtername << "'";
+    throw std::runtime_error(out.str());
+  }
+}
+
+int
+InvertAxisFilter::filter(int old_value, int value)
+{
+  return -value;
+}
+
 /* EOF */

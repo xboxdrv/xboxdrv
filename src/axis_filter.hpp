@@ -25,7 +25,7 @@
 class AxisFilter;
 
 typedef boost::shared_ptr<AxisFilter> AxisFilterPtr;
-
+
 class AxisFilter
 {
 public:
@@ -35,9 +35,18 @@ public:
   AxisFilter() {}
   virtual ~AxisFilter() {}
 
-  virtual bool filter(bool old_value, bool value) =0;
+  virtual int filter(int old_value, int value) =0;
 };
+
+class InvertAxisFilter : public AxisFilter
+{
+public:
+  InvertAxisFilter() {}
+  ~InvertAxisFilter() {}
 
+  int filter(int old_value, int value);
+};
+
 #endif
 
 /* EOF */

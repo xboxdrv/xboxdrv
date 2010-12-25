@@ -402,4 +402,10 @@ AxisEvent::str() const
   return out.str();
 }
 
+void
+AxisEvent::set_filters(const std::vector<AxisFilterPtr>& filters)
+{
+  m_filters = filters;
+}
+
 /* EOF */

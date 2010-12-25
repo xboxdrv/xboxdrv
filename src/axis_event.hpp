@@ -56,6 +56,7 @@ public:
   AxisEvent();
 
   void set_axis_range(int min, int max);
+  void set_filters(const std::vector<AxisFilterPtr>& filters);
 
   void init(uInput& uinput) const;
   void send(uInput& uinput, int old_value, int value) const;

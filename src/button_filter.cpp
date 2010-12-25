@@ -79,4 +79,33 @@ InvertButtonFilter::filter(bool value)
   return !value;
 }
 
+AutofireButtonFilter::AutofireButtonFilter() :
+  m_frequency(50)
+{
+}
+
+void
+AutofireButtonFilter::update(float msec_delta)
+{
+  m_counter += msec_delta;
+
+  if (m_counter > m_frequency)
+  {
+    m_counter = 0;
+
+    // FIXME: fire event
+  }
+}
+
+bool
+AutofireButtonFilter::filter(bool value)
+{
+  if (value)
+  {
+    m_counter = 0;
+  }
+
+  return value;
+}
+
 /* EOF */

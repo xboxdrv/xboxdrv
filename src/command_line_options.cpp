@@ -654,44 +654,66 @@ CommandLineParser::print_version() const
 void
 CommandLineParser::set_ui_axismap(const std::string& name, const std::string& value)
 {
+  std::vector<AxisFilterPtr> filters;
+  std::string lhs;
+  {
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+    int k = 0;
+
+    for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++k)
+    {
+      if (k == 0)
+      { // shift+key
+        lhs = *t;
+      }
+      else
+      { // filter
+        filters.push_back(AxisFilter::from_string(*t));
+      }
+    }
+  }
+
   AxisEventPtr event = AxisEvent::from_string(value);
 
-  std::string::size_type j = name.find('+');
+  event->set_filters(filters);
+
+  std::string::size_type j = lhs.find('+');
   if (j == std::string::npos)
   {
-    XboxAxis  axis  = string2axis(name);
+    XboxAxis  axis  = string2axis(lhs);
 
     if (axis != XBOX_AXIS_UNKNOWN)
     {
       event->set_axis_range(get_axis_min(axis),
                             get_axis_max(axis));
 
-      //std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
+      //std::cout << "set_ui_axismap: " << lhs << " = " << value << std::endl;
 
       m_options->uinput_config.get_axis_map().bind(axis, event);
     }
     else
     {
-      throw std::runtime_error("Couldn't convert string \"" + name + "=" + value + "\" to ui-axis-mapping");
+      throw std::runtime_error("Couldn't convert string \"" + lhs + "=" + value + "\" to ui-axis-mapping");
     }
   }
   else
   {
-    XboxButton shift = string2btn(name.substr(0, j));
-    XboxAxis   axis  = string2axis(name.substr(j+1));
+    XboxButton shift = string2btn(lhs.substr(0, j));
+    XboxAxis   axis  = string2axis(lhs.substr(j+1));
 
     if (axis != XBOX_AXIS_UNKNOWN)
     {
       event->set_axis_range(get_axis_min(axis),
                             get_axis_max(axis));
 
-      //std::cout << "set_ui_axismap: " << name << " = " << value << std::endl;
+      //std::cout << "set_ui_axismap: " << lhs << " = " << value << std::endl;
 
       m_options->uinput_config.get_axis_map().bind(shift, axis, event);
     }
     else
     {
-      throw std::runtime_error("Couldn't convert string \"" + name + "=" + value + "\" to ui-axis-mapping");
+      throw std::runtime_error("Couldn't convert string \"" + lhs + "=" + value + "\" to ui-axis-mapping");
     }    
   }      
 }
