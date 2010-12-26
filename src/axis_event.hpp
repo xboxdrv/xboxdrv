@@ -37,60 +37,99 @@ public:
   static const int MAX_MODIFIER = 4;
 
   static AxisEventPtr invalid();
+
   static AxisEventPtr create_abs(int device_id, int code, int min, int max, int fuzz, int flat);
   static AxisEventPtr create_rel(int device_id, int code, int repeat = 10, float value = 5);
-
-  static AxisEventPtr create_key();
-  static AxisEventPtr create_rel();
-  static AxisEventPtr create_abs();
 
   /** If an AxisEvent gets created the user has to set min/max with set_axis_range() */ 
   static AxisEventPtr from_string(const std::string& str);
 
-private:
-  static AxisEventPtr abs_from_string(const std::string& str);
-  static AxisEventPtr rel_from_string(const std::string& str);
-  static AxisEventPtr key_from_string(const std::string& str);
-
 public:
   AxisEvent();
+  virtual ~AxisEvent() {}
 
-  void set_axis_range(int min, int max);
   void set_filters(const std::vector<AxisFilterPtr>& filters);
+
+  virtual void init(uInput& uinput) const =0;
+  virtual void send(uInput& uinput, int old_value, int value) const =0;
+  virtual void update(uInput& uinput, int msec_delta) =0;
+
+  virtual void set_axis_range(int min, int max) {}
+
+  virtual std::string str() const =0;
+
+protected:
+  std::vector<AxisFilterPtr> m_filters;
+};
+
+class RelAxisEvent : public AxisEvent
+{
+public:
+  static AxisEventPtr from_string(const std::string& str);
+
+public:
+  RelAxisEvent();
+  RelAxisEvent(int device_id, int code, int repeat = 10, float value = 5);
 
   void init(uInput& uinput) const;
   void send(uInput& uinput, int old_value, int value) const;
+  void update(uInput& uinput, int msec_delta);
 
   std::string str() const;
 
 private:
-  /** EV_KEY, EV_ABS, EV_REL */
-  int type;
+  UIEvent m_code;
+  float m_value; // FIXME: Why is this float?
+  int   m_repeat;
+};
 
-  union {
-    struct {
-      UIEvent code;
-      float value; // FIXME: Why is this float?
-      int   repeat;
-    } rel;
+class AbsAxisEvent : public AxisEvent
+{
+public:
+  static AxisEventPtr from_string(const std::string& str);
 
-    struct {
-      UIEvent code;
-      int min;
-      int max;
-      int fuzz;
-      int flat;
-    } abs;
+public:
+  AbsAxisEvent();
+  AbsAxisEvent(int device_id, int code, int min, int max, int fuzz, int flat);
 
-    struct {
-      // Array is terminated by -1
-      UIEvent up_codes[MAX_MODIFIER+1];
-      UIEvent down_codes[MAX_MODIFIER+1];
-      int threshold;
-    } key;
-  };
+  void set_axis_range(int min, int max);
 
-  std::vector<AxisFilterPtr> m_filters;
+  void init(uInput& uinput) const;
+  void send(uInput& uinput, int old_value, int value) const;
+  void update(uInput& uinput, int msec_delta);
+
+  std::string str() const;
+
+private:
+  UIEvent m_code;
+  int m_min;
+  int m_max;
+  int m_fuzz;
+  int m_flat;
+};
+
+class KeyAxisEvent : public AxisEvent
+{
+public:
+  static AxisEventPtr from_string(const std::string& str);
+  
+public:
+  KeyAxisEvent();
+
+  void init(uInput& uinput) const;
+  void send(uInput& uinput, int old_value, int value) const;
+  void update(uInput& uinput, int msec_delta);
+
+  std::string str() const;
+
+private:
+  static const int MAX_MODIFIER = 4;
+
+  // Array is terminated by -1
+  UIEvent m_up_codes[MAX_MODIFIER+1];
+  UIEvent m_down_codes[MAX_MODIFIER+1];
+  int m_threshold;
+
 };
 
 #endif

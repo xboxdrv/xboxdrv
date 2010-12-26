@@ -41,7 +41,7 @@ public:
   void clear();
 
   void init(uInput& uinput) const;
-
+  void update(uInput& uinput, int msec_delta);
 };
 
 #endif
