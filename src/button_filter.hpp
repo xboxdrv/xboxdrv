@@ -62,12 +62,14 @@ public:
 class AutofireButtonFilter : public ButtonFilter
 {
 public:
-  AutofireButtonFilter();
+  AutofireButtonFilter(int frequency);
 
   void update(float msec_delta);
   bool filter(bool value);
 
 private:
+  bool m_state;
+
   /** msec between shots */
   int m_frequency;
   int m_counter;

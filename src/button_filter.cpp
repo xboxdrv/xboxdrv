@@ -20,6 +20,7 @@
 
 #include <sstream>
 #include <boost/tokenizer.hpp>
+#include <boost/lexical_cast.hpp>
 
 ButtonFilterPtr
 ButtonFilter::from_string(const std::string& str)
@@ -28,6 +29,8 @@ ButtonFilter::from_string(const std::string& str)
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
   int k = 0;
   
+  int frequency = 50; // FIXME: hack
+
   std::string filtername;
   for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++k)
   {
@@ -35,9 +38,9 @@ ButtonFilter::from_string(const std::string& str)
     {
       filtername = *t;
     }
-    else
+    else if (k == 1)
     {
-      
+      frequency = boost::lexical_cast<int>(*t);
     }
   }
 
@@ -48,6 +51,10 @@ ButtonFilter::from_string(const std::string& str)
   else if (filtername == "invert")
   {
     return ButtonFilterPtr(new InvertButtonFilter);
+  }
+  else if (filtername == "auto" || filtername == "autofire")
+  {
+    return ButtonFilterPtr(new AutofireButtonFilter(frequency));
   }
   else
   {
@@ -79,33 +86,45 @@ InvertButtonFilter::filter(bool value)
   return !value;
 }
 
-AutofireButtonFilter::AutofireButtonFilter() :
-  m_frequency(50)
+AutofireButtonFilter::AutofireButtonFilter(int frequency) :
+  m_state(false),
+  m_frequency(frequency),
+  m_counter(0)
 {
 }
 
 void
 AutofireButtonFilter::update(float msec_delta)
 {
-  m_counter += msec_delta;
-
-  if (m_counter > m_frequency)
+  if (m_state)
   {
-    m_counter = 0;
-
-    // FIXME: fire event
+    m_counter += msec_delta;
   }
 }
 
 bool
 AutofireButtonFilter::filter(bool value)
 {
-  if (value)
+  m_state = value;
+
+  if (!value)
   {
     m_counter = 0;
+    return false;
   }
-
-  return value;
+  else
+  {
+    // auto fire
+    if (m_counter > m_frequency)
+    {
+      m_counter = 0;
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
 }
 
 /* EOF */

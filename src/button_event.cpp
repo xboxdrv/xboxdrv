@@ -20,6 +20,7 @@
 #include <iostream>
 #include <linux/input.h>
 #include <stdexcept>
+#include <memory>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -36,27 +37,33 @@ ButtonEvent::invalid()
 }
 
 ButtonEventPtr
+ButtonEvent::create(ButtonEventHandler* handler)
+{
+  return ButtonEventPtr(new ButtonEvent(handler));
+}
+
+ButtonEventPtr
 ButtonEvent::create_abs(int code)
 {
-  return ButtonEventPtr(new AbsButtonEvent(code));
+  return ButtonEvent::create(new AbsButtonEventHandler(code));
 }
 
 ButtonEventPtr
 ButtonEvent::create_key(int code)
 {
-  return ButtonEventPtr(new KeyButtonEvent(code));
+  return ButtonEvent::create(new KeyButtonEventHandler(code));
 }
 
 ButtonEventPtr
 ButtonEvent::create_key()
 {
-  return ButtonEventPtr(new KeyButtonEvent);
+  return ButtonEvent::create(new KeyButtonEventHandler);
 }
 
 ButtonEventPtr
 ButtonEvent::create_rel(int code)
 {
-  return ButtonEventPtr(new RelButtonEvent(UIEvent::create(DEVICEID_AUTO, EV_REL, code)));
+  return ButtonEvent::create(new RelButtonEventHandler(UIEvent::create(DEVICEID_AUTO, EV_REL, code)));
 }
 
 ButtonEventPtr
@@ -67,31 +74,34 @@ ButtonEvent::from_string(const std::string& str)
 
   if (token == "abs")
   {
-    return AbsButtonEvent::from_string(str.substr(p+1));
+    return ButtonEvent::create(AbsButtonEventHandler::from_string(str.substr(p+1)));
   }
   else if (token == "rel")
   {
-    return RelButtonEvent::from_string(str.substr(p+1));
+    return ButtonEvent::create(RelButtonEventHandler::from_string(str.substr(p+1)));
   }
   else if (token == "key")
   {
-    return KeyButtonEvent::from_string(str.substr(p+1));
+    return ButtonEvent::create(KeyButtonEventHandler::from_string(str.substr(p+1)));
   }
   else
   {
     // try to guess the type of event on the type of the first event code
     switch(get_event_type(token))
     {
-      case EV_KEY: return KeyButtonEvent::from_string(str);
-      case EV_REL: return RelButtonEvent::from_string(str);
-      case EV_ABS: return AbsButtonEvent::from_string(str);
-      case     -1: return ButtonEvent::invalid();
+      case EV_KEY: return ButtonEvent::create(KeyButtonEventHandler::from_string(str));
+      case EV_REL: return ButtonEvent::create(RelButtonEventHandler::from_string(str));
+      case EV_ABS: return ButtonEvent::create(AbsButtonEventHandler::from_string(str));
+      case     -1: return ButtonEventPtr();
       default: assert(!"unknown type");
     }
   }
 }
 
-ButtonEvent::ButtonEvent() :
+ButtonEvent::ButtonEvent(ButtonEventHandler* handler) :
+  m_last_send_state(false),
+  m_last_raw_state(false),
+  m_handler(handler),
   m_filters()
 {
 }
@@ -102,22 +112,60 @@ ButtonEvent::set_filters(const std::vector<ButtonFilterPtr>& filters)
   m_filters = filters;
 }
 
-bool
-ButtonEvent::apply_filter(bool value) const
+void
+ButtonEvent::init(uInput& uinput) const
+{
+  return m_handler->init(uinput);
+}
+
+void
+ButtonEvent::send(uInput& uinput, bool raw_state)
+{
+  m_last_raw_state = raw_state;
+  bool filtered_state = raw_state;
+
+  // filter values
+  for(std::vector<ButtonFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
+  {
+    filtered_state = (*i)->filter(filtered_state);
+  }
+
+  if (m_last_send_state == filtered_state)
+  {
+    // button state has not changed, so do not send events
+  }
+  else
+  {
+    m_last_send_state = filtered_state;
+    m_handler->send(uinput, m_last_send_state);
+  }
+}
+
+void
+ButtonEvent::update(uInput& uinput, int msec_delta)
 {
   for(std::vector<ButtonFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
   {
-    value = (*i)->filter(value);
+    (*i)->update(msec_delta);
   }
-  return value;
+
+  m_handler->update(uinput, msec_delta);
+  
+  send(uinput, m_last_raw_state);
+}
+
+std::string
+ButtonEvent::str() const
+{
+  return m_handler->str();
 }
 
-ButtonEventPtr
-KeyButtonEvent::from_string(const std::string& str)
+KeyButtonEventHandler*
+KeyButtonEventHandler::from_string(const std::string& str)
 {
-  //std::cout << " KeyButtonEvent::from_string: " << str << std::endl;
+  //std::cout << " KeyButtonEventHandler::from_string: " << str << std::endl;
 
-  boost::shared_ptr<KeyButtonEvent> ev;
+  std::auto_ptr<KeyButtonEventHandler> ev;
 
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
@@ -129,7 +177,7 @@ KeyButtonEvent::from_string(const std::string& str)
     {
       case 0: 
         {
-          ev.reset(new KeyButtonEvent());
+          ev.reset(new KeyButtonEventHandler());
 
           boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
           tokenizer ev_tokens(*i, plus_sep);
@@ -171,10 +219,10 @@ KeyButtonEvent::from_string(const std::string& str)
     }
   }
 
-  return ev;
+  return ev.release();
 }
 
-KeyButtonEvent::KeyButtonEvent() :
+KeyButtonEventHandler::KeyButtonEventHandler() :
   m_state(false),
   m_codes(),
   m_secondary_codes(),
@@ -185,7 +233,7 @@ KeyButtonEvent::KeyButtonEvent() :
   std::fill_n(m_secondary_codes, MAX_MODIFIER + 1, UIEvent::invalid());
 }
 
-KeyButtonEvent::KeyButtonEvent(int code) :
+KeyButtonEventHandler::KeyButtonEventHandler(int code) :
   m_codes()
 {
   std::fill_n(m_codes, MAX_MODIFIER + 1, UIEvent::invalid());
@@ -194,7 +242,7 @@ KeyButtonEvent::KeyButtonEvent(int code) :
 }
 
 void
-KeyButtonEvent::init(uInput& uinput) const
+KeyButtonEventHandler::init(uInput& uinput) const
 {
   for(int i = 0; m_codes[i].is_valid(); ++i)
   {
@@ -212,10 +260,8 @@ KeyButtonEvent::init(uInput& uinput) const
 }
 
 void
-KeyButtonEvent::send(uInput& uinput, bool value)
+KeyButtonEventHandler::send(uInput& uinput, bool value)
 {
-  value = apply_filter(value);
-
   if (m_state != value)
   {
     m_state = value;
@@ -276,7 +322,7 @@ KeyButtonEvent::send(uInput& uinput, bool value)
 }
 
 void
-KeyButtonEvent::update(uInput& uinput, int msec_delta) 
+KeyButtonEventHandler::update(uInput& uinput, int msec_delta) 
 {
   if (m_state && m_hold_threshold)
   {
@@ -299,7 +345,7 @@ KeyButtonEvent::update(uInput& uinput, int msec_delta)
 }
 
 std::string
-KeyButtonEvent::str() const
+KeyButtonEventHandler::str() const
 {
   std::ostringstream out;
   for(int i = 0; m_codes[i].is_valid();)
@@ -313,14 +359,14 @@ KeyButtonEvent::str() const
   return out.str();
 }
 
-ButtonEventPtr
-AbsButtonEvent::from_string(const std::string& str)
+AbsButtonEventHandler*
+AbsButtonEventHandler::from_string(const std::string& str)
 {
   // FIXME: Need magic to detect min/max of the axis
   assert(!"not implemented");
 }
 
-AbsButtonEvent::AbsButtonEvent(int code) :
+AbsButtonEventHandler::AbsButtonEventHandler(int code) :
   m_code(UIEvent::invalid()),
   m_value()
 {
@@ -329,16 +375,14 @@ AbsButtonEvent::AbsButtonEvent(int code) :
 }
 
 void
-AbsButtonEvent::init(uInput& uinput) const
+AbsButtonEventHandler::init(uInput& uinput) const
 {
   uinput.create_uinput_device(m_code.device_id);
 }
 
 void
-AbsButtonEvent::send(uInput& uinput, bool value)
+AbsButtonEventHandler::send(uInput& uinput, bool value)
 {
-  value = apply_filter(value);
-
   if (value)
   {
     uinput.get_uinput(m_code.device_id)->send(EV_ABS, m_code.code, m_value);
@@ -346,17 +390,17 @@ AbsButtonEvent::send(uInput& uinput, bool value)
 }
 
 std::string
-AbsButtonEvent::str() const
+AbsButtonEventHandler::str() const
 {
   std::ostringstream out;
   out << "abs: " << m_code.device_id << "-" << m_code.code << ":" << m_value; 
   return out.str();
 }
 
-ButtonEventPtr
-RelButtonEvent::from_string(const std::string& str)
+RelButtonEventHandler*
+RelButtonEventHandler::from_string(const std::string& str)
 {
-  boost::shared_ptr<RelButtonEvent> ev;
+  std::auto_ptr<RelButtonEventHandler> ev;
 
   int idx = 0;
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
@@ -367,7 +411,7 @@ RelButtonEvent::from_string(const std::string& str)
     switch(idx)
     {
       case 0:
-        ev.reset(new RelButtonEvent(str2rel_event(*i)));
+        ev.reset(new RelButtonEventHandler(str2rel_event(*i)));
         break;
 
       case 1: 
@@ -380,10 +424,10 @@ RelButtonEvent::from_string(const std::string& str)
     }
   }
 
-  return ev;
+  return ev.release();
 }
 
-RelButtonEvent::RelButtonEvent(const UIEvent& code) :
+RelButtonEventHandler::RelButtonEventHandler(const UIEvent& code) :
   m_code(code),
   m_value(3),
   m_repeat(100)
@@ -391,17 +435,15 @@ RelButtonEvent::RelButtonEvent(const UIEvent& code) :
 }
 
 void
-RelButtonEvent::init(uInput& uinput) const
+RelButtonEventHandler::init(uInput& uinput) const
 {
   uinput.create_uinput_device(m_code.device_id);
   uinput.get_uinput(m_code.device_id)->add_rel(m_code.code);
 }
 
 void
-RelButtonEvent::send(uInput& uinput, bool value)
+RelButtonEventHandler::send(uInput& uinput, bool value)
 {
-  value = apply_filter(value);
-
   if (value)
   {
     uinput.send_rel_repetitive(m_code, m_value, m_repeat);
@@ -413,7 +455,7 @@ RelButtonEvent::send(uInput& uinput, bool value)
 }
 
 std::string
-RelButtonEvent::str() const
+RelButtonEventHandler::str() const
 {
   std::ostringstream out;
   out << "rel:" << m_code.device_id << "-" << m_code.code << ":" << m_value << ":" << m_repeat;

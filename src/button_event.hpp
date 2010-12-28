@@ -20,6 +20,7 @@
 #define HEADER_XBOXDRV_BUTTON_EVENT_HPP
 
 #include <boost/shared_ptr.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <string>
 #include <vector>
 
@@ -28,6 +29,7 @@
 
 class uInput;
 class ButtonEvent;
+class ButtonEventHandler;
 
 typedef boost::shared_ptr<ButtonEvent> ButtonEventPtr;
 
@@ -35,6 +37,7 @@ class ButtonEvent
 {
 public:
   static ButtonEventPtr invalid();
+  static ButtonEventPtr create(ButtonEventHandler* handler);
   static ButtonEventPtr create_key(int code);
   static ButtonEventPtr create_key();
   static ButtonEventPtr create_abs(int code);
@@ -42,32 +45,42 @@ public:
   static ButtonEventPtr from_string(const std::string& str);
 
 protected:
-  ButtonEvent();
-  virtual ~ButtonEvent() {}
-
-  bool apply_filter(bool value) const;
+  ButtonEvent(ButtonEventHandler* handler);
 
 public: 
-  virtual void init(uInput& uinput) const =0;
-  virtual void send(uInput& uinput, bool value) =0;
-  virtual void update(uInput& uinput, int msec_delta) =0;
+  void init(uInput& uinput) const;
+  void send(uInput& uinput, bool value);
+  void update(uInput& uinput, int msec_delta);
+  std::string str() const;
 
   void set_filters(const std::vector<ButtonFilterPtr>& filters);
 
-  virtual std::string str() const =0;
-
 private:
+  bool m_last_send_state;
+  bool m_last_raw_state;
+  boost::scoped_ptr<ButtonEventHandler> m_handler;
   std::vector<ButtonFilterPtr> m_filters;
 };
 
-class KeyButtonEvent : public ButtonEvent
+class ButtonEventHandler
 {
 public:
-  static ButtonEventPtr from_string(const std::string& str);
+  virtual ~ButtonEventHandler() {}
+  
+  virtual void init(uInput& uinput) const =0;
+  virtual void send(uInput& uinput, bool value) =0;
+  virtual void update(uInput& uinput, int msec_delta) =0;
+  virtual std::string str() const =0;
+};
+
+class KeyButtonEventHandler : public ButtonEventHandler
+{
+public:
+  static KeyButtonEventHandler* from_string(const std::string& str);
 
 public:
-  KeyButtonEvent();
-  KeyButtonEvent(int code);
+  KeyButtonEventHandler();
+  KeyButtonEventHandler(int code);
 
   void init(uInput& uinput) const;
   void send(uInput& uinput, bool value);
@@ -86,13 +99,13 @@ private:
   int m_hold_counter;
 };
 
-class AbsButtonEvent : public ButtonEvent
+class AbsButtonEventHandler : public ButtonEventHandler
 {
 public:
-  static ButtonEventPtr from_string(const std::string& str);
+  static AbsButtonEventHandler* from_string(const std::string& str);
 
 public:
-  AbsButtonEvent(int code);
+  AbsButtonEventHandler(int code);
 
   void init(uInput& uinput) const;
   void send(uInput& uinput, bool value);
@@ -105,13 +118,13 @@ private:
   int m_value;
 };
 
-class RelButtonEvent : public ButtonEvent
+class RelButtonEventHandler : public ButtonEventHandler
 {
 public:
-  static ButtonEventPtr from_string(const std::string& str);
+  static RelButtonEventHandler* from_string(const std::string& str);
 
 public:
-  RelButtonEvent(const UIEvent& code);
+  RelButtonEventHandler(const UIEvent& code);
 
   void init(uInput& uinput) const;
   void send(uInput& uinput, bool value);
