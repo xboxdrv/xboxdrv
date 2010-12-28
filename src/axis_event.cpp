@@ -80,6 +80,8 @@ AxisEvent::from_string(const std::string& str)
 }
 
 AxisEvent::AxisEvent(AxisEventHandler* handler) :
+  m_min(0),
+  m_max(0),
   m_handler(handler),
   m_filters()
 {
@@ -98,14 +100,14 @@ AxisEvent::init(uInput& uinput) const
 }
 
 void
-AxisEvent::send(uInput& uinput, int old_value, int value) const
+AxisEvent::send(uInput& uinput, int value)
 {
   for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
   {
-    value = (*i)->filter(old_value, value);
+    value = (*i)->filter(value, m_min, m_max);
   }
 
-  m_handler->send(uinput, old_value, value);
+  m_handler->send(uinput, value);
 }
 
 void
@@ -117,6 +119,8 @@ AxisEvent::update(uInput& uinput, int msec_delta)
 void
 AxisEvent::set_axis_range(int min, int max)
 {
+  m_min = min;
+  m_max = max;
   m_handler->set_axis_range(min, max);
 }
 
@@ -186,7 +190,7 @@ RelAxisEventHandler::init(uInput& uinput) const
 }
 
 void
-RelAxisEventHandler::send(uInput& uinput, int old_value, int value) const
+RelAxisEventHandler::send(uInput& uinput, int value)
 {
   // FIXME: Need to know the min/max of value
   int v = m_value * value / 32767;
@@ -278,7 +282,7 @@ AbsAxisEventHandler::init(uInput& uinput) const
 }
 
 void
-AbsAxisEventHandler:: send(uInput& uinput, int old_value, int value) const
+AbsAxisEventHandler:: send(uInput& uinput, int value)
 {
   /*FIXME for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
   {
@@ -355,7 +359,8 @@ KeyAxisEventHandler::from_string(const std::string& str)
   return ev.release();
 }
 
-KeyAxisEventHandler::KeyAxisEventHandler()
+KeyAxisEventHandler::KeyAxisEventHandler() :
+  m_old_value(0)
 {
   std::fill_n(m_up_codes,   MAX_MODIFIER+1, UIEvent::invalid());
   std::fill_n(m_down_codes, MAX_MODIFIER+1, UIEvent::invalid());
@@ -380,10 +385,10 @@ KeyAxisEventHandler::init(uInput& uinput) const
 }
 
 void
-KeyAxisEventHandler::send(uInput& uinput, int old_value, int value) const
+KeyAxisEventHandler::send(uInput& uinput, int value)
 {
-  if (::abs(old_value) <  m_threshold &&
-      ::abs(value)     >= m_threshold)
+  if (::abs(m_old_value) <  m_threshold &&
+      ::abs(value)       >= m_threshold)
   { // entering bigger then threshold zone
     if (value < 0)
     {
@@ -402,8 +407,8 @@ KeyAxisEventHandler::send(uInput& uinput, int old_value, int value) const
         uinput.send_key(m_up_codes[i].device_id, m_up_codes[i].code, false);
     }
   }
-  else if (::abs(old_value) >= m_threshold &&
-           ::abs(value)     <  m_threshold)
+  else if (::abs(m_old_value) >= m_threshold &&
+           ::abs(value)       <  m_threshold)
   { // entering zero zone
     for(int i = 0; m_up_codes[i].is_valid(); ++i)
       uinput.send_key(m_down_codes[i].device_id, m_down_codes[i].code, false);
@@ -411,6 +416,8 @@ KeyAxisEventHandler::send(uInput& uinput, int old_value, int value) const
     for(int i = 0; m_up_codes[i].is_valid(); ++i)
       uinput.send_key(m_up_codes[i].device_id, m_up_codes[i].code, false);
   }
+
+  m_old_value = value;
 }
 
 void

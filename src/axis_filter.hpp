@@ -35,7 +35,7 @@ public:
   AxisFilter() {}
   virtual ~AxisFilter() {}
 
-  virtual int filter(int old_value, int value) =0;
+  virtual int filter(int value, int min, int max) =0;
 };
 
 class InvertAxisFilter : public AxisFilter
@@ -44,7 +44,37 @@ public:
   InvertAxisFilter() {}
   ~InvertAxisFilter() {}
 
-  int filter(int old_value, int value);
+  int filter(int value, int min, int max);
+};
+
+class SensitivityAxisFilter : public AxisFilter
+{
+public:
+  static SensitivityAxisFilter* from_string(const std::string& str);
+
+public:
+  SensitivityAxisFilter(float sensitivity);
+
+  int filter(int value, int min, int max);
+
+private:
+  float m_sensitivity;
+};
+
+class CalibrationAxisFilter : public AxisFilter
+{
+public:
+  static CalibrationAxisFilter* from_string(const std::string& str);
+
+public:
+  CalibrationAxisFilter(int min, int center, int max);
+
+  int filter(int value, int min, int max);
+
+private:
+  int m_min;
+  int m_center;
+  int m_max;
 };
 
 #endif

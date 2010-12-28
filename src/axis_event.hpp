@@ -51,7 +51,7 @@ public:
   void set_filters(const std::vector<AxisFilterPtr>& filters);
 
   void init(uInput& uinput) const;
-  void send(uInput& uinput, int old_value, int value) const;
+  void send(uInput& uinput, int value);
   void update(uInput& uinput, int msec_delta);
 
   void set_axis_range(int min, int max);
@@ -59,6 +59,8 @@ public:
   std::string str() const;
 
 private:
+  int m_min;
+  int m_max;
   boost::scoped_ptr<AxisEventHandler> m_handler;
   std::vector<AxisFilterPtr> m_filters;
 };
@@ -69,7 +71,7 @@ public:
   virtual ~AxisEventHandler() {}
 
   virtual void init(uInput& uinput) const =0;
-  virtual void send(uInput& uinput, int old_value, int value) const =0;
+  virtual void send(uInput& uinput, int value) =0;
   virtual void update(uInput& uinput, int msec_delta) =0;
 
   virtual void set_axis_range(int min, int max) {}
@@ -87,7 +89,7 @@ public:
   RelAxisEventHandler(int device_id, int code, int repeat = 10, float value = 5);
 
   void init(uInput& uinput) const;
-  void send(uInput& uinput, int old_value, int value) const;
+  void send(uInput& uinput, int value);
   void update(uInput& uinput, int msec_delta);
 
   std::string str() const;
@@ -110,7 +112,7 @@ public:
   void set_axis_range(int min, int max);
 
   void init(uInput& uinput) const;
-  void send(uInput& uinput, int old_value, int value) const;
+  void send(uInput& uinput, int value);
   void update(uInput& uinput, int msec_delta);
 
   std::string str() const;
@@ -132,13 +134,15 @@ public:
   KeyAxisEventHandler();
 
   void init(uInput& uinput) const;
-  void send(uInput& uinput, int old_value, int value) const;
+  void send(uInput& uinput, int value);
   void update(uInput& uinput, int msec_delta);
 
   std::string str() const;
 
 private:
   static const int MAX_MODIFIER = 4;
+
+  int m_old_value;
 
   // Array is terminated by -1
   UIEvent m_up_codes[MAX_MODIFIER+1];

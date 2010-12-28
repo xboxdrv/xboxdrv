@@ -490,7 +490,6 @@ uInput::send_axis(XboxAxis code, int32_t value)
   // not just when the axis changed
   if (axis_state[code] != value)
   {
-    int old_value = axis_state[code];
     axis_state[code] = value;
 
     bool event_send = false;
@@ -503,7 +502,7 @@ uInput::send_axis(XboxAxis code, int32_t value)
         const AxisEventPtr& event = cfg.get_axis_map().lookup(static_cast<XboxButton>(shift), code);
         if (event)
         {
-          event->send(*this, old_value, value);
+          event->send(*this, value);
           event_send = true;
         }
       }
@@ -515,7 +514,7 @@ uInput::send_axis(XboxAxis code, int32_t value)
       const AxisEventPtr& event = cfg.get_axis_map().lookup(code);
       if (event)
       {
-        event->send(*this, old_value, value);
+        event->send(*this, value);
       }
     }
   }

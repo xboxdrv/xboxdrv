@@ -27,6 +27,18 @@ $ dput my-ppa xboxdrv_0.6.1_source.changes
 Stuff to do before 0.6.1 release:
 =================================
 
+* "couldn't convert 'ABS_y' to enum, not a member of EV_ABS"
+ 
+  convert all enum names to uppercase? or does that lead to conflicts in the naming?
+
+* allow giving ini options on command line: xboxdrv '-e' foo=5 (or '-o')
+
+* allow the right side of --ui-buttomap/--ui-axismap to be empty:
+
+  xboxdrv --ui-buttonmap X1^deadzone:50
+
+  This would just add the filter to the chain, not create a complete new mapping
+
 * remove guide button from default mapping when its an Xbox1 controller
 
 * fixup guitar
@@ -37,6 +49,15 @@ Stuff to do before 0.6.1 release:
 
 * add more example scripts
 
+* make evdev grab optional:
+
+  --evdev-grab
+
+    Takes exclusive ownership of the event device, all events are
+    directed to xboxdrv and no other application will be able to
+    receive events.
+
+  --evdev-no-grab
 
 Stuff to do before 0.7.0 release:
 =================================
@@ -50,16 +71,6 @@ Stuff to do before 0.7.0 release:
 * allow separate deadzone for each axis
 
 * make dummy joystick axis creation optional
-
-* make evdev grab optional:
-
-  --evdev-grab
-
-    Takes exclusive ownership of the event device, all events are
-    directed to xboxdrv and no other application will be able to
-    receive events.
-
-  --evdev-no-grab
 
 * --ui-axismap LT=KEY_A:KEY_B:1 
 

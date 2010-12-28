@@ -1,6 +1,6 @@
 # -*- python -*-
 
-if True:
+if False:
     env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'])
 else:
     env = Environment(CXXFLAGS= [ "-O3", "-g3",
@@ -9,7 +9,7 @@ else:
                                   "-Wall",
                                   "-Wextra",
                                   "-Wnon-virtual-dtor",
-                                  "-Weffc++",
+                                  #"-Weffc++",
                                   #"-Wconversion",
                                   "-Wold-style-cast",
                                   # "-Werror",
