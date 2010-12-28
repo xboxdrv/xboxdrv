@@ -35,6 +35,7 @@ public:
   AxisFilter() {}
   virtual ~AxisFilter() {}
 
+  virtual void update(int msec_delta) {}
   virtual int filter(int value, int min, int max) =0;
 };
 
@@ -74,6 +75,41 @@ public:
 private:
   int m_min;
   int m_center;
+  int m_max;
+};
+
+class DeadzoneAxisFilter : public AxisFilter
+{
+public:
+  static DeadzoneAxisFilter* from_string(const std::string& str);
+
+public:
+  DeadzoneAxisFilter(int deadzone, bool smooth);
+
+  int filter(int value, int min, int max);
+
+private:
+  int m_deadzone;
+  bool m_smooth;
+};
+
+class RelativeAxisFilter : public AxisFilter
+{
+public:
+  static RelativeAxisFilter* from_string(const std::string& str);
+
+public:
+  RelativeAxisFilter(int speed);
+
+  void update(int msec_delta);
+  int filter(int value, int min, int max);
+
+private:
+  int m_speed;
+
+  int m_value;
+  int m_state;
+  int m_min;
   int m_max;
 };
 

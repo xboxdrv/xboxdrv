@@ -51,7 +51,7 @@ AxisFilter::from_string(const std::string& str)
   std::string rest;
 
   if (p != std::string::npos) 
-    str.substr(p+1);
+    rest = str.substr(p+1);
 
   if (filtername == "invert")
   {
@@ -64,6 +64,14 @@ AxisFilter::from_string(const std::string& str)
   else if (filtername == "sensitivity" || filtername == "sen")
   {
     return AxisFilterPtr(SensitivityAxisFilter::from_string(rest));
+  }
+  else if (filtername == "deadzone" || filtername == "dead")
+  {
+    return AxisFilterPtr(DeadzoneAxisFilter::from_string(rest));
+  }
+  else if (filtername == "relative" || filtername == "rel")
+  {
+    return AxisFilterPtr(RelativeAxisFilter::from_string(rest));
   }
   else
   {
@@ -170,4 +178,122 @@ CalibrationAxisFilter::filter(int value, int min, int max)
   return Math::clamp(min, value, max);
 }
 
+DeadzoneAxisFilter*
+DeadzoneAxisFilter::from_string(const std::string& str)
+{
+  int  deadzone = 0;
+  bool smooth   = true;
+
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  int idx = 0;
+  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  {
+    switch(idx)
+    {
+      case 0: deadzone = boost::lexical_cast<int>(*t); break;
+      case 1: smooth   = boost::lexical_cast<bool>(*t); break;
+      default: throw std::runtime_error("to many arguments"); break;
+    }
+  }
+
+  return new DeadzoneAxisFilter(deadzone, smooth);
+}
+
+DeadzoneAxisFilter::DeadzoneAxisFilter(int deadzone, bool smooth) :
+  m_deadzone(deadzone),
+  m_smooth(smooth)
+{
+}
+
+int
+DeadzoneAxisFilter::filter(int value, int min, int max)
+{
+  if (/*FIXME !m_smooth */ true)
+  {
+    if (abs(value) < m_deadzone)
+    {
+      return 0;
+    }
+    else
+    {
+      return value;
+    }
+  }
+  else // (m_smooth)
+  {
+    // FIXME: not implemented
+    assert(!"not implemented");
+    /*
+      if (value < -deadzone) 
+      {
+      const float scale = 32768 / (32768 - deadzone);
+      rv += deadzone;
+      rv *= scale;
+      rv -= 0.5;
+      }
+      else if (value > deadzone) 
+      {
+      const float scale = 32767 / (32767 - deadzone);
+      rv -= deadzone;
+      rv *= scale;
+      rv += 0.5;
+      } 
+      else 
+      {
+      return 0;
+      }
+    */
+  }
+}
+
+RelativeAxisFilter*
+RelativeAxisFilter::from_string(const std::string& str)
+{
+  int speed = 20000;
+
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  int idx = 0;
+  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  {
+    switch(idx)
+    {
+      case 0: speed = boost::lexical_cast<int>(*t); break;
+      default: throw std::runtime_error("to many arguments"); break;
+    }
+  }
+
+  return new RelativeAxisFilter(speed);
+  
+}
+
+RelativeAxisFilter::RelativeAxisFilter(int speed) :
+  m_speed(speed),
+  m_value(0),
+  m_state(0),
+  m_min(-1),
+  m_max(1)
+{
+}
+
+void
+RelativeAxisFilter::update(int msec_delta)
+{
+  m_state += m_speed * m_value / m_max * msec_delta / 1000;
+  
+  m_state = Math::clamp(m_min, m_state, m_max);
+}
+
+int
+RelativeAxisFilter::filter(int value, int min, int max)
+{
+  m_value = value;
+
+  m_min   = min;
+  m_max   = max;
+
+  return m_state;
+}
+
 /* EOF */

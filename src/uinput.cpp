@@ -321,6 +321,7 @@ void
 uInput::update(int msec_delta)
 {
   cfg.get_btn_map().update(*this, msec_delta);
+  cfg.get_axis_map().update(*this, msec_delta);
 
   for(std::map<UIEvent, RelRepeat>::iterator i = rel_repeat_lst.begin(); i != rel_repeat_lst.end(); ++i)
   {

@@ -102,7 +102,7 @@ AutofireButtonFilter::AutofireButtonFilter(int frequency) :
 }
 
 void
-AutofireButtonFilter::update(float msec_delta)
+AutofireButtonFilter::update(int msec_delta)
 {
   if (m_state)
   {

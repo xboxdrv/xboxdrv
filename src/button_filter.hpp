@@ -35,7 +35,7 @@ public:
   virtual ~ButtonFilter() {}
 
   virtual bool filter(bool value) =0;
-  virtual void update(float msec_delta) =0;
+  virtual void update(int msec_delta) =0;
 };
 
 class ToggleButtonFilter : public ButtonFilter
@@ -44,7 +44,7 @@ public:
   ToggleButtonFilter();
 
   bool filter(bool value);
-  void update(float msec_delta) {}
+  void update(int msec_delta) {}
 
 private:
   bool m_state;
@@ -55,7 +55,7 @@ class InvertButtonFilter : public ButtonFilter
 public:
   InvertButtonFilter() {}
 
-  void update(float msec_delta) {}
+  void update(int msec_delta) {}
   bool filter(bool value);
 };
 
@@ -67,7 +67,7 @@ public:
 public:
   AutofireButtonFilter(int frequency);
 
-  void update(float msec_delta);
+  void update(int msec_delta);
   bool filter(bool value);
 
 private:

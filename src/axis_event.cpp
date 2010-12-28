@@ -80,6 +80,8 @@ AxisEvent::from_string(const std::string& str)
 }
 
 AxisEvent::AxisEvent(AxisEventHandler* handler) :
+  m_last_raw_value(0),
+  m_last_send_value(0),
   m_min(0),
   m_max(0),
   m_handler(handler),
@@ -102,18 +104,31 @@ AxisEvent::init(uInput& uinput) const
 void
 AxisEvent::send(uInput& uinput, int value)
 {
+  m_last_raw_value = value;
+
   for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
   {
     value = (*i)->filter(value, m_min, m_max);
   }
 
-  m_handler->send(uinput, value);
+  if (m_last_send_value != value)
+  {
+    m_last_send_value = value;
+    m_handler->send(uinput, value);
+  }
 }
 
 void
 AxisEvent::update(uInput& uinput, int msec_delta)
 {
+  for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
+  {
+    (*i)->update(msec_delta);
+  }
+
   m_handler->update(uinput, msec_delta);
+
+  send(uinput, m_last_raw_value);
 }
 
 void
@@ -230,17 +245,17 @@ AbsAxisEventHandler::from_string(const std::string& str)
         break;
 
       default: 
-        throw std::runtime_error("AxisEvent::abs_from_string(): to many arguments: " + str);
+        throw std::runtime_error("AxisEventHandlers::abs_from_string(): to many arguments: " + str);
     }
   }
 
   if (j == 0)
   {
-    throw std::runtime_error("AxisEvent::abs_from_string(): at least one argument required: " + str);
+    throw std::runtime_error("AxisEventHandler::abs_from_string(): at least one argument required: " + str);
   }
   else if (j > 1)
   {
-    throw std::runtime_error("AxisEvent::abs_from_string(): invalid extra arguments in " + str);
+    throw std::runtime_error("AxisEventHandler::abs_from_string(): invalid extra arguments in " + str);
   }
   else
   {

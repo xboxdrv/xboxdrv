@@ -59,8 +59,10 @@ public:
   std::string str() const;
 
 private:
-  int m_min;
-  int m_max;
+  int  m_last_raw_value;
+  int  m_last_send_value;
+  int  m_min;
+  int  m_max;
   boost::scoped_ptr<AxisEventHandler> m_handler;
   std::vector<AxisFilterPtr> m_filters;
 };
