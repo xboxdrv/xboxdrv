@@ -20,6 +20,7 @@
 #define HEADER_XBOXDRV_AXIS_EVENT_HPP
 
 #include <boost/shared_ptr.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <string>
 #include <vector>
 
@@ -28,14 +29,13 @@
 
 class uInput;
 class AxisEvent;
+class AxisEventHandler;
 
 typedef boost::shared_ptr<AxisEvent> AxisEventPtr;
-
+
 class AxisEvent
 {
 public:
-  static const int MAX_MODIFIER = 4;
-
   static AxisEventPtr invalid();
 
   static AxisEventPtr create_abs(int device_id, int code, int min, int max, int fuzz, int flat);
@@ -45,10 +45,28 @@ public:
   static AxisEventPtr from_string(const std::string& str);
 
 public:
-  AxisEvent();
-  virtual ~AxisEvent() {}
+  AxisEvent(AxisEventHandler* handler);
+  ~AxisEvent() {}
 
   void set_filters(const std::vector<AxisFilterPtr>& filters);
+
+  void init(uInput& uinput) const;
+  void send(uInput& uinput, int old_value, int value) const;
+  void update(uInput& uinput, int msec_delta);
+
+  void set_axis_range(int min, int max);
+
+  std::string str() const;
+
+private:
+  boost::scoped_ptr<AxisEventHandler> m_handler;
+  std::vector<AxisFilterPtr> m_filters;
+};
+
+class AxisEventHandler
+{
+public:
+  virtual ~AxisEventHandler() {}
 
   virtual void init(uInput& uinput) const =0;
   virtual void send(uInput& uinput, int old_value, int value) const =0;
@@ -57,19 +75,16 @@ public:
   virtual void set_axis_range(int min, int max) {}
 
   virtual std::string str() const =0;
-
-protected:
-  std::vector<AxisFilterPtr> m_filters;
 };
-
-class RelAxisEvent : public AxisEvent
+
+class RelAxisEventHandler : public AxisEventHandler
 {
 public:
-  static AxisEventPtr from_string(const std::string& str);
+  static RelAxisEventHandler* from_string(const std::string& str);
 
 public:
-  RelAxisEvent();
-  RelAxisEvent(int device_id, int code, int repeat = 10, float value = 5);
+  RelAxisEventHandler();
+  RelAxisEventHandler(int device_id, int code, int repeat = 10, float value = 5);
 
   void init(uInput& uinput) const;
   void send(uInput& uinput, int old_value, int value) const;
@@ -82,15 +97,15 @@ private:
   float m_value; // FIXME: Why is this float?
   int   m_repeat;
 };
-
-class AbsAxisEvent : public AxisEvent
+
+class AbsAxisEventHandler : public AxisEventHandler
 {
 public:
-  static AxisEventPtr from_string(const std::string& str);
+  static AbsAxisEventHandler* from_string(const std::string& str);
 
 public:
-  AbsAxisEvent();
-  AbsAxisEvent(int device_id, int code, int min, int max, int fuzz, int flat);
+  AbsAxisEventHandler();
+  AbsAxisEventHandler(int device_id, int code, int min, int max, int fuzz, int flat);
 
   void set_axis_range(int min, int max);
 
@@ -107,14 +122,14 @@ private:
   int m_fuzz;
   int m_flat;
 };
-
-class KeyAxisEvent : public AxisEvent
+
+class KeyAxisEventHandler : public AxisEventHandler
 {
 public:
-  static AxisEventPtr from_string(const std::string& str);
+  static KeyAxisEventHandler* from_string(const std::string& str);
   
 public:
-  KeyAxisEvent();
+  KeyAxisEventHandler();
 
   void init(uInput& uinput) const;
   void send(uInput& uinput, int old_value, int value) const;
@@ -131,7 +146,7 @@ private:
   int m_threshold;
 
 };
-
+
 #endif
 
 /* EOF */

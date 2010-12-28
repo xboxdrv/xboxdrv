@@ -27,7 +27,7 @@
 #include "evdev_helper.hpp"
 #include "uinput.hpp"
 #include "uinput_deviceid.hpp"
-
+
 AxisEventPtr
 AxisEvent::invalid() 
 { 
@@ -37,13 +37,13 @@ AxisEvent::invalid()
 AxisEventPtr
 AxisEvent::create_abs(int device_id, int code, int min, int max, int fuzz, int flat)
 {
-  return AxisEventPtr(new AbsAxisEvent(device_id, code, min, max, fuzz, flat));
+  return AxisEventPtr(new AxisEvent(new AbsAxisEventHandler(device_id, code, min, max, fuzz, flat)));
 }
 
 AxisEventPtr
 AxisEvent::create_rel(int device_id, int code, int repeat, float value)
 {
-  return AxisEventPtr(new RelAxisEvent(device_id, code, repeat, value));
+  return AxisEventPtr(new AxisEvent(new RelAxisEventHandler(device_id, code, repeat, value)));
 }
   
 AxisEventPtr
@@ -54,15 +54,15 @@ AxisEvent::from_string(const std::string& str)
   switch (get_event_type(str))
   {
     case EV_ABS:
-      ev = AbsAxisEvent::from_string(str);
+      ev.reset(new AxisEvent(AbsAxisEventHandler::from_string(str)));
       break;
 
     case EV_REL:
-      ev = RelAxisEvent::from_string(str);
+      ev.reset(new AxisEvent(RelAxisEventHandler::from_string(str)));
       break;
 
     case EV_KEY:
-      ev = KeyAxisEvent::from_string(str);
+      ev.reset(new AxisEvent(KeyAxisEventHandler::from_string(str)));
       break;
 
     case -1:
@@ -78,21 +78,11 @@ AxisEvent::from_string(const std::string& str)
 
   return ev;
 }
-
-AxisEvent::AxisEvent() :
+
+AxisEvent::AxisEvent(AxisEventHandler* handler) :
+  m_handler(handler),
   m_filters()
 {
-}
-
-void
-AxisEvent::update(uInput& uinput, int msec_delta)
-{
-  /*
-    for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
-    {
-    value = (*i)->filter(old_value, value);
-    }
-  */
 }
 
 void
@@ -100,14 +90,49 @@ AxisEvent::set_filters(const std::vector<AxisFilterPtr>& filters)
 {
   m_filters = filters;
 }
+
+void
+AxisEvent::init(uInput& uinput) const
+{
+  m_handler->init(uinput);
+}
+
+void
+AxisEvent::send(uInput& uinput, int old_value, int value) const
+{
+  for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
+  {
+    value = (*i)->filter(old_value, value);
+  }
+
+  m_handler->send(uinput, old_value, value);
+}
+
+void
+AxisEvent::update(uInput& uinput, int msec_delta)
+{
+  m_handler->update(uinput, msec_delta);
+}
+
+void
+AxisEvent::set_axis_range(int min, int max)
+{
+  m_handler->set_axis_range(min, max);
+}
+
+std::string
+AxisEvent::str() const
+{
+  return m_handler->str();
+}
 
-AxisEventPtr
-RelAxisEvent::from_string(const std::string& str)
+RelAxisEventHandler*
+RelAxisEventHandler::from_string(const std::string& str)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
 
-  boost::shared_ptr<RelAxisEvent> ev(new RelAxisEvent);
+  std::auto_ptr<RelAxisEventHandler> ev(new RelAxisEventHandler);
 
   int j = 0;
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
@@ -136,17 +161,17 @@ RelAxisEvent::from_string(const std::string& str)
     throw std::runtime_error("AxisEvent::rel_from_string(): at least one argument required: " + str);
   }
 
-  return ev;
+  return ev.release();
 }
 
-RelAxisEvent::RelAxisEvent()
+RelAxisEventHandler::RelAxisEventHandler()
 {
   m_code = UIEvent::invalid();
   m_value  = 5;
   m_repeat = 10;
 }
 
-RelAxisEvent::RelAxisEvent(int device_id, int code, int repeat, float value)
+RelAxisEventHandler::RelAxisEventHandler(int device_id, int code, int repeat, float value)
 {
   m_code   = UIEvent::create(device_id, EV_REL, code);
   m_value  = value;
@@ -154,14 +179,14 @@ RelAxisEvent::RelAxisEvent(int device_id, int code, int repeat, float value)
 }
 
 void
-RelAxisEvent::init(uInput& uinput) const
+RelAxisEventHandler::init(uInput& uinput) const
 {
   uinput.create_uinput_device(m_code.device_id);
   uinput.add_rel(m_code.device_id, m_code.code);
 }
 
 void
-RelAxisEvent::send(uInput& uinput, int old_value, int value) const
+RelAxisEventHandler::send(uInput& uinput, int old_value, int value) const
 {
   // FIXME: Need to know the min/max of value
   int v = m_value * value / 32767;
@@ -172,20 +197,20 @@ RelAxisEvent::send(uInput& uinput, int old_value, int value) const
 }
 
 void
-RelAxisEvent::update(uInput& uinput, int msec_delta)
+RelAxisEventHandler::update(uInput& uinput, int msec_delta)
 {
 }
 
 std::string
-RelAxisEvent::str() const
+RelAxisEventHandler::str() const
 {
   std::ostringstream out;
   out << m_code.device_id << "-" << m_code.code << ":" << m_value << ":" << m_repeat;
   return out.str();
 }
 
-AxisEventPtr
-AbsAxisEvent::from_string(const std::string& str)
+AbsAxisEventHandler*
+AbsAxisEventHandler::from_string(const std::string& str)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
@@ -215,12 +240,11 @@ AbsAxisEvent::from_string(const std::string& str)
   }
   else
   {
-    AxisEventPtr ev = create_abs(DEVICEID_AUTO, code, -1, -1, 0, 0);
-    return ev;
+    return new AbsAxisEventHandler(DEVICEID_AUTO, code, -1, -1, 0, 0);
   }
 }
 
-AbsAxisEvent::AbsAxisEvent()
+AbsAxisEventHandler::AbsAxisEventHandler()
 {
   m_code = UIEvent::invalid();
   m_min  = -32768; // FIXME: this must be properly set
@@ -229,7 +253,7 @@ AbsAxisEvent::AbsAxisEvent()
   m_flat = 0;
 }
 
-AbsAxisEvent::AbsAxisEvent(int device_id, int code, int min, int max, int fuzz, int flat)
+AbsAxisEventHandler::AbsAxisEventHandler(int device_id, int code, int min, int max, int fuzz, int flat)
 {
   m_code  = UIEvent::create(device_id, EV_ABS, code);
   m_min   = min;
@@ -239,14 +263,14 @@ AbsAxisEvent::AbsAxisEvent(int device_id, int code, int min, int max, int fuzz, 
 }
 
 void
-AbsAxisEvent::set_axis_range(int min, int max)
+AbsAxisEventHandler::set_axis_range(int min, int max)
 {
   m_min = min;
   m_max = max;
 }
 
 void
-AbsAxisEvent::init(uInput& uinput) const
+AbsAxisEventHandler::init(uInput& uinput) const
 {
   uinput.create_uinput_device(m_code.device_id);
   uinput.add_abs(m_code.device_id, m_code.code, 
@@ -254,23 +278,23 @@ AbsAxisEvent::init(uInput& uinput) const
 }
 
 void
-AbsAxisEvent:: send(uInput& uinput, int old_value, int value) const
+AbsAxisEventHandler:: send(uInput& uinput, int old_value, int value) const
 {
-  for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
+  /*FIXME for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
   {
     value = (*i)->filter(old_value, value);
-  }
+    }*/
 
   uinput.get_uinput(m_code.device_id)->send(EV_ABS, m_code.code, value);
 }
  
 void
-AbsAxisEvent::update(uInput& uinput, int msec_delta)
+AbsAxisEventHandler::update(uInput& uinput, int msec_delta)
 {
 }
 
 std::string
-AbsAxisEvent::str() const
+AbsAxisEventHandler::str() const
 {
   std::ostringstream out;
   out << m_code.device_id << "-" << m_code.code << ":" 
@@ -279,13 +303,13 @@ AbsAxisEvent::str() const
   return out.str();
 }
 
-AxisEventPtr
-KeyAxisEvent::from_string(const std::string& str)
+KeyAxisEventHandler*
+KeyAxisEventHandler::from_string(const std::string& str)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
 
-  boost::shared_ptr<KeyAxisEvent> ev(new KeyAxisEvent);
+  std::auto_ptr<KeyAxisEventHandler> ev(new KeyAxisEventHandler);
 
   int j = 0;
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
@@ -328,10 +352,10 @@ KeyAxisEvent::from_string(const std::string& str)
     throw std::runtime_error("AxisEvent::key_from_string(): at least one argument required: " + str);
   }
 
-  return ev; 
+  return ev.release();
 }
 
-KeyAxisEvent::KeyAxisEvent()
+KeyAxisEventHandler::KeyAxisEventHandler()
 {
   std::fill_n(m_up_codes,   MAX_MODIFIER+1, UIEvent::invalid());
   std::fill_n(m_down_codes, MAX_MODIFIER+1, UIEvent::invalid());
@@ -339,7 +363,7 @@ KeyAxisEvent::KeyAxisEvent()
 }
 
 void
-KeyAxisEvent::init(uInput& uinput) const
+KeyAxisEventHandler::init(uInput& uinput) const
 {
   for(int i = 0; m_up_codes[i].is_valid(); ++i)
   {
@@ -356,7 +380,7 @@ KeyAxisEvent::init(uInput& uinput) const
 }
 
 void
-KeyAxisEvent::send(uInput& uinput, int old_value, int value) const
+KeyAxisEventHandler::send(uInput& uinput, int old_value, int value) const
 {
   if (::abs(old_value) <  m_threshold &&
       ::abs(value)     >= m_threshold)
@@ -390,12 +414,12 @@ KeyAxisEvent::send(uInput& uinput, int old_value, int value) const
 }
 
 void
-KeyAxisEvent::update(uInput& uinput, int msec_delta)
+KeyAxisEventHandler::update(uInput& uinput, int msec_delta)
 {
 }
 
 std::string
-KeyAxisEvent::str() const
+KeyAxisEventHandler::str() const
 {
   std::ostringstream out;
   for(int i = 0; m_up_codes[i].is_valid();)
