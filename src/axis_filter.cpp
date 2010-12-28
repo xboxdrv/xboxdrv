@@ -48,7 +48,10 @@ AxisFilter::from_string(const std::string& str)
 {
   std::string::size_type p = str.find(':');
   const std::string& filtername = str.substr(0, p);
-  std::string rest = str.substr(p+1);
+  std::string rest;
+
+  if (p != std::string::npos) 
+    str.substr(p+1);
 
   if (filtername == "invert")
   {

@@ -25,24 +25,12 @@
 ButtonFilterPtr
 ButtonFilter::from_string(const std::string& str)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  int k = 0;
-  
-  int frequency = 50; // FIXME: hack
+  std::string::size_type p = str.find(":");
+  std::string filtername = str.substr(0, p);
+  std::string rest;
 
-  std::string filtername;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++k)
-  {
-    if (k == 0)
-    {
-      filtername = *t;
-    }
-    else if (k == 1)
-    {
-      frequency = boost::lexical_cast<int>(*t);
-    }
-  }
+  if (p != std::string::npos) 
+    rest = str.substr(p);
 
   if (filtername == "toggle")
   {
@@ -54,7 +42,7 @@ ButtonFilter::from_string(const std::string& str)
   }
   else if (filtername == "auto" || filtername == "autofire")
   {
-    return ButtonFilterPtr(new AutofireButtonFilter(frequency));
+    return ButtonFilterPtr(AutofireButtonFilter::from_string(rest));
   }
   else
   {
@@ -86,6 +74,26 @@ InvertButtonFilter::filter(bool value)
   return !value;
 }
 
+AutofireButtonFilter*
+AutofireButtonFilter::from_string(const std::string& str)
+{
+  int frequency = 50;
+
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  int idx = 0;
+  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  {
+    switch(idx)
+    {
+      case 0: frequency = boost::lexical_cast<int>(*t); break;
+      default: throw std::runtime_error("to many arguments"); break;
+    }
+  }
+
+  return new AutofireButtonFilter(frequency);
+}
+
 AutofireButtonFilter::AutofireButtonFilter(int frequency) :
   m_state(false),
   m_frequency(frequency),

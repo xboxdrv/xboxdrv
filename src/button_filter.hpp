@@ -62,6 +62,9 @@ public:
 class AutofireButtonFilter : public ButtonFilter
 {
 public:
+  static AutofireButtonFilter* from_string(const std::string& str);
+
+public:
   AutofireButtonFilter(int frequency);
 
   void update(float msec_delta);
