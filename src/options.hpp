@@ -80,6 +80,8 @@ public:
   EvdevAbsMap evdev_absmap;
   std::map<int, XboxButton> evdev_keymap;
 
+  std::vector<std::string> exec;
+
   Options();
 };
 

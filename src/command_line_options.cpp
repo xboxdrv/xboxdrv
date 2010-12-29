@@ -600,7 +600,8 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case ArgParser::REST_ARG:
-        RAISE_EXCEPTION("unknown command line option: " << opt.argument);
+        //RAISE_EXCEPTION("unknown command line option: " << opt.argument);
+        opts.exec.push_back(opt.argument);
         break;
 
       default:

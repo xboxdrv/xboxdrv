@@ -16,22 +16,24 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/lexical_cast.hpp>
-#include <boost/function.hpp>
 #include <boost/bind.hpp>
-#include <boost/scoped_array.hpp>
-#include <sys/time.h>
-#include <ctype.h>
-#include <time.h>
-#include <signal.h>
-#include <errno.h>
-#include <math.h>
 #include <boost/format.hpp>
-#include <usb.h>
-#include <unistd.h>
+#include <boost/function.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/scoped_array.hpp>
+#include <ctype.h>
+#include <errno.h>
 #include <iostream>
-#include <string.h>
+#include <math.h>
+#include <signal.h>
 #include <stdio.h>
+#include <string.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <unistd.h>
+#include <usb.h>
 
 #include "uinput.hpp"
 #include "xboxmsg.hpp"
@@ -53,6 +55,9 @@
 bool global_exit_xboxdrv = false;
 XboxGenericController* global_controller = 0;
 
+// FIXME: isolate problametic code to a separate file, instead of pragma
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+
 void on_sigint(int)
 {
   if (global_exit_xboxdrv)
@@ -315,6 +320,33 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
   memset(&oldmsg,     0, sizeof(oldmsg));
   memset(&oldrealmsg, 0, sizeof(oldrealmsg));
 
+  pid_t pid = -1;
+
+  if (!opts.exec.empty())
+  { // launch program if one was given
+    pid = fork();
+    if (pid == 0)
+    {
+      char** argv = static_cast<char**>(malloc(sizeof(char*) * opts.exec.size()));
+      for(size_t i = 0; i < opts.exec.size(); ++i)
+      {
+        argv[i] = strdup(opts.exec[i].c_str());
+      }
+      argv[opts.exec.size()] = NULL;
+
+      if (execvp(opts.exec[0].c_str(), argv) == -1)
+      {
+        std::cout << "error: " << opts.exec[0] << ": " << strerror(errno) << std::endl;
+      }
+
+      for(size_t i = 0; i < opts.exec.size(); ++i)
+      {
+        free(argv[i]);
+      }
+      free(argv);
+    }
+  }
+
   uint32_t last_time = get_time();
   while(!global_exit_xboxdrv)
   {
@@ -386,6 +418,21 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
     if (uinput)
     {
       uinput->update(msec_delta);
+    }
+
+    if (pid != -1)
+    {
+      int status = 0;
+      int w = waitpid(pid, &status, WNOHANG);
+
+      if (w > 0)
+      {
+        if (WIFEXITED(status) || WIFSIGNALED(status))
+        {
+          std::cout << "Child program has stopped, shutting down xboxdrv" << std::endl;
+          global_exit_xboxdrv = true;
+        }
+      }
     }
   }
 }
