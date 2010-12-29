@@ -19,8 +19,9 @@
 #ifndef HEADER_XBOXDRV_AXIS_FILTER_HPP
 #define HEADER_XBOXDRV_AXIS_FILTER_HPP
 
-#include <string>
 #include <boost/shared_ptr.hpp>
+#include <string>
+#include <vector>
 
 class AxisFilter;
 
@@ -111,6 +112,34 @@ private:
   int m_state;
   int m_min;
   int m_max;
+};
+
+class ResponseCurveAxisFilter : public AxisFilter
+{
+public: 
+  static ResponseCurveAxisFilter* from_string(const std::string& str);
+
+public:
+  ResponseCurveAxisFilter(const std::vector<int>& samples);
+
+  int filter(int value, int min, int max);
+
+private:
+  std::vector<int> m_samples;
+};
+
+class LogAxisFilter : public AxisFilter
+{
+public: 
+  static LogAxisFilter* from_string(const std::string& str);
+
+public:
+  LogAxisFilter(const std::string& name);
+
+  int filter(int value, int min, int max);
+
+private:
+  std::string m_name;
 };
 
 #endif

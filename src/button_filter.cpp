@@ -18,6 +18,7 @@
 
 #include "button_filter.hpp"
 
+#include <iostream>
 #include <sstream>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
@@ -30,7 +31,7 @@ ButtonFilter::from_string(const std::string& str)
   std::string rest;
 
   if (p != std::string::npos) 
-    rest = str.substr(p);
+    rest = str.substr(p+1);
 
   if (filtername == "toggle")
   {
@@ -43,6 +44,10 @@ ButtonFilter::from_string(const std::string& str)
   else if (filtername == "auto" || filtername == "autofire")
   {
     return ButtonFilterPtr(AutofireButtonFilter::from_string(rest));
+  }
+  else if (filtername == "log")
+  {
+    return ButtonFilterPtr(LogButtonFilter::from_string(rest));
   }
   else
   {
@@ -133,6 +138,32 @@ AutofireButtonFilter::filter(bool value)
       return false;
     }
   }
+}
+
+LogButtonFilter*
+LogButtonFilter::from_string(const std::string& str)
+{
+  return new LogButtonFilter(str);
+}
+
+LogButtonFilter::LogButtonFilter(const std::string& name) :
+  m_name(name)
+{
+}
+
+bool
+LogButtonFilter::filter(bool value)
+{
+  if (m_name.empty())
+  {
+    std::cout << value << std::endl;
+  }
+  else
+  {
+    std::cout << m_name << ": " << value << std::endl;
+  }
+
+  return value;
 }
 
 /* EOF */

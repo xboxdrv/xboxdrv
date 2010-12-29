@@ -20,6 +20,7 @@
 #define HEADER_XBOXDRV_BUTTON_FILTER_HPP
 
 #include <boost/shared_ptr.hpp>
+#include <string>
 
 class ButtonFilter;
 
@@ -35,7 +36,7 @@ public:
   virtual ~ButtonFilter() {}
 
   virtual bool filter(bool value) =0;
-  virtual void update(int msec_delta) =0;
+  virtual void update(int msec_delta) {}
 };
 
 class ToggleButtonFilter : public ButtonFilter
@@ -76,6 +77,20 @@ private:
   /** msec between shots */
   int m_frequency;
   int m_counter;
+};
+
+class LogButtonFilter : public ButtonFilter
+{
+public:
+  static LogButtonFilter* from_string(const std::string& str);
+
+public:
+  LogButtonFilter(const std::string& name);
+
+  bool filter(bool value);
+
+private:
+  std::string m_name;
 };
 
 #endif

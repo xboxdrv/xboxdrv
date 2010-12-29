@@ -27,9 +27,11 @@ $ dput my-ppa xboxdrv_0.6.1_source.changes
 Stuff to do before 0.6.1 release:
 =================================
 
-* AxisFilter: invert, sensitivy, deadzone, relative-axis
+* figure out how to do absolute mouse positioning in Xorg
 
-* ButtonFilter: invert, autofire, toggle
+* AxisFilter: invert(*), sensitivy(*), deadzone(*), relative-axis(*)
+
+* ButtonFilter: invert(*), autofire(*), toggle(*)
 
 * Not implementable as they need more then one axis: squareaxis, four-way-restrictor, dpad-rotation
 

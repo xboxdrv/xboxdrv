@@ -5,7 +5,7 @@ xboxdrv 0.6.2 - (??/???/????)
 * added ability to invert buttons
 * added ability to send different events depending on how long a
   button was pressed
-* added generic event filters, replacing --sensitive-axis, --deadzone,
+* added generic event filters, which replacing --sensitive-axis, --deadzone,
   etc.
 
 
