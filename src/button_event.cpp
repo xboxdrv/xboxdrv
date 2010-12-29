@@ -504,11 +504,12 @@ ExecButtonEventHandler::send(uInput& uinput, bool value)
     pid_t pid = fork();
     if (pid == 0)
     {
-      char** argv = static_cast<char**>(malloc(sizeof(char*) * m_args.size()));
+      char** argv = static_cast<char**>(malloc(sizeof(char*) * (m_args.size() + 1)));
       for(size_t i = 0; i < m_args.size(); ++i)
       {
         argv[i] = strdup(m_args[i].c_str());
       }
+      argv[m_args.size()] = NULL;
 
       if (execvp(m_args[0].c_str(), argv) == -1)
       {
