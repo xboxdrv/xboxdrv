@@ -742,7 +742,9 @@ CommandLineParser::set_ui_buttonmap(const std::string& name, const std::string& 
 
   std::string btn_str = lhs;
   ButtonEventPtr event = ButtonEvent::from_string(value);
-  event->set_filters(filters);
+
+  if (event)
+    event->set_filters(filters);
 
   std::string::size_type j = btn_str.find('+');
   if (j == std::string::npos)

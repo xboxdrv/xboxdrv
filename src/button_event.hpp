@@ -139,6 +139,24 @@ private:
   int  m_repeat;
 };
 
+class ExecButtonEventHandler : public ButtonEventHandler
+{
+public:
+  static ExecButtonEventHandler* from_string(const std::string& str);
+
+public:
+  ExecButtonEventHandler(const std::vector<std::string>& args);
+
+  void init(uInput& uinput) const;
+  void send(uInput& uinput, bool value);
+  void update(uInput& uinput, int msec_delta) {}
+
+  std::string str() const;
+
+private:
+  std::vector<std::string> m_args;
+};
+
 #endif
 
 /* EOF */

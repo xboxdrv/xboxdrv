@@ -17,12 +17,15 @@
 */
 
 #include <assert.h>
+#include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
+#include <errno.h>
 #include <iostream>
 #include <linux/input.h>
-#include <stdexcept>
 #include <memory>
-#include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
+#include <stdexcept>
+#include <string.h>
+#include <unistd.h>
 
 #include "helper.hpp"
 #include "button_event.hpp"
@@ -71,18 +74,26 @@ ButtonEvent::from_string(const std::string& str)
 {
   std::string::size_type p = str.find(':');
   const std::string& token = str.substr(0, p);
+  std::string rest;
+
+  if (p != std::string::npos) 
+    rest = str.substr(p+1);
 
   if (token == "abs")
   {
-    return ButtonEvent::create(AbsButtonEventHandler::from_string(str.substr(p+1)));
+    return ButtonEvent::create(AbsButtonEventHandler::from_string(rest));
   }
   else if (token == "rel")
   {
-    return ButtonEvent::create(RelButtonEventHandler::from_string(str.substr(p+1)));
+    return ButtonEvent::create(RelButtonEventHandler::from_string(rest));
   }
   else if (token == "key")
   {
-    return ButtonEvent::create(KeyButtonEventHandler::from_string(str.substr(p+1)));
+    return ButtonEvent::create(KeyButtonEventHandler::from_string(rest));
+  }
+  else if (token == "exec")
+  {
+    return ButtonEvent::create(ExecButtonEventHandler::from_string(rest));
   }
   else
   {
@@ -92,7 +103,7 @@ ButtonEvent::from_string(const std::string& str)
       case EV_KEY: return ButtonEvent::create(KeyButtonEventHandler::from_string(str));
       case EV_REL: return ButtonEvent::create(RelButtonEventHandler::from_string(str));
       case EV_ABS: return ButtonEvent::create(AbsButtonEventHandler::from_string(str));
-      case     -1: return ButtonEventPtr();
+      case     -1: return ButtonEvent::invalid();
       default: assert(!"unknown type");
     }
   }
@@ -172,7 +183,6 @@ KeyButtonEventHandler::from_string(const std::string& str)
   int idx = 0;
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++idx)
   {
-
     switch(idx)
     {
       case 0: 
@@ -460,6 +470,64 @@ RelButtonEventHandler::str() const
   std::ostringstream out;
   out << "rel:" << m_code.device_id << "-" << m_code.code << ":" << m_value << ":" << m_repeat;
   return out.str();
+}
+
+ExecButtonEventHandler*
+ExecButtonEventHandler::from_string(const std::string& str)
+{
+  std::vector<std::string> args;
+
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+
+  std::copy(tokens.begin(), tokens.end(), std::back_inserter(args));
+
+  return new ExecButtonEventHandler(args);
+}
+
+ExecButtonEventHandler::ExecButtonEventHandler(const std::vector<std::string>& args) :
+  m_args(args)
+{
+}
+
+void
+ExecButtonEventHandler::init(uInput& uinput) const
+{
+  // nothing to do
+}
+
+void
+ExecButtonEventHandler::send(uInput& uinput, bool value)
+{
+  if (value)
+  {
+    pid_t pid = fork();
+    if (pid == 0)
+    {
+      char** argv = static_cast<char**>(malloc(sizeof(char*) * m_args.size()));
+      for(size_t i = 0; i < m_args.size(); ++i)
+      {
+        argv[i] = strdup(m_args[i].c_str());
+      }
+
+      if (execvp(m_args[0].c_str(), argv) == -1)
+      {
+        std::cout << "error: ExecButtonEventHandler::send(): " << strerror(errno) << std::endl;
+      }
+
+      for(size_t i = 0; i < m_args.size(); ++i)
+      {
+        free(argv[i]);
+      }
+      free(argv);
+    }
+  }
+}
+
+std::string
+ExecButtonEventHandler::str() const
+{
+  return "exec";
 }
 
 /* EOF */

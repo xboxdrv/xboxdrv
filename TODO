@@ -27,6 +27,31 @@ $ dput my-ppa xboxdrv_0.6.1_source.changes
 Stuff to do before 0.6.1 release:
 =================================
 
+* split by "," should ignore empty fields
+
+* support for macros:
+
+  --ui-buttonevent A=macro:file.macro
+
+  syntax:
+
+  send KEY_A 0
+  send ABS_X 25
+  wait 10
+  send ABS_X 24
+
+* support for programs:
+
+  --ui-buttonevent A=exec:/usr/bin/foo
+
+* convert --mouse to use the new input filter
+
+* give some response curve examples:
+
+  # Low sensitivity on the stick when LB is pressed:
+
+ --ui-axismap lb+y1^resp:-8000:0:8000=ABS_Y,y1=ABS_Y,lb+x1^resp:-8000:0:8000=ABS_X,x1=ABS_X
+
 * figure out how to do absolute mouse positioning in Xorg
 
 * AxisFilter: invert(*), sensitivy(*), deadzone(*), relative-axis(*)
