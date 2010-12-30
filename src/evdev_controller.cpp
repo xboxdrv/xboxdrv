@@ -39,9 +39,11 @@
 
 EvdevController::EvdevController(const std::string& filename,
                                  const EvdevAbsMap& absmap,
-                                 const std::map<int, XboxButton>& keymap) :
+                                 const std::map<int, XboxButton>& keymap,
+                                 bool debug) :
   m_fd(-1),
   m_name(),
+  m_debug(debug),
   m_absmap(absmap),
   m_keymap(keymap),
   m_absinfo(ABS_MAX),
@@ -142,7 +144,37 @@ EvdevController::set_led(uint8_t status)
 bool
 EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
 {
-  //std::cout << ev.type << " " << ev.code << " " << ev.value << std::endl;
+  if (m_debug)
+  {
+    switch(ev.type)
+    {
+      case EV_KEY:
+        std::cout << "[evdev] EV_KEY " << key2str(ev.code) << " " << ev.value << std::endl;
+        break;
+
+      case EV_REL:
+        std::cout << "[evdev] EV_REL " << rel2str(ev.code) << " " << ev.value << std::endl;
+        break;
+
+      case EV_ABS:
+        std::cout << "[evdev] EV_ABS " << abs2str(ev.code) << " " << ev.value << std::endl;
+        break;
+
+      case EV_SYN:
+        std::cout << "------------------- sync -------------------" << std::endl;
+        break;
+
+      case EV_MSC:
+        // FIXME: no idea what those are good for, but they pop up
+        // after key presses (something with scancodes maybe?!)
+        break;
+
+      default:
+        std::cout << "[evdev] unknown: " << ev.type << " " << ev.code << " " << ev.value << std::endl;
+        break;
+    }
+  }
+
   switch(ev.type)
   {
     case EV_KEY:

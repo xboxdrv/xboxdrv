@@ -50,7 +50,8 @@ Options::Options() :
   square_axis(false),
   four_way_restrictor(false),
   dpad_rotation(0),
-  evdev_device()
+  evdev_device(),
+  evdev_debug(false)
 {
 }
 

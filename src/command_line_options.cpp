@@ -95,6 +95,7 @@ enum {
   OPTION_LIST_CONTROLLER,
   OPTION_MOUSE,
   OPTION_EVDEV,
+  OPTION_EVDEV_DEBUG,
   OPTION_EVDEV_ABSMAP,
   OPTION_EVDEV_KEYMAP,
   OPTION_DETACH_KERNEL_DRIVER,
@@ -146,6 +147,7 @@ CommandLineParser::init_argp()
     .add_option(OPTION_DEVICE_BY_ID,   0, "device-by-id",   "VENDOR:PRODUCT", "Use device that matches VENDOR:PRODUCT (as returned by lsusb)")
     .add_option(OPTION_TYPE,           0, "type",    "TYPE", "Ignore autodetection and enforce controller type (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)")
     .add_option(OPTION_EVDEV,          0, "evdev",   "DEVICE", "Read events from a evdev device, instead of USB")
+    .add_option(OPTION_EVDEV_DEBUG,    0, "evdev-debug", "", "Print out all events received from evdev")
     .add_option(OPTION_EVDEV_ABSMAP, 0, "evdev-absmap", "MAP", "Map evdev key events to Xbox360 button events")
     .add_option(OPTION_EVDEV_KEYMAP, 0, "evdev-keymap", "MAP", "Map evdev abs events to Xbox360 axis events")
     .add_newline()
@@ -218,6 +220,7 @@ CommandLineParser::init_ini(Options* opts)
     ("four-way-restrictor", &opts->four_way_restrictor)
     ("dpad-rotation", &opts->dpad_rotation)
     ("evdev", &opts->evdev_device)
+    ("evdev-debug", &opts->evdev_debug)
     ("config", boost::bind(&CommandLineParser::read_config_file, this, opts, _1))
     ("alt-config", boost::bind(&CommandLineParser::read_alt_config_file, this, opts, _1))
 
@@ -482,6 +485,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_EVDEV:
         opts.evdev_device = opt.argument;
+        break;
+
+      case OPTION_EVDEV_DEBUG:
+        opts.evdev_debug = true;
         break;
         
       case OPTION_EVDEV_ABSMAP:

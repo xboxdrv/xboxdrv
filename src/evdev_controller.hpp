@@ -35,6 +35,7 @@ class EvdevController : public XboxGenericController
 private:
   int m_fd;
   std::string m_name;
+  bool m_debug;
 
   EvdevAbsMap m_absmap;
 
@@ -50,7 +51,8 @@ private:
 public:
   EvdevController(const std::string& filename, 
                   const EvdevAbsMap&  absmap,
-                  const std::map<int, XboxButton>& keyMap);
+                  const std::map<int, XboxButton>& keyMap,
+                  bool debug);
 
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
