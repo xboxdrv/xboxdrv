@@ -189,7 +189,8 @@ CalibrationAxisFilter::filter(int value, int min, int max)
 DeadzoneAxisFilter*
 DeadzoneAxisFilter::from_string(const std::string& str)
 {
-  int  deadzone = 0;
+  int  min_deadzone = 0;
+  int  max_deadzone = 0;
   bool smooth   = true;
 
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
@@ -199,17 +200,31 @@ DeadzoneAxisFilter::from_string(const std::string& str)
   {
     switch(idx)
     {
-      case 0: deadzone = boost::lexical_cast<int>(*t); break;
-      case 1: smooth   = boost::lexical_cast<bool>(*t); break;
-      default: throw std::runtime_error("to many arguments"); break;
+      case 0:
+        min_deadzone = -boost::lexical_cast<int>(*t);
+        max_deadzone = -min_deadzone;
+        break;
+        
+      case 1:
+        max_deadzone = boost::lexical_cast<int>(*t); 
+        break;
+
+      case 2:
+        smooth = boost::lexical_cast<bool>(*t); 
+        break;
+
+      default:
+        throw std::runtime_error("to many arguments"); 
+        break;
     }
   }
 
-  return new DeadzoneAxisFilter(deadzone, smooth);
+  return new DeadzoneAxisFilter(min_deadzone, max_deadzone, smooth);
 }
 
-DeadzoneAxisFilter::DeadzoneAxisFilter(int deadzone, bool smooth) :
-  m_deadzone(deadzone),
+DeadzoneAxisFilter::DeadzoneAxisFilter(int min_deadzone, int max_deadzone, bool smooth) :
+  m_min_deadzone(min_deadzone),
+  m_max_deadzone(max_deadzone),
   m_smooth(smooth)
 {
 }
@@ -217,41 +232,31 @@ DeadzoneAxisFilter::DeadzoneAxisFilter(int deadzone, bool smooth) :
 int
 DeadzoneAxisFilter::filter(int value, int min, int max)
 {
-  if (/*FIXME !m_smooth */ true)
+  if (!m_smooth)
   {
-    if (abs(value) < m_deadzone)
+    if (value < m_min_deadzone || m_max_deadzone < value)
     {
-      return 0;
+      return value;
     }
     else
     {
-      return value;
+      return 0;
     }
   }
   else // (m_smooth)
   {
-    // FIXME: not implemented
-    assert(!"not implemented");
-    /*
-      if (value < -deadzone) 
-      {
-      const float scale = 32768 / (32768 - deadzone);
-      rv += deadzone;
-      rv *= scale;
-      rv -= 0.5;
-      }
-      else if (value > deadzone) 
-      {
-      const float scale = 32767 / (32767 - deadzone);
-      rv -= deadzone;
-      rv *= scale;
-      rv += 0.5;
-      } 
-      else 
-      {
+    if (value < m_min_deadzone)
+    {
+      return min * (value - m_min_deadzone) / (min - m_min_deadzone);
+    }
+    else if (value > m_max_deadzone) 
+    {
+      return max * (value - m_max_deadzone) / (max - m_max_deadzone);
+    }
+    else 
+    {
       return 0;
-      }
-    */
+    }
   }
 }
 

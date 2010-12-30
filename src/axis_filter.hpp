@@ -85,12 +85,13 @@ public:
   static DeadzoneAxisFilter* from_string(const std::string& str);
 
 public:
-  DeadzoneAxisFilter(int deadzone, bool smooth);
+  DeadzoneAxisFilter(int min_deadzone, int max_deathzone, bool smooth);
 
   int filter(int value, int min, int max);
 
 private:
-  int m_deadzone;
+  int m_min_deadzone;
+  int m_max_deadzone;
   bool m_smooth;
 };
 
