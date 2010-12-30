@@ -1,12 +1,23 @@
-xboxdrv 0.6.2 - (??/???/????)
-==============================
+xboxdrv 0.6.2 - (??/Jan/2011)
+=============================
 
-* added ability to do toggle buttons
-* added ability to invert buttons
+* added generic event filter framework
+* added toggle button filter
+* added invert button filter
+* added auto fire button filter
+* added log filter for button and axis
+* added invert axis filter
+* added sensitivity axis filter
+* added relative axis filter
+* added response curve axis filter
+* added deadzone axis filter
+* added calibration axis filter
 * added ability to send different events depending on how long a
   button was pressed
-* added generic event filters, which replacing --sensitive-axis, --deadzone,
-  etc.
+* added ability to launch a program on button press
+* added ability to replay a macro on a button press
+* added ability to launch a child program from within xboxdrv, making
+  wrapper scripts easier to write without race conditions
 
 
 xboxdrv 0.6.1 - (21/Dec/2010)
