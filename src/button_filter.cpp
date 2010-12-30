@@ -87,7 +87,8 @@ InvertButtonFilter::filter(bool value)
 AutofireButtonFilter*
 AutofireButtonFilter::from_string(const std::string& str)
 {
-  int frequency = 50;
+  int rate  = 50;
+  int delay = 0;
 
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
@@ -96,17 +97,20 @@ AutofireButtonFilter::from_string(const std::string& str)
   {
     switch(idx)
     {
-      case 0: frequency = boost::lexical_cast<int>(*t); break;
+      case 0: rate  = boost::lexical_cast<int>(*t); break;
+      case 1: delay = boost::lexical_cast<int>(*t); break;
       default: throw std::runtime_error("to many arguments"); break;
     }
   }
 
-  return new AutofireButtonFilter(frequency);
+  return new AutofireButtonFilter(rate, delay);
 }
 
-AutofireButtonFilter::AutofireButtonFilter(int frequency) :
+AutofireButtonFilter::AutofireButtonFilter(int rate, int delay) :
   m_state(false),
-  m_frequency(frequency),
+  m_autofire(false),
+  m_rate(rate),
+  m_delay(delay),
   m_counter(0)
 {
 }
@@ -117,6 +121,11 @@ AutofireButtonFilter::update(int msec_delta)
   if (m_state)
   {
     m_counter += msec_delta;
+
+    if (m_counter > m_delay)
+    {
+      m_autofire = true;
+    }
   }
 }
 
@@ -127,22 +136,27 @@ AutofireButtonFilter::filter(bool value)
 
   if (!value)
   {
-    m_counter = 0;
+    m_counter  = 0;
+    m_autofire = false;
     return false;
   }
   else
-  {
-    // FIXME: should fire event at 0 not m_frequency
-
-    // auto fire
-    if (m_counter > m_frequency)
+  { // auto fire
+    if (m_autofire)
     {
-      m_counter = 0;
-      return true;
+      if (m_counter > m_rate)
+      {
+        m_counter = 0;
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
     else
     {
-      return false;
+      return true;
     }
   }
 }

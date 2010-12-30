@@ -67,16 +67,18 @@ public:
   static AutofireButtonFilter* from_string(const std::string& str);
 
 public:
-  AutofireButtonFilter(int frequency);
+  AutofireButtonFilter(int rate, int delay);
 
   void update(int msec_delta);
   bool filter(bool value);
 
 private:
   bool m_state;
+  bool m_autofire;
 
   /** msec between shots */
-  int m_frequency;
+  int m_rate;
+  int m_delay;
   int m_counter;
 };
 
