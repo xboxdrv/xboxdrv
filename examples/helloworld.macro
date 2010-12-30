@@ -1,0 +1,47 @@
+send KEY_LEFTSHIFT 1
+send KEY_H 1
+wait 100
+send KEY_H 0
+send KEY_LEFTSHIFT 0
+
+send KEY_E 1
+wait 100
+send KEY_E 0
+
+send KEY_L 1
+wait 100
+send KEY_L 0
+
+send KEY_L 1
+wait 100
+send KEY_L 0
+
+send KEY_O 1
+wait 100
+send KEY_O 0
+
+send KEY_SPACE 1
+wait 100
+send KEY_SPACE 0
+
+send KEY_LEFTSHIFT 1
+send KEY_W 1
+wait 100
+send KEY_W 0
+send KEY_LEFTSHIFT 0
+
+send KEY_O 1
+wait 100
+send KEY_O 0
+
+send KEY_R 1
+wait 100
+send KEY_R 0
+
+send KEY_L 1
+wait 100
+send KEY_L 0
+
+send KEY_D 1
+wait 100
+send KEY_D 0

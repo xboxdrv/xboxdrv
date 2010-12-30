@@ -127,6 +127,8 @@ AutofireButtonFilter::filter(bool value)
   }
   else
   {
+    // FIXME: should fire event at 0 not m_frequency
+
     // auto fire
     if (m_counter > m_frequency)
     {

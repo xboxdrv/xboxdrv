@@ -53,7 +53,8 @@ public:
   void update(uInput& uinput, int msec_delta);
   std::string str() const;
 
-  void set_filters(const std::vector<ButtonFilterPtr>& filters);
+  void add_filters(const std::vector<ButtonFilterPtr>& filters);
+  void add_filter(ButtonFilterPtr filter);
 
 private:
   bool m_last_send_state;
@@ -155,6 +156,47 @@ public:
 
 private:
   std::vector<std::string> m_args;
+};
+
+class MacroButtonEventHandler : public ButtonEventHandler
+{
+public:
+private:
+  struct MacroEvent {
+    enum { kSendOp, kWaitOp, kNull } type; 
+    
+    union {
+      struct {
+        UIEvent event;
+        int     value;
+      } send;
+
+      struct {
+        int msec;
+      } wait;
+    };
+  };
+
+public:
+  static MacroButtonEventHandler* from_string(const std::string& str);
+
+public:
+  MacroButtonEventHandler(const std::vector<MacroEvent>& events);
+
+  void init(uInput& uinput) const;
+  void send(uInput& uinput, bool value);
+  void update(uInput& uinput, int msec_delta);
+
+  std::string str() const;
+
+private:
+  static MacroEvent macro_event_from_string(const std::string& str);
+
+private:
+  std::vector<MacroEvent> m_events;
+  bool m_send_in_progress;
+  int m_countdown;
+  std::vector<MacroEvent>::size_type m_event_counter;
 };
 
 #endif
