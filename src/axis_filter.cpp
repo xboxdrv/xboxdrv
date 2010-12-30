@@ -92,8 +92,21 @@ AxisFilter::from_string(const std::string& str)
 int
 InvertAxisFilter::filter(int value, int min, int max)
 {
-  // FIXME: take min/max into account
-  return -value;
+  int center = (max + min + 1)/2; // FIXME: '+1' is kind of a hack to
+                                  // get the center at 0 for the
+                                  // [-32768, 32767] case
+  if (value < center)
+  {
+    return (max - center) * (value - center) / (min - center) + center;
+  }
+  else if (value > center)
+  {
+    return (min - center) * (value - center) / (max - center) + center;
+  }
+  else
+  {
+    return value;
+  }
 }
 
 SensitivityAxisFilter*
@@ -129,6 +142,7 @@ SensitivityAxisFilter::filter(int value, int min, int max)
 
   float t = powf(2, m_sensitivity);
 
+  // FIXME: there might be better/more standard ways to accomplish this
   if (pos > 0)
   {
     pos = powf(1.0f - powf(1.0f - pos, t), 1 / t);
