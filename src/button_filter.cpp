@@ -58,18 +58,23 @@ ButtonFilter::from_string(const std::string& str)
 }
 
 ToggleButtonFilter::ToggleButtonFilter() :
-  m_state(false)
+  m_state(false),
+  m_last_value(false)
 {
 }
 
 bool
 ToggleButtonFilter::filter(bool value)
 {
-  if (value)
+  if (value != m_last_value)
   {
-    m_state = !m_state;
+    if (value)
+    {
+      m_state = !m_state;
+    }
+
+    m_last_value = value;
   }
-   
   return m_state;
 }   
 

@@ -49,6 +49,7 @@ public:
 
 private:
   bool m_state;
+  bool m_last_value;
 };
 
 class InvertButtonFilter : public ButtonFilter
