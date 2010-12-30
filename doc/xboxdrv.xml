@@ -641,9 +641,10 @@ start=KEY_ESC
         <varlistentry>
           <term><option>--ui-buttonmap</option> <replaceable class="parameter">UIBUTTONSPEC,...</replaceable></term>
           <listitem>
-            <programlisting><![CDATA[UIBUTTONSPEC = XBOXBUTTON [ "+" XBOXBUTTON ] [ "^" FILTER ] ... "=" ( RELSPEC | BTNSPEC ) ;
+            <programlisting><![CDATA[UIBUTTONSPEC = XBOXBUTTON [ "+" XBOXBUTTON ] [ "^" FILTER ] ... "=" ( RELSPEC | BTNSPEC | EXECSPEC ) ;
 RELSPEC      = [ DEVICEID "-" ] "REL_" [ ":" [ VALUE ] [ ":" REPEAT ] ] ;
 BTNSPEC      = [ DEVICEID "-" ] ( ( "BTN_" NAME ) | ( "KEY_" NAME ) ) { "+" BTNSPEC } ;
+EXECSPEC     = PROGRAM { ":" ARGUMENT } ;
 XBOXBUTTON   = "a" | "b" | "x" | "y" | "lb" | "rb" | "lt" | "rt" | 
                "tl" | "tr" | "start" | "select" | "back" | "guide" | "black" | "white" ;
 FILTER       = "toggle" | "invert" ;
@@ -1319,13 +1320,13 @@ $ modprobe joydev]]></programlisting>
     <refsect2>
       <title>Keyboard Emulation</title>
 
-      <para>The following configuration works for games that are played with
-        keyboard, like Flash games or games that don't support a joystick, you
-        have to adjust the keybindings to fit the game:</para>
+      <para>The following configuration works for games that are
+        played with keyboard, like Flash games or games that don't
+        support a joystick. You might have to adjust the keybindings
+        to fit the game:</para>
 
       <programlisting><![CDATA[$ xboxdrv \
   --ui-clear \
-  --dpad-as-button \
   --ui-buttonmap a=XK_a,b=XK_b,x=XK_x,y=XK_y \
   --ui-buttonmap dl=XK_Left,dr=XK_Right,du=XK_Up,dd=XK_Down]]></programlisting>
     </refsect2>
@@ -1409,6 +1410,26 @@ joysticktype = ch]]></programlisting>
   --ui-buttonmap dl=KEY_4,dr=KEY_2,du=REL_WHEEL:-1:150,dd=REL_WHEEL:1:150 \
   --ui-buttonmap back=KEY_TAB,start=KEY_ESC \
   -s --deadzone 6000 --dpad-as-button --trigger-as-button]]></programlisting>
+    </refsect2>
+
+    <refsect2>
+      <title>Using mouse emulation and joystick at the same time</title>
+      <para>
+        To use mouse emulation and joystick at the same time you have
+        to register two uinput configuration with xboxdrv, this works
+        via:
+      </para>
+      <programlisting><![CDATA[$ xboxdrv \
+  --ui-new --mouse
+]]></programlisting>
+      <para>
+        The <option>--ui-new</option> option will open up a second
+        configuration and all configuration options on the right side
+        of it will go there, while everything on the left side of it
+        will go into the first configuration. Toggling between the
+        configurations works with the guide button, you can have as
+        many configuratios as you want.
+      </para>
     </refsect2>
   </refsect1>
 
