@@ -24,49 +24,18 @@ $ sudo pbuilder --build xboxdrv_0.6.1.dsc
 $ dput my-ppa xboxdrv_0.6.1_source.changes
 
 
-Stuff to do before 0.6.1 release:
+Stuff to do before 0.6.2 release:
 =================================
 
-* split by "," should ignore empty fields
+* add "mouse=true" to ini options
 
-* support for macros:
+* write documentation for new features
 
-  --ui-buttonevent A=macro:file.macro
+* AxisFilter: invert(checked), sensitivy(*), deadzone(checked), relative-axis(checked)
 
-  syntax:
+* ButtonFilter: invert(checked), toggle(checked), auto(checked)
 
-  send KEY_A 0
-  send ABS_X 25
-  wait 10
-  send ABS_X 24
-
-* support for programs:
-
-  --ui-buttonevent A=exec:/usr/bin/foo
-
-* convert --mouse to use the new input filter
-
-* give some response curve examples:
-
-  # Low sensitivity on the stick when LB is pressed:
-
- --ui-axismap lb+y1^resp:-8000:0:8000=ABS_Y,y1=ABS_Y,lb+x1^resp:-8000:0:8000=ABS_X,x1=ABS_X
-
-* figure out how to do absolute mouse positioning in Xorg
-
-* AxisFilter: invert(*), sensitivy(*), deadzone(*), relative-axis(*)
-
-* ButtonFilter: invert(*), autofire(*), toggle(*)
-
-* Not implementable as they need more then one axis: squareaxis, four-way-restrictor, dpad-rotation
-
-* "couldn't convert 'ABS_y' to enum, not a member of EV_ABS"
- 
-  convert all enum names to uppercase? or does that lead to conflicts in the naming?
-
-* allow giving ini options on command line: xboxdrv '-e' foo=5 (or '-o')
-
-* allow the right side of --ui-buttomap/--ui-axismap to be empty:
+* allow the right side of --ui-axismap to be empty:
 
   xboxdrv --ui-buttonmap X1^deadzone:50
 
@@ -75,12 +44,6 @@ Stuff to do before 0.6.1 release:
 * remove guide button from default mapping when its an Xbox1 controller
 
 * fixup guitar
-
-* add an --evdev debug mode that displays events
-
-* support for Playstation button names maybe? cross, triangle, circle, square, R3, L3, ...?
-
-* add more example scripts
 
 * make evdev grab optional:
 
@@ -91,6 +54,44 @@ Stuff to do before 0.6.1 release:
     receive events.
 
   --evdev-no-grab
+
+Stuff to do before 0.6.x release:
+=================================
+
+* REL_ events could need acceleration support, as mouse emulation is currently kind of imprecise
+
+* write example ini configs (as documented source for user customization):
+
+  * default config
+
+  * two joysticks with one stick
+ 
+  * all buttons and axis shifted by LB and RB
+
+  * evdev joystick to xbox360
+
+  * dosbox flightstick emulation
+
+  * high sensitivty
+
+  * mouse emulation
+
+* give some response curve examples:
+
+  # Low sensitivity on the stick when LB is pressed:
+
+ --ui-axismap lb+y1^resp:-8000:0:8000=ABS_Y,y1=ABS_Y,lb+x1^resp:-8000:0:8000=ABS_X,x1=ABS_X
+
+* figure out how to do absolute mouse positioning in Xorg
+
+* Not implementable as they need more then one axis: squareaxis, four-way-restrictor, dpad-rotation
+
+* "couldn't convert 'ABS_y' to enum, not a member of EV_ABS"
+ 
+  convert all enum names to uppercase? or does that lead to conflicts in the naming?
+
+* support for Playstation button names maybe? cross, triangle, circle, square, R3, L3, ...?
+
 
 Stuff to do before 0.7.0 release:
 =================================

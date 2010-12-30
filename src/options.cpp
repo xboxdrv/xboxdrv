@@ -51,6 +51,7 @@ Options::Options() :
   four_way_restrictor(false),
   dpad_rotation(0),
   evdev_device(),
+  evdev_grab(true),
   evdev_debug(false)
 {
 }

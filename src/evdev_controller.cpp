@@ -40,9 +40,11 @@
 EvdevController::EvdevController(const std::string& filename,
                                  const EvdevAbsMap& absmap,
                                  const std::map<int, XboxButton>& keymap,
+                                 bool grab,
                                  bool debug) :
   m_fd(-1),
   m_name(),
+  m_grab(grab),
   m_debug(debug),
   m_absmap(absmap),
   m_keymap(keymap),
@@ -67,6 +69,7 @@ EvdevController::EvdevController(const std::string& filename,
     std::cout << "Name: " << m_name << std::endl;
   }
 
+  if (m_grab)
   { // grab the device, so it doesn't broadcast events into the wild
     int ret = ioctl(m_fd, EVIOCGRAB, 1);
     if ( ret == -1 )

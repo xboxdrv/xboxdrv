@@ -79,6 +79,7 @@ public:
   std::string evdev_device;
   EvdevAbsMap evdev_absmap;
   std::map<int, XboxButton> evdev_keymap;
+  bool evdev_grab;
   bool evdev_debug;
 
   std::vector<std::string> exec;

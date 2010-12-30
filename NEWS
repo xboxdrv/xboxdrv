@@ -18,6 +18,10 @@ xboxdrv 0.6.2 - (??/Jan/2011)
 * added ability to replay a macro on a button press
 * added ability to launch a child program from within xboxdrv, making
   wrapper scripts easier to write without race conditions
+* added --option NAME=VALUE to allow INI-style config options from
+  command line
+* added --evdev-debug to print out all received events from evdev
+* added --evdev-no-grab to avoid a full grab on the event device
 
 
 xboxdrv 0.6.1 - (21/Dec/2010)

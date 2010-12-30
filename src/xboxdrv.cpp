@@ -523,6 +523,7 @@ Xboxdrv::run_main(const Options& opts)
     controller = std::auto_ptr<XboxGenericController>(new EvdevController(opts.evdev_device, 
                                                                           opts.evdev_absmap, 
                                                                           opts.evdev_keymap,
+                                                                          opts.evdev_grab,
                                                                           opts.evdev_debug));
 
     // FIXME: ugly, should be part of XboxGenericController
