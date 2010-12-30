@@ -722,44 +722,57 @@ CommandLineParser::set_ui_axismap(const std::string& name, const std::string& va
 void
 CommandLineParser::set_ui_buttonmap(const std::string& name, const std::string& value)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
-  int k = 0;
-  std::string lhs;
+  ButtonEventPtr event;
 
+  XboxButton shift = XBOX_BTN_UNKNOWN;
+  XboxButton btn   = XBOX_BTN_UNKNOWN;
   std::vector<ButtonFilterPtr> filters;
 
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++k)
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  int idx = 0;
+  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
   {
-    if (k == 0)
-    { // shift+key
-      lhs = *t;
+    switch(idx)
+    { 
+      case 0: // shift+key portion
+        {
+          std::string::size_type j = t->find('+');
+          if (j == std::string::npos)
+          {
+            shift = XBOX_BTN_UNKNOWN;
+            btn   = string2btn(*t);
+          }
+          else
+          {
+            shift = string2btn(t->substr(0, j));
+            btn   = string2btn(t->substr(j+1));
+          }
+          
+          if (value.empty())
+          { // if no rhs value is given, add filters to the current binding
+            event = m_options->uinput_config.get_btn_map().lookup(shift, btn);
+          }
+          else
+          {
+            event = ButtonEvent::from_string(value);
+            if (event)
+            {
+              m_options->uinput_config.get_btn_map().bind(shift, btn, event);
+            }
+          }
+        }
+        break;
+
+      default:
+        { // filter
+          if (event)
+          {
+            event->add_filter(ButtonFilter::from_string(*t));
+          }
+        }
+        break;
     }
-    else
-    { // filter
-      filters.push_back(ButtonFilter::from_string(*t));
-    }
-  }
-
-  std::string btn_str = lhs;
-  ButtonEventPtr event = ButtonEvent::from_string(value);
-
-  if (event)
-    event->set_filters(filters);
-
-  std::string::size_type j = btn_str.find('+');
-  if (j == std::string::npos)
-  {
-    XboxButton  btn = string2btn(btn_str);
-
-    m_options->uinput_config.get_btn_map().bind(btn, event);
-  }
-  else
-  {
-    XboxButton shift = string2btn(btn_str.substr(0, j));
-    XboxButton btn   = string2btn(btn_str.substr(j+1));
-
-    m_options->uinput_config.get_btn_map().bind(shift, btn, event);
   }
 }
 
