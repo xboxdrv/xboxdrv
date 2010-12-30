@@ -433,20 +433,34 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_MOUSE:
-        opts.uinput_config.dpad_as_button();
-        opts.deadzone = 4000;
+        opts.uinput_config.get_axis_map().clear();
+        opts.uinput_config.get_btn_map().clear();
         opts.uinput_config.trigger_as_zaxis();
-        process_name_value_string("-y2=y2,-trigger=trigger", boost::bind(&CommandLineParser::set_axismap, this, _1, _2));
+
         // send events only every 20msec, lower values cause a jumpy pointer
-        process_name_value_string("x1=REL_X:15:20,y1=REL_Y:15:20,"
-                                  "y2=REL_WHEEL:5:100,x2=REL_HWHEEL:5:100,"
-                                  "trigger=REL_WHEEL:5:100",
-                                  boost::bind(&CommandLineParser::set_ui_axismap, this, _1, _2));
-        process_name_value_string("a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER,rb=KEY_PAGEDOWN,lb=KEY_PAGEUP,"
-                                  "dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN,"
-                                  "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,"
-                                  "tl=void,tr=void",
-                                  boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
+        set_ui_axismap("x1^dead:4000", "REL_X:15:20");
+        set_ui_axismap("y1^dead:4000", "REL_Y:15:20");
+        set_ui_axismap("tr+x1^dead:4000^resp:-8000:0:8000", "REL_X:15:20");
+        set_ui_axismap("tr+y1^dead:4000^resp:-8000:0:8000", "REL_Y:15:20");
+        set_ui_axismap("y2^invert^dead:4000", "REL_WHEEL:5:100");
+        set_ui_axismap("x2^dead:4000", "REL_HWHEEL:5:100");
+        set_ui_axismap("trigger^invert", "REL_WHEEL:5:100");
+        
+        set_ui_buttonmap("a", "BTN_LEFT");
+        set_ui_buttonmap("b", "BTN_RIGHT");
+        set_ui_buttonmap("x", "BTN_MIDDLE");
+        set_ui_buttonmap("y", "KEY_ENTER");
+        set_ui_buttonmap("rb", "KEY_PAGEDOWN");
+        set_ui_buttonmap("lb", "KEY_PAGEUP");
+        
+        set_ui_buttonmap("dl", "KEY_LEFT");
+        set_ui_buttonmap("dr", "KEY_RIGHT");
+        set_ui_buttonmap("du", "KEY_UP");
+        set_ui_buttonmap("dd", "KEY_DOWN");
+        
+        set_ui_buttonmap("start", "KEY_FORWARD");
+        set_ui_buttonmap("back", "KEY_BACK");
+        set_ui_buttonmap("guide", "KEY_ESC");
         break;
 
       case OPTION_DETACH_KERNEL_DRIVER:
