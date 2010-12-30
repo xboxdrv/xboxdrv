@@ -50,6 +50,7 @@ enum {
   OPTION_QUIET,
   OPTION_SILENT,
   OPTION_DAEMON,
+  OPTION_CONFIG_OPTION,
   OPTION_CONFIG,
   OPTION_ALT_CONFIG,
   OPTION_WRITE_CONFIG,
@@ -132,6 +133,7 @@ CommandLineParser::init_argp()
     .add_option(OPTION_MIMIC_XPAD,    0,  "mimic-xpad",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver")
     .add_option(OPTION_DAEMON,       'D', "daemon",      "", "run as daemon")
     .add_option(OPTION_CONFIG,       'c', "config",      "FILE", "read configuration from FILE")
+    .add_option(OPTION_CONFIG_OPTION,'o', "option",      "NAME=VALUE", "Set the given configuration option") 
     .add_option(OPTION_ALT_CONFIG,    0, "alt-config",   "FILE", "read alternative configuration from FILE ")
     .add_option(OPTION_WRITE_CONFIG,  0, "write-config", "FILE", "write an example configuration to FILE")
     .add_newline()
@@ -300,6 +302,17 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
             // FIXME: implement me
             m_ini.save(out);
           }
+        }
+        break;
+
+      case OPTION_CONFIG_OPTION:
+        {
+          std::string name, value;
+          split_string_at(opt.argument, '=', &name, &value);
+
+          INISchemaBuilder builder(m_ini);
+          builder.send_section("xboxdrv");
+          builder.send_pair(name, value);
         }
         break;
 
