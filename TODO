@@ -24,19 +24,16 @@ $ sudo pbuilder --build xboxdrv_0.6.1.dsc
 $ dput my-ppa xboxdrv_0.6.1_source.changes
 
 
-Stuff to do before 0.6.2 release:
+Stuff to do before 0.6.x release:
 =================================
 
-Change default axis/button map depending on controller type (tricky as
-type is only really known after the axis/buttonmap as already been
-build):
+* change default axis/button map depending on controller type (tricky as
+  type is only really known after the axis/buttonmap as already been
+  build):
 
 * remove guide button from default mapping when its an Xbox1 controller
 
-* this was broken in: a4e1003cba0ff925358ce5ed84d2bf9a728e93d6 past 0.6.2
-
-Stuff to do before 0.6.x release:
-=================================
+* guitar handling was changed in a4e1003cba0ff925358ce5ed84d2bf9a728e93d6 
 
 * REL_ events could need acceleration support, as mouse emulation is currently kind of imprecise
 

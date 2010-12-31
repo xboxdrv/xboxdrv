@@ -1,4 +1,4 @@
-xboxdrv 0.6.2 - (??/Jan/2011)
+xboxdrv 0.6.2 - (31/Dec/2010)
 =============================
 
 * merged Xbox360 guitar handling into the regular Xbox360 controller
@@ -28,6 +28,7 @@ xboxdrv 0.6.2 - (??/Jan/2011)
 * Mad Catz Xbox controller - MW2 controller support added
 * added support for Xbox1 analog buttons, use --ui-axismap with A, B,
   X, Y, black, white
+* give proper error message when the Play&Charge kit is used
 
 
 xboxdrv 0.6.1 - (21/Dec/2010)

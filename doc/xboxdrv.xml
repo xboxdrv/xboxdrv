@@ -60,10 +60,11 @@
     </para>
     <para>
       It is also possible for <command>xboxdrv</command> to read input
-      data directly from an event device, this allows you to use the
+      data directly from an event device, this allows to use the
       configurability of <command>xboxdrv</command> on regular PC
-      joysticks and thus lets <command>xboxdrv</command> serve a
-      similar purpose as <command>joy2key</command>. See the
+      joysticks, keyboards and mice and thus
+      lets <command>xboxdrv</command> serve a similar purpose
+      as <command>joy2key</command>. See the
       option <option>--evdev</option> below for more information.
     </para>
     <para>
@@ -208,8 +209,7 @@
               The <filename>examples/</filename> directory contains
               some example configuration files.
             </para>
-            <programlisting><![CDATA[
-[xboxdrv]
+            <programlisting><![CDATA[[xboxdrv]
 silent=true
 deadzone=6000
 dpad-as-button=true
