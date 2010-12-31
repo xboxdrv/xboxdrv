@@ -186,6 +186,14 @@ enum XboxAxis {
 
   XBOX_AXIS_TRIGGER,
 
+  // Xbox1 analog button
+  XBOX_AXIS_A,
+  XBOX_AXIS_B,
+  XBOX_AXIS_X,
+  XBOX_AXIS_Y,
+  XBOX_AXIS_BLACK,
+  XBOX_AXIS_WHITE,
+
   XBOX_AXIS_MAX
 };
 

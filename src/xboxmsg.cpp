@@ -397,18 +397,19 @@ int get_axis(XboxGenericMsg& msg, XboxAxis axis)
         case XBOX_AXIS_TRIGGER:
           return msg.xbox360.rt - msg.xbox360.lt;
 
-        case XBOX_AXIS_X1:
-          return msg.xbox360.x1;
-        case XBOX_AXIS_Y1:
-          return msg.xbox360.y1;
-        case XBOX_AXIS_X2:
-          return msg.xbox360.x2;
-        case XBOX_AXIS_Y2:
-          return msg.xbox360.y2;
-        case XBOX_AXIS_LT:
-          return msg.xbox360.lt;
-        case XBOX_AXIS_RT:
-          return msg.xbox360.rt;
+        case XBOX_AXIS_X1: return msg.xbox360.x1;
+        case XBOX_AXIS_Y1: return msg.xbox360.y1;
+        case XBOX_AXIS_X2: return msg.xbox360.x2;
+        case XBOX_AXIS_Y2: return msg.xbox360.y2;
+        case XBOX_AXIS_LT: return msg.xbox360.lt;
+        case XBOX_AXIS_RT: return msg.xbox360.rt;
+
+        case XBOX_AXIS_A:     return 0;
+        case XBOX_AXIS_B:     return 0;
+        case XBOX_AXIS_X:     return 0;
+        case XBOX_AXIS_Y:     return 0;
+        case XBOX_AXIS_BLACK: return 0;
+        case XBOX_AXIS_WHITE: return 0;
       }
       break;
 
@@ -447,21 +448,21 @@ int get_axis(XboxGenericMsg& msg, XboxAxis axis)
             return 0;
           }
 
-        case XBOX_AXIS_TRIGGER:
-          return msg.xbox.rt - msg.xbox.lt;
+        case XBOX_AXIS_TRIGGER: return msg.xbox.rt - msg.xbox.lt;
 
-        case XBOX_AXIS_X1:
-          return msg.xbox.x1;
-        case XBOX_AXIS_Y1:
-          return msg.xbox.y1;
-        case XBOX_AXIS_X2:
-          return msg.xbox.x2;
-        case XBOX_AXIS_Y2:
-          return msg.xbox.y2;
-        case XBOX_AXIS_LT:
-          return msg.xbox.lt;
-        case XBOX_AXIS_RT:
-          return msg.xbox.rt;
+        case XBOX_AXIS_X1: return msg.xbox.x1;
+        case XBOX_AXIS_Y1: return msg.xbox.y1;
+        case XBOX_AXIS_X2: return msg.xbox.x2;
+        case XBOX_AXIS_Y2: return msg.xbox.y2;
+        case XBOX_AXIS_LT: return msg.xbox.lt;
+        case XBOX_AXIS_RT: return msg.xbox.rt;
+
+        case XBOX_AXIS_A:     return msg.xbox.a;
+        case XBOX_AXIS_B:     return msg.xbox.b;
+        case XBOX_AXIS_X:     return msg.xbox.x;
+        case XBOX_AXIS_Y:     return msg.xbox.y;
+        case XBOX_AXIS_BLACK: return msg.xbox.black;
+        case XBOX_AXIS_WHITE: return msg.xbox.white;
       }
       break;
   }
@@ -549,21 +550,21 @@ float get_axis_float(XboxGenericMsg& msg, XboxAxis axis)
             return 0;
           }
 
-        case XBOX_AXIS_TRIGGER:
-          return (msg.xbox360.rt - msg.xbox360.lt)/255.0f;
+        case XBOX_AXIS_TRIGGER: return (msg.xbox360.rt - msg.xbox360.lt)/255.0f;
 
-        case XBOX_AXIS_X1:
-          return s16_to_float(msg.xbox360.x1);
-        case XBOX_AXIS_Y1:
-          return s16_to_float(msg.xbox360.y1);
-        case XBOX_AXIS_X2:
-          return s16_to_float(msg.xbox360.x2);
-        case XBOX_AXIS_Y2:
-          return s16_to_float(msg.xbox360.y2);
-        case XBOX_AXIS_LT:
-          return u8_to_float(msg.xbox360.lt);
-        case XBOX_AXIS_RT:
-          return u8_to_float(msg.xbox360.rt);
+        case XBOX_AXIS_X1: return s16_to_float(msg.xbox360.x1);
+        case XBOX_AXIS_Y1: return s16_to_float(msg.xbox360.y1);
+        case XBOX_AXIS_X2: return s16_to_float(msg.xbox360.x2);
+        case XBOX_AXIS_Y2: return s16_to_float(msg.xbox360.y2);
+        case XBOX_AXIS_LT: return u8_to_float(msg.xbox360.lt);
+        case XBOX_AXIS_RT: return u8_to_float(msg.xbox360.rt);
+
+        case XBOX_AXIS_A:     return 0;
+        case XBOX_AXIS_B:     return 0;
+        case XBOX_AXIS_X:     return 0;
+        case XBOX_AXIS_Y:     return 0;
+        case XBOX_AXIS_BLACK: return 0;
+        case XBOX_AXIS_WHITE: return 0;
       }
       break;
 
@@ -602,21 +603,21 @@ float get_axis_float(XboxGenericMsg& msg, XboxAxis axis)
             return 0;
           }
 
-        case XBOX_AXIS_TRIGGER:
-          return (msg.xbox.rt - msg.xbox.lt) / 255.0f;
+        case XBOX_AXIS_TRIGGER: return (msg.xbox.rt - msg.xbox.lt) / 255.0f;
 
-        case XBOX_AXIS_X1:
-          return s16_to_float(msg.xbox.x1);
-        case XBOX_AXIS_Y1:
-          return s16_to_float(msg.xbox.y1);
-        case XBOX_AXIS_X2:
-          return s16_to_float(msg.xbox.x2);
-        case XBOX_AXIS_Y2:
-          return s16_to_float(msg.xbox.y2);
-        case XBOX_AXIS_LT:
-          return u8_to_float(msg.xbox.lt);
-        case XBOX_AXIS_RT:
-          return u8_to_float(msg.xbox.rt);
+        case XBOX_AXIS_X1: return s16_to_float(msg.xbox.x1);
+        case XBOX_AXIS_Y1: return s16_to_float(msg.xbox.y1);
+        case XBOX_AXIS_X2: return s16_to_float(msg.xbox.x2);
+        case XBOX_AXIS_Y2: return s16_to_float(msg.xbox.y2);
+        case XBOX_AXIS_LT: return u8_to_float(msg.xbox.lt);
+        case XBOX_AXIS_RT: return u8_to_float(msg.xbox.rt);
+
+        case XBOX_AXIS_A:     return u8_to_float(msg.xbox.a);
+        case XBOX_AXIS_B:     return u8_to_float(msg.xbox.b);
+        case XBOX_AXIS_X:     return u8_to_float(msg.xbox.x);
+        case XBOX_AXIS_Y:     return u8_to_float(msg.xbox.y);
+        case XBOX_AXIS_BLACK: return u8_to_float(msg.xbox.black);
+        case XBOX_AXIS_WHITE: return u8_to_float(msg.xbox.white);
       }
       break;
   }
@@ -675,18 +676,19 @@ void set_axis_float(XboxGenericMsg& msg, XboxAxis axis, float v)
           }
           break;
 
-        case XBOX_AXIS_X1:
-          msg.xbox360.x1 = float_to_s16(v); break;
-        case XBOX_AXIS_Y1:
-          msg.xbox360.y1 = float_to_s16(v); break;
-        case XBOX_AXIS_X2:
-          msg.xbox360.x2 = float_to_s16(v); break;
-        case XBOX_AXIS_Y2:
-          msg.xbox360.y2 = float_to_s16(v); break;
-        case XBOX_AXIS_LT:
-          msg.xbox360.lt = float_to_u8(v); break;
-        case XBOX_AXIS_RT:
-          msg.xbox360.rt = float_to_u8(v); break;
+        case XBOX_AXIS_X1: msg.xbox360.x1 = float_to_s16(v); break;
+        case XBOX_AXIS_Y1: msg.xbox360.y1 = float_to_s16(v); break;
+        case XBOX_AXIS_X2: msg.xbox360.x2 = float_to_s16(v); break;
+        case XBOX_AXIS_Y2: msg.xbox360.y2 = float_to_s16(v); break;
+        case XBOX_AXIS_LT: msg.xbox360.lt = float_to_u8(v);  break;
+        case XBOX_AXIS_RT: msg.xbox360.rt = float_to_u8(v);  break;
+
+        case XBOX_AXIS_A:     break;
+        case XBOX_AXIS_B:     break;
+        case XBOX_AXIS_X:     break;
+        case XBOX_AXIS_Y:     break;
+        case XBOX_AXIS_BLACK: break;
+        case XBOX_AXIS_WHITE: break;
       }
       break;
 
@@ -738,18 +740,19 @@ void set_axis_float(XboxGenericMsg& msg, XboxAxis axis, float v)
           }
           break;
 
-        case XBOX_AXIS_X1:
-          msg.xbox.x1 = float_to_s16(v); break;
-        case XBOX_AXIS_Y1:
-          msg.xbox.y1 = float_to_s16(v); break;
-        case XBOX_AXIS_X2:
-          msg.xbox.x2 = float_to_s16(v); break;
-        case XBOX_AXIS_Y2:
-          msg.xbox.y2 = float_to_s16(v); break;
-        case XBOX_AXIS_LT:
-          msg.xbox.lt = float_to_u8(v); break;
-        case XBOX_AXIS_RT:
-          msg.xbox.rt = float_to_u8(v); break;
+        case XBOX_AXIS_X1: msg.xbox.x1 = float_to_s16(v); break;
+        case XBOX_AXIS_Y1: msg.xbox.y1 = float_to_s16(v); break;
+        case XBOX_AXIS_X2: msg.xbox.x2 = float_to_s16(v); break;
+        case XBOX_AXIS_Y2: msg.xbox.y2 = float_to_s16(v); break;
+        case XBOX_AXIS_LT: msg.xbox.lt = float_to_u8(v); break;
+        case XBOX_AXIS_RT: msg.xbox.rt = float_to_u8(v); break;
+
+        case XBOX_AXIS_A:     msg.xbox.a = float_to_u8(v);
+        case XBOX_AXIS_B:     msg.xbox.b = float_to_u8(v);
+        case XBOX_AXIS_X:     msg.xbox.x = float_to_u8(v);
+        case XBOX_AXIS_Y:     msg.xbox.y = float_to_u8(v);
+        case XBOX_AXIS_BLACK: msg.xbox.black = float_to_u8(v);
+        case XBOX_AXIS_WHITE: msg.xbox.white = float_to_u8(v);
       }
       break;
   }
@@ -807,18 +810,19 @@ void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
           }
           break;
 
-        case XBOX_AXIS_X1:
-          msg.xbox360.x1 = v; break;
-        case XBOX_AXIS_Y1:
-          msg.xbox360.y1 = v; break;
-        case XBOX_AXIS_X2:
-          msg.xbox360.x2 = v; break;
-        case XBOX_AXIS_Y2:
-          msg.xbox360.y2 = v; break;
-        case XBOX_AXIS_LT:
-          msg.xbox360.lt = v; break;
-        case XBOX_AXIS_RT:
-          msg.xbox360.rt = v; break;
+        case XBOX_AXIS_X1: msg.xbox360.x1 = v; break;
+        case XBOX_AXIS_Y1: msg.xbox360.y1 = v; break;
+        case XBOX_AXIS_X2: msg.xbox360.x2 = v; break;
+        case XBOX_AXIS_Y2: msg.xbox360.y2 = v; break;
+        case XBOX_AXIS_LT: msg.xbox360.lt = v; break;
+        case XBOX_AXIS_RT: msg.xbox360.rt = v; break;
+
+        case XBOX_AXIS_A:     break;
+        case XBOX_AXIS_B:     break;
+        case XBOX_AXIS_X:     break;
+        case XBOX_AXIS_Y:     break;
+        case XBOX_AXIS_BLACK: break;
+        case XBOX_AXIS_WHITE: break;
       }
       break;
 
@@ -851,7 +855,7 @@ void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
           if (v > 0)
           {
             msg.xbox.dpad_up   = false;
-            msg.xbox.dpad_down =  true;
+            msg.xbox.dpad_down = true;
           }
           else if (v < 0)
           {
@@ -870,18 +874,19 @@ void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v)
           msg.xbox.rt = v > 0 ? v : 0;
           break;
 
-        case XBOX_AXIS_X1:
-          msg.xbox.x1 = v; break;
-        case XBOX_AXIS_Y1:
-          msg.xbox.y1 = v; break;
-        case XBOX_AXIS_X2:
-          msg.xbox.x2 = v; break;
-        case XBOX_AXIS_Y2:
-          msg.xbox.y2 = v; break;
-        case XBOX_AXIS_LT:
-          msg.xbox.lt = v; break;
-        case XBOX_AXIS_RT:
-          msg.xbox.rt = v; break;
+        case XBOX_AXIS_X1: msg.xbox.x1 = v; break;
+        case XBOX_AXIS_Y1: msg.xbox.y1 = v; break;
+        case XBOX_AXIS_X2: msg.xbox.x2 = v; break;
+        case XBOX_AXIS_Y2: msg.xbox.y2 = v; break;
+        case XBOX_AXIS_LT: msg.xbox.lt = v; break;
+        case XBOX_AXIS_RT: msg.xbox.rt = v; break;
+
+        case XBOX_AXIS_A:     msg.xbox.a = v; break;
+        case XBOX_AXIS_B:     msg.xbox.b = v; break;
+        case XBOX_AXIS_X:     msg.xbox.x = v; break;
+        case XBOX_AXIS_Y:     msg.xbox.y = v; break;
+        case XBOX_AXIS_BLACK: msg.xbox.black = v; break;
+        case XBOX_AXIS_WHITE: msg.xbox.white = v; break;
       }
       break;
   }
@@ -966,6 +971,24 @@ XboxAxis string2axis(const std::string& str_)
   else if (str == "trigger" || str == "z" || str == "rudder")
     return XBOX_AXIS_TRIGGER;
 
+  else if (str == "a")
+    return XBOX_AXIS_A;
+
+  else if (str == "b")
+    return XBOX_AXIS_B;
+
+  else if (str == "x")
+    return XBOX_AXIS_X;
+
+  else if (str == "y")
+    return XBOX_AXIS_Y;
+
+  else if (str == "black")
+    return XBOX_AXIS_BLACK;
+
+  else if (str == "white")
+    return XBOX_AXIS_WHITE;
+
   else
     return XBOX_AXIS_UNKNOWN;
 }
@@ -990,6 +1013,13 @@ std::string axis2string(XboxAxis axis)
 
     case XBOX_AXIS_LT: return "LT";
     case XBOX_AXIS_RT: return "RT";
+
+    case XBOX_AXIS_A:     return "a";
+    case XBOX_AXIS_B:     return "b";
+    case XBOX_AXIS_X:     return "x"; 
+    case XBOX_AXIS_Y:     return "y"; 
+    case XBOX_AXIS_BLACK: return "black";
+    case XBOX_AXIS_WHITE: return "white";
   }
   return "unknown";
 }
@@ -1048,6 +1078,13 @@ int get_axis_min(XboxAxis axis)
 
     case XBOX_AXIS_TRIGGER: return -255;
 
+    case XBOX_AXIS_A:     return 0;
+    case XBOX_AXIS_B:     return 0;
+    case XBOX_AXIS_X:     return 0;
+    case XBOX_AXIS_Y:     return 0;
+    case XBOX_AXIS_BLACK: return 0;
+    case XBOX_AXIS_WHITE: return 0;
+
     default: assert(!"never reached");
   }
 }
@@ -1069,6 +1106,13 @@ int get_axis_max(XboxAxis axis)
     case XBOX_AXIS_DPAD_Y: return 1;
 
     case XBOX_AXIS_TRIGGER: return 255;
+
+    case XBOX_AXIS_A:     return 255;
+    case XBOX_AXIS_B:     return 255;
+    case XBOX_AXIS_X:     return 255;
+    case XBOX_AXIS_Y:     return 255;
+    case XBOX_AXIS_BLACK: return 255;
+    case XBOX_AXIS_WHITE: return 255;
 
     default: assert(!"never reached");
   }
