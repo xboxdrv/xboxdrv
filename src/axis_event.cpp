@@ -37,7 +37,8 @@ AxisEvent::invalid()
 AxisEventPtr
 AxisEvent::create_abs(int device_id, int code, int min, int max, int fuzz, int flat)
 {
-  return AxisEventPtr(new AxisEvent(new AbsAxisEventHandler(device_id, code, min, max, fuzz, flat)));
+  return AxisEventPtr(new AxisEvent(new AbsAxisEventHandler(device_id, code, min, max, fuzz, flat),
+                                    min, max));
 }
 
 AxisEventPtr
@@ -79,20 +80,20 @@ AxisEvent::from_string(const std::string& str)
   return ev;
 }
 
-AxisEvent::AxisEvent(AxisEventHandler* handler) :
+AxisEvent::AxisEvent(AxisEventHandler* handler, int min, int max) :
   m_last_raw_value(0),
   m_last_send_value(0),
-  m_min(0),
-  m_max(0),
+  m_min(min),
+  m_max(max),
   m_handler(handler),
   m_filters()
 {
 }
 
 void
-AxisEvent::set_filters(const std::vector<AxisFilterPtr>& filters)
+AxisEvent::add_filter(AxisFilterPtr filter)
 {
-  m_filters = filters;
+  m_filters.push_back(filter);
 }
 
 void
@@ -274,6 +275,8 @@ AbsAxisEventHandler::AbsAxisEventHandler()
 
 AbsAxisEventHandler::AbsAxisEventHandler(int device_id, int code, int min, int max, int fuzz, int flat)
 {
+  std::cout << this << " AbsAxisEventHandler::AbsAxisEventHandler: " << min << " " << max << std::endl;
+
   m_code  = UIEvent::create(device_id, EV_ABS, code);
   m_min   = min;
   m_max   = max;
@@ -286,6 +289,8 @@ AbsAxisEventHandler::set_axis_range(int min, int max)
 {
   m_min = min;
   m_max = max;
+
+  std::cout << this << " AbsAxisEventHandler::set_axis_range: " << min << " " << max << std::endl;
 }
 
 void

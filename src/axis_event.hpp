@@ -45,10 +45,10 @@ public:
   static AxisEventPtr from_string(const std::string& str);
 
 public:
-  AxisEvent(AxisEventHandler* handler);
+  AxisEvent(AxisEventHandler* handler, int min = 0, int max = 0);
   ~AxisEvent() {}
 
-  void set_filters(const std::vector<AxisFilterPtr>& filters);
+  void add_filter(AxisFilterPtr filter);
 
   void init(uInput& uinput) const;
   void send(uInput& uinput, int value);
