@@ -1063,6 +1063,18 @@ NAME       = STRING ;]]></programlisting>
         </varlistentry>
 
         <varlistentry>
+          <term><option>--guitar</option></term>
+          <listitem>
+            <para>
+              Sets a predefined button and axis mapping for use with
+              guitar controllers. This mainly gets rid of a few
+              unnecesary buttons and axis not used by a guitar
+              controller.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>-m, --mouse</option></term>
           <listitem>
             <para>

@@ -81,18 +81,12 @@ uInputCfg::mimic_xpad()
 
   get_btn_map().bind(XBOX_BTN_START, ButtonEvent::create_key(BTN_START));
   get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEvent::create_key(BTN_MODE));
-  get_btn_map().bind(XBOX_BTN_BACK, ButtonEvent::create_key(BTN_BACK));
+  get_btn_map().bind(XBOX_BTN_BACK,  ButtonEvent::create_key(BTN_BACK));
 
   get_btn_map().bind(XBOX_BTN_A, ButtonEvent::create_key(BTN_A));
   get_btn_map().bind(XBOX_BTN_B, ButtonEvent::create_key(BTN_B));
   get_btn_map().bind(XBOX_BTN_X, ButtonEvent::create_key(BTN_X));
   get_btn_map().bind(XBOX_BTN_Y, ButtonEvent::create_key(BTN_Y));
-
-  get_btn_map().bind(XBOX_BTN_GREEN, ButtonEvent::create_key(BTN_0));
-  get_btn_map().bind(XBOX_BTN_RED, ButtonEvent::create_key(BTN_1));
-  get_btn_map().bind(XBOX_BTN_YELLOW, ButtonEvent::create_key(BTN_2));
-  get_btn_map().bind(XBOX_BTN_BLUE, ButtonEvent::create_key(BTN_3));
-  get_btn_map().bind(XBOX_BTN_ORANGE, ButtonEvent::create_key(BTN_4));
 
   get_btn_map().bind(XBOX_BTN_WHITE, ButtonEvent::create_key(BTN_TL));
   get_btn_map().bind(XBOX_BTN_BLACK, ButtonEvent::create_key(BTN_TR));
@@ -106,9 +100,9 @@ uInputCfg::mimic_xpad()
   get_btn_map().bind(XBOX_BTN_THUMB_L, ButtonEvent::create_key(BTN_THUMBL));
   get_btn_map().bind(XBOX_BTN_THUMB_R, ButtonEvent::create_key(BTN_THUMBR));
             
-  get_btn_map().bind(XBOX_DPAD_UP, ButtonEvent::create_key(BTN_BASE));
-  get_btn_map().bind(XBOX_DPAD_DOWN, ButtonEvent::create_key(BTN_BASE2));
-  get_btn_map().bind(XBOX_DPAD_LEFT, ButtonEvent::create_key(BTN_BASE3));
+  get_btn_map().bind(XBOX_DPAD_UP,    ButtonEvent::create_key(BTN_BASE));
+  get_btn_map().bind(XBOX_DPAD_DOWN,  ButtonEvent::create_key(BTN_BASE2));
+  get_btn_map().bind(XBOX_DPAD_LEFT,  ButtonEvent::create_key(BTN_BASE3));
   get_btn_map().bind(XBOX_DPAD_RIGHT, ButtonEvent::create_key(BTN_BASE4));
 
   // Axis Mapping
@@ -170,12 +164,6 @@ uInputCfg::set_defaults()
   get_btn_map().bind(XBOX_BTN_B, ButtonEvent::create_key(BTN_B));
   get_btn_map().bind(XBOX_BTN_X, ButtonEvent::create_key(BTN_X));
   get_btn_map().bind(XBOX_BTN_Y, ButtonEvent::create_key(BTN_Y));
-
-  get_btn_map().bind(XBOX_BTN_GREEN, ButtonEvent::create_key(BTN_0));
-  get_btn_map().bind(XBOX_BTN_RED, ButtonEvent::create_key(BTN_1));
-  get_btn_map().bind(XBOX_BTN_YELLOW, ButtonEvent::create_key(BTN_2));
-  get_btn_map().bind(XBOX_BTN_BLUE, ButtonEvent::create_key(BTN_3));
-  get_btn_map().bind(XBOX_BTN_ORANGE, ButtonEvent::create_key(BTN_4));
 
   get_btn_map().bind(XBOX_BTN_WHITE, ButtonEvent::create_key(BTN_TL));
   get_btn_map().bind(XBOX_BTN_BLACK, ButtonEvent::create_key(BTN_TR));
@@ -370,6 +358,31 @@ uInputCfg::set_ui_buttonmap(const std::string& name, const std::string& value)
         break;
     }
   }
+}
+
+void
+uInputCfg::guitar()
+{
+  get_btn_map().clear();
+  get_axis_map().clear();
+
+  // Button Mapping
+  get_btn_map().bind(XBOX_BTN_START, ButtonEvent::create_key(BTN_START));
+  get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEvent::create_key(BTN_MODE));
+  get_btn_map().bind(XBOX_BTN_BACK,  ButtonEvent::create_key(BTN_SELECT));
+
+  get_btn_map().bind(XBOX_BTN_A,  ButtonEvent::create_key(BTN_0)); // green 
+  get_btn_map().bind(XBOX_BTN_B,  ButtonEvent::create_key(BTN_1)); // red
+  get_btn_map().bind(XBOX_BTN_Y,  ButtonEvent::create_key(BTN_2)); // blue
+  get_btn_map().bind(XBOX_BTN_X,  ButtonEvent::create_key(BTN_3)); // yellow
+  get_btn_map().bind(XBOX_BTN_LB, ButtonEvent::create_key(BTN_4)); // orange
+
+  // Axis Mapping
+  get_axis_map().bind(XBOX_AXIS_X2, AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -32768, 32767, 0, 0)); // whammy
+  get_axis_map().bind(XBOX_AXIS_Y2, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -32768, 32767, 0, 0)); // tilt
+  
+  get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0X, -1, 1, 0, 0));
+  get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0Y, -1, 1, 0, 0));
 }
 
 /* EOF */

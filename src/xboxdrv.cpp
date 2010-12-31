@@ -566,11 +566,11 @@ Xboxdrv::run_main(const Options& opts)
           break;
 
         case GAMEPAD_XBOX360_GUITAR:
-          controller = std::auto_ptr<XboxGenericController>(new Xbox360Controller(dev, true, opts.detach_kernel_driver));
+          controller = std::auto_ptr<XboxGenericController>(new Xbox360Controller(dev, opts.detach_kernel_driver));
           break;
 
         case GAMEPAD_XBOX360:
-          controller = std::auto_ptr<XboxGenericController>(new Xbox360Controller(dev, false, opts.detach_kernel_driver));
+          controller = std::auto_ptr<XboxGenericController>(new Xbox360Controller(dev, opts.detach_kernel_driver));
           break;
 
         case GAMEPAD_XBOX360_WIRELESS:

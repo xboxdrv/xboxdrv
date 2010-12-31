@@ -31,9 +31,8 @@
 #include "xbox360_controller.hpp"
 #include "xboxmsg.hpp"
 
-Xbox360Controller::Xbox360Controller(struct usb_device* dev_, bool is_guitar_, bool try_detach) :
+Xbox360Controller::Xbox360Controller(struct usb_device* dev_, bool try_detach) :
   dev(dev_),
-  is_guitar(is_guitar_),
   dev_type(),
   handle(),
   endpoint_in(1),
@@ -238,16 +237,8 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
   {
-    if (is_guitar)
-    {
-      msg.type   = XBOX_MSG_XBOX360_GUITAR;
-      memcpy(&msg.guitar, data, sizeof(Xbox360GuitarMsg));
-    }
-    else
-    {
-      msg.type    = XBOX_MSG_XBOX360;
-      memcpy(&msg.xbox360, data, sizeof(Xbox360Msg));
-    }
+    msg.type    = XBOX_MSG_XBOX360;
+    memcpy(&msg.xbox360, data, sizeof(Xbox360Msg));
     return true;
   }
   else

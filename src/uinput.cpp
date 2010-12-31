@@ -174,10 +174,6 @@ uInput::send(XboxGenericMsg& msg)
     case XBOX_MSG_XBOX360:
       send(msg.xbox360);
       break;
-
-    case XBOX_MSG_XBOX360_GUITAR:
-      send(msg.guitar);
-      break;
         
     default:
       std::cout << "XboxGenericMsg type: " << msg.type << std::endl;
@@ -293,28 +289,6 @@ uInput::send(XboxMsg& msg)
   if      (msg.dpad_left)  send_axis(XBOX_AXIS_DPAD_X, -1);
   else if (msg.dpad_right) send_axis(XBOX_AXIS_DPAD_X,  1);
   else                     send_axis(XBOX_AXIS_DPAD_X,  0);
-}
-
-void
-uInput::send(Xbox360GuitarMsg& msg)
-{
-  send_button(XBOX_DPAD_UP,    msg.dpad_up);
-  send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
-  send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
-  send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
-
-  send_button(XBOX_BTN_START, msg.start);
-  send_button(XBOX_BTN_GUIDE, msg.guide);
-  send_button(XBOX_BTN_BACK,  msg.back);
-
-  send_button(XBOX_BTN_GREEN,  msg.green);
-  send_button(XBOX_BTN_RED,    msg.red);
-  send_button(XBOX_BTN_YELLOW, msg.yellow);
-  send_button(XBOX_BTN_BLUE,   msg.blue);
-  send_button(XBOX_BTN_ORANGE, msg.orange);
-
-  send_axis(XBOX_AXIS_X1, msg.whammy);
-  send_axis(XBOX_AXIS_Y1, msg.tilt);
 }
 
 void

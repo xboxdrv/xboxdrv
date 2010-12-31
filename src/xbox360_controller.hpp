@@ -30,7 +30,6 @@ class Xbox360Controller : public XboxGenericController
 {
 private:
   struct usb_device* dev;
-  bool is_guitar;
   XPadDevice*        dev_type;
   struct usb_dev_handle* handle;
   
@@ -42,7 +41,7 @@ private:
   void find_endpoints();
 
 public:
-  Xbox360Controller(struct usb_device* dev, bool is_guitar, bool try_detach);
+  Xbox360Controller(struct usb_device* dev, bool try_detach);
   ~Xbox360Controller();
 
   void set_rumble(uint8_t left, uint8_t right);

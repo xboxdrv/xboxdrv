@@ -61,6 +61,7 @@ public:
   /** Sets a button/axis mapping that is equal to the xpad kernel driver */
   void mimic_xpad();
   void mouse();
+  void guitar();
   void set_defaults();
 
   void trigger_as_button();

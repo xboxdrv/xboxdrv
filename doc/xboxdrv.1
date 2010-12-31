@@ -540,6 +540,10 @@ mapping, except that the right hand side is an event name from
 use all \fBKEY_\fR or \fBBTN_\fR 
 codes for \*(T<\fB\-\-ui\-buttonmap\fR\*(T>.
 
+If the right hand side is left empty all the supplied
+filters will be added to the already existing button
+binding instead of a new one.
+
 Aside from the named keys, you can also give the input
 code directly as number via the
 syntax \fBKEY_#\fINUM\fB\fR.
@@ -864,6 +868,12 @@ not be switched at runtime.
 \*(T<\fB\-\-ui\-toggle\fR\*(T> \fIXBOXBTN\fR
 Sets the button that will be used to toggle between
 different uinput configurations.
+.TP 
+\*(T<\fB\-\-guitar\fR\*(T>
+Sets a predefined button and axis mapping for use with
+guitar controllers. This mainly gets rid of a few
+unnecesary buttons and axis not used by a guitar
+controller.
 .TP 
 \*(T<\fB\-m, \-\-mouse\fR\*(T>
 Lets the controller act as a mouse. It is indendical to:

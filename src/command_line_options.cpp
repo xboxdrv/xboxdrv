@@ -94,6 +94,7 @@ enum {
   OPTION_LIST_SUPPORTED_DEVICES_XPAD,
   OPTION_LIST_CONTROLLER,
   OPTION_MOUSE,
+  OPTION_GUITAR,
   OPTION_EVDEV,
   OPTION_EVDEV_NO_GRAB,
   OPTION_EVDEV_DEBUG,
@@ -175,8 +176,9 @@ CommandLineParser::init_argp()
     .add_option(OPTION_UI_TOGGLE,          0, "ui-toggle",        "BTN",  "Set button to use for toggling between configs")
     .add_option(OPTION_UI_BUTTONMAP,       0, "ui-buttonmap",     "MAP",  "Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)")
     .add_option(OPTION_UI_AXISMAP,         0, "ui-axismap",       "MAP",  "Changes the uinput events send when moving a axis (example: X1=ABS_X2)")
-    .add_option(OPTION_MOUSE,            'm', "mouse",            "",     "Enable mouse emulation")
-    .add_option(OPTION_SQUARE_AXIS,        0, "square-axis",      "",     "Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)")
+    .add_option(OPTION_MOUSE,             'm', "mouse",            "",     "Enable mouse emulation")
+    .add_option(OPTION_GUITAR,             0, "guitar",            "",     "Enables guitar button and axis mapping")
+    .add_option(OPTION_SQUARE_AXIS,        0, "square-axis",       "",     "Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)")
     .add_option(OPTION_FOUR_WAY_RESTRICTOR,0, "four-way-restrictor", "",  "Restrict axis movement to one axis at a time")
     .add_option(OPTION_DPAD_ROTATION,      0, "dpad-rotation",    "DEGREE", "Rotate the dpad by the given DEGREE, must be a multiple of 45")
     .add_option(OPTION_AXIS_SENSITIVITY,   0, "axis-sensitivity", "MAP",  "Adjust the axis sensitivity (example: X1=2.0,Y1=1.0)")
@@ -230,6 +232,7 @@ CommandLineParser::init_ini(Options* opts)
     // uinput stuff
     ("device-name", &opts->uinput_config.device_name)
     ("mouse", boost::bind(&uInputCfg::mouse, boost::ref(opts->uinput_config)), boost::function<void ()>())
+    ("guitar", boost::bind(&uInputCfg::guitar, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ("trigger-as-button", boost::bind(&uInputCfg::trigger_as_button, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ("trigger-as-zaxis", boost::bind(&uInputCfg::trigger_as_zaxis, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ("dpad-as-button", boost::bind(&uInputCfg::dpad_as_button, boost::ref(opts->uinput_config)), boost::function<void ()>())
@@ -458,6 +461,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_MOUSE:
         opts.uinput_config.mouse();
+        break;
+
+      case OPTION_GUITAR:
+        opts.uinput_config.guitar();
         break;
 
       case OPTION_DETACH_KERNEL_DRIVER:

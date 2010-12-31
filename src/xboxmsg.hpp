@@ -36,8 +36,7 @@ enum GamepadType {
 
 enum XboxMsgType {
   XBOX_MSG_XBOX,
-  XBOX_MSG_XBOX360,
-  XBOX_MSG_XBOX360_GUITAR
+  XBOX_MSG_XBOX360
 };
 
 struct Xbox360Msg
@@ -86,52 +85,6 @@ struct Xbox360Msg
   unsigned int dummy3      :16;
 } __attribute__((__packed__));
 
-struct Xbox360GuitarMsg
-{
-  // -------------------------
-  unsigned int type       :8;
-  unsigned int length     :8;
-
-  // data[2] ------------------
-  unsigned int dpad_up     :1; // also strum-up
-  unsigned int dpad_down   :1; // also strum-down
-  unsigned int dpad_left   :1;
-  unsigned int dpad_right  :1;
-
-  unsigned int start       :1;
-  unsigned int back        :1;
-
-  unsigned int thumb_l     :1; // unused
-  unsigned int thumb_r     :1; // unused
-
-  // data[3] ------------------
-  unsigned int orange      :1; // 5
-  unsigned int rb          :1; // unused
-  unsigned int guide       :1; 
-  unsigned int dummy1      :1; // unused
-
-  unsigned int green       :1; // 1, A 
-  unsigned int red         :1; // 2, B
-  unsigned int blue        :1; // 4, X
-  unsigned int yellow      :1; // 3, Y
-
-  // data[4] ------------------
-  unsigned int lt          :8; // unknown
-  unsigned int rt          :8; // unknown
-
-  // data[6] ------------------
-  int x1                   :16; // unused
-  int y1                   :16; // unused
-
-  // data[10] -----------------
-  int whammy               :16;
-  int tilt                 :16;
-
-  // data[14]; ----------------
-  unsigned int dummy2      :32; // unused
-  unsigned int dummy3      :16; // unused
-} __attribute__((__packed__));
-
 struct XboxMsg
 {
   // --------------------------
@@ -175,14 +128,12 @@ struct XboxGenericMsg
 {
   XboxMsgType type;
   union {
-    struct Xbox360GuitarMsg guitar;
-    struct Xbox360Msg       xbox360;
-    struct XboxMsg          xbox;
+    struct Xbox360Msg xbox360;
+    struct XboxMsg    xbox;
   };
 };
 
 std::ostream& operator<<(std::ostream& out, const GamepadType& type);
-std::ostream& operator<<(std::ostream& out, const Xbox360GuitarMsg& msg);
 std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg);
 std::ostream& operator<<(std::ostream& out, const XboxMsg& msg);
 std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg);
@@ -197,12 +148,6 @@ enum XboxButton {
   XBOX_BTN_B,
   XBOX_BTN_X,
   XBOX_BTN_Y,
-
-  XBOX_BTN_GREEN,
-  XBOX_BTN_RED,
-  XBOX_BTN_BLUE,
-  XBOX_BTN_YELLOW,
-  XBOX_BTN_ORANGE,
 
   XBOX_BTN_WHITE,
   XBOX_BTN_BLACK,

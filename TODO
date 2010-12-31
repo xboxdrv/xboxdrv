@@ -32,7 +32,8 @@ type is only really known after the axis/buttonmap as already been
 build):
 
 * remove guide button from default mapping when its an Xbox1 controller
-* fixup guitar
+
+* this was broken in: a4e1003cba0ff925358ce5ed84d2bf9a728e93d6 past 0.6.2
 
 Stuff to do before 0.6.x release:
 =================================

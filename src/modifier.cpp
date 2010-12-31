@@ -247,9 +247,6 @@ void apply_square_axis(XboxGenericMsg& msg)
       squarify_axis(msg.xbox360.x1, msg.xbox360.y1);
       squarify_axis(msg.xbox360.x2, msg.xbox360.y2);
       break;
-        
-    case XBOX_MSG_XBOX360_GUITAR:
-      break;
   }
 }
 
@@ -304,10 +301,6 @@ void apply_deadzone(XboxGenericMsg& msg, const Options& opts)
       msg.xbox360.y2 = scale_deadzone(msg.xbox360.y2, opts.deadzone);
       msg.xbox360.lt = scale_trigger_deadzone(msg.xbox360.lt, opts.deadzone_trigger);
       msg.xbox360.rt = scale_trigger_deadzone(msg.xbox360.rt, opts.deadzone_trigger);
-      break;
-
-    case XBOX_MSG_XBOX360_GUITAR:
-      // FIXME: any use for deadzone here?
       break;
   }
 }

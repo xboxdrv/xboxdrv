@@ -1,6 +1,8 @@
 xboxdrv 0.6.2 - (??/Jan/2011)
 =============================
 
+* merged Xbox360 guitar handling into the regular Xbox360 controller
+  handling, use --guitar to get the old mapping back
 * added generic event filter framework
 * added toggle button filter
 * added invert button filter
