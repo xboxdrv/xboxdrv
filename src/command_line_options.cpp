@@ -696,68 +696,64 @@ CommandLineParser::print_version() const
 void
 CommandLineParser::set_ui_axismap(const std::string& name, const std::string& value)
 {
+  AxisEventPtr event;
+
+  XboxButton shift = XBOX_BTN_UNKNOWN;
+  XboxAxis   axis  = XBOX_AXIS_UNKNOWN;
   std::vector<AxisFilterPtr> filters;
-  std::string lhs;
-  {
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-    tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
-    int k = 0;
 
-    for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++k)
-    {
-      if (k == 0)
-      { // shift+key
-        lhs = *t;
-      }
-      else
-      { // filter
-        filters.push_back(AxisFilter::from_string(*t));
-      }
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  int idx = 0;
+  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  {
+    switch(idx)
+    { 
+      case 0: // shift+key portion
+        {
+          std::string::size_type j = t->find('+');
+          if (j == std::string::npos)
+          {
+            shift = XBOX_BTN_UNKNOWN;
+            axis  = string2axis(*t);
+          }
+          else
+          {
+            shift = string2btn(t->substr(0, j));
+            axis  = string2axis(t->substr(j+1));
+          }
+          
+          if (value.empty())
+          { // if no rhs value is given, add filters to the current binding
+            event = m_options->uinput_config.get_axis_map().lookup(shift, axis);
+          }
+          else
+          {
+            event = AxisEvent::from_string(value);
+            if (event)
+            {
+              if (axis != XBOX_AXIS_UNKNOWN)
+              {
+                event->set_axis_range(get_axis_min(axis),
+                                      get_axis_max(axis));
+              }
+
+              m_options->uinput_config.get_axis_map().bind(shift, axis, event);
+            }
+          }
+        }
+        break;
+
+      default:
+        { // filter
+          if (event)
+          {
+            event->add_filter(AxisFilter::from_string(*t));
+          }
+        }
+        break;
     }
   }
-
-  AxisEventPtr event = AxisEvent::from_string(value);
-
-  event->set_filters(filters);
-
-  std::string::size_type j = lhs.find('+');
-  if (j == std::string::npos)
-  {
-    XboxAxis  axis  = string2axis(lhs);
-
-    if (axis != XBOX_AXIS_UNKNOWN)
-    {
-      event->set_axis_range(get_axis_min(axis),
-                            get_axis_max(axis));
-
-      //std::cout << "set_ui_axismap: " << lhs << " = " << value << std::endl;
-
-      m_options->uinput_config.get_axis_map().bind(axis, event);
-    }
-    else
-    {
-      throw std::runtime_error("Couldn't convert string \"" + lhs + "=" + value + "\" to ui-axis-mapping");
-    }
-  }
-  else
-  {
-    XboxButton shift = string2btn(lhs.substr(0, j));
-    XboxAxis   axis  = string2axis(lhs.substr(j+1));
-
-    if (axis != XBOX_AXIS_UNKNOWN)
-    {
-      event->set_axis_range(get_axis_min(axis),
-                            get_axis_max(axis));
-
-      //std::cout << "set_ui_axismap: " << lhs << " = " << value << std::endl;
-
-      m_options->uinput_config.get_axis_map().bind(shift, axis, event);
-    }
-    else
-    {
-      throw std::runtime_error("Couldn't convert string \"" + lhs + "=" + value + "\" to ui-axis-mapping");
-    }    
-  }      
 }
 
 void
