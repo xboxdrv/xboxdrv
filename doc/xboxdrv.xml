@@ -33,6 +33,9 @@
     <cmdsynopsis>
       <command>xboxdrv</command>
       <arg rep="repeat"><option>OPTION</option></arg>
+      <arg><option>--</option></arg>
+      <arg><option>COMMAND</option></arg>
+      <arg><option>ARGUMENTS</option></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 
@@ -62,6 +65,12 @@
       joysticks and thus lets <command>xboxdrv</command> serve a
       similar purpose as <command>joy2key</command>. See the
       option <option>--evdev</option> below for more information.
+    </para>
+    <para>
+      When a <option>COMMAND</option> is provided xboxdrv will launch
+      that application and be running till that application exits.
+      This is a convenience function to make it easier to use xboxdrv
+      in wrapper scripts.
     </para>
   </refsect1>
 
@@ -366,6 +375,35 @@ start=KEY_ESC
         </varlistentry>
 
         <varlistentry>
+          <term><option>--evdev-debug</option></term>
+          <listitem>
+            <para>
+              The evdev event handler will print all received events
+              to stdout, this makes it easy to see which events a
+              given controller sends.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--evdev-no-grab</option></term>
+          <listitem>
+            <para>
+              By default the evdev driver will grab the device, thus
+              making it impossible for other applications to receive
+              events from that device. This is done to avoid confusing
+              applications, as otherwise an app would receive every
+              event twice, once from the original device and once from
+              the virtual xboxdrv one. In some cases this behaviour is
+              undesired, such when mapping only an other wise
+              unhandled subset of keys of an device, i.e. mapping the
+              multimedia keys on a keyboard, so this option turns the
+              grab off.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>--evdev-absmap</option> <replaceable class="parameter">ABSMAP,...</replaceable></term>
           <listitem>
             <programlisting><![CDATA[ABSMAP = EVDEV_ABS [ "+", "-" ] "=" XBOXAXIS ;]]></programlisting>
@@ -406,7 +444,6 @@ start=KEY_ESC
             </para>
           </listitem>
         </varlistentry>
-
       </variablelist>
     </refsect2>
 
@@ -647,7 +684,7 @@ BTNSPEC      = [ DEVICEID "-" ] ( ( "BTN_" NAME ) | ( "KEY_" NAME ) ) { "+" BTNS
 EXECSPEC     = PROGRAM { ":" ARGUMENT } ;
 XBOXBUTTON   = "a" | "b" | "x" | "y" | "lb" | "rb" | "lt" | "rt" | 
                "tl" | "tr" | "start" | "select" | "back" | "guide" | "black" | "white" ;
-FILTER       = "toggle" | "invert" ;
+FILTER       = "toggle" | "invert" | "autofire" [ ":" RATE ] [ ":" DELAY ] | log [ ":" STRING ] ;
 NAME         = STRING ;
 VALUE        = NUMBER ;
 REPEAT       = NUMBER ;
@@ -659,6 +696,11 @@ DEVICEID     = NUMBER ;]]></programlisting>
               <filename>/usr/include/linux/input.h</filename>. You can
               use all <keysym>KEY_</keysym> or <keysym>BTN_</keysym> 
               codes for <option>--ui-buttonmap</option>.
+            </para>
+            <para>
+              If the right hand side is left empty all the supplied
+              filters will be added to the already existing button
+              binding instead of a new one.
             </para>
             <para>
               Aside from the named keys, you can also give the input
@@ -766,6 +808,47 @@ DEVICEID     = NUMBER ;]]></programlisting>
             </para>
             <programlisting><![CDATA[xboxdrv -s \
   --ui-buttonmap A^toggle=JS_0]]></programlisting>
+
+            <bridgehead renderas="sect3">Hold Button</bridgehead>
+            <para>
+              You can send different events depending on how long a
+              button was pressed by:
+            </para>
+            <programlisting><![CDATA[xboxdrv \
+  --ui-buttonmap A=JS_0:JS_1:500]]></programlisting>
+            <para>
+              This will send JS_0 events when the button is pressed
+              and switch to JS_1 events when the button was hold for
+              500 miliseconds.
+            </para>
+
+            <bridgehead renderas="sect3">Exec Button</bridgehead>
+            <para>
+              You can bind a button to an application, so that the
+              application will be launched when the button was
+              pressed:
+            </para>
+            <programlisting><![CDATA[xboxdrv \
+  --ui-buttonmap A=exec:/home/juser/local/bin/screenshot.sh]]></programlisting>
+
+            <bridgehead renderas="sect3">Macro Button</bridgehead>
+            <para>
+              A button can be bound to a macros via:
+            </para>
+            <programlisting><![CDATA[xboxdrv \
+  --ui-buttonmap A=macro:/home/juser/.xboxdrv/somefile.macro]]></programlisting>
+            <para>
+              The <filename>.macro</filename> file has the form of:
+            </para>
+            <programlisting><![CDATA[
+send KEY_LEFTSHIFT 1
+wait 500
+send KEY_LEFTSHIFT 0]]></programlisting>
+            <para>
+              All abs, rel and key events can be send from a macro file.
+            </para>
+
+            <bridgehead renderas="sect3">Toggle Filter</bridgehead>
             <para>
               The toggle filter will turn the button into a toggle
               button, clicking the button will set it to pressed state
@@ -773,10 +856,37 @@ DEVICEID     = NUMBER ;]]></programlisting>
               where you might want to permanently run or duck without
               holding the button pressed.
             </para>
+
+            <bridgehead renderas="sect3">Invert Filter</bridgehead>
             <para>
               The invert filter will keep the button in pressed state
               when it is not pressed and in unpressed state when it is
               pressed.
+            </para>
+
+            <bridgehead renderas="sect3">Autofire Filter</bridgehead>
+            <para>
+              The autofire filter allows to repeatatly send button
+              press events when the button is held down. It takes two
+              optional parameters:
+            </para>
+            <para>
+              <replaceable>RATE</replaceable> is the number of
+              miliseconds between button press events.
+            </para>
+            <para>
+              <replaceable>DELAY</replaceable> the amount of
+              miliseconds till the autofire will start, before that
+              delay the button will act as normal.
+            </para>
+
+            <bridgehead renderas="sect3">Log Filter</bridgehead>
+            <para>
+              The log filter will output everything to stdout that
+              goes through it to, this is useful for debugging the
+              filter. A <replaceable>STRING</replaceable> can be
+              provided as parameter that will be outputed before the
+              event.
             </para>
           </listitem>
         </varlistentry>
@@ -784,10 +894,15 @@ DEVICEID     = NUMBER ;]]></programlisting>
         <varlistentry>
           <term><option>--ui-axismap</option> <replaceable class="parameter">UIAXISSPEC,...</replaceable></term>
           <listitem>
-            <programlisting><![CDATA[UIAXISSPEC = [ XBOXBTN "+" ] XBOXAXIS "=" ( RELSPEC | BTNSPEC | ABSSPEC ) ;
+            <programlisting><![CDATA[UIAXISSPEC = [ XBOXBTN "+" ] XBOXAXIS { "^" FILTER }  "=" ( RELSPEC | BTNSPEC | ABSSPEC ) ;
 BTNSPEC    = "KEY_" NAME ":" "KEY_" NAME ":" THRESHOLD ;
 RELSPEC    = "REL_" NAME ":" VALUE ":" REPEAT ;
 ABSSPEC    = "ABS_" NAME ;
+FILTER     = ( "calibration" | "cal" ) ":" MIN ":" CENTER ":" MAX |
+             ( "sensitifity" | "sen" ) ":" SENSITIFITY |
+             ( "deadzone" | "dead" ) ":" MIN ":" MAX ":" SMOOTH |
+             ( "relative" | "rel" ) ":" SPEED  |
+             ( "responsecurve" | "response" | "resp" ) { ":" VALUE }
 XBOXBTN    = "a" | "b" | "x" | "y" | "start" | "back" | "guide" | "lb" | "rb" | ...
 XBOXAXIS   = "x1" | "y1" | "x2" | "y2" | "z" | "lt" | "rt" | "dpad_x" | "dpad_y" ;
 VALUE      = NUMBER ;
@@ -829,6 +944,58 @@ NAME       = STRING ;]]></programlisting>
             <para>
               This allows you to send ABS_X events normally and ABS_RX
               events when the LB button is held down.
+            </para>
+
+            <bridgehead renderas="sect3">Calibration Filter</bridgehead>
+            <para>
+              See <option>--calibration</option>.
+            </para>
+
+            <bridgehead renderas="sect3">Sensitifity Filter</bridgehead>
+            <para>
+              See <option>--axis-sensitivity</option>.
+            </para>
+
+            <bridgehead renderas="sect3">Deadzone Filter</bridgehead>
+            <para>
+              Deadzone filter applies a deadzone to the current axis.
+              If only <replaceable>MIN</replaceable> is provided, the
+              parameter will be interpreted
+              as <replaceable>-MIN:MIN:1</replaceable>. If the
+              argument is 1, smooth filtering will be applied so that
+              the end of the deadzone is 0. Setting the argument to 0
+              will apply a simple cut-off filter, where all events
+              smaller then the threshold are ignored.
+            </para>
+
+            <bridgehead renderas="sect3">Relative Axis Filter</bridgehead>
+            <para>
+              See <option>--relative-axis</option>.
+            </para>
+
+            <bridgehead renderas="sect3">Response Curve Filter</bridgehead>
+            <para>
+              The response curve filter allows you to completely
+              change the way an axis reacts. The filter takes a list
+              of <replaceable>VALUES</replaceable> that are then
+              linearly interpolated and spread across the full range
+              of the axis. An example would look like this:
+            </para>
+            <programlisting><![CDATA[xboxdrv \
+ --ui-axismap x1^resp:-32768:-4000:0:4000:32767=]]></programlisting>
+            <para>
+              Here the X1 axis is manipulated so that it will have a
+              lower sensitivity in the center and a higher one on the
+              outside.
+            </para>
+
+            <bridgehead renderas="sect3">Log Filter</bridgehead>
+            <para>
+              The log filter will output everything to stdout that
+              goes through it to, this is useful for debugging the
+              filter. A <replaceable>STRING</replaceable> can be
+              provided as parameter that will be outputed before the
+              event.
             </para>
           </listitem>
         </varlistentry>

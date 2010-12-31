@@ -29,12 +29,6 @@ Stuff to do before 0.6.2 release:
 
 * add "mouse=true" to ini options
 
-* write documentation for new features
-
-* AxisFilter: invert(checked), sensitivy(*), deadzone(checked), relative-axis(checked)
-
-* ButtonFilter: invert(checked), toggle(checked), auto(checked)
-
 * allow the right side of --ui-axismap to be empty:
 
   xboxdrv --ui-buttonmap X1^deadzone:50
@@ -45,15 +39,11 @@ Stuff to do before 0.6.2 release:
 
 * fixup guitar
 
-* make evdev grab optional:
-
-  --evdev-grab
+* --evdev-grab
 
     Takes exclusive ownership of the event device, all events are
     directed to xboxdrv and no other application will be able to
     receive events.
-
-  --evdev-no-grab
 
 Stuff to do before 0.6.x release:
 =================================

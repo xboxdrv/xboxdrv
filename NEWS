@@ -22,6 +22,8 @@ xboxdrv 0.6.2 - (??/Jan/2011)
   command line
 * added --evdev-debug to print out all received events from evdev
 * added --evdev-no-grab to avoid a full grab on the event device
+* unified ini and command line parsing some more
+* Mad Catz Xbox controller - MW2 controller support added
 
 
 xboxdrv 0.6.1 - (21/Dec/2010)

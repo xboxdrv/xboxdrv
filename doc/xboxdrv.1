@@ -16,7 +16,7 @@ xboxdrv
 \fBxboxdrv\fR \kx
 .if (\nx>(\n(.l/2)) .nr x (\n(.l/5)
 'in \n(.iu+\nxu
-[\fBOPTION\fR]\&...
+[\fBOPTION\fR]\&... [\fB--\fR] [\fBCOMMAND\fR] [\fBARGUMENTS\fR]
 'in \n(.iu-\nxu
 .ad b
 'hy
@@ -42,6 +42,11 @@ configurability of \fBxboxdrv\fR on regular PC
 joysticks and thus lets \fBxboxdrv\fR serve a
 similar purpose as \fBjoy2key\fR. See the
 option \*(T<\fB\-\-evdev\fR\*(T> below for more information.
+.PP
+When a \*(T<\fBCOMMAND\fR\*(T> is provided xboxdrv will launch
+that application and be running till that application exits.
+This is a convenience function to make it easier to use xboxdrv
+in wrapper scripts.
 .SH OPTIONS
 .SS "GENERAL OPTIONS"
 .TP 
@@ -220,6 +225,23 @@ use udev, this operation should be harmless and
 automatically reverse itself when you remove the
 controller and plug it back in or when you reboot the
 computer.
+.TP 
+\*(T<\fB\-\-evdev\-debug\fR\*(T>
+The evdev event handler will print all received events
+to stdout, this makes it easy to see which events a
+given controller sends.
+.TP 
+\*(T<\fB\-\-evdev\-no\-grab\fR\*(T>
+By default the evdev driver will grab the device, thus
+making it impossible for other applications to receive
+events from that device. This is done to avoid confusing
+applications, as otherwise an app would receive every
+event twice, once from the original device and once from
+the virtual xboxdrv one. In some cases this behaviour is
+undesired, such when mapping only an other wise
+unhandled subset of keys of an device, i.e. mapping the
+multimedia keys on a keyboard, so this option turns the
+grab off.
 .TP 
 \*(T<\fB\-\-evdev\-absmap\fR\*(T> \fIABSMAP,...\fR
 .nf
@@ -498,12 +520,13 @@ their range is different.
 .TP 
 \*(T<\fB\-\-ui\-buttonmap\fR\*(T> \fIUIBUTTONSPEC,...\fR
 .nf
-\*(T<UIBUTTONSPEC = XBOXBUTTON [ "+" XBOXBUTTON ] [ "^" FILTER ] ... "=" ( RELSPEC | BTNSPEC ) ;
+\*(T<UIBUTTONSPEC = XBOXBUTTON [ "+" XBOXBUTTON ] [ "^" FILTER ] ... "=" ( RELSPEC | BTNSPEC | EXECSPEC ) ;
 RELSPEC      = [ DEVICEID "\-" ] "REL_" [ ":" [ VALUE ] [ ":" REPEAT ] ] ;
 BTNSPEC      = [ DEVICEID "\-" ] ( ( "BTN_" NAME ) | ( "KEY_" NAME ) ) { "+" BTNSPEC } ;
+EXECSPEC     = PROGRAM { ":" ARGUMENT } ;
 XBOXBUTTON   = "a" | "b" | "x" | "y" | "lb" | "rb" | "lt" | "rt" | 
                "tl" | "tr" | "start" | "select" | "back" | "guide" | "black" | "white" ;
-FILTER       = "toggle" | "invert" ;
+FILTER       = "toggle" | "invert" | "autofire" [ ":" RATE ] [ ":" DELAY ] | log [ ":" STRING ] ;
 NAME         = STRING ;
 VALUE        = NUMBER ;
 REPEAT       = NUMBER ;
@@ -621,22 +644,97 @@ You can also apply filters to button events:
   \-\-ui\-buttonmap A^toggle=JS_0\*(T>
 .fi
 
+Hold Button
+
+You can send different events depending on how long a
+button was pressed by:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=JS_0:JS_1:500\*(T>
+.fi
+
+This will send JS_0 events when the button is pressed
+and switch to JS_1 events when the button was hold for
+500 miliseconds.
+
+Exec Button
+
+You can bind a button to an application, so that the
+application will be launched when the button was
+pressed:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=exec:/home/juser/local/bin/screenshot.sh\*(T>
+.fi
+
+Macro Button
+
+A button can be bound to a macros via:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=macro:/home/juser/.xboxdrv/somefile.macro\*(T>
+.fi
+
+The \*(T<\fI.macro\fR\*(T> file has the form of:
+
+.nf
+\*(T<
+send KEY_LEFTSHIFT 1
+wait 500
+send KEY_LEFTSHIFT 0\*(T>
+.fi
+
+All abs, rel and key events can be send from a macro file.
+
+Toggle Filter
+
 The toggle filter will turn the button into a toggle
 button, clicking the button will set it to pressed state
 and pressing it again will unpress it. Useful for games
 where you might want to permanently run or duck without
 holding the button pressed.
 
+Invert Filter
+
 The invert filter will keep the button in pressed state
 when it is not pressed and in unpressed state when it is
 pressed.
+
+Autofire Filter
+
+The autofire filter allows to repeatatly send button
+press events when the button is held down. It takes two
+optional parameters:
+
+\fIRATE\fR is the number of
+miliseconds between button press events.
+
+\fIDELAY\fR the amount of
+miliseconds till the autofire will start, before that
+delay the button will act as normal.
+
+Log Filter
+
+The log filter will output everything to stdout that
+goes through it to, this is useful for debugging the
+filter. A \fISTRING\fR can be
+provided as parameter that will be outputed before the
+event.
 .TP 
 \*(T<\fB\-\-ui\-axismap\fR\*(T> \fIUIAXISSPEC,...\fR
 .nf
-\*(T<UIAXISSPEC = [ XBOXBTN "+" ] XBOXAXIS "=" ( RELSPEC | BTNSPEC | ABSSPEC ) ;
+\*(T<UIAXISSPEC = [ XBOXBTN "+" ] XBOXAXIS { "^" FILTER }  "=" ( RELSPEC | BTNSPEC | ABSSPEC ) ;
 BTNSPEC    = "KEY_" NAME ":" "KEY_" NAME ":" THRESHOLD ;
 RELSPEC    = "REL_" NAME ":" VALUE ":" REPEAT ;
 ABSSPEC    = "ABS_" NAME ;
+FILTER     = ( "calibration" | "cal" ) ":" MIN ":" CENTER ":" MAX |
+             ( "sensitifity" | "sen" ) ":" SENSITIFITY |
+             ( "deadzone" | "dead" ) ":" MIN ":" MAX ":" SMOOTH |
+             ( "relative" | "rel" ) ":" SPEED  |
+             ( "responsecurve" | "response" | "resp" ) { ":" VALUE }
 XBOXBTN    = "a" | "b" | "x" | "y" | "start" | "back" | "guide" | "lb" | "rb" | ...
 XBOXAXIS   = "x1" | "y1" | "x2" | "y2" | "z" | "lt" | "rt" | "dpad_x" | "dpad_y" ;
 VALUE      = NUMBER ;
@@ -679,6 +777,54 @@ also use shift keys in place of the XBOXAXIS:
 
 This allows you to send ABS_X events normally and ABS_RX
 events when the LB button is held down.
+
+Calibration Filter
+
+See \*(T<\fB\-\-calibration\fR\*(T>.
+
+Sensitifity Filter
+
+See \*(T<\fB\-\-axis\-sensitivity\fR\*(T>.
+
+Deadzone Filter
+
+Deadzone filter applies a deadzone to the current axis.
+If only \fIMIN\fR is provided, the
+parameter will be interpreted
+as \fI-MIN:MIN:1\fR. If the
+argument is 1, smooth filtering will be applied so that
+the end of the deadzone is 0. Setting the argument to 0
+will apply a simple cut-off filter, where all events
+smaller then the threshold are ignored.
+
+Relative Axis Filter
+
+See \*(T<\fB\-\-relative\-axis\fR\*(T>.
+
+Response Curve Filter
+
+The response curve filter allows you to completely
+change the way an axis reacts. The filter takes a list
+of \fIVALUES\fR that are then
+linearly interpolated and spread across the full range
+of the axis. An example would look like this:
+
+.nf
+\*(T<xboxdrv \e
+ \-\-ui\-axismap x1^resp:\-32768:\-4000:0:4000:32767=\*(T>
+.fi
+
+Here the X1 axis is manipulated so that it will have a
+lower sensitivity in the center and a higher one on the
+outside.
+
+Log Filter
+
+The log filter will output everything to stdout that
+goes through it to, this is useful for debugging the
+filter. A \fISTRING\fR can be
+provided as parameter that will be outputed before the
+event.
 .TP 
 \*(T<\fB\-\-alt\-config\fR\*(T> \fIFILE\fR
 A shortcut for writing \*(T<\fB\-\-ui\-new\fR\*(T> \*(T<\fB\-\-config\fR\*(T> \fIFILE\fR.
@@ -1049,14 +1195,14 @@ wrong configuration, but due to Xorg grabbing your event device and
 locking it, see Xorg section for possible fixes.
 .SH EXAMPLES
 .SS "KEYBOARD EMULATION"
-The following configuration works for games that are played with
-keyboard, like Flash games or games that don't support a joystick, you
-have to adjust the keybindings to fit the game:
+The following configuration works for games that are
+played with keyboard, like Flash games or games that don't
+support a joystick. You might have to adjust the keybindings
+to fit the game:
 .PP
 .nf
 \*(T<$ xboxdrv \e
   \-\-ui\-clear \e
-  \-\-dpad\-as\-button \e
   \-\-ui\-buttonmap a=XK_a,b=XK_b,x=XK_x,y=XK_y \e
   \-\-ui\-buttonmap dl=XK_Left,dr=XK_Right,du=XK_Up,dd=XK_Down\*(T>
 .fi
@@ -1127,6 +1273,22 @@ configuration, you have to do tweaking yourself.
   \-\-ui\-buttonmap back=KEY_TAB,start=KEY_ESC \e
   \-s \-\-deadzone 6000 \-\-dpad\-as\-button \-\-trigger\-as\-button\*(T>
 .fi
+.SS "USING MOUSE EMULATION AND JOYSTICK AT THE SAME TIME"
+To use mouse emulation and joystick at the same time you have
+to register two uinput configuration with xboxdrv, this works
+via:
+.PP
+.nf
+\*(T<$ xboxdrv \e
+  \-\-ui\-new \-\-mouse
+\*(T>.fi
+.PP
+The \*(T<\fB\-\-ui\-new\fR\*(T> option will open up a second
+configuration and all configuration options on the right side
+of it will go there, while everything on the left side of it
+will go into the first configuration. Toggling between the
+configurations works with the guide button, you can have as
+many configuratios as you want.
 .SH "SDL NOTES"
 To let SDL know which axis act as a hat and which act as normal axis
 you have to set an environment variable:
