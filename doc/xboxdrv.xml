@@ -1172,20 +1172,32 @@ NAME       = STRING ;]]></programlisting>
           <listitem>
             <para>The sensitive of an axis can be adjusted via --axis-sensitivty:</para>
 
-            <programlisting>$ xboxdrv --axis-sensitivty X1=-2.0,Y1=-2.0</programlisting>
+            <programlisting>$ xboxdrv --axis-sensitivty X1=-1.0,Y1=-1.0</programlisting>
 
-            <para>A value of 0 gives you the default linear sensitivity, values larger
-              then 0 will give you heigher sensitivity, while values smaller then 0
-              will give you lower sensitivity.</para>
+            <para>
+              A value of 0 gives you the default linear sensitivity,
+              values larger then 0 will give you higher sensitivity,
+              while values smaller then 0 will give you lower
+              sensitivity. Sensitivity values in the range of [-1, 1]
+              will generally give good results, everything beyond that
+              won't be of much practical use.
+            </para>
 
             <para>Sensitivity works by applying:</para>
 
             <programlisting><![CDATA[t = 2 ** sensitivity;
 pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
 
-            <para>To the value of the axis, thus both the min and max position will
-              always stay the same, only the values inbetween change.</para>
-
+            <para>
+              To the value of the axis, this means that both the
+              minimum value and the maximum value of the axis will
+              always stay the same, just the response inbetween
+              changes.
+            </para>
+            <para>
+              For a complete freeform way to change the axis response
+              see the <option>Response Curve Filter</option>.
+            </para>
           </listitem>
         </varlistentry>
 
