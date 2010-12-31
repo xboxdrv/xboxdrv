@@ -225,10 +225,8 @@ int get_button(XboxGenericMsg& msg, XboxButton button)
         case XBOX_BTN_X:       return msg.xbox360.x;
         case XBOX_BTN_Y:       return msg.xbox360.y;
 
-        case XBOX_BTN_LB:
-        case XBOX_BTN_WHITE:   return msg.xbox360.lb;
-        case XBOX_BTN_RB:
-        case XBOX_BTN_BLACK:   return msg.xbox360.rb;
+        case XBOX_BTN_LB:      return msg.xbox360.lb;
+        case XBOX_BTN_RB:      return msg.xbox360.rb;
 
         case XBOX_BTN_LT:      return msg.xbox360.lt;
         case XBOX_BTN_RT:      return msg.xbox360.rt;
@@ -258,13 +256,11 @@ int get_button(XboxGenericMsg& msg, XboxButton button)
         case XBOX_BTN_X:     return msg.xbox.x;
         case XBOX_BTN_Y:     return msg.xbox.y;
 
-        case XBOX_BTN_LB:       
-        case XBOX_BTN_WHITE:   return msg.xbox.white;
-        case XBOX_BTN_RB:
-        case XBOX_BTN_BLACK:   return msg.xbox.black;
+        case XBOX_BTN_LB:    return msg.xbox.white;
+        case XBOX_BTN_RB:    return msg.xbox.black;
 
-        case XBOX_BTN_LT:      return msg.xbox.lt;
-        case XBOX_BTN_RT:      return msg.xbox.rt;
+        case XBOX_BTN_LT:    return msg.xbox.lt;
+        case XBOX_BTN_RT:    return msg.xbox.rt;
 
         case XBOX_BTN_THUMB_L: return msg.xbox.thumb_l;
         case XBOX_BTN_THUMB_R: return msg.xbox.thumb_r;
@@ -298,10 +294,8 @@ void set_button(XboxGenericMsg& msg, XboxButton button, bool v)
         case XBOX_BTN_X:       msg.xbox360.x = v; break;
         case XBOX_BTN_Y:       msg.xbox360.y = v; break;
 
-        case XBOX_BTN_LB:
-        case XBOX_BTN_WHITE:   msg.xbox360.lb = v; break;
-        case XBOX_BTN_RB:
-        case XBOX_BTN_BLACK:   msg.xbox360.rb = v; break;
+        case XBOX_BTN_LB:      msg.xbox360.lb = v; break;
+        case XBOX_BTN_RB:      msg.xbox360.rb = v; break;
 
         case XBOX_BTN_LT:      msg.xbox360.lt = v*255; break;
         case XBOX_BTN_RT:      msg.xbox360.rt = v*255; break;
@@ -331,10 +325,8 @@ void set_button(XboxGenericMsg& msg, XboxButton button, bool v)
         case XBOX_BTN_X:       msg.xbox.x = v; break;
         case XBOX_BTN_Y:       msg.xbox.y = v; break;
 
-        case XBOX_BTN_LB:
-        case XBOX_BTN_WHITE:   msg.xbox.white = v; break;
-        case XBOX_BTN_RB:
-        case XBOX_BTN_BLACK:   msg.xbox.black = v; break;
+        case XBOX_BTN_LB:      msg.xbox.white = v; break;
+        case XBOX_BTN_RB:      msg.xbox.black = v; break;
 
         case XBOX_BTN_LT:      msg.xbox.lt = v; break;
         case XBOX_BTN_RT:      msg.xbox.rt = v; break;
@@ -912,14 +904,9 @@ XboxButton string2btn(const std::string& str_)
   else if (str == "y" || str == "4" || str == "yellow")
     return XBOX_BTN_Y;
 
-  else if (str == "black")
-    return XBOX_BTN_BLACK;
-  else if (str == "white")
-    return XBOX_BTN_WHITE;
-
-  else if (str == "lb" || str == "5" || str == "orange")
+  else if (str == "lb" || str == "5" || str == "orange" || str == "white")
     return XBOX_BTN_LB;
-  else if (str == "rb" || str == "6")
+  else if (str == "rb" || str == "6" || str == "black")
     return XBOX_BTN_RB;
 
   else if (str == "lt" || str == "7")
@@ -1039,9 +1026,6 @@ std::string btn2string(XboxButton btn)
     case XBOX_BTN_B: return "B";
     case XBOX_BTN_X: return "X";
     case XBOX_BTN_Y: return "Y";
-
-    case XBOX_BTN_WHITE: return "White";
-    case XBOX_BTN_BLACK: return "Black";
 
     case XBOX_BTN_LB: return "LB";
     case XBOX_BTN_RB: return "RB";

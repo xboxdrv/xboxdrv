@@ -256,8 +256,8 @@ uInput::send(XboxMsg& msg)
   send_button(XBOX_BTN_X, msg.x);
   send_button(XBOX_BTN_Y, msg.y);
 
-  send_button(XBOX_BTN_WHITE, msg.white);
-  send_button(XBOX_BTN_BLACK, msg.black);
+  send_button(XBOX_BTN_LB, msg.white);
+  send_button(XBOX_BTN_RB, msg.black);
 
   // trigger
   send_button(XBOX_BTN_LT, msg.lt);

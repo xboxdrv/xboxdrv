@@ -88,9 +88,6 @@ uInputCfg::mimic_xpad()
   get_btn_map().bind(XBOX_BTN_X, ButtonEvent::create_key(BTN_X));
   get_btn_map().bind(XBOX_BTN_Y, ButtonEvent::create_key(BTN_Y));
 
-  get_btn_map().bind(XBOX_BTN_WHITE, ButtonEvent::create_key(BTN_TL));
-  get_btn_map().bind(XBOX_BTN_BLACK, ButtonEvent::create_key(BTN_TR));
-
   get_btn_map().bind(XBOX_BTN_LB, ButtonEvent::create_key(BTN_TL));
   get_btn_map().bind(XBOX_BTN_RB, ButtonEvent::create_key(BTN_TR));
             
@@ -164,9 +161,6 @@ uInputCfg::set_defaults()
   get_btn_map().bind(XBOX_BTN_B, ButtonEvent::create_key(BTN_B));
   get_btn_map().bind(XBOX_BTN_X, ButtonEvent::create_key(BTN_X));
   get_btn_map().bind(XBOX_BTN_Y, ButtonEvent::create_key(BTN_Y));
-
-  get_btn_map().bind(XBOX_BTN_WHITE, ButtonEvent::create_key(BTN_TL));
-  get_btn_map().bind(XBOX_BTN_BLACK, ButtonEvent::create_key(BTN_TR));
 
   get_btn_map().bind(XBOX_BTN_LB, ButtonEvent::create_key(BTN_TL));
   get_btn_map().bind(XBOX_BTN_RB, ButtonEvent::create_key(BTN_TR));

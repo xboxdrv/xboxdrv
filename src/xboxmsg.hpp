@@ -149,9 +149,6 @@ enum XboxButton {
   XBOX_BTN_X,
   XBOX_BTN_Y,
 
-  XBOX_BTN_WHITE,
-  XBOX_BTN_BLACK,
-
   XBOX_BTN_LB,
   XBOX_BTN_RB,
 
