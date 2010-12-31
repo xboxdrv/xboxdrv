@@ -289,6 +289,13 @@ uInput::send(XboxMsg& msg)
   if      (msg.dpad_left)  send_axis(XBOX_AXIS_DPAD_X, -1);
   else if (msg.dpad_right) send_axis(XBOX_AXIS_DPAD_X,  1);
   else                     send_axis(XBOX_AXIS_DPAD_X,  0);
+
+  send_axis(XBOX_AXIS_A, msg.a);
+  send_axis(XBOX_AXIS_B, msg.b);
+  send_axis(XBOX_AXIS_X, msg.x);
+  send_axis(XBOX_AXIS_Y, msg.y);
+  send_axis(XBOX_AXIS_BLACK, msg.black);
+  send_axis(XBOX_AXIS_WHITE, msg.white);
 }
 
 void

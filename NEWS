@@ -26,6 +26,7 @@ xboxdrv 0.6.2 - (??/Jan/2011)
 * added --evdev-no-grab to avoid a full grab on the event device
 * unified ini and command line parsing some more
 * Mad Catz Xbox controller - MW2 controller support added
+* added support for Xbox1 analog buttons
 
 
 xboxdrv 0.6.1 - (21/Dec/2010)
