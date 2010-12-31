@@ -27,23 +27,12 @@ $ dput my-ppa xboxdrv_0.6.1_source.changes
 Stuff to do before 0.6.2 release:
 =================================
 
-* add "mouse=true" to ini options
-
-* allow the right side of --ui-axismap to be empty:
-
-  xboxdrv --ui-buttonmap X1^deadzone:50
-
-  This would just add the filter to the chain, not create a complete new mapping
+Change default axis/button map depending on controller type (tricky as
+type is only really known after the axis/buttonmap as already been
+build):
 
 * remove guide button from default mapping when its an Xbox1 controller
-
 * fixup guitar
-
-* --evdev-grab
-
-    Takes exclusive ownership of the event device, all events are
-    directed to xboxdrv and no other application will be able to
-    receive events.
 
 Stuff to do before 0.6.x release:
 =================================

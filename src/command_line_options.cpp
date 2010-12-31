@@ -229,6 +229,7 @@ CommandLineParser::init_ini(Options* opts)
 
     // uinput stuff
     ("device-name", &opts->uinput_config.device_name)
+    ("mouse", boost::bind(&uInputCfg::mouse, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ("trigger-as-button", boost::bind(&uInputCfg::trigger_as_button, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ("trigger-as-zaxis", boost::bind(&uInputCfg::trigger_as_zaxis, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ("dpad-as-button", boost::bind(&uInputCfg::dpad_as_button, boost::ref(opts->uinput_config)), boost::function<void ()>())
@@ -237,8 +238,10 @@ CommandLineParser::init_ini(Options* opts)
     ("mimic-xpad", boost::bind(&uInputCfg::mimic_xpad, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ;
 
-  m_ini.section("ui-buttonmap", boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
-  m_ini.section("ui-axismap",   boost::bind(&CommandLineParser::set_ui_axismap, this, _1, _2));
+  m_ini.section("ui-buttonmap", boost::bind(&uInputCfg::set_ui_buttonmap, 
+                                            boost::ref(opts->uinput_config), _1, _2));
+  m_ini.section("ui-axismap",   boost::bind(&uInputCfg::set_ui_axismap, 
+                                            boost::ref(opts->uinput_config), _1, _2));
 
   m_ini.section("buttonmap", boost::bind(&CommandLineParser::set_buttonmap, this, _1, _2));
   m_ini.section("axismap",   boost::bind(&CommandLineParser::set_axismap, this, _1, _2));
@@ -444,42 +447,17 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_UI_AXISMAP:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_axismap, this, _1, _2));
+        process_name_value_string(opt.argument, boost::bind(&uInputCfg::set_ui_axismap, 
+                                                            boost::ref(opts.uinput_config), _1, _2));
         break;
 
       case OPTION_UI_BUTTONMAP:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
+        process_name_value_string(opt.argument, boost::bind(&uInputCfg::set_ui_buttonmap, 
+                                                            boost::ref(opts.uinput_config), _1, _2));
         break;
 
       case OPTION_MOUSE:
-        opts.uinput_config.get_axis_map().clear();
-        opts.uinput_config.get_btn_map().clear();
-        opts.uinput_config.trigger_as_zaxis();
-
-        // send events only every 20msec, lower values cause a jumpy pointer
-        set_ui_axismap("x1^dead:4000", "REL_X:15:20");
-        set_ui_axismap("y1^dead:4000", "REL_Y:15:20");
-        set_ui_axismap("tr+x1^dead:4000^resp:-8000:0:8000", "REL_X:15:20");
-        set_ui_axismap("tr+y1^dead:4000^resp:-8000:0:8000", "REL_Y:15:20");
-        set_ui_axismap("y2^invert^dead:4000", "REL_WHEEL:5:100");
-        set_ui_axismap("x2^dead:4000", "REL_HWHEEL:5:100");
-        set_ui_axismap("trigger^invert", "REL_WHEEL:5:100");
-        
-        set_ui_buttonmap("a", "BTN_LEFT");
-        set_ui_buttonmap("b", "BTN_RIGHT");
-        set_ui_buttonmap("x", "BTN_MIDDLE");
-        set_ui_buttonmap("y", "KEY_ENTER");
-        set_ui_buttonmap("rb", "KEY_PAGEDOWN");
-        set_ui_buttonmap("lb", "KEY_PAGEUP");
-        
-        set_ui_buttonmap("dl", "KEY_LEFT");
-        set_ui_buttonmap("dr", "KEY_RIGHT");
-        set_ui_buttonmap("du", "KEY_UP");
-        set_ui_buttonmap("dd", "KEY_DOWN");
-        
-        set_ui_buttonmap("start", "KEY_FORWARD");
-        set_ui_buttonmap("back", "KEY_BACK");
-        set_ui_buttonmap("guide", "KEY_ESC");
+        opts.uinput_config.mouse();
         break;
 
       case OPTION_DETACH_KERNEL_DRIVER:
@@ -691,126 +669,6 @@ CommandLineParser::print_version() const
     << "Licensed under GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
     << "This program comes with ABSOLUTELY NO WARRANTY.\n"
     << "This is free software, and you are welcome to redistribute it under certain conditions; see the file COPYING for details.\n";
-}
-
-void
-CommandLineParser::set_ui_axismap(const std::string& name, const std::string& value)
-{
-  AxisEventPtr event;
-
-  XboxButton shift = XBOX_BTN_UNKNOWN;
-  XboxAxis   axis  = XBOX_AXIS_UNKNOWN;
-  std::vector<AxisFilterPtr> filters;
-
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
-  int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
-  {
-    switch(idx)
-    { 
-      case 0: // shift+key portion
-        {
-          std::string::size_type j = t->find('+');
-          if (j == std::string::npos)
-          {
-            shift = XBOX_BTN_UNKNOWN;
-            axis  = string2axis(*t);
-          }
-          else
-          {
-            shift = string2btn(t->substr(0, j));
-            axis  = string2axis(t->substr(j+1));
-          }
-          
-          if (value.empty())
-          { // if no rhs value is given, add filters to the current binding
-            event = m_options->uinput_config.get_axis_map().lookup(shift, axis);
-          }
-          else
-          {
-            event = AxisEvent::from_string(value);
-            if (event)
-            {
-              if (axis != XBOX_AXIS_UNKNOWN)
-              {
-                event->set_axis_range(get_axis_min(axis),
-                                      get_axis_max(axis));
-              }
-
-              m_options->uinput_config.get_axis_map().bind(shift, axis, event);
-            }
-          }
-        }
-        break;
-
-      default:
-        { // filter
-          if (event)
-          {
-            event->add_filter(AxisFilter::from_string(*t));
-          }
-        }
-        break;
-    }
-  }
-}
-
-void
-CommandLineParser::set_ui_buttonmap(const std::string& name, const std::string& value)
-{
-  ButtonEventPtr event;
-
-  XboxButton shift = XBOX_BTN_UNKNOWN;
-  XboxButton btn   = XBOX_BTN_UNKNOWN;
-  std::vector<ButtonFilterPtr> filters;
-
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
-  int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
-  {
-    switch(idx)
-    { 
-      case 0: // shift+key portion
-        {
-          std::string::size_type j = t->find('+');
-          if (j == std::string::npos)
-          {
-            shift = XBOX_BTN_UNKNOWN;
-            btn   = string2btn(*t);
-          }
-          else
-          {
-            shift = string2btn(t->substr(0, j));
-            btn   = string2btn(t->substr(j+1));
-          }
-          
-          if (value.empty())
-          { // if no rhs value is given, add filters to the current binding
-            event = m_options->uinput_config.get_btn_map().lookup(shift, btn);
-          }
-          else
-          {
-            event = ButtonEvent::from_string(value);
-            if (event)
-            {
-              m_options->uinput_config.get_btn_map().bind(shift, btn, event);
-            }
-          }
-        }
-        break;
-
-      default:
-        { // filter
-          if (event)
-          {
-            event->add_filter(ButtonFilter::from_string(*t));
-          }
-        }
-        break;
-    }
-  }
 }
 
 void

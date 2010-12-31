@@ -16,8 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <linux/input.h>
+#include <boost/tokenizer.hpp>
 #include <iostream>
+#include <linux/input.h>
 
 #include "uinput_cfg.hpp"
 
@@ -123,6 +124,38 @@ uInputCfg::mimic_xpad()
 }
 
 void
+uInputCfg::mouse()
+{
+  get_axis_map().clear();
+  get_btn_map().clear();
+
+  // send events only every 20msec, lower values cause a jumpy pointer
+  set_ui_axismap("x1^dead:4000", "REL_X:15:20");
+  set_ui_axismap("y1^dead:4000", "REL_Y:15:20");
+  set_ui_axismap("tr+x1^dead:4000^resp:-8000:0:8000", "REL_X:15:20");
+  set_ui_axismap("tr+y1^dead:4000^resp:-8000:0:8000", "REL_Y:15:20");
+  set_ui_axismap("y2^invert^dead:6000", "REL_WHEEL:5:100");
+  set_ui_axismap("x2^dead:6000", "REL_HWHEEL:5:100");
+  set_ui_axismap("trigger^invert", "REL_WHEEL:5:100");
+        
+  set_ui_buttonmap("a", "BTN_LEFT");
+  set_ui_buttonmap("b", "BTN_RIGHT");
+  set_ui_buttonmap("x", "BTN_MIDDLE");
+  set_ui_buttonmap("y", "KEY_ENTER");
+  set_ui_buttonmap("rb", "KEY_PAGEDOWN");
+  set_ui_buttonmap("lb", "KEY_PAGEUP");
+        
+  set_ui_buttonmap("dl", "KEY_LEFT");
+  set_ui_buttonmap("dr", "KEY_RIGHT");
+  set_ui_buttonmap("du", "KEY_UP");
+  set_ui_buttonmap("dd", "KEY_DOWN");
+        
+  set_ui_buttonmap("start", "KEY_FORWARD");
+  set_ui_buttonmap("back", "KEY_BACK");
+  set_ui_buttonmap("guide", "KEY_ESC");
+}
+
+void
 uInputCfg::set_defaults()
 {
   get_btn_map().clear();
@@ -217,6 +250,126 @@ uInputCfg::dpad_only()
 
   get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -1, 1, 0, 0));
   get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -1, 1, 0, 0));
+}
+
+void
+uInputCfg::set_ui_axismap(const std::string& name, const std::string& value)
+{
+  AxisEventPtr event;
+
+  XboxButton shift = XBOX_BTN_UNKNOWN;
+  XboxAxis   axis  = XBOX_AXIS_UNKNOWN;
+  std::vector<AxisFilterPtr> filters;
+
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  int idx = 0;
+  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  {
+    switch(idx)
+    { 
+      case 0: // shift+key portion
+        {
+          std::string::size_type j = t->find('+');
+          if (j == std::string::npos)
+          {
+            shift = XBOX_BTN_UNKNOWN;
+            axis  = string2axis(*t);
+          }
+          else
+          {
+            shift = string2btn(t->substr(0, j));
+            axis  = string2axis(t->substr(j+1));
+          }
+          
+          if (value.empty())
+          { // if no rhs value is given, add filters to the current binding
+            event = get_axis_map().lookup(shift, axis);
+          }
+          else
+          {
+            event = AxisEvent::from_string(value);
+            if (event)
+            {
+              if (axis != XBOX_AXIS_UNKNOWN)
+              {
+                event->set_axis_range(get_axis_min(axis),
+                                      get_axis_max(axis));
+              }
+
+              get_axis_map().bind(shift, axis, event);
+            }
+          }
+        }
+        break;
+
+      default:
+        { // filter
+          if (event)
+          {
+            event->add_filter(AxisFilter::from_string(*t));
+          }
+        }
+        break;
+    }
+  }
+}
+
+void
+uInputCfg::set_ui_buttonmap(const std::string& name, const std::string& value)
+{
+  ButtonEventPtr event;
+
+  XboxButton shift = XBOX_BTN_UNKNOWN;
+  XboxButton btn   = XBOX_BTN_UNKNOWN;
+  std::vector<ButtonFilterPtr> filters;
+
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  int idx = 0;
+  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  {
+    switch(idx)
+    { 
+      case 0: // shift+key portion
+        {
+          std::string::size_type j = t->find('+');
+          if (j == std::string::npos)
+          {
+            shift = XBOX_BTN_UNKNOWN;
+            btn   = string2btn(*t);
+          }
+          else
+          {
+            shift = string2btn(t->substr(0, j));
+            btn   = string2btn(t->substr(j+1));
+          }
+          
+          if (value.empty())
+          { // if no rhs value is given, add filters to the current binding
+            event = get_btn_map().lookup(shift, btn);
+          }
+          else
+          {
+            event = ButtonEvent::from_string(value);
+            if (event)
+            {
+              get_btn_map().bind(shift, btn, event);
+            }
+          }
+        }
+        break;
+
+      default:
+        { // filter
+          if (event)
+          {
+            event->add_filter(ButtonFilter::from_string(*t));
+          }
+        }
+        break;
+    }
+  }
 }
 
 /* EOF */
