@@ -275,8 +275,6 @@ AbsAxisEventHandler::AbsAxisEventHandler()
 
 AbsAxisEventHandler::AbsAxisEventHandler(int device_id, int code, int min, int max, int fuzz, int flat)
 {
-  std::cout << this << " AbsAxisEventHandler::AbsAxisEventHandler: " << min << " " << max << std::endl;
-
   m_code  = UIEvent::create(device_id, EV_ABS, code);
   m_min   = min;
   m_max   = max;
@@ -289,8 +287,6 @@ AbsAxisEventHandler::set_axis_range(int min, int max)
 {
   m_min = min;
   m_max = max;
-
-  std::cout << this << " AbsAxisEventHandler::set_axis_range: " << min << " " << max << std::endl;
 }
 
 void
