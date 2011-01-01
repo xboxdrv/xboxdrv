@@ -82,6 +82,8 @@ public:
   bool evdev_grab;
   bool evdev_debug;
 
+  bool chatpad;
+
   std::vector<std::string> exec;
 
   Options();

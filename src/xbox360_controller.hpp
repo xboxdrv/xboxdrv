@@ -22,6 +22,7 @@
 #include <usb.h>
 #include "xbox_generic_controller.hpp"
 
+class Chatpad;
 class USBReadThread;
 struct XPadDevice;
 
@@ -37,15 +38,17 @@ private:
   int endpoint_out;
 
   std::auto_ptr<USBReadThread> read_thread;
+  std::auto_ptr<Chatpad> m_chatpad;
 
   void find_endpoints();
 
 public:
-  Xbox360Controller(struct usb_device* dev, bool try_detach);
+  Xbox360Controller(struct usb_device* dev, bool chatpad, bool try_detach);
   ~Xbox360Controller();
 
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
+  void set_chatpad();
   bool read(XboxGenericMsg& msg, bool verbose, int timeout);
 
 private:

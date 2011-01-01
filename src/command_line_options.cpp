@@ -100,6 +100,7 @@ enum {
   OPTION_EVDEV_DEBUG,
   OPTION_EVDEV_ABSMAP,
   OPTION_EVDEV_KEYMAP,
+  OPTION_CHATPAD,
   OPTION_DETACH_KERNEL_DRIVER,
   OPTION_HELP_DEVICES
 };
@@ -151,8 +152,9 @@ CommandLineParser::init_argp()
     .add_option(OPTION_EVDEV,          0, "evdev",   "DEVICE", "Read events from a evdev device, instead of USB")
     .add_option(OPTION_EVDEV_DEBUG,    0, "evdev-debug", "", "Print out all events received from evdev")
     .add_option(OPTION_EVDEV_NO_GRAB,  0, "evdev-no-grab", "", "Do not grab the event device, allow other apps to receive events")
-    .add_option(OPTION_EVDEV_ABSMAP, 0, "evdev-absmap", "MAP", "Map evdev key events to Xbox360 button events")
-    .add_option(OPTION_EVDEV_KEYMAP, 0, "evdev-keymap", "MAP", "Map evdev abs events to Xbox360 axis events")
+    .add_option(OPTION_EVDEV_ABSMAP,   0, "evdev-absmap", "MAP", "Map evdev key events to Xbox360 button events")
+    .add_option(OPTION_EVDEV_KEYMAP,   0, "evdev-keymap", "MAP", "Map evdev abs events to Xbox360 axis events")
+    .add_option(OPTION_CHATPAD,        0, "chatpad", "",  "Enable Chatpad support for Xbox360 USB controller")
     .add_newline()
 
     .add_text("Status Options: ")
@@ -410,6 +412,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
                           << " * firestorm-vsb\n"
                           << " * saitek-p2500\n");
         }
+        break;
+
+      case OPTION_CHATPAD:
+        opts.chatpad = true;
         break;
 
       case OPTION_FORCE_FEEDBACK:

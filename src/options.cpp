@@ -52,7 +52,8 @@ Options::Options() :
   dpad_rotation(0),
   evdev_device(),
   evdev_grab(true),
-  evdev_debug(false)
+  evdev_debug(false),
+  chatpad(false)
 {
 }
 
