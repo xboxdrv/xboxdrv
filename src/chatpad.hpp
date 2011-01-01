@@ -76,6 +76,14 @@ enum {
   CHATPAD_MOD_PEOPLE = 0x08
 };
 
+enum {
+  CHATPAD_LED_PEOPLE    = 1<<0,
+  CHATPAD_LED_ORANGE    = 1<<1,
+  CHATPAD_LED_GREEN     = 1<<2,
+  CHATPAD_LED_SHIFT     = 1<<3,
+  CHATPAD_LED_BACKLIGHT = 1<<4
+};
+
 class Chatpad
 {
 private:
@@ -117,6 +125,7 @@ private:
   std::auto_ptr<LinuxUinput> m_uinput;
   int m_keymap[256];
   bool m_state[256];
+  unsigned int m_led_state;
 
 public:
   Chatpad(struct usb_dev_handle* handle);
@@ -124,6 +133,9 @@ public:
 
   void send_init();
   void start_threads();
+
+  void set_led(unsigned int led, bool state);
+  bool get_led(unsigned int led); 
 
   void process(const ChatpadKeyMsg& msg);
   void init_uinput();

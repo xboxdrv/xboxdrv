@@ -29,7 +29,8 @@ Chatpad::Chatpad(struct usb_dev_handle* handle) :
   m_handle(handle),
   m_quit_thread(false),
   m_read_thread(),
-  m_keep_alive_thread()
+  m_keep_alive_thread(),
+  m_led_state(0)
 {
   memset(m_keymap, 0, 256);
   memset(m_state, 0, 256);
@@ -108,6 +109,59 @@ Chatpad::init_uinput()
   m_uinput->finish();
 }
 
+bool
+Chatpad::get_led(unsigned int led)
+{
+  return m_led_state & led;
+}
+
+void
+Chatpad::set_led(unsigned int led, bool state)
+{
+  if (state)
+  {
+    m_led_state |= led;
+
+    if (led == CHATPAD_LED_PEOPLE)
+    {
+      usb_control_msg(m_handle, 0x41, 0x00, 0x000b, 0x0002, NULL, 0, 0);
+    }
+    else if (led == CHATPAD_LED_ORANGE)
+    {
+      usb_control_msg(m_handle, 0x41, 0x00, 0x000a, 0x0002, NULL, 0, 0);
+    }
+    else if (led == CHATPAD_LED_GREEN)
+    {
+      usb_control_msg(m_handle, 0x41, 0x00, 0x0009, 0x0002, NULL, 0, 0);
+    }
+    else if (led == CHATPAD_LED_SHIFT)
+    {
+      usb_control_msg(m_handle, 0x41, 0x00, 0x0008, 0x0002, NULL, 0, 0);
+    }
+  }
+  else
+  {
+    m_led_state &= ~led;
+
+    if (led == CHATPAD_LED_PEOPLE)
+    {
+      usb_control_msg(m_handle, 0x41, 0x00, 0x0003, 0x0002, NULL, 0, 0);
+    }
+    else if (led == CHATPAD_LED_ORANGE)
+    {
+      usb_control_msg(m_handle, 0x41, 0x00, 0x0002, 0x0002, NULL, 0, 0);
+    }
+    else if (led == CHATPAD_LED_GREEN)
+    {
+      usb_control_msg(m_handle, 0x41, 0x00, 0x0001, 0x0002, NULL, 0, 0);
+    }
+    else if (led == CHATPAD_LED_SHIFT)
+    {
+      usb_control_msg(m_handle, 0x41, 0x00, 0x0000, 0x0002, NULL, 0, 0);
+    }
+  }
+}
+
 void
 Chatpad::start_threads()
 {
@@ -175,6 +229,26 @@ Chatpad::process(const ChatpadKeyMsg& msg)
   {
     if (m_state[i] != old_state[i])
     {
+      if (m_state[i])
+      {
+        if (i == CHATPAD_MOD_PEOPLE)
+        {
+          set_led(CHATPAD_LED_PEOPLE, !get_led(CHATPAD_LED_PEOPLE));
+        }
+        else if (i == CHATPAD_MOD_ORANGE)
+        {
+          set_led(CHATPAD_LED_ORANGE, !get_led(CHATPAD_LED_ORANGE));
+        }
+        else if (i == CHATPAD_MOD_GREEN)
+        {
+          set_led(CHATPAD_LED_GREEN, !get_led(CHATPAD_LED_GREEN));
+        }
+        else if (i == CHATPAD_MOD_SHIFT)
+        {
+          set_led(CHATPAD_LED_SHIFT, !get_led(CHATPAD_LED_SHIFT));
+        }
+      }
+
       m_uinput->send(EV_KEY, m_keymap[i], m_state[i]);
     }
   }
