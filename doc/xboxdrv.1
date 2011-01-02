@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 2010-05-05 0.6.2 "User Commands"
+.TH "xboxdrv " 1 2010-05-05 0.6.3 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -37,10 +37,11 @@ well as more complicated things like mouse and keyboard emulation,
 auto-fire and throttle control emulation.
 .PP
 It is also possible for \fBxboxdrv\fR to read input
-data directly from an event device, this allows you to use the
+data directly from an event device, this allows to use the
 configurability of \fBxboxdrv\fR on regular PC
-joysticks and thus lets \fBxboxdrv\fR serve a
-similar purpose as \fBjoy2key\fR. See the
+joysticks, keyboards and mice and thus
+lets \fBxboxdrv\fR serve a similar purpose
+as \fBjoy2key\fR. See the
 option \*(T<\fB\-\-evdev\fR\*(T> below for more information.
 .PP
 When a \*(T<\fBCOMMAND\fR\*(T> is provided xboxdrv will launch
@@ -279,6 +280,13 @@ events. An example configuration would look like this:
 \fBxboxdrv\fR will output on start a full
 list of event names that the given event device
 supports.
+.TP 
+\*(T<\fB\-\-chatpad\fR\*(T>
+Enables the support for the Xbox360 Chatpad. WARNING:
+This is preliminary code, it will crash your gamepad
+when xboxdrv is started multiple times and won't provide
+proper keymapping for any of the umlauts and special
+characters.
 .SS "STATUS OPTIONS"
 .TP 
 \*(T<\fB\-l\fR\*(T>, \*(T<\fB\-\-led\fR\*(T> \fINUM\fR

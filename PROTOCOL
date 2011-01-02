@@ -295,6 +295,8 @@ Chatpad init:
 
 Hardware version 1.10, uses 0x01 0x02 for init.
 Hardware version 1.14, uses 0x09 0x00 for init.
+                0x0114
+                0x0110
 
 
 Xbox360 Guitar

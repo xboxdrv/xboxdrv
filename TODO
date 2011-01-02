@@ -46,6 +46,16 @@ Figure out a way to load custom keymaps:
 Stuff to do before 0.6.x release:
 =================================
 
+* write UIEvent::from_string()
+
+* find a way to bring back --no-extra-devices, saves typing
+
+* absolute mouse pointer can be created with:
+
+  ABS_X, ABS_Y, BTN_LEFT
+
+  document that somewhere
+
 http://www.mp3car.com/vbulletin/input-devices/108554-xbox360-chatpad-awsome-backlit-mini-keyboard-16.html#post1256444
 
 * change default axis/button map depending on controller type (tricky as

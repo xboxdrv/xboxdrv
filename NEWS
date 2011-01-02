@@ -1,9 +1,13 @@
 xboxdrv 0.6.3 - (??/Jan/2011)
 =============================
 
-* chatpad support, enable with --chatpad (special thanks to Jani
+* chatpad support, enable with --chatpad, special thanks to Jani
   Virta, Andy Kirkham, dwomac and GAFBlizzard who helped make it
-  possible)
+  possible
+* cleanup of modifier code
+* added optional abs:/rel:/key: prefixes to --ui-axismap
+* fixed multiple bugs that made it impossible to assign events to
+  specific devices
 
 
 xboxdrv 0.6.2 - (31/Dec/2010)

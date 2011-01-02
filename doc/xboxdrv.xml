@@ -444,6 +444,19 @@ start=KEY_ESC
             </para>
           </listitem>
         </varlistentry>
+
+        <varlistentry>
+          <term><option>--chatpad</option></term>
+          <listitem>
+            <para>
+              Enables the support for the Xbox360 Chatpad. WARNING:
+              This is preliminary code, it will crash your gamepad
+              when xboxdrv is started multiple times and won't provide
+              proper keymapping for any of the umlauts and special
+              characters.
+            </para>
+          </listitem>
+        </varlistentry>
       </variablelist>
     </refsect2>
 
