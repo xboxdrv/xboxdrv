@@ -82,15 +82,6 @@ struct AxisSensitivityMapping {
   float sensitivity;
 };
 
-void apply_button_map(XboxGenericMsg& msg, const std::vector<ButtonMapping>& lst);
-void apply_axis_map(XboxGenericMsg& msg, const std::vector<AxisMapping>& lst);
-void apply_calibration_map(XboxGenericMsg& msg, const std::vector<CalibrationMapping>& lst);
-void apply_deadzone(XboxGenericMsg& msg, const Options& opts);
-void apply_square_axis(XboxGenericMsg& msg);
-void apply_axis_sensitivity(XboxGenericMsg& msg, const Options& opts);
-void apply_four_way_restrictor(XboxGenericMsg& msg, const Options& opts);
-void apply_dpad_rotator(XboxGenericMsg& msg, const Options& opts);
-
 #endif
 
 /* EOF */
