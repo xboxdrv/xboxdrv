@@ -18,6 +18,12 @@
 
 #include "axismap_modifier.hpp"
 
+/** converts the arbitary range to [-1,1] */
+inline float to_float(int value, int min, int max)
+{
+  return static_cast<float>(value - min) / static_cast<float>(max - min) * 2.0f - 1.0f;
+}
+
 AxismapModifier::AxismapModifier(const std::vector<AxisMapping>& axismap) :
   m_axismap(axismap)
 {
@@ -28,14 +34,33 @@ AxismapModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
   XboxGenericMsg newmsg = msg;
 
-  for(std::vector<AxisMapping>::const_iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
+  // update all filters in all mappings
+  for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
+  {
+    for(std::vector<AxisFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
+    {
+      (*j)->update(msec_delta);
+    }
+  }
+
+  // clear all values in the new msg
+  for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
     set_axis_float(newmsg, i->lhs, 0);
   }
 
-  for(std::vector<AxisMapping>::const_iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
+  for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
-    float lhs  = get_axis_float(msg,    i->lhs);
+    int min = get_axis_min(i->lhs);
+    int max = get_axis_max(i->lhs);
+    int value = get_axis(msg, i->lhs);
+
+    for(std::vector<AxisFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
+    {
+      value = (*j)->filter(value, min, max);
+    }
+
+    float lhs  = to_float(value, min, max);
     float nrhs = get_axis_float(newmsg, i->rhs);
 
     if (i->invert)

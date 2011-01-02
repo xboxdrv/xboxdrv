@@ -73,31 +73,70 @@ ButtonMapping
 ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
 {
   ButtonMapping mapping;
-  mapping.lhs = string2btn(lhs);
-  mapping.rhs = string2btn(rhs);
+
+  mapping.lhs = XBOX_BTN_UNKNOWN;
+  mapping.rhs = XBOX_BTN_UNKNOWN;
+
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(lhs, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  int idx = 0;
+  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  {
+    switch(idx)
+    {
+      case 0:  mapping.lhs = string2btn(*t); break;
+      default: mapping.filters.push_back(ButtonFilter::from_string(*t));
+    }
+  }
+
+  if (rhs.empty())
+  {
+    mapping.rhs = mapping.lhs;
+  }
+  else
+  {
+    mapping.rhs = string2btn(rhs);
+  }
+
   return mapping;
 }
 
 AxisMapping
-AxisMapping::from_string(const std::string& lhs, const std::string& rhs)
+AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
 {
-  assert(!lhs.empty());
-  assert(!rhs.empty());
-
+  std::string lhs = lhs_;
   AxisMapping mapping;
+
+  mapping.invert = false;
+  mapping.lhs = XBOX_AXIS_UNKNOWN;
+  mapping.rhs = XBOX_AXIS_UNKNOWN;
 
   if (lhs[0] == '-')
   {
     mapping.invert = true;
-    mapping.lhs = string2axis(lhs.substr(1));
+    lhs = lhs.substr(1);
+  }
+
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(lhs, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  int idx = 0;
+  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  {
+    switch(idx)
+    {
+      case 0:  mapping.lhs = string2axis(*t); break;
+      default: mapping.filters.push_back(AxisFilter::from_string(*t));
+    }
+  }
+
+  if (rhs.empty())
+  {
+    mapping.rhs = mapping.lhs;
   }
   else
   {
-    mapping.invert = false;
-    mapping.lhs = string2axis(lhs);
+    mapping.rhs = string2axis(rhs);
   }
-
-  mapping.rhs = string2axis(rhs);
 
   if (mapping.lhs == XBOX_AXIS_UNKNOWN ||
       mapping.rhs == XBOX_AXIS_UNKNOWN)

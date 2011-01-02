@@ -28,11 +28,35 @@ ButtonMapModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
   XboxGenericMsg newmsg = msg;
 
-  for(std::vector<ButtonMapping>::const_iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
-    set_button(newmsg, i->lhs, 0);
+  // update all filters in all mappings
+  for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
+  {
+    for(std::vector<ButtonFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
+    {
+      (*j)->update(msec_delta);
+    }
+  }
 
-  for(std::vector<ButtonMapping>::const_iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
-    set_button(newmsg, i->rhs, get_button(msg, i->lhs) || get_button(newmsg, i->rhs));
+  // set all buttons to 0
+  for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
+  {
+    set_button(newmsg, i->lhs, 0);
+  }
+
+  for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
+  {
+    // Take both lhs and rhs into account to allow multiple buttons
+    // mapping to the same button
+    bool value = get_button(msg, i->lhs) || get_button(newmsg, i->rhs);
+
+    // apply the button filter
+    for(std::vector<ButtonFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
+    {
+      value = (*j)->filter(value);
+    }    
+
+    set_button(newmsg, i->rhs, value);
+  }
 
   msg = newmsg;  
 }

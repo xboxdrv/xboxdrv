@@ -24,6 +24,8 @@
 #include <vector>
 #include <boost/shared_ptr.hpp>
 
+#include "axis_filter.hpp"
+#include "button_filter.hpp"
 #include "xboxmsg.hpp"
 
 class Modifier;
@@ -48,7 +50,8 @@ struct ButtonMapping {
   static ButtonMapping from_string(const std::string& lhs, const std::string& rhs);
 
   XboxButton lhs;
-  XboxButton rhs; 
+  XboxButton rhs;
+  std::vector<ButtonFilterPtr> filters;
 };
 
 struct AxisMapping {
@@ -57,6 +60,7 @@ struct AxisMapping {
   XboxAxis lhs;
   XboxAxis rhs;
   bool     invert;
+  std::vector<AxisFilterPtr> filters;
 };
 
 struct RelativeAxisMapping {
