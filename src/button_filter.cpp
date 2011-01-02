@@ -37,7 +37,7 @@ ButtonFilter::from_string(const std::string& str)
   {
     return ButtonFilterPtr(new ToggleButtonFilter);
   }
-  else if (filtername == "invert")
+  else if (filtername == "invert" || filtername == "inv")
   {
     return ButtonFilterPtr(new InvertButtonFilter);
   }

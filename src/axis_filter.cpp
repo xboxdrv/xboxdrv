@@ -53,7 +53,7 @@ AxisFilter::from_string(const std::string& str)
   if (p != std::string::npos) 
     rest = str.substr(p+1);
 
-  if (filtername == "invert")
+  if (filtername == "invert" || filtername == "inv")
   {
     return AxisFilterPtr(new InvertAxisFilter);
   }
