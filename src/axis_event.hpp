@@ -109,7 +109,7 @@ public:
 
 public:
   AbsAxisEventHandler();
-  AbsAxisEventHandler(int device_id, int code, int min, int max, int fuzz, int flat);
+  AbsAxisEventHandler(const UIEvent& code, int min, int max, int fuzz, int flat);
 
   void set_axis_range(int min, int max);
 

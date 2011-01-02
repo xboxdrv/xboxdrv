@@ -82,7 +82,7 @@ UIEvent::operator<(const UIEvent& rhs)  const
 void
 UIEvent::resolve_device_id()
 {
-  if (DEVICEID_AUTO)
+  if (device_id == DEVICEID_AUTO)
   {
     switch(type)
     {
@@ -108,6 +108,39 @@ UIEvent::resolve_device_id()
       case EV_ABS:
         device_id = DEVICEID_JOYSTICK;
         break;
+    }
+  }
+}
+
+/** Takes "1-BTN_A" splits it into "1", "BTN_A" */
+void split_event_name(const std::string& str, std::string* event_str, int* device_id)
+{
+  std::string::size_type p = str.find('-');
+  if (p == std::string::npos)
+  {
+    *event_str = str;
+    *device_id = DEVICEID_AUTO;
+  }
+  else
+  {
+    *event_str = str.substr(p+1);
+    std::string device = str.substr(0, p);
+
+    if (device == "auto")
+    {
+      *device_id = DEVICEID_AUTO;
+    }
+    else if (device == "mouse")
+    {
+      *device_id = DEVICEID_MOUSE;
+    }
+    else if (device == "keyboard")
+    {
+      *device_id = DEVICEID_KEYBOARD;
+    }
+    else
+    {
+      *device_id = boost::lexical_cast<int>(device);
     }
   }
 }

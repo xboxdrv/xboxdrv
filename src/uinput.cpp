@@ -117,6 +117,8 @@ uInput::uInput(GamepadType type, int vendor_id, int product_id, uInputCfg config
 void
 uInput::create_uinput_device(int device_id)
 {
+  // DEVICEID_AUTO should not happen at this point as the user should
+  // have called resolve_device_id()
   assert(device_id != DEVICEID_AUTO);
 
   uInputDevs::iterator it = uinput_devs.find(device_id);

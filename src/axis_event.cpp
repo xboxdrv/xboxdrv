@@ -37,7 +37,8 @@ AxisEvent::invalid()
 AxisEventPtr
 AxisEvent::create_abs(int device_id, int code, int min, int max, int fuzz, int flat)
 {
-  return AxisEventPtr(new AxisEvent(new AbsAxisEventHandler(device_id, code, min, max, fuzz, flat),
+  return AxisEventPtr(new AxisEvent(new AbsAxisEventHandler(UIEvent::create(device_id, EV_ABS, code),
+                                                            min, max, fuzz, flat),
                                     min, max));
 }
 
@@ -258,13 +259,13 @@ AbsAxisEventHandler::from_string(const std::string& str)
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
   
   int j = 0;
-  int code = -1;
+  UIEvent code = UIEvent::invalid();
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
   {
     switch(j)
     {
       case 0:
-        code = str2abs(*i);
+        code = str2abs_event(*i);
         break;
 
       default: 
@@ -282,7 +283,7 @@ AbsAxisEventHandler::from_string(const std::string& str)
   }
   else
   {
-    return new AbsAxisEventHandler(DEVICEID_AUTO, code, -1, -1, 0, 0);
+    return new AbsAxisEventHandler(code, -1, -1, 0, 0);
   }
 }
 
@@ -295,9 +296,9 @@ AbsAxisEventHandler::AbsAxisEventHandler()
   m_flat = 0;
 }
 
-AbsAxisEventHandler::AbsAxisEventHandler(int device_id, int code, int min, int max, int fuzz, int flat)
+AbsAxisEventHandler::AbsAxisEventHandler(const UIEvent& code, int min, int max, int fuzz, int flat)
 {
-  m_code  = UIEvent::create(device_id, EV_ABS, code);
+  m_code  = code;
   m_min   = min;
   m_max   = max;
   m_fuzz  = fuzz;
