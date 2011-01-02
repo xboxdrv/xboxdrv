@@ -22,15 +22,33 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <boost/shared_ptr.hpp>
+
 #include "xboxmsg.hpp"
 
+class Modifier;
 class Options;
 
+typedef boost::shared_ptr<Modifier> ModifierPtr;
+
+class Modifier
+{
+public:
+  virtual void update(int msec_delta, XboxGenericMsg& msg) =0;
+};
+
+struct AutoFireMapping {
+  static AutoFireMapping from_string(const std::string& lhs, const std::string& rhs);
+
+  XboxButton button;
+  int        frequency;
+};
+
 struct ButtonMapping {
   static ButtonMapping from_string(const std::string& lhs, const std::string& rhs);
 
   XboxButton lhs;
-  XboxButton rhs;
+  XboxButton rhs; 
 };
 
 struct AxisMapping {
@@ -39,13 +57,6 @@ struct AxisMapping {
   XboxAxis lhs;
   XboxAxis rhs;
   bool     invert;
-};
-
-struct AutoFireMapping {
-  static AutoFireMapping from_string(const std::string& lhs, const std::string& rhs);
-
-  XboxButton button;
-  int        frequency;
 };
 
 struct RelativeAxisMapping {
@@ -69,93 +80,6 @@ struct AxisSensitivityMapping {
 
   XboxAxis axis;
   float sensitivity;
-};
-
-class RelativeAxisModifier
-{
-private:
-  std::vector<RelativeAxisMapping> m_relative_axis_map;
-  std::vector<int> m_axis_state;
-
-public:
-  RelativeAxisModifier(const std::vector<RelativeAxisMapping>& relative_axis_map) :
-    m_relative_axis_map(relative_axis_map),
-    m_axis_state()
-  {
-    for(size_t i = 0; i < m_relative_axis_map.size(); ++i)
-    {
-      m_axis_state.push_back(0);
-    }
-  }
-
-  void update(int msec_delta, XboxGenericMsg& msg)
-  {
-    for(size_t i = 0; i < m_relative_axis_map.size(); ++i)
-    {
-      int value = get_axis(msg, m_relative_axis_map[i].axis);
-      if (abs(value) > 4000 ) // FIXME: add proper deadzone handling
-      {
-        m_axis_state[i] += ((m_relative_axis_map[i].speed * value) / 32768) * msec_delta / 1000;
-        if (m_axis_state[i] < -32768)
-          m_axis_state[i] = -32768;
-        else if (m_axis_state[i] > 32767)
-          m_axis_state[i] = 32767;
-
-        set_axis(msg, m_relative_axis_map[i].axis, m_axis_state[i]);
-      }
-      else
-      {
-        set_axis(msg, m_relative_axis_map[i].axis, m_axis_state[i]);
-      }
-    }
-  }
-};
-
-class AutoFireModifier
-{
-private:
-  std::vector<AutoFireMapping> m_autofire_map;
-  std::vector<int> m_button_timer;
-
-public:
-  AutoFireModifier(const std::vector<AutoFireMapping>& autofire_map) :
-    m_autofire_map(autofire_map),
-    m_button_timer()
-  {
-    for(std::vector<AutoFireMapping>::const_iterator i = m_autofire_map.begin(); i != m_autofire_map.end(); ++i)
-    {
-      m_button_timer.push_back(0);
-    }
-  }
-
-  void update(int msec_delta, XboxGenericMsg& msg)
-  {
-    for(size_t i = 0; i < m_autofire_map.size(); ++i)
-    {
-      if (get_button(msg, m_autofire_map[i].button))
-      {
-        m_button_timer[i] += msec_delta;
-
-        if (m_button_timer[i] > m_autofire_map[i].frequency)
-        {
-          set_button(msg, m_autofire_map[i].button, 1);
-          m_button_timer[i] = 0; // FIXME: we ignoring the passed time
-        }
-        else if (m_button_timer[i] > m_autofire_map[i].frequency/2)
-        {
-          set_button(msg, m_autofire_map[i].button, 0);
-        }
-        else
-        {
-          set_button(msg, m_autofire_map[i].button, 1);
-        }
-      }
-      else
-      {
-        m_button_timer[i] = 0;
-      }
-    }
-  }
 };
 
 void apply_button_map(XboxGenericMsg& msg, const std::vector<ButtonMapping>& lst);

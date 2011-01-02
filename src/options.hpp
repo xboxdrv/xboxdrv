@@ -23,10 +23,12 @@
 #include <map>
 #include <vector>
 
-#include "xpad_device.hpp"
-#include "uinput_cfg.hpp"
-#include "modifier.hpp"
 #include "evdev_absmap.hpp"
+#include "modifier.hpp"
+#include "modifier/autofire_modifier.hpp"
+#include "modifier/relativeaxis_modifier.hpp"
+#include "uinput_cfg.hpp"
+#include "xpad_device.hpp"
 
 class Options
 {

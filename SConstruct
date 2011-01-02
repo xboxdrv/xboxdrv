@@ -1,7 +1,8 @@
 # -*- python -*-
 
 if True:
-    env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'])
+    env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'],
+                      CPPPATH=["src/"])
 else:
     env = Environment(CXXFLAGS= [ "-O3", "-g3",
                                   "-ansi",
@@ -17,7 +18,8 @@ else:
                                   "-Wcast-qual",
                                   "-Winit-self", # only works with >= -O1
                                   "-Wno-unused-parameter",
-                                  ])
+                                  ],
+                      CPPPATH=["src/"])
 
 f = open("VERSION")
 package_version = f.read()
@@ -53,7 +55,9 @@ if not conf.CheckLib('boost_thread-mt', language='C++'):
 
 env = conf.Finish()
 
-env.Program('xboxdrv', Glob('src/*.cpp'))
+env.Program('xboxdrv',
+            Glob('src/*.cpp') +
+            Glob('src/modifier/*.cpp'))
 
 if False:
     env.Program('inputdrv', Glob('src/inputdrv/*.cpp'),

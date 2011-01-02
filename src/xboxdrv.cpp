@@ -35,6 +35,17 @@
 #include <unistd.h>
 #include <usb.h>
 
+#include "modifier/autofire_modifier.hpp"
+#include "modifier/axis_sensitivty_modifier.hpp"
+#include "modifier/axismap_modifier.hpp"
+#include "modifier/button_map_modifier.hpp"
+#include "modifier/calibration_modifier.hpp"
+#include "modifier/deadzone_modifier.hpp"
+#include "modifier/dpad_rotation_modifier.hpp"
+#include "modifier/four_way_restrictor_modifier.hpp"
+#include "modifier/relativeaxis_modifier.hpp"
+#include "modifier/square_axis_modifier.hpp"
+
 #include "uinput.hpp"
 #include "xboxmsg.hpp"
 #include "xbox_controller.hpp"
@@ -278,41 +289,44 @@ Xboxdrv::find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDe
 }
 
 void
-Xboxdrv::apply_modifier(XboxGenericMsg& msg, int msec_delta, const Options& opts) const
-{
-  apply_calibration_map(msg, opts.calibration_map);
-
-  // Apply modifier
-  apply_deadzone(msg, opts);
-
-  if (opts.square_axis)
-    apply_square_axis(msg);
-
-  if (!opts.axis_sensitivity_map.empty())
-    apply_axis_sensitivity(msg, opts);
-
-  if (opts.four_way_restrictor)
-    apply_four_way_restrictor(msg, opts);
-
-  if (opts.dpad_rotation)
-    apply_dpad_rotator(msg, opts);
-}
-
-void
 Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController* controller, const Options& opts)
 {
   int timeout = 0; // 0 == no timeout
   XboxGenericMsg oldmsg; // last data send to uinput
   XboxGenericMsg oldrealmsg; // last data read from the device
 
-  std::auto_ptr<AutoFireModifier>      autofire_modifier;
-  std::auto_ptr<RelativeAxisModifier> relative_axis_modifier;
+  std::vector<ModifierPtr> modifier;
+
+  // Create filter
+  if (!opts.calibration_map.empty())
+    modifier.push_back(ModifierPtr(new CalibrationModifier(opts.calibration_map)));
+  
+  if (opts.deadzone != 0 || opts.deadzone_trigger != 0)
+    modifier.push_back(ModifierPtr(new DeadzoneModifier(opts.deadzone, opts.deadzone_trigger)));
+
+  if (!opts.square_axis)
+    modifier.push_back(ModifierPtr(new SquareAxisModifier()));
+
+  if (!opts.axis_sensitivity_map.empty())
+    modifier.push_back(ModifierPtr(new AxisSensitivityModifier(opts.axis_sensitivity_map)));
+  
+  if (opts.four_way_restrictor)
+    modifier.push_back(ModifierPtr(new FourWayRestrictorModifier()));
+
+  if (opts.dpad_rotation)
+    modifier.push_back(ModifierPtr(new DpadRotationModifier(opts.dpad_rotation)));
 
   if (!opts.autofire_map.empty())
-    autofire_modifier.reset(new AutoFireModifier(opts.autofire_map)); 
+    modifier.push_back(ModifierPtr(new AutoFireModifier(opts.autofire_map)));
 
   if (!opts.relative_axis_map.empty())
-    relative_axis_modifier.reset(new RelativeAxisModifier(opts.relative_axis_map)); 
+    modifier.push_back(ModifierPtr(new RelativeAxisModifier(opts.relative_axis_map)));
+
+  if (!opts.button_map.empty())
+    modifier.push_back(ModifierPtr(new ButtonMapModifier(opts.button_map)));
+    
+  if (!opts.axis_map.empty())
+    modifier.push_back(ModifierPtr(new AxismapModifier(opts.axis_map)));
 
   // how long to wait for a controller event before taking care of autofire etc.
   timeout = 25; 
@@ -367,19 +381,11 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
     int msec_delta = this_time - last_time;
     last_time = this_time;
 
-    apply_modifier(msg, msec_delta, opts);
-
-    if (autofire_modifier.get())
-      autofire_modifier->update(msec_delta, msg);
-      
-    if (relative_axis_modifier.get())
-      relative_axis_modifier->update(msec_delta, msg);
-
-    if (!opts.button_map.empty())
-      apply_button_map(msg, opts.button_map);
-
-    if (!opts.axis_map.empty())
-      apply_axis_map(msg,   opts.axis_map);
+    // run the controller message through all modifier
+    for(std::vector<ModifierPtr>::iterator i = modifier.begin(); i != modifier.end(); ++i)
+    {
+      (*i)->update(msec_delta, msg);
+    }
 
     if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)) != 0)
     { // Only send a new event out if something has changed,
