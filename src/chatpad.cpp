@@ -183,17 +183,14 @@ Chatpad::read_thread()
     }
     else
     {
-      if (false)
+      if (true)
       {
-        if (!(data[0] == 0xf0 && data[1] == 0x04)) // ignore timing messages
+        std::cout << "read: " << len << "/5: data: " << std::flush;
+        for(int i = 0; i < len; ++i)
         {
-          std::cout << "read: " << len << "/5: data: " << std::flush;
-          for(int i = 0; i < len; ++i)
-          {
-            std::cout << boost::format("0x%02x ") % int(data[i]);
-          }
-          std::cout << std::endl;
+          std::cout << boost::format("0x%02x ") % int(data[i]);
         }
+        std::cout << std::endl;
       }
 
       if (data[0] == 0x00)
@@ -231,6 +228,11 @@ Chatpad::process(const ChatpadKeyMsg& msg)
     {
       if (m_state[i])
       {
+        if (i == CHATPAD_KEY_1)
+        {
+          usb_control_msg(m_handle, 0x41, 0x00, 0x0004, 0x0002, NULL, 0, 0);
+        }
+
         if (i == CHATPAD_MOD_PEOPLE)
         {
           set_led(CHATPAD_LED_PEOPLE, !get_led(CHATPAD_LED_PEOPLE));
@@ -298,8 +300,16 @@ Chatpad::send_init()
   }
   else
   {
-    buf[0] = 0x01;
-    buf[1] = 0x02;
+    if (true /* old_xbox360 pad */)
+    {
+      buf[0] = 0x01;
+      buf[1] = 0x02;
+    }
+    else
+    {
+      buf[0] = 0x09;
+      buf[1] = 0x00;
+    }
 
     ret = usb_control_msg(m_handle, 0x40, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (send 2 bytes, data must be 0x09 0x00)
     std::cout << "ret: " << ret << std::endl;

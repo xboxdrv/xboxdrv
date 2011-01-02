@@ -256,6 +256,46 @@ usb_control_msg()'s
 Sending "0x41 0x0 0x1f 0x02" gives a reply of "0x08, 0x03, 0x01"
 (chatpad) or "0x08, 0x03, 0x03" (chatpad + headset)
 
+Data from Chatpad
+=================
+
+0xf0 0x04
+0x00 MODIFIER SCAN1 SCAN2 0x00
+
+             ,-  active LEDs
+            /    ,----,---- clock, counts up to 0x0f then rolls to zero
+0xf0 0x04 LEDSTATUS 0x0e 0x0e 
+0x00 0x00 0x34   0x00 0x00  <- always zero
+ |    |    `- scan1 `scan2
+  \    `--- modifier bit field
+   `--- input event
+
+LED: 
+10111001
+
+<backlight> <zero> <shift> <orange> <green> 0 0 <people>
+
+LED_STATUS_PEOPLE    = (1<<0)
+LED_STATUS_SHIFT     = (1<<5)
+LED_STATUS_ORANGE    = (1<<4)
+LED_STATUS_GREEN     = (1<<3)
+LED_STATUS_BACKLIGHT = (1<<7)
+
+0xa0 - shift
+0x88 - green
+0x81 - people
+0x90 - orange
+0x91 - people+orange
+0x98 - orange+green
+0xb0 - shift+orange
+0xb9 - shift+orange+green+shift
+
+
+Chatpad init:
+
+Hardware version 1.10, uses 0x01 0x02 for init.
+Hardware version 1.14, uses 0x09 0x00 for init.
+
 
 Xbox360 Guitar
 ==============

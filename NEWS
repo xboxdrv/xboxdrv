@@ -1,3 +1,11 @@
+xboxdrv 0.6.3 - (??/Jan/2011)
+=============================
+
+* chatpad support, enable with --chatpad (special thanks to Jani
+  Virta, Andy Kirkham, dwomac and GAFBlizzard who helped make it
+  possible)
+
+
 xboxdrv 0.6.2 - (31/Dec/2010)
 =============================
 

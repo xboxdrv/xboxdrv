@@ -35,8 +35,12 @@ Other parts of the code are inspired or based on cwiid:
   * L. Donnie Smith <wiimote@abstrakraft.org>
 
 
-Chatpad USB Protocol Traces:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Chatpad USB Reverse Engineering:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   * Jani Virta <jani.virta@iqit.fi>
+  * Andy Kirkham
+  * dwomac
+  * GAFBlizzard
+
 
 # EOF #

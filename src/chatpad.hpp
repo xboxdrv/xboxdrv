@@ -84,6 +84,14 @@ enum {
   CHATPAD_LED_BACKLIGHT = 1<<4
 };
 
+enum {
+  CHATPAD_LED_STATUS_PEOPLE    = (1<<0),
+  CHATPAD_LED_STATUS_SHIFT     = (1<<5),
+  CHATPAD_LED_STATUS_ORANGE    = (1<<4),
+  CHATPAD_LED_STATUS_GREEN     = (1<<3),
+  CHATPAD_LED_STATUS_BACKLIGHT = (1<<7)
+};
+
 class Chatpad
 {
 private:
