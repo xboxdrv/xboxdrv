@@ -52,27 +52,49 @@ AxisEvent::from_string(const std::string& str)
 {
   AxisEventPtr ev;
 
-  switch (get_event_type(str))
+  std::string::size_type p = str.find(':');
+  const std::string& token = str.substr(0, p);
+  std::string rest;
+
+  if (p != std::string::npos) 
+    rest = str.substr(p+1);
+
+  if (token == "abs")
   {
-    case EV_ABS:
-      ev.reset(new AxisEvent(AbsAxisEventHandler::from_string(str)));
-      break;
+    ev.reset(new AxisEvent(AbsAxisEventHandler::from_string(rest)));
+  }
+  else if (token == "rel")
+  {
+    ev.reset(new AxisEvent(RelAxisEventHandler::from_string(rest)));
+  }
+  else if (token == "key")
+  {
+    ev.reset(new AxisEvent(KeyAxisEventHandler::from_string(rest)));
+  }
+  else
+  { // try to guess a type
+    switch (get_event_type(str))
+    {
+      case EV_ABS:
+        ev.reset(new AxisEvent(AbsAxisEventHandler::from_string(str)));
+        break;
 
-    case EV_REL:
-      ev.reset(new AxisEvent(RelAxisEventHandler::from_string(str)));
-      break;
+      case EV_REL:
+        ev.reset(new AxisEvent(RelAxisEventHandler::from_string(str)));
+        break;
 
-    case EV_KEY:
-      ev.reset(new AxisEvent(KeyAxisEventHandler::from_string(str)));
-      break;
+      case EV_KEY:
+        ev.reset(new AxisEvent(KeyAxisEventHandler::from_string(str)));
+        break;
 
-    case -1:
-      std::cout << "--------- invalid --------------" << std::endl;
-      ev = invalid();
-      break;
+      case -1:
+        std::cout << "--------- invalid --------------" << std::endl;
+        ev = invalid();
+        break;
 
-    default:
-      assert(!"AxisEvent::from_string(): should never be reached");
+      default:
+        assert(!"AxisEvent::from_string(): should never be reached");
+    }
   }
 
   //std::cout << "AxisEvent::from_string():\n  in:  " << str << "\n  out: " << ev->str() << std::endl;
