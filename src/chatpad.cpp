@@ -25,13 +25,19 @@
 
 #include "linux_uinput.hpp"
 
-Chatpad::Chatpad(struct usb_dev_handle* handle) :
+Chatpad::Chatpad(struct usb_dev_handle* handle, uint16_t bcdDevice) :
   m_handle(handle),
+  m_bcdDevice(bcdDevice),
   m_quit_thread(false),
   m_read_thread(),
   m_keep_alive_thread(),
   m_led_state(0)
 {
+  if (m_bcdDevice != 0x0110 && m_bcdDevice != 0x0114)
+  {
+    throw std::runtime_error("unknown bcdDevice version number, please report this issue to grumbel@gmail.com and include the output of 'lsusb -v'");
+  }
+
   memset(m_keymap, 0, 256);
   memset(m_state, 0, 256);
 
@@ -183,7 +189,7 @@ Chatpad::read_thread()
     }
     else
     {
-      if (true)
+      if (false)
       {
         std::cout << "read: " << len << "/5: data: " << std::flush;
         for(int i = 0; i < len; ++i)
@@ -281,18 +287,17 @@ Chatpad::send_init()
 
   // these three will fail, but are necessary to have the later ones succeed
   ret = usb_control_msg(m_handle, 0x40, 0xa9, 0xa30c, 0x4423, NULL, 0, 0);
-  std::cout << "ret: " << ret << std::endl;
+  //std::cout << "ret: " << ret << std::endl;
 
   ret = usb_control_msg(m_handle, 0x40, 0xa9, 0x2344, 0x7f03, NULL, 0, 0);
-  std::cout << "ret: " << ret << std::endl;
+  //std::cout << "ret: " << ret << std::endl;
 
   ret = usb_control_msg(m_handle, 0x40, 0xa9, 0x5839, 0x6832, NULL, 0, 0);
-  std::cout << "ret: " << ret << std::endl;
-
+  //std::cout << "ret: " << ret << std::endl;
 
   // make chatpad ready
   ret = usb_control_msg(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, will return a mode)
-  std::cout << "ret: " << ret << " " << (int)buf[0] << " " << (int)buf[1]<< std::endl;
+  //std::cout << "ret: " << ret << " " << (int)buf[0] << " " << (int)buf[1]<< std::endl;
 
   if (buf[1] & 2)
   {
@@ -300,22 +305,26 @@ Chatpad::send_init()
   }
   else
   {
-    if (true /* old_xbox360 pad */)
+    if (m_bcdDevice == 0x0110)
     {
       buf[0] = 0x01;
       buf[1] = 0x02;
     }
-    else
+    else if (m_bcdDevice == 0x0114)
     {
       buf[0] = 0x09;
       buf[1] = 0x00;
     }
+    else
+    {
+      assert(!"never reached");
+    }
 
     ret = usb_control_msg(m_handle, 0x40, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (send 2 bytes, data must be 0x09 0x00)
-    std::cout << "ret: " << ret << std::endl;
+    //std::cout << "ret: " << ret << std::endl;
  
     ret = usb_control_msg(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, this should return the NEW mode)
-    std::cout << "ret: " << ret << " " << (int)buf[0] << " " << (int)buf[1]<< std::endl;
+    //std::cout << "ret: " << ret << " " << (int)buf[0] << " " << (int)buf[1]<< std::endl;
 
     if (!(buf[1] & 2))
     {
@@ -326,11 +335,11 @@ Chatpad::send_init()
 
   // only when we get "01 02" back is the chatpad ready
   usb_control_msg(m_handle, 0x41, 0x0, 0x1f, 0x02, 0, NULL, 0);
-  std::cout << "0x1f" << std::endl;
+  //std::cout << "0x1f" << std::endl;
   sleep(1);
        
   usb_control_msg(m_handle, 0x41, 0x0, 0x1e, 0x02, 0, NULL, 0);
-  std::cout << "0x1e" << std::endl;
+  //std::cout << "0x1e" << std::endl;
 
   // can't send 1b before 1f before one rotation
   usb_control_msg(m_handle, 0x41, 0x0, 0x1b, 0x02, 0, NULL, 0);

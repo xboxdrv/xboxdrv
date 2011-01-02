@@ -105,7 +105,7 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev_, bool chatpad, bool
 
   if (chatpad)
   {
-    m_chatpad.reset(new Chatpad(handle));
+    m_chatpad.reset(new Chatpad(handle, dev->descriptor.bcdDevice));
     m_chatpad->send_init();
     m_chatpad->start_threads();
   }
