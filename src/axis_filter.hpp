@@ -109,10 +109,9 @@ public:
 private:
   int m_speed;
 
-  int m_value;
-  int m_state;
-  int m_min;
-  int m_max;
+  float m_float_speed;
+  float m_value;
+  float m_state;
 };
 
 class ResponseCurveAxisFilter : public AxisFilter

@@ -292,35 +292,31 @@ RelativeAxisFilter::from_string(const std::string& str)
   }
 
   return new RelativeAxisFilter(speed);
-  
 }
 
 RelativeAxisFilter::RelativeAxisFilter(int speed) :
   m_speed(speed),
+  m_float_speed(0.0f),
   m_value(0),
-  m_state(0),
-  m_min(-1),
-  m_max(1)
+  m_state(0)
 {
 }
 
 void
 RelativeAxisFilter::update(int msec_delta)
 {
-  m_state += m_speed * m_value / m_max * msec_delta / 1000;
-  
-  m_state = Math::clamp(m_min, m_state, m_max);
+  m_state += m_float_speed * m_value * msec_delta / 1000.0f;
+  m_state = Math::clamp(-1.0f, m_state, 1.0f);
 }
 
 int
 RelativeAxisFilter::filter(int value, int min, int max)
 {
-  m_value = value;
+  m_value = to_float(value, min, max);
 
-  m_min   = min;
-  m_max   = max;
+  m_float_speed = to_float(m_speed, min, max);
 
-  return m_state;
+  return from_float(m_state, min, max);
 }
 
 ResponseCurveAxisFilter*
