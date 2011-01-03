@@ -700,40 +700,8 @@ send KEY_LEFTSHIFT 0\*(T>
 
 All abs, rel and key events can be send from a macro file.
 
-Toggle Filter
-
-The toggle filter will turn the button into a toggle
-button, clicking the button will set it to pressed state
-and pressing it again will unpress it. Useful for games
-where you might want to permanently run or duck without
-holding the button pressed.
-
-Invert Filter
-
-The invert filter will keep the button in pressed state
-when it is not pressed and in unpressed state when it is
-pressed.
-
-Autofire Filter
-
-The autofire filter allows to repeatatly send button
-press events when the button is held down. It takes two
-optional parameters:
-
-\fIRATE\fR is the number of
-miliseconds between button press events.
-
-\fIDELAY\fR the amount of
-miliseconds till the autofire will start, before that
-delay the button will act as normal.
-
-Log Filter
-
-The log filter will output everything to stdout that
-goes through it to, this is useful for debugging the
-filter. A \fISTRING\fR can be
-provided as parameter that will be outputed before the
-event.
+For documentation on the filters you can apply to events
+see [Button Filter].
 .TP 
 \*(T<\fB\-\-ui\-axismap\fR\*(T> \fIUIAXISSPEC,...\fR
 .nf
@@ -789,53 +757,7 @@ also use shift keys in place of the XBOXAXIS:
 This allows you to send ABS_X events normally and ABS_RX
 events when the LB button is held down.
 
-Calibration Filter
-
-See \*(T<\fB\-\-calibration\fR\*(T>.
-
-Sensitifity Filter
-
-See \*(T<\fB\-\-axis\-sensitivity\fR\*(T>.
-
-Deadzone Filter
-
-Deadzone filter applies a deadzone to the current axis.
-If only \fIMIN\fR is provided, the
-parameter will be interpreted
-as \fI-MIN:MIN:1\fR. If the
-argument is 1, smooth filtering will be applied so that
-the end of the deadzone is 0. Setting the argument to 0
-will apply a simple cut-off filter, where all events
-smaller then the threshold are ignored.
-
-Relative Axis Filter
-
-See \*(T<\fB\-\-relative\-axis\fR\*(T>.
-
-Response Curve Filter
-
-The response curve filter allows you to completely
-change the way an axis reacts. The filter takes a list
-of \fIVALUES\fR that are then
-linearly interpolated and spread across the full range
-of the axis. An example would look like this:
-
-.nf
-\*(T<xboxdrv \e
- \-\-ui\-axismap x1^resp:\-32768:\-4000:0:4000:32767=\*(T>
-.fi
-
-Here the X1 axis is manipulated so that it will have a
-lower sensitivity in the center and a higher one on the
-outside.
-
-Log Filter
-
-The log filter will output everything to stdout that
-goes through it to, this is useful for debugging the
-filter. A \fISTRING\fR can be
-provided as parameter that will be outputed before the
-event.
+For information on how to use axis filters, see [Axis Filter].
 .TP 
 \*(T<\fB\-\-alt\-config\fR\*(T> \fIFILE\fR
 A shortcut for writing \*(T<\fB\-\-ui\-new\fR\*(T> \*(T<\fB\-\-config\fR\*(T> \fIFILE\fR.
@@ -1072,6 +994,89 @@ You can change the rumble strength via:
 .fi
 
 Values larger then 100% are possible as well.
+.SH "INPUT FILTER"
+Input filter allow to manipulate the events that come from the
+controller. They can be used
+on \*(T<\fB\-\-buttonmap\fR\*(T>, \*(T<\fB\-\-axismap\fR\*(T>, \*(T<\fB\-\-ui\-buttonmap\fR\*(T>
+and \*(T<\fB\-\-ui\-axismap\fR\*(T>. The difference between the
+two is that the \*(T<\fB\-\-ui\-...\fR\*(T> versions applies to
+the uinput events, while the other version applies to Xbox360
+controller events.
+.SS "BUTTON FILTER"
+.TP 
+\*(T<\fBtog\fR\*(T>, \*(T<\fBtoggle\fR\*(T>
+The toggle filter will turn the button into a toggle
+button, clicking the button will set it to pressed state
+and pressing it again will unpress it. Useful for games
+where you might want to permanently run or duck without
+holding the button pressed.
+.TP 
+\*(T<\fBinv\fR\*(T>, \*(T<\fBinvert\fR\*(T>
+The invert filter will keep the button in pressed state
+when it is not pressed and in unpressed state when it is
+pressed.
+.TP 
+\*(T<\fBauto\fR\*(T>, \*(T<\fBautofire\fR\*(T>:\fIRATE\fR:\fIDELAY\fR
+The autofire filter allows to repeatatly send button
+press events when the button is held down. It takes two
+optional parameters:
+
+\fIRATE\fR is the number of
+miliseconds between button press events.
+
+\fIDELAY\fR the amount of
+miliseconds till the autofire will start, before that
+delay the button will act as normal.
+.TP 
+\*(T<\fBlog\fR\*(T>:\fISTRING\fR
+The log filter will output everything to stdout that
+goes through it to, this is useful for debugging the
+filter. A \fISTRING\fR can be
+provided as parameter that will be outputed before the
+event.
+.SS "AXIS FILTER"
+.TP 
+\*(T<\fBcal\fR\*(T>, \*(T<\fBcalibration\fR\*(T>
+See \*(T<\fB\-\-calibration\fR\*(T>.
+.TP 
+\*(T<\fBsen\fR\*(T>, \*(T<\fBsensitivity\fR\*(T>:\fISENSITIVITY\fR
+See \*(T<\fB\-\-axis\-sensitivity\fR\*(T>.
+.TP 
+\*(T<\fBdead\fR\*(T>, \*(T<\fBdeadzone\fR\*(T>:\fIVALUE\fR, \*(T<\fBdeadzone\fR\*(T>:\fIMIN\fR:\fICENTER\fR:\fIMAX\fR 
+Deadzone filter applies a deadzone to the current axis.
+If only \fIMIN\fR is provided, the
+parameter will be interpreted
+as \fI-MIN:MIN:1\fR. If the
+argument is 1, smooth filtering will be applied so that
+the end of the deadzone is 0. Setting the argument to 0
+will apply a simple cut-off filter, where all events
+smaller then the threshold are ignored.
+.TP 
+\*(T<\fBrel\fR\*(T>, \*(T<\fBrelative\fR\*(T>:\fISPEED\fR
+See \*(T<\fB\-\-relative\-axis\fR\*(T>.
+.TP 
+\*(T<\fBresp\fR\*(T>, \*(T<\fBresponse\fR\*(T>:\fIVALUES\fR:...
+The response curve filter allows you to completely
+change the way an axis reacts. The filter takes a list
+of \fIVALUES\fR that are then
+linearly interpolated and spread across the full range
+of the axis. An example would look like this:
+
+.nf
+\*(T<xboxdrv \e
+ \-\-ui\-axismap x1^resp:\-32768:\-4000:0:4000:32767\*(T>
+.fi
+
+Here the X1 axis is manipulated so that it will have a
+lower sensitivity in the center and a higher one on the
+outside.
+.TP 
+\*(T<\fBlog\fR\*(T>:\fISTRING\fR
+The log filter will output everything to stdout that
+goes through it to, this is useful for debugging the
+filter. A \fISTRING\fR can be
+provided as parameter that will be outputed before the
+event.
 .SH "RUNNING XBOXDRV"
 Plug in your Xbox360 gamepad and then unload the xpad driver via:
 .PP

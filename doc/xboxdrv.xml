@@ -860,46 +860,9 @@ send KEY_LEFTSHIFT 0]]></programlisting>
             <para>
               All abs, rel and key events can be send from a macro file.
             </para>
-
-            <bridgehead renderas="sect3">Toggle Filter</bridgehead>
             <para>
-              The toggle filter will turn the button into a toggle
-              button, clicking the button will set it to pressed state
-              and pressing it again will unpress it. Useful for games
-              where you might want to permanently run or duck without
-              holding the button pressed.
-            </para>
-
-            <bridgehead renderas="sect3">Invert Filter</bridgehead>
-            <para>
-              The invert filter will keep the button in pressed state
-              when it is not pressed and in unpressed state when it is
-              pressed.
-            </para>
-
-            <bridgehead renderas="sect3">Autofire Filter</bridgehead>
-            <para>
-              The autofire filter allows to repeatatly send button
-              press events when the button is held down. It takes two
-              optional parameters:
-            </para>
-            <para>
-              <replaceable>RATE</replaceable> is the number of
-              miliseconds between button press events.
-            </para>
-            <para>
-              <replaceable>DELAY</replaceable> the amount of
-              miliseconds till the autofire will start, before that
-              delay the button will act as normal.
-            </para>
-
-            <bridgehead renderas="sect3">Log Filter</bridgehead>
-            <para>
-              The log filter will output everything to stdout that
-              goes through it to, this is useful for debugging the
-              filter. A <replaceable>STRING</replaceable> can be
-              provided as parameter that will be outputed before the
-              event.
+              For documentation on the filters you can apply to events
+              see <link linkend="buttonfilter" endterm="buttonfilter.title" />.
             </para>
           </listitem>
         </varlistentry>
@@ -959,56 +922,8 @@ NAME       = STRING ;]]></programlisting>
               events when the LB button is held down.
             </para>
 
-            <bridgehead renderas="sect3">Calibration Filter</bridgehead>
             <para>
-              See <option>--calibration</option>.
-            </para>
-
-            <bridgehead renderas="sect3">Sensitifity Filter</bridgehead>
-            <para>
-              See <option>--axis-sensitivity</option>.
-            </para>
-
-            <bridgehead renderas="sect3">Deadzone Filter</bridgehead>
-            <para>
-              Deadzone filter applies a deadzone to the current axis.
-              If only <replaceable>MIN</replaceable> is provided, the
-              parameter will be interpreted
-              as <replaceable>-MIN:MIN:1</replaceable>. If the
-              argument is 1, smooth filtering will be applied so that
-              the end of the deadzone is 0. Setting the argument to 0
-              will apply a simple cut-off filter, where all events
-              smaller then the threshold are ignored.
-            </para>
-
-            <bridgehead renderas="sect3">Relative Axis Filter</bridgehead>
-            <para>
-              See <option>--relative-axis</option>.
-            </para>
-
-            <bridgehead renderas="sect3">Response Curve Filter</bridgehead>
-            <para>
-              The response curve filter allows you to completely
-              change the way an axis reacts. The filter takes a list
-              of <replaceable>VALUES</replaceable> that are then
-              linearly interpolated and spread across the full range
-              of the axis. An example would look like this:
-            </para>
-            <programlisting><![CDATA[xboxdrv \
- --ui-axismap x1^resp:-32768:-4000:0:4000:32767=]]></programlisting>
-            <para>
-              Here the X1 axis is manipulated so that it will have a
-              lower sensitivity in the center and a higher one on the
-              outside.
-            </para>
-
-            <bridgehead renderas="sect3">Log Filter</bridgehead>
-            <para>
-              The log filter will output everything to stdout that
-              goes through it to, this is useful for debugging the
-              filter. A <replaceable>STRING</replaceable> can be
-              provided as parameter that will be outputed before the
-              event.
+              For information on how to use axis filters, see <link linkend="axisfilter" endterm="axisfilter.title" />.
             </para>
           </listitem>
         </varlistentry>
@@ -1330,6 +1245,164 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
       </variablelist>
     </refsect2>
   </refsect1> 
+
+  <refsect1 id="inputfilter">
+    <title id="inputfilter.title">Input Filter</title>
+    <para>
+      Input filter allow to manipulate the events that come from the
+      controller. They can be used
+      on <option>--buttonmap</option>, <option>--axismap</option>, <option>--ui-buttonmap</option>
+      and <option>--ui-axismap</option>. The difference between the
+      two is that the <option>--ui-...</option> versions applies to
+      the uinput events, while the other version applies to Xbox360
+      controller events.
+    </para>
+    <refsect2 id="buttonfilter">
+      <title id="buttonfilter.title">Button Filter</title>
+      <variablelist>
+        <varlistentry>
+          <term><option>tog</option>, <option>toggle</option></term>
+          <listitem>
+            <para>
+              The toggle filter will turn the button into a toggle
+              button, clicking the button will set it to pressed state
+              and pressing it again will unpress it. Useful for games
+              where you might want to permanently run or duck without
+              holding the button pressed.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>inv</option>, <option>invert</option></term>
+          <listitem>
+            <para>
+              The invert filter will keep the button in pressed state
+              when it is not pressed and in unpressed state when it is
+              pressed.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>auto</option>, <option>autofire</option>:<replaceable>RATE</replaceable>:<replaceable>DELAY</replaceable></term>
+          <listitem>
+            <para>
+              The autofire filter allows to repeatatly send button
+              press events when the button is held down. It takes two
+              optional parameters:
+            </para>
+            <para>
+              <replaceable>RATE</replaceable> is the number of
+              miliseconds between button press events.
+            </para>
+            <para>
+              <replaceable>DELAY</replaceable> the amount of
+              miliseconds till the autofire will start, before that
+              delay the button will act as normal.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>log</option>:<replaceable>STRING</replaceable></term>
+          <listitem>
+            <para>
+              The log filter will output everything to stdout that
+              goes through it to, this is useful for debugging the
+              filter. A <replaceable>STRING</replaceable> can be
+              provided as parameter that will be outputed before the
+              event.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+
+    <refsect2 id="axisfilter">
+      <title id="axisfilter.title">Axis Filter</title>
+      <variablelist>
+        <varlistentry>
+          <term><option>cal</option>, <option>calibration</option></term>
+          <listitem>
+            <para>
+              See <option>--calibration</option>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>sen</option>, <option>sensitivity</option>:<replaceable>SENSITIVITY</replaceable></term>
+          <listitem>
+            <para>
+              See <option>--axis-sensitivity</option>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>dead</option>, 
+            <option>deadzone</option>:<replaceable>VALUE</replaceable>, 
+            <option>deadzone</option>:<replaceable>MIN</replaceable>:<replaceable>CENTER</replaceable>:<replaceable>MAX</replaceable>
+          </term>
+          <listitem>
+            <para>
+              Deadzone filter applies a deadzone to the current axis.
+              If only <replaceable>MIN</replaceable> is provided, the
+              parameter will be interpreted
+              as <replaceable>-MIN:MIN:1</replaceable>. If the
+              argument is 1, smooth filtering will be applied so that
+              the end of the deadzone is 0. Setting the argument to 0
+              will apply a simple cut-off filter, where all events
+              smaller then the threshold are ignored.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>rel</option>, <option>relative</option>:<replaceable>SPEED</replaceable></term>
+          <listitem>
+            <para>
+              See <option>--relative-axis</option>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>resp</option>, <option>response</option>:<replaceable>VALUES</replaceable>:...</term>
+          <listitem>
+            <para>
+              The response curve filter allows you to completely
+              change the way an axis reacts. The filter takes a list
+              of <replaceable>VALUES</replaceable> that are then
+              linearly interpolated and spread across the full range
+              of the axis. An example would look like this:
+            </para>
+            <programlisting><![CDATA[xboxdrv \
+ --ui-axismap x1^resp:-32768:-4000:0:4000:32767]]></programlisting>
+            <para>
+              Here the X1 axis is manipulated so that it will have a
+              lower sensitivity in the center and a higher one on the
+              outside.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>log</option>:<replaceable>STRING</replaceable></term>
+          <listitem>
+            <para>
+              The log filter will output everything to stdout that
+              goes through it to, this is useful for debugging the
+              filter. A <replaceable>STRING</replaceable> can be
+              provided as parameter that will be outputed before the
+              event.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+  </refsect1>
 
   <refsect1>
     <title>Running xboxdrv</title>
