@@ -304,7 +304,7 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
   if (opts.deadzone != 0 || opts.deadzone_trigger != 0)
     modifier.push_back(ModifierPtr(new DeadzoneModifier(opts.deadzone, opts.deadzone_trigger)));
 
-  if (!opts.square_axis)
+  if (opts.square_axis)
     modifier.push_back(ModifierPtr(new SquareAxisModifier()));
 
   if (!opts.axis_sensitivity_map.empty())
