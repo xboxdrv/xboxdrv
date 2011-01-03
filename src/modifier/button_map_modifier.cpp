@@ -47,7 +47,7 @@ ButtonMapModifier::update(int msec_delta, XboxGenericMsg& msg)
   {
     // Take both lhs and rhs into account to allow multiple buttons
     // mapping to the same button
-    bool value = get_button(msg, i->lhs) || get_button(newmsg, i->rhs);
+    bool value = get_button(msg, i->lhs);
 
     // apply the button filter
     for(std::vector<ButtonFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
@@ -55,7 +55,7 @@ ButtonMapModifier::update(int msec_delta, XboxGenericMsg& msg)
       value = (*j)->filter(value);
     }    
 
-    set_button(newmsg, i->rhs, value);
+    set_button(newmsg, i->rhs, value || get_button(newmsg, i->rhs));
   }
 
   msg = newmsg;  
