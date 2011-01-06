@@ -1,0 +1,12 @@
+#!/bin/sh
+
+xboxdrv \
+  --evdev /dev/input/by-id/usb-Microsoft_SideWinder_Dual_Strike_USB_version_1.0-event-joystick \
+  --evdev-absmap ABS_HAT0X=X1,ABS_HAT0Y=y1 \
+  --evdev-absmap ABS_X=x2,ABS_Y=y2 \
+  --evdev-keymap BTN_BASE2=rb,BTN_BASE=lb \
+  --evdev-keymap BTN_THUMB=x,BTN_TOP=a,BTN_TRIGGER=y,BTN_THUMB2=b \
+  --evdev-keymap BTN_TOP2=start,BTN_PINKIE=back,BTN_BASE3=guide \
+  "$@"
+
+# EOF #
