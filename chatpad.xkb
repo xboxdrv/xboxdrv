@@ -1,7 +1,7 @@
 xkb_keymap {
   xkb_keycodes  { include "evdev+aliases(qwerty)" };
   xkb_types     { include "complete"      };
-  xkb_compat    { include "complete"      };     
+  xkb_compat    { include "complete"      };
   xkb_symbols "chatpad-qwerty"  { 
     name[group1]="Germany";
 
@@ -55,7 +55,7 @@ xkb_keymap {
     key <AD03> {
         symbols[Group1]= [               e, E ],
         symbols[Group2]= [               EuroSign, cent ],
-        symbols[Group3]= [                ] # é
+        symbols[Group3]= [               eacute, Eacute ] # é
     };
     key <AD04> {
         symbols[Group1]= [               r, R ],
@@ -65,23 +65,23 @@ xkb_keymap {
     key <AD05> {
         symbols[Group1]= [               t, T ],
         symbols[Group2]= [               dollar ],
-        symbols[Group3]= [                ] # |b
+        symbols[Group3]= [               THORN ] # |b
     };
 
     key <AD06> {
         symbols[Group1]= [               z, Z ],
         symbols[Group2]= [               ampersand ],
-        symbols[Group3]= [                asciicircum ] # ^
+        symbols[Group3]= [               asciicircum ] # ^
     };
     key <AD07> {
         symbols[Group1]= [               u, U ],
         symbols[Group2]= [               slash ],
-        symbols[Group3]= [               udiaeresis, Udiaeresis ] ü
+        symbols[Group3]= [               udiaeresis, Udiaeresis ] # ü
     };
     key <AD08> {
         symbols[Group1]= [               i, I ],
         symbols[Group2]= [               parenleft ],
-        symbols[Group3]= [                ] # í ' <- as dot
+        symbols[Group3]= [                iacute, Iacute ] # í ' <- as dot
     };
     key <AD09> {
         symbols[Group1]= [               o, O ],
@@ -97,27 +97,27 @@ xkb_keymap {
 
     key <AC01> {
         symbols[Group1]= [               a, A ],
-        symbols[Group2]= [                ], # a°
+        symbols[Group2]= [               aring, Aring ], # a°
         symbols[Group3]= [                adiaeresis, Adiaeresis ]
     };
     key <AC02> {
         symbols[Group1]= [               s, S ],
-        symbols[Group2]= [                ssharp ], # ß
-        symbols[Group3]= [                ] # s + v
+        symbols[Group2]= [               ssharp ], # ß
+        symbols[Group3]= [               scaron, Scaron ] # s + v
     };
     key <AC03> {
         symbols[Group1]= [               d, D ],
-        symbols[Group2]= [                ], # <<
-        symbols[Group3]= [                ] # delta + ~
+        symbols[Group2]= [               guillemotleft ], # <<
+        symbols[Group3]= [               eth, Eth ] # delta + ~
     };
     key <AC04> {
         symbols[Group1]= [               f, F ],
-        symbols[Group2]= [                ], # >>
-        symbols[Group3]= [              sterling ] # L pound
+        symbols[Group2]= [               guillemotright ], # >>
+        symbols[Group3]= [               sterling ] # L pound
     };
     key <AC05> {
         symbols[Group1]= [               g, G ],
-        symbols[Group2]= [                ], # .. 
+        symbols[Group2]= [               diaeresis ], # .. 
         symbols[Group3]= [                ] # kilrathi ???
     };
     key <AC06> {
@@ -128,22 +128,22 @@ xkb_keymap {
     key <AC07> {
         symbols[Group1]= [               j, J ],
         symbols[Group2]= [               braceright ], # }
-        symbols[Group3]= [                ] # o + /
+        symbols[Group3]= [               oslash, Oslash ] # o + /
     };
     key <AC08> {
         symbols[Group1]= [               k, K ],
         symbols[Group2]= [               bracketleft ], # [
-        symbols[Group3]= [                ] # ae
+        symbols[Group3]= [               ae, AE ] # ae
     };
     key <AC09> {
         symbols[Group1]= [               l, L ],
-        symbols[Group2]= [                bracketright ], # ]
-        symbols[Group3]= [                ] # oe
+        symbols[Group2]= [               bracketright ], # ]
+        symbols[Group3]= [               oe, OE ] # oe
     };
     key <AB09> {
-        symbols[Group1]= [               comma ],
+        symbols[Group1]= [               period ],
         symbols[Group2]= [               ampersand ],
-        symbols[Group3]= [               pound ] # # 
+        symbols[Group3]= [               numbersign ] # # 
     };
 
 
@@ -164,8 +164,8 @@ xkb_keymap {
     };
     key <AB03> {
         symbols[Group1]= [               c, C ],
-        symbols[Group2]= [                ], # ~
-        symbols[Group3]= [                ] # c + ,
+        symbols[Group2]= [                asciitilde ], # ~
+        symbols[Group3]= [                ccedilla, Ccedilla] # c + ,
     };
     key <AB04> {
         symbols[Group1]= [               v, V ],
@@ -181,15 +181,15 @@ xkb_keymap {
     key <AB06> {
         symbols[Group1]= [               n, N ],
         symbols[Group2]= [               semicolon ], # ; 
-        symbols[Group3]= [                ]  # n + ~
+        symbols[Group3]= [               ntilde, Ntilde ]  # n + ~
     };
     key <AB07> {
         symbols[Group1]= [               m, M ],
         symbols[Group2]= [               colon ], # :
-        symbols[Group3]= [                ]  # mü
+        symbols[Group3]= [               mu ]  # mü
     };
     key <AB08> {
-        symbols[Group1]= [               period ],
+        symbols[Group1]= [               comma ],
         symbols[Group2]= [               question ], 
         symbols[Group3]= [               questiondown ]
     };
