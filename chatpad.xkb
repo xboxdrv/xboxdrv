@@ -44,119 +44,159 @@ xkb_keymap {
     # Row 2
     key <AD01> {
         symbols[Group1]= [               q, Q ],
-        symbols[Group2]= [               exclam ]
+        symbols[Group2]= [               exclam ],
+        symbols[Group3]= [                at ] # @
     };
     key <AD02> {
         symbols[Group1]= [               w, W ],
-        symbols[Group2]= [               quotedbl ]
+        symbols[Group2]= [               quotedbl ],
+        symbols[Group3]= [               exclamdown ] # inverted !
     };
     key <AD03> {
         symbols[Group1]= [               e, E ],
-        symbols[Group2]= [               EuroSign, cent ]
+        symbols[Group2]= [               EuroSign, cent ],
+        symbols[Group3]= [                ] # é
     };
     key <AD04> {
         symbols[Group1]= [               r, R ],
-        symbols[Group2]= [               dollar ]
+        symbols[Group2]= [               dollar ],
+        symbols[Group3]= [                yen ] # yen
     };
     key <AD05> {
         symbols[Group1]= [               t, T ],
-        symbols[Group2]= [               dollar ]
+        symbols[Group2]= [               dollar ],
+        symbols[Group3]= [                ] # |b
     };
 
     key <AD06> {
         symbols[Group1]= [               z, Z ],
-        symbols[Group2]= [               ampersand ]
+        symbols[Group2]= [               ampersand ],
+        symbols[Group3]= [                asciicircum ] # ^
     };
     key <AD07> {
         symbols[Group1]= [               u, U ],
-        symbols[Group2]= [               slash ]
+        symbols[Group2]= [               slash ],
+        symbols[Group3]= [               udiaeresis, Udiaeresis ] ü
     };
     key <AD08> {
         symbols[Group1]= [               i, I ],
-        symbols[Group2]= [               parenleft ]
+        symbols[Group2]= [               parenleft ],
+        symbols[Group3]= [                ] # í ' <- as dot
     };
     key <AD09> {
         symbols[Group1]= [               o, O ],
-        symbols[Group2]= [               parenright ]
+        symbols[Group2]= [               parenright ],
+        symbols[Group3]= [               odiaeresis, Odiaeresis ] 
     };
     key <AD10> {
         symbols[Group1]= [               p, P ],
-        symbols[Group2]= [               equal ]
+        symbols[Group2]= [               equal ],
+        symbols[Group3]= [               backslash ]
     };
 
 
     key <AC01> {
         symbols[Group1]= [               a, A ],
-        symbols[Group2]= [                ] # a°
+        symbols[Group2]= [                ], # a°
+        symbols[Group3]= [                adiaeresis, Adiaeresis ]
     };
     key <AC02> {
         symbols[Group1]= [               s, S ],
-        symbols[Group2]= [                ] # ß
+        symbols[Group2]= [                ssharp ], # ß
+        symbols[Group3]= [                ] # s + v
     };
     key <AC03> {
         symbols[Group1]= [               d, D ],
-        symbols[Group2]= [                ] # <<
+        symbols[Group2]= [                ], # <<
+        symbols[Group3]= [                ] # delta + ~
     };
     key <AC04> {
         symbols[Group1]= [               f, F ],
-        symbols[Group2]= [                ] # >>
+        symbols[Group2]= [                ], # >>
+        symbols[Group3]= [              sterling ] # L pound
     };
     key <AC05> {
         symbols[Group1]= [               g, G ],
-        symbols[Group2]= [                ] # .. 
+        symbols[Group2]= [                ], # .. 
+        symbols[Group3]= [                ] # kilrathi ???
     };
     key <AC06> {
         symbols[Group1]= [               h, H ],
-        symbols[Group2]= [               braceleft ] # {
+        symbols[Group2]= [               braceleft ], # {
+        symbols[Group3]= [               grave ] # `
     };
     key <AC07> {
         symbols[Group1]= [               j, J ],
-        symbols[Group2]= [               braceright ] # }
+        symbols[Group2]= [               braceright ], # }
+        symbols[Group3]= [                ] # o + /
     };
     key <AC08> {
         symbols[Group1]= [               k, K ],
-        symbols[Group2]= [               bracketleft ] # [
+        symbols[Group2]= [               bracketleft ], # [
+        symbols[Group3]= [                ] # ae
     };
     key <AC09> {
         symbols[Group1]= [               l, L ],
-        symbols[Group2]= [                bracketright ] # ]
+        symbols[Group2]= [                bracketright ], # ]
+        symbols[Group3]= [                ] # oe
     };
     key <AB09> {
         symbols[Group1]= [               comma ],
-        symbols[Group2]= [                ampersand ]
+        symbols[Group2]= [               ampersand ],
+        symbols[Group3]= [               pound ] # # 
     };
 
 
     key <LFSH> {
-        symbols[Group1]= [               Shift_L ]
+        symbols[Group1]= [               Shift_L ],
+        symbols[Group2]= [                ],
+        symbols[Group3]= [                ] # Capslock
     };
     key <AB01> {
-        symbols[Group1]= [               y, Y ]
+        symbols[Group1]= [               y, Y ],
+        symbols[Group2]= [                less ], # < 
+        symbols[Group3]= [                degree ] # °
     };
     key <AB02> {
-        symbols[Group1]= [               x, X ]
+        symbols[Group1]= [               x, X ],
+        symbols[Group2]= [                greater ], # >
+        symbols[Group3]= [                bar ] # |
     };
     key <AB03> {
-        symbols[Group1]= [               c, C ]
+        symbols[Group1]= [               c, C ],
+        symbols[Group2]= [                ], # ~
+        symbols[Group3]= [                ] # c + ,
     };
     key <AB04> {
-        symbols[Group1]= [               v, V ]
+        symbols[Group1]= [               v, V ],
+        symbols[Group2]= [               minus ], # -
+        symbols[Group3]= [               underscore  ]  # _
     };
 
     key <AB05> {
-        symbols[Group1]= [               b, B ]
+        symbols[Group1]= [               b, B ],
+        symbols[Group2]= [               asterisk ], # *
+        symbols[Group3]= [               plus ] # +
     };
     key <AB06> {
-        symbols[Group1]= [               n, N ]
+        symbols[Group1]= [               n, N ],
+        symbols[Group2]= [               semicolon ], # ; 
+        symbols[Group3]= [                ]  # n + ~
     };
     key <AB07> {
-        symbols[Group1]= [               m, M ]
+        symbols[Group1]= [               m, M ],
+        symbols[Group2]= [               colon ], # :
+        symbols[Group3]= [                ]  # mü
     };
     key <AB08> {
-        symbols[Group1]= [               period ]
+        symbols[Group1]= [               period ],
+        symbols[Group2]= [               question ], 
+        symbols[Group3]= [               questiondown ]
     };
     key <RTRN> {
-        symbols[Group1]= [               Return ]
+        symbols[Group1]= [               Return ],
+        symbols[Group2]= [                ],
+        symbols[Group3]= [                ]
     };
 
 
@@ -184,6 +224,7 @@ xkb_keymap {
         symbols[Group1]= [               Alt_R ]
     };
   };
+
   xkb_geometry  { 
     width  = 250;
     height = 140;
