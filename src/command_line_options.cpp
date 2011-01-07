@@ -254,7 +254,7 @@ CommandLineParser::init_ini(Options* opts)
   m_ini.section("autofire",   boost::bind(&CommandLineParser::set_autofire, this, _1, _2));
   m_ini.section("relative-axis",   boost::bind(&CommandLineParser::set_relative_axis, this, _1, _2));
   m_ini.section("calibration",   boost::bind(&CommandLineParser::set_calibration, this, _1, _2));
-  m_ini.section("axis-sensitivity",   boost::bind(&CommandLineParser::set_calibration, this, _1, _2));
+  m_ini.section("axis-sensitivity",   boost::bind(&CommandLineParser::set_axis_sensitivity, this, _1, _2));
 
   m_ini.section("evdev-absmap", boost::bind(&CommandLineParser::set_evdev_absmap, this, _1, _2));
   m_ini.section("evdev-keymap", boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
