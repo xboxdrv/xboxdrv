@@ -1,0 +1,320 @@
+xkb_keymap {
+  xkb_keycodes  { include "evdev+aliases(qwerty)" };
+  xkb_types     { include "complete"      };
+  xkb_compat    { include "complete"      };     
+  xkb_symbols "chatpad-qwerty"  { 
+    name[group1]="Germany";
+
+    # Row 1
+    key  <ESC> {         [          Escape ]
+    };
+
+    key <AE01> {
+        symbols[Group1]= [               1, exclam ]
+    };
+    key <AE02> {
+        symbols[Group1]= [               2, quotedbl ]
+    };
+    key <AE03> {
+        symbols[Group1]= [               3, section ]
+    };
+    key <AE04> {
+        symbols[Group1]= [               4, dollar ]
+    };
+    key <AE05> {
+        symbols[Group1]= [               5, percent]
+    };
+    key <AE06> {
+        symbols[Group1]= [               6, ampersand ]
+    };
+    key <AE07> {
+        symbols[Group1]= [               7, slash ]
+    };
+    key <AE08> {
+        symbols[Group1]= [               8, bracketright ]
+    };
+    key <AE09> {
+        symbols[Group1]= [               9, bracketleft ]
+    };
+    key <AE10> {
+        symbols[Group1]= [               0, equal ]
+    };
+
+
+    # Row 2
+    key <AD01> {
+        symbols[Group1]= [               q, Q ],
+        symbols[Group2]= [               exclam ]
+    };
+    key <AD02> {
+        symbols[Group1]= [               w, W ],
+        symbols[Group2]= [               quotedbl ]
+    };
+    key <AD03> {
+        symbols[Group1]= [               e, E ],
+        symbols[Group2]= [               EuroSign, cent ]
+    };
+    key <AD04> {
+        symbols[Group1]= [               r, R ],
+        symbols[Group2]= [               dollar ]
+    };
+    key <AD05> {
+        symbols[Group1]= [               t, T ],
+        symbols[Group2]= [               dollar ]
+    };
+
+    key <AD06> {
+        symbols[Group1]= [               z, Z ],
+        symbols[Group2]= [               ampersand ]
+    };
+    key <AD07> {
+        symbols[Group1]= [               u, U ],
+        symbols[Group2]= [               slash ]
+    };
+    key <AD08> {
+        symbols[Group1]= [               i, I ],
+        symbols[Group2]= [               parenleft ]
+    };
+    key <AD09> {
+        symbols[Group1]= [               o, O ],
+        symbols[Group2]= [               parenright ]
+    };
+    key <AD10> {
+        symbols[Group1]= [               p, P ],
+        symbols[Group2]= [               equal ]
+    };
+
+
+    key <AC01> {
+        symbols[Group1]= [               a, A ],
+        symbols[Group2]= [                ] # a°
+    };
+    key <AC02> {
+        symbols[Group1]= [               s, S ],
+        symbols[Group2]= [                ] # ß
+    };
+    key <AC03> {
+        symbols[Group1]= [               d, D ],
+        symbols[Group2]= [                ] # <<
+    };
+    key <AC04> {
+        symbols[Group1]= [               f, F ],
+        symbols[Group2]= [                ] # >>
+    };
+    key <AC05> {
+        symbols[Group1]= [               g, G ],
+        symbols[Group2]= [                ] # .. 
+    };
+    key <AC06> {
+        symbols[Group1]= [               h, H ],
+        symbols[Group2]= [               braceleft ] # {
+    };
+    key <AC07> {
+        symbols[Group1]= [               j, J ],
+        symbols[Group2]= [               braceright ] # }
+    };
+    key <AC08> {
+        symbols[Group1]= [               k, K ],
+        symbols[Group2]= [               bracketleft ] # [
+    };
+    key <AC09> {
+        symbols[Group1]= [               l, L ],
+        symbols[Group2]= [                bracketright ] # ]
+    };
+    key <AB09> {
+        symbols[Group1]= [               comma ],
+        symbols[Group2]= [                ampersand ]
+    };
+
+
+    key <LFSH> {
+        symbols[Group1]= [               Shift_L ]
+    };
+    key <AB01> {
+        symbols[Group1]= [               y, Y ]
+    };
+    key <AB02> {
+        symbols[Group1]= [               x, X ]
+    };
+    key <AB03> {
+        symbols[Group1]= [               c, C ]
+    };
+    key <AB04> {
+        symbols[Group1]= [               v, V ]
+    };
+
+    key <AB05> {
+        symbols[Group1]= [               b, B ]
+    };
+    key <AB06> {
+        symbols[Group1]= [               n, N ]
+    };
+    key <AB07> {
+        symbols[Group1]= [               m, M ]
+    };
+    key <AB08> {
+        symbols[Group1]= [               period ]
+    };
+    key <RTRN> {
+        symbols[Group1]= [               Return ]
+    };
+
+
+    key <MDSW> {
+        symbols[Group1]= [               Mode_switch ]
+    };
+    key <META> {
+        symbols[Group1]= [               Super_L ]
+    };
+    key <LEFT> {
+        symbols[Group1]= [               Left ]
+    };
+
+    key <SPCE> {
+        symbols[Group1]= [               space ]
+    };
+
+    key <RGHT> {
+        symbols[Group1]= [               Right ]
+    };
+    key <BKSP> {
+        symbols[Group1]= [               BackSpace ]
+    };
+    key <SUPR> {
+        symbols[Group1]= [               Alt_R ]
+    };
+  };
+  xkb_geometry  { 
+    width  = 250;
+    height = 140;
+
+    baseColor=   "white";
+    labelColor=  "black";
+    xfont=       "-*-helvetica-medium-r-normal--*-120-*-*-*-*-iso8859-1";
+    description= "Microsoft Xbox360 Chatpad";
+
+    shape "NUM" {
+        corner= 4, # corner roundness
+        { [  15,  11 ] }, # width, height
+        { [   1,   1 ], [  14,  9 ] } # top/left, bottom right
+    };
+
+    shape "ALPHA" {
+        corner= 4, # corner roundness
+        { [  16,  13 ] }, # width, height
+        { [   1,   1 ], [  15,  11 ] } # top/left, bottom right
+    };
+
+    shape "SPACE" {
+        corner= 4, # corner roundness
+        { [  54,  13 ] }, # width, height
+        { [   1,   1 ], [  53,  11 ] } # top/left, bottom right
+    };
+
+    section "Numbers" {
+      key.color= "white";
+      priority=  2;
+      top=     47;
+      left=    35;
+      width=   138;
+      height=  102;
+      angle=  0;
+      row {
+        top=  1;
+        left= 1;
+        keys {
+          { <AE01>, "NUM",   1 },
+          { <AE02>, "NUM",   1 },
+          { <AE03>, "NUM",   1 },
+          { <AE04>, "NUM",   1 },
+          { <AE05>, "NUM",   1 },
+
+          { <AE06>, "NUM",   1 },
+          { <AE07>, "NUM",   1 },
+          { <AE08>, "NUM",   1 },
+          { <AE09>, "NUM",   1 },
+          { <AE10>, "NUM",   1 }
+        };
+      };
+    };
+
+    section "Alpha" {
+      key.color= "white";
+      priority=  2;
+      top=     61;
+      left=    30;
+      width=   138;
+      height=  102;
+      angle=  0;
+      row {
+        top=  1;
+        left= 1;
+        keys {
+          { <AD01>, "ALPHA",   1 },
+          { <AD02>, "ALPHA",   1 },
+          { <AD03>, "ALPHA",   1 },
+          { <AD04>, "ALPHA",   1 },
+          { <AD05>, "ALPHA",   1 },
+
+          { <AD06>, "ALPHA",   1 },
+          { <AD07>, "ALPHA",   1 },
+          { <AD08>, "ALPHA",   1 },
+          { <AD09>, "ALPHA",   1 },
+          { <AD10>, "ALPHA",   1 }
+        };
+      };
+
+      row {
+        top=  16;
+        left= 1;
+        keys {
+          { <AC01>, "ALPHA",   1 },
+          { <AC02>, "ALPHA",   1 },
+          { <AC03>, "ALPHA",   1 },
+          { <AC04>, "ALPHA",   1 },
+          { <AC05>, "ALPHA",   1 },
+
+          { <AC06>, "ALPHA",   1 },
+          { <AC07>, "ALPHA",   1 },
+          { <AC08>, "ALPHA",   1 },
+          { <AC09>, "ALPHA",   1 },
+          { <AB09>, "ALPHA",   1 }
+        };
+      };
+
+      row {
+        top=  32;
+        left= 1;
+        keys {
+          { <LFSH>, "ALPHA",   1 },
+          { <AB01>, "ALPHA",   1 },
+          { <AB02>, "ALPHA",   1 },
+          { <AB03>, "ALPHA",   1 },
+          { <AB04>, "ALPHA",   1 },
+
+          { <AB05>, "ALPHA",   1 },
+          { <AB06>, "ALPHA",   1 },
+          { <AB07>, "ALPHA",   1 },
+          { <AB08>, "ALPHA",   1 },
+          { <RTRN>, "ALPHA",   1 }
+        };
+      };
+
+      row {
+        top=  48;
+        left= 7;
+        keys {
+          { <AA01>, "ALPHA",   1 },
+          { <AA02>, "ALPHA",   1 },
+          { <LEFT>, "ALPHA",   1 },
+
+          { <SPCE>, "SPACE",   1 },
+
+          { <RGHT>, "ALPHA",  1 },
+          { <BKSP>, "ALPHA",   1 },
+          { <AA08>, "ALPHA",   1 }
+        };
+      };
+    };
+  };
+};
