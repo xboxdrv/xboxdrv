@@ -43,7 +43,9 @@ private:
   void find_endpoints();
 
 public:
-  Xbox360Controller(struct usb_device* dev, bool chatpad, bool try_detach);
+  Xbox360Controller(struct usb_device* dev, 
+                    bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
+                    bool try_detach);
   ~Xbox360Controller();
 
   void set_rumble(uint8_t left, uint8_t right);

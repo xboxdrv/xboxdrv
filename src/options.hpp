@@ -85,6 +85,8 @@ public:
   bool evdev_debug;
 
   bool chatpad;
+  bool chatpad_no_init;
+  bool chatpad_debug;
 
   std::vector<std::string> exec;
 

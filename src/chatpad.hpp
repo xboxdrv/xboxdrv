@@ -128,6 +128,10 @@ private:
 private:
   struct usb_dev_handle* m_handle;
   uint16_t m_bcdDevice;
+  bool m_no_init;
+  bool m_debug;
+
+
   bool m_quit_thread;
   std::auto_ptr<boost::thread> m_read_thread;
   std::auto_ptr<boost::thread> m_keep_alive_thread;
@@ -137,7 +141,8 @@ private:
   unsigned int m_led_state;
 
 public:
-  Chatpad(struct usb_dev_handle* handle, uint16_t bcdDevice);
+  Chatpad(struct usb_dev_handle* handle, uint16_t bcdDevice,
+          bool no_init, bool debug);
   ~Chatpad();
 
   void send_init();

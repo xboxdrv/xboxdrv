@@ -32,7 +32,9 @@
 #include "xbox360_controller.hpp"
 #include "xboxmsg.hpp"
 
-Xbox360Controller::Xbox360Controller(struct usb_device* dev_, bool chatpad, bool try_detach) :
+Xbox360Controller::Xbox360Controller(struct usb_device* dev_, 
+                                     bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
+                                     bool try_detach) :
   dev(dev_),
   dev_type(),
   handle(),
@@ -105,7 +107,7 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev_, bool chatpad, bool
 
   if (chatpad)
   {
-    m_chatpad.reset(new Chatpad(handle, dev->descriptor.bcdDevice));
+    m_chatpad.reset(new Chatpad(handle, dev->descriptor.bcdDevice, chatpad_no_init, chatpad_debug));
     m_chatpad->send_init();
     m_chatpad->start_threads();
   }

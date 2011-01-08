@@ -53,7 +53,9 @@ Options::Options() :
   evdev_device(),
   evdev_grab(true),
   evdev_debug(false),
-  chatpad(false)
+  chatpad(false),
+  chatpad_no_init(false),
+  chatpad_debug(false)
 {
 }
 

@@ -25,9 +25,12 @@
 
 #include "linux_uinput.hpp"
 
-Chatpad::Chatpad(struct usb_dev_handle* handle, uint16_t bcdDevice) :
+Chatpad::Chatpad(struct usb_dev_handle* handle, uint16_t bcdDevice,
+                 bool no_init, bool debug) :
   m_handle(handle),
   m_bcdDevice(bcdDevice),
+  m_no_init(no_init),
+  m_debug(debug),
   m_quit_thread(false),
   m_read_thread(),
   m_keep_alive_thread(),
@@ -189,9 +192,9 @@ Chatpad::read_thread()
     }
     else
     {
-      if (false)
+      if (m_debug)
       {
-        std::cout << "read: " << len << "/5: data: " << std::flush;
+        std::cout << "[chatpad] read: " << len << "/5: data: " << std::flush;
         for(int i = 0; i < len; ++i)
         {
           std::cout << boost::format("0x%02x ") % int(data[i]);
@@ -270,11 +273,11 @@ Chatpad::keep_alive_thread()
   while(!m_quit_thread)
   {
     usb_control_msg(m_handle, 0x41, 0x0, 0x1f, 0x02, 0, NULL, 0);
-    //std::cout << "0x1f" << std::endl;
+    if (m_debug) std::cout << "[chatpad] 0x1f" << std::endl;
     sleep(1);
        
     usb_control_msg(m_handle, 0x41, 0x0, 0x1e, 0x02, 0, NULL, 0);
-    //std::cout << "0x1e" << std::endl;
+    if (m_debug) std::cout << "[chatpad] 0x1e" << std::endl;
     sleep(1);
   }
 }
@@ -282,67 +285,72 @@ Chatpad::keep_alive_thread()
 void
 Chatpad::send_init()
 {
-  int ret;
-  char buf[2];
-
-  // these three will fail, but are necessary to have the later ones succeed
-  ret = usb_control_msg(m_handle, 0x40, 0xa9, 0xa30c, 0x4423, NULL, 0, 0);
-  //std::cout << "ret: " << ret << std::endl;
-
-  ret = usb_control_msg(m_handle, 0x40, 0xa9, 0x2344, 0x7f03, NULL, 0, 0);
-  //std::cout << "ret: " << ret << std::endl;
-
-  ret = usb_control_msg(m_handle, 0x40, 0xa9, 0x5839, 0x6832, NULL, 0, 0);
-  //std::cout << "ret: " << ret << std::endl;
-
-  // make chatpad ready
-  ret = usb_control_msg(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, will return a mode)
-  //std::cout << "ret: " << ret << " " << (int)buf[0] << " " << (int)buf[1]<< std::endl;
-
-  if (buf[1] & 2)
+  if (!m_no_init)
   {
-    // chatpad already ready
-  }
-  else
-  {
-    if (m_bcdDevice == 0x0110)
+    int ret;
+    char buf[2];
+
+    // these three will fail, but are necessary to have the later ones succeed
+    ret = usb_control_msg(m_handle, 0x40, 0xa9, 0xa30c, 0x4423, NULL, 0, 0);
+    if (m_debug) std::cout << "[chatpad] ret: " << ret << std::endl;
+
+    ret = usb_control_msg(m_handle, 0x40, 0xa9, 0x2344, 0x7f03, NULL, 0, 0);
+    if (m_debug) std::cout << "[chatpad] ret: " << ret << std::endl;
+
+    ret = usb_control_msg(m_handle, 0x40, 0xa9, 0x5839, 0x6832, NULL, 0, 0);
+    if (m_debug) std::cout << "[chatpad] ret: " << ret << std::endl;
+
+    // make chatpad ready
+    ret = usb_control_msg(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, will return a mode)
+    if (m_debug) std::cout << "[chatpad] ret: " << ret << " " << (int)buf[0] << " " << (int)buf[1]<< std::endl;
+
+    if (buf[1] & 2)
     {
-      buf[0] = 0x01;
-      buf[1] = 0x02;
-    }
-    else if (m_bcdDevice == 0x0114)
-    {
-      buf[0] = 0x09;
-      buf[1] = 0x00;
+      // chatpad already ready
+      // FIXME: doesn't work
     }
     else
     {
-      assert(!"never reached");
-    }
+      if (m_bcdDevice == 0x0110)
+      {
+        buf[0] = 0x01;
+        buf[1] = 0x02;
+      }
+      else if (m_bcdDevice == 0x0114)
+      {
+        buf[0] = 0x09;
+        buf[1] = 0x00;
+      }
+      else
+      {
+        assert(!"never reached");
+      }
 
-    ret = usb_control_msg(m_handle, 0x40, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (send 2 bytes, data must be 0x09 0x00)
-    //std::cout << "ret: " << ret << std::endl;
+      ret = usb_control_msg(m_handle, 0x40, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (send 2 bytes, data must be 0x09 0x00)
+      if (m_debug) std::cout << "[chatpad] ret: " << ret << std::endl;
  
-    ret = usb_control_msg(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, this should return the NEW mode)
-    //std::cout << "ret: " << ret << " " << (int)buf[0] << " " << (int)buf[1]<< std::endl;
+      ret = usb_control_msg(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, this should return the NEW mode)
+      if (m_debug) std::cout << "[chatpad] ret: " << ret << " " << (int)buf[0] << " " << (int)buf[1]<< std::endl;
 
-    if (!(buf[1] & 2))
-    {
-      throw std::runtime_error("chatpad init failure");
+      if (!(buf[1] & 2))
+      {
+        throw std::runtime_error("chatpad init failure");
+      }
+      // chatpad is enabled, so start with keep alive
     }
-    // chatpad is enabled, so start with keep alive
   }
 
   // only when we get "01 02" back is the chatpad ready
   usb_control_msg(m_handle, 0x41, 0x0, 0x1f, 0x02, 0, NULL, 0);
-  //std::cout << "0x1f" << std::endl;
+  if (m_debug) std::cout << "[chatpad] 0x1f" << std::endl;
   sleep(1);
        
   usb_control_msg(m_handle, 0x41, 0x0, 0x1e, 0x02, 0, NULL, 0);
-  //std::cout << "0x1e" << std::endl;
+  if (m_debug) std::cout << "[chatpad] 0x1e" << std::endl;
 
   // can't send 1b before 1f before one rotation
   usb_control_msg(m_handle, 0x41, 0x0, 0x1b, 0x02, 0, NULL, 0);
+  if (m_debug) std::cout << "[chatpad] 0x1b" << std::endl;
 }
 
 /* EOF */
