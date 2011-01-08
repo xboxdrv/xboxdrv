@@ -1,7 +1,32 @@
 xkb_keymap {
   xkb_keycodes  { include "evdev+aliases(qwerty)" };
-  xkb_types     { include "complete"      };
-  xkb_compat    { include "complete"      };
+
+  xkb_types     { 
+    type "ALPHABETIC" {
+        modifiers= Shift+Lock;
+        map[Shift]= Level2;
+        map[Lock]= Level2;
+        level_name[Level1]= "Base";
+        level_name[Level2]= "Caps";
+    };
+  };
+
+  xkb_compat    {
+    virtual_modifiers Hyper;
+
+    interpret Mod3+AnyOfOrNone(all) {
+        virtualModifier= Hyper;
+        useModMapMods=level1;
+        action= SetGroup(group=+2);
+    };
+
+    interpret Mode_switch+AnyOfOrNone(all) {
+        virtualModifier= Hyper;
+        useModMapMods=level1;
+        action= SetGroup(group=+1);
+    };
+  };
+
   xkb_symbols "chatpad-qwerty"  { 
     name[group1]="Germany";
 
@@ -43,52 +68,62 @@ xkb_keymap {
 
     # Row 2
     key <AD01> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               q, Q ],
         symbols[Group2]= [               exclam ],
         symbols[Group3]= [                at ] # @
     };
     key <AD02> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               w, W ],
         symbols[Group2]= [               quotedbl ],
         symbols[Group3]= [               exclamdown ] # inverted !
     };
     key <AD03> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               e, E ],
         symbols[Group2]= [               EuroSign, cent ],
         symbols[Group3]= [               eacute, Eacute ] # é
     };
     key <AD04> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               r, R ],
         symbols[Group2]= [               dollar ],
         symbols[Group3]= [                yen ] # yen
     };
     key <AD05> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               t, T ],
-        symbols[Group2]= [               dollar ],
+        symbols[Group2]= [               percent ],
         symbols[Group3]= [               THORN ] # |b
     };
 
     key <AD06> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               z, Z ],
         symbols[Group2]= [               ampersand ],
         symbols[Group3]= [               asciicircum ] # ^
     };
     key <AD07> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               u, U ],
         symbols[Group2]= [               slash ],
         symbols[Group3]= [               udiaeresis, Udiaeresis ] # ü
     };
     key <AD08> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               i, I ],
         symbols[Group2]= [               parenleft ],
         symbols[Group3]= [                iacute, Iacute ] # í ' <- as dot
     };
     key <AD09> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               o, O ],
         symbols[Group2]= [               parenright ],
         symbols[Group3]= [               odiaeresis, Odiaeresis ] 
     };
     key <AD10> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               p, P ],
         symbols[Group2]= [               equal ],
         symbols[Group3]= [               backslash ]
@@ -96,53 +131,63 @@ xkb_keymap {
 
 
     key <AC01> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               a, A ],
         symbols[Group2]= [               aring, Aring ], # a°
         symbols[Group3]= [                adiaeresis, Adiaeresis ]
     };
     key <AC02> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               s, S ],
         symbols[Group2]= [               ssharp ], # ß
         symbols[Group3]= [               scaron, Scaron ] # s + v
     };
     key <AC03> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               d, D ],
         symbols[Group2]= [               guillemotleft ], # <<
         symbols[Group3]= [               eth, Eth ] # delta + ~
     };
     key <AC04> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               f, F ],
         symbols[Group2]= [               guillemotright ], # >>
         symbols[Group3]= [               sterling ] # L pound
     };
     key <AC05> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               g, G ],
         symbols[Group2]= [               diaeresis ], # .. 
         symbols[Group3]= [                ] # kilrathi ???
     };
     key <AC06> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               h, H ],
         symbols[Group2]= [               braceleft ], # {
         symbols[Group3]= [               grave ] # `
     };
     key <AC07> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               j, J ],
         symbols[Group2]= [               braceright ], # }
         symbols[Group3]= [               oslash, Oslash ] # o + /
     };
     key <AC08> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               k, K ],
         symbols[Group2]= [               bracketleft ], # [
         symbols[Group3]= [               ae, AE ] # ae
     };
     key <AC09> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               l, L ],
         symbols[Group2]= [               bracketright ], # ]
         symbols[Group3]= [               oe, OE ] # oe
     };
     key <AB09> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               period ],
-        symbols[Group2]= [               ampersand ],
+        symbols[Group2]= [               question ],
         symbols[Group3]= [               numbersign ] # # 
     };
 
@@ -153,57 +198,64 @@ xkb_keymap {
         symbols[Group3]= [                ] # Capslock
     };
     key <AB01> {
-        symbols[Group1]= [               y, Y ],
+        type= "ALPHABETIC",
+        symbols[Group1]= [                y, Y ],
         symbols[Group2]= [                less ], # < 
         symbols[Group3]= [                degree ] # °
     };
     key <AB02> {
-        symbols[Group1]= [               x, X ],
+        type= "ALPHABETIC",
+        symbols[Group1]= [                x, X ],
         symbols[Group2]= [                greater ], # >
         symbols[Group3]= [                bar ] # |
     };
     key <AB03> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               c, C ],
         symbols[Group2]= [                asciitilde ], # ~
         symbols[Group3]= [                ccedilla, Ccedilla] # c + ,
     };
     key <AB04> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               v, V ],
         symbols[Group2]= [               minus ], # -
         symbols[Group3]= [               underscore  ]  # _
     };
 
     key <AB05> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               b, B ],
         symbols[Group2]= [               asterisk ], # *
         symbols[Group3]= [               plus ] # +
     };
     key <AB06> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               n, N ],
         symbols[Group2]= [               semicolon ], # ; 
         symbols[Group3]= [               ntilde, Ntilde ]  # n + ~
     };
     key <AB07> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               m, M ],
         symbols[Group2]= [               colon ], # :
         symbols[Group3]= [               mu ]  # mü
     };
     key <AB08> {
+        type= "ALPHABETIC",
         symbols[Group1]= [               comma ],
-        symbols[Group2]= [               question ], 
+        symbols[Group2]= [               apostrophe ], 
         symbols[Group3]= [               questiondown ]
     };
     key <RTRN> {
-        symbols[Group1]= [               Return ],
-        symbols[Group2]= [                ],
-        symbols[Group3]= [                ]
+        symbols[Group1]= [               Return ]
     };
 
-
-    key <MDSW> {
+    key <LALT> {
+        repeat= No,
         symbols[Group1]= [               Mode_switch ]
     };
-    key <META> {
+    key <LMTA> {
+        repeat= No,
         symbols[Group1]= [               Super_L ]
     };
     key <LEFT> {
@@ -220,9 +272,15 @@ xkb_keymap {
     key <BKSP> {
         symbols[Group1]= [               BackSpace ]
     };
-    key <SUPR> {
-        symbols[Group1]= [               Alt_R ]
+    key <LCTL> {
+        repeat= No,
+        symbols[Group1]= [               Hyper_R ]
     };
+
+    modifier_map Shift { <LFSH> };
+    modifier_map Mod2 { <LALT> }; // green
+    modifier_map Mod3 { <LCTL> }; // orange
+    modifier_map Mod4 { <LMTA> }; // people
   };
 
   xkb_geometry  { 
