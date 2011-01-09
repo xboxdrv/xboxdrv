@@ -1019,7 +1019,7 @@ NAME       = STRING ;]]></programlisting>
   --ui-buttonmap "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,tl=void,tr=void"]]></programlisting>
             <para>
               You can customize it by the usual means, just make sure
-              that <option>--mouse</option> comes before you
+              that <option>--mouse</option> comes before your
               customization options on the command line.
             </para>
             <para>
@@ -1239,7 +1239,11 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
 
             <programlisting>$ xboxdrv --rumble-gain 50%</programlisting>
 
-            <para>Values larger then 100% are possible as well.</para>
+            <para>
+              Values larger then 100% are possible as well and will
+              amplify small rumble commands, rumble commands already
+              at the maximum will stay unchanged.
+            </para>
           </listitem>
         </varlistentry>
       </variablelist>
@@ -1323,7 +1327,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
       <title id="axisfilter.title">Axis Filter</title>
       <variablelist>
         <varlistentry>
-          <term><option>cal</option>, <option>calibration</option></term>
+          <term><option>cal</option>, <option>calibration</option>:<replaceable>MIN</replaceable>:<replaceable>CENTER</replaceable>:<replaceable>MAX</replaceable></term>
           <listitem>
             <para>
               See <option>--calibration</option>.

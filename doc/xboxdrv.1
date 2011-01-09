@@ -820,7 +820,7 @@ Lets the controller act as a mouse. It is indendical to:
 .fi
 
 You can customize it by the usual means, just make sure
-that \*(T<\fB\-\-mouse\fR\*(T> comes before you
+that \*(T<\fB\-\-mouse\fR\*(T> comes before your
 customization options on the command line.
 
 Note that if you have your mouse buttons switched you must
@@ -993,7 +993,9 @@ You can change the rumble strength via:
 \*(T<$ xboxdrv \-\-rumble\-gain 50%\*(T>
 .fi
 
-Values larger then 100% are possible as well.
+Values larger then 100% are possible as well and will
+amplify small rumble commands, rumble commands already
+at the maximum will stay unchanged.
 .SH "INPUT FILTER"
 Input filter allow to manipulate the events that come from the
 controller. They can be used
@@ -1036,7 +1038,7 @@ provided as parameter that will be outputed before the
 event.
 .SS "AXIS FILTER"
 .TP 
-\*(T<\fBcal\fR\*(T>, \*(T<\fBcalibration\fR\*(T>
+\*(T<\fBcal\fR\*(T>, \*(T<\fBcalibration\fR\*(T>:\fIMIN\fR:\fICENTER\fR:\fIMAX\fR
 See \*(T<\fB\-\-calibration\fR\*(T>.
 .TP 
 \*(T<\fBsen\fR\*(T>, \*(T<\fBsensitivity\fR\*(T>:\fISENSITIVITY\fR

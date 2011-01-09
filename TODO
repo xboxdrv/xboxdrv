@@ -27,14 +27,40 @@ $ dput my-ppa xboxdrv_0.6.3_source.changes
 Stuff to do before 0.6.4 release:
 =================================
 
-* integrate filters into --buttonmap and --axismap:
+* write documentation
 
-  --buttonmap X^toggle:autofire=B
-  --axismap Y1^relative
+* add chatpad/headset options to ini
 
-  main purpose: allow to make shift a toggle button
+* cleanup --help, some newlines missing in there
 
-* bug: when shifting the last axis state sticks even when they key was released
+* basic Dualstrike mouse emulation with absolute position:
+
+ ./xboxdrv-dualstrike \
+  --ui-clear \
+  --ui-buttonmap rb=key:1-BTN_LEFT,lb=key:1-BTN_RIGHT \
+  --ui-axismap x2^cal:-25000:0:25000=abs:1-ABS_X,y2^cal:-25000:0:25000=abs:1-ABS_Y
+  --ui-axismap x1=KEY_LEFT:KEY_RIGHT,y1=KEY_DOWN:KEY_UP  -s
+
+* can't parse:
+ --ui-axismap x2=2-ABS_X,y2=2-ABS_Y
+
+  only this works:
+
+ --ui-axismap x2=abs:2-ABS_X,y2=abs:2-ABS_Y
+
+  implement better guessing
+
+* bug: when shifting the last axis state sticks even when the key was released
+
+Stuff to do before 0.6.x release:
+=================================
+
+* figure out what to do with deprecated stuff:
+
+  --deadzone         - can probably stay for convenience
+  --deadzone-trigger - can probably stay for convenience
+  --relative-axis    - should go
+  --autofire         - should go
 
 Figure out a way to load custom keymaps:
 
@@ -42,9 +68,25 @@ Figure out a way to load custom keymaps:
 * http://stackoverflow.com/questions/1557689/keyboard-remapping-with-more-modifiers
 * http://tldp.org/HOWTO/Keyboard-and-Console-HOWTO-15.html
 
-
-Stuff to do before 0.6.x release:
-=================================
+* setxkbmap -device ... -I xboxdrv/xorg/
+
+xkbprint -label name $DISPLAY - | gv -orientation=seascape -
+http://www.charvolant.org/~doug/xkb/html/xkb.html
+http://pascal.tsu.ru/en/xkb/
+http://wiki.debian.org/XStrikeForce/InputHotplugGuide
+http://git.madduck.net/v/etc/xsession.git?a=blob;f=.xkb/symbols/madduck;hb=refs/heads/xkb
+http://www.x.org/wiki/XKB
+http://sourceforge.net/tracker/download.php?group_id=286545&atid=1214224&file_id=361450&aid=2945171
+
+http://www.x.org/docs/XKB/XKBlib.pdf
+
+* --four-way-restrictor for the dpad?
+
+  - keep whatever direction is pressed first, don't allow walking over diagonals?
+  - always keep last main direction until another main direction got pressed?
+  - --disable-dpad-diagonals ur,dl,dl
+
+* limit --four-way-restrictor to a single axis
 
 * write UIEvent::from_string()
 
@@ -52,9 +94,9 @@ Stuff to do before 0.6.x release:
 
 * absolute mouse pointer can be created with:
 
-  ABS_X, ABS_Y, BTN_LEFT
+  abs:1-ABS_X, abs:1-ABS_Y, key:1-BTN_LEFT
 
-  document that somewhere
+  document that somewhere, device must not contain REL_X, REL_Y or BTN_A or it won't work in X11  
 
 http://www.mp3car.com/vbulletin/input-devices/108554-xbox360-chatpad-awsome-backlit-mini-keyboard-16.html#post1256444
 
