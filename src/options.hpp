@@ -89,7 +89,9 @@ public:
   bool chatpad_debug;
 
   bool headset;
+  bool headset_debug;
   std::string headset_dump;
+  std::string headset_play;
 
   std::vector<std::string> exec;
 

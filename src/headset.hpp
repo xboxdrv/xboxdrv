@@ -31,14 +31,18 @@ private:
   std::auto_ptr<boost::thread> m_write_thread;
 
   bool m_quit_read_thread;
+  bool m_quit_write_thread;
 
 public:
-  Headset(struct usb_dev_handle* handle, const std::string& dump_filename);
+  Headset(struct usb_dev_handle* handle, 
+          bool debug,
+          const std::string& dump_filename,
+          const std::string& play_filename);
   ~Headset();
 
 private:
   void write_thread(const std::string& filename);
-  void read_thread(const std::string& filename);
+  void read_thread(const std::string& filename, bool debug);
 
 private:
   Headset(const Headset&);

@@ -22,9 +22,13 @@
 #include <fstream>
 #include <boost/format.hpp>
 
-Headset::Headset(struct usb_dev_handle* handle, const std::string& dump_filename) :
+Headset::Headset(struct usb_dev_handle* handle, 
+                 bool debug,
+                 const std::string& dump_filename,
+                 const std::string& play_filename) :
   m_handle(handle),
-  m_quit_read_thread(false)
+  m_quit_read_thread(false),
+  m_quit_write_thread(false)
 {
   int ret = usb_claim_interface(m_handle, 1);
 
@@ -35,8 +39,12 @@ Headset::Headset(struct usb_dev_handle* handle, const std::string& dump_filename
     throw std::runtime_error(out.str());
   }
 
-  m_read_thread.reset(new boost::thread(boost::bind(&Headset::read_thread, this, dump_filename)));
-  //m_write_thread.reset(new boost::thread(boost::bind(&Chatpad::write_thread, this)));
+  m_read_thread.reset(new boost::thread(boost::bind(&Headset::read_thread, this, dump_filename, debug)));
+
+  if (!play_filename.empty())
+  {
+    m_write_thread.reset(new boost::thread(boost::bind(&Headset::write_thread, this, play_filename)));
+  }
 }
 
 Headset::~Headset()
@@ -63,13 +71,43 @@ Headset::~Headset()
 void
 Headset::write_thread(const std::string& filename)
 {
-  //std::ifstream in(filename.c_str(), std::ios::binary);
+  std::ifstream in(filename.c_str(), std::ios::binary);
 
-  
+  if (!in)
+  {
+    std::ostringstream out;
+    out << "[headset] " << filename << ": " << strerror(errno);
+    throw std::runtime_error(out.str());    
+  }
+
+  std::cout << "[headset] starting playback: " << filename << std::endl;
+
+  char data[32];
+  while(in)
+  {
+    int len = in.read(data, sizeof(data)).gcount();
+
+    if (len != 32)
+    {
+      // ignore short reads
+    }
+    else
+    {
+      const int ret = usb_interrupt_write(m_handle, 4, reinterpret_cast<char*>(data), sizeof(data), 0);
+      if (ret < 0)
+      {
+        std::ostringstream out;
+        out << "[headset] " << usb_strerror();
+        throw std::runtime_error(out.str());
+      }
+    }
+  }
+
+  std::cout << "[headset] finished playback: " << filename << std::endl;
 }
 
 void
-Headset::read_thread(const std::string& filename)
+Headset::read_thread(const std::string& filename, bool debug)
 {
   std::auto_ptr<std::ofstream> out;
   
@@ -80,7 +118,7 @@ Headset::read_thread(const std::string& filename)
     if (!*out)
     {
       std::ostringstream out;
-      out << "[headset] " << strerror(errno);
+      out << "[headset] " << filename << ": " << strerror(errno);
       throw std::runtime_error(out.str());
     }
   }
@@ -108,12 +146,15 @@ Headset::read_thread(const std::string& filename)
           out->write(reinterpret_cast<char*>(data), sizeof(data));
         }
 
-        std::cout << "[headset] ";
-        for(int i = 0; i < ret; ++i)
+        if (debug)
         {
-          std::cout << boost::format("0x%02x ") % int(data[i]);
+          std::cout << "[headset] ";
+          for(int i = 0; i < ret; ++i)
+          {
+            std::cout << boost::format("0x%02x ") % int(data[i]);
+          }
+          std::cout << std::endl;
         }
-        std::cout << std::endl;
       }
     }
   }

@@ -46,7 +46,10 @@ private:
 public:
   Xbox360Controller(struct usb_device* dev, 
                     bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
-                    bool headset, const std::string& headset_dump,
+                    bool headset, 
+                    bool headset_debug, 
+                    const std::string& headset_dump,
+                    const std::string& headset_play,
                     bool try_detach);
   ~Xbox360Controller();
 

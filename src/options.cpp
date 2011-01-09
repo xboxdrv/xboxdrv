@@ -57,7 +57,9 @@ Options::Options() :
   chatpad_no_init(false),
   chatpad_debug(false),
   headset(false),
-  headset_dump()
+  headset_debug(false),
+  headset_dump(),
+  headset_play()
 {
 }
 

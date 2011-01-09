@@ -36,7 +36,10 @@
 
 Xbox360Controller::Xbox360Controller(struct usb_device* dev_, 
                                      bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
-                                     bool headset, const std::string& headset_dump,
+                                     bool headset, 
+                                     bool headset_debug, 
+                                     const std::string& headset_dump,
+                                     const std::string& headset_play,
                                      bool try_detach) :
   dev(dev_),
   dev_type(),
@@ -117,7 +120,7 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev_,
 
   if (headset)
   {
-    m_headset.reset(new Headset(handle, headset_dump));
+    m_headset.reset(new Headset(handle, headset_debug, headset_dump, headset_play));
   }
 }
 
