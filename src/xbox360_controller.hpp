@@ -56,9 +56,6 @@ public:
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
   bool read(XboxGenericMsg& msg, bool verbose, int timeout);
-  
-  void headset_play(const std::string& filename);
-  void headset_write(const std::string& filename);
 
 private:
   Xbox360Controller (const Xbox360Controller&);

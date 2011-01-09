@@ -302,7 +302,7 @@ Chatpad::send_init()
 
     // make chatpad ready
     ret = usb_control_msg(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, will return a mode)
-    if (m_debug) std::cout << "[chatpad] ret: " << ret << " " << (int)buf[0] << " " << (int)buf[1]<< std::endl;
+    if (m_debug) std::cout << "[chatpad] ret: " << ret << " " << static_cast<int>(buf[0]) << " " << static_cast<int>(buf[1])<< std::endl;
 
     if (buf[1] & 2)
     {
@@ -330,7 +330,7 @@ Chatpad::send_init()
       if (m_debug) std::cout << "[chatpad] ret: " << ret << std::endl;
  
       ret = usb_control_msg(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, this should return the NEW mode)
-      if (m_debug) std::cout << "[chatpad] ret: " << ret << " " << (int)buf[0] << " " << (int)buf[1]<< std::endl;
+      if (m_debug) std::cout << "[chatpad] ret: " << ret << " " << static_cast<int>(buf[0]) << " " << static_cast<int>(buf[1]) << std::endl;
 
       if (!(buf[1] & 2))
       {

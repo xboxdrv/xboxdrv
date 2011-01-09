@@ -282,16 +282,4 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   return false;
 }
 
-void
-Xbox360Controller::headset_play(const std::string& filename)
-{
-  //  std::ifstream in(filename.c_str(), std::ios::binary);
-}
-
-void
-Xbox360Controller::headset_write(const std::string& filename)
-{
-  //  std::ofstream out(filename.c_str(), std::ios::binary);
-}
-
 /* EOF */

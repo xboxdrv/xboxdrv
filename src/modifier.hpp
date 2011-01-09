@@ -36,6 +36,7 @@ typedef boost::shared_ptr<Modifier> ModifierPtr;
 class Modifier
 {
 public:
+  virtual ~Modifier() {}
   virtual void update(int msec_delta, XboxGenericMsg& msg) =0;
 };
 
