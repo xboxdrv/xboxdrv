@@ -1828,9 +1828,7 @@ joysticktype = ch]]></programlisting>
         to register two uinput configuration with xboxdrv, this works
         via:
       </para>
-      <programlisting><![CDATA[$ xboxdrv \
-  --ui-new --mouse
-]]></programlisting>
+      <programlisting><![CDATA[$ xboxdrv --ui-new --mouse]]></programlisting>
       <para>
         The <option>--ui-new</option> option will open up a second
         configuration and all configuration options on the right side
