@@ -242,6 +242,10 @@ ArgParser::print_help(std::ostream& out) const
       {
         pprint.print(i->help);
       }
+      else if (i->key == PSEUDO) 
+      {
+        pprint.print(std::string(column_width, ' '), i->long_option, i->help);
+      }
       else 
       {
         char option[256]   = { 0 };
@@ -290,6 +294,21 @@ ArgParser::add_usage(const std::string& usage)
   options.push_back(option);
 
   return *this;
+}
+
+ArgParser&
+ArgParser::add_pseudo(const std::string& left, const std::string& doc)
+{
+  Option option;
+
+  option.key          = PSEUDO;
+  option.long_option  = left;
+  option.help         = doc;
+  option.visible      = true;
+
+  options.push_back(option);
+
+  return *this;  
 }
 
 ArgParser&

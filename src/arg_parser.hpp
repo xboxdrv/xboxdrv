@@ -68,7 +68,8 @@ public:
   enum {
     REST_ARG  = -1,
     TEXT      = -4,
-    USAGE     = -5
+    USAGE     = -5,
+    PSEUDO    = -6
   };
 
 private:
@@ -84,6 +85,7 @@ public:
 
   ArgParser& add_usage(const std::string& usage);
   ArgParser& add_text(const std::string& doc);
+  ArgParser& add_pseudo(const std::string& left, const std::string& doc);
   ArgParser& add_newline();
   
   ArgParser& add_option(int key,
