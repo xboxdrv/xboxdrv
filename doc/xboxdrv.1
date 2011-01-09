@@ -81,16 +81,11 @@ List supported devices (used by xboxdrv-daemon.py).
 \*(T<\fB\-\-list\-supported\-devices\-xpad\fR\*(T>
 List supported devices in \*(T<\fIxpad.c\fR\*(T> style.
 .TP 
-\*(T<\fB\-R\fR\*(T>, \*(T<\fB\-\-test\-rumble\fR\*(T>
-Pressing LT will move the left rumble motor and pressing
-RT will move the right one. Rumble motor strength
-depends on how hard you press. This is useful for
-testing the rumble motors.
+\*(T<\fB\-D\fR\*(T>, \*(T<\fB\-\-daemon\fR\*(T>
+Run xboxdrv as daemon. This option hasn't been tested
+much and it is not recommented to be used.
 .TP 
-\*(T<\fB\-\-no\-uinput\fR\*(T>
-Do not try to start uinput event dispatching, useful for debugging.
-.TP 
-\*(T<\fB\-\-config\fR\*(T> \fIFILE\fR
+\*(T<\fB\-c\fR\*(T>, \*(T<\fB\-\-config\fR\*(T> \fIFILE\fR
 Reads configuration information from \fIFILE\fR.
 Configurations from file are handling as if they would
 be command line options at the position
@@ -150,15 +145,21 @@ start=KEY_ESC
 # EOF #\*(T>
 .fi
 .TP 
-\*(T<\fB\-\-mimic\-xpad\fR\*(T>
-Causes xboxdrv to use the same axis and button names as the xpad kernel driver.
+\*(T<\fB\-\-alt\-config\fR\*(T> \fIFILE\fR
+A shortcut for
+writing \*(T<\fB\-\-ui\-new\fR\*(T> \*(T<\fB\-\-config\fR\*(T> \fIFILE\fR.
+
+To load multiple configuration options use:
+
+.nf
+\*(T<xboxdrv \-\-config first.ini \-\-alt\-config second.ini \-\-alt\-config third.ini\*(T>
+.fi
 .TP 
-\*(T<\fB\-D\fR\*(T>, \*(T<\fB\-\-daemon\fR\*(T>
-Run as daemon. In most situations this is not very
-useful, as \fBxboxdrv\fR will fail when the
-pad is removed or plugged in. See xboxdrv-daemon(1) for
-a way to launch \fBxboxdrv\fR
-automatically.
+\*(T<\fB\-o\fR\*(T>, \*(T<\fB\-\-option\fR\*(T> \fINAME=VALUE\fR
+Set an option as if it would come from a config file from the command line.
+.TP 
+\*(T<\fB\-\-write\-config\fR\*(T> \fIFILE\fR
+Write an example configuration file to \fIFILE\fR.
 .SS "DEVICE OPTIONS"
 .TP 
 \*(T<\fB\-d\fR\*(T>, \*(T<\fB\-\-detach\-kernel\-driver\fR\*(T>
@@ -200,6 +201,7 @@ xbox360-wireless
 \(bu
 xbox360-guitar
 .RE
+.SS "EVDEV OPTION"
 .TP 
 \*(T<\fB\-\-evdev\fR\*(T> \fIDEVICE\fR
 Allows you to read input data from a regular event
@@ -280,13 +282,6 @@ events. An example configuration would look like this:
 \fBxboxdrv\fR will output on start a full
 list of event names that the given event device
 supports.
-.TP 
-\*(T<\fB\-\-chatpad\fR\*(T>
-Enables the support for the Xbox360 Chatpad. WARNING:
-This is preliminary code, it will crash your gamepad
-when xboxdrv is started multiple times and won't provide
-proper keymapping for any of the umlauts and special
-characters.
 .SS "STATUS OPTIONS"
 .TP 
 \*(T<\fB\-l\fR\*(T>, \*(T<\fB\-\-led\fR\*(T> \fINUM\fR
@@ -384,6 +379,79 @@ blink once
 T}
 .TE
 .TP 
+\*(T<\fB\-q\fR\*(T>, \*(T<\fB\-\-quit\fR\*(T>
+Exit xboxdrv after setting LED or rumble values.
+.SS "CHATPAD OPTIONS (EXPERIMENTAL)"
+Chatpad support is still experimental. Basic keyboard usage
+will work, there is however currently no support for
+customization or the green and orange key modifiers.
+.PP
+Starting xboxdrv multiple times in a row with
+the \*(T<\fB\-\-chatpad\fR\*(T> option can crash the
+controller. Unplugging it and plugging it back in should reset
+it.
+.TP 
+\*(T<\fB\-\-chatpad\fR\*(T>
+Enables the support for the Xbox360 Chatpad. WARNING:
+This is preliminary code, it will crash your gamepad
+when xboxdrv is started multiple times and won't provide
+proper keymapping for any of the umlauts and special
+characters.
+.TP 
+\*(T<\fB\-\-chatpad\-no\-init\fR\*(T>
+This will start chatpad support with out sending the
+init sequence, thus potentially avoiding crashing the
+controller if xboxdrv is started multiple times.
+.TP 
+\*(T<\fB\-\-chatpad\-debug\fR\*(T>
+Output raw chatpad data to the stdout for debugging purpose.
+.SS "HEADSET OPTIONS (EXPERIMENTAL, XBOX360 USB ONLY)"
+Xboxdrv does not support the headset, the options below are
+for developers only and will dump raw headset data, not .wav
+files.
+.TP 
+\*(T<\fB\-\-headset\fR\*(T>
+Enable headset support and dump incomming data to stdout.
+.TP 
+\*(T<\fB\-\-headset\-dump\fR\*(T> \fIFILE\fR
+Enable headset support and dump incomming data to FILE.
+.TP 
+\*(T<\fB\-\-headset\-play\fR\*(T> \fIFILE\fR
+Enable headset support and send FILE to the headset for playback.
+.SS "FORCE FEEDBACK"
+.TP 
+\*(T<\fB\-\-force\-feedback\fR\*(T>
+Enables the standard kernel force feedback interface. It
+is disabled by default as it causes trouble with some
+applications running in Wine.
+
+Since the Xbox360 controller supports just rumble not full force
+feedback, xboxdrv tries to emulate other effects. This emulation
+hasn't been tested much and might not always work as expected. Bug
+reports and test cases are welcome.
+
+Note that you must close the application that is using force feedback
+always before you close the xboxdrv driver, else you might end up with
+a hanging non-interruptable xboxdrv process that will require a reboot
+to get rid of.
+.TP 
+\*(T<\fB\-\-rumble\-gain\fR\*(T> \fIAMOUNT\fR
+You can change the rumble strength via:
+
+.nf
+\*(T<$ xboxdrv \-\-rumble\-gain 50%\*(T>
+.fi
+
+Values larger then 100% are possible as well and will
+amplify small rumble commands, rumble commands already
+at the maximum will stay unchanged.
+.TP 
+\*(T<\fB\-R\fR\*(T>, \*(T<\fB\-\-test\-rumble\fR\*(T>
+Pressing LT will move the left rumble motor and pressing
+RT will move the right one. Rumble motor strength
+depends on how hard you press. This is useful for
+testing the rumble motors.
+.TP 
 \*(T<\fB\-r\fR\*(T>, \*(T<\fB\-\-rumble\fR\*(T> \fIL,R\fR
 Set the speed for both rumble motors. Values from 0 to 255 are accepted, the default is 0,0.
 .SS "CONFIGURATION OPTIONS"
@@ -414,22 +482,6 @@ specified with:
 .nf
 \*(T<$ xboxdrv \-\-deadzone\-trigger 15%  \*(T>
 .fi
-.TP 
-\*(T<\fB\-\-trigger\-as\-button\fR\*(T>
-LT and RT send button instead of axis events
-.TP 
-\*(T<\fB\-\-trigger\-as\-zaxis\fR\*(T>
-Combine LT and RT to form a zaxis instead
-.TP 
-\*(T<\fB\-\-dpad\-as\-button\fR\*(T>
-The DPad sends button instead of axis events.
-.TP 
-\*(T<\fB\-\-dpad\-only\fR\*(T>
-Both sticks are ignored, only the DPad sends out axis
-events. Useful for games that might get confused by
-additional analog axis. Combining this option
-with \*(T<\fB\-\-trigger\-as\-button\fR\*(T> is recommend
-in most situations.
 .TP 
 \*(T<\fB\-b, \-\-buttonmap BUTTON=BUTTON,...\fR\*(T>
 Button remapping is available via the \*(T<\fB\-\-buttonmap\fR\*(T> option. If you want
@@ -524,6 +576,102 @@ Possible axis names are: x1, y1, x2, y2, lt, rt
 
 Swaping lt or rt with x1, y1, x2, y2 will not work properly, since
 their range is different.
+.SS "UINPUT PRESET CONFIGURATION OPTIONS"
+The following options are simple shortcuts for common
+configurations that can be accomplished
+by \*(T<\fB\-\-ui\-buttonmap\fR\*(T>
+and \*(T<\fB\-\-ui\-axismap\fR\*(T>.
+.TP 
+\*(T<\fB\-\-trigger\-as\-button\fR\*(T>
+LT and RT send button instead of axis events
+.TP 
+\*(T<\fB\-\-trigger\-as\-zaxis\fR\*(T>
+Combine LT and RT to form a zaxis instead
+.TP 
+\*(T<\fB\-\-dpad\-as\-button\fR\*(T>
+The DPad sends button instead of axis events.
+.TP 
+\*(T<\fB\-\-dpad\-only\fR\*(T>
+Both sticks are ignored, only the DPad sends out axis
+events. Useful for games that might get confused by
+additional analog axis. Combining this option
+with \*(T<\fB\-\-trigger\-as\-button\fR\*(T> is recommend
+in most situations.
+.TP 
+\*(T<\fB\-\-guitar\fR\*(T>
+Sets a predefined button and axis mapping for use with
+guitar controllers. This mainly gets rid of a few
+unnecesary buttons and axis not used by a guitar
+controller.
+.TP 
+\*(T<\fB\-m, \-\-mouse\fR\*(T>
+Lets the controller act as a mouse. It is indendical to:
+
+.nf
+\*(T<$ xboxdrv \e
+  \-\-dpad\-as\-button
+  \-\-deadzone 4000
+  \-\-trigger\-as\-zaxis
+  \-\-axismap "\-y2=y2,\-trigger=trigger"
+  \-\-ui\-axismap "x1=REL_X:15:20,y1=REL_Y:15:20,y2=REL_WHEEL:5:100,x2=REL_HWHEEL:5:100,trigger=REL_WHEEL:5:100"
+  \-\-ui\-buttonmap "a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER,rb=KEY_PAGEDOWN,lb=KEY_PAGEUP,"
+  \-\-ui\-buttonmap "dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN,"
+  \-\-ui\-buttonmap "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,tl=void,tr=void"\*(T>
+.fi
+
+You can customize it by the usual means, just make sure
+that \*(T<\fB\-\-mouse\fR\*(T> comes before your
+customization options on the command line.
+
+Note that if you have your mouse buttons switched you must
+adjust the above to match your mouse configuration or the
+button events will come out wrong.
+.TP 
+\*(T<\fB\-\-mimic\-xpad\fR\*(T>
+Causes xboxdrv to use the same axis and button names as the xpad kernel driver.
+.SS "UINPUT CONFIGURATION OPTIONS"
+.TP 
+\*(T<\fB\-\-no\-uinput\fR\*(T>
+Do not try to start uinput event dispatching, useful for debugging.
+.TP 
+\*(T<\fB\-\-name DEVNAME\fR\*(T>
+Changes the descriptive name the device will have
+.TP 
+\*(T<\fB\-\-ui\-new\fR\*(T>
+Allows the creation of an alternative uinput
+configuration to which one can toggle at runtime by
+pressing the ui-toggle button (defaults to guide).
+
+.nf
+\*(T<$ xboxdrv \e
+    \-\-mouse \e
+  \-\-ui\-new 
+    \-\-ui\-axismap X1=ABS_X,Y1=ABS_Y \e
+    \-\-ui\-buttonmap A=JS_0,B=JS_1\*(T>
+.fi
+
+The above configuration would install mouse emulation as
+first configuration and a simple joystick emulation as
+second configuration. Allowing toggling between mouse
+emulation and joystick handling by pressing the guide
+button.
+
+Not that \*(T<\fB\-\-ui\-new\fR\*(T> is currently limited
+to only configurations done
+with \*(T<\fB\-\-ui\-buttonmap\fR\*(T>
+and \*(T<\fB\-\-ui\-axismap\fR\*(T>, autofire, throttle
+emulation, deadzones and all other things can currently
+not be switched at runtime.
+.TP 
+\*(T<\fB\-\-ui\-clear\fR\*(T>
+Removes all uinput mappings and will leave the driver in
+a blank state and only map those things you added
+yourself. If you only want to get rid of individual
+buttons you can use the 'void' event.
+.TP 
+\*(T<\fB\-\-ui\-toggle\fR\*(T> \fIXBOXBTN\fR
+Sets the button that will be used to toggle between
+different uinput configurations.
 .TP 
 \*(T<\fB\-\-ui\-buttonmap\fR\*(T> \fIUIBUTTONSPEC,...\fR
 .nf
@@ -759,77 +907,6 @@ events when the LB button is held down.
 
 For information on how to use axis filters, see [Axis Filter].
 .TP 
-\*(T<\fB\-\-alt\-config\fR\*(T> \fIFILE\fR
-A shortcut for writing \*(T<\fB\-\-ui\-new\fR\*(T> \*(T<\fB\-\-config\fR\*(T> \fIFILE\fR.
-.TP 
-\*(T<\fB\-\-ui\-clear\fR\*(T>
-Removes all uinput mappings and will leave the driver in
-a blank state and only map those things you added
-yourself. If you only want to get rid of individual
-buttons you can use the 'void' event.
-.TP 
-\*(T<\fB\-\-ui\-new\fR\*(T>
-Allows the creation of an alternative uinput
-configuration to which one can toggle at runtime by
-pressing the ui-toggle button (defaults to guide).
-
-.nf
-\*(T<$ xboxdrv \e
-    \-\-mouse \e
-  \-\-ui\-new 
-    \-\-ui\-axismap X1=ABS_X,Y1=ABS_Y \e
-    \-\-ui\-buttonmap A=JS_0,B=JS_1\*(T>
-.fi
-
-The above configuration would install mouse emulation as
-first configuration and a simple joystick emulation as
-second configuration. Allowing toggling between mouse
-emulation and joystick handling by pressing the guide
-button.
-
-Not that \*(T<\fB\-\-ui\-new\fR\*(T> is currently limited
-to only configurations done
-with \*(T<\fB\-\-ui\-buttonmap\fR\*(T>
-and \*(T<\fB\-\-ui\-axismap\fR\*(T>, autofire, throttle
-emulation, deadzones and all other things can currently
-not be switched at runtime.
-.TP 
-\*(T<\fB\-\-ui\-toggle\fR\*(T> \fIXBOXBTN\fR
-Sets the button that will be used to toggle between
-different uinput configurations.
-.TP 
-\*(T<\fB\-\-guitar\fR\*(T>
-Sets a predefined button and axis mapping for use with
-guitar controllers. This mainly gets rid of a few
-unnecesary buttons and axis not used by a guitar
-controller.
-.TP 
-\*(T<\fB\-m, \-\-mouse\fR\*(T>
-Lets the controller act as a mouse. It is indendical to:
-
-.nf
-\*(T<$ xboxdrv \e
-  \-\-dpad\-as\-button
-  \-\-deadzone 4000
-  \-\-trigger\-as\-zaxis
-  \-\-axismap "\-y2=y2,\-trigger=trigger"
-  \-\-ui\-axismap "x1=REL_X:15:20,y1=REL_Y:15:20,y2=REL_WHEEL:5:100,x2=REL_HWHEEL:5:100,trigger=REL_WHEEL:5:100"
-  \-\-ui\-buttonmap "a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER,rb=KEY_PAGEDOWN,lb=KEY_PAGEUP,"
-  \-\-ui\-buttonmap "dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN,"
-  \-\-ui\-buttonmap "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,tl=void,tr=void"\*(T>
-.fi
-
-You can customize it by the usual means, just make sure
-that \*(T<\fB\-\-mouse\fR\*(T> comes before your
-customization options on the command line.
-
-Note that if you have your mouse buttons switched you must
-adjust the above to match your mouse configuration or the
-button events will come out wrong.
-.TP 
-\*(T<\fB\-\-name DEVNAME\fR\*(T>
-Changes the descriptive name the device will have
-.TP 
 \*(T<\fB\-\-square\-axis\fR\*(T>
 The Xbox360 gamepad, as most other current day gamepads,
 features a circular movement range, which restricts the
@@ -970,32 +1047,6 @@ pos = (1.0f \- (1.0f \- pos) ** t) ** (1 / t);\*(T>
 
 To the value of the axis, thus both the min and max position will
 always stay the same, only the values inbetween change.
-.TP 
-\*(T<\fB\-\-force\-feedback\fR\*(T>
-Enables the standard kernel force feedback interface. It
-is disabled by default as it causes trouble with some
-applications running in Wine.
-
-Since the Xbox360 controller supports just rumble not full force
-feedback, xboxdrv tries to emulate other effects. This emulation
-hasn't been tested much and might not always work as expected. Bug
-reports and test cases are welcome.
-
-Note that you must close the application that is using force feedback
-always before you close the xboxdrv driver, else you might end up with
-a hanging non-interruptable xboxdrv process that will require a reboot
-to get rid of.
-.TP 
-\*(T<\fB\-\-rumble\-gain\fR\*(T> \fIAMOUNT\fR
-You can change the rumble strength via:
-
-.nf
-\*(T<$ xboxdrv \-\-rumble\-gain 50%\*(T>
-.fi
-
-Values larger then 100% are possible as well and will
-amplify small rumble commands, rumble commands already
-at the maximum will stay unchanged.
 .SH "INPUT FILTER"
 Input filter allow to manipulate the events that come from the
 controller. They can be used

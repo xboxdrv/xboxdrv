@@ -164,28 +164,17 @@
         </varlistentry>
 
         <varlistentry>
-          <term><option>-R</option>, <option>--test-rumble</option></term>
+          <term><option>-D</option>, <option>--daemon</option></term>
           <listitem>
             <para>
-              Pressing LT will move the left rumble motor and pressing
-              RT will move the right one. Rumble motor strength
-              depends on how hard you press. This is useful for
-              testing the rumble motors.
+              Run xboxdrv as daemon. This option hasn't been tested
+              much and it is not recommented to be used.
             </para>
           </listitem>
         </varlistentry>
 
         <varlistentry>
-          <term><option>--no-uinput</option></term>
-          <listitem>
-            <para>
-              Do not try to start uinput event dispatching, useful for debugging.
-            </para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--config</option> <replaceable class="parameter">FILE</replaceable></term>
+          <term><option>-c</option>, <option>--config</option> <replaceable class="parameter">FILE</replaceable></term>
           <listitem>
             <para>
               Reads configuration information from <replaceable class="parameter">FILE</replaceable>.
@@ -250,23 +239,33 @@ start=KEY_ESC
         </varlistentry>
 
         <varlistentry>
-          <term><option>--mimic-xpad</option></term>
+          <term><option>--alt-config</option> <replaceable class="parameter">FILE</replaceable></term>
           <listitem>
             <para>
-              Causes xboxdrv to use the same axis and button names as the xpad kernel driver.
+              A shortcut for
+              writing <option>--ui-new</option> <option>--config</option> <replaceable class="parameter">FILE</replaceable>.
+            </para>
+            <para>
+              To load multiple configuration options use:
+            </para>
+            <programlisting><![CDATA[xboxdrv --config first.ini --alt-config second.ini --alt-config third.ini]]></programlisting>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>-o</option>, <option>--option</option> <replaceable class="parameter">NAME=VALUE</replaceable></term>
+          <listitem>
+            <para>
+              Set an option as if it would come from a config file from the command line.
             </para>
           </listitem>
         </varlistentry>
 
         <varlistentry>
-          <term><option>-D</option>, <option>--daemon</option></term>
+          <term><option>--write-config</option> <replaceable class="parameter">FILE</replaceable></term>
           <listitem>
             <para>
-              Run as daemon. In most situations this is not very
-              useful, as <command>xboxdrv</command> will fail when the
-              pad is removed or plugged in. See xboxdrv-daemon(1) for
-              a way to launch <command>xboxdrv</command>
-              automatically.
+              Write an example configuration file to <replaceable class="parameter">FILE</replaceable>.
             </para>
           </listitem>
         </varlistentry>
@@ -341,7 +340,12 @@ start=KEY_ESC
             </itemizedlist>
           </listitem>
         </varlistentry>
+      </variablelist>
+    </refsect2>
 
+    <refsect2>
+      <title>Evdev Option</title>
+      <variablelist>
         <varlistentry>
           <term><option>--evdev</option> <replaceable class="parameter">DEVICE</replaceable></term>
           <listitem>
@@ -444,19 +448,6 @@ start=KEY_ESC
             </para>
           </listitem>
         </varlistentry>
-
-        <varlistentry>
-          <term><option>--chatpad</option></term>
-          <listitem>
-            <para>
-              Enables the support for the Xbox360 Chatpad. WARNING:
-              This is preliminary code, it will crash your gamepad
-              when xboxdrv is started multiple times and won't provide
-              proper keymapping for any of the umlauts and special
-              characters.
-            </para>
-          </listitem>
-        </varlistentry>
       </variablelist>
     </refsect2>
 
@@ -504,6 +495,156 @@ start=KEY_ESC
         </varlistentry>
 
         <varlistentry>
+          <term><option>-q</option>, <option>--quit</option></term>
+          <listitem>
+            <para>
+              Exit xboxdrv after setting LED or rumble values.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+
+    <refsect2>
+      <title>Chatpad Options (experimental)</title>
+      <para>
+        Chatpad support is still experimental. Basic keyboard usage
+        will work, there is however currently no support for
+        customization or the green and orange key modifiers.
+      </para>
+      <para>
+        Starting xboxdrv multiple times in a row with
+        the <option>--chatpad</option> option can crash the
+        controller. Unplugging it and plugging it back in should reset
+        it.
+      </para>
+      <variablelist>
+        <varlistentry>
+          <term><option>--chatpad</option></term>
+          <listitem>
+            <para>
+              Enables the support for the Xbox360 Chatpad. WARNING:
+              This is preliminary code, it will crash your gamepad
+              when xboxdrv is started multiple times and won't provide
+              proper keymapping for any of the umlauts and special
+              characters.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--chatpad-no-init</option></term>
+          <listitem>
+            <para>
+              This will start chatpad support with out sending the
+              init sequence, thus potentially avoiding crashing the
+              controller if xboxdrv is started multiple times.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--chatpad-debug</option></term>
+          <listitem>
+            <para>
+              Output raw chatpad data to the stdout for debugging purpose.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+
+    <refsect2>
+      <title>Headset Options (experimental, Xbox360 USB only)</title>
+      <para>
+        Xboxdrv does not support the headset, the options below are
+        for developers only and will dump raw headset data, not .wav
+        files.
+      </para>
+      <variablelist>
+        <varlistentry>
+          <term><option>--headset</option></term>
+          <listitem>
+            <para>
+              Enable headset support and dump incomming data to stdout.
+            </para>
+          </listitem>
+
+        </varlistentry>
+        <varlistentry>
+          <term><option>--headset-dump</option> <replaceable class="parameter">FILE</replaceable></term>
+          <listitem>
+            <para>
+              Enable headset support and dump incomming data to FILE.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--headset-play</option> <replaceable class="parameter">FILE</replaceable></term>
+          <listitem>
+            <para>
+              Enable headset support and send FILE to the headset for playback.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>    
+
+    <refsect2>
+      <title>Force Feedback</title>
+      <variablelist>
+        <varlistentry>
+          <term><option>--force-feedback</option></term>
+          <listitem>
+            <para>
+              Enables the standard kernel force feedback interface. It
+              is disabled by default as it causes trouble with some
+              applications running in Wine.
+            </para>
+            <para>
+              Since the Xbox360 controller supports just rumble not full force
+              feedback, xboxdrv tries to emulate other effects. This emulation
+              hasn't been tested much and might not always work as expected. Bug
+              reports and test cases are welcome.
+            </para>
+            <para>
+              Note that you must close the application that is using force feedback
+              always before you close the xboxdrv driver, else you might end up with
+              a hanging non-interruptable xboxdrv process that will require a reboot
+              to get rid of.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--rumble-gain</option> <replaceable class="parameter">AMOUNT</replaceable></term>
+          <listitem>
+            <para>You can change the rumble strength via:</para>
+
+            <programlisting>$ xboxdrv --rumble-gain 50%</programlisting>
+
+            <para>
+              Values larger then 100% are possible as well and will
+              amplify small rumble commands, rumble commands already
+              at the maximum will stay unchanged.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>-R</option>, <option>--test-rumble</option></term>
+          <listitem>
+            <para>
+              Pressing LT will move the left rumble motor and pressing
+              RT will move the right one. Rumble motor strength
+              depends on how hard you press. This is useful for
+              testing the rumble motors.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>-r</option>, <option>--rumble</option> <replaceable class="parameter"> L,R</replaceable></term>
           <listitem>
             <para>
@@ -547,40 +688,6 @@ start=KEY_ESC
               specified with:
             </para>
             <programlisting>$ xboxdrv --deadzone-trigger 15%  </programlisting>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--trigger-as-button</option></term>
-          <listitem>
-            <para>LT and RT send button instead of axis events</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--trigger-as-zaxis</option></term>
-          <listitem>
-            <para>Combine LT and RT to form a zaxis instead</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--dpad-as-button</option></term>
-          <listitem>
-            <para>The DPad sends button instead of axis events.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--dpad-only</option></term>
-          <listitem>
-            <para>
-              Both sticks are ignored, only the DPad sends out axis
-              events. Useful for games that might get confused by
-              additional analog axis. Combining this option
-              with <option>--trigger-as-button</option> is recommend
-              in most situations.
-            </para>
           </listitem>
         </varlistentry>
 
@@ -687,7 +794,177 @@ start=KEY_ESC
             </para>
           </listitem>
         </varlistentry>
-        
+      </variablelist>
+    </refsect2>
+
+    <refsect2>
+      <title>Uinput Preset Configuration Options</title>
+      <para>
+        The following options are simple shortcuts for common
+        configurations that can be accomplished
+        by <option>--ui-buttonmap</option>
+        and <option>--ui-axismap</option>.
+      </para>
+      <variablelist>   
+        <varlistentry>
+          <term><option>--trigger-as-button</option></term>
+          <listitem>
+            <para>LT and RT send button instead of axis events</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--trigger-as-zaxis</option></term>
+          <listitem>
+            <para>Combine LT and RT to form a zaxis instead</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--dpad-as-button</option></term>
+          <listitem>
+            <para>The DPad sends button instead of axis events.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--dpad-only</option></term>
+          <listitem>
+            <para>
+              Both sticks are ignored, only the DPad sends out axis
+              events. Useful for games that might get confused by
+              additional analog axis. Combining this option
+              with <option>--trigger-as-button</option> is recommend
+              in most situations.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--guitar</option></term>
+          <listitem>
+            <para>
+              Sets a predefined button and axis mapping for use with
+              guitar controllers. This mainly gets rid of a few
+              unnecesary buttons and axis not used by a guitar
+              controller.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>-m, --mouse</option></term>
+          <listitem>
+            <para>
+              Lets the controller act as a mouse. It is indendical to:
+            </para>
+            <programlisting><![CDATA[$ xboxdrv \
+  --dpad-as-button
+  --deadzone 4000
+  --trigger-as-zaxis
+  --axismap "-y2=y2,-trigger=trigger"
+  --ui-axismap "x1=REL_X:15:20,y1=REL_Y:15:20,y2=REL_WHEEL:5:100,x2=REL_HWHEEL:5:100,trigger=REL_WHEEL:5:100"
+  --ui-buttonmap "a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER,rb=KEY_PAGEDOWN,lb=KEY_PAGEUP,"
+  --ui-buttonmap "dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN,"
+  --ui-buttonmap "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,tl=void,tr=void"]]></programlisting>
+            <para>
+              You can customize it by the usual means, just make sure
+              that <option>--mouse</option> comes before your
+              customization options on the command line.
+            </para>
+            <para>
+              Note that if you have your mouse buttons switched you must
+              adjust the above to match your mouse configuration or the
+              button events will come out wrong.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--mimic-xpad</option></term>
+          <listitem>
+            <para>
+              Causes xboxdrv to use the same axis and button names as the xpad kernel driver.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+
+    <refsect2>
+      <title>Uinput Configuration Options</title>
+      <variablelist>   
+        <varlistentry>
+          <term><option>--no-uinput</option></term>
+          <listitem>
+            <para>
+              Do not try to start uinput event dispatching, useful for debugging.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--name DEVNAME</option></term>
+          <listitem>
+            <para>
+              Changes the descriptive name the device will have
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--ui-new</option></term>
+          <listitem>
+            <para>
+              Allows the creation of an alternative uinput
+              configuration to which one can toggle at runtime by
+              pressing the ui-toggle button (defaults to guide).
+            </para>
+            <programlisting><![CDATA[$ xboxdrv \
+    --mouse \
+  --ui-new 
+    --ui-axismap X1=ABS_X,Y1=ABS_Y \
+    --ui-buttonmap A=JS_0,B=JS_1]]></programlisting>
+            <para>
+              The above configuration would install mouse emulation as
+              first configuration and a simple joystick emulation as
+              second configuration. Allowing toggling between mouse
+              emulation and joystick handling by pressing the guide
+              button.
+            </para>
+            <para>
+              Not that <option>--ui-new</option> is currently limited
+              to only configurations done
+              with <option>--ui-buttonmap</option>
+              and <option>--ui-axismap</option>, autofire, throttle
+              emulation, deadzones and all other things can currently
+              not be switched at runtime.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--ui-clear</option></term>
+          <listitem>
+            <para>
+              Removes all uinput mappings and will leave the driver in
+              a blank state and only map those things you added
+              yourself.  If you only want to get rid of individual
+              buttons you can use the 'void' event.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--ui-toggle</option> <replaceable class="parameter">XBOXBTN</replaceable></term>
+          <listitem>
+            <para>
+              Sets the button that will be used to toggle between
+              different uinput configurations.
+            </para>
+          </listitem>
+        </varlistentry>
+
         <varlistentry>
           <term><option>--ui-buttonmap</option> <replaceable class="parameter">UIBUTTONSPEC,...</replaceable></term>
           <listitem>
@@ -929,117 +1206,6 @@ NAME       = STRING ;]]></programlisting>
         </varlistentry>
 
         <varlistentry>
-          <term><option>--alt-config</option> <replaceable class="parameter">FILE</replaceable></term>
-          <listitem>
-            <para>
-              A shortcut for writing <option>--ui-new</option> <option>--config</option> <replaceable class="parameter">FILE</replaceable>.
-            </para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--ui-clear</option></term>
-          <listitem>
-            <para>
-              Removes all uinput mappings and will leave the driver in
-              a blank state and only map those things you added
-              yourself.  If you only want to get rid of individual
-              buttons you can use the 'void' event.
-            </para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--ui-new</option></term>
-          <listitem>
-            <para>
-              Allows the creation of an alternative uinput
-              configuration to which one can toggle at runtime by
-              pressing the ui-toggle button (defaults to guide).
-            </para>
-            <programlisting><![CDATA[$ xboxdrv \
-    --mouse \
-  --ui-new 
-    --ui-axismap X1=ABS_X,Y1=ABS_Y \
-    --ui-buttonmap A=JS_0,B=JS_1]]></programlisting>
-            <para>
-              The above configuration would install mouse emulation as
-              first configuration and a simple joystick emulation as
-              second configuration. Allowing toggling between mouse
-              emulation and joystick handling by pressing the guide
-              button.
-            </para>
-            <para>
-              Not that <option>--ui-new</option> is currently limited
-              to only configurations done
-              with <option>--ui-buttonmap</option>
-              and <option>--ui-axismap</option>, autofire, throttle
-              emulation, deadzones and all other things can currently
-              not be switched at runtime.
-            </para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--ui-toggle</option> <replaceable class="parameter">XBOXBTN</replaceable></term>
-          <listitem>
-            <para>
-              Sets the button that will be used to toggle between
-              different uinput configurations.
-            </para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--guitar</option></term>
-          <listitem>
-            <para>
-              Sets a predefined button and axis mapping for use with
-              guitar controllers. This mainly gets rid of a few
-              unnecesary buttons and axis not used by a guitar
-              controller.
-            </para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>-m, --mouse</option></term>
-          <listitem>
-            <para>
-              Lets the controller act as a mouse. It is indendical to:
-            </para>
-            <programlisting><![CDATA[$ xboxdrv \
-  --dpad-as-button
-  --deadzone 4000
-  --trigger-as-zaxis
-  --axismap "-y2=y2,-trigger=trigger"
-  --ui-axismap "x1=REL_X:15:20,y1=REL_Y:15:20,y2=REL_WHEEL:5:100,x2=REL_HWHEEL:5:100,trigger=REL_WHEEL:5:100"
-  --ui-buttonmap "a=BTN_LEFT,b=BTN_RIGHT,x=BTN_MIDDLE,y=KEY_ENTER,rb=KEY_PAGEDOWN,lb=KEY_PAGEUP,"
-  --ui-buttonmap "dl=KEY_LEFT,dr=KEY_RIGHT,du=KEY_UP,dd=KEY_DOWN,"
-  --ui-buttonmap "start=KEY_FORWARD,back=KEY_BACK,guide=KEY_ESC,tl=void,tr=void"]]></programlisting>
-            <para>
-              You can customize it by the usual means, just make sure
-              that <option>--mouse</option> comes before your
-              customization options on the command line.
-            </para>
-            <para>
-              Note that if you have your mouse buttons switched you must
-              adjust the above to match your mouse configuration or the
-              button events will come out wrong.
-            </para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--name DEVNAME</option></term>
-          <listitem>
-            <para>
-              Changes the descriptive name the device will have
-            </para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
           <term><option>--square-axis</option></term>
           <listitem>
             <para>
@@ -1206,44 +1372,6 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
             <para>To the value of the axis, thus both the min and max position will
               always stay the same, only the values inbetween change.</para>
 
-          </listitem>
-        </varlistentry>
-        
-        <varlistentry>
-          <term><option>--force-feedback</option></term>
-          <listitem>
-            <para>
-              Enables the standard kernel force feedback interface. It
-              is disabled by default as it causes trouble with some
-              applications running in Wine.
-            </para>
-            <para>
-              Since the Xbox360 controller supports just rumble not full force
-              feedback, xboxdrv tries to emulate other effects. This emulation
-              hasn't been tested much and might not always work as expected. Bug
-              reports and test cases are welcome.
-            </para>
-            <para>
-              Note that you must close the application that is using force feedback
-              always before you close the xboxdrv driver, else you might end up with
-              a hanging non-interruptable xboxdrv process that will require a reboot
-              to get rid of.
-            </para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--rumble-gain</option> <replaceable class="parameter">AMOUNT</replaceable></term>
-          <listitem>
-            <para>You can change the rumble strength via:</para>
-
-            <programlisting>$ xboxdrv --rumble-gain 50%</programlisting>
-
-            <para>
-              Values larger then 100% are possible as well and will
-              amplify small rumble commands, rumble commands already
-              at the maximum will stay unchanged.
-            </para>
           </listitem>
         </varlistentry>
       </variablelist>
