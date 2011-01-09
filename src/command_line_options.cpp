@@ -219,7 +219,7 @@ CommandLineParser::init_argp()
     .add_text("Axis Filter:")
     .add_pseudo("  cal, calibration MIN:CENTER:MAX", "Set the calibration values for the axis")
     .add_pseudo("  sen, sensitivity:SENSITIVITY", "Set the axis sensitivity")
-    .add_pseudo("  dead, deadzone:VALUE, deadzone:MIN:CENTER:MAX", "Set the axis deadzone")
+    .add_pseudo("  dead:VALUE, dead:MIN:CENTER:MAX", "Set the axis deadzone")
     .add_pseudo("  rel, relative:SPEED", "Turn axis into a relative-axis")
     .add_pseudo("  resp, response:VALUES:...", "Set values of the response curve")
     .add_pseudo("  log:STRING", "Print axis value to stdout")
@@ -280,6 +280,15 @@ CommandLineParser::init_ini(Options* opts)
     ("dpad-only", boost::bind(&uInputCfg::dpad_only, boost::ref(opts->uinput_config)), boost::function<void ()>())
     ("force-feedback", &opts->uinput_config.force_feedback)
     ("mimic-xpad", boost::bind(&uInputCfg::mimic_xpad, boost::ref(opts->uinput_config)), boost::function<void ()>())
+
+    ("chatpad",         &opts->chatpad)
+    ("chatpad-no-init", &opts->chatpad_no_init)
+    ("chatpad-debug",   &opts->chatpad_debug)
+
+    ("headset",         &opts->headset)
+    ("headset-debug",   &opts->headset_debug)
+    ("headset-dump",    &opts->headset_dump)
+    ("headset-play",    &opts->headset_play)
     ;
 
   m_ini.section("ui-buttonmap", boost::bind(&uInputCfg::set_ui_buttonmap, 

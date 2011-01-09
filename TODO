@@ -27,11 +27,12 @@ $ dput my-ppa xboxdrv_0.6.3_source.changes
 Stuff to do before 0.6.4 release:
 =================================
 
-* write documentation
+* write documentation for chatpad, headset options
 
-* add chatpad/headset options to ini
-
-* cleanup --help, some newlines missing in there
+* bug: when shifting the last axis state sticks even when the key was released
+
+Stuff to do before 0.6.x release:
+=================================
 
 * basic Dualstrike mouse emulation with absolute position:
 
@@ -49,11 +50,6 @@ Stuff to do before 0.6.4 release:
  --ui-axismap x2=abs:2-ABS_X,y2=abs:2-ABS_Y
 
   implement better guessing
-
-* bug: when shifting the last axis state sticks even when the key was released
-
-Stuff to do before 0.6.x release:
-=================================
 
 * figure out what to do with deprecated stuff:
 
