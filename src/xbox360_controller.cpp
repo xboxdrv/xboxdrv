@@ -22,9 +22,11 @@
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 #include <boost/format.hpp>
 
 #include "chatpad.hpp"
+#include "headset.hpp"
 #include "helper.hpp"
 #include "options.hpp"
 #include "usb_helper.hpp"
@@ -34,6 +36,7 @@
 
 Xbox360Controller::Xbox360Controller(struct usb_device* dev_, 
                                      bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
+                                     bool headset, const std::string& headset_dump,
                                      bool try_detach) :
   dev(dev_),
   dev_type(),
@@ -111,6 +114,11 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev_,
     m_chatpad->send_init();
     m_chatpad->start_threads();
   }
+
+  if (headset)
+  {
+    m_headset.reset(new Headset(handle, headset_dump));
+  }
 }
 
 Xbox360Controller::~Xbox360Controller()
@@ -120,6 +128,11 @@ Xbox360Controller::~Xbox360Controller()
   if (m_chatpad.get())
   {
     m_chatpad.reset();
+  }
+
+  if (m_headset.get())
+  {
+    m_headset.reset();
   }
 
   usb_release_interface(handle, 0); 
@@ -267,8 +280,15 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
 }
 
 void
-Xbox360Controller::set_chatpad()
+Xbox360Controller::headset_play(const std::string& filename)
 {
+  //  std::ifstream in(filename.c_str(), std::ios::binary);
+}
+
+void
+Xbox360Controller::headset_write(const std::string& filename)
+{
+  //  std::ofstream out(filename.c_str(), std::ios::binary);
 }
 
 /* EOF */

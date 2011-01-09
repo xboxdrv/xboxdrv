@@ -103,6 +103,8 @@ enum {
   OPTION_CHATPAD,
   OPTION_CHATPAD_NO_INIT,
   OPTION_CHATPAD_DEBUG,
+  OPTION_HEADSET,
+  OPTION_HEADSET_DUMP,
   OPTION_DETACH_KERNEL_DRIVER,
   OPTION_HELP_DEVICES
 };
@@ -159,6 +161,8 @@ CommandLineParser::init_argp()
     .add_option(OPTION_CHATPAD,        0, "chatpad", "",  "Enable Chatpad support for Xbox360 USB controller")
     .add_option(OPTION_CHATPAD_NO_INIT, 0, "chatpad-no-init", "",  "To not send init code to the Chatpad")
     .add_option(OPTION_CHATPAD_DEBUG, 0, "chatpad-debug", "",  "To not send init code to the Chatpad")
+    .add_option(OPTION_HEADSET,        0, "headset", "",  "Enable Headset support for Xbox360 USB controller (not working)")
+    .add_option(OPTION_HEADSET_DUMP,   0, "headset-dump", "FILE",  "Dump headset data to FILE")
     .add_newline()
 
     .add_text("Status Options: ")
@@ -429,6 +433,15 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_CHATPAD_DEBUG:
         opts.chatpad_debug = true;
+        break;
+
+      case OPTION_HEADSET:
+        opts.headset = true;
+        break;
+
+      case OPTION_HEADSET_DUMP:
+        opts.headset = true;
+        opts.headset_dump = opt.argument;
         break;
 
       case OPTION_FORCE_FEEDBACK:

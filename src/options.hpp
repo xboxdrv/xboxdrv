@@ -88,6 +88,9 @@ public:
   bool chatpad_no_init;
   bool chatpad_debug;
 
+  bool headset;
+  std::string headset_dump;
+
   std::vector<std::string> exec;
 
   Options();

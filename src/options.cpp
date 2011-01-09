@@ -55,7 +55,9 @@ Options::Options() :
   evdev_debug(false),
   chatpad(false),
   chatpad_no_init(false),
-  chatpad_debug(false)
+  chatpad_debug(false),
+  headset(false),
+  headset_dump()
 {
 }
 

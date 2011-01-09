@@ -23,10 +23,10 @@
 #include "xbox_generic_controller.hpp"
 
 class Chatpad;
+class Headset;
 class USBReadThread;
 struct XPadDevice;
-
-/** */
+
 class Xbox360Controller : public XboxGenericController
 {
 private:
@@ -39,25 +39,29 @@ private:
 
   std::auto_ptr<USBReadThread> read_thread;
   std::auto_ptr<Chatpad> m_chatpad;
+  std::auto_ptr<Headset> m_headset;
 
   void find_endpoints();
 
 public:
   Xbox360Controller(struct usb_device* dev, 
                     bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
+                    bool headset, const std::string& headset_dump,
                     bool try_detach);
   ~Xbox360Controller();
 
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
-  void set_chatpad();
   bool read(XboxGenericMsg& msg, bool verbose, int timeout);
+  
+  void headset_play(const std::string& filename);
+  void headset_write(const std::string& filename);
 
 private:
   Xbox360Controller (const Xbox360Controller&);
   Xbox360Controller& operator= (const Xbox360Controller&);
 };
-
+
 #endif
 
 /* EOF */
