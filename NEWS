@@ -11,6 +11,7 @@ xboxdrv 0.6.3 - (10/Jan/2011)
 * fixed multiple bugs that made it impossible to assign events to
   specific devices
 * fixed axis getting stuck when using a shift key
+* fixed incorrect error handling on fork()/exec()
 
 
 xboxdrv 0.6.2 - (31/Dec/2010)

@@ -341,7 +341,7 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
     pid = fork();
     if (pid == 0)
     {
-      char** argv = static_cast<char**>(malloc(sizeof(char*) * opts.exec.size()));
+      char** argv = static_cast<char**>(malloc(sizeof(char*) * opts.exec.size() + 1));
       for(size_t i = 0; i < opts.exec.size(); ++i)
       {
         argv[i] = strdup(opts.exec[i].c_str());
@@ -351,13 +351,9 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
       if (execvp(opts.exec[0].c_str(), argv) == -1)
       {
         std::cout << "error: " << opts.exec[0] << ": " << strerror(errno) << std::endl;
+        // FIXME: must signal the parent process
+        exit(EXIT_FAILURE);
       }
-
-      for(size_t i = 0; i < opts.exec.size(); ++i)
-      {
-        free(argv[i]);
-      }
-      free(argv);
     }
   }
 
@@ -433,9 +429,21 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
 
       if (w > 0)
       {
-        if (WIFEXITED(status) || WIFSIGNALED(status))
+        if (WIFEXITED(status))
         {
-          std::cout << "Child program has stopped, shutting down xboxdrv" << std::endl;
+          if (WEXITSTATUS(status) != 0)
+          {
+            std::cout << "error: child program has stopped with exit status " << WEXITSTATUS(status) << std::endl;
+          }
+          else
+          {
+            std::cout << "child program exited successful" << std::endl;
+          }
+          global_exit_xboxdrv = true;
+        }
+        else if (WIFSIGNALED(status))
+        {
+          std::cout << "error: child program was terminated by " << WTERMSIG(status) << std::endl;
           global_exit_xboxdrv = true;
         }
       }
