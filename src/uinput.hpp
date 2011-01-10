@@ -49,6 +49,7 @@ private:
 
   int  axis_state[XBOX_AXIS_MAX];
   bool button_state[XBOX_BTN_MAX];
+  bool last_button_state[XBOX_BTN_MAX];
 
   struct RelRepeat 
   {

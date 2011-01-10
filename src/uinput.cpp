@@ -53,7 +53,8 @@ uInput::uInput(GamepadType type, int vendor_id, int product_id, uInputCfg config
   rel_repeat_lst()
 {
   std::fill_n(axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
-  std::fill_n(button_state, static_cast<int>(XBOX_BTN_MAX),  false);
+  std::fill_n(button_state,      static_cast<int>(XBOX_BTN_MAX),  false);
+  std::fill_n(last_button_state, static_cast<int>(XBOX_BTN_MAX),  false);
 
   if (cfg.force_feedback)
   {
@@ -167,6 +168,8 @@ uInput::~uInput()
 void
 uInput::send(XboxGenericMsg& msg)
 {
+  std::copy(button_state, button_state+XBOX_BTN_MAX, last_button_state);
+
   switch(msg.type)
   {
     case XBOX_MSG_XBOX:
@@ -214,6 +217,13 @@ uInput::send(Xbox360Msg& msg)
   send_button(XBOX_BTN_LT, msg.lt); // FIXME: no deadzone handling here
   send_button(XBOX_BTN_RT, msg.rt);
 
+  // dpad
+  send_button(XBOX_DPAD_UP,    msg.dpad_up);
+  send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
+  send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
+  send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
+
+  // trigger
   send_axis(XBOX_AXIS_LT, msg.lt);
   send_axis(XBOX_AXIS_RT, msg.rt);
 
@@ -227,11 +237,6 @@ uInput::send(Xbox360Msg& msg)
   send_axis(XBOX_AXIS_Y2, -msg.y2);
 
   // dpad
-  send_button(XBOX_DPAD_UP,    msg.dpad_up);
-  send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
-  send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
-  send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
-
   if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
   else if (msg.dpad_down)  send_axis(XBOX_AXIS_DPAD_Y,  1);
   else                     send_axis(XBOX_AXIS_DPAD_Y,  0);
@@ -265,6 +270,12 @@ uInput::send(XboxMsg& msg)
   send_button(XBOX_BTN_LT, msg.lt);
   send_button(XBOX_BTN_RT, msg.rt);
 
+  // dpad as button
+  send_button(XBOX_DPAD_UP,    msg.dpad_up);
+  send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
+  send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
+  send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
+
   send_axis(XBOX_AXIS_LT, msg.lt);
   send_axis(XBOX_AXIS_RT, msg.rt);
 
@@ -276,12 +287,6 @@ uInput::send(XboxMsg& msg)
 
   send_axis(XBOX_AXIS_X2,  msg.x2);
   send_axis(XBOX_AXIS_Y2, -msg.y2);
-
-  // dpad as button
-  send_button(XBOX_DPAD_UP,    msg.dpad_up);
-  send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
-  send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
-  send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
 
   // dpad as axis
   if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
@@ -470,38 +475,46 @@ uInput::send_rel_repetitive(const UIEvent& code, int value, int repeat_interval)
 void
 uInput::send_axis(XboxAxis code, int32_t value)
 {
-  // FIXME: should be sending updates when the shift button changes,
-  // not just when the axis changed
-  if (axis_state[code] != value)
-  {
-    axis_state[code] = value;
+  AxisEventPtr ev      = cfg.get_axis_map().lookup(code);
+  AxisEventPtr last_ev = ev;
 
-    bool event_send = false;
-
-    // send all shifted stuff
-    for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
-    {    
-      if (button_state[shift])
-      {
-        const AxisEventPtr& event = cfg.get_axis_map().lookup(static_cast<XboxButton>(shift), code);
-        if (event)
-        {
-          event->send(*this, value);
-          event_send = true;
-        }
-      }
-    }
-
-    // sending regular axis, if no shifted events where send
-    if (!event_send)
+  // find the curren AxisEvent bound to current axis code
+  for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
+  {    
+    if (button_state[shift])
     {
-      const AxisEventPtr& event = cfg.get_axis_map().lookup(code);
-      if (event)
-      {
-        event->send(*this, value);
-      }
+      ev = cfg.get_axis_map().lookup(static_cast<XboxButton>(shift), code);
+      break;
     }
   }
+
+  // find the last AxisEvent bound to current axis code
+  for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
+  {    
+    if (last_button_state[shift])
+    {
+      last_ev = cfg.get_axis_map().lookup(static_cast<XboxButton>(shift), code);
+      break;
+    }
+  }
+
+  if (last_ev != ev)
+  {
+    // a shift key was released
+    if (last_ev) last_ev->send(*this, 0);
+    if (ev) ev->send(*this, value);
+  }
+  else
+  {
+    // no shift was touched, so only send events when the value changed
+    if (axis_state[code] != value)
+    {
+      if (ev) ev->send(*this, value);
+    }
+  }
+
+  // save current value
+  axis_state[code] = value;
 }
 
 LinuxUinput*

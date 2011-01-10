@@ -24,11 +24,6 @@ $ sudo pbuilder --build xboxdrv_0.6.3.dsc
 $ dput my-ppa xboxdrv_0.6.3_source.changes
 
 
-Stuff to do before 0.6.4 release:
-=================================
-
-* bug: when shifting the last axis state sticks even when the key was released
-
 Stuff to do before 0.6.x release:
 =================================
 
