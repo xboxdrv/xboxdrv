@@ -71,7 +71,7 @@ xkb_keymap {
         type= "ALPHABETIC",
         symbols[Group1]= [               q, Q ],
         symbols[Group2]= [               exclam ],
-        symbols[Group3]= [                at ] # @
+        symbols[Group3]= [               at ] # @
     };
     key <AD02> {
         type= "ALPHABETIC",
@@ -158,7 +158,7 @@ xkb_keymap {
         type= "ALPHABETIC",
         symbols[Group1]= [               g, G ],
         symbols[Group2]= [               diaeresis ], # .. 
-        symbols[Group3]= [                ] # kilrathi ???
+        symbols[Group3]= [               currency ] # Microsoft Points symbol
     };
     key <AC06> {
         type= "ALPHABETIC",
