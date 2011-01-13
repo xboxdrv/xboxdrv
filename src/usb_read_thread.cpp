@@ -21,6 +21,7 @@
 #include <boost/bind.hpp>
 #include <string.h>
 #include <libusb.h>
+#include <iostream>
 
 #include "usb_read_thread.hpp"
 
@@ -57,7 +58,7 @@ USBReadThread::stop_thread()
 }
 
 int
-USBReadThread::read(uint8_t* data, int len, int timeout)
+USBReadThread::read(uint8_t* data, int len, int* transferred, int timeout)
 {
   assert(len == m_read_length);
 
@@ -66,16 +67,17 @@ USBReadThread::read(uint8_t* data, int len, int timeout)
   if (!m_read_buffer_cond.timed_wait(lock, boost::posix_time::milliseconds(timeout), 
                                      buffer_not_empty(m_read_buffer)))
   {
-    return 0;
+    return LIBUSB_ERROR_TIMEOUT;
   }
   else
   {
-    Paket paket = m_read_buffer.front();
+    Packet packet = m_read_buffer.front();
 
-    memcpy(data, paket.data.get(), m_read_length);
+    *transferred = packet.length;
+    memcpy(data, packet.data.get(), m_read_length);
     m_read_buffer.pop();
 
-    return paket.length;
+    return LIBUSB_SUCCESS;
   }
 }
 
@@ -91,16 +93,16 @@ USBReadThread::run()
                                         reinterpret_cast<uint8_t*>(data.get()), m_read_length, 
                                         &len, 0 /*timeout*/);
 
-    if (ret != LIBUSB_SUCCESS)
+    if (ret == LIBUSB_SUCCESS)
     {
       boost::mutex::scoped_lock lock(m_read_buffer_mutex);
 
-      Paket paket;
+      Packet packet;
 
-      paket.data   = data;
-      paket.length = len;
+      packet.data   = data;
+      packet.length = len;
 
-      m_read_buffer.push(paket);
+      m_read_buffer.push(packet);
           
       m_read_buffer_cond.notify_one();
 

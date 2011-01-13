@@ -116,7 +116,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
 
   if (read_thread.get())
   {
-    ret = read_thread->read(data, sizeof(data), timeout);
+    ret = read_thread->read(data, sizeof(data), &len, timeout);
   }
   else
   {

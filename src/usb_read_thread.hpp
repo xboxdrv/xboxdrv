@@ -33,18 +33,18 @@ private:
   const int m_read_endpoint;
   const int m_read_length;
 
-  struct Paket 
+  struct Packet 
   {
     boost::shared_array<uint8_t> data;
     int length;
 
-    Paket() :
+    Packet() :
       data(),
       length()
     {}
   };
 
-  typedef std::queue<Paket> Buffer;
+  typedef std::queue<Packet> Buffer;
   Buffer m_read_buffer;
   boost::mutex m_read_buffer_mutex;
   boost::condition m_read_buffer_cond;
@@ -70,7 +70,7 @@ public:
   USBReadThread(struct libusb_device_handle* handle, int endpoint, int len);
   ~USBReadThread();
 
-  int read(uint8_t* data, int len, int timeout);
+  int read(uint8_t* data, int len, int* transferred, int timeout);
 
   void start_thread();
   void stop_thread();

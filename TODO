@@ -41,6 +41,12 @@ $ dput my-ppa xboxdrv_0.6.4_source.changes
 Stuff to do before 0.6.5 release:
 =================================
 
+* dpad mapping is messed up
+
+
+Stuff to do before 0.6.6 release:
+=================================
+
 * added return value checking to:
 
   libusb_open

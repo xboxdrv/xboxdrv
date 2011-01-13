@@ -49,7 +49,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
   read_thread()
 {
   find_endpoints();
-  if (0)
+  if (true) // FIXME
   {
     std::cout << "EP(IN):  " << endpoint_in << std::endl;
     std::cout << "EP(OUT): " << endpoint_out << std::endl;
@@ -118,7 +118,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
   }
 #endif
 
-  read_thread = std::auto_ptr<USBReadThread>(new USBReadThread(handle, endpoint_in, 32));
+  read_thread.reset(new USBReadThread(handle, endpoint_in, 32));
   read_thread->start_thread();
 
   if (chatpad)
@@ -157,52 +157,52 @@ Xbox360Controller::~Xbox360Controller()
 void
 Xbox360Controller::find_endpoints()
 {
-#ifdef LIBUSB_OLD_VERSION
-  bool debug_print = false;
-
-  for(struct libusb_config_descriptor* config = dev->config;
-      config != dev->config + dev->descriptor.bNumConfigurations;
-      ++config)
+  libusb_config_descriptor* config;
+  int ret = libusb_get_config_descriptor(dev, 0 /* config_index */, &config);
+  if (ret != LIBUSB_SUCCESS)
   {
-    if (debug_print) std::cout << "Config: " << static_cast<int>(config->bConfigurationValue) << std::endl;
+    throw std::runtime_error("-- failure --"); // FIXME
+  }
 
-    for(struct usb_interface* interface = config->interface;
-        interface != config->interface + config->bNumInterfaces;
-        ++interface)
+  bool debug_print = true;
+
+  for(const libusb_interface* interface = config->interface;
+      interface != config->interface + config->bNumInterfaces;
+      ++interface)
+  {
+    for(const libusb_interface_descriptor* altsetting = interface->altsetting;
+        altsetting != interface->altsetting + interface->num_altsetting;
+        ++altsetting)
     {
-      for(struct usb_interface_descriptor* altsetting = interface->altsetting;
-          altsetting != interface->altsetting + interface->num_altsetting;
-          ++altsetting)
-      {
-        if (debug_print) std::cout << "  Interface: " << static_cast<int>(altsetting->bInterfaceNumber) << std::endl;
+      if (debug_print) std::cout << "  Interface: " << static_cast<int>(altsetting->bInterfaceNumber) << std::endl;
           
-        for(struct usb_endpoint_descriptor* endpoint = altsetting->endpoint; 
-            endpoint != altsetting->endpoint + altsetting->bNumEndpoints; 
-            ++endpoint)
-        {
-          if (debug_print) 
-            std::cout << "    Endpoint: " << int(endpoint->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK)
-                      << "(" << ((endpoint->bEndpointAddress & USB_ENDPOINT_DIR_MASK) ? "IN" : "OUT") << ")"
-                      << std::endl;
+      for(const libusb_endpoint_descriptor* endpoint = altsetting->endpoint; 
+          endpoint != altsetting->endpoint + altsetting->bNumEndpoints; 
+          ++endpoint)
+      {
+        if (debug_print) 
+          std::cout << "    Endpoint: " << int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK)
+                    << "(" << ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? "IN" : "OUT") << ")"
+                    << std::endl;
 
-          if (altsetting->bInterfaceClass    == LIBUSB_CLASS_VENDOR_SPEC &&
-              altsetting->bInterfaceSubClass == 93 &&
-              altsetting->bInterfaceProtocol == 1)
+        if (altsetting->bInterfaceClass    == LIBUSB_CLASS_VENDOR_SPEC &&
+            altsetting->bInterfaceSubClass == 93 &&
+            altsetting->bInterfaceProtocol == 1)
+        {
+          if (endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK)
           {
-            if (endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK)
-            {
-              endpoint_in = int(endpoint->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK);
-            }
-            else
-            {
-              endpoint_out = int(endpoint->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK);
-            }
+            endpoint_in = int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK);
+          }
+          else
+          {
+            endpoint_out = int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK);
           }
         }
       }
     }
   }
-#endif
+
+  libusb_free_config_descriptor(config);
 }
 
 void
@@ -244,7 +244,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
 
   if (read_thread.get())
   {
-    ret = read_thread->read(data, sizeof(data), timeout);
+    ret = read_thread->read(data, sizeof(data), &len, timeout);
   }
   else
   {

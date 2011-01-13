@@ -480,8 +480,8 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
 }
 
 void
-Xboxdrv::find_controller(libusb_device*& dev,
-                         XPadDevice&         dev_type,
+Xboxdrv::find_controller(libusb_device** dev,
+                         XPadDevice& dev_type,
                          const Options& opts) const
 {
   if (opts.busid[0] != '\0' && opts.devid[0] != '\0')
@@ -493,7 +493,7 @@ Xboxdrv::find_controller(libusb_device*& dev,
     }
     else
     {
-      if (!find_controller_by_path(opts.busid, opts.devid, &dev))
+      if (!find_controller_by_path(opts.busid, opts.devid, dev))
       {
         std::cout << "Error: couldn't find device " << opts.busid << ":" << opts.devid << std::endl;
         exit(EXIT_FAILURE);
@@ -501,14 +501,13 @@ Xboxdrv::find_controller(libusb_device*& dev,
       else
       {
         dev_type.type      = opts.gamepad_type;
-#ifdef LIBUSB_OLD_VERSION
-        int libusb_get_device_descriptor(libusb_device *dev,
-                                 struct libusb_device_descriptor *desc);
-
-        dev_type.idVendor  = dev->descriptor.idVendor;
-        dev_type.idProduct = dev->descriptor.idProduct;
-#endif
         dev_type.name      = "unknown";
+        libusb_device_descriptor desc;
+        if (libusb_get_device_descriptor(*dev, &desc) == LIBUSB_SUCCESS)
+        {
+          dev_type.idVendor  = desc.idVendor;
+          dev_type.idProduct = desc.idProduct;
+        }
       }
     }
   }
@@ -521,7 +520,7 @@ Xboxdrv::find_controller(libusb_device*& dev,
     }
     else 
     {
-      if (!find_controller_by_id(opts.controller_id, opts.vendor_id, opts.product_id, &dev))
+      if (!find_controller_by_id(opts.controller_id, opts.vendor_id, opts.product_id, dev))
       {
         std::cout << "Error: couldn't find device with " 
                   << (boost::format("%04x:%04x") % opts.vendor_id % opts.product_id) 
@@ -539,7 +538,7 @@ Xboxdrv::find_controller(libusb_device*& dev,
   }
   else
   {
-    if (!find_xbox360_controller(opts.controller_id, &dev, &dev_type))
+    if (!find_xbox360_controller(opts.controller_id, dev, &dev_type))
     {
       std::cout << "No Xbox or Xbox360 controller found" << std::endl;
       exit(EXIT_FAILURE);
@@ -590,9 +589,9 @@ Xboxdrv::run_main(const Options& opts)
     //FIXME:usb_find_busses();
     //FIXME:usb_find_devices();
     
-    libusb_device* dev = 0;
+    libusb_device* dev = 0; // FIXME: this must be libusb_unref_device()'ed, child code must not keep a copy around
   
-    find_controller(dev, dev_type, opts);
+    find_controller(&dev, dev_type, opts);
 
     if (!dev)
     {
