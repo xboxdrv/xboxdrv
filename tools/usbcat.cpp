@@ -21,6 +21,7 @@
 #include <iostream>
 #include <math.h>
 #include <string.h>
+#include <stdio.h>
 
 std::ostream& operator<<(std::ostream& out, struct usb_device* dev)
 {
