@@ -176,27 +176,32 @@ Xboxdrv::run_list_controller()
 }
 
 bool
-Xboxdrv::find_controller_by_path(const std::string& busid, const std::string& devid,libusb_device** xbox_device) const
+Xboxdrv::find_controller_by_path(const std::string& busid_str, const std::string& devid_str, libusb_device** xbox_device) const
 {
-#ifdef LIBUSB_OLD_VERSION
-  struct usb_bus* busses = usb_get_busses();
+  int busid = boost::lexical_cast<int>(busid_str);
+  int devid = boost::lexical_cast<int>(devid_str);
 
-  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+  libusb_device** list;
+  ssize_t num_devices = libusb_get_device_list(m_libusb_ctx, &list);
+
+  for(ssize_t dev_it = 0; dev_it < num_devices; ++dev_it)
   {
-    if (bus->dirname == busid)
+    libusb_device* dev = list[dev_it];
+
+    if (libusb_get_bus_number(dev)     == busid &&
+        libusb_get_device_address(dev) == devid)
     {
-      for (libusb_device* dev = bus->devices; dev; dev = dev->next) 
-      {
-        if (dev->filename == devid)
-        {
-          *xbox_device = dev;
-          return true;
-        }
-      }
+      *xbox_device = dev;
+
+      // incrementing ref count, user must call unref
+      libusb_ref_device(*xbox_device);
+      libusb_free_device_list(list, 1 /* unref_devices */);
+      return true;
     }
   }
-#endif
-  return 0;
+
+  libusb_free_device_list(list, 1 /* unref_devices */);
+  return false;
 }
 
 /** find the number of the next unused /dev/input/jsX device */
@@ -234,73 +239,81 @@ Xboxdrv::find_evdev_number() const
 bool
 Xboxdrv::find_controller_by_id(int id, int vendor_id, int product_id, libusb_device** xbox_device) const
 {
-#ifdef LIBUSB_OLD_VERSION
-  struct usb_bus* busses = usb_get_busses();
+  libusb_device** list;
+  ssize_t num_devices = libusb_get_device_list(m_libusb_ctx, &list);
 
   int id_count = 0;
-  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+  for(ssize_t dev_it = 0; dev_it < num_devices; ++dev_it)
   {
-    for (libusb_device* dev = bus->devices; dev; dev = dev->next) 
+    libusb_device* dev = list[dev_it];
+    libusb_device_descriptor desc;
+
+    // FIXME: we silently ignore failures
+    if (libusb_get_device_descriptor(dev, &desc) == LIBUSB_SUCCESS)
     {
-      if (dev->descriptor.idVendor  == vendor_id &&
-          dev->descriptor.idProduct == product_id)
+      if (desc.idVendor  == vendor_id &&
+          desc.idProduct == product_id)
       {
         if (id_count == id)
         {
           *xbox_device = dev;
+          // increment ref count, user must free the device
+          libusb_ref_device(*xbox_device);
+          libusb_free_device_list(list, 1 /* unref_devices */);
           return true;
         }
         else
         {
           id_count += 1;
-          break;
         }
       }
     }
   }
-#endif
-  return 0;  
+
+  libusb_free_device_list(list, 1 /* unref_devices */);
+  return false;
 }
 
 bool
 Xboxdrv::find_xbox360_controller(int id, libusb_device** xbox_device, XPadDevice* type) const
 {
-#ifdef LIBUSB_OLD_VERSION
-  struct usb_bus* busses = usb_get_busses();
+  libusb_device** list;
+  ssize_t num_devices = libusb_get_device_list(m_libusb_ctx, &list);
 
   int id_count = 0;
-  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+  for(ssize_t dev_it = 0; dev_it < num_devices; ++dev_it)
   {
-    for (libusb_device* dev = bus->devices; dev; dev = dev->next) 
-    {
-      if (0)
-        std::cout << (boost::format("UsbDevice: idVendor: 0x%04x idProduct: 0x%04x")
-                      % int(dev->descriptor.idProduct)
-                      % int(dev->descriptor.idVendor))
-                  << std::endl;
+    libusb_device* dev = list[dev_it];
+    libusb_device_descriptor desc;
 
+    // FIXME: we silently ignore failures
+    if (libusb_get_device_descriptor(dev, &desc) == LIBUSB_SUCCESS)
+    {
       for(int i = 0; i < xpad_devices_count; ++i)
       {
-        if (dev->descriptor.idVendor  == xpad_devices[i].idVendor &&
-            dev->descriptor.idProduct == xpad_devices[i].idProduct)
+        if (desc.idVendor  == xpad_devices[i].idVendor &&
+            desc.idProduct == xpad_devices[i].idProduct)
         {
           if (id_count == id)
           {
             *xbox_device = dev;
             *type        = xpad_devices[i];
+            // increment ref count, user must free the device
+            libusb_ref_device(*xbox_device);
+            libusb_free_device_list(list, 1 /* unref_devices */);
             return true;
           }
           else
           {
             id_count += 1;
-            break;
           }
         }
       }
     }
   }
-#endif
-  return 0;
+
+  libusb_free_device_list(list, 1 /* unref_devices */);
+  return false;
 }
 
 void
