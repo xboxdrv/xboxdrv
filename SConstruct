@@ -4,7 +4,8 @@ if True:
     env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'],
                       CPPPATH=["src/"])
 else:
-    env = Environment(CXXFLAGS= [ "-O3", "-g3",
+    env = Environment(CXX="g++-4.5",
+                      CXXFLAGS= [ "-O3", "-g3",
                                   "-ansi",
                                   "-pedantic",
                                   "-Wall",

@@ -29,9 +29,10 @@
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>xboxdrv</command>
-      <arg rep="repeat"><option>OPTION</option></arg>
-      -- 
-      <arg rep="repeat"><option>XBOXDRV ARGS</option></arg>
+      <arg rep="repeat">OPTION</arg>
+      <arg choice="opt">--</arg>
+      <arg choice="req">XBOXDRV</arg>
+      <arg choice="opt" rep="repeat">ARGS</arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 
