@@ -55,7 +55,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
     std::cout << "EP(OUT): " << endpoint_out << std::endl;
   }
 
-  libusb_open(dev, &handle);
+  int ret = libusb_open(dev, &handle);
 
   if (0)
   {
@@ -69,7 +69,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
     }
   }
 
-  if (!handle)
+  if (ret != LIBUSB_SUCCESS)
   {
     throw std::runtime_error("Error opening Xbox360 controller");
   }
@@ -110,7 +110,8 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
           }
 
           uint8_t data[32];
-          int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | endpoint_in, reinterpret_cast<char*>(data), sizeof(data), 20);
+          int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | endpoint_in, 
+                                              reinterpret_cast<char*>(data), sizeof(data), 20);
           print_raw_data(std::cout, data, ret);
         }
       }

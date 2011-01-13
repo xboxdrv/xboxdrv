@@ -41,16 +41,10 @@ $ dput my-ppa xboxdrv_0.6.4_source.changes
 Stuff to do before 0.6.5 release:
 =================================
 
-* dpad mapping is messed up
-
-
-Stuff to do before 0.6.6 release:
-=================================
-
 * added return value checking to:
 
-  libusb_open
-  libusb_interrupt_transfer
+  libusb_open [done]
+  libusb_interrupt_transfer [done]
   libusb_control_transfer
   make sure libusb_control_transfer has proper endpoint number
 

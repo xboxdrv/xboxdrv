@@ -96,11 +96,10 @@ Headset::write_thread(const std::string& filename)
     }
     else
     {
-      int len = 0;
-      const int ret = libusb_interrupt_transfer(m_handle, 
-                                                LIBUSB_ENDPOINT_OUT | 4,
+      int transferred = 0;
+      const int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_OUT | 4,
                                                 data, sizeof(data),
-                                                &len, 0);
+                                                &transferred, 0);
       if (ret != LIBUSB_SUCCESS)
       {
         std::ostringstream out;

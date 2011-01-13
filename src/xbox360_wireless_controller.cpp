@@ -120,7 +120,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else
   {
-    ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_OUT | endpoint, 
+    ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | endpoint, 
                                     data, sizeof(data), 
                                     &len, timeout);
   }

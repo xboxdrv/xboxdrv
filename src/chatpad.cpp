@@ -185,8 +185,12 @@ Chatpad::read_thread()
   while(!m_quit_thread)
   {
     int len = 0;
-    libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 6,
-                              data, sizeof(data), &len, 0);
+    int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 6,
+                                        data, sizeof(data), &len, 0);
+    if (ret != LIBUSB_SUCCESS)
+    {
+      throw std::runtime_error("-- failure --"); // FIXME
+    }
 
     if (len < 0)
     {
