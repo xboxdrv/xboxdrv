@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOX360_CONTROLLER_HPP
 #define HEADER_XBOX360_CONTROLLER_HPP
 
-#include <usb.h>
+#include <libusb.h>
 #include "xbox_generic_controller.hpp"
 
 class Chatpad;
@@ -30,9 +30,9 @@ struct XPadDevice;
 class Xbox360Controller : public XboxGenericController
 {
 private:
-  struct usb_device* dev;
+  libusb_device* dev;
   XPadDevice*        dev_type;
-  struct usb_dev_handle* handle;
+  struct libusb_device_handle* handle;
   
   int endpoint_in;
   int endpoint_out;
@@ -44,7 +44,7 @@ private:
   void find_endpoints();
 
 public:
-  Xbox360Controller(struct usb_device* dev, 
+  Xbox360Controller(libusb_device* dev, 
                     bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
                     bool headset, 
                     bool headset_debug, 

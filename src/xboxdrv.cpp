@@ -33,7 +33,7 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
-#include <usb.h>
+#include <libusb.h>
 
 #include "modifier/autofire_modifier.hpp"
 #include "modifier/axis_sensitivty_modifier.hpp"
@@ -112,10 +112,20 @@ void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_
 void
 Xboxdrv::run_list_controller()
 {
-  usb_init();
-  usb_find_busses();
-  usb_find_devices();
+  int ret = libusb_init(&m_libusb_ctx);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    throw std::runtime_error("-- failure --"); // FIXME
+  }
 
+  //FIXME:usb_find_busses();
+  //FIXME:usb_find_devices();
+
+  //libusb_device* list;
+  //ssize_t libusb_get_device_list(m_libusb_ctx, libusb_device*** list);
+  //libusb_free_device_list(libusb_device** list, int unref_devices);
+
+#ifdef LIBUSB_OLD_VERSION
   struct usb_bus* busses = usb_get_busses();
 
   int id = 0;
@@ -123,7 +133,7 @@ Xboxdrv::run_list_controller()
   std::cout << "----+-----+----------+-----------+--------------------------------------" << std::endl;
   for (struct usb_bus* bus = busses; bus; bus = bus->next)
   {
-    for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+    for (libusb_device* dev = bus->devices; dev; dev = dev->next) 
     {
       for(int i = 0; i < xpad_devices_count; ++i)
       {
@@ -163,18 +173,21 @@ Xboxdrv::run_list_controller()
 
   if (id == 0)
     std::cout << "\nNo controller detected" << std::endl; 
+#endif
+
 }
 
 bool
-Xboxdrv::find_controller_by_path(const std::string& busid, const std::string& devid,struct usb_device** xbox_device) const
+Xboxdrv::find_controller_by_path(const std::string& busid, const std::string& devid,libusb_device** xbox_device) const
 {
+#ifdef LIBUSB_OLD_VERSION
   struct usb_bus* busses = usb_get_busses();
 
   for (struct usb_bus* bus = busses; bus; bus = bus->next)
   {
     if (bus->dirname == busid)
     {
-      for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+      for (libusb_device* dev = bus->devices; dev; dev = dev->next) 
       {
         if (dev->filename == devid)
         {
@@ -184,6 +197,7 @@ Xboxdrv::find_controller_by_path(const std::string& busid, const std::string& de
       }
     }
   }
+#endif
   return 0;
 }
 
@@ -220,14 +234,15 @@ Xboxdrv::find_evdev_number() const
 }
 
 bool
-Xboxdrv::find_controller_by_id(int id, int vendor_id, int product_id, struct usb_device** xbox_device) const
+Xboxdrv::find_controller_by_id(int id, int vendor_id, int product_id, libusb_device** xbox_device) const
 {
+#ifdef LIBUSB_OLD_VERSION
   struct usb_bus* busses = usb_get_busses();
 
   int id_count = 0;
   for (struct usb_bus* bus = busses; bus; bus = bus->next)
   {
-    for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+    for (libusb_device* dev = bus->devices; dev; dev = dev->next) 
     {
       if (dev->descriptor.idVendor  == vendor_id &&
           dev->descriptor.idProduct == product_id)
@@ -245,19 +260,20 @@ Xboxdrv::find_controller_by_id(int id, int vendor_id, int product_id, struct usb
       }
     }
   }
-  return 0;
-  
+#endif
+  return 0;  
 }
 
 bool
-Xboxdrv::find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice* type) const
+Xboxdrv::find_xbox360_controller(int id, libusb_device** xbox_device, XPadDevice* type) const
 {
+#ifdef LIBUSB_OLD_VERSION
   struct usb_bus* busses = usb_get_busses();
 
   int id_count = 0;
   for (struct usb_bus* bus = busses; bus; bus = bus->next)
   {
-    for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+    for (libusb_device* dev = bus->devices; dev; dev = dev->next) 
     {
       if (0)
         std::cout << (boost::format("UsbDevice: idVendor: 0x%04x idProduct: 0x%04x")
@@ -285,6 +301,7 @@ Xboxdrv::find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDe
       }
     }
   }
+#endif
   return 0;
 }
 
@@ -452,7 +469,7 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
 }
 
 void
-Xboxdrv::find_controller(struct usb_device*& dev,
+Xboxdrv::find_controller(libusb_device*& dev,
                          XPadDevice&         dev_type,
                          const Options& opts) const
 {
@@ -473,8 +490,13 @@ Xboxdrv::find_controller(struct usb_device*& dev,
       else
       {
         dev_type.type      = opts.gamepad_type;
+#ifdef LIBUSB_OLD_VERSION
+        int libusb_get_device_descriptor(libusb_device *dev,
+                                 struct libusb_device_descriptor *desc);
+
         dev_type.idVendor  = dev->descriptor.idVendor;
         dev_type.idProduct = dev->descriptor.idProduct;
+#endif
         dev_type.name      = "unknown";
       }
     }
@@ -548,11 +570,16 @@ Xboxdrv::run_main(const Options& opts)
   }
   else
   { // regular USB Xbox360 controller    
-    usb_init();
-    usb_find_busses();
-    usb_find_devices();
+    int ret = libusb_init(&m_libusb_ctx);
+    if (ret != LIBUSB_SUCCESS)
+    {
+      throw std::runtime_error("-- failure --"); // FIXME
+    }
+
+    //FIXME:usb_find_busses();
+    //FIXME:usb_find_devices();
     
-    struct usb_device* dev      = 0;
+    libusb_device* dev = 0;
   
     find_controller(dev, dev_type, opts);
 
@@ -678,10 +705,11 @@ Xboxdrv::run_main(const Options& opts)
 }
 
 void
-Xboxdrv::print_info(struct usb_device* dev,
+Xboxdrv::print_info(libusb_device* dev,
                     const XPadDevice& dev_type,
                     const Options& opts) const
 {
+#ifdef LIBUSB_OLD_VERSION
   std::cout << "USB Device:        " << dev->bus->dirname << ":" << dev->filename << std::endl;
   std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
     % dev_type.name % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct) << std::endl;
@@ -696,6 +724,7 @@ Xboxdrv::print_info(struct usb_device* dev,
     std::cout << "LED Status:        " << "auto" << std::endl;
   else
     std::cout << "LED Status:        " << opts.led << std::endl;
+#endif
 
   std::cout << "Square Axis:       " << ((opts.square_axis) ? "yes" : "no") << std::endl;
   std::cout << "4-Way Restrictor:  " << ((opts.four_way_restrictor) ? "yes" : "no") << std::endl;
@@ -844,6 +873,19 @@ Xboxdrv::run_daemon(const Options& opts)
   run_main(opts);
 }
 
+Xboxdrv::Xboxdrv() :
+  m_libusb_ctx(0)
+{
+}
+
+Xboxdrv::~Xboxdrv()
+{
+  if (m_libusb_ctx)
+  {
+    libusb_exit(m_libusb_ctx);
+  }
+}
+
 int
 Xboxdrv::main(int argc, char** argv)
 {

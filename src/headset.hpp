@@ -19,14 +19,14 @@
 #ifndef HEADER_XBOXDRV_HEADSET_HPP
 #define HEADER_XBOXDRV_HEADSET_HPP
 
+#include <libusb.h>
 #include <memory>
-#include <usb.h>
 #include <boost/thread.hpp>
 
 class Headset
 {
 private:
-  struct usb_dev_handle* m_handle;
+  struct libusb_device_handle* m_handle;
   std::auto_ptr<boost::thread> m_read_thread;
   std::auto_ptr<boost::thread> m_write_thread;
 
@@ -34,7 +34,7 @@ private:
   bool m_quit_write_thread;
 
 public:
-  Headset(struct usb_dev_handle* handle, 
+  Headset(struct libusb_device_handle* handle, 
           bool debug,
           const std::string& dump_filename,
           const std::string& play_filename);

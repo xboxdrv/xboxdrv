@@ -19,21 +19,21 @@
 #ifndef HEADER_SAITEK_P2500_CONTROLLER_HPP
 #define HEADER_SAITEK_P2500_CONTROLLER_HPP
 
-#include <usb.h>
+#include <libusb.h>
 #include "xboxmsg.hpp"
 #include "xbox_generic_controller.hpp"
 
 class SaitekP2500Controller : public XboxGenericController
 {
 private:
-  struct usb_device* dev;
-  struct usb_dev_handle* handle;
+  libusb_device* dev;
+  struct libusb_device_handle* handle;
   
   int left_rumble;
   int right_rumble;
 
 public:
-  SaitekP2500Controller(struct usb_device* dev, bool try_detach);
+  SaitekP2500Controller(libusb_device* dev, bool try_detach);
   ~SaitekP2500Controller();
 
   void set_rumble(uint8_t left, uint8_t right);

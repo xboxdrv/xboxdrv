@@ -20,11 +20,11 @@
 #include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
 #include <string.h>
-#include <usb.h>
+#include <libusb.h>
 
 #include "usb_read_thread.hpp"
 
-USBReadThread::USBReadThread(struct usb_dev_handle* handle, int endpoint, int len) : 
+USBReadThread::USBReadThread(struct libusb_device_handle* handle, int endpoint, int len) : 
   m_handle(handle),
   m_read_endpoint(endpoint),
   m_read_length(len),
@@ -86,16 +86,19 @@ USBReadThread::run()
   
   while(!m_stop)
   {
-    int ret = usb_interrupt_read(m_handle, m_read_endpoint, reinterpret_cast<char*>(data.get()), m_read_length, 0 /*timeout*/);
+    int len = 0;
+    int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | m_read_endpoint, 
+                                        reinterpret_cast<uint8_t*>(data.get()), m_read_length, 
+                                        &len, 0 /*timeout*/);
 
-    if (ret != 0)
+    if (ret != LIBUSB_SUCCESS)
     {
       boost::mutex::scoped_lock lock(m_read_buffer_mutex);
 
       Paket paket;
 
       paket.data   = data;
-      paket.length = ret;
+      paket.length = len;
 
       m_read_buffer.push(paket);
           

@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <usb.h>
+#include <libusb.h>
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
@@ -31,7 +31,7 @@
 #include "xbox360_wireless_controller.hpp"
 #include "xboxmsg.hpp"
 
-Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev_, int controller_id, 
+Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev_, int controller_id, 
                                                      bool try_detach) :
   dev(dev_),
   handle(),
@@ -48,8 +48,8 @@ Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev_, in
   endpoint  = controller_id*2 + 1;
   interface = controller_id*2;
 
-  handle = usb_open(dev);
-  if (!handle)
+  const int ret = libusb_open(dev, &handle);
+  if (ret != LIBUSB_SUCCESS)
   {
     throw std::runtime_error("Xbox360WirelessController: Error opening Xbox360 controller");
   }
@@ -59,7 +59,7 @@ Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev_, in
     if (err != 0) 
     {
       std::ostringstream out;
-      out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
+      out << "Error couldn't claim the USB interface: " << usb_strerror(err) << std::endl
           << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
       throw std::runtime_error(out.str());
     }
@@ -72,8 +72,8 @@ Xbox360WirelessController::Xbox360WirelessController(struct usb_device* dev_, in
 Xbox360WirelessController::~Xbox360WirelessController()
 {
   read_thread->stop_thread();
-  usb_release_interface(handle, interface); 
-  usb_close(handle);
+  libusb_release_interface(handle, interface); 
+  libusb_close(handle);
 }
 
 void
@@ -82,7 +82,13 @@ Xbox360WirelessController::set_rumble(uint8_t left, uint8_t right)
   //                                       +-- typo? might be 0x0c, i.e. length
   //                                       v
   uint8_t rumblecmd[] = { 0x00, 0x01, 0x0f, 0xc0, 0x00, left, right, 0x00, 0x00, 0x00, 0x00, 0x00 };
-  usb_interrupt_write(handle, endpoint, reinterpret_cast<char*>(rumblecmd), sizeof(rumblecmd), 0);
+  int transferred = 0;
+  int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_OUT | endpoint,
+                                      rumblecmd, sizeof(rumblecmd), &transferred, 0);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    throw std::runtime_error("-- failure --"); // FIXME
+  }
 }
 
 void
@@ -91,8 +97,14 @@ Xbox360WirelessController::set_led(uint8_t status)
   led_status = status;
   //                                +--- Why not just status?
   //                                v
-  char ledcmd[] = { 0x00, 0x00, 0x08, 0x40 + (status % 0x0e), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-  usb_interrupt_write(handle, endpoint, ledcmd, sizeof(ledcmd), 0);
+  uint8_t ledcmd[] = { 0x00, 0x00, 0x08, 0x40 + (status % 0x0e), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+  int transferred = 0;
+  int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_OUT | endpoint, 
+                                ledcmd, sizeof(ledcmd), &transferred, 0);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    throw std::runtime_error("-- failure --"); // FIXME:
+  }
 }
 
 bool
@@ -100,6 +112,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   uint8_t data[32];
   int ret = 0;
+  int len = 0;
 
   if (read_thread.get())
   {
@@ -107,20 +120,22 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else
   {
-    ret = usb_interrupt_read(handle, endpoint, reinterpret_cast<char*>(data), sizeof(data), timeout);
+    ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_OUT | endpoint, 
+                                    data, sizeof(data), 
+                                    &len, timeout);
   }
 
-  if (ret == -ETIMEDOUT)
+  if (ret == LIBUSB_ERROR_TIMEOUT)
   {
     return false;
   }
-  else  if (ret < 0)
+  else  if (ret != LIBUSB_SUCCESS)
   { // Error
     std::ostringstream str;
-    str << "USBError: " << ret << "\n" << usb_strerror();
+    str << "USBError: " << ret << "\n" << usb_strerror(ret);
     throw std::runtime_error(str.str());
   }
-  else if (ret == 2 && data[0] == 0x08) 
+  else if (len == 2 && data[0] == 0x08) 
   { // Connection Status Message
     if (data[1] == 0x00) 
     {
@@ -145,7 +160,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
       std::cout << "Connection status: unknown" << std::endl;
     }
   }
-  else if (ret == 29)
+  else if (len == 29)
   {
     if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
     { // Initial Announc Message
@@ -180,17 +195,17 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
     else
     {
       std::cout << "Unknown: ";
-      print_raw_data(std::cout, data, ret);
+      print_raw_data(std::cout, data, len);
     }
   }
-  else if (ret == 0)
+  else if (len == 0)
   {
     // ignore
   }
   else
   {
     std::cout << "Unknown: ";
-    print_raw_data(std::cout, data, ret);
+    print_raw_data(std::cout, data, len);
   }
 
   return false;

@@ -29,7 +29,7 @@
 class USBReadThread
 {
 private:
-  struct usb_dev_handle* m_handle;
+  struct libusb_device_handle* m_handle;
   const int m_read_endpoint;
   const int m_read_length;
 
@@ -67,7 +67,7 @@ private:
   bool m_stop;
 
 public:
-  USBReadThread(struct usb_dev_handle* handle, int endpoint, int len);
+  USBReadThread(struct libusb_device_handle* handle, int endpoint, int len);
   ~USBReadThread();
 
   int read(uint8_t* data, int len, int timeout);

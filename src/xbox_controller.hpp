@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOX_CONTROLLER_HPP
 #define HEADER_XBOX_CONTROLLER_HPP
 
-#include <usb.h>
+#include <libusb.h>
 
 #include "xbox_generic_controller.hpp"
 
@@ -28,8 +28,8 @@ struct XPadDevice;
 class XboxController : public XboxGenericController
 {
 private:
-  struct usb_device* dev;
-  struct usb_dev_handle* handle;
+  libusb_device* dev;
+  struct libusb_device_handle* handle;
 
   int endpoint_in;
   int endpoint_out;
@@ -37,7 +37,7 @@ private:
   void find_endpoints();
 
 public:
-  XboxController(struct usb_device* dev, bool try_detach);
+  XboxController(libusb_device* dev, bool try_detach);
   virtual ~XboxController();
 
   void set_rumble(uint8_t left, uint8_t right);

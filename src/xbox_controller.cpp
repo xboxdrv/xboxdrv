@@ -18,6 +18,7 @@
 
 #include <errno.h>
 #include <iostream>
+#include <libusb.h>
 #include <sstream>
 #include <stdexcept>
 #include <string.h>
@@ -26,15 +27,15 @@
 #include "xboxmsg.hpp"
 #include "xbox_controller.hpp"
 
-XboxController::XboxController(struct usb_device* dev_, bool try_detach) :
+XboxController::XboxController(libusb_device* dev_, bool try_detach) :
   dev(dev_),
   handle(),
   endpoint_in(1),
   endpoint_out(2)
 {
   find_endpoints();
-  handle = usb_open(dev);
-  if (!handle)
+  int ret = libusb_open(dev, &handle);
+  if (ret != LIBUSB_SUCCESS)
   {
     throw std::runtime_error("Error opening Xbox360 controller");
   }
@@ -54,13 +55,14 @@ XboxController::XboxController(struct usb_device* dev_, bool try_detach) :
 
 XboxController::~XboxController()
 {
-  usb_release_interface(handle, 0); 
-  usb_close(handle);
+  libusb_release_interface(handle, 0); 
+  libusb_close(handle);
 }
 
 void
 XboxController::find_endpoints()
 {
+#ifdef LIBUSB_OLD_VERSION
   bool debug_print = false;
 
   for(struct usb_config_descriptor* config = dev->config;
@@ -105,13 +107,20 @@ XboxController::find_endpoints()
       }
     }
   }
+#endif
 }
 
 void
 XboxController::set_rumble(uint8_t left, uint8_t right)
 {
-  char rumblecmd[] = { 0x00, 0x06, 0x00, left, 0x00, right };
-  usb_interrupt_write(handle, endpoint_out, rumblecmd, sizeof(rumblecmd), 0);
+  uint8_t rumblecmd[] = { 0x00, 0x06, 0x00, left, 0x00, right };
+  int transferred = 0;
+  int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_OUT | endpoint_out, 
+                                      rumblecmd, sizeof(rumblecmd), &transferred, 0);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    throw std::runtime_error("-- failure -- "); // FIXME
+  }
 }
 
 void
@@ -125,25 +134,30 @@ XboxController::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   // FIXME: Add tracking for duplicate data packages (send by logitech controller)
   uint8_t data[32];
-  int ret = usb_interrupt_read(handle, endpoint_in, reinterpret_cast<char*>(data), sizeof(data), timeout);
+  int len = 0;
+  int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | endpoint_in,
+                                      data, sizeof(data), &len, timeout);
 
-  if (ret == -ETIMEDOUT)
+  if (ret == LIBUSB_ERROR_TIMEOUT)
   {
     return false;
   }
-  else if (ret < 0)
+  else if (ret != LIBUSB_SUCCESS)
   { // Error
     std::ostringstream str;
-    str << "USBError: " << ret << "\n" << usb_strerror();
+    str << "USBError: " << ret << "\n" << usb_strerror(ret);
     throw std::runtime_error(str.str());
   }
-  else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
+  else if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
   {
     msg.type = XBOX_MSG_XBOX;
     memcpy(&msg.xbox, data, sizeof(XboxMsg));
     return true;
   }
-  return false;
+  else
+  {
+    return false;
+  }
 }
 
 /* EOF */
