@@ -1,7 +1,8 @@
-xboxdrv 0.6.4 - (??/???/2011)
+xboxdrv 0.6.4 - (13/Jan/2011)
 =============================
 
-
+* fixed bug that disabled all axis when a button was pressed
+* fixed some missing include
 
 
 xboxdrv 0.6.3 - (10/Jan/2011)
