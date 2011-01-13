@@ -118,27 +118,25 @@ Xboxdrv::run_list_controller()
     throw std::runtime_error("-- failure --"); // FIXME
   }
 
-  //FIXME:usb_find_busses();
-  //FIXME:usb_find_devices();
-
-  //libusb_device* list;
-  //ssize_t libusb_get_device_list(m_libusb_ctx, libusb_device*** list);
-  //libusb_free_device_list(libusb_device** list, int unref_devices);
-
-#ifdef LIBUSB_OLD_VERSION
-  struct usb_bus* busses = usb_get_busses();
+  libusb_device** list;
+  ssize_t num_devices = libusb_get_device_list(m_libusb_ctx, &list);
 
   int id = 0;
   std::cout << " id | wid | idVendor | idProduct | Name" << std::endl;
   std::cout << "----+-----+----------+-----------+--------------------------------------" << std::endl;
-  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+
+  for(ssize_t dev_it = 0; dev_it < num_devices; ++dev_it)
   {
-    for (libusb_device* dev = bus->devices; dev; dev = dev->next) 
+    libusb_device* dev = list[dev_it];
+    libusb_device_descriptor desc;
+
+    // FIXME: we silently ignore failures
+    if (libusb_get_device_descriptor(dev, &desc) == LIBUSB_SUCCESS)
     {
       for(int i = 0; i < xpad_devices_count; ++i)
       {
-        if (dev->descriptor.idVendor  == xpad_devices[i].idVendor &&
-            dev->descriptor.idProduct == xpad_devices[i].idProduct)
+        if (desc.idVendor  == xpad_devices[i].idVendor &&
+            desc.idProduct == xpad_devices[i].idProduct)
         {
           if (xpad_devices[i].type == GAMEPAD_XBOX360_WIRELESS)
           {
@@ -173,8 +171,8 @@ Xboxdrv::run_list_controller()
 
   if (id == 0)
     std::cout << "\nNo controller detected" << std::endl; 
-#endif
 
+  libusb_free_device_list(list, 1 /* unref_devices */);
 }
 
 bool
