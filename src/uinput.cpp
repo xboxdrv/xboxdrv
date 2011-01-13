@@ -475,25 +475,33 @@ uInput::send_rel_repetitive(const UIEvent& code, int value, int repeat_interval)
 void
 uInput::send_axis(XboxAxis code, int32_t value)
 {
-  AxisEventPtr ev      = cfg.get_axis_map().lookup(code);
+  AxisEventPtr ev = cfg.get_axis_map().lookup(code);
   AxisEventPtr last_ev = ev;
 
   // find the curren AxisEvent bound to current axis code
   for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
-  {    
+  {
     if (button_state[shift])
     {
-      ev = cfg.get_axis_map().lookup(static_cast<XboxButton>(shift), code);
+      AxisEventPtr new_ev = cfg.get_axis_map().lookup(static_cast<XboxButton>(shift), code);
+      if (new_ev)
+      {
+        ev = new_ev;
+      }
       break;
     }
   }
-
+  
   // find the last AxisEvent bound to current axis code
   for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
   {    
     if (last_button_state[shift])
     {
-      last_ev = cfg.get_axis_map().lookup(static_cast<XboxButton>(shift), code);
+      AxisEventPtr new_ev = cfg.get_axis_map().lookup(static_cast<XboxButton>(shift), code);
+      if (new_ev)
+      {
+        last_ev = new_ev;
+      }
       break;
     }
   }
