@@ -69,7 +69,7 @@ XboxController::find_endpoints()
     throw std::runtime_error("-- failure --"); // FIXME
   }
 
-  bool debug_print = true;
+  bool debug_print = false;
 
   // FIXME: no need to search all interfaces, could just check the one we acutally use
   for(const libusb_interface* interface = config->interface;

@@ -31,7 +31,7 @@ The development version can be optained via:
 Required libraries and tools:
 
  * g++ - GNU C++ Compiler
- * libusb
+ * libusb-1.0
  * boost
  * scons
  * uinput (userspace input kernel module)
@@ -43,14 +43,14 @@ Once everything installed, you can compile by typing:
 
  $ scons
 
-On Ubuntu 10.04 you can install all the required libraries via:
+On Ubuntu 10.10 you can install all the required libraries via:
 
  $ sudo apt-get install \
      g++ \
-     libboost1.40-dev \
-     libboost-thread1.40-dev \
+     libboost1.42-dev \
+     libboost-thread1.42-dev \
      scons \
-     libusb-dev \
+     libusb-1.0-0-dev \
      git-core \
      libx11-dev \
      x11proto-core-dev \

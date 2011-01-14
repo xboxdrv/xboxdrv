@@ -180,6 +180,11 @@ Chatpad::set_led(unsigned int led, bool state)
     {
       send_ctrl(0x41, 0x00, 0x0000, 0x0002, NULL, 0);
     }
+    else if (led == CHATPAD_LED_BACKLIGHT)
+    {
+      // backlight goes on automatically, so we only provide a switch to disable it
+      send_ctrl(0x41, 0x00, 0x0004, 0x0002, NULL, 0);
+    }
   }
 }
 
@@ -256,11 +261,6 @@ Chatpad::process(const ChatpadKeyMsg& msg)
     {
       if (m_state[i])
       {
-        if (i == CHATPAD_KEY_1)
-        {
-          send_ctrl(0x41, 0x00, 0x0004, 0x0002, NULL, 0);
-        }
-
         if (i == CHATPAD_MOD_PEOPLE)
         {
           set_led(CHATPAD_LED_PEOPLE, !get_led(CHATPAD_LED_PEOPLE));
