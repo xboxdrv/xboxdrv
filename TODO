@@ -41,15 +41,6 @@ $ dput my-ppa xboxdrv_0.6.4_source.changes
 Stuff to do before 0.6.5 release:
 =================================
 
-* added return value checking to:
-
-  libusb_open [done]
-  libusb_interrupt_transfer [done]
-  libusb_control_transfer
-  make sure libusb_control_transfer has proper endpoint number
-
-  cleanup #ifdef LIBUSB_OLD_VERSION
-
 * improve output on which uinput devices are created
 
 * add --list-keys --list-x11-keys --list-abs --list-rel --list-button --list-axis etc.

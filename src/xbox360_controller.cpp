@@ -86,49 +86,23 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
     }
   }
 
-#ifdef LIBUSB_OLD_VERSION
-  if (0)
-  {
-    uint8_t arr[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128, 255 };
-    for (int len = 3; len <= 8; ++len)
-    {
-      // Sending random data:
-      for (int front = 0; front < 256; ++front)
-      {
-        for (size_t i = 0; i < sizeof(arr); ++i)
-        {
-          uint8_t ledcmd[] = { front, len, arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i] }; 
-          printf("%d %d %d\n", len, front, arr[i]);
-          int transferred = 0;
-          
-          int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_OUT | endpoint_out, 
-                                              ledcmd, len, &transferred, 0);
-
-          if (ret != LIBUSB_SUCCESS)
-          {
-            throw std::runtime_error("--- failure ---"); // FIXME
-          }
-
-          uint8_t data[32];
-          int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | endpoint_in, 
-                                              reinterpret_cast<char*>(data), sizeof(data), 20);
-          print_raw_data(std::cout, data, ret);
-        }
-      }
-    }
-  }
-#endif
-
   read_thread.reset(new USBReadThread(handle, endpoint_in, 32));
   read_thread->start_thread();
 
   if (chatpad)
   {
-#ifdef LIBUSB_OLD_VERSION
-    m_chatpad.reset(new Chatpad(handle, dev->descriptor.bcdDevice, chatpad_no_init, chatpad_debug));
-    m_chatpad->send_init();
-    m_chatpad->start_threads();
-#endif
+    libusb_device_descriptor desc;
+
+    if (libusb_get_device_descriptor(dev, &desc) == LIBUSB_SUCCESS)
+    {
+      m_chatpad.reset(new Chatpad(handle, desc.bcdDevice, chatpad_no_init, chatpad_debug));
+      m_chatpad->send_init();
+      m_chatpad->start_threads();
+    }
+    else
+    {
+      throw std::runtime_error("-- failure --"); // FIXME
+    }
   }
 
   if (headset)
@@ -167,6 +141,7 @@ Xbox360Controller::find_endpoints()
 
   bool debug_print = true;
 
+  // FIXME: no need to search all interfaces, could just check the one we acutally use
   for(const libusb_interface* interface = config->interface;
       interface != config->interface + config->bNumInterfaces;
       ++interface)

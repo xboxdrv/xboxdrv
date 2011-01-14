@@ -158,6 +158,8 @@ public:
 private:
   void read_thread();
   void keep_alive_thread();
+  void send_ctrl(uint8_t request_type, uint8_t request, uint16_t value, uint16_t index,
+                 uint8_t* data, uint16_t length);
 
 private:
   Chatpad(const Chatpad&);

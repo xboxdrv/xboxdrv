@@ -719,10 +719,18 @@ Xboxdrv::print_info(libusb_device* dev,
                     const XPadDevice& dev_type,
                     const Options& opts) const
 {
-#ifdef LIBUSB_OLD_VERSION
-  std::cout << "USB Device:        " << dev->bus->dirname << ":" << dev->filename << std::endl;
+  libusb_device_descriptor desc;
+
+  if (libusb_get_device_descriptor(dev, &desc) != LIBUSB_SUCCESS)
+  {
+    throw std::runtime_error("-- failure --"); // FIXME
+  }
+
+  std::cout << "USB Device:        " << boost::format("%03d:%03d:") 
+    % static_cast<int>(libusb_get_bus_number(dev))
+    % static_cast<int>(libusb_get_device_address(dev)) << std::endl;
   std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
-    % dev_type.name % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct) << std::endl;
+    % dev_type.name % uint16_t(desc.idVendor) % uint16_t(desc.idProduct) << std::endl;
   if (dev_type.type == GAMEPAD_XBOX360_WIRELESS)
     std::cout << "Wireless Port:     " << opts.wireless_id << std::endl;
   std::cout << "Controller Type:   " << dev_type.type << std::endl;
@@ -734,7 +742,6 @@ Xboxdrv::print_info(libusb_device* dev,
     std::cout << "LED Status:        " << "auto" << std::endl;
   else
     std::cout << "LED Status:        " << opts.led << std::endl;
-#endif
 
   std::cout << "Square Axis:       " << ((opts.square_axis) ? "yes" : "no") << std::endl;
   std::cout << "4-Way Restrictor:  " << ((opts.four_way_restrictor) ? "yes" : "no") << std::endl;
