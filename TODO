@@ -42,6 +42,8 @@ $ dput my-ppa ../xboxdrv_0.6.4-2~lucid1_source.changes
 Stuff to do before 0.6.5 release:
 =================================
 
+* add analog emulation for button (i.e. the longer its pressed, the higher the value)
+
 * uinput must be made threadsafe
 
 * write/recycle a proper logging class

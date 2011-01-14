@@ -299,8 +299,9 @@ XboxdrvDaemon::launch_xboxdrv(uInput* uinput, const XPadDevice& dev_type, const 
     std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
    
     // FIXME: keep these collected somewhere
-    XboxdrvThread* loop = new XboxdrvThread();
-    loop->launch_thread(dev_type.type, uinput, controller.release(), opts);
+    std::auto_ptr<XboxdrvThread> loop(new XboxdrvThread(controller));
+    loop->launch_thread(dev_type.type, uinput, opts);
+    m_threads.push_back(loop.release());
   }
 }
 

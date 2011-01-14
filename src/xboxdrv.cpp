@@ -487,8 +487,8 @@ Xboxdrv::run_main(const Options& opts)
 
     global_exit_xboxdrv = false;
 
-    XboxdrvThread loop;
-    loop.controller_loop(dev_type.type, uinput.get(), controller.get(), opts);
+    XboxdrvThread loop(controller);
+    loop.controller_loop(dev_type.type, uinput.get(), opts);
           
     if (!opts.quiet) 
       std::cout << "Shutdown complete" << std::endl;

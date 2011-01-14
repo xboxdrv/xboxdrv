@@ -21,16 +21,19 @@
 
 #include <libudev.h>
 #include <stdint.h>
+#include <vector>
 
 class Options;
 class uInput;
 struct XPadDevice;
+class XboxdrvThread;
 
 class XboxdrvDaemon
 {
 private:
   struct udev* m_udev;
   struct udev_monitor* m_monitor;
+  std::vector<XboxdrvThread*> m_threads;
 
 public:
   XboxdrvDaemon();

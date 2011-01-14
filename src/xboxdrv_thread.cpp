@@ -27,6 +27,7 @@
 #include <assert.h>
 
 #include "helper.hpp"
+#include "log.hpp"
 #include "modifier.hpp"
 #include "options.hpp"
 #include "uinput.hpp"
@@ -48,8 +49,19 @@ extern bool global_exit_xboxdrv;
 // FIXME: isolate problametic code to a separate file, instead of pragma
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
-XboxdrvThread::XboxdrvThread()
+XboxdrvThread::XboxdrvThread(std::auto_ptr<XboxGenericController> controller) :
+  m_controller(controller)
 {
+}
+
+XboxdrvThread::~XboxdrvThread()
+{
+  if (m_thread.get())
+  {
+    log_info << "waiting for thread to join: " << m_thread->get_id() << std::endl;
+    m_thread->join();
+    log_info << "joined thread: " << m_thread->get_id() << std::endl;
+  }
 }
 
 // FIXME: duplicate code
@@ -66,8 +78,7 @@ void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_
 } // namespace
 
 void
-XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, XboxGenericController* controller, 
-                               const Options& opts)
+XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& opts)
 {
   int timeout = 0; // 0 == no timeout
   XboxGenericMsg oldmsg; // last data send to uinput
@@ -136,11 +147,11 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, XboxGenericCont
   }
 
   uint32_t last_time = get_time();
-  while(!global_exit_xboxdrv)
+  while(!global_exit_xboxdrv) // FIXME: should not directly depend on global_exit_xboxdrv
   {
     XboxGenericMsg msg;
 
-    if (controller->read(msg, opts.verbose, timeout))
+    if (m_controller->read(msg, opts.verbose, timeout))
     {
       oldrealmsg = msg;
     }
@@ -178,17 +189,17 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, XboxGenericCont
       {
         if (type == GAMEPAD_XBOX)
         {
-          set_rumble(controller, opts.rumble_gain, msg.xbox.lt, msg.xbox.rt);
+          set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox.lt, msg.xbox.rt);
         }
         else if (type == GAMEPAD_XBOX360 ||
                  type == GAMEPAD_XBOX360_WIRELESS)
         {
-          set_rumble(controller, opts.rumble_gain, msg.xbox360.lt, msg.xbox360.rt);
+          set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox360.lt, msg.xbox360.rt);
         }
         else if (type == GAMEPAD_FIRESTORM ||
                  type == GAMEPAD_FIRESTORM_VSB)
         {
-          set_rumble(controller, opts.rumble_gain,
+          set_rumble(m_controller.get(), opts.rumble_gain,
                      std::min(255, abs((msg.xbox360.y1>>8)*2)), 
                      std::min(255, abs((msg.xbox360.y2>>8)*2)));
         }
@@ -230,12 +241,11 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, XboxGenericCont
 }
 
 void
-XboxdrvThread::launch_thread(GamepadType type, uInput* uinput, XboxGenericController* controller, 
-                             const Options& opts)
+XboxdrvThread::launch_thread(GamepadType type, uInput* uinput, const Options& opts)
 {
   assert(m_thread.get() == 0);
   m_thread.reset(new boost::thread(boost::bind(&XboxdrvThread::controller_loop, this, 
-                                               type, uinput, controller, boost::cref(opts))));
+                                               type, uinput, boost::cref(opts))));
 }
 
 /* EOF */
