@@ -23,6 +23,8 @@
 #include <libusb.h>
 #include <iostream>
 
+#include "log.hpp"
+#include "usb_helper.hpp"
 #include "usb_read_thread.hpp"
 
 USBReadThread::USBReadThread(struct libusb_device_handle* handle, int endpoint, int len) : 
@@ -107,6 +109,11 @@ USBReadThread::run()
       m_read_buffer_cond.notify_one();
 
       data = boost::shared_array<uint8_t>(new uint8_t[m_read_length]);
+    }
+    else
+    {
+      log_error << "error while reading from USB: " << usb_strerror(ret) << std::endl;
+      m_stop = true;
     }
   }
 }
