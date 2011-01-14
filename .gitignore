@@ -14,3 +14,6 @@ old
 .sconf_temp/
 arg_parser_test
 config.log
+doc/xboxdrv-daemon.html/
+doc/xboxdrv.html/
+doc/xboxdrv.ent
