@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <memory>
 #include <boost/thread.hpp>
+#include <libusb.h>
 
 class LinuxUinput;
 
@@ -126,7 +127,7 @@ private:
   } __attribute__((__packed__));
 
 private:
-  struct usb_dev_handle* m_handle;
+  libusb_device_handle* m_handle;
   uint16_t m_bcdDevice;
   bool m_no_init;
   bool m_debug;
@@ -141,7 +142,7 @@ private:
   unsigned int m_led_state;
 
 public:
-  Chatpad(struct usb_dev_handle* handle, uint16_t bcdDevice,
+  Chatpad(struct libusb_device_handle* handle, uint16_t bcdDevice,
           bool no_init, bool debug);
   ~Chatpad();
 
@@ -157,6 +158,8 @@ public:
 private:
   void read_thread();
   void keep_alive_thread();
+  void send_ctrl(uint8_t request_type, uint8_t request, uint16_t value, uint16_t index,
+                 uint8_t* data, uint16_t length);
 
 private:
   Chatpad(const Chatpad&);

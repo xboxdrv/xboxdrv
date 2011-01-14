@@ -1,6 +1,6 @@
 # -*- python -*-
 
-if True:
+if False:
     env = Environment(CPPFLAGS=['-g', '-O2', '-Wall', '-ansi', '-pedantic'],
                       CPPPATH=["src/"])
 else:
@@ -21,6 +21,8 @@ else:
                                   "-Wno-unused-parameter",
                                   ],
                       CPPPATH=["src/"])
+
+env.ParseConfig("pkg-config --cflags --libs libusb-1.0 | sed 's/-I/-isystem/g'")
 
 f = open("VERSION")
 package_version = f.read()

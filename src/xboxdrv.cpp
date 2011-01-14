@@ -33,7 +33,7 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
-#include <usb.h>
+#include <libusb.h>
 
 #include "modifier/autofire_modifier.hpp"
 #include "modifier/axis_sensitivty_modifier.hpp"
@@ -112,23 +112,31 @@ void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_
 void
 Xboxdrv::run_list_controller()
 {
-  usb_init();
-  usb_find_busses();
-  usb_find_devices();
+  int ret = libusb_init(&m_libusb_ctx);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    throw std::runtime_error("-- failure --"); // FIXME
+  }
 
-  struct usb_bus* busses = usb_get_busses();
+  libusb_device** list;
+  ssize_t num_devices = libusb_get_device_list(m_libusb_ctx, &list);
 
   int id = 0;
   std::cout << " id | wid | idVendor | idProduct | Name" << std::endl;
   std::cout << "----+-----+----------+-----------+--------------------------------------" << std::endl;
-  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+
+  for(ssize_t dev_it = 0; dev_it < num_devices; ++dev_it)
   {
-    for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+    libusb_device* dev = list[dev_it];
+    libusb_device_descriptor desc;
+
+    // FIXME: we silently ignore failures
+    if (libusb_get_device_descriptor(dev, &desc) == LIBUSB_SUCCESS)
     {
       for(int i = 0; i < xpad_devices_count; ++i)
       {
-        if (dev->descriptor.idVendor  == xpad_devices[i].idVendor &&
-            dev->descriptor.idProduct == xpad_devices[i].idProduct)
+        if (desc.idVendor  == xpad_devices[i].idVendor &&
+            desc.idProduct == xpad_devices[i].idProduct)
         {
           if (xpad_devices[i].type == GAMEPAD_XBOX360_WIRELESS)
           {
@@ -163,28 +171,37 @@ Xboxdrv::run_list_controller()
 
   if (id == 0)
     std::cout << "\nNo controller detected" << std::endl; 
+
+  libusb_free_device_list(list, 1 /* unref_devices */);
 }
 
 bool
-Xboxdrv::find_controller_by_path(const std::string& busid, const std::string& devid,struct usb_device** xbox_device) const
+Xboxdrv::find_controller_by_path(const std::string& busid_str, const std::string& devid_str, libusb_device** xbox_device) const
 {
-  struct usb_bus* busses = usb_get_busses();
+  int busid = boost::lexical_cast<int>(busid_str);
+  int devid = boost::lexical_cast<int>(devid_str);
 
-  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+  libusb_device** list;
+  ssize_t num_devices = libusb_get_device_list(m_libusb_ctx, &list);
+
+  for(ssize_t dev_it = 0; dev_it < num_devices; ++dev_it)
   {
-    if (bus->dirname == busid)
+    libusb_device* dev = list[dev_it];
+
+    if (libusb_get_bus_number(dev)     == busid &&
+        libusb_get_device_address(dev) == devid)
     {
-      for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
-      {
-        if (dev->filename == devid)
-        {
-          *xbox_device = dev;
-          return true;
-        }
-      }
+      *xbox_device = dev;
+
+      // incrementing ref count, user must call unref
+      libusb_ref_device(*xbox_device);
+      libusb_free_device_list(list, 1 /* unref_devices */);
+      return true;
     }
   }
-  return 0;
+
+  libusb_free_device_list(list, 1 /* unref_devices */);
+  return false;
 }
 
 /** find the number of the next unused /dev/input/jsX device */
@@ -220,72 +237,83 @@ Xboxdrv::find_evdev_number() const
 }
 
 bool
-Xboxdrv::find_controller_by_id(int id, int vendor_id, int product_id, struct usb_device** xbox_device) const
+Xboxdrv::find_controller_by_id(int id, int vendor_id, int product_id, libusb_device** xbox_device) const
 {
-  struct usb_bus* busses = usb_get_busses();
+  libusb_device** list;
+  ssize_t num_devices = libusb_get_device_list(m_libusb_ctx, &list);
 
   int id_count = 0;
-  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+  for(ssize_t dev_it = 0; dev_it < num_devices; ++dev_it)
   {
-    for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+    libusb_device* dev = list[dev_it];
+    libusb_device_descriptor desc;
+
+    // FIXME: we silently ignore failures
+    if (libusb_get_device_descriptor(dev, &desc) == LIBUSB_SUCCESS)
     {
-      if (dev->descriptor.idVendor  == vendor_id &&
-          dev->descriptor.idProduct == product_id)
+      if (desc.idVendor  == vendor_id &&
+          desc.idProduct == product_id)
       {
         if (id_count == id)
         {
           *xbox_device = dev;
+          // increment ref count, user must free the device
+          libusb_ref_device(*xbox_device);
+          libusb_free_device_list(list, 1 /* unref_devices */);
           return true;
         }
         else
         {
           id_count += 1;
-          break;
         }
       }
     }
   }
-  return 0;
-  
+
+  libusb_free_device_list(list, 1 /* unref_devices */);
+  return false;
 }
 
 bool
-Xboxdrv::find_xbox360_controller(int id, struct usb_device** xbox_device, XPadDevice* type) const
+Xboxdrv::find_xbox360_controller(int id, libusb_device** xbox_device, XPadDevice* type) const
 {
-  struct usb_bus* busses = usb_get_busses();
+  libusb_device** list;
+  ssize_t num_devices = libusb_get_device_list(m_libusb_ctx, &list);
 
   int id_count = 0;
-  for (struct usb_bus* bus = busses; bus; bus = bus->next)
+  for(ssize_t dev_it = 0; dev_it < num_devices; ++dev_it)
   {
-    for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
-    {
-      if (0)
-        std::cout << (boost::format("UsbDevice: idVendor: 0x%04x idProduct: 0x%04x")
-                      % int(dev->descriptor.idProduct)
-                      % int(dev->descriptor.idVendor))
-                  << std::endl;
+    libusb_device* dev = list[dev_it];
+    libusb_device_descriptor desc;
 
+    // FIXME: we silently ignore failures
+    if (libusb_get_device_descriptor(dev, &desc) == LIBUSB_SUCCESS)
+    {
       for(int i = 0; i < xpad_devices_count; ++i)
       {
-        if (dev->descriptor.idVendor  == xpad_devices[i].idVendor &&
-            dev->descriptor.idProduct == xpad_devices[i].idProduct)
+        if (desc.idVendor  == xpad_devices[i].idVendor &&
+            desc.idProduct == xpad_devices[i].idProduct)
         {
           if (id_count == id)
           {
             *xbox_device = dev;
             *type        = xpad_devices[i];
+            // increment ref count, user must free the device
+            libusb_ref_device(*xbox_device);
+            libusb_free_device_list(list, 1 /* unref_devices */);
             return true;
           }
           else
           {
             id_count += 1;
-            break;
           }
         }
       }
     }
   }
-  return 0;
+
+  libusb_free_device_list(list, 1 /* unref_devices */);
+  return false;
 }
 
 void
@@ -452,8 +480,8 @@ Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController
 }
 
 void
-Xboxdrv::find_controller(struct usb_device*& dev,
-                         XPadDevice&         dev_type,
+Xboxdrv::find_controller(libusb_device** dev,
+                         XPadDevice& dev_type,
                          const Options& opts) const
 {
   if (opts.busid[0] != '\0' && opts.devid[0] != '\0')
@@ -465,7 +493,7 @@ Xboxdrv::find_controller(struct usb_device*& dev,
     }
     else
     {
-      if (!find_controller_by_path(opts.busid, opts.devid, &dev))
+      if (!find_controller_by_path(opts.busid, opts.devid, dev))
       {
         std::cout << "Error: couldn't find device " << opts.busid << ":" << opts.devid << std::endl;
         exit(EXIT_FAILURE);
@@ -473,9 +501,13 @@ Xboxdrv::find_controller(struct usb_device*& dev,
       else
       {
         dev_type.type      = opts.gamepad_type;
-        dev_type.idVendor  = dev->descriptor.idVendor;
-        dev_type.idProduct = dev->descriptor.idProduct;
         dev_type.name      = "unknown";
+        libusb_device_descriptor desc;
+        if (libusb_get_device_descriptor(*dev, &desc) == LIBUSB_SUCCESS)
+        {
+          dev_type.idVendor  = desc.idVendor;
+          dev_type.idProduct = desc.idProduct;
+        }
       }
     }
   }
@@ -488,7 +520,7 @@ Xboxdrv::find_controller(struct usb_device*& dev,
     }
     else 
     {
-      if (!find_controller_by_id(opts.controller_id, opts.vendor_id, opts.product_id, &dev))
+      if (!find_controller_by_id(opts.controller_id, opts.vendor_id, opts.product_id, dev))
       {
         std::cout << "Error: couldn't find device with " 
                   << (boost::format("%04x:%04x") % opts.vendor_id % opts.product_id) 
@@ -506,7 +538,7 @@ Xboxdrv::find_controller(struct usb_device*& dev,
   }
   else
   {
-    if (!find_xbox360_controller(opts.controller_id, &dev, &dev_type))
+    if (!find_xbox360_controller(opts.controller_id, dev, &dev_type))
     {
       std::cout << "No Xbox or Xbox360 controller found" << std::endl;
       exit(EXIT_FAILURE);
@@ -548,13 +580,18 @@ Xboxdrv::run_main(const Options& opts)
   }
   else
   { // regular USB Xbox360 controller    
-    usb_init();
-    usb_find_busses();
-    usb_find_devices();
+    int ret = libusb_init(&m_libusb_ctx);
+    if (ret != LIBUSB_SUCCESS)
+    {
+      throw std::runtime_error("-- failure --"); // FIXME
+    }
+
+    //FIXME:usb_find_busses();
+    //FIXME:usb_find_devices();
     
-    struct usb_device* dev      = 0;
+    libusb_device* dev = 0; // FIXME: this must be libusb_unref_device()'ed, child code must not keep a copy around
   
-    find_controller(dev, dev_type, opts);
+    find_controller(&dev, dev_type, opts);
 
     if (!dev)
     {
@@ -678,13 +715,22 @@ Xboxdrv::run_main(const Options& opts)
 }
 
 void
-Xboxdrv::print_info(struct usb_device* dev,
+Xboxdrv::print_info(libusb_device* dev,
                     const XPadDevice& dev_type,
                     const Options& opts) const
 {
-  std::cout << "USB Device:        " << dev->bus->dirname << ":" << dev->filename << std::endl;
+  libusb_device_descriptor desc;
+
+  if (libusb_get_device_descriptor(dev, &desc) != LIBUSB_SUCCESS)
+  {
+    throw std::runtime_error("-- failure --"); // FIXME
+  }
+
+  std::cout << "USB Device:        " << boost::format("%03d:%03d:") 
+    % static_cast<int>(libusb_get_bus_number(dev))
+    % static_cast<int>(libusb_get_device_address(dev)) << std::endl;
   std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
-    % dev_type.name % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct) << std::endl;
+    % dev_type.name % uint16_t(desc.idVendor) % uint16_t(desc.idProduct) << std::endl;
   if (dev_type.type == GAMEPAD_XBOX360_WIRELESS)
     std::cout << "Wireless Port:     " << opts.wireless_id << std::endl;
   std::cout << "Controller Type:   " << dev_type.type << std::endl;
@@ -844,6 +890,19 @@ Xboxdrv::run_daemon(const Options& opts)
   run_main(opts);
 }
 
+Xboxdrv::Xboxdrv() :
+  m_libusb_ctx(0)
+{
+}
+
+Xboxdrv::~Xboxdrv()
+{
+  if (m_libusb_ctx)
+  {
+    libusb_exit(m_libusb_ctx);
+  }
+}
+
 int
 Xboxdrv::main(int argc, char** argv)
 {

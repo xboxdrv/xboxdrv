@@ -34,7 +34,7 @@
 #include "xbox360_controller.hpp"
 #include "xboxmsg.hpp"
 
-Xbox360Controller::Xbox360Controller(struct usb_device* dev_, 
+Xbox360Controller::Xbox360Controller(libusb_device* dev_, 
                                      bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
                                      bool headset, 
                                      bool headset_debug, 
@@ -49,27 +49,27 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev_,
   read_thread()
 {
   find_endpoints();
-  if (0)
+  if (true) // FIXME
   {
     std::cout << "EP(IN):  " << endpoint_in << std::endl;
     std::cout << "EP(OUT): " << endpoint_out << std::endl;
   }
 
-  handle = usb_open(dev);
+  int ret = libusb_open(dev, &handle);
 
   if (0)
   {
     int err;
-    if ((err = usb_set_configuration(handle, 0)) < 0)
+    if ((err = libusb_set_configuration(handle, 0)) < 0)
     {
       std::ostringstream out;
-      out << "Error set USB configuration: " << usb_strerror() << std::endl
+      out << "Error set USB configuration: " << usb_strerror(err) << std::endl
           << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
       throw std::runtime_error(out.str());
     }
   }
 
-  if (!handle)
+  if (ret != LIBUSB_SUCCESS)
   {
     throw std::runtime_error("Error opening Xbox360 controller");
   }
@@ -80,42 +80,29 @@ Xbox360Controller::Xbox360Controller(struct usb_device* dev_,
     if (err != 0) 
     {
       std::ostringstream out;
-      out << " Error couldn't claim the USB interface: " << usb_strerror() << std::endl
+      out << " Error couldn't claim the USB interface: " << usb_strerror(err) << std::endl
           << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
       throw std::runtime_error(out.str());
     }
   }
 
-  if (0)
-  {
-    unsigned char arr[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128, 255 };
-    for (int len = 3; len <= 8; ++len)
-    {
-      // Sending random data:
-      for (int front = 0; front < 256; ++front)
-      {
-        for (size_t i = 0; i < sizeof(arr); ++i)
-        {
-          char ledcmd[] = { front, len, arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i] }; 
-          printf("%d %d %d\n", len, front, arr[i]);
-          usb_interrupt_write(handle, endpoint_out, ledcmd, len, 0);
-
-          uint8_t data[32];
-          int ret = usb_interrupt_read(handle, endpoint_in, reinterpret_cast<char*>(data), sizeof(data), 20);
-          print_raw_data(std::cout, data, ret);
-        }
-      }
-    }
-  }
-
-  read_thread = std::auto_ptr<USBReadThread>(new USBReadThread(handle, endpoint_in, 32));
+  read_thread.reset(new USBReadThread(handle, endpoint_in, 32));
   read_thread->start_thread();
 
   if (chatpad)
   {
-    m_chatpad.reset(new Chatpad(handle, dev->descriptor.bcdDevice, chatpad_no_init, chatpad_debug));
-    m_chatpad->send_init();
-    m_chatpad->start_threads();
+    libusb_device_descriptor desc;
+
+    if (libusb_get_device_descriptor(dev, &desc) == LIBUSB_SUCCESS)
+    {
+      m_chatpad.reset(new Chatpad(handle, desc.bcdDevice, chatpad_no_init, chatpad_debug));
+      m_chatpad->send_init();
+      m_chatpad->start_threads();
+    }
+    else
+    {
+      throw std::runtime_error("-- failure --"); // FIXME
+    }
   }
 
   if (headset)
@@ -138,71 +125,90 @@ Xbox360Controller::~Xbox360Controller()
     m_headset.reset();
   }
 
-  usb_release_interface(handle, 0); 
-  usb_close(handle);
+  libusb_release_interface(handle, 0); 
+  libusb_close(handle);
 }
 
 void
 Xbox360Controller::find_endpoints()
 {
-  bool debug_print = false;
-
-  for(struct usb_config_descriptor* config = dev->config;
-      config != dev->config + dev->descriptor.bNumConfigurations;
-      ++config)
+  libusb_config_descriptor* config;
+  int ret = libusb_get_config_descriptor(dev, 0 /* config_index */, &config);
+  if (ret != LIBUSB_SUCCESS)
   {
-    if (debug_print) std::cout << "Config: " << static_cast<int>(config->bConfigurationValue) << std::endl;
+    throw std::runtime_error("-- failure --"); // FIXME
+  }
 
-    for(struct usb_interface* interface = config->interface;
-        interface != config->interface + config->bNumInterfaces;
-        ++interface)
+  bool debug_print = true;
+
+  // FIXME: no need to search all interfaces, could just check the one we acutally use
+  for(const libusb_interface* interface = config->interface;
+      interface != config->interface + config->bNumInterfaces;
+      ++interface)
+  {
+    for(const libusb_interface_descriptor* altsetting = interface->altsetting;
+        altsetting != interface->altsetting + interface->num_altsetting;
+        ++altsetting)
     {
-      for(struct usb_interface_descriptor* altsetting = interface->altsetting;
-          altsetting != interface->altsetting + interface->num_altsetting;
-          ++altsetting)
-      {
-        if (debug_print) std::cout << "  Interface: " << static_cast<int>(altsetting->bInterfaceNumber) << std::endl;
+      if (debug_print) std::cout << "  Interface: " << static_cast<int>(altsetting->bInterfaceNumber) << std::endl;
           
-        for(struct usb_endpoint_descriptor* endpoint = altsetting->endpoint; 
-            endpoint != altsetting->endpoint + altsetting->bNumEndpoints; 
-            ++endpoint)
-        {
-          if (debug_print) 
-            std::cout << "    Endpoint: " << int(endpoint->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK)
-                      << "(" << ((endpoint->bEndpointAddress & USB_ENDPOINT_DIR_MASK) ? "IN" : "OUT") << ")"
-                      << std::endl;
+      for(const libusb_endpoint_descriptor* endpoint = altsetting->endpoint; 
+          endpoint != altsetting->endpoint + altsetting->bNumEndpoints; 
+          ++endpoint)
+      {
+        if (debug_print) 
+          std::cout << "    Endpoint: " << int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK)
+                    << "(" << ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? "IN" : "OUT") << ")"
+                    << std::endl;
 
-          if (altsetting->bInterfaceClass    == USB_CLASS_VENDOR_SPEC &&
-              altsetting->bInterfaceSubClass == 93 &&
-              altsetting->bInterfaceProtocol == 1)
+        if (altsetting->bInterfaceClass    == LIBUSB_CLASS_VENDOR_SPEC &&
+            altsetting->bInterfaceSubClass == 93 &&
+            altsetting->bInterfaceProtocol == 1)
+        {
+          if (endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK)
           {
-            if (endpoint->bEndpointAddress & USB_ENDPOINT_DIR_MASK)
-            {
-              endpoint_in = int(endpoint->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK);
-            }
-            else
-            {
-              endpoint_out = int(endpoint->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK);
-            }
+            endpoint_in = int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK);
+          }
+          else
+          {
+            endpoint_out = int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK);
           }
         }
       }
     }
   }
+
+  libusb_free_config_descriptor(config);
 }
 
 void
 Xbox360Controller::set_rumble(uint8_t left, uint8_t right)
 {
   uint8_t rumblecmd[] = { 0x00, 0x08, 0x00, left, right, 0x00, 0x00, 0x00 };
-  usb_interrupt_write(handle, endpoint_out, reinterpret_cast<char*>(rumblecmd), sizeof(rumblecmd), 0);
+  int transferred = 0;
+  int ret = 0;
+  ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_OUT | endpoint_out, 
+                                  rumblecmd, sizeof(rumblecmd), 
+                                  &transferred, 0);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    throw std::runtime_error("-- failure --"); // FIXME
+  }
 }
 
 void
 Xbox360Controller::set_led(uint8_t status)
 {
-  char ledcmd[] = { 0x01, 0x03, status }; 
-  usb_interrupt_write(handle, endpoint_out, ledcmd, sizeof(ledcmd), 0);
+  uint8_t ledcmd[] = { 0x01, 0x03, status }; 
+  int transferred = 0;
+  int ret = 0;
+  ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_OUT | endpoint_out, 
+                                  ledcmd, sizeof(ledcmd), 
+                                  &transferred, 0);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    throw std::runtime_error("-- failure --"); // FIXME
+  }
 }
 
 bool
@@ -210,27 +216,30 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   uint8_t data[32];
   int ret = 0;
+  int len = 0;
 
   if (read_thread.get())
   {
-    ret = read_thread->read(data, sizeof(data), timeout);
+    ret = read_thread->read(data, sizeof(data), &len, timeout);
   }
   else
   {
-    ret = usb_interrupt_read(handle, endpoint_in, reinterpret_cast<char*>(data), sizeof(data), timeout);
+    ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | endpoint_in, 
+                                    data, sizeof(data), 
+                                    &len, timeout);
   }
 
-  if (ret == -ETIMEDOUT)
+  if (ret == LIBUSB_ERROR_TIMEOUT)
   {
     return false;
   }
-  else if (ret < 0)
+  else if (ret != LIBUSB_SUCCESS)
   { // Error
     std::ostringstream str;
-    str << "Xbox360Controller: USBError: " << ret << "\n" << usb_strerror();
+    str << "Xbox360Controller: USBError: " << ret << "\n" << usb_strerror(ret);
     throw std::runtime_error(str.str());
   }
-  else if (ret == 0)
+  else if (len == 0)
   {
     if (verbose)
     {
@@ -239,14 +248,14 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
       // ignore, seems harmless, so just ignore
     }
   }
-  else if (ret == 3 && data[0] == 0x01 && data[1] == 0x03)
+  else if (len == 3 && data[0] == 0x01 && data[1] == 0x03)
   { 
     if (verbose)
     {
       std::cout << "Xbox360Controller: LED Status: " << int(data[2]) << std::endl;
     }
   }
-  else if (ret == 3 && data[0] == 0x03 && data[1] == 0x03)
+  else if (len == 3 && data[0] == 0x03 && data[1] == 0x03)
   { 
     if (verbose)
     {
@@ -257,7 +266,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
       std::cout << "Xbox360Controller: Rumble Status: " << int(data[2]) << std::endl;
     }
   }
-  else if (ret == 3 && data[0] == 0x08 && data[1] == 0x03)
+  else if (len == 3 && data[0] == 0x08 && data[1] == 0x03)
   {
     if (!g_options->quiet)
     {
@@ -267,7 +276,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
         std::cout << "Headset: none";
     }
   }
-  else if (ret == 20 && data[0] == 0x00 && data[1] == 0x14)
+  else if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
   {
     msg.type    = XBOX_MSG_XBOX360;
     memcpy(&msg.xbox360, data, sizeof(Xbox360Msg));
@@ -276,7 +285,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   else
   {
     std::cout << "Unknown: ";
-    print_raw_data(std::cout, data, ret);
+    print_raw_data(std::cout, data, len);
   }
 
   return false;

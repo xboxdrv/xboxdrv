@@ -29,8 +29,8 @@ struct XPadDevice;
 class Xbox360WirelessController : public XboxGenericController
 {
 private:
-  struct usb_device* dev;
-  struct usb_dev_handle* handle;
+  libusb_device* dev;
+  struct libusb_device_handle* handle;
   int endpoint;
   int interface;
   int battery_status;
@@ -40,7 +40,7 @@ private:
   std::auto_ptr<USBReadThread> read_thread;
 
 public:
-  Xbox360WirelessController(struct usb_device* dev, int controller_id, bool try_detach);
+  Xbox360WirelessController(libusb_device* dev, int controller_id, bool try_detach);
   virtual ~Xbox360WirelessController();
 
   void set_rumble(uint8_t left, uint8_t right);

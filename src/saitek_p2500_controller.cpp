@@ -59,21 +59,21 @@ struct SaitekP2500Msg
     
 } __attribute__((__packed__));
 
-SaitekP2500Controller::SaitekP2500Controller(struct usb_device* dev_, bool try_detach) :
+SaitekP2500Controller::SaitekP2500Controller(libusb_device* dev_, bool try_detach) :
   dev(dev_),
   handle(),
   left_rumble(-1),
   right_rumble(-1)
 {
-  handle = usb_open(dev);
-  if (!handle)
+  int ret = libusb_open(dev, &handle);
+  if (ret != LIBUSB_SUCCESS)
   {
     throw std::runtime_error("Error opening SaitekP2500Controller");
   }
   else
   {
     int err = usb_claim_n_detach_interface(handle, 0, try_detach);
-    if (err != 0) 
+    if (err != LIBUSB_SUCCESS) 
     {
       std::ostringstream out;
       out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
@@ -85,8 +85,8 @@ SaitekP2500Controller::SaitekP2500Controller(struct usb_device* dev_, bool try_d
 
 SaitekP2500Controller::~SaitekP2500Controller()
 {
-  usb_release_interface(handle, 0); 
-  usb_close(handle);
+  libusb_release_interface(handle, 0); 
+  libusb_close(handle);
 }
 
 void
@@ -101,7 +101,7 @@ SaitekP2500Controller::set_rumble(uint8_t left, uint8_t right)
 
     char cmd[] = { left, right, 0x00, 0x00 };
 
-    usb_control_msg(handle, 0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd), 0);
+    libusb_control_transfer(handle, 0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd), 0);
     }
   */
 }
@@ -116,19 +116,21 @@ bool
 SaitekP2500Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   SaitekP2500Msg data;
-  int ret = usb_interrupt_read(handle, 1 /*EndPoint*/, reinterpret_cast<char*>(&data), sizeof(data), timeout);
-
-  if (ret == -ETIMEDOUT)
+  int len = 0;
+  int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | 1,
+                                      reinterpret_cast<uint8_t*>(&data), sizeof(data), 
+                                      &len, timeout);
+  if (ret == LIBUSB_ERROR_TIMEOUT)
   {
     return false;
   }
-  else if (ret < 0)
+  else if (ret != LIBUSB_SUCCESS)
   { // Error
     std::ostringstream str;
-    str << "USBError: " << ret << "\n" << usb_strerror();
+    str << "USBError: " << ret << "\n" << usb_strerror(ret);
     throw std::runtime_error(str.str());
   }
-  else if (ret == sizeof(data))
+  else if (len == sizeof(data))
   {
     memset(&msg, 0, sizeof(msg));
     msg.type    = XBOX_MSG_XBOX360;
