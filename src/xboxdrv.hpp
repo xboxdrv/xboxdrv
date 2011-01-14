@@ -42,9 +42,6 @@ private:
   void print_info(libusb_device* dev,
                   const XPadDevice& dev_type,
                   const Options& opts) const;
-  void controller_loop(GamepadType type, uInput* uinput,
-                       XboxGenericController* controller, 
-                       const Options& opts);
 
   bool find_controller_by_path(const std::string& busid, const std::string& devid,libusb_device** xbox_device) const;
   void find_controller(libusb_device** dev,

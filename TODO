@@ -83,6 +83,14 @@ Stuff to do before 0.6.5 release:
   multiple controllers directly in xboxdrv
 
 
+XboxdrvDaemon
+=============
+
+* add --no-detach
+
+* add --create-pid (look how other daemons do it)
+
+
 Stuff to do before 0.6.x release:
 =================================
 

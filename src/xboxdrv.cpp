@@ -16,6 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "xboxdrv.hpp"
+
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
 #include <boost/function.hpp>
@@ -35,40 +37,26 @@
 #include <unistd.h>
 #include <libusb.h>
 
-#include "modifier/autofire_modifier.hpp"
-#include "modifier/axis_sensitivty_modifier.hpp"
-#include "modifier/axismap_modifier.hpp"
-#include "modifier/button_map_modifier.hpp"
-#include "modifier/calibration_modifier.hpp"
-#include "modifier/deadzone_modifier.hpp"
-#include "modifier/dpad_rotation_modifier.hpp"
-#include "modifier/four_way_restrictor_modifier.hpp"
-#include "modifier/relativeaxis_modifier.hpp"
-#include "modifier/square_axis_modifier.hpp"
-
+#include "command_line_options.hpp"
+#include "evdev_controller.hpp"
+#include "evdev_helper.hpp"
+#include "firestorm_dual_controller.hpp"
+#include "helper.hpp"
+#include "options.hpp"
+#include "saitek_p2500_controller.hpp"
 #include "uinput.hpp"
-#include "xboxmsg.hpp"
-#include "xbox_controller.hpp"
 #include "xbox360_controller.hpp"
 #include "xbox360_wireless_controller.hpp"
-#include "firestorm_dual_controller.hpp"
-#include "saitek_p2500_controller.hpp"
-#include "evdev_controller.hpp"
-#include "helper.hpp"
-#include "evdev_helper.hpp"
-#include "command_line_options.hpp"
-#include "options.hpp"
+#include "xbox_controller.hpp"
 #include "xbox_generic_controller.hpp"
-
-#include "xboxdrv.hpp"
+#include "xboxdrv_daemon.hpp"
+#include "xboxdrv_thread.hpp"
+#include "xboxmsg.hpp"
 
 // Some ugly global variables, needed for sigint catching
 bool global_exit_xboxdrv = false;
 XboxGenericController* global_controller = 0;
 
-// FIXME: isolate problametic code to a separate file, instead of pragma
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-
 void on_sigint(int)
 {
   if (global_exit_xboxdrv)
@@ -97,16 +85,6 @@ void on_sigterm(int)
     global_controller->set_led(0);
 
   exit(EXIT_SUCCESS);
-}
-
-void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_t rhs)
-{
-  lhs = std::min(lhs * gain / 255, 255);
-  rhs = std::min(rhs * gain / 255, 255);
-  
-  //std::cout << (int)lhs << " " << (int)rhs << std::endl;
-
-  controller->set_rumble(lhs, rhs);
 }
 
 void
@@ -317,169 +295,6 @@ Xboxdrv::find_xbox360_controller(int id, libusb_device** xbox_device, XPadDevice
 }
 
 void
-Xboxdrv::controller_loop(GamepadType type, uInput* uinput, XboxGenericController* controller, const Options& opts)
-{
-  int timeout = 0; // 0 == no timeout
-  XboxGenericMsg oldmsg; // last data send to uinput
-  XboxGenericMsg oldrealmsg; // last data read from the device
-
-  std::vector<ModifierPtr> modifier;
-
-  // Create filter
-  if (!opts.calibration_map.empty())
-    modifier.push_back(ModifierPtr(new CalibrationModifier(opts.calibration_map)));
-  
-  if (opts.deadzone != 0 || opts.deadzone_trigger != 0)
-    modifier.push_back(ModifierPtr(new DeadzoneModifier(opts.deadzone, opts.deadzone_trigger)));
-
-  if (opts.square_axis)
-    modifier.push_back(ModifierPtr(new SquareAxisModifier()));
-
-  if (!opts.axis_sensitivity_map.empty())
-    modifier.push_back(ModifierPtr(new AxisSensitivityModifier(opts.axis_sensitivity_map)));
-  
-  if (opts.four_way_restrictor)
-    modifier.push_back(ModifierPtr(new FourWayRestrictorModifier()));
-
-  if (opts.dpad_rotation)
-    modifier.push_back(ModifierPtr(new DpadRotationModifier(opts.dpad_rotation)));
-
-  if (!opts.autofire_map.empty())
-    modifier.push_back(ModifierPtr(new AutoFireModifier(opts.autofire_map)));
-
-  if (!opts.relative_axis_map.empty())
-    modifier.push_back(ModifierPtr(new RelativeAxisModifier(opts.relative_axis_map)));
-
-  if (!opts.button_map.empty())
-    modifier.push_back(ModifierPtr(new ButtonMapModifier(opts.button_map)));
-    
-  if (!opts.axis_map.empty())
-    modifier.push_back(ModifierPtr(new AxismapModifier(opts.axis_map)));
-
-  // how long to wait for a controller event before taking care of autofire etc.
-  timeout = 25; 
-
-  memset(&oldmsg,     0, sizeof(oldmsg));
-  memset(&oldrealmsg, 0, sizeof(oldrealmsg));
-
-  pid_t pid = -1;
-
-  if (!opts.exec.empty())
-  { // launch program if one was given
-    pid = fork();
-    if (pid == 0)
-    {
-      char** argv = static_cast<char**>(malloc(sizeof(char*) * opts.exec.size() + 1));
-      for(size_t i = 0; i < opts.exec.size(); ++i)
-      {
-        argv[i] = strdup(opts.exec[i].c_str());
-      }
-      argv[opts.exec.size()] = NULL;
-
-      if (execvp(opts.exec[0].c_str(), argv) == -1)
-      {
-        std::cout << "error: " << opts.exec[0] << ": " << strerror(errno) << std::endl;
-        // FIXME: must signal the parent process
-        exit(EXIT_FAILURE);
-      }
-    }
-  }
-
-  uint32_t last_time = get_time();
-  while(!global_exit_xboxdrv)
-  {
-    XboxGenericMsg msg;
-
-    if (controller->read(msg, opts.verbose, timeout))
-    {
-      oldrealmsg = msg;
-    }
-    else
-    {
-      // no new data read, so copy the last read data
-      msg = oldrealmsg;
-    }
-
-    // Calc changes in time
-    uint32_t this_time = get_time();
-    int msec_delta = this_time - last_time;
-    last_time = this_time;
-
-    // run the controller message through all modifier
-    for(std::vector<ModifierPtr>::iterator i = modifier.begin(); i != modifier.end(); ++i)
-    {
-      (*i)->update(msec_delta, msg);
-    }
-
-    if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)) != 0)
-    { // Only send a new event out if something has changed,
-      // this is useful since some controllers send events
-      // even if nothing has changed, deadzone can cause this
-      // too
-      oldmsg = msg;
-
-      if (!opts.silent)
-        std::cout << msg << std::endl;
-
-      if (uinput) 
-        uinput->send(msg);
-                 
-      if (opts.rumble)
-      {
-        if (type == GAMEPAD_XBOX)
-        {
-          set_rumble(controller, opts.rumble_gain, msg.xbox.lt, msg.xbox.rt);
-        }
-        else if (type == GAMEPAD_XBOX360 ||
-                 type == GAMEPAD_XBOX360_WIRELESS)
-        {
-          set_rumble(controller, opts.rumble_gain, msg.xbox360.lt, msg.xbox360.rt);
-        }
-        else if (type == GAMEPAD_FIRESTORM ||
-                 type == GAMEPAD_FIRESTORM_VSB)
-        {
-          set_rumble(controller, opts.rumble_gain,
-                     std::min(255, abs((msg.xbox360.y1>>8)*2)), 
-                     std::min(255, abs((msg.xbox360.y2>>8)*2)));
-        }
-      }
-    }
-
-    if (uinput)
-    {
-      uinput->update(msec_delta);
-    }
-
-    if (pid != -1)
-    {
-      int status = 0;
-      int w = waitpid(pid, &status, WNOHANG);
-
-      if (w > 0)
-      {
-        if (WIFEXITED(status))
-        {
-          if (WEXITSTATUS(status) != 0)
-          {
-            std::cout << "error: child program has stopped with exit status " << WEXITSTATUS(status) << std::endl;
-          }
-          else
-          {
-            std::cout << "child program exited successful" << std::endl;
-          }
-          global_exit_xboxdrv = true;
-        }
-        else if (WIFSIGNALED(status))
-        {
-          std::cout << "error: child program was terminated by " << WTERMSIG(status) << std::endl;
-          global_exit_xboxdrv = true;
-        }
-      }
-    }
-  }
-}
-
-void
 Xboxdrv::find_controller(libusb_device** dev,
                          XPadDevice& dev_type,
                          const Options& opts) const
@@ -546,6 +361,19 @@ Xboxdrv::find_controller(libusb_device** dev,
   }
 }
 
+// FIXME: duplicate code
+namespace {
+void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_t rhs)
+{
+  lhs = std::min(lhs * gain / 255, 255);
+  rhs = std::min(rhs * gain / 255, 255);
+  
+  //std::cout << (int)lhs << " " << (int)rhs << std::endl;
+
+  controller->set_rumble(lhs, rhs);
+}
+} // namespace
+
 void
 Xboxdrv::run_main(const Options& opts)
 {
@@ -585,9 +413,6 @@ Xboxdrv::run_main(const Options& opts)
     {
       throw std::runtime_error("-- failure --"); // FIXME
     }
-
-    //FIXME:usb_find_busses();
-    //FIXME:usb_find_devices();
     
     libusb_device* dev = 0; // FIXME: this must be libusb_unref_device()'ed, child code must not keep a copy around
   
@@ -707,7 +532,9 @@ Xboxdrv::run_main(const Options& opts)
     }
 
     global_exit_xboxdrv = false;
-    controller_loop(dev_type.type, uinput.get(), controller.get(), opts);
+
+    XboxdrvThread loop;
+    loop.controller_loop(dev_type.type, uinput.get(), controller.get(), opts);
           
     if (!opts.quiet) 
       std::cout << "Shutdown complete" << std::endl;
@@ -875,19 +702,39 @@ Xboxdrv::run_help_devices()
 void
 Xboxdrv::run_daemon(const Options& opts)
 {
-  pid_t pid = fork();
-
-  if (pid < 0) exit(EXIT_FAILURE); /* fork error */
-  if (pid > 0) exit(EXIT_SUCCESS); /* parent exits */
-
-  pid_t sid = setsid();
-  std::cout << "Sid: " << sid << std::endl;
-  if (chdir("/") != 0)
+  if (true /* no_detatch */)
   {
-    throw std::runtime_error(strerror(errno));
+    XboxdrvDaemon daemon;
+    daemon.run();
   }
+  else
+  {
+    pid_t pid = fork();
 
-  run_main(opts);
+    if (pid < 0) 
+    { // fork error
+      perror("fork");
+      exit(EXIT_FAILURE); 
+    }
+    else if (pid > 0) 
+    { // parent, just exit
+      exit(EXIT_SUCCESS); 
+    }
+    else
+    { // child, run daemon
+      pid_t sid = setsid();
+
+      std::cout << "Sid: " << sid << std::endl;
+
+      if (chdir("/") != 0)
+      {
+        throw std::runtime_error(strerror(errno));
+      }
+
+      XboxdrvDaemon daemon;
+      daemon.run();
+    }
+  }
 }
 
 Xboxdrv::Xboxdrv() :

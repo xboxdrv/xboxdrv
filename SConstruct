@@ -23,6 +23,7 @@ else:
                       CPPPATH=["src/"])
 
 env.ParseConfig("pkg-config --cflags --libs libusb-1.0 | sed 's/-I/-isystem/g'")
+env.ParseConfig("pkg-config --cflags --libs libudev | sed 's/-I/-isystem/g'")
 
 f = open("VERSION")
 package_version = f.read()
