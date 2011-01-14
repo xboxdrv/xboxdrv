@@ -19,6 +19,9 @@
 #ifndef HEADER_XBOXDRV_XBOXDRV_THREAD_HPP
 #define HEADER_XBOXDRV_XBOXDRV_THREAD_HPP
 
+#include <memory>
+#include <boost/thread.hpp>
+
 #include "xboxmsg.hpp"
 
 class Options;
@@ -28,13 +31,17 @@ class XboxGenericController;
 class XboxdrvThread // FIXME: find a better name, XboxdrvControllerLoop?!
 {
 private:
+  std::auto_ptr<boost::thread> m_thread;
+
 public:
   XboxdrvThread();
 
   void controller_loop(GamepadType type, uInput* uinput, XboxGenericController* controller, 
                        const Options& opts);
-  void run();
 
+  void launch_thread(GamepadType type, uInput* uinput, XboxGenericController* controller, 
+                       const Options& opts);
+  
 private:
   XboxdrvThread(const XboxdrvThread&);
   XboxdrvThread& operator=(const XboxdrvThread&);

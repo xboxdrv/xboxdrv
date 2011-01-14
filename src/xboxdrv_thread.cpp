@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <vector>
+#include <assert.h>
 
 #include "helper.hpp"
 #include "modifier.hpp"
@@ -48,11 +49,6 @@ extern bool global_exit_xboxdrv;
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
 XboxdrvThread::XboxdrvThread()
-{
-}
-
-void
-XboxdrvThread::run()
 {
 }
 
@@ -231,6 +227,15 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, XboxGenericCont
       }
     }
   }
+}
+
+void
+XboxdrvThread::launch_thread(GamepadType type, uInput* uinput, XboxGenericController* controller, 
+                             const Options& opts)
+{
+  assert(m_thread.get() == 0);
+  m_thread.reset(new boost::thread(boost::bind(&XboxdrvThread::controller_loop, this, 
+                                               type, uinput, controller, boost::cref(opts))));
 }
 
 /* EOF */

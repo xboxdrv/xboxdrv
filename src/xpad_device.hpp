@@ -31,6 +31,10 @@ struct XPadDevice
   const char* name;
 };
 
+/** Search for an xpad device matching the \a idVendor, \a idProduct
+    values, the first \a skip matches will be ignored */
+bool find_xpad_device(uint16_t idVendor, uint16_t idProduct, XPadDevice* dev_type);
+
 extern XPadDevice xpad_devices[];
 extern const int xpad_devices_count;
 

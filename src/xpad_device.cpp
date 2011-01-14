@@ -93,5 +93,19 @@ XPadDevice xpad_devices[] = {
 };
 
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
+
+bool find_xpad_device(uint16_t idVendor, uint16_t idProduct, XPadDevice* dev_type)
+{
+  for(int i = 0; i < xpad_devices_count; ++i)
+  {
+    if (idVendor  == xpad_devices[i].idVendor &&
+        idProduct == xpad_devices[i].idProduct)
+    {
+      *dev_type = xpad_devices[i];
+      return true;
+    }
+  }
+  return false;
+}
 
 /* EOF */

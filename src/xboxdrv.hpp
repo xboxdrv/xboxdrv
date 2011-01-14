@@ -57,9 +57,6 @@ public:
   ~Xboxdrv();
 
   int main(int argc, char** argv);
-
-private:
-  libusb_context* m_libusb_ctx;
 };
 
 #endif

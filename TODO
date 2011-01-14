@@ -16,6 +16,8 @@ git push --tags
 Ubuntu Package:
 ===============
 
+add libudev, libusb-1.0 to builddependencies
+
 # Ubuntu 10.10
 
 $ cd ../debian/
@@ -39,6 +41,10 @@ $ dput my-ppa ../xboxdrv_0.6.4-2~lucid1_source.changes
 
 Stuff to do before 0.6.5 release:
 =================================
+
+* uinput must be made threadsafe
+
+* write/recycle a proper logging class
 
 * improve output on which uinput devices are created
 

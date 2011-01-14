@@ -40,15 +40,11 @@
 #include "command_line_options.hpp"
 #include "evdev_controller.hpp"
 #include "evdev_helper.hpp"
-#include "firestorm_dual_controller.hpp"
 #include "helper.hpp"
 #include "options.hpp"
-#include "saitek_p2500_controller.hpp"
 #include "uinput.hpp"
-#include "xbox360_controller.hpp"
-#include "xbox360_wireless_controller.hpp"
-#include "xbox_controller.hpp"
 #include "xbox_generic_controller.hpp"
+#include "xbox_controller_factory.hpp"
 #include "xboxdrv_daemon.hpp"
 #include "xboxdrv_thread.hpp"
 #include "xboxmsg.hpp"
@@ -90,14 +86,14 @@ void on_sigterm(int)
 void
 Xboxdrv::run_list_controller()
 {
-  int ret = libusb_init(&m_libusb_ctx);
+  int ret = libusb_init(NULL);
   if (ret != LIBUSB_SUCCESS)
   {
     throw std::runtime_error("-- failure --"); // FIXME
   }
 
   libusb_device** list;
-  ssize_t num_devices = libusb_get_device_list(m_libusb_ctx, &list);
+  ssize_t num_devices = libusb_get_device_list(NULL, &list);
 
   int id = 0;
   std::cout << " id | wid | idVendor | idProduct | Name" << std::endl;
@@ -160,7 +156,7 @@ Xboxdrv::find_controller_by_path(const std::string& busid_str, const std::string
   int devid = boost::lexical_cast<int>(devid_str);
 
   libusb_device** list;
-  ssize_t num_devices = libusb_get_device_list(m_libusb_ctx, &list);
+  ssize_t num_devices = libusb_get_device_list(NULL, &list);
 
   for(ssize_t dev_it = 0; dev_it < num_devices; ++dev_it)
   {
@@ -218,7 +214,7 @@ bool
 Xboxdrv::find_controller_by_id(int id, int vendor_id, int product_id, libusb_device** xbox_device) const
 {
   libusb_device** list;
-  ssize_t num_devices = libusb_get_device_list(m_libusb_ctx, &list);
+  ssize_t num_devices = libusb_get_device_list(NULL, &list);
 
   int id_count = 0;
   for(ssize_t dev_it = 0; dev_it < num_devices; ++dev_it)
@@ -256,7 +252,7 @@ bool
 Xboxdrv::find_xbox360_controller(int id, libusb_device** xbox_device, XPadDevice* type) const
 {
   libusb_device** list;
-  ssize_t num_devices = libusb_get_device_list(m_libusb_ctx, &list);
+  ssize_t num_devices = libusb_get_device_list(NULL, &list);
 
   int id_count = 0;
   for(ssize_t dev_it = 0; dev_it < num_devices; ++dev_it)
@@ -390,7 +386,7 @@ Xboxdrv::run_main(const Options& opts)
 
   std::auto_ptr<XboxGenericController> controller;
 
-  XPadDevice         dev_type;
+  XPadDevice dev_type;
 
   if (!opts.evdev_device.empty())
   { // normal PC joystick via evdev
@@ -408,13 +404,14 @@ Xboxdrv::run_main(const Options& opts)
   }
   else
   { // regular USB Xbox360 controller    
-    int ret = libusb_init(&m_libusb_ctx);
+    int ret = libusb_init(NULL);
     if (ret != LIBUSB_SUCCESS)
     {
       throw std::runtime_error("-- failure --"); // FIXME
     }
     
-    libusb_device* dev = 0; // FIXME: this must be libusb_unref_device()'ed, child code must not keep a copy around
+    // FIXME: this must be libusb_unref_device()'ed, child code must not keep a copy around
+    libusb_device* dev = 0;
   
     find_controller(&dev, dev_type, opts);
 
@@ -427,50 +424,7 @@ Xboxdrv::run_main(const Options& opts)
       if (!opts.quiet)
         print_info(dev, dev_type, opts);
 
-      switch (dev_type.type)
-      {
-        case GAMEPAD_XBOX360_PLAY_N_CHARGE: 
-          throw std::runtime_error("The Xbox360 Play&Charge cable is for recharging only, it does not transmit data, "
-                                   "thus xboxdrv can't support it. You have to get a wireless receiver:\n"
-                                   "\n"
-                                   "  * http://www.xbox.com/en-ca/hardware/x/xbox360wirelessgamingreceiver/");
-          break;
-
-        case GAMEPAD_XBOX:
-        case GAMEPAD_XBOX_MAT:
-          controller = std::auto_ptr<XboxGenericController>(new XboxController(dev, opts.detach_kernel_driver));
-          break;
-
-        case GAMEPAD_XBOX360:
-        case GAMEPAD_XBOX360_GUITAR:
-          controller = std::auto_ptr<XboxGenericController>(new Xbox360Controller(dev, 
-                                                                                  opts.chatpad, opts.chatpad_no_init, opts.chatpad_debug,
-                                                                                  opts.headset, 
-                                                                                  opts.headset_debug, 
-                                                                                  opts.headset_dump,
-                                                                                  opts.headset_play,
-                                                                                  opts.detach_kernel_driver));
-          break;
-
-        case GAMEPAD_XBOX360_WIRELESS:
-          controller = std::auto_ptr<XboxGenericController>(new Xbox360WirelessController(dev, opts.wireless_id, opts.detach_kernel_driver));
-          break;
-
-        case GAMEPAD_FIRESTORM:
-          controller = std::auto_ptr<XboxGenericController>(new FirestormDualController(dev, false, opts.detach_kernel_driver));
-          break;
-
-        case GAMEPAD_FIRESTORM_VSB:
-          controller = std::auto_ptr<XboxGenericController>(new FirestormDualController(dev, true, opts.detach_kernel_driver));
-          break;
-
-        case GAMEPAD_SAITEK_P2500:
-          controller = std::auto_ptr<XboxGenericController>(new SaitekP2500Controller(dev, opts.detach_kernel_driver));
-          break;
-
-        default:
-          assert(!"Unknown gamepad type");
-      }
+      controller = XboxControllerFactory::create(dev_type, dev, opts);
     }
   }
 
@@ -503,7 +457,7 @@ Xboxdrv::run_main(const Options& opts)
     {
       if (!opts.quiet)
         std::cout << "Starting with uinput" << std::endl;
-      uinput = std::auto_ptr<uInput>(new uInput(dev_type.type, dev_type.idVendor, dev_type.idProduct, opts.uinput_config));
+      uinput = std::auto_ptr<uInput>(new uInput(dev_type.idVendor, dev_type.idProduct, opts.uinput_config));
       if (opts.uinput_config.force_feedback)
       {
         uinput->set_ff_callback(boost::bind(&set_rumble,  controller.get(), opts.rumble_gain, _1, _2));
@@ -702,10 +656,16 @@ Xboxdrv::run_help_devices()
 void
 Xboxdrv::run_daemon(const Options& opts)
 {
+  int ret = libusb_init(NULL);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    throw std::runtime_error("-- failure --"); // FIXME
+  }
+
   if (true /* no_detatch */)
   {
     XboxdrvDaemon daemon;
-    daemon.run();
+    daemon.run(opts);
   }
   else
   {
@@ -732,22 +692,19 @@ Xboxdrv::run_daemon(const Options& opts)
       }
 
       XboxdrvDaemon daemon;
-      daemon.run();
+      daemon.run(opts);
     }
   }
+
+  libusb_exit(NULL);
 }
 
-Xboxdrv::Xboxdrv() :
-  m_libusb_ctx(0)
+Xboxdrv::Xboxdrv()
 {
 }
 
 Xboxdrv::~Xboxdrv()
 {
-  if (m_libusb_ctx)
-  {
-    libusb_exit(m_libusb_ctx);
-  }
 }
 
 int

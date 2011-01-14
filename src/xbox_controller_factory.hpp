@@ -16,38 +16,27 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_XBOXDRV_DAEMON_HPP
-#define HEADER_XBOXDRV_XBOXDRV_DAEMON_HPP
+#ifndef HEADER_XBOXDRV_XBOX_CONTROLLER_FACTORY_HPP
+#define HEADER_XBOXDRV_XBOX_CONTROLLER_FACTORY_HPP
 
-#include <libudev.h>
-#include <stdint.h>
+#include <memory>
+#include <libusb.h>
 
-class Options;
-class uInput;
-struct XPadDevice;
+#include "xpad_device.hpp"
+#include "options.hpp"
 
-class XboxdrvDaemon
+class XboxGenericController;
+
+class XboxControllerFactory
 {
-private:
-  struct udev* m_udev;
-  struct udev_monitor* m_monitor;
-
 public:
-  XboxdrvDaemon();
-  ~XboxdrvDaemon();
-
-  void run(const Options& opts);
+  static std::auto_ptr<XboxGenericController> create(const XPadDevice& dev_type, 
+                                                     libusb_device* dev, 
+                                                     const Options& opts);
 
 private:
-  void process_match(const Options& opts, uInput* uinput, struct udev_device* device);
-  void print_info(struct udev_device* device);
-  void launch_xboxdrv(uInput* uinput,
-                      const XPadDevice& dev_type, const Options& opts, 
-                      uint8_t busnum, uint8_t devnum);
-  
-private:
-  XboxdrvDaemon(const XboxdrvDaemon&);
-  XboxdrvDaemon& operator=(const XboxdrvDaemon&);
+  XboxControllerFactory(const XboxControllerFactory&);
+  XboxControllerFactory& operator=(const XboxControllerFactory&);
 };
 
 #endif

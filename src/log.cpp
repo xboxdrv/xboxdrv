@@ -16,40 +16,27 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_XBOXDRV_DAEMON_HPP
-#define HEADER_XBOXDRV_XBOXDRV_DAEMON_HPP
+#include "log.hpp"
 
-#include <libudev.h>
-#include <stdint.h>
+#include <sstream>
 
-class Options;
-class uInput;
-struct XPadDevice;
-
-class XboxdrvDaemon
+std::string log_pretty_print(const std::string& str)
 {
-private:
-  struct udev* m_udev;
-  struct udev_monitor* m_monitor;
+  // FIXME: very basic, might not work with complex return types
+  std::string::size_type function_start = 0;
+  for(std::string::size_type i = 0; i < str.size(); ++i)
+  {
+    if (str[i] == ' ')
+    {
+      function_start = i+1;
+    }
+    else if (str[i] == '(')
+    {
+      return str.substr(function_start, i - function_start) + "()";
+    }
+  }
 
-public:
-  XboxdrvDaemon();
-  ~XboxdrvDaemon();
-
-  void run(const Options& opts);
-
-private:
-  void process_match(const Options& opts, uInput* uinput, struct udev_device* device);
-  void print_info(struct udev_device* device);
-  void launch_xboxdrv(uInput* uinput,
-                      const XPadDevice& dev_type, const Options& opts, 
-                      uint8_t busnum, uint8_t devnum);
-  
-private:
-  XboxdrvDaemon(const XboxdrvDaemon&);
-  XboxdrvDaemon& operator=(const XboxdrvDaemon&);
-};
-
-#endif
+  return str.substr(function_start);
+}
 
 /* EOF */

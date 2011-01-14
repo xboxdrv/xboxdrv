@@ -74,4 +74,27 @@ const char* usb_strerror(int err)
   }
 }
 
+libusb_device* usb_find_device_by_path(uint8_t busnum, uint8_t devnum)
+{
+  libusb_device* ret_device = 0;
+
+  libusb_device** list;
+  ssize_t num_devices = libusb_get_device_list(NULL, &list);
+  for(ssize_t dev_it = 0; dev_it < num_devices; ++dev_it)
+  {
+    libusb_device* dev = list[dev_it];
+
+    if (busnum == libusb_get_bus_number(dev) &&
+        devnum == libusb_get_device_address(dev))
+    {
+      ret_device = dev;
+      libusb_ref_device(ret_device);
+      break;
+    }
+  }
+  libusb_free_device_list(list, 1 /* unref_devices */);
+
+  return ret_device;
+}
+
 /* EOF */

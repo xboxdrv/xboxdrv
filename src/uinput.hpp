@@ -66,7 +66,7 @@ public:
   static bool is_keyboard_button(int ev_code);
 
 public:
-  uInput(GamepadType type, int vendor_id, int product_id, uInputCfg cfg = uInputCfg());
+  uInput(int vendor_id, int product_id, uInputCfg cfg = uInputCfg());
   ~uInput();
 
   void send(XboxGenericMsg& msg); 

@@ -23,7 +23,17 @@
 #include <string.h>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/bind.hpp>
 #include <stdio.h>
+#include <assert.h>
+
+#include "log.hpp"
+#include "options.hpp"
+#include "uinput.hpp"
+#include "usb_helper.hpp"
+#include "xbox_controller_factory.hpp"
+#include "xboxdrv_thread.hpp"
+#include "xpad_device.hpp"
 
 XboxdrvDaemon::XboxdrvDaemon() :
   m_udev(0),
@@ -37,12 +47,7 @@ XboxdrvDaemon::XboxdrvDaemon() :
   }
   else
   {
-    // FIXME: add enumerate here, see libudev example on how to avoid
-    // race condition
-    m_monitor = udev_monitor_new_from_netlink(m_udev, "udev");
-    udev_monitor_enable_receiving(m_monitor);
-
-    udev_monitor_filter_add_match_subsystem_devtype(m_monitor, "usb", "usb_device");
+    // do nothing, stuff is done in run()
   }
 }
 
@@ -53,10 +58,130 @@ XboxdrvDaemon::~XboxdrvDaemon()
 }
 
 void
-XboxdrvDaemon::run()
+XboxdrvDaemon::process_match(const Options& opts, uInput* uinput, struct udev_device* device)
 {
+  // 1) Match vendor/product against the xpad list
+  // value = udev_device_get_property_value(device, "ID_VENDOR_ID"); // 045e
+  // value = udev_device_get_property_value(device, "ID_MODEL_ID");  // 028e
+  // value = udev_device_get_property_value(device, "ID_REVISION");  // 0110 aka bcd
+  // PRODUCT = "45e/28e/110"
+
+  const char* product_str = udev_device_get_property_value(device, "PRODUCT");
+  if (product_str)
+  {
+    unsigned int vendor = 0;
+    unsigned int product = 0; 
+    unsigned int bcd = 0;
+    if (sscanf(product_str, "%x/%x/%x", &vendor, &product, &bcd) != 3)
+    {
+      std::cout << "[XboxdrvDaemon] couldn't parse PRODUCT = " << product_str << std::endl;
+    }
+    else
+    {
+      if (false)
+        std::cout << "Product parse: " 
+                  << boost::format("%03x/%03x/%03x == %s") % vendor % product % bcd % product_str
+                  << std::endl;
+
+      // FIXME: could do this after we know that vendor/product are good
+      // 2) Get busnum and devnum        
+      // busnum:devnum are decimal, not hex
+      const char* busnum_str = udev_device_get_property_value(device, "BUSNUM");
+      const char* devnum_str = udev_device_get_property_value(device, "DEVNUM");
+
+      if (busnum_str && devnum_str)
+      {
+        try 
+        {
+          XPadDevice dev_type;
+          if (find_xpad_device(vendor, product, &dev_type))
+          {
+            // 3) Launch thread to handle the device
+            log_info << "Found a valid Xboxdrv controller: " << busnum_str << ":" << devnum_str 
+                     << " -- "
+                     << boost::lexical_cast<int>(busnum_str) << ", "
+                     << boost::lexical_cast<int>(devnum_str)
+                     << std::endl;
+           
+            launch_xboxdrv(uinput,
+                           dev_type, opts,
+                           boost::lexical_cast<int>(busnum_str),
+                           boost::lexical_cast<int>(devnum_str));
+          }
+        }
+        catch(const std::exception& err)
+        {
+          std::cout << "[XboxdrvDaemon] child thread lauch failure: " << err.what() << std::endl;
+        }
+      }
+    }
+  }  
+}
+
+void
+XboxdrvDaemon::run(const Options& opts)
+{
+  // Setup uinput
+  std::auto_ptr<uInput> uinput;
+  if (!opts.no_uinput)
+  {
+    if (!opts.quiet) std::cout << "Starting with uinput" << std::endl;
+
+    uinput.reset(new uInput(0, 0, // don't have vendor/product ids, so use zero
+                            opts.uinput_config));
+    // FIXME:
+    /* must setup this callback later when we have a controller
+       if (opts.uinput_config.force_feedback)
+       {
+       uinput->set_ff_callback(boost::bind(&set_rumble,  controller.get(), opts.rumble_gain, _1, _2));
+       }
+    */
+  }
+  else
+  {
+    if (!opts.quiet)
+      std::cout << "Starting without uinput" << std::endl;
+  }
+
+  // Setup udev monitor and enumerate
+  m_monitor = udev_monitor_new_from_netlink(m_udev, "udev");
+  udev_monitor_filter_add_match_subsystem_devtype(m_monitor, "usb", "usb_device");
+  udev_monitor_enable_receiving(m_monitor);
+
+  // FIXME: won't we get devices twice that have been plugged in at
+  // this point? once from the enumeration, once from the monitor
+
+  // Enumerate over all devices already connected to the computer
+  {
+    struct udev_enumerate* enumerate = udev_enumerate_new(m_udev);
+    assert(enumerate);
+
+    udev_enumerate_add_match_subsystem(enumerate, "usb");
+    // not available yet: udev_enumerate_add_match_is_initialized(enumerate);
+    udev_enumerate_scan_devices(enumerate);
+
+    struct udev_list_entry* devices;
+    struct udev_list_entry* dev_list_entry;
+    
+    devices = udev_enumerate_get_list_entry(enumerate);
+    udev_list_entry_foreach(dev_list_entry, devices) 
+    {
+      // name is path, value is NULL
+      const char* path  = udev_list_entry_get_name(dev_list_entry) ;
+      //const char* value = udev_list_entry_get_value(dev_list_entry);
+      
+      //std::cout << "Enum: " << path << std::endl;
+
+      struct udev_device* device = udev_device_new_from_syspath(m_udev, path);
+      process_match(opts, uinput.get(), device);
+      udev_device_unref(device);
+    }
+    udev_enumerate_unref(enumerate);
+  }
+
   while(true)
   {
+    // FIXME: we bust udev_unref_monitor() this
     struct udev_device* device = udev_monitor_receive_device(m_monitor);
 
     if (!device)
@@ -70,48 +195,7 @@ XboxdrvDaemon::run()
 
       if (action && strcmp(action, "add") == 0)
       {
-        // 1) Match vendor/product against the xpad list
-        // value = udev_device_get_property_value(device, "ID_VENDOR_ID"); // 045e
-        // value = udev_device_get_property_value(device, "ID_MODEL_ID");  // 028e
-        // value = udev_device_get_property_value(device, "ID_REVISION");  // 0110 aka bcd
-        // PRODUCT = "45e/28e/110"
-
-        const char* product_str = udev_device_get_property_value(device, "PRODUCT");
-        if (product_str)
-        {
-          unsigned int vendor = 0;
-          unsigned int product = 0; 
-          unsigned int bcd = 0;
-          if (sscanf(product_str, "%x/%x/%x", &vendor, &product, &bcd) != 3)
-          {
-            std::cout << "[XboxdrvDaemon] couldn't parse PRODUCT = " << product_str << std::endl;
-          }
-          else
-          {
-            std::cout << "Product parse: " 
-                      << boost::format("%03x/%03x/%03x == %s") % vendor % product % bcd % product_str
-                      << std::endl;
-
-            // 2) Get busnum and devnum        
-            // FIXME: are those dec or hex?
-            const char* busnum_str = udev_device_get_property_value(device, "BUSNUM");
-            const char* devnum_str = udev_device_get_property_value(device, "DEVNUM");
-
-            if (busnum_str && devnum_str)
-            {
-              try 
-              {
-              // 3) Launch thread to handle the device
-              launch_xboxdrv(boost::lexical_cast<int>(busnum_str),
-                             boost::lexical_cast<int>(devnum_str));
-              }
-              catch(const std::exception& err)
-              {
-                std::cout << "[XboxdrvDaemon] child thread lauch failure: " << err.what() << std::endl;
-              }
-            }
-          }
-        }
+        process_match(opts, uinput.get(), device);
       }
     }
     udev_device_unref(device);
@@ -195,9 +279,29 @@ XboxdrvDaemon::print_info(struct udev_device* device)
 }
 
 void
-XboxdrvDaemon::launch_xboxdrv(uint8_t busnum, uint8_t devnum)
+XboxdrvDaemon::launch_xboxdrv(uInput* uinput, const XPadDevice& dev_type, const Options& opts, uint8_t busnum, uint8_t devnum)
 {
-  std::cout << "[XboxdrvDaemon] launching " << boost::format("%03d:%03d") % busnum % devnum << std::endl;
+  std::cout << "[XboxdrvDaemon] launching " << boost::format("%03d:%03d") 
+    % static_cast<int>(busnum) 
+    % static_cast<int>(devnum)
+            << std::endl;
+
+  // FIXME: results must be libusb_unref_device()'ed
+  libusb_device* dev = usb_find_device_by_path(busnum, devnum);
+
+  if (!dev)
+  {
+    log_error << "USB device disappeared before it could be opened" << std::endl;
+  }
+  else
+  {
+    // FIXME: we are memory leaking the controller in the thread
+    std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
+   
+    // FIXME: keep these collected somewhere
+    XboxdrvThread* loop = new XboxdrvThread();
+    loop->launch_thread(dev_type.type, uinput, controller.release(), opts);
+  }
 }
 
 /* EOF */
