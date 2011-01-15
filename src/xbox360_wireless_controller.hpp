@@ -21,7 +21,6 @@
 
 #include "xbox_generic_controller.hpp"
 
-class USBReadThread;
 struct XboxGenericMsg;
 struct XPadDevice;
 
@@ -30,14 +29,12 @@ class Xbox360WirelessController : public XboxGenericController
 {
 private:
   libusb_device* dev;
-  struct libusb_device_handle* handle;
+  libusb_device_handle* handle;
   int endpoint;
   int interface;
   int battery_status;
   std::string serial;
   int led_status;
-  
-  std::auto_ptr<USBReadThread> read_thread;
 
 public:
   Xbox360WirelessController(libusb_device* dev, int controller_id, bool try_detach);

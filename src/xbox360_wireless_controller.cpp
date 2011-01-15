@@ -27,7 +27,6 @@
 
 #include "helper.hpp"
 #include "usb_helper.hpp"
-#include "usb_read_thread.hpp"
 #include "xbox360_wireless_controller.hpp"
 #include "xboxmsg.hpp"
 
@@ -39,8 +38,7 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev_, int co
   interface(),
   battery_status(),
   serial(),
-  led_status(0),
-  read_thread()
+  led_status(0)
 {
   assert(controller_id >= 0 && controller_id < 4);
   
@@ -64,9 +62,6 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev_, int co
       throw std::runtime_error(out.str());
     }
   }
-
-  read_thread = std::auto_ptr<USBReadThread>(new USBReadThread(handle, endpoint, 32));
-  read_thread->start_thread();
 }
 
 Xbox360WirelessController::~Xbox360WirelessController()
@@ -110,19 +105,11 @@ bool
 Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
 {
   uint8_t data[32];
-  int ret = 0;
   int len = 0;
-
-  if (read_thread.get())
-  {
-    ret = read_thread->read(data, sizeof(data), &len, timeout);
-  }
-  else
-  {
-    ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | endpoint, 
-                                    data, sizeof(data), 
-                                    &len, timeout);
-  }
+ 
+  int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | endpoint, 
+                                      data, sizeof(data), 
+                                      &len, timeout);
 
   if (ret == LIBUSB_ERROR_TIMEOUT)
   {

@@ -24,7 +24,6 @@
 
 class Chatpad;
 class Headset;
-class USBReadThread;
 struct XPadDevice;
 
 class Xbox360Controller : public XboxGenericController
@@ -32,12 +31,11 @@ class Xbox360Controller : public XboxGenericController
 private:
   libusb_device* dev;
   XPadDevice*        dev_type;
-  struct libusb_device_handle* handle;
+  libusb_device_handle* handle;
   
   int endpoint_in;
   int endpoint_out;
 
-  std::auto_ptr<USBReadThread> read_thread;
   std::auto_ptr<Chatpad> m_chatpad;
   std::auto_ptr<Headset> m_headset;
 
