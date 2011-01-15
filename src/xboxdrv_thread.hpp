@@ -33,6 +33,7 @@ class XboxdrvThread // FIXME: find a better name, XboxdrvControllerLoop?!
 private:
   std::auto_ptr<boost::thread> m_thread;
   std::auto_ptr<XboxGenericController> m_controller;
+  bool m_loop;
 
 public:
   XboxdrvThread(std::auto_ptr<XboxGenericController> controller);
@@ -40,8 +41,9 @@ public:
 
   void controller_loop(GamepadType type, uInput* uinput, const Options& opts);
 
-  void launch_thread(GamepadType type, uInput* uinput, const Options& opts);
-  
+  void start_thread(GamepadType type, uInput* uinput, const Options& opts);
+  void stop_thread();
+
 private:
   XboxdrvThread(const XboxdrvThread&);
   XboxdrvThread& operator=(const XboxdrvThread&);

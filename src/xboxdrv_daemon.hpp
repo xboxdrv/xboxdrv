@@ -33,7 +33,8 @@ class XboxdrvDaemon
 private:
   struct udev* m_udev;
   struct udev_monitor* m_monitor;
-  std::vector<XboxdrvThread*> m_threads;
+  typedef std::vector<XboxdrvThread*> Threads;
+  Threads m_threads;
 
 public:
   XboxdrvDaemon();

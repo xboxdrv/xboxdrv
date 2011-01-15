@@ -50,7 +50,9 @@ extern bool global_exit_xboxdrv;
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
 XboxdrvThread::XboxdrvThread(std::auto_ptr<XboxGenericController> controller) :
-  m_controller(controller)
+  m_thread(),
+  m_controller(controller),
+  m_loop(true)
 {
 }
 
@@ -59,7 +61,7 @@ XboxdrvThread::~XboxdrvThread()
   if (m_thread.get())
   {
     log_info << "waiting for thread to join: " << m_thread->get_id() << std::endl;
-    m_thread->join();
+    stop_thread(); 
     log_info << "joined thread: " << m_thread->get_id() << std::endl;
   }
 }
@@ -147,7 +149,7 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
   }
 
   uint32_t last_time = get_time();
-  while(!global_exit_xboxdrv) // FIXME: should not directly depend on global_exit_xboxdrv
+  while(m_loop && !global_exit_xboxdrv) // FIXME: should not directly depend on global_exit_xboxdrv
   {
     XboxGenericMsg msg;
 
@@ -241,11 +243,20 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
 }
 
 void
-XboxdrvThread::launch_thread(GamepadType type, uInput* uinput, const Options& opts)
+XboxdrvThread::start_thread(GamepadType type, uInput* uinput, const Options& opts)
 {
   assert(m_thread.get() == 0);
   m_thread.reset(new boost::thread(boost::bind(&XboxdrvThread::controller_loop, this, 
                                                type, uinput, boost::cref(opts))));
+}
+
+void
+XboxdrvThread::stop_thread()
+{
+  assert(m_thread.get());
+
+  m_loop = false;
+  m_thread->join();
 }
 
 /* EOF */

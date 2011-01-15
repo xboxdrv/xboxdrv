@@ -53,6 +53,11 @@ XboxdrvDaemon::XboxdrvDaemon() :
 
 XboxdrvDaemon::~XboxdrvDaemon()
 {
+  for(Threads::iterator i = m_threads.begin(); i != m_threads.end(); ++i)
+  {
+    delete *i;
+  }
+
   udev_monitor_unref(m_monitor);
   udev_unref(m_udev);
 }
@@ -300,7 +305,7 @@ XboxdrvDaemon::launch_xboxdrv(uInput* uinput, const XPadDevice& dev_type, const 
    
     // FIXME: keep these collected somewhere
     std::auto_ptr<XboxdrvThread> loop(new XboxdrvThread(controller));
-    loop->launch_thread(dev_type.type, uinput, opts);
+    loop->start_thread(dev_type.type, uinput, opts);
     m_threads.push_back(loop.release());
   }
 }
