@@ -69,8 +69,6 @@ void on_sigint(int)
       std::cout << "Shutdown initiated, press Ctrl-c again if nothing is happening" << std::endl;
 
     global_exit_xboxdrv = true; 
-    if (global_controller)
-      global_controller->set_led(0);
   }
 }
 
@@ -78,9 +76,6 @@ void on_sigterm(int)
 {
   if (!g_options->quiet)
     std::cout << "Shutdown initiated by SIGTERM" << std::endl;
-
-  if (global_controller)
-    global_controller->set_led(0);
 
   exit(EXIT_SUCCESS);
 }
