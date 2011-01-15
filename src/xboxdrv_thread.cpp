@@ -18,6 +18,7 @@
 
 #include "xboxdrv_thread.hpp"
 
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <errno.h>
 #include <iostream>
 #include <string.h>
@@ -257,6 +258,22 @@ XboxdrvThread::stop_thread()
 
   m_loop = false;
   m_thread->join();
+  m_thread.reset();
+}
+
+bool
+XboxdrvThread::try_join_thread()
+{
+  bool got_joined = m_thread->timed_join(boost::posix_time::time_duration(0,0,0,0));
+  if (got_joined)
+  {
+    m_thread.reset();
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 /* EOF */

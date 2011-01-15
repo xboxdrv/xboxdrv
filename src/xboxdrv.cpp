@@ -38,6 +38,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "log.hpp"
 #include "command_line_options.hpp"
 #include "evdev_controller.hpp"
 #include "evdev_helper.hpp"
@@ -690,21 +691,6 @@ Xboxdrv::run_daemon(const Options& opts)
       if (chdir("/") != 0)
       {
         throw std::runtime_error(strerror(errno));
-      }
-
-      if (!opts.pid_file.empty())
-      {
-        std::ofstream out(opts.pid_file.c_str());
-        if (!out)
-        {
-          std::ostringstream str;
-          str << opts.pid_file << ": " << strerror(errno);
-          throw std::runtime_error(str.str());
-        }
-        else
-        {
-          out << getpid() << std::endl;
-        }
       }
 
       XboxdrvDaemon daemon;

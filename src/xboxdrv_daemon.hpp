@@ -43,6 +43,7 @@ public:
   void run(const Options& opts);
 
 private:
+  void cleanup_threads();
   void process_match(const Options& opts, uInput* uinput, struct udev_device* device);
   void print_info(struct udev_device* device);
   void launch_xboxdrv(uInput* uinput,

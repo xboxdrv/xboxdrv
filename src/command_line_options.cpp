@@ -32,6 +32,7 @@
 #include "helper.hpp"
 #include "ini_parser.hpp"
 #include "ini_schema_builder.hpp"
+#include "log.hpp"
 #include "options.hpp"
 #include "uinput_deviceid.hpp"
 
@@ -145,9 +146,9 @@ CommandLineParser::init_argp()
     .add_newline()
 
     .add_text("Daemon Options: ")
-    .add_option(OPTION_DAEMON,       'D', "daemon",    "", "Run as daemon")
-    .add_option(OPTION_DAEMON,       0, "detach",      "", "Detach the daemon from the current shell")
-    .add_option(OPTION_DAEMON,       0, "pid-file",    "FILE", "Write daemon pid to FILE")
+    .add_option(OPTION_DAEMON,        'D', "daemon",    "", "Run as daemon")
+    .add_option(OPTION_DAEMON_DETACH,   0, "detach",      "", "Detach the daemon from the current shell")
+    .add_option(OPTION_DAEMON_PID_FILE, 0, "pid-file",    "FILE", "Write daemon pid to FILE")
     .add_newline()
 
     .add_text("Device Options: ")
@@ -354,7 +355,6 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_DAEMON:
-        opts.silent = true;
         opts.mode = Options::RUN_DAEMON;
         break;
 

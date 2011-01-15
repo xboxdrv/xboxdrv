@@ -18,14 +18,16 @@
 
 #include "xboxdrv_daemon.hpp"
 
-#include <iostream>
-#include <stdexcept>
-#include <string.h>
+#include <algorithm>
+#include <assert.h>
+#include <boost/bind.hpp>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/bind.hpp>
+#include <fstream>
+#include <iostream>
+#include <stdexcept>
 #include <stdio.h>
-#include <assert.h>
+#include <string.h>
 
 #include "log.hpp"
 #include "options.hpp"
@@ -60,6 +62,19 @@ XboxdrvDaemon::~XboxdrvDaemon()
 
   udev_monitor_unref(m_monitor);
   udev_unref(m_udev);
+}
+
+void
+XboxdrvDaemon::cleanup_threads()
+{
+  size_t num_threads = m_threads.size();
+  m_threads.erase(std::remove_if(m_threads.begin(), m_threads.end(), 
+                                 boost::bind(&XboxdrvThread::try_join_thread, _1)),
+                  m_threads.end());
+  if (num_threads != m_threads.size())
+  {
+    log_info << "cleaned up " << (num_threads - m_threads.size()) << " thread(s)" << std::endl;
+  }
 }
 
 void
@@ -126,6 +141,22 @@ XboxdrvDaemon::process_match(const Options& opts, uInput* uinput, struct udev_de
 void
 XboxdrvDaemon::run(const Options& opts)
 {
+  if (!opts.pid_file.empty())
+  {
+    log_info << "writing pid file: " << opts.pid_file << std::endl;
+    std::ofstream out(opts.pid_file.c_str());
+    if (!out)
+    {
+      std::ostringstream str;
+      str << opts.pid_file << ": " << strerror(errno);
+      throw std::runtime_error(str.str());
+    }
+    else
+    {
+      out << getpid() << std::endl;
+    }
+  }
+
   // Setup uinput
   std::auto_ptr<uInput> uinput;
   if (!opts.no_uinput)
@@ -188,6 +219,8 @@ XboxdrvDaemon::run(const Options& opts)
   {
     // FIXME: we bust udev_unref_monitor() this
     struct udev_device* device = udev_monitor_receive_device(m_monitor);
+
+    cleanup_threads();
 
     if (!device)
     {

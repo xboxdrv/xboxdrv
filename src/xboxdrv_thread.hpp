@@ -43,6 +43,7 @@ public:
 
   void start_thread(GamepadType type, uInput* uinput, const Options& opts);
   void stop_thread();
+  bool try_join_thread();
 
 private:
   XboxdrvThread(const XboxdrvThread&);
