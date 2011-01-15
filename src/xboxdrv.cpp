@@ -25,7 +25,9 @@
 #include <boost/scoped_array.hpp>
 #include <ctype.h>
 #include <errno.h>
+#include <fstream>
 #include <iostream>
+#include <libusb.h>
 #include <math.h>
 #include <signal.h>
 #include <stdio.h>
@@ -35,7 +37,6 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
-#include <libusb.h>
 
 #include "command_line_options.hpp"
 #include "evdev_controller.hpp"
@@ -662,7 +663,7 @@ Xboxdrv::run_daemon(const Options& opts)
     throw std::runtime_error("-- failure --"); // FIXME
   }
 
-  if (true /* no_detatch */)
+  if (!opts.detach)
   {
     XboxdrvDaemon daemon;
     daemon.run(opts);
@@ -689,6 +690,21 @@ Xboxdrv::run_daemon(const Options& opts)
       if (chdir("/") != 0)
       {
         throw std::runtime_error(strerror(errno));
+      }
+
+      if (!opts.pid_file.empty())
+      {
+        std::ofstream out(opts.pid_file.c_str());
+        if (!out)
+        {
+          std::ostringstream str;
+          str << opts.pid_file << ": " << strerror(errno);
+          throw std::runtime_error(str.str());
+        }
+        else
+        {
+          out << getpid() << std::endl;
+        }
       }
 
       XboxdrvDaemon daemon;

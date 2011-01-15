@@ -59,7 +59,9 @@ Options::Options() :
   headset(false),
   headset_debug(false),
   headset_dump(),
-  headset_play()
+  headset_play(),
+  detach(false),
+  pid_file()
 {
 }
 

@@ -42,6 +42,25 @@ $ dput my-ppa ../xboxdrv_0.6.4-2~lucid1_source.changes
 Stuff to do before 0.6.5 release:
 =================================
 
+* get rid of uinput.get_uinput(m_code.device_id)->send(EV_ABS, m_code.code, value) turn into:
+  
+  uinput.send(m_code.device_id, EV_ABS, m_code.code, value);
+
+  or
+
+  uinput.send_abs(m_code.device_id, m_code.code, value);
+
+* add: void Uinput::send(XboxGenericMsg& msg, int controller_slot = 0); 
+* have separate UinputConfig's for each controller_slot
+* need magic to assign controller to a slot
+* might need magic to give device-ids in a slot fashion: 
+  from: 1-ABS_X   (second uinput device)
+  to:   2.1-ABS_X (third uinput device for the second slot)
+   2.mouse-BTN_MIDDLE ?!
+   1.-BTN_MIDDLE
+   1.auto-BTN_MIDDLE
+   auto-BTN_MIDDLE
+
 * add analog emulation for button (i.e. the longer its pressed, the higher the value)
 
 * uinput must be made threadsafe
@@ -93,10 +112,6 @@ Stuff to do before 0.6.5 release:
 
 XboxdrvDaemon
 =============
-
-* add --no-detach
-
-* add --create-pid (look how other daemons do it)
 
 
 Stuff to do before 0.6.x release:

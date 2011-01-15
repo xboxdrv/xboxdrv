@@ -107,6 +107,8 @@ enum {
   OPTION_HEADSET_DUMP,
   OPTION_HEADSET_PLAY,
   OPTION_DETACH_KERNEL_DRIVER,
+  OPTION_DAEMON_DETACH,
+  OPTION_DAEMON_PID_FILE,
   OPTION_HELP_DEVICES
 };
 
@@ -136,11 +138,16 @@ CommandLineParser::init_argp()
     .add_option(OPTION_LIST_CONTROLLER, 'L', "list-controller", "", "list available controllers")
     .add_option(OPTION_LIST_SUPPORTED_DEVICES, 0, "list-supported-devices", "", "list supported devices (used by xboxdrv-daemon.py)")
     .add_option(OPTION_LIST_SUPPORTED_DEVICES_XPAD, 0, "list-supported-devices-xpad", "", "list supported devices in xpad.c style")
-    .add_option(OPTION_DAEMON,       'D', "daemon",      "", "run as daemon")
     .add_option(OPTION_CONFIG,       'c', "config",      "FILE", "read configuration from FILE")
     .add_option(OPTION_ALT_CONFIG,    0, "alt-config",   "FILE", "read alternative configuration from FILE ")
     .add_option(OPTION_CONFIG_OPTION,'o', "option",      "NAME=VALUE", "Set the given configuration option") 
     .add_option(OPTION_WRITE_CONFIG,  0, "write-config", "FILE", "rite an example configuration to FILE")
+    .add_newline()
+
+    .add_text("Daemon Options: ")
+    .add_option(OPTION_DAEMON,       'D', "daemon",    "", "Run as daemon")
+    .add_option(OPTION_DAEMON,       0, "detach",      "", "Detach the daemon from the current shell")
+    .add_option(OPTION_DAEMON,       0, "pid-file",    "FILE", "Write daemon pid to FILE")
     .add_newline()
 
     .add_text("Device Options: ")
@@ -654,6 +661,14 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_HELP_LED:
         opts.mode = Options::PRINT_LED_HELP;
+        break;
+
+      case OPTION_DAEMON_DETACH:
+        opts.detach = true;
+        break;
+
+      case OPTION_DAEMON_PID_FILE:
+        opts.pid_file = opt.argument;
         break;
 
       case OPTION_DEVICE_BY_ID:

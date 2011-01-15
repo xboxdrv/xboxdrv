@@ -93,6 +93,9 @@ public:
   std::string headset_dump;
   std::string headset_play;
 
+  bool detach;
+  std::string pid_file;
+
   std::vector<std::string> exec;
 
   Options();
