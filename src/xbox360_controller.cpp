@@ -113,18 +113,6 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
 
 Xbox360Controller::~Xbox360Controller()
 {
-  read_thread->stop_thread();
-
-  if (m_chatpad.get())
-  {
-    m_chatpad.reset();
-  }
-
-  if (m_headset.get())
-  {
-    m_headset.reset();
-  }
-
   libusb_release_interface(handle, 0); 
   libusb_close(handle);
 }

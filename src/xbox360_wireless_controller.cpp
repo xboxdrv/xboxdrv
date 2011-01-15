@@ -71,7 +71,6 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev_, int co
 
 Xbox360WirelessController::~Xbox360WirelessController()
 {
-  read_thread->stop_thread();
   libusb_release_interface(handle, interface); 
   libusb_close(handle);
 }

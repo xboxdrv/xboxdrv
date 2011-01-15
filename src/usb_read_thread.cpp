@@ -41,13 +41,14 @@ USBReadThread::USBReadThread(struct libusb_device_handle* handle, int endpoint, 
 
 USBReadThread::~USBReadThread()
 {
-  if (!m_stop)
-    stop_thread();
+  stop_thread();
 }
   
 void
 USBReadThread::start_thread()
 {
+  assert(!m_thread.get());
+
   m_stop = false;
   m_thread = std::auto_ptr<boost::thread>(new boost::thread(boost::bind(&USBReadThread::run, this)));
 }
@@ -55,8 +56,12 @@ USBReadThread::start_thread()
 void
 USBReadThread::stop_thread()
 {
-  m_stop = true;
-  m_thread->join();
+  if (m_thread.get())
+  {
+    m_stop = true;
+    m_thread->join();
+    m_thread.reset();
+  }
 }
 
 int
