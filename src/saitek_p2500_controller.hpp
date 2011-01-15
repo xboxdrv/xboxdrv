@@ -27,7 +27,7 @@ class SaitekP2500Controller : public XboxGenericController
 {
 private:
   libusb_device* dev;
-  struct libusb_device_handle* handle;
+  libusb_device_handle* handle;
   
   int left_rumble;
   int right_rumble;

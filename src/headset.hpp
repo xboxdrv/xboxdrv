@@ -26,7 +26,7 @@
 class Headset
 {
 private:
-  struct libusb_device_handle* m_handle;
+  libusb_device_handle* m_handle;
   std::auto_ptr<boost::thread> m_read_thread;
   std::auto_ptr<boost::thread> m_write_thread;
 
@@ -34,7 +34,7 @@ private:
   bool m_quit_write_thread;
 
 public:
-  Headset(struct libusb_device_handle* handle, 
+  Headset(libusb_device_handle* handle, 
           bool debug,
           const std::string& dump_filename,
           const std::string& play_filename);

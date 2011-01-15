@@ -27,7 +27,7 @@
 #include "usb_helper.hpp"
 #include "usb_read_thread.hpp"
 
-USBReadThread::USBReadThread(struct libusb_device_handle* handle, int endpoint, int len) : 
+USBReadThread::USBReadThread(libusb_device_handle* handle, int endpoint, int len) : 
   m_handle(handle),
   m_read_endpoint(endpoint),
   m_read_length(len),

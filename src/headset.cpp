@@ -25,7 +25,7 @@
 
 #include "usb_helper.hpp"
 
-Headset::Headset(struct libusb_device_handle* handle, 
+Headset::Headset(libusb_device_handle* handle, 
                  bool debug,
                  const std::string& dump_filename,
                  const std::string& play_filename) :

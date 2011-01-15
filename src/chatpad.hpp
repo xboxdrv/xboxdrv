@@ -142,7 +142,7 @@ private:
   unsigned int m_led_state;
 
 public:
-  Chatpad(struct libusb_device_handle* handle, uint16_t bcdDevice,
+  Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
           bool no_init, bool debug);
   ~Chatpad();
 

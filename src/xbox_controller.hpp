@@ -29,7 +29,7 @@ class XboxController : public XboxGenericController
 {
 private:
   libusb_device* dev;
-  struct libusb_device_handle* handle;
+  libusb_device_handle* handle;
 
   int endpoint_in;
   int endpoint_out;

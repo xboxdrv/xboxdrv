@@ -28,7 +28,7 @@ class FirestormDualController : public XboxGenericController
 private:
   bool is_vsb;
   libusb_device* dev;
-  struct libusb_device_handle* handle;
+  libusb_device_handle* handle;
   
   int left_rumble;
   int right_rumble;
