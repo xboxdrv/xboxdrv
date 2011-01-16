@@ -30,6 +30,25 @@
 #include "uinput_cfg.hpp"
 #include "xpad_device.hpp"
 
+class ControllerOptions
+{
+public:
+  ControllerOptions();
+
+  uInputCfg uinput;
+  int deadzone;
+  int deadzone_trigger;
+  std::vector<ButtonMapping> button_map;
+  std::vector<AxisMapping>   axis_map;
+  std::vector<AutoFireMapping> autofire_map;
+  std::vector<RelativeAxisMapping> relative_axis_map;
+  std::vector<CalibrationMapping> calibration_map;
+  std::vector<AxisSensitivityMapping> axis_sensitivity_map;
+  bool square_axis;
+  bool four_way_restrictor;
+  int  dpad_rotation; 
+};
+
 class Options
 {
 public:
@@ -44,6 +63,7 @@ public:
          PRINT_LED_HELP
   } mode;
 
+  // General program options
   bool verbose;
   bool silent;
   bool quiet;
@@ -60,39 +80,34 @@ public:
 
   GamepadType gamepad_type;
   
+  // device options
   std::string busid;
   std::string devid;
 
   int vendor_id;
   int product_id;
 
-  uInputCfg uinput_config;
-  int deadzone;
-  int deadzone_trigger;
-  std::vector<ButtonMapping> button_map;
-  std::vector<AxisMapping>   axis_map;
-  std::vector<AutoFireMapping> autofire_map;
-  std::vector<RelativeAxisMapping> relative_axis_map;
-  std::vector<CalibrationMapping> calibration_map;
-  std::vector<AxisSensitivityMapping> axis_sensitivity_map;
-  bool square_axis;
-  bool four_way_restrictor;
-  int  dpad_rotation;
   std::string evdev_device;
   EvdevAbsMap evdev_absmap;
-  std::map<int, XboxButton> evdev_keymap;
   bool evdev_grab;
   bool evdev_debug;
+  std::map<int, XboxButton> evdev_keymap;
 
+  // controller options
+  ControllerOptions controller;
+
+  // chatpad options
   bool chatpad;
   bool chatpad_no_init;
   bool chatpad_debug;
 
+  // headset options
   bool headset;
   bool headset_debug;
   std::string headset_dump;
   std::string headset_play;
 
+  // daemon options
   bool detach;
   std::string pid_file;
 

@@ -20,6 +20,22 @@
 
 Options* g_options;
 
+ControllerOptions::ControllerOptions() :
+  uinput(),
+  deadzone(0),
+  deadzone_trigger(0),
+  button_map(),
+  axis_map(),
+  autofire_map(),
+  relative_axis_map(),
+  calibration_map(),
+  axis_sensitivity_map(),
+  square_axis(false),
+  four_way_restrictor(false),
+  dpad_rotation(0)
+{
+}
+
 Options::Options() :
   mode(RUN_DEFAULT),
   verbose(false),
@@ -38,19 +54,8 @@ Options::Options() :
   gamepad_type(GAMEPAD_UNKNOWN),
   vendor_id(-1),
   product_id(-1),
-  uinput_config(),
-  deadzone(0),
-  deadzone_trigger(0),
-  button_map(),
-  axis_map(),
-  autofire_map(),
-  relative_axis_map(),
-  calibration_map(),
-  axis_sensitivity_map(),
-  square_axis(false),
-  four_way_restrictor(false),
-  dpad_rotation(0),
   evdev_device(),
+  evdev_absmap(),
   evdev_grab(true),
   evdev_debug(false),
   chatpad(false),

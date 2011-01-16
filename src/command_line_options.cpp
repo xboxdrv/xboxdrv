@@ -268,13 +268,13 @@ CommandLineParser::init_ini(Options* opts)
     ("detach-kernel-driver", &opts->detach_kernel_driver)
     ("busid", &opts->busid)
     ("devid", &opts->devid)
-    ("deadzone", &opts->deadzone)
-    ("deadzone-trigger", &opts->deadzone_trigger)
+    ("deadzone", &opts->controller.deadzone)
+    ("deadzone-trigger", &opts->controller.deadzone_trigger)
     ("vendor-id", &opts->vendor_id)
     ("product-id", &opts->product_id)   
-    ("square-axis", &opts->square_axis)
-    ("four-way-restrictor", &opts->four_way_restrictor)
-    ("dpad-rotation", &opts->dpad_rotation)
+    ("square-axis", &opts->controller.square_axis)
+    ("four-way-restrictor", &opts->controller.four_way_restrictor)
+    ("dpad-rotation", &opts->controller.dpad_rotation)
     ("evdev", &opts->evdev_device)
     ("evdev-grab", &opts->evdev_grab)
     ("evdev-debug", &opts->evdev_debug)
@@ -282,15 +282,15 @@ CommandLineParser::init_ini(Options* opts)
     ("alt-config", boost::bind(&CommandLineParser::read_alt_config_file, this, opts, _1))
 
     // uinput stuff
-    ("device-name", &opts->uinput_config.device_name)
-    ("mouse", boost::bind(&uInputCfg::mouse, boost::ref(opts->uinput_config)), boost::function<void ()>())
-    ("guitar", boost::bind(&uInputCfg::guitar, boost::ref(opts->uinput_config)), boost::function<void ()>())
-    ("trigger-as-button", boost::bind(&uInputCfg::trigger_as_button, boost::ref(opts->uinput_config)), boost::function<void ()>())
-    ("trigger-as-zaxis", boost::bind(&uInputCfg::trigger_as_zaxis, boost::ref(opts->uinput_config)), boost::function<void ()>())
-    ("dpad-as-button", boost::bind(&uInputCfg::dpad_as_button, boost::ref(opts->uinput_config)), boost::function<void ()>())
-    ("dpad-only", boost::bind(&uInputCfg::dpad_only, boost::ref(opts->uinput_config)), boost::function<void ()>())
-    ("force-feedback", &opts->uinput_config.force_feedback)
-    ("mimic-xpad", boost::bind(&uInputCfg::mimic_xpad, boost::ref(opts->uinput_config)), boost::function<void ()>())
+    ("device-name", &opts->controller.uinput.device_name)
+    ("mouse", boost::bind(&uInputCfg::mouse, boost::ref(opts->controller.uinput)), boost::function<void ()>())
+    ("guitar", boost::bind(&uInputCfg::guitar, boost::ref(opts->controller.uinput)), boost::function<void ()>())
+    ("trigger-as-button", boost::bind(&uInputCfg::trigger_as_button, boost::ref(opts->controller.uinput)), boost::function<void ()>())
+    ("trigger-as-zaxis", boost::bind(&uInputCfg::trigger_as_zaxis, boost::ref(opts->controller.uinput)), boost::function<void ()>())
+    ("dpad-as-button", boost::bind(&uInputCfg::dpad_as_button, boost::ref(opts->controller.uinput)), boost::function<void ()>())
+    ("dpad-only", boost::bind(&uInputCfg::dpad_only, boost::ref(opts->controller.uinput)), boost::function<void ()>())
+    ("force-feedback", &opts->controller.uinput.force_feedback)
+    ("mimic-xpad", boost::bind(&uInputCfg::mimic_xpad, boost::ref(opts->controller.uinput)), boost::function<void ()>())
 
     ("chatpad",         &opts->chatpad)
     ("chatpad-no-init", &opts->chatpad_no_init)
@@ -303,9 +303,9 @@ CommandLineParser::init_ini(Options* opts)
     ;
 
   m_ini.section("ui-buttonmap", boost::bind(&uInputCfg::set_ui_buttonmap, 
-                                            boost::ref(opts->uinput_config), _1, _2));
+                                            boost::ref(opts->controller.uinput), _1, _2));
   m_ini.section("ui-axismap",   boost::bind(&uInputCfg::set_ui_axismap, 
-                                            boost::ref(opts->uinput_config), _1, _2));
+                                            boost::ref(opts->controller.uinput), _1, _2));
 
   m_ini.section("buttonmap", boost::bind(&CommandLineParser::set_buttonmap, this, _1, _2));
   m_ini.section("axismap",   boost::bind(&CommandLineParser::set_axismap, this, _1, _2));
@@ -421,7 +421,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_MIMIC_XPAD:
-        opts.uinput_config.mimic_xpad();
+        opts.controller.uinput.mimic_xpad();
         break;
 
       case OPTION_TYPE:
@@ -500,7 +500,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_FORCE_FEEDBACK:
-        opts.uinput_config.force_feedback = true;
+        opts.controller.uinput.force_feedback = true;
         break;
 
       case OPTION_RUMBLE_GAIN:
@@ -516,42 +516,42 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
                     
       case OPTION_NAME:
-        opts.uinput_config.device_name = opt.argument;
+        opts.controller.uinput.device_name = opt.argument;
         break;
 
       case OPTION_UI_NEW:
-        opts.uinput_config.add_input_mapping();
-        if (opts.uinput_config.config_toggle_button == XBOX_BTN_UNKNOWN)
+        opts.controller.uinput.add_input_mapping();
+        if (opts.controller.uinput.config_toggle_button == XBOX_BTN_UNKNOWN)
         {
-          opts.uinput_config.config_toggle_button = XBOX_BTN_GUIDE;
+          opts.controller.uinput.config_toggle_button = XBOX_BTN_GUIDE;
         }
         break;
 
       case OPTION_UI_TOGGLE:
-        opts.uinput_config.config_toggle_button = string2btn(opt.argument);
+        opts.controller.uinput.config_toggle_button = string2btn(opt.argument);
         break;
 
       case OPTION_UI_CLEAR:
-        opts.uinput_config.get_axis_map().clear();
-        opts.uinput_config.get_btn_map().clear();
+        opts.controller.uinput.get_axis_map().clear();
+        opts.controller.uinput.get_btn_map().clear();
         break;
 
       case OPTION_UI_AXISMAP:
         process_name_value_string(opt.argument, boost::bind(&uInputCfg::set_ui_axismap, 
-                                                            boost::ref(opts.uinput_config), _1, _2));
+                                                            boost::ref(opts.controller.uinput), _1, _2));
         break;
 
       case OPTION_UI_BUTTONMAP:
         process_name_value_string(opt.argument, boost::bind(&uInputCfg::set_ui_buttonmap, 
-                                                            boost::ref(opts.uinput_config), _1, _2));
+                                                            boost::ref(opts.controller.uinput), _1, _2));
         break;
 
       case OPTION_MOUSE:
-        opts.uinput_config.mouse();
+        opts.controller.uinput.mouse();
         break;
 
       case OPTION_GUITAR:
-        opts.uinput_config.guitar();
+        opts.controller.uinput.guitar();
         break;
 
       case OPTION_DETACH_KERNEL_DRIVER:
@@ -602,27 +602,27 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
             
       case OPTION_DPAD_ONLY:
-        opts.uinput_config.dpad_only();
+        opts.controller.uinput.dpad_only();
         break;
             
       case OPTION_DPAD_AS_BUTTON:
-        opts.uinput_config.dpad_as_button();
+        opts.controller.uinput.dpad_as_button();
         break;
 
       case OPTION_DEADZONE:
-        opts.deadzone = to_number(32767, opt.argument);
+        opts.controller.deadzone = to_number(32767, opt.argument);
         break;
 
       case OPTION_DEADZONE_TRIGGER:
-        opts.deadzone_trigger = to_number(255, opt.argument);
+        opts.controller.deadzone_trigger = to_number(255, opt.argument);
         break;
 
       case OPTION_TRIGGER_AS_BUTTON:
-        opts.uinput_config.trigger_as_button();
+        opts.controller.uinput.trigger_as_button();
         break;
         
       case OPTION_TRIGGER_AS_ZAXIS:
-        opts.uinput_config.trigger_as_zaxis();
+        opts.controller.uinput.trigger_as_zaxis();
         break;
 
       case OPTION_AUTOFIRE:
@@ -642,7 +642,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_FOUR_WAY_RESTRICTOR:
-        opts.four_way_restrictor = true;
+        opts.controller.four_way_restrictor = true;
         break;
 
       case OPTION_DPAD_ROTATION:
@@ -651,12 +651,12 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
           degree /= 45;
           degree %= 8;
           if (degree < 0) degree += 8;
-          opts.dpad_rotation = degree;
+          opts.controller.dpad_rotation = degree;
         }
         break;
 
       case OPTION_SQUARE_AXIS:
-        opts.square_axis = true;
+        opts.controller.square_axis = true;
         break;
 
       case OPTION_HELP_LED:
@@ -776,13 +776,13 @@ CommandLineParser::print_version() const
 void
 CommandLineParser::set_axismap(const std::string& name, const std::string& value)
 {
-  m_options->axis_map.push_back(AxisMapping::from_string(name, value));
+  m_options->controller.axis_map.push_back(AxisMapping::from_string(name, value));
 }
 
 void
 CommandLineParser::set_buttonmap(const std::string& name, const std::string& value)
 {
-  m_options->button_map.push_back(ButtonMapping::from_string(name, value));
+  m_options->controller.button_map.push_back(ButtonMapping::from_string(name, value));
 }
 
 void
@@ -814,25 +814,25 @@ CommandLineParser::set_evdev_keymap(const std::string& name, const std::string& 
 void
 CommandLineParser::set_relative_axis(const std::string& name, const std::string& value)
 {
-  m_options->relative_axis_map.push_back(RelativeAxisMapping::from_string(name, value));
+  m_options->controller.relative_axis_map.push_back(RelativeAxisMapping::from_string(name, value));
 }
 
 void
 CommandLineParser::set_autofire(const std::string& name, const std::string& value)
 {
-  m_options->autofire_map.push_back(AutoFireMapping::from_string(name, value));
+  m_options->controller.autofire_map.push_back(AutoFireMapping::from_string(name, value));
 }
 
 void
 CommandLineParser::set_calibration(const std::string& name, const std::string& value)
 {
-  m_options->calibration_map.push_back(CalibrationMapping::from_string(name, value));
+  m_options->controller.calibration_map.push_back(CalibrationMapping::from_string(name, value));
 }
 
 void
 CommandLineParser::set_axis_sensitivity(const std::string& name, const std::string& value)
 {
-  m_options->axis_sensitivity_map.push_back(AxisSensitivityMapping::from_string(name, value));
+  m_options->controller.axis_sensitivity_map.push_back(AxisSensitivityMapping::from_string(name, value));
 }
 
 void
@@ -857,7 +857,7 @@ CommandLineParser::read_config_file(Options* opts, const std::string& filename)
 void
 CommandLineParser::read_alt_config_file(Options* opts, const std::string& filename)
 {
-  opts->uinput_config.add_input_mapping();
+  opts->controller.uinput.add_input_mapping();
   read_config_file(opts, filename);
 }
 

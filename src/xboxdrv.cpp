@@ -454,8 +454,8 @@ Xboxdrv::run_main(const Options& opts)
     {
       if (!opts.quiet)
         std::cout << "Starting with uinput" << std::endl;
-      uinput = std::auto_ptr<uInput>(new uInput(dev_type.idVendor, dev_type.idProduct, opts.uinput_config));
-      if (opts.uinput_config.force_feedback)
+      uinput = std::auto_ptr<uInput>(new uInput(dev_type.idVendor, dev_type.idProduct, opts.controller.uinput));
+      if (opts.controller.uinput.force_feedback)
       {
         uinput->set_ff_callback(boost::bind(&set_rumble,  controller.get(), opts.rumble_gain, _1, _2));
       }
@@ -512,8 +512,8 @@ Xboxdrv::print_info(libusb_device* dev,
   if (dev_type.type == GAMEPAD_XBOX360_WIRELESS)
     std::cout << "Wireless Port:     " << opts.wireless_id << std::endl;
   std::cout << "Controller Type:   " << dev_type.type << std::endl;
-  std::cout << "Deadzone:          " << opts.deadzone << std::endl;
-  std::cout << "Trigger Deadzone:  " << opts.deadzone_trigger << std::endl;
+  std::cout << "Deadzone:          " << opts.controller.deadzone << std::endl;
+  std::cout << "Trigger Deadzone:  " << opts.controller.deadzone_trigger << std::endl;
   std::cout << "Rumble Debug:      " << (opts.rumble ? "on" : "off") << std::endl;
   std::cout << "Rumble Speed:      " << "left: " << opts.rumble_l << " right: " << opts.rumble_r << std::endl;
   if (opts.led == -1)
@@ -521,18 +521,20 @@ Xboxdrv::print_info(libusb_device* dev,
   else
     std::cout << "LED Status:        " << opts.led << std::endl;
 
-  std::cout << "Square Axis:       " << ((opts.square_axis) ? "yes" : "no") << std::endl;
-  std::cout << "4-Way Restrictor:  " << ((opts.four_way_restrictor) ? "yes" : "no") << std::endl;
-  std::cout << "Dpad Rotation:     " << opts.dpad_rotation * 45 << " degree" << std::endl;
+  std::cout << "Square Axis:       " << ((opts.controller.square_axis) ? "yes" : "no") << std::endl;
+  std::cout << "4-Way Restrictor:  " << ((opts.controller.four_way_restrictor) ? "yes" : "no") << std::endl;
+  std::cout << "Dpad Rotation:     " << opts.controller.dpad_rotation * 45 << " degree" << std::endl;
   
   std::cout << "ButtonMap:         ";
-  if (opts.button_map.empty())
+  if (opts.controller.button_map.empty())
   {
     std::cout << "none" << std::endl;
   }
   else
   {
-    for(std::vector<ButtonMapping>::const_iterator i = opts.button_map.begin(); i != opts.button_map.end(); ++i)
+    for(std::vector<ButtonMapping>::const_iterator i = opts.controller.button_map.begin(); 
+        i != opts.controller.button_map.end(); 
+        ++i)
     {
       std::cout << btn2string(i->lhs) << "->" << btn2string(i->rhs) << " ";
     }
@@ -540,13 +542,14 @@ Xboxdrv::print_info(libusb_device* dev,
   }
 
   std::cout << "AxisMap:           ";
-  if (opts.axis_map.empty())
+  if (opts.controller.axis_map.empty())
   {
     std::cout << "none" << std::endl;
   }
   else
   {
-    for(std::vector<AxisMapping>::const_iterator i = opts.axis_map.begin(); i != opts.axis_map.end(); ++i)
+    for(std::vector<AxisMapping>::const_iterator i = opts.controller.axis_map.begin(); 
+        i != opts.controller.axis_map.end(); ++i)
     {
       if (i->invert)
         std::cout << "-" << axis2string(i->lhs) << "->" << axis2string(i->rhs) << " ";
@@ -557,13 +560,15 @@ Xboxdrv::print_info(libusb_device* dev,
   }
 
   std::cout << "RelativeAxisMap:   ";
-  if (opts.relative_axis_map.empty())
+  if (opts.controller.relative_axis_map.empty())
   {
     std::cout << "none" << std::endl;
   }
   else
   {
-    for(std::vector<RelativeAxisMapping>::const_iterator i = opts.relative_axis_map.begin(); i != opts.relative_axis_map.end(); ++i)
+    for(std::vector<RelativeAxisMapping>::const_iterator i = opts.controller.relative_axis_map.begin(); 
+        i != opts.controller.relative_axis_map.end();
+        ++i)
     {
       std::cout << axis2string(i->axis) << "=" << i->speed << " ";
     }
@@ -571,13 +576,15 @@ Xboxdrv::print_info(libusb_device* dev,
   }
 
   std::cout << "AutoFireMap:       ";
-  if (opts.autofire_map.empty())
+  if (opts.controller.autofire_map.empty())
   {
     std::cout << "none" << std::endl;
   }
   else
   {
-    for(std::vector<AutoFireMapping>::const_iterator i = opts.autofire_map.begin(); i != opts.autofire_map.end(); ++i)
+    for(std::vector<AutoFireMapping>::const_iterator i = opts.controller.autofire_map.begin(); 
+        i != opts.controller.autofire_map.end(); 
+        ++i)
     {
       std::cout << btn2string(i->button) << "=" << i->frequency << " ";
     }
@@ -585,7 +592,7 @@ Xboxdrv::print_info(libusb_device* dev,
   }
 
   std::cout << "RumbleGain:        " << opts.rumble_gain << std::endl;
-  std::cout << "ForceFeedback:     " << ((opts.uinput_config.force_feedback) ? "enabled" : "disabled") << std::endl;
+  std::cout << "ForceFeedback:     " << ((opts.controller.uinput.force_feedback) ? "enabled" : "disabled") << std::endl;
 }
 
 void

@@ -90,35 +90,35 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
   std::vector<ModifierPtr> modifier;
 
   // Create filter
-  if (!opts.calibration_map.empty())
-    modifier.push_back(ModifierPtr(new CalibrationModifier(opts.calibration_map)));
+  if (!opts.controller.calibration_map.empty())
+    modifier.push_back(ModifierPtr(new CalibrationModifier(opts.controller.calibration_map)));
   
-  if (opts.deadzone != 0 || opts.deadzone_trigger != 0)
-    modifier.push_back(ModifierPtr(new DeadzoneModifier(opts.deadzone, opts.deadzone_trigger)));
+  if (opts.controller.deadzone != 0 || opts.controller.deadzone_trigger != 0)
+    modifier.push_back(ModifierPtr(new DeadzoneModifier(opts.controller.deadzone, opts.controller.deadzone_trigger)));
 
-  if (opts.square_axis)
+  if (opts.controller.square_axis)
     modifier.push_back(ModifierPtr(new SquareAxisModifier()));
 
-  if (!opts.axis_sensitivity_map.empty())
-    modifier.push_back(ModifierPtr(new AxisSensitivityModifier(opts.axis_sensitivity_map)));
+  if (!opts.controller.axis_sensitivity_map.empty())
+    modifier.push_back(ModifierPtr(new AxisSensitivityModifier(opts.controller.axis_sensitivity_map)));
   
-  if (opts.four_way_restrictor)
+  if (opts.controller.four_way_restrictor)
     modifier.push_back(ModifierPtr(new FourWayRestrictorModifier()));
 
-  if (opts.dpad_rotation)
-    modifier.push_back(ModifierPtr(new DpadRotationModifier(opts.dpad_rotation)));
+  if (opts.controller.dpad_rotation)
+    modifier.push_back(ModifierPtr(new DpadRotationModifier(opts.controller.dpad_rotation)));
 
-  if (!opts.autofire_map.empty())
-    modifier.push_back(ModifierPtr(new AutoFireModifier(opts.autofire_map)));
+  if (!opts.controller.autofire_map.empty())
+    modifier.push_back(ModifierPtr(new AutoFireModifier(opts.controller.autofire_map)));
 
-  if (!opts.relative_axis_map.empty())
-    modifier.push_back(ModifierPtr(new RelativeAxisModifier(opts.relative_axis_map)));
+  if (!opts.controller.relative_axis_map.empty())
+    modifier.push_back(ModifierPtr(new RelativeAxisModifier(opts.controller.relative_axis_map)));
 
-  if (!opts.button_map.empty())
-    modifier.push_back(ModifierPtr(new ButtonMapModifier(opts.button_map)));
+  if (!opts.controller.button_map.empty())
+    modifier.push_back(ModifierPtr(new ButtonMapModifier(opts.controller.button_map)));
     
-  if (!opts.axis_map.empty())
-    modifier.push_back(ModifierPtr(new AxismapModifier(opts.axis_map)));
+  if (!opts.controller.axis_map.empty())
+    modifier.push_back(ModifierPtr(new AxismapModifier(opts.controller.axis_map)));
 
   // how long to wait for a controller event before taking care of autofire etc.
   timeout = 25; 

@@ -46,14 +46,9 @@ private:
   int current_input_map;
   
 public:
+  /** \addtogroup creation Creation Functions
+   ** @{*/
   uInputCfg();
-
-  ButtonMap& get_btn_map();
-  AxisMap&   get_axis_map();
-
-  ButtonMap& get_btn_map(int n);
-  AxisMap&   get_axis_map(int n);
-  int input_mapping_count() const { return static_cast<int>(map.size()); }
 
   void add_input_mapping();
   void next_input_mapping();
@@ -72,6 +67,17 @@ public:
 
   void set_ui_buttonmap(const std::string& name, const std::string& value);
   void set_ui_axismap(const std::string& name, const std::string& value);
+  /** @}*/
+
+  /** \addtogroup access Access Functions
+   ** @{*/
+  ButtonMap& get_btn_map();
+  AxisMap&   get_axis_map();
+
+  ButtonMap& get_btn_map(int n);
+  AxisMap&   get_axis_map(int n);
+  int input_mapping_count() const { return static_cast<int>(map.size()); }
+  /** @}*/
 };
 
 #endif
