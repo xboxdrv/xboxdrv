@@ -149,97 +149,105 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
     }
   }
 
-  uint32_t last_time = get_time();
-  while(m_loop && !global_exit_xboxdrv) // FIXME: should not directly depend on global_exit_xboxdrv
+  try 
   {
-    XboxGenericMsg msg;
-
-    if (m_controller->read(msg, opts.verbose, timeout))
+    uint32_t last_time = get_time();
+    while(m_loop && !global_exit_xboxdrv) // FIXME: should not directly depend on global_exit_xboxdrv
     {
-      oldrealmsg = msg;
-    }
-    else
-    {
-      // no new data read, so copy the last read data
-      msg = oldrealmsg;
-    }
+      XboxGenericMsg msg;
 
-    // Calc changes in time
-    uint32_t this_time = get_time();
-    int msec_delta = this_time - last_time;
-    last_time = this_time;
+      if (m_controller->read(msg, opts.verbose, timeout))
+      {
+        oldrealmsg = msg;
+      }
+      else
+      {
+        // no new data read, so copy the last read data
+        msg = oldrealmsg;
+      }
 
-    // run the controller message through all modifier
-    for(std::vector<ModifierPtr>::iterator i = modifier.begin(); i != modifier.end(); ++i)
-    {
-      (*i)->update(msec_delta, msg);
-    }
+      // Calc changes in time
+      uint32_t this_time = get_time();
+      int msec_delta = this_time - last_time;
+      last_time = this_time;
 
-    if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)) != 0)
-    { // Only send a new event out if something has changed,
-      // this is useful since some controllers send events
-      // even if nothing has changed, deadzone can cause this
-      // too
-      oldmsg = msg;
+      // run the controller message through all modifier
+      for(std::vector<ModifierPtr>::iterator i = modifier.begin(); i != modifier.end(); ++i)
+      {
+        (*i)->update(msec_delta, msg);
+      }
 
-      if (!opts.silent)
-        std::cout << msg << std::endl;
+      if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)) != 0)
+      { // Only send a new event out if something has changed,
+        // this is useful since some controllers send events
+        // even if nothing has changed, deadzone can cause this
+        // too
+        oldmsg = msg;
 
-      if (uinput) 
-        uinput->send(msg);
+        if (!opts.silent)
+          std::cout << msg << std::endl;
+
+        if (uinput) 
+          uinput->send(msg);
                  
-      if (opts.rumble)
+        if (opts.rumble)
+        {
+          if (type == GAMEPAD_XBOX)
+          {
+            set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox.lt, msg.xbox.rt);
+          }
+          else if (type == GAMEPAD_XBOX360 ||
+                   type == GAMEPAD_XBOX360_WIRELESS)
+          {
+            set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox360.lt, msg.xbox360.rt);
+          }
+          else if (type == GAMEPAD_FIRESTORM ||
+                   type == GAMEPAD_FIRESTORM_VSB)
+          {
+            set_rumble(m_controller.get(), opts.rumble_gain,
+                       std::min(255, abs((msg.xbox360.y1>>8)*2)), 
+                       std::min(255, abs((msg.xbox360.y2>>8)*2)));
+          }
+        }
+      }
+
+      if (uinput)
       {
-        if (type == GAMEPAD_XBOX)
+        uinput->update(msec_delta);
+      }
+
+      if (pid != -1)
+      {
+        int status = 0;
+        int w = waitpid(pid, &status, WNOHANG);
+
+        if (w > 0)
         {
-          set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox.lt, msg.xbox.rt);
-        }
-        else if (type == GAMEPAD_XBOX360 ||
-                 type == GAMEPAD_XBOX360_WIRELESS)
-        {
-          set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox360.lt, msg.xbox360.rt);
-        }
-        else if (type == GAMEPAD_FIRESTORM ||
-                 type == GAMEPAD_FIRESTORM_VSB)
-        {
-          set_rumble(m_controller.get(), opts.rumble_gain,
-                     std::min(255, abs((msg.xbox360.y1>>8)*2)), 
-                     std::min(255, abs((msg.xbox360.y2>>8)*2)));
+          if (WIFEXITED(status))
+          {
+            if (WEXITSTATUS(status) != 0)
+            {
+              std::cout << "error: child program has stopped with exit status " << WEXITSTATUS(status) << std::endl;
+            }
+            else
+            {
+              std::cout << "child program exited successful" << std::endl;
+            }
+            global_exit_xboxdrv = true;
+          }
+          else if (WIFSIGNALED(status))
+          {
+            std::cout << "error: child program was terminated by " << WTERMSIG(status) << std::endl;
+            global_exit_xboxdrv = true;
+          }
         }
       }
     }
-
-    if (uinput)
-    {
-      uinput->update(msec_delta);
-    }
-
-    if (pid != -1)
-    {
-      int status = 0;
-      int w = waitpid(pid, &status, WNOHANG);
-
-      if (w > 0)
-      {
-        if (WIFEXITED(status))
-        {
-          if (WEXITSTATUS(status) != 0)
-          {
-            std::cout << "error: child program has stopped with exit status " << WEXITSTATUS(status) << std::endl;
-          }
-          else
-          {
-            std::cout << "child program exited successful" << std::endl;
-          }
-          global_exit_xboxdrv = true;
-        }
-        else if (WIFSIGNALED(status))
-        {
-          std::cout << "error: child program was terminated by " << WTERMSIG(status) << std::endl;
-          global_exit_xboxdrv = true;
-        }
-      }
-    }
+  }
+  catch(const std::exception& err)
+  {
+    // catch read errors from USB and other stuff that can go wrong
+    log_error << err.what() << std::endl;
   }
 }
 

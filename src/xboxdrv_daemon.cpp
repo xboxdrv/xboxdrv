@@ -37,6 +37,8 @@
 #include "xboxdrv_thread.hpp"
 #include "xpad_device.hpp"
 
+extern bool global_exit_xboxdrv;
+
 XboxdrvDaemon::XboxdrvDaemon() :
   m_udev(0),
   m_monitor(0)
@@ -215,8 +217,9 @@ XboxdrvDaemon::run(const Options& opts)
     udev_enumerate_unref(enumerate);
   }
 
-  while(true)
+  while(!global_exit_xboxdrv)
   {
+    // FIXME: udev_monitor_receive_device() will block, must break out of it somehow
     // FIXME: we bust udev_unref_monitor() this
     struct udev_device* device = udev_monitor_receive_device(m_monitor);
 
