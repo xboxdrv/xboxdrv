@@ -776,7 +776,7 @@ CommandLineParser::print_version() const
 void
 CommandLineParser::set_axismap(const std::string& name, const std::string& value)
 {
-  m_options->controller.axis_map.push_back(AxisMapping::from_string(name, value));
+  m_options->controller.modifier.push_back(ModifierPtr(AxismapModifier::from_string(name, value)));
 }
 
 void
@@ -814,25 +814,25 @@ CommandLineParser::set_evdev_keymap(const std::string& name, const std::string& 
 void
 CommandLineParser::set_relative_axis(const std::string& name, const std::string& value)
 {
-  m_options->controller.relative_axis_map.push_back(RelativeAxisMapping::from_string(name, value));
+  m_options->controller.modifier.push_back(ModifierPtr(RelativeAxisModifier::from_string(name, value)));
 }
 
 void
 CommandLineParser::set_autofire(const std::string& name, const std::string& value)
 {
-  m_options->controller.autofire_map.push_back(AutofireMapping::from_string(name, value));
+  m_options->controller.modifier.push_back(ModifierPtr(AutofireModifier::from_string(name, value)));
 }
 
 void
 CommandLineParser::set_calibration(const std::string& name, const std::string& value)
 {
-  m_options->controller.calibration_map.push_back(CalibrationMapping::from_string(name, value));
+  m_options->controller.modifier.push_back(ModifierPtr(CalibrationModifier::from_string(name, value)));
 }
 
 void
 CommandLineParser::set_axis_sensitivity(const std::string& name, const std::string& value)
 {
-  m_options->controller.axis_sensitivity_map.push_back(AxisSensitivityMapping::from_string(name, value));
+  m_options->controller.modifier.push_back(ModifierPtr(AxisSensitivityModifier::from_string(name, value)));
 }
 
 void

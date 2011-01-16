@@ -38,19 +38,21 @@ class Modifier
 public:
   static ModifierPtr create(const std::string& str);
 
+  /** Priority defines the sort order of modifiers in the modifier
+      stack, well defined order is important as some modifiers would
+      otherwise lead to weird results */
   enum Priority
   {
-    kAutofirePriority,
-    kAxisSensitivityPriority,
-    kAxismapPriority,
-    kButtonMapPriority,
     kCalibrationPriority,
     kDeadzonePriority,
-    kDpadRotationPriority,
-    kFourWayRestrictor,
+    kSquareAxisPriority,
+    kAxisSensitivityPriority,
     kFourWayRestrictorPriority,
+    kDpadRotationPriority,
+    kAutofirePriority,
     kRelativeAxisPriority,
-    kSquareAxisPriority
+    kAxismapPriority,
+    kButtonMapPriority
   };
 
 public:

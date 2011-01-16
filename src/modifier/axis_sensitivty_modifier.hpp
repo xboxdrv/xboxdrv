@@ -21,13 +21,13 @@
 
 #include "modifier.hpp"
 
-class AxisSensitivityMapping 
+class AxisSensitivityModifier : public Modifier
 {
 public:
-  static AxisSensitivityMapping from_string(const std::string& lhs, const std::string& rhs);
+  static AxisSensitivityModifier* from_string(const std::string& lhs, const std::string& rhs);
 
 public:
-  AxisSensitivityMapping(XboxAxis axis, float sensitivity);
+  AxisSensitivityModifier(XboxAxis axis, float sensitivity);
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
@@ -36,23 +36,6 @@ public:
 public:
   XboxAxis m_axis;
   float m_sensitivity;
-};
-
-class AxisSensitivityModifier : public Modifier
-{
-private:
-  std::vector<AxisSensitivityMapping> m_axis_sensitivity_map;
-
-public:
-  AxisSensitivityModifier(const std::vector<AxisSensitivityMapping>& axis_sensitivity_map);
-
-  void update(int msec_delta, XboxGenericMsg& msg);
-
-  Modifier::Priority get_priority() const { return Modifier::kAxisSensitivityPriority; };
-
-private:
-  AxisSensitivityModifier(const AxisSensitivityModifier&);
-  AxisSensitivityModifier& operator=(const AxisSensitivityModifier&);
 };
 
 #endif

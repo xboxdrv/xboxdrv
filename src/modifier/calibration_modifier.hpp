@@ -23,13 +23,13 @@
 
 #include "modifier.hpp"
 
-class CalibrationMapping : public Modifier
+class CalibrationModifier : public Modifier
 {
 public:
-  static CalibrationMapping from_string(const std::string& lhs, const std::string& rhs);
+  static CalibrationModifier* from_string(const std::string& lhs, const std::string& rhs);
 
 public:
-  CalibrationMapping();
+  CalibrationModifier();
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
@@ -40,23 +40,6 @@ public:
   int m_min;
   int m_center;
   int m_max;
-};
-
-class CalibrationModifier : public Modifier
-{
-private:
-  std::vector<CalibrationMapping> m_calibration_map;
-
-public:
-  CalibrationModifier(const std::vector<CalibrationMapping>& calibration_map);
-
-  void update(int msec_delta, XboxGenericMsg& msg);
-
-  Modifier::Priority get_priority() const { return Modifier::kCalibrationPriority; };
-
-private:
-  CalibrationModifier(const CalibrationModifier&);
-  CalibrationModifier& operator=(const CalibrationModifier&);
 };
 
 #endif

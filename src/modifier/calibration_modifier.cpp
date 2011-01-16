@@ -30,13 +30,15 @@ int clamp(int lhs, int rhs, int v)
 
 } // namespace
 
-CalibrationMapping CalibrationMapping::from_string(const std::string& lhs, const std::string& rhs)
+CalibrationModifier*
+CalibrationModifier::from_string(const std::string& lhs, const std::string& rhs)
 {
-  CalibrationMapping mapping; 
-  mapping.m_axis    = string2axis(lhs);
-  mapping.m_min     = -32768;
-  mapping.m_center  = 0;
-  mapping.m_max     = 32767;
+  std::auto_ptr<CalibrationModifier> mapping(new CalibrationModifier);
+
+  mapping->m_axis    = string2axis(lhs);
+  mapping->m_min     = -32768;
+  mapping->m_center  = 0;
+  mapping->m_max     = 32767;
 
   boost::char_separator<char> sep(":", "", boost::keep_empty_tokens);
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
@@ -52,11 +54,11 @@ CalibrationMapping CalibrationMapping::from_string(const std::string& lhs, const
       try 
       {
         if (j == 0) 
-          mapping.m_min = boost::lexical_cast<int>(*i);
+          mapping->m_min = boost::lexical_cast<int>(*i);
         else if (j == 1)
-          mapping.m_center = boost::lexical_cast<int>(*i);
+          mapping->m_center = boost::lexical_cast<int>(*i);
         else if (j == 2)
-          mapping.m_max = boost::lexical_cast<int>(*i);
+          mapping->m_max = boost::lexical_cast<int>(*i);
         else 
           throw std::runtime_error("--calibration: to many arguments given, syntax is 'AXIS=MIN:CENTER:MAX'");
       }
@@ -67,13 +69,13 @@ CalibrationMapping CalibrationMapping::from_string(const std::string& lhs, const
     }
   }
       
-  if (!(mapping.m_min <= mapping.m_center && mapping.m_center <= mapping.m_max))
+  if (!(mapping->m_min <= mapping->m_center && mapping->m_center <= mapping->m_max))
     throw std::runtime_error("Order wrong 'AXIS=MIN:CENTER:MAX'");
 
-  return mapping;
+  return mapping.release();
 }
 
-CalibrationMapping::CalibrationMapping() :
+CalibrationModifier::CalibrationModifier() :
   m_axis(XBOX_AXIS_UNKNOWN),
   m_min(0),
   m_center(0),
@@ -82,7 +84,7 @@ CalibrationMapping::CalibrationMapping() :
 }
 
 void
-CalibrationMapping::update(int msec_delta, XboxGenericMsg& msg)
+CalibrationModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
   int value = get_axis(msg,  m_axis);
 
@@ -94,29 +96,6 @@ CalibrationMapping::update(int msec_delta, XboxGenericMsg& msg)
     value = 0;
 
   set_axis(msg, m_axis, clamp(-32768, 32767, value));
-}
-
-CalibrationModifier::CalibrationModifier(const std::vector<CalibrationMapping>& calibration_map) :
-  m_calibration_map(calibration_map)
-{
-}
-
-void
-CalibrationModifier::update(int msec_delta, XboxGenericMsg& msg)
-{
-  for(std::vector<CalibrationMapping>::const_iterator i = m_calibration_map.begin(); i != m_calibration_map.end(); ++i)
-  {
-    int value = get_axis(msg,  i->m_axis);
-
-    if (value < i->m_center)
-      value = 32768 * (value - i->m_center) / (i->m_center - i->m_min);
-    else if (value > i->m_center)
-      value = 32767 * (value - i->m_center) / (i->m_max - i->m_center);
-    else
-      value = 0;
-
-    set_axis(msg, i->m_axis, clamp(-32768, 32767, value));
-  }
 }
 
 /* EOF */

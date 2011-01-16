@@ -44,11 +44,6 @@ public:
   std::vector<ModifierPtr> modifier;
   int deadzone;
   int deadzone_trigger;
-  std::vector<AxisMapping>   axis_map;
-  std::vector<AutofireMapping> autofire_map;
-  std::vector<RelativeAxisMapping> relative_axis_map;
-  std::vector<CalibrationMapping> calibration_map;
-  std::vector<AxisSensitivityMapping> axis_sensitivity_map;
   bool square_axis;
   bool four_way_restrictor;
   int  dpad_rotation; 

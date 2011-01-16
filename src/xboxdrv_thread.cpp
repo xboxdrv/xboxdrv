@@ -99,32 +99,17 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
   std::vector<ModifierPtr> modifier;
 
   // Create filter
-  if (!opts.controller.calibration_map.empty())
-    modifier.push_back(ModifierPtr(new CalibrationModifier(opts.controller.calibration_map)));
-  
   if (opts.controller.deadzone != 0 || opts.controller.deadzone_trigger != 0)
     modifier.push_back(ModifierPtr(new DeadzoneModifier(opts.controller.deadzone, opts.controller.deadzone_trigger)));
 
   if (opts.controller.square_axis)
     modifier.push_back(ModifierPtr(new SquareAxisModifier()));
-
-  if (!opts.controller.axis_sensitivity_map.empty())
-    modifier.push_back(ModifierPtr(new AxisSensitivityModifier(opts.controller.axis_sensitivity_map)));
-  
+ 
   if (opts.controller.four_way_restrictor)
     modifier.push_back(ModifierPtr(new FourWayRestrictorModifier()));
 
   if (opts.controller.dpad_rotation)
     modifier.push_back(ModifierPtr(new DpadRotationModifier(opts.controller.dpad_rotation)));
-
-  if (!opts.controller.autofire_map.empty())
-    modifier.push_back(ModifierPtr(new AutofireModifier(opts.controller.autofire_map)));
-
-  if (!opts.controller.relative_axis_map.empty())
-    modifier.push_back(ModifierPtr(new RelativeAxisModifier(opts.controller.relative_axis_map)));
-   
-  if (!opts.controller.axis_map.empty())
-    modifier.push_back(ModifierPtr(new AxismapModifier(opts.controller.axis_map)));
 
   modifier.insert(modifier.end(), opts.controller.modifier.begin(), opts.controller.modifier.end());
   std::stable_sort(modifier.begin(), modifier.end(), SortModifierByPriority());

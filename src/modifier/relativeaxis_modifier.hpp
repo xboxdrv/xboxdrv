@@ -21,13 +21,13 @@
 
 #include "modifier.hpp"
 
-class RelativeAxisMapping : public Modifier
+class RelativeAxisModifier : public Modifier
 {
 public:
-  static RelativeAxisMapping from_string(const std::string& lhs, const std::string& rhs);
+  static RelativeAxisModifier* from_string(const std::string& lhs, const std::string& rhs);
 
 public:
-  RelativeAxisMapping();
+  RelativeAxisModifier();
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
@@ -38,24 +38,6 @@ public:
   int      m_speed;
 
   int m_axis_state;
-};
-
-class RelativeAxisModifier : public Modifier
-{
-private:
-  std::vector<RelativeAxisMapping> m_relative_axis_map;
-  std::vector<int> m_axis_state;
-
-public:
-  RelativeAxisModifier(const std::vector<RelativeAxisMapping>& relative_axis_map);
-
-  void update(int msec_delta, XboxGenericMsg& msg);
-
-  Modifier::Priority get_priority() const { return Modifier::kRelativeAxisPriority; };
-
-private:
-  RelativeAxisModifier(const RelativeAxisModifier&);
-  RelativeAxisModifier& operator=(const RelativeAxisModifier&);
 };
 
 #endif

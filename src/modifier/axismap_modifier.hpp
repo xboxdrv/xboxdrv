@@ -23,33 +23,23 @@
 
 #include "modifier.hpp"
 
-class AxisMapping 
+class AxismapModifier : public Modifier 
 {
 public:
-  static AxisMapping from_string(const std::string& lhs, const std::string& rhs);
+  static AxismapModifier* from_string(const std::string& lhs, const std::string& rhs);
+
+public:
+  AxismapModifier();
+
+  void update(int msec_delta, XboxGenericMsg& msg);
+
+  Modifier::Priority get_priority() const { return Modifier::kAxismapPriority; };
 
 public:
   XboxAxis m_lhs;
   XboxAxis m_rhs;
   bool     m_invert;
   std::vector<AxisFilterPtr> m_filters;
-};
-
-class AxismapModifier : public Modifier
-{
-private:
-  std::vector<AxisMapping> m_axismap;
-
-public:
-  AxismapModifier(const std::vector<AxisMapping>& axismap);
-
-  void update(int msec_delta, XboxGenericMsg& msg);
-
-  Modifier::Priority get_priority() const { return Modifier::kAxismapPriority; };
-
-private:
-  AxismapModifier(const AxismapModifier&);
-  AxismapModifier& operator=(const AxismapModifier&);
 };
 
 #endif

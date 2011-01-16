@@ -2,6 +2,11 @@ xboxdrv 0.6.5 - (??/Jan/2011)
 =============================
 
 * switched to libusb-1.0
+* -D, --daemon replaces xboxdrv-daemon
+* --daemon supports hotpluging via libudev, even in applications that
+  don't support it themselves
+* cleaned up axis/button modifier some more
+* startup output got cleaned up
 
 
 xboxdrv 0.6.4 - (13/Jan/2011)

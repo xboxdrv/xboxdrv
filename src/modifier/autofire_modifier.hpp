@@ -23,13 +23,13 @@
 
 #include "modifier.hpp"
 
-class AutofireMapping 
+class AutofireModifier : public Modifier
 {
 public:
-  static AutofireMapping from_string(const std::string& lhs, const std::string& rhs);
+  static AutofireModifier* from_string(const std::string& lhs, const std::string& rhs);
 
 public:  
-  AutofireMapping(XboxButton button, int frequency);
+  AutofireModifier(XboxButton button, int frequency);
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
@@ -40,20 +40,6 @@ public:
   int m_frequency;
 
   int m_button_timer;
-};
-
-class AutofireModifier : public Modifier
-{
-private:
-  std::vector<AutofireMapping> m_autofire_map;
-  std::vector<int> m_button_timer;
-
-public:
-  AutofireModifier(const std::vector<AutofireMapping>& autofire_map);
-    
-  void update(int msec_delta, XboxGenericMsg& msg);
-
-  Modifier::Priority get_priority() const { return Modifier::kAutofirePriority; };
 };
 
 #endif

@@ -21,18 +21,18 @@
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 
-RelativeAxisMapping
-RelativeAxisMapping::from_string(const std::string& lhs, const std::string& rhs)
+RelativeAxisModifier*
+RelativeAxisModifier::from_string(const std::string& lhs, const std::string& rhs)
 {
   /* Format of str: A={SPEED} */
-  RelativeAxisMapping mapping;
-  mapping.m_axis  = string2axis(lhs);
-  mapping.m_speed = boost::lexical_cast<int>(rhs);
+  std::auto_ptr<RelativeAxisModifier> mapping(new RelativeAxisModifier);
+  mapping->m_axis  = string2axis(lhs);
+  mapping->m_speed = boost::lexical_cast<int>(rhs);
   // FIXME: insert some error checking here
-  return mapping;
+  return mapping.release();
 }
 
-RelativeAxisMapping::RelativeAxisMapping() :
+RelativeAxisModifier::RelativeAxisModifier() :
   m_axis(XBOX_AXIS_UNKNOWN),
   m_speed(0),
   m_axis_state(0)
@@ -40,7 +40,7 @@ RelativeAxisMapping::RelativeAxisMapping() :
 }
 
 void
-RelativeAxisMapping::update(int msec_delta, XboxGenericMsg& msg)
+RelativeAxisModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
   int value = get_axis(msg, m_axis);
   if (abs(value) > 4000 ) // FIXME: add proper deadzone handling
@@ -56,39 +56,6 @@ RelativeAxisMapping::update(int msec_delta, XboxGenericMsg& msg)
   else
   {
     set_axis(msg, m_axis, m_axis_state);
-  }
-}
-
-RelativeAxisModifier::RelativeAxisModifier(const std::vector<RelativeAxisMapping>& relative_axis_map) :
-  m_relative_axis_map(relative_axis_map),
-  m_axis_state()
-{
-  for(size_t i = 0; i < m_relative_axis_map.size(); ++i)
-  {
-    m_axis_state.push_back(0);
-  }
-}
-
-void
-RelativeAxisModifier::update(int msec_delta, XboxGenericMsg& msg)
-{
-  for(size_t i = 0; i < m_relative_axis_map.size(); ++i)
-  {
-    int value = get_axis(msg, m_relative_axis_map[i].m_axis);
-    if (abs(value) > 4000 ) // FIXME: add proper deadzone handling
-    {
-      m_axis_state[i] += ((m_relative_axis_map[i].m_speed * value) / 32768) * msec_delta / 1000;
-      if (m_axis_state[i] < -32768)
-        m_axis_state[i] = -32768;
-      else if (m_axis_state[i] > 32767)
-        m_axis_state[i] = 32767;
-
-      set_axis(msg, m_relative_axis_map[i].m_axis, m_axis_state[i]);
-    }
-    else
-    {
-      set_axis(msg, m_relative_axis_map[i].m_axis, m_axis_state[i]);
-    }
   }
 }
 

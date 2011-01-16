@@ -19,6 +19,7 @@
 #include "axismap_modifier.hpp"
 
 #include <boost/tokenizer.hpp>
+#include <memory>
 
 /** converts the arbitary range to [-1,1] */
 inline float to_float(int value, int min, int max)
@@ -26,19 +27,19 @@ inline float to_float(int value, int min, int max)
   return static_cast<float>(value - min) / static_cast<float>(max - min) * 2.0f - 1.0f;
 }
 
-AxisMapping
-AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
+AxismapModifier*
+AxismapModifier::from_string(const std::string& lhs_, const std::string& rhs)
 {
   std::string lhs = lhs_;
-  AxisMapping mapping;
+  std::auto_ptr<AxismapModifier> mapping(new AxismapModifier);
 
-  mapping.m_invert = false;
-  mapping.m_lhs = XBOX_AXIS_UNKNOWN;
-  mapping.m_rhs = XBOX_AXIS_UNKNOWN;
+  mapping->m_invert = false;
+  mapping->m_lhs = XBOX_AXIS_UNKNOWN;
+  mapping->m_rhs = XBOX_AXIS_UNKNOWN;
 
   if (lhs[0] == '-')
   {
-    mapping.m_invert = true;
+    mapping->m_invert = true;
     lhs = lhs.substr(1);
   }
 
@@ -49,31 +50,34 @@ AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
   {
     switch(idx)
     {
-      case 0:  mapping.m_lhs = string2axis(*t); break;
-      default: mapping.m_filters.push_back(AxisFilter::from_string(*t));
+      case 0:  mapping->m_lhs = string2axis(*t); break;
+      default: mapping->m_filters.push_back(AxisFilter::from_string(*t));
     }
   }
 
   if (rhs.empty())
   {
-    mapping.m_rhs = mapping.m_lhs;
+    mapping->m_rhs = mapping->m_lhs;
   }
   else
   {
-    mapping.m_rhs = string2axis(rhs);
+    mapping->m_rhs = string2axis(rhs);
   }
 
-  if (mapping.m_lhs == XBOX_AXIS_UNKNOWN ||
-      mapping.m_rhs == XBOX_AXIS_UNKNOWN)
+  if (mapping->m_lhs == XBOX_AXIS_UNKNOWN ||
+      mapping->m_rhs == XBOX_AXIS_UNKNOWN)
   {
     throw std::runtime_error("Couldn't convert string \"" + lhs + "=" + rhs + "\" to axis mapping");
   }
 
-  return mapping;
+  return mapping.release();
 }
 
-AxismapModifier::AxismapModifier(const std::vector<AxisMapping>& axismap) :
-  m_axismap(axismap)
+AxismapModifier::AxismapModifier() :
+  m_lhs(XBOX_AXIS_UNKNOWN),
+  m_rhs(XBOX_AXIS_UNKNOWN),
+  m_invert(false),
+  m_filters()
 {
 }
 
@@ -83,42 +87,34 @@ AxismapModifier::update(int msec_delta, XboxGenericMsg& msg)
   XboxGenericMsg newmsg = msg;
 
   // update all filters in all mappings
-  for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
+  for(std::vector<AxisFilterPtr>::iterator j = m_filters.begin(); j != m_filters.end(); ++j)
   {
-    for(std::vector<AxisFilterPtr>::iterator j = i->m_filters.begin(); j != i->m_filters.end(); ++j)
-    {
-      (*j)->update(msec_delta);
-    }
+    (*j)->update(msec_delta);
   }
 
   // clear all values in the new msg
-  for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
+  set_axis_float(newmsg, m_lhs, 0);
+
+  int min = get_axis_min(m_lhs);
+  int max = get_axis_max(m_lhs);
+  int value = get_axis(msg, m_lhs);
+
+  for(std::vector<AxisFilterPtr>::iterator j = m_filters.begin(); j != m_filters.end(); ++j)
   {
-    set_axis_float(newmsg, i->m_lhs, 0);
+    value = (*j)->filter(value, min, max);
   }
 
-  for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
+  float lhs  = to_float(value, min, max);
+  float nrhs = get_axis_float(newmsg, m_rhs);
+
+  if (m_invert)
   {
-    int min = get_axis_min(i->m_lhs);
-    int max = get_axis_max(i->m_lhs);
-    int value = get_axis(msg, i->m_lhs);
-
-    for(std::vector<AxisFilterPtr>::iterator j = i->m_filters.begin(); j != i->m_filters.end(); ++j)
-    {
-      value = (*j)->filter(value, min, max);
-    }
-
-    float lhs  = to_float(value, min, max);
-    float nrhs = get_axis_float(newmsg, i->m_rhs);
-
-    if (i->m_invert)
-    {
-      lhs = -lhs;
-    }
-
-    set_axis_float(newmsg, i->m_rhs, std::max(std::min(nrhs + lhs, 1.0f), -1.0f));
+    lhs = -lhs;
   }
-  msg = newmsg;
+
+  set_axis_float(newmsg, m_rhs, std::max(std::min(nrhs + lhs, 1.0f), -1.0f));
+
+  msg = newmsg; 
 }
 
 /* EOF */

@@ -25,11 +25,6 @@ ControllerOptions::ControllerOptions() :
   modifier(),
   deadzone(0),
   deadzone_trigger(0),
-  axis_map(),
-  autofire_map(),
-  relative_axis_map(),
-  calibration_map(),
-  axis_sensitivity_map(),
   square_axis(false),
   four_way_restrictor(false),
   dpad_rotation(0)
