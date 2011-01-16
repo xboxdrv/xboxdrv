@@ -782,7 +782,7 @@ CommandLineParser::set_axismap(const std::string& name, const std::string& value
 void
 CommandLineParser::set_buttonmap(const std::string& name, const std::string& value)
 {
-  m_options->controller.button_map.push_back(ButtonMapping::from_string(name, value));
+  m_options->controller.modifier.push_back(ModifierPtr(ButtonmapModifier::from_string(name, value)));
 }
 
 void
@@ -820,7 +820,7 @@ CommandLineParser::set_relative_axis(const std::string& name, const std::string&
 void
 CommandLineParser::set_autofire(const std::string& name, const std::string& value)
 {
-  m_options->controller.autofire_map.push_back(AutoFireMapping::from_string(name, value));
+  m_options->controller.autofire_map.push_back(AutofireMapping::from_string(name, value));
 }
 
 void

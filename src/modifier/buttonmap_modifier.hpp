@@ -20,18 +20,26 @@
 #define HEADER_XBOXDRV_MODIFIER_BUTTON_MAP_MODIFIER_HPP
 
 #include "modifier.hpp"
-
-class ButtonMapModifier : public Modifier
+
+class ButtonmapModifier : public Modifier
 {
-private:
-  std::vector<ButtonMapping> m_buttonmap;
+public:
+  static ButtonmapModifier* from_string(const std::string& lhs, const std::string& rhs);
+  
+public:
+  ButtonmapModifier(XboxButton lhs,
+                    XboxButton rhs);
+  
+  void update(int msec_delta, XboxGenericMsg& msg);
+
+  Modifier::Priority get_priority() const { return Modifier::kButtonMapPriority; };
 
 public:
-  ButtonMapModifier(const std::vector<ButtonMapping>& buttonmap);
-
-  void update(int msec_delta, XboxGenericMsg& msg);
+  XboxButton m_lhs;
+  XboxButton m_rhs;
+  std::vector<ButtonFilterPtr> m_filters;
 };
-
+
 #endif
 
 /* EOF */

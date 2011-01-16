@@ -37,7 +37,7 @@
 #include "modifier/autofire_modifier.hpp"
 #include "modifier/axis_sensitivty_modifier.hpp"
 #include "modifier/axismap_modifier.hpp"
-#include "modifier/button_map_modifier.hpp"
+#include "modifier/buttonmap_modifier.hpp"
 #include "modifier/calibration_modifier.hpp"
 #include "modifier/deadzone_modifier.hpp"
 #include "modifier/dpad_rotation_modifier.hpp"
@@ -78,6 +78,15 @@ void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_
 
   controller->set_rumble(lhs, rhs);
 }
+
+struct SortModifierByPriority
+{ 
+  bool operator()(const ModifierPtr& lhs, const ModifierPtr& rhs) const
+  {
+    return lhs->get_priority() < rhs->get_priority();
+  }
+};
+
 } // namespace
 
 void
@@ -109,19 +118,19 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
     modifier.push_back(ModifierPtr(new DpadRotationModifier(opts.controller.dpad_rotation)));
 
   if (!opts.controller.autofire_map.empty())
-    modifier.push_back(ModifierPtr(new AutoFireModifier(opts.controller.autofire_map)));
+    modifier.push_back(ModifierPtr(new AutofireModifier(opts.controller.autofire_map)));
 
   if (!opts.controller.relative_axis_map.empty())
     modifier.push_back(ModifierPtr(new RelativeAxisModifier(opts.controller.relative_axis_map)));
-
-  if (!opts.controller.button_map.empty())
-    modifier.push_back(ModifierPtr(new ButtonMapModifier(opts.controller.button_map)));
-    
+   
   if (!opts.controller.axis_map.empty())
     modifier.push_back(ModifierPtr(new AxismapModifier(opts.controller.axis_map)));
 
+  modifier.insert(modifier.end(), opts.controller.modifier.begin(), opts.controller.modifier.end());
+  std::stable_sort(modifier.begin(), modifier.end(), SortModifierByPriority());
+
   // how long to wait for a controller event before taking care of autofire etc.
-  timeout = 25; 
+  timeout = 25; // FIXME: add an option for that
 
   memset(&oldmsg,     0, sizeof(oldmsg));
   memset(&oldrealmsg, 0, sizeof(oldrealmsg));

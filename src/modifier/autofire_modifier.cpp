@@ -18,37 +18,84 @@
 
 #include "autofire_modifier.hpp"
 
-AutoFireModifier::AutoFireModifier(const std::vector<AutoFireMapping>& autofire_map) :
+#include <boost/lexical_cast.hpp>
+
+AutofireMapping 
+AutofireMapping::from_string(const std::string& lhs, const std::string& rhs)
+{
+  /* Format of str: A={ON-DELAY}[:{OFF-DELAY}]
+     Examples: A=10 or A=10:50 
+     if OFF-DELAY == nil then ON-DELAY = OFF-DELAY 
+  */
+  AutofireMapping mapping(string2btn(lhs), boost::lexical_cast<int>(rhs));
+  return mapping;
+}
+
+AutofireMapping::AutofireMapping(XboxButton button, int frequency) :
+  m_button(button),
+  m_frequency(frequency),
+  m_button_timer(0)
+{
+}
+
+void
+AutofireMapping::update(int msec_delta, XboxGenericMsg& msg)
+{
+  if (get_button(msg, m_button))
+  {
+    m_button_timer += msec_delta;
+
+    if (m_button_timer > m_frequency)
+    {
+      set_button(msg, m_button, 1);
+      m_button_timer = 0; // FIXME: we ignoring the passed time
+    }
+    else if (m_button_timer > m_frequency/2)
+    {
+      set_button(msg, m_button, 0);
+    }
+    else
+    {
+      set_button(msg, m_button, 1);
+    }
+  }
+  else
+  {
+    m_button_timer = 0;
+  } 
+}
+
+AutofireModifier::AutofireModifier(const std::vector<AutofireMapping>& autofire_map) :
   m_autofire_map(autofire_map),
   m_button_timer()
 {
-  for(std::vector<AutoFireMapping>::const_iterator i = m_autofire_map.begin(); i != m_autofire_map.end(); ++i)
+  for(std::vector<AutofireMapping>::const_iterator i = m_autofire_map.begin(); i != m_autofire_map.end(); ++i)
   {
     m_button_timer.push_back(0);
   }
 }
 
 void
-AutoFireModifier::update(int msec_delta, XboxGenericMsg& msg)
+AutofireModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
   for(size_t i = 0; i < m_autofire_map.size(); ++i)
   {
-    if (get_button(msg, m_autofire_map[i].button))
+    if (get_button(msg, m_autofire_map[i].m_button))
     {
       m_button_timer[i] += msec_delta;
 
-      if (m_button_timer[i] > m_autofire_map[i].frequency)
+      if (m_button_timer[i] > m_autofire_map[i].m_frequency)
       {
-        set_button(msg, m_autofire_map[i].button, 1);
+        set_button(msg, m_autofire_map[i].m_button, 1);
         m_button_timer[i] = 0; // FIXME: we ignoring the passed time
       }
-      else if (m_button_timer[i] > m_autofire_map[i].frequency/2)
+      else if (m_button_timer[i] > m_autofire_map[i].m_frequency/2)
       {
-        set_button(msg, m_autofire_map[i].button, 0);
+        set_button(msg, m_autofire_map[i].m_button, 0);
       }
       else
       {
-        set_button(msg, m_autofire_map[i].button, 1);
+        set_button(msg, m_autofire_map[i].m_button, 1);
       }
     }
     else
@@ -57,5 +104,5 @@ AutoFireModifier::update(int msec_delta, XboxGenericMsg& msg)
     }
   }
 }
-
+
 /* EOF */

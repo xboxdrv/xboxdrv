@@ -20,7 +20,26 @@
 #define HEADER_XBOXDRV_MODIFIER_RELATIVEAXIS_MODIFIER_HPP
 
 #include "modifier.hpp"
+
+class RelativeAxisMapping : public Modifier
+{
+public:
+  static RelativeAxisMapping from_string(const std::string& lhs, const std::string& rhs);
 
+public:
+  RelativeAxisMapping();
+
+  void update(int msec_delta, XboxGenericMsg& msg);
+
+  Modifier::Priority get_priority() const { return Modifier::kRelativeAxisPriority; };
+
+public:
+  XboxAxis m_axis;
+  int      m_speed;
+
+  int m_axis_state;
+};
+
 class RelativeAxisModifier : public Modifier
 {
 private:
@@ -32,11 +51,13 @@ public:
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
+  Modifier::Priority get_priority() const { return Modifier::kRelativeAxisPriority; };
+
 private:
   RelativeAxisModifier(const RelativeAxisModifier&);
   RelativeAxisModifier& operator=(const RelativeAxisModifier&);
 };
-
+
 #endif
 
 /* EOF */

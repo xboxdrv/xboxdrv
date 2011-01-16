@@ -36,55 +36,28 @@ typedef boost::shared_ptr<Modifier> ModifierPtr;
 class Modifier
 {
 public:
+  static ModifierPtr create(const std::string& str);
+
+  enum Priority
+  {
+    kAutofirePriority,
+    kAxisSensitivityPriority,
+    kAxismapPriority,
+    kButtonMapPriority,
+    kCalibrationPriority,
+    kDeadzonePriority,
+    kDpadRotationPriority,
+    kFourWayRestrictor,
+    kFourWayRestrictorPriority,
+    kRelativeAxisPriority,
+    kSquareAxisPriority
+  };
+
+public:
   virtual ~Modifier() {}
-  virtual void update(int msec_delta, XboxGenericMsg& msg) =0;
-};
-
-struct AutoFireMapping {
-  static AutoFireMapping from_string(const std::string& lhs, const std::string& rhs);
+  virtual void update(int msec_delta, XboxGenericMsg& msg) = 0;
 
-  XboxButton button;
-  int        frequency;
-};
-
-struct ButtonMapping {
-  static ButtonMapping from_string(const std::string& lhs, const std::string& rhs);
-
-  XboxButton lhs;
-  XboxButton rhs;
-  std::vector<ButtonFilterPtr> filters;
-};
-
-struct AxisMapping {
-  static AxisMapping from_string(const std::string& lhs, const std::string& rhs);
-
-  XboxAxis lhs;
-  XboxAxis rhs;
-  bool     invert;
-  std::vector<AxisFilterPtr> filters;
-};
-
-struct RelativeAxisMapping {
-  static RelativeAxisMapping from_string(const std::string& lhs, const std::string& rhs);
-
-  XboxAxis axis;
-  int      speed;
-};
-
-struct CalibrationMapping {
-  static CalibrationMapping from_string(const std::string& lhs, const std::string& rhs);
-
-  XboxAxis axis;
-  int min;
-  int center;
-  int max;
-};
-
-struct AxisSensitivityMapping {
-  static AxisSensitivityMapping from_string(const std::string& lhs, const std::string& rhs);
-
-  XboxAxis axis;
-  float sensitivity;
+  virtual Priority get_priority() const = 0;
 };
 
 #endif

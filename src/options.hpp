@@ -25,10 +25,15 @@
 
 #include "evdev_absmap.hpp"
 #include "modifier.hpp"
-#include "modifier/autofire_modifier.hpp"
-#include "modifier/relativeaxis_modifier.hpp"
 #include "uinput_cfg.hpp"
 #include "xpad_device.hpp"
+
+#include "modifier/autofire_modifier.hpp"
+#include "modifier/axismap_modifier.hpp"
+#include "modifier/axis_sensitivty_modifier.hpp"
+#include "modifier/buttonmap_modifier.hpp"
+#include "modifier/calibration_modifier.hpp"
+#include "modifier/relativeaxis_modifier.hpp"
 
 class ControllerOptions
 {
@@ -36,11 +41,11 @@ public:
   ControllerOptions();
 
   uInputCfg uinput;
+  std::vector<ModifierPtr> modifier;
   int deadzone;
   int deadzone_trigger;
-  std::vector<ButtonMapping> button_map;
   std::vector<AxisMapping>   axis_map;
-  std::vector<AutoFireMapping> autofire_map;
+  std::vector<AutofireMapping> autofire_map;
   std::vector<RelativeAxisMapping> relative_axis_map;
   std::vector<CalibrationMapping> calibration_map;
   std::vector<AxisSensitivityMapping> axis_sensitivity_map;

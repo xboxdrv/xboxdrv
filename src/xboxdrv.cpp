@@ -525,22 +525,6 @@ Xboxdrv::print_info(libusb_device* dev,
   std::cout << "4-Way Restrictor:  " << ((opts.controller.four_way_restrictor) ? "yes" : "no") << std::endl;
   std::cout << "Dpad Rotation:     " << opts.controller.dpad_rotation * 45 << " degree" << std::endl;
   
-  std::cout << "ButtonMap:         ";
-  if (opts.controller.button_map.empty())
-  {
-    std::cout << "none" << std::endl;
-  }
-  else
-  {
-    for(std::vector<ButtonMapping>::const_iterator i = opts.controller.button_map.begin(); 
-        i != opts.controller.button_map.end(); 
-        ++i)
-    {
-      std::cout << btn2string(i->lhs) << "->" << btn2string(i->rhs) << " ";
-    }
-    std::cout << std::endl;
-  }
-
   std::cout << "AxisMap:           ";
   if (opts.controller.axis_map.empty())
   {
@@ -551,10 +535,10 @@ Xboxdrv::print_info(libusb_device* dev,
     for(std::vector<AxisMapping>::const_iterator i = opts.controller.axis_map.begin(); 
         i != opts.controller.axis_map.end(); ++i)
     {
-      if (i->invert)
-        std::cout << "-" << axis2string(i->lhs) << "->" << axis2string(i->rhs) << " ";
+      if (i->m_invert)
+        std::cout << "-" << axis2string(i->m_lhs) << "->" << axis2string(i->m_rhs) << " ";
       else
-        std::cout << axis2string(i->lhs) << "->" << axis2string(i->rhs) << " ";
+        std::cout << axis2string(i->m_lhs) << "->" << axis2string(i->m_rhs) << " ";
     }
     std::cout << std::endl;
   }
@@ -570,23 +554,23 @@ Xboxdrv::print_info(libusb_device* dev,
         i != opts.controller.relative_axis_map.end();
         ++i)
     {
-      std::cout << axis2string(i->axis) << "=" << i->speed << " ";
+      std::cout << axis2string(i->m_axis) << "=" << i->m_speed << " ";
     }
     std::cout << std::endl;
   }
 
-  std::cout << "AutoFireMap:       ";
+  std::cout << "AutofireMap:       ";
   if (opts.controller.autofire_map.empty())
   {
     std::cout << "none" << std::endl;
   }
   else
   {
-    for(std::vector<AutoFireMapping>::const_iterator i = opts.controller.autofire_map.begin(); 
+    for(std::vector<AutofireMapping>::const_iterator i = opts.controller.autofire_map.begin(); 
         i != opts.controller.autofire_map.end(); 
         ++i)
     {
-      std::cout << btn2string(i->button) << "=" << i->frequency << " ";
+      std::cout << btn2string(i->m_button) << "=" << i->m_frequency << " ";
     }
     std::cout << std::endl;
   }

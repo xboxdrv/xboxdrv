@@ -22,7 +22,19 @@
 #include <vector>
 
 #include "modifier.hpp"
+
+class AxisMapping 
+{
+public:
+  static AxisMapping from_string(const std::string& lhs, const std::string& rhs);
 
+public:
+  XboxAxis m_lhs;
+  XboxAxis m_rhs;
+  bool     m_invert;
+  std::vector<AxisFilterPtr> m_filters;
+};
+
 class AxismapModifier : public Modifier
 {
 private:
@@ -33,11 +45,13 @@ public:
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
+  Modifier::Priority get_priority() const { return Modifier::kAxismapPriority; };
+
 private:
   AxismapModifier(const AxismapModifier&);
   AxismapModifier& operator=(const AxismapModifier&);
 };
-
+
 #endif
 
 /* EOF */

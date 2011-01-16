@@ -29,6 +29,8 @@ public:
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
+  Modifier::Priority get_priority() const { return Modifier::kFourWayRestrictorPriority; };
+
 private:
   FourWayRestrictorModifier(const FourWayRestrictorModifier&);
   FourWayRestrictorModifier& operator=(const FourWayRestrictorModifier&);

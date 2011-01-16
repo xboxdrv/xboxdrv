@@ -22,9 +22,9 @@ Options* g_options;
 
 ControllerOptions::ControllerOptions() :
   uinput(),
+  modifier(),
   deadzone(0),
   deadzone_trigger(0),
-  button_map(),
   axis_map(),
   autofire_map(),
   relative_axis_map(),

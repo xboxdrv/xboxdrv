@@ -22,7 +22,26 @@
 #include <vector>
 
 #include "modifier.hpp"
+
+class CalibrationMapping : public Modifier
+{
+public:
+  static CalibrationMapping from_string(const std::string& lhs, const std::string& rhs);
 
+public:
+  CalibrationMapping();
+
+  void update(int msec_delta, XboxGenericMsg& msg);
+
+  Modifier::Priority get_priority() const { return Modifier::kCalibrationPriority; };
+
+public:
+  XboxAxis m_axis;
+  int m_min;
+  int m_center;
+  int m_max;
+};
+
 class CalibrationModifier : public Modifier
 {
 private:
@@ -33,11 +52,13 @@ public:
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
+  Modifier::Priority get_priority() const { return Modifier::kCalibrationPriority; };
+
 private:
   CalibrationModifier(const CalibrationModifier&);
   CalibrationModifier& operator=(const CalibrationModifier&);
 };
-
+
 #endif
 
 /* EOF */

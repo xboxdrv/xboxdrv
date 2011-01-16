@@ -22,19 +22,40 @@
 #include <vector>
 
 #include "modifier.hpp"
+
+class AutofireMapping 
+{
+public:
+  static AutofireMapping from_string(const std::string& lhs, const std::string& rhs);
 
-class AutoFireModifier : public Modifier
+public:  
+  AutofireMapping(XboxButton button, int frequency);
+
+  void update(int msec_delta, XboxGenericMsg& msg);
+
+  Modifier::Priority get_priority() const { return Modifier::kAutofirePriority; };
+
+public:
+  XboxButton m_button;
+  int m_frequency;
+
+  int m_button_timer;
+};
+
+class AutofireModifier : public Modifier
 {
 private:
-  std::vector<AutoFireMapping> m_autofire_map;
+  std::vector<AutofireMapping> m_autofire_map;
   std::vector<int> m_button_timer;
 
 public:
-  AutoFireModifier(const std::vector<AutoFireMapping>& autofire_map);
+  AutofireModifier(const std::vector<AutofireMapping>& autofire_map);
     
   void update(int msec_delta, XboxGenericMsg& msg);
-};
 
+  Modifier::Priority get_priority() const { return Modifier::kAutofirePriority; };
+};
+
 #endif
 
 /* EOF */

@@ -20,7 +20,24 @@
 #define HEADER_XBOXDRV_MODIFIER_AXIS_SENSITIVTY_MODIFIER_HPP
 
 #include "modifier.hpp"
+
+class AxisSensitivityMapping 
+{
+public:
+  static AxisSensitivityMapping from_string(const std::string& lhs, const std::string& rhs);
 
+public:
+  AxisSensitivityMapping(XboxAxis axis, float sensitivity);
+
+  void update(int msec_delta, XboxGenericMsg& msg);
+
+  Modifier::Priority get_priority() const { return Modifier::kAxisSensitivityPriority; };
+
+public:
+  XboxAxis m_axis;
+  float m_sensitivity;
+};
+
 class AxisSensitivityModifier : public Modifier
 {
 private:
@@ -31,11 +48,13 @@ public:
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
+  Modifier::Priority get_priority() const { return Modifier::kAxisSensitivityPriority; };
+
 private:
   AxisSensitivityModifier(const AxisSensitivityModifier&);
   AxisSensitivityModifier& operator=(const AxisSensitivityModifier&);
 };
-
+
 #endif
 
 /* EOF */

@@ -42,6 +42,16 @@ $ dput my-ppa ../xboxdrv_0.6.4-2~lucid1_source.changes
 Stuff to do before 0.6.5 release:
 =================================
 
+* add:
+
+  --modifier axis-sensitivity:X1=-1.0,Y1=-1.0
+  --modifier axis-sensitivity:X1=-1.0,Y1=-1.0
+  --modifier relative-axis:AXIS=NUM^axis-sensitivity:X1=-1.0,Y1=-1.0
+
+  little ugly, but should be workable. All those modifiers get appened to a modifier stack.
+ 
+  old modifier options also still work, but are sorted prior to use, to act the same as in older xboxdrv versions
+
 * get rid of uinput.get_uinput(m_code.device_id)->send(EV_ABS, m_code.code, value) turn into:
   
   uinput.send(m_code.device_id, EV_ABS, m_code.code, value);
@@ -113,9 +123,18 @@ Stuff to do before 0.6.5 release:
 XboxdrvDaemon
 =============
 
+  -a FILENAME, --on-attach=FILENAME
+                        Launch EXE when a new controller is connected
+  -d FILENAME, --on-detach=FILENAME
+                        Launch EXE when a controller is detached
+
 
 Stuff to do before 0.6.x release:
 =================================
+
+* uinput must be thread safe
+
+* use pretty print to print copyright notice
 
 * basic Dualstrike mouse emulation with absolute position:
 
