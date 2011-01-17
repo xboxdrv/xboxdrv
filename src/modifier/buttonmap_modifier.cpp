@@ -111,7 +111,14 @@ ButtonmapModifier::add_filter(XboxButton btn, ButtonFilterPtr filter)
       i->filters.push_back(filter);
       break;
     }
-  } 
+  }
+
+  // button not already in the map, so add it
+  ButtonMapping mapping;
+  mapping.lhs = btn;
+  mapping.rhs = btn;
+  mapping.filters.push_back(filter);
+  add(mapping);
 }
 
 /* EOF */

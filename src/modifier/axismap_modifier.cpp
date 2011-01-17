@@ -139,6 +139,13 @@ AxismapModifier::add_filter(XboxAxis axis, AxisFilterPtr filter)
       break;
     }
   }
+
+  AxisMapping mapping;
+  mapping.lhs = axis;
+  mapping.rhs = axis;
+  mapping.invert = false;
+  mapping.filters.push_back(filter);
+  add(mapping);
 }
 
 /* EOF */
