@@ -55,6 +55,7 @@ public:
   virtual void update(int msec_delta, XboxGenericMsg& msg) = 0;
 
   virtual Priority get_priority() const = 0;
+  virtual std::string str() const = 0;
 };
 
 #endif

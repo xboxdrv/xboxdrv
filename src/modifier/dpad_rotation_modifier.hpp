@@ -39,6 +39,8 @@ public:
 
   Modifier::Priority get_priority() const { return Modifier::kDpadRotationPriority; };
 
+  std::string str() const;
+
 private:
   DpadRotationModifier(const DpadRotationModifier&);
   DpadRotationModifier& operator=(const DpadRotationModifier&);

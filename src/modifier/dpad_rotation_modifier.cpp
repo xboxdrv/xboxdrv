@@ -151,4 +151,12 @@ DpadRotationModifier::update(int msec_delta, XboxGenericMsg& msg)
   }
 }
 
+std::string
+DpadRotationModifier::str() const
+{
+  std::ostringstream out;
+  out << "dpad-rotation:" << m_dpad_rotation;
+  return out.str();
+}
+
 /* EOF */

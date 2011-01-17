@@ -44,6 +44,8 @@ public:
   void add(const AxisMapping& mapping);
   void add_filter(XboxAxis axis, AxisFilterPtr filter);
 
+  std::string str() const;
+
 public:
   std::vector<AxisMapping> m_axismap;
 };

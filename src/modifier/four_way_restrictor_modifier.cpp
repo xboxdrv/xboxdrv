@@ -19,6 +19,7 @@
 #include "four_way_restrictor_modifier.hpp"
 
 #include <stdexcept>
+#include <sstream>
 
 FourWayRestrictorModifier*
 FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
@@ -70,6 +71,14 @@ FourWayRestrictorModifier::update(int msec_delta, XboxGenericMsg& msg)
   {
     set_axis(msg, XBOX_AXIS_X2, 0);
   }
+}
+
+std::string
+FourWayRestrictorModifier::str() const
+{
+  std::ostringstream out;
+  out << "4way:" << axis2string(m_xaxis) << ":" << axis2string(m_yaxis);
+  return out.str();
 }
 
 /* EOF */

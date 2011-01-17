@@ -76,12 +76,24 @@ ToggleButtonFilter::filter(bool value)
     m_last_value = value;
   }
   return m_state;
-}   
+}
+
+std::string
+ToggleButtonFilter::str() const
+{
+  return "toggle";
+}
 
 bool
 InvertButtonFilter::filter(bool value)
 {
   return !value;
+}
+
+std::string
+InvertButtonFilter::str() const
+{
+  return "invert";
 }
 
 AutofireButtonFilter*
@@ -160,6 +172,14 @@ AutofireButtonFilter::filter(bool value)
     }
   }
 }
+
+std::string
+AutofireButtonFilter::str() const
+{
+  std::ostringstream out;
+  out << "auto:" << m_rate << ":" << m_delay;
+  return out.str();
+}
 
 LogButtonFilter*
 LogButtonFilter::from_string(const std::string& str)
@@ -185,6 +205,14 @@ LogButtonFilter::filter(bool value)
   }
 
   return value;
+}
+
+std::string
+LogButtonFilter::str() const
+{
+  std::ostringstream out;
+  out << "log:" << m_name;
+  return out.str();  
 }
 
 /* EOF */

@@ -16,10 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "square_axis_modifier.hpp"
+
 #include <math.h>
+#include <sstream>
 
 #include "helper.hpp"
-#include "square_axis_modifier.hpp"
 
 namespace {
 
@@ -60,22 +62,33 @@ SquareAxisModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-SquareAxisModifier::SquareAxisModifier(XboxAxis x_axis, XboxAxis y_axis) :
-  m_x_axis(x_axis),
-  m_y_axis(y_axis)
+SquareAxisModifier::SquareAxisModifier(XboxAxis xaxis, XboxAxis yaxis) :
+  m_xaxis(xaxis),
+  m_yaxis(yaxis)
 {
 }
 
 void
 SquareAxisModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
-  int x = get_axis(msg, m_x_axis);
-  int y = get_axis(msg, m_y_axis);
+  int x = get_axis(msg, m_xaxis);
+  int y = get_axis(msg, m_yaxis);
 
   squarify_axis(x, y);
 
-  set_axis(msg, m_x_axis, x);
-  set_axis(msg, m_y_axis, y);
+  set_axis(msg, m_xaxis, x);
+  set_axis(msg, m_yaxis, y);
+}
+
+std::string
+SquareAxisModifier::str() const
+{
+  std::ostringstream out;
+  out << "square"
+      << axis2string(m_xaxis)
+      << ":"
+      << axis2string(m_yaxis);
+  return out.str();
 }
 
 /* EOF */

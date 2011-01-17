@@ -108,6 +108,14 @@ InvertAxisFilter::filter(int value, int min, int max)
     return value;
   }
 }
+
+std::string
+InvertAxisFilter::str() const
+{
+  std::ostringstream out;
+  out << "invert";
+  return out.str();
+}
 
 SensitivityAxisFilter*
 SensitivityAxisFilter::from_string(const std::string& str)
@@ -154,6 +162,14 @@ SensitivityAxisFilter::filter(int value, int min, int max)
     return from_float(-pos, min, max);
   }
 }
+
+std::string
+SensitivityAxisFilter::str() const
+{
+  std::ostringstream out;
+  out << "sensitivity:" << m_sensitivity;
+  return out.str();
+}
 
 CalibrationAxisFilter*
 CalibrationAxisFilter::from_string(const std::string& str)
@@ -198,6 +214,14 @@ CalibrationAxisFilter::filter(int value, int min, int max)
     value = 0;
 
   return Math::clamp(min, value, max);
+}
+
+std::string
+CalibrationAxisFilter::str() const
+{
+  std::ostringstream out;
+  out << "calibration:" << m_min << ":" << m_center << ":" << m_max;
+  return out.str();
 }
 
 DeadzoneAxisFilter*
@@ -273,6 +297,14 @@ DeadzoneAxisFilter::filter(int value, int min, int max)
     }
   }
 }
+
+std::string
+DeadzoneAxisFilter::str() const
+{
+  std::ostringstream out;
+  out << "deadzone:" << m_min_deadzone << ":" << m_max_deadzone << ":" << m_smooth;
+  return out.str();
+}
 
 RelativeAxisFilter*
 RelativeAxisFilter::from_string(const std::string& str)
@@ -317,6 +349,14 @@ RelativeAxisFilter::filter(int value, int min, int max)
   m_float_speed = to_float(m_speed, min, max);
 
   return from_float(m_state, min, max);
+}
+
+std::string
+RelativeAxisFilter::str() const
+{
+  std::ostringstream out;
+  out << "relativeaxis:" << m_speed;
+  return out.str();
 }
 
 ResponseCurveAxisFilter*
@@ -365,6 +405,18 @@ ResponseCurveAxisFilter::filter(int value, int min, int max)
     return ((1.0f - t) * m_samples[bucket_index]) + (t * m_samples[bucket_index + 1]);
   }
 }
+
+std::string
+ResponseCurveAxisFilter::str() const
+{
+  std::ostringstream out;
+  out << "responsecurve";
+  for(std::vector<int>::const_iterator i = m_samples.begin(); i != m_samples.end(); ++i)
+  {
+    out << ":" << *i;
+  }
+  return out.str();
+}
 
 LogAxisFilter*
 LogAxisFilter::from_string(const std::string& str)
@@ -390,6 +442,14 @@ LogAxisFilter::filter(int value, int min, int max)
   }
 
   return value;
+}
+
+std::string
+LogAxisFilter::str() const
+{
+  std::ostringstream out;
+  out << "log:" << m_name;
+  return out.str();
 }
 
 /* EOF */

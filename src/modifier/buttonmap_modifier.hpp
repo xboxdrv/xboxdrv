@@ -41,6 +41,8 @@ public:
   void add(const ButtonMapping& mapping);
   void add_filter(XboxButton btn, ButtonFilterPtr filter);
 
+  std::string str() const;
+
 public:
   std::vector<ButtonMapping> m_buttonmap;
 };

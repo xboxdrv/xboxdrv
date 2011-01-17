@@ -37,6 +37,7 @@ public:
 
   virtual bool filter(bool value) =0;
   virtual void update(int msec_delta) {}
+  virtual std::string str() const = 0;
 };
 
 class ToggleButtonFilter : public ButtonFilter
@@ -46,6 +47,7 @@ public:
 
   bool filter(bool value);
   void update(int msec_delta) {}
+  std::string str() const;
 
 private:
   bool m_state;
@@ -59,6 +61,7 @@ public:
 
   void update(int msec_delta) {}
   bool filter(bool value);
+  std::string str() const;
 };
 
 class AutofireButtonFilter : public ButtonFilter
@@ -71,6 +74,7 @@ public:
 
   void update(int msec_delta);
   bool filter(bool value);
+  std::string str() const;
 
 private:
   bool m_state;
@@ -91,6 +95,7 @@ public:
   LogButtonFilter(const std::string& name);
 
   bool filter(bool value);
+  std::string str() const;
 
 private:
   std::string m_name;

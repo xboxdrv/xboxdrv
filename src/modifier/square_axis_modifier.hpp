@@ -33,9 +33,11 @@ public:
 
   Modifier::Priority get_priority() const { return Modifier::kSquareAxisPriority; };
 
+  std::string str() const;
+
 private:
-  XboxAxis m_x_axis;
-  XboxAxis m_y_axis;
+  XboxAxis m_xaxis;
+  XboxAxis m_yaxis;
 };
 
 #endif

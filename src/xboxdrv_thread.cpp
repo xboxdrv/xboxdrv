@@ -101,6 +101,12 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
   modifier.push_back(opts.controller.buttonmap);
   modifier.push_back(opts.controller.axismap);
 
+  std::cout << "Active Modifier:" << std::endl;
+  for(std::vector<ModifierPtr>::iterator i = modifier.begin(); i != modifier.end(); ++i)
+  {
+    std::cout << (*i)->str() << std::endl;
+  }
+
   // how long to wait for a controller event before taking care of autofire etc.
   timeout = 25; // FIXME: add an option for that
 

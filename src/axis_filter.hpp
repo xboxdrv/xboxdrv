@@ -37,7 +37,8 @@ public:
   virtual ~AxisFilter() {}
 
   virtual void update(int msec_delta) {}
-  virtual int filter(int value, int min, int max) =0;
+  virtual int filter(int value, int min, int max) = 0;
+  virtual std::string str() const = 0;
 };
 
 class InvertAxisFilter : public AxisFilter
@@ -47,6 +48,7 @@ public:
   ~InvertAxisFilter() {}
 
   int filter(int value, int min, int max);
+  std::string str() const;
 };
 
 class SensitivityAxisFilter : public AxisFilter
@@ -58,6 +60,7 @@ public:
   SensitivityAxisFilter(float sensitivity);
 
   int filter(int value, int min, int max);
+  std::string str() const;
 
 private:
   float m_sensitivity;
@@ -72,6 +75,7 @@ public:
   CalibrationAxisFilter(int min, int center, int max);
 
   int filter(int value, int min, int max);
+  std::string str() const;
 
 private:
   int m_min;
@@ -88,6 +92,7 @@ public:
   DeadzoneAxisFilter(int min_deadzone, int max_deathzone, bool smooth);
 
   int filter(int value, int min, int max);
+  std::string str() const;
 
 private:
   int m_min_deadzone;
@@ -105,6 +110,7 @@ public:
 
   void update(int msec_delta);
   int filter(int value, int min, int max);
+  std::string str() const;
 
 private:
   int m_speed;
@@ -123,6 +129,7 @@ public:
   ResponseCurveAxisFilter(const std::vector<int>& samples);
 
   int filter(int value, int min, int max);
+  std::string str() const;
 
 private:
   std::vector<int> m_samples;
@@ -137,6 +144,7 @@ public:
   LogAxisFilter(const std::string& name);
 
   int filter(int value, int min, int max);
+  std::string str() const;
 
 private:
   std::string m_name;

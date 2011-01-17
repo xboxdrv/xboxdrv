@@ -33,6 +33,8 @@ public:
 
   Modifier::Priority get_priority() const { return Modifier::kFourWayRestrictorPriority; };
 
+  std::string str() const;
+
 private:
   const XboxAxis m_xaxis;
   const XboxAxis m_yaxis;

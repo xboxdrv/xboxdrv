@@ -19,6 +19,7 @@
 #include "buttonmap_modifier.hpp"
 
 #include <boost/tokenizer.hpp>
+#include <sstream>
 
 ButtonMapping 
 ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
@@ -119,6 +120,22 @@ ButtonmapModifier::add_filter(XboxButton btn, ButtonFilterPtr filter)
   mapping.rhs = btn;
   mapping.filters.push_back(filter);
   add(mapping);
+}
+
+std::string
+ButtonmapModifier::str() const
+{
+  std::ostringstream out;
+  out << "buttonmap:";
+  for(std::vector<ButtonMapping>::const_iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
+  {
+    out << btn2string(i->lhs) << "=" << btn2string(i->rhs) << std::endl;
+    for(std::vector<ButtonFilterPtr>::const_iterator filter = i->filters.begin(); filter != i->filters.end(); ++filter)
+    {
+      out << "  " << (*filter)->str() << std::endl;
+    }
+  }
+  return out.str();
 }
 
 /* EOF */

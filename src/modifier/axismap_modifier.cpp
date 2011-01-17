@@ -20,6 +20,7 @@
 
 #include <boost/tokenizer.hpp>
 #include <memory>
+#include <sstream>
 
 /** converts the arbitary range to [-1,1] */
 inline float to_float(int value, int min, int max)
@@ -146,6 +147,22 @@ AxismapModifier::add_filter(XboxAxis axis, AxisFilterPtr filter)
   mapping.invert = false;
   mapping.filters.push_back(filter);
   add(mapping);
+}
+
+std::string
+AxismapModifier::str() const
+{
+  std::ostringstream out;
+  out << "axismap:";
+  for(std::vector<AxisMapping>::const_iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
+  {
+    out << axis2string(i->lhs) << "=" << axis2string(i->rhs) << std::endl;
+    for(std::vector<AxisFilterPtr>::const_iterator filter = i->filters.begin(); filter != i->filters.end(); ++filter)
+    {
+      out << "  " << (*filter)->str() << std::endl;
+    }
+  }
+  return out.str();
 }
 
 /* EOF */
