@@ -28,6 +28,9 @@ class AutofireModifier : public Modifier
 public:
   static AutofireModifier* from_string(const std::string& lhs, const std::string& rhs);
 
+  /** input: [ BUTTON, FREQUENCY ] */
+  static AutofireModifier* from_string(const std::vector<std::string>& args);
+
 public:  
   AutofireModifier(XboxButton button, int frequency);
 

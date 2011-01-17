@@ -23,7 +23,9 @@
 
 class SquareAxisModifier : public Modifier
 {
-private:
+public:
+  static SquareAxisModifier* from_string(const std::vector<std::string>& args);
+
 public:
   SquareAxisModifier();
 

@@ -23,7 +23,9 @@
 
 class FourWayRestrictorModifier : public Modifier
 {
-private:
+public:
+  static FourWayRestrictorModifier* from_string(const std::vector<std::string>& args);
+
 public:
   FourWayRestrictorModifier();
 

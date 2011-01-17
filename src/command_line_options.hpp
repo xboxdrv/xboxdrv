@@ -48,6 +48,8 @@ public:
   void create_ini_schema(Options* opts);
 
 private:
+  void set_modifier(const std::string& name, const std::string& value);
+
   void set_axismap(const std::string& name, const std::string& value);
   void set_buttonmap(const std::string& name, const std::string& value);
 
@@ -58,6 +60,12 @@ private:
   void set_autofire(const std::string& name, const std::string& value);
   void set_calibration(const std::string& name, const std::string& value);
   void set_axis_sensitivity(const std::string& name, const std::string& value);
+
+  void set_deadzone(const std::string& value);
+  void set_deadzone_trigger(const std::string& value);
+  void set_square_axis();
+  void set_four_way_restrictor();
+  void set_dpad_rotation(const std::string& value);
 
   void read_config_file(Options* opts, const std::string& filename);
   void read_alt_config_file(Options* opts, const std::string& filename);

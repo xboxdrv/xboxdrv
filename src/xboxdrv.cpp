@@ -512,8 +512,6 @@ Xboxdrv::print_info(libusb_device* dev,
   if (dev_type.type == GAMEPAD_XBOX360_WIRELESS)
     std::cout << "Wireless Port:     " << opts.wireless_id << std::endl;
   std::cout << "Controller Type:   " << dev_type.type << std::endl;
-  std::cout << "Deadzone:          " << opts.controller.deadzone << std::endl;
-  std::cout << "Trigger Deadzone:  " << opts.controller.deadzone_trigger << std::endl;
   std::cout << "Rumble Debug:      " << (opts.rumble ? "on" : "off") << std::endl;
   std::cout << "Rumble Speed:      " << "left: " << opts.rumble_l << " right: " << opts.rumble_r << std::endl;
   if (opts.led == -1)
@@ -521,10 +519,6 @@ Xboxdrv::print_info(libusb_device* dev,
   else
     std::cout << "LED Status:        " << opts.led << std::endl;
 
-  std::cout << "Square Axis:       " << ((opts.controller.square_axis) ? "yes" : "no") << std::endl;
-  std::cout << "4-Way Restrictor:  " << ((opts.controller.four_way_restrictor) ? "yes" : "no") << std::endl;
-  std::cout << "Dpad Rotation:     " << opts.controller.dpad_rotation * 45 << " degree" << std::endl;
-  
   std::cout << "RumbleGain:        " << opts.rumble_gain << std::endl;
   std::cout << "ForceFeedback:     " << ((opts.controller.uinput.force_feedback) ? "enabled" : "disabled") << std::endl;
 }

@@ -36,7 +36,7 @@ typedef boost::shared_ptr<Modifier> ModifierPtr;
 class Modifier
 {
 public:
-  static ModifierPtr create(const std::string& str);
+  static Modifier* from_string(const std::string& name, const std::string& value);
 
   /** Priority defines the sort order of modifiers in the modifier
       stack, well defined order is important as some modifiers would

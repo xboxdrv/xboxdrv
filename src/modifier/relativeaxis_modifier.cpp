@@ -22,6 +22,11 @@
 #include <boost/lexical_cast.hpp>
 
 RelativeAxisModifier*
+RelativeAxisModifier::from_string(const std::vector<std::string>& args)
+{
+}
+
+RelativeAxisModifier*
 RelativeAxisModifier::from_string(const std::string& lhs, const std::string& rhs)
 {
   /* Format of str: A={SPEED} */

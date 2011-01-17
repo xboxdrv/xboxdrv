@@ -25,6 +25,7 @@ class RelativeAxisModifier : public Modifier
 {
 public:
   static RelativeAxisModifier* from_string(const std::string& lhs, const std::string& rhs);
+  static RelativeAxisModifier* from_string(const std::vector<std::string>& args);
 
 public:
   RelativeAxisModifier();

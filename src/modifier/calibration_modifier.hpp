@@ -28,7 +28,11 @@ class CalibrationModifier : public Modifier
 public:
   static CalibrationModifier* from_string(const std::string& lhs, const std::string& rhs);
 
+  /** input: [ AXIS, MIN, CENTER, MAX ] */
+  static CalibrationModifier* from_string(const std::vector<std::string>& args);
+
 public:
+  CalibrationModifier(XboxAxis axis, int min, int center, int max);
   CalibrationModifier();
 
   void update(int msec_delta, XboxGenericMsg& msg);

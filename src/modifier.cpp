@@ -16,6 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "modifier.hpp"
+
+#include <boost/tokenizer.hpp>
+#include <vector>
+
 #include "modifier/autofire_modifier.hpp"
 #include "modifier/deadzone_modifier.hpp"
 #include "modifier/axismap_modifier.hpp"
@@ -27,10 +32,63 @@
 #include "modifier/calibration_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 
-ModifierPtr
-Modifier::create(const std::string& str)
+Modifier*
+Modifier::from_string(const std::string& name, const std::string& value)
 {
-  return ModifierPtr();
+  if (name == "axismap")
+  {
+    //return AxismapModifier::from_string(value);
+    throw std::runtime_error("unknown modifier: " + name);
+  }
+  else if (name == "buttonmap")
+  {
+    //return ButtonmapModifier::from_string(value);
+    throw std::runtime_error("unknown modifier: " + name);
+  }
+  else
+  {
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+
+    std::vector<std::string> args(tokens.begin(), tokens.end());
+
+    if (name == "auto" || name == "autofire")
+    {
+      return AutofireModifier::from_string(args);
+    }
+    else if (name == "dead" || name == "deadzone")
+    {
+      return DeadzoneModifier::from_string(args);
+    }
+    else if (name == "dpad-rotation")
+    {
+      return DpadRotationModifier::from_string(args);
+    }
+    else if (name == "sen" || name == "sensitivty"  || name == "axis-sensitivty")
+    {
+      return AxisSensitivityModifier::from_string(args);
+    }
+    else if (name == "4rest" || name == "four-way-restrictor")
+    {
+      return FourWayRestrictorModifier::from_string(args);
+    }
+    else if (name == "rel" || name == "relative" || name == "relativeaxis")
+    {
+      return RelativeAxisModifier::from_string(args);
+    }
+    else if (name == "cal" || name == "calibration")
+    {
+      return CalibrationModifier::from_string(args);
+    }
+    else if (name == "square" || name == "square-axis")
+    {
+      return SquareAxisModifier::from_string(args);
+    }
+    else
+    {
+      throw std::runtime_error("unknown modifier: " + name);
+    }
+  }
 }
 
-/* EOF */
+  /* EOF */

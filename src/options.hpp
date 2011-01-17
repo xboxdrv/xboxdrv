@@ -42,11 +42,6 @@ public:
 
   uInputCfg uinput;
   std::vector<ModifierPtr> modifier;
-  int deadzone;
-  int deadzone_trigger;
-  bool square_axis;
-  bool four_way_restrictor;
-  int  dpad_rotation; 
 };
 
 class Options

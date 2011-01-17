@@ -56,6 +56,12 @@ void squarify_axis_(int16_t& x_inout, int16_t& y_inout)
 } // namespace
 
 
+SquareAxisModifier*
+SquareAxisModifier::from_string(const std::vector<std::string>& args)
+{
+  return new SquareAxisModifier;
+}
+
 SquareAxisModifier::SquareAxisModifier()
 {
 }

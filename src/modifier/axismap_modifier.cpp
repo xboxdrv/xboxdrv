@@ -84,13 +84,13 @@ AxismapModifier::AxismapModifier() :
 void
 AxismapModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
-  XboxGenericMsg newmsg = msg;
-
   // update all filters in all mappings
   for(std::vector<AxisFilterPtr>::iterator j = m_filters.begin(); j != m_filters.end(); ++j)
   {
     (*j)->update(msec_delta);
   }
+
+  XboxGenericMsg newmsg = msg;
 
   // clear all values in the new msg
   set_axis_float(newmsg, m_lhs, 0);

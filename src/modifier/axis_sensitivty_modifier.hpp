@@ -26,9 +26,12 @@ class AxisSensitivityModifier : public Modifier
 public:
   static AxisSensitivityModifier* from_string(const std::string& lhs, const std::string& rhs);
 
+  /** input: [ AXIS, SENSITIVITY ] */
+  static AxisSensitivityModifier* from_string(const std::vector<std::string>& args);
+
 public:
   AxisSensitivityModifier(XboxAxis axis, float sensitivity);
-
+  
   void update(int msec_delta, XboxGenericMsg& msg);
 
   Modifier::Priority get_priority() const { return Modifier::kAxisSensitivityPriority; };

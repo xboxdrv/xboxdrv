@@ -18,8 +18,22 @@
 
 #include "autofire_modifier.hpp"
 
+#include <stdexcept>
 #include <boost/lexical_cast.hpp>
 
+AutofireModifier*
+AutofireModifier::from_string(const std::vector<std::string>& args)
+{
+  if (args.size() != 2)
+  {
+    throw std::runtime_error("AutofireModifier takes exactly two arguments");
+  }
+  else
+  {
+    return new AutofireModifier(string2btn(args[0]), boost::lexical_cast<int>(args[1]));    
+  }
+}
+
 AutofireModifier*
 AutofireModifier::from_string(const std::string& lhs, const std::string& rhs)
 {

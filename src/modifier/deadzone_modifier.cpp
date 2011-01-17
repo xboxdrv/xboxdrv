@@ -60,6 +60,11 @@ uint8_t scale_trigger_deadzone(uint8_t value, int deadzone)
 
 } // namespace
 
+DeadzoneModifier*
+DeadzoneModifier::from_string(const std::vector<std::string>& args)
+{
+}
+
 DeadzoneModifier::DeadzoneModifier(int deadzone, int deadzone_trigger) :
   m_deadzone(deadzone),
   m_deadzone_trigger(deadzone_trigger)

@@ -59,28 +59,27 @@ ButtonmapModifier::ButtonmapModifier(XboxButton lhs,
 void
 ButtonmapModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
-  XboxGenericMsg newmsg = msg;
-
   // update all filters in all mappings
   for(std::vector<ButtonFilterPtr>::iterator i = m_filters.begin(); i != m_filters.end(); ++i)
   {
     (*i)->update(msec_delta);
   }
 
+  XboxGenericMsg newmsg = msg;
+
   // set all buttons to 0
   set_button(newmsg, m_lhs, 0);
 
-
-  // Take both lhs and rhs into account to allow multiple buttons
-  // mapping to the same button
   bool value = get_button(msg, m_lhs);
 
   // apply the button filter
   for(std::vector<ButtonFilterPtr>::iterator j = m_filters.begin(); j != m_filters.end(); ++j)
   {
     value = (*j)->filter(value);
-  }    
+  }
 
+  // Take both lhs and rhs into account to allow multiple buttons
+  // mapping to the same button
   set_button(newmsg, m_rhs, value || get_button(newmsg, m_rhs));
 
   msg = newmsg;

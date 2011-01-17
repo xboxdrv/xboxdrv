@@ -23,6 +23,9 @@
 
 class DeadzoneModifier : public Modifier
 {
+public:
+  static DeadzoneModifier* from_string(const std::vector<std::string>& args);
+
 private:
   int m_deadzone;
   int m_deadzone_trigger;

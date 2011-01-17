@@ -25,6 +25,9 @@ class XboxGenericMsg;
 
 class DpadRotationModifier : public Modifier
 {
+public:
+  static DpadRotationModifier* from_string(const std::vector<std::string>& args);
+
 private:
   int  m_dpad_rotation;
 

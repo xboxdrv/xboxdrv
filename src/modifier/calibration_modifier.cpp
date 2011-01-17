@@ -31,6 +31,22 @@ int clamp(int lhs, int rhs, int v)
 } // namespace
 
 CalibrationModifier*
+CalibrationModifier::from_string(const std::vector<std::string>& args)
+{
+  if (args.size() != 3)
+  {
+    throw std::runtime_error("CalibrationModifier takes exactly three arguments");
+  }
+  else
+  {
+    return new CalibrationModifier(string2axis(args[0]),
+                                   boost::lexical_cast<int>(args[0]),
+                                   boost::lexical_cast<int>(args[1]),
+                                   boost::lexical_cast<int>(args[2]));
+  }
+}
+
+CalibrationModifier*
 CalibrationModifier::from_string(const std::string& lhs, const std::string& rhs)
 {
   std::auto_ptr<CalibrationModifier> mapping(new CalibrationModifier);
@@ -75,6 +91,14 @@ CalibrationModifier::from_string(const std::string& lhs, const std::string& rhs)
   return mapping.release();
 }
 
+CalibrationModifier::CalibrationModifier(XboxAxis axis, int min, int center, int max) :
+  m_axis(axis),
+  m_min(min),
+  m_center(center),
+  m_max(max)
+{
+}
+
 CalibrationModifier::CalibrationModifier() :
   m_axis(XBOX_AXIS_UNKNOWN),
   m_min(0),

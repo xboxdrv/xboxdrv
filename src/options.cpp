@@ -22,12 +22,7 @@ Options* g_options;
 
 ControllerOptions::ControllerOptions() :
   uinput(),
-  modifier(),
-  deadzone(0),
-  deadzone_trigger(0),
-  square_axis(false),
-  four_way_restrictor(false),
-  dpad_rotation(0)
+  modifier()
 {
 }
 

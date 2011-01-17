@@ -19,7 +19,12 @@
 #include "modifier/dpad_rotation_modifier.hpp"
 
 #include "xboxmsg.hpp"
-
+
+DpadRotationModifier*
+DpadRotationModifier::from_string(const std::vector<std::string>& args)
+{
+}
+
 DpadRotationModifier::DpadRotationModifier(int dpad_rotation) :
   m_dpad_rotation(dpad_rotation)
 {

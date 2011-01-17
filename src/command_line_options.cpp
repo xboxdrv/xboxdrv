@@ -36,6 +36,11 @@
 #include "options.hpp"
 #include "uinput_deviceid.hpp"
 
+#include "modifier/deadzone_modifier.hpp"
+#include "modifier/square_axis_modifier.hpp"
+#include "modifier/four_way_restrictor_modifier.hpp"
+#include "modifier/dpad_rotation_modifier.hpp"
+
 #define RAISE_EXCEPTION(x) do {                         \
     std::ostringstream kiJk8f08d4oMX;                   \
     kiJk8f08d4oMX << x;                                 \
@@ -64,6 +69,7 @@ enum {
   OPTION_TYPE,
   OPTION_FORCE_FEEDBACK,
   OPTION_RUMBLE_GAIN,
+  OPTION_MODIFIER,
   OPTION_BUTTONMAP,
   OPTION_AXISMAP,
   OPTION_NAME,
@@ -268,18 +274,19 @@ CommandLineParser::init_ini(Options* opts)
     ("detach-kernel-driver", &opts->detach_kernel_driver)
     ("busid", &opts->busid)
     ("devid", &opts->devid)
-    ("deadzone", &opts->controller.deadzone)
-    ("deadzone-trigger", &opts->controller.deadzone_trigger)
     ("vendor-id", &opts->vendor_id)
     ("product-id", &opts->product_id)   
-    ("square-axis", &opts->controller.square_axis)
-    ("four-way-restrictor", &opts->controller.four_way_restrictor)
-    ("dpad-rotation", &opts->controller.dpad_rotation)
     ("evdev", &opts->evdev_device)
     ("evdev-grab", &opts->evdev_grab)
     ("evdev-debug", &opts->evdev_debug)
     ("config", boost::bind(&CommandLineParser::read_config_file, this, opts, _1))
     ("alt-config", boost::bind(&CommandLineParser::read_alt_config_file, this, opts, _1))
+
+    ("deadzone", boost::bind(&CommandLineParser::set_deadzone, this, _1))
+    ("deadzone-trigger", boost::bind(&CommandLineParser::set_deadzone_trigger, this, _1))
+    ("square-axis", boost::bind(&CommandLineParser::set_square_axis, this), boost::function<void ()>())
+    ("four-way-restrictor", boost::bind(&CommandLineParser::set_four_way_restrictor, this), boost::function<void ()>())
+    ("dpad-rotation", boost::bind(&CommandLineParser::set_dpad_rotation, this, _1))
 
     // uinput stuff
     ("device-name", &opts->controller.uinput.device_name)
@@ -301,6 +308,8 @@ CommandLineParser::init_ini(Options* opts)
     ("headset-dump",    &opts->headset_dump)
     ("headset-play",    &opts->headset_play)
     ;
+
+  m_ini.section("modifier", boost::bind(&CommandLineParser::set_modifier, this, _1, _2));
 
   m_ini.section("ui-buttonmap", boost::bind(&uInputCfg::set_ui_buttonmap, 
                                             boost::ref(opts->controller.uinput), _1, _2));
@@ -507,6 +516,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         opts.rumble_gain = to_number(255, opt.argument);
         break;
 
+      case OPTION_MODIFIER:
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_modifier, this, _1, _2));
+        break;
+
       case OPTION_BUTTONMAP:
         process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_buttonmap, this, _1, _2));
         break;
@@ -610,11 +623,11 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_DEADZONE:
-        opts.controller.deadzone = to_number(32767, opt.argument);
+        set_deadzone(opt.argument);
         break;
 
       case OPTION_DEADZONE_TRIGGER:
-        opts.controller.deadzone_trigger = to_number(255, opt.argument);
+        set_deadzone_trigger(opt.argument);
         break;
 
       case OPTION_TRIGGER_AS_BUTTON:
@@ -642,21 +655,15 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_FOUR_WAY_RESTRICTOR:
-        opts.controller.four_way_restrictor = true;
+        set_four_way_restrictor();
         break;
 
       case OPTION_DPAD_ROTATION:
-        {
-          int degree = boost::lexical_cast<int>(opt.argument);
-          degree /= 45;
-          degree %= 8;
-          if (degree < 0) degree += 8;
-          opts.controller.dpad_rotation = degree;
-        }
+        set_dpad_rotation(opt.argument);
         break;
 
       case OPTION_SQUARE_AXIS:
-        opts.controller.square_axis = true;
+        set_square_axis();
         break;
 
       case OPTION_HELP_LED:
@@ -774,6 +781,12 @@ CommandLineParser::print_version() const
 }
 
 void
+CommandLineParser::set_modifier(const std::string& name, const std::string& value)
+{
+  m_options->controller.modifier.push_back(ModifierPtr(Modifier::from_string(name, value)));
+}
+
+void
 CommandLineParser::set_axismap(const std::string& name, const std::string& value)
 {
   m_options->controller.modifier.push_back(ModifierPtr(AxismapModifier::from_string(name, value)));
@@ -834,6 +847,61 @@ CommandLineParser::set_axis_sensitivity(const std::string& name, const std::stri
 {
   m_options->controller.modifier.push_back(ModifierPtr(AxisSensitivityModifier::from_string(name, value)));
 }
+
+void
+CommandLineParser::set_deadzone(const std::string& value)
+{
+  m_options->controller.modifier.push_back(ModifierPtr(new DeadzoneModifier(to_number(32767, value), 0)));
+}
+
+void
+CommandLineParser::set_deadzone_trigger(const std::string& value)
+{
+  m_options->controller.modifier.push_back(ModifierPtr(new DeadzoneModifier(0, to_number(255, value))));
+}
+
+void
+CommandLineParser::set_square_axis()
+{
+  m_options->controller.modifier.push_back(ModifierPtr(new SquareAxisModifier()));
+}
+
+void
+CommandLineParser::set_four_way_restrictor()
+{
+  m_options->controller.modifier.push_back(ModifierPtr(new FourWayRestrictorModifier()));
+}
+
+void
+CommandLineParser::set_dpad_rotation(const std::string& value)
+{
+  int degree = boost::lexical_cast<int>(value);
+  degree /= 45;
+  degree %= 8;
+  if (degree < 0) 
+    degree += 8;
+
+  m_options->controller.modifier.push_back(ModifierPtr(new DpadRotationModifier(degree)));
+}
+
+/*
+  void set_deadzone(int value);
+  void set_deadzone_trigger(int value);
+  void set_square_axis();
+  void set_four_way_restrictor();
+
+  if (opts.controller.deadzone != 0 || opts.controller.deadzone_trigger != 0)
+    modifier.push_back(ModifierPtr(new DeadzoneModifier(opts.controller.deadzone, opts.controller.deadzone_trigger)));
+
+  if (opts.controller.square_axis)
+    modifier.push_back(ModifierPtr(new SquareAxisModifier()));
+ 
+  if (opts.controller.four_way_restrictor)
+    modifier.push_back(ModifierPtr(new FourWayRestrictorModifier()));
+
+  if (opts.controller.dpad_rotation)
+    modifier.push_back(ModifierPtr(new DpadRotationModifier(opts.controller.dpad_rotation)));
+*/
 
 void
 CommandLineParser::read_config_file(Options* opts, const std::string& filename)

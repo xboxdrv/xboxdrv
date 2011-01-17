@@ -17,7 +17,13 @@
 */
 
 #include "four_way_restrictor_modifier.hpp"
-
+
+FourWayRestrictorModifier*
+FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
+{
+  return new FourWayRestrictorModifier;
+}
+
 FourWayRestrictorModifier::FourWayRestrictorModifier()
 {
 }
@@ -53,5 +59,5 @@ FourWayRestrictorModifier::update(int msec_delta, XboxGenericMsg& msg)
     set_axis(msg, XBOX_AXIS_X2, 0);
   }
 }
-
+
 /* EOF */

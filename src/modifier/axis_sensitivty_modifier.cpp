@@ -16,11 +16,26 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "axis_sensitivty_modifier.hpp"
+
 #include <math.h>
 #include <boost/lexical_cast.hpp>
-
-#include "axis_sensitivty_modifier.hpp"
+#include <stdexcept>
 
+AxisSensitivityModifier*
+AxisSensitivityModifier::from_string(const std::vector<std::string>& args)
+{
+  if (args.size() != 2)
+  {
+    throw std::runtime_error("AxisSensitivityModifier takes exactly two arguments");
+  }
+  else
+  {
+    return new AxisSensitivityModifier(string2axis(args[0]),
+                                       boost::lexical_cast<float>(args[1]));
+  }
+}
+
 AxisSensitivityModifier*
 AxisSensitivityModifier::from_string(const std::string& lhs, const std::string& rhs)
 {
