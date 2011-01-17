@@ -1315,7 +1315,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
         </varlistentry>
 
         <varlistentry>
-          <term><option>--autofire BUTTON=FREQUENCY</option></term>
+          <term><option>--autofire BUTTON=FREQUENCY,...</option></term>
           <listitem>
             <para>Autofire mapping allows you to let a button automatically fire with a
               given frequency in miliseconds:</para>

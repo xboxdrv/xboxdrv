@@ -22,6 +22,8 @@ Options* g_options;
 
 ControllerOptions::ControllerOptions() :
   uinput(),
+  buttonmap(new ButtonmapModifier),
+  axismap(new AxismapModifier),
   modifier()
 {
 }

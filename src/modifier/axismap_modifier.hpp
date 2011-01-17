@@ -23,11 +23,17 @@
 
 #include "modifier.hpp"
 
+struct AxisMapping {
+  static AxisMapping from_string(const std::string& lhs, const std::string& rhs);
+
+  XboxAxis lhs;
+  XboxAxis rhs;
+  bool     invert;
+  std::vector<AxisFilterPtr> filters;
+};
+
 class AxismapModifier : public Modifier 
 {
-public:
-  static AxismapModifier* from_string(const std::string& lhs, const std::string& rhs);
-
 public:
   AxismapModifier();
 
@@ -35,11 +41,11 @@ public:
 
   Modifier::Priority get_priority() const { return Modifier::kAxismapPriority; };
 
+  void add(const AxisMapping& mapping);
+  void add_filter(XboxAxis axis, AxisFilterPtr filter);
+
 public:
-  XboxAxis m_lhs;
-  XboxAxis m_rhs;
-  bool     m_invert;
-  std::vector<AxisFilterPtr> m_filters;
+  std::vector<AxisMapping> m_axismap;
 };
 
 #endif

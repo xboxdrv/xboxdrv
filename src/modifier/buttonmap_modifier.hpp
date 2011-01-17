@@ -21,23 +21,28 @@
 
 #include "modifier.hpp"
 
+struct ButtonMapping {
+  static ButtonMapping from_string(const std::string& lhs, const std::string& rhs);
+
+  XboxButton lhs;
+  XboxButton rhs;
+  std::vector<ButtonFilterPtr> filters;
+};
+
 class ButtonmapModifier : public Modifier
 {
 public:
-  static ButtonmapModifier* from_string(const std::string& lhs, const std::string& rhs);
-  
-public:
-  ButtonmapModifier(XboxButton lhs,
-                    XboxButton rhs);
+  ButtonmapModifier();
   
   void update(int msec_delta, XboxGenericMsg& msg);
 
   Modifier::Priority get_priority() const { return Modifier::kButtonMapPriority; };
 
+  void add(const ButtonMapping& mapping);
+  void add_filter(XboxButton btn, ButtonFilterPtr filter);
+
 public:
-  XboxButton m_lhs;
-  XboxButton m_rhs;
-  std::vector<ButtonFilterPtr> m_filters;
+  std::vector<ButtonMapping> m_buttonmap;
 };
 
 #endif

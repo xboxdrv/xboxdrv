@@ -20,10 +20,13 @@
 
 #include <boost/tokenizer.hpp>
 
-ButtonmapModifier*
-ButtonmapModifier::from_string(const std::string& lhs, const std::string& rhs)
+ButtonMapping 
+ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
 {
-  std::auto_ptr<ButtonmapModifier> mapping(new ButtonmapModifier(XBOX_BTN_UNKNOWN, XBOX_BTN_UNKNOWN));
+  ButtonMapping mapping;
+
+  mapping.lhs = XBOX_BTN_UNKNOWN;
+  mapping.rhs = XBOX_BTN_UNKNOWN;
 
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(lhs, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
@@ -32,57 +35,83 @@ ButtonmapModifier::from_string(const std::string& lhs, const std::string& rhs)
   {
     switch(idx)
     {
-      case 0:  mapping->m_lhs = string2btn(*t); break;
-      default: mapping->m_filters.push_back(ButtonFilter::from_string(*t));
+      case 0:  mapping.lhs = string2btn(*t); break;
+      default: mapping.filters.push_back(ButtonFilter::from_string(*t));
     }
   }
 
   if (rhs.empty())
   {
-    mapping->m_rhs = mapping->m_lhs;
+    mapping.rhs = mapping.lhs;
   }
   else
   {
-    mapping->m_rhs = string2btn(rhs);
+    mapping.rhs = string2btn(rhs);
   }
 
-  return mapping.release();
+  return mapping;
 }
 
-ButtonmapModifier::ButtonmapModifier(XboxButton lhs,
-                                     XboxButton rhs) :
-  m_lhs(lhs),
-  m_rhs(rhs)
+ButtonmapModifier::ButtonmapModifier() :
+  m_buttonmap()
 {
 }
   
 void
 ButtonmapModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
-  // update all filters in all mappings
-  for(std::vector<ButtonFilterPtr>::iterator i = m_filters.begin(); i != m_filters.end(); ++i)
-  {
-    (*i)->update(msec_delta);
-  }
-
   XboxGenericMsg newmsg = msg;
 
-  // set all buttons to 0
-  set_button(newmsg, m_lhs, 0);
-
-  bool value = get_button(msg, m_lhs);
-
-  // apply the button filter
-  for(std::vector<ButtonFilterPtr>::iterator j = m_filters.begin(); j != m_filters.end(); ++j)
+  // update all filters in all mappings
+  for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
-    value = (*j)->filter(value);
+    for(std::vector<ButtonFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
+    {
+      (*j)->update(msec_delta);
+    }
   }
 
-  // Take both lhs and rhs into account to allow multiple buttons
-  // mapping to the same button
-  set_button(newmsg, m_rhs, value || get_button(newmsg, m_rhs));
+  // set all buttons to 0
+  for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
+  {
+    set_button(newmsg, i->lhs, 0);
+  }
 
-  msg = newmsg;
+  for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
+  {
+    // Take both lhs and rhs into account to allow multiple buttons
+    // mapping to the same button
+    bool value = get_button(msg, i->lhs);
+
+    // apply the button filter
+    for(std::vector<ButtonFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
+    {
+      value = (*j)->filter(value);
+    }    
+
+    set_button(newmsg, i->rhs, value || get_button(newmsg, i->rhs));
+  }
+
+  msg = newmsg;  
+}
+
+void
+ButtonmapModifier::add(const ButtonMapping& mapping)
+{
+  m_buttonmap.push_back(mapping);
+}
+
+void
+ButtonmapModifier::add_filter(XboxButton btn, ButtonFilterPtr filter)
+{
+  for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
+  {
+    if (i->lhs == btn)
+    {
+      i->filters.push_back(filter);
+      break;
+    }
+  } 
 }
 
 /* EOF */

@@ -27,19 +27,19 @@ inline float to_float(int value, int min, int max)
   return static_cast<float>(value - min) / static_cast<float>(max - min) * 2.0f - 1.0f;
 }
 
-AxismapModifier*
-AxismapModifier::from_string(const std::string& lhs_, const std::string& rhs)
+AxisMapping
+AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
 {
   std::string lhs = lhs_;
-  std::auto_ptr<AxismapModifier> mapping(new AxismapModifier);
+  AxisMapping mapping;
 
-  mapping->m_invert = false;
-  mapping->m_lhs = XBOX_AXIS_UNKNOWN;
-  mapping->m_rhs = XBOX_AXIS_UNKNOWN;
+  mapping.invert = false;
+  mapping.lhs = XBOX_AXIS_UNKNOWN;
+  mapping.rhs = XBOX_AXIS_UNKNOWN;
 
   if (lhs[0] == '-')
   {
-    mapping->m_invert = true;
+    mapping.invert = true;
     lhs = lhs.substr(1);
   }
 
@@ -50,71 +50,95 @@ AxismapModifier::from_string(const std::string& lhs_, const std::string& rhs)
   {
     switch(idx)
     {
-      case 0:  mapping->m_lhs = string2axis(*t); break;
-      default: mapping->m_filters.push_back(AxisFilter::from_string(*t));
+      case 0:  mapping.lhs = string2axis(*t); break;
+      default: mapping.filters.push_back(AxisFilter::from_string(*t));
     }
   }
 
   if (rhs.empty())
   {
-    mapping->m_rhs = mapping->m_lhs;
+    mapping.rhs = mapping.lhs;
   }
   else
   {
-    mapping->m_rhs = string2axis(rhs);
+    mapping.rhs = string2axis(rhs);
   }
 
-  if (mapping->m_lhs == XBOX_AXIS_UNKNOWN ||
-      mapping->m_rhs == XBOX_AXIS_UNKNOWN)
+  if (mapping.lhs == XBOX_AXIS_UNKNOWN ||
+      mapping.rhs == XBOX_AXIS_UNKNOWN)
   {
     throw std::runtime_error("Couldn't convert string \"" + lhs + "=" + rhs + "\" to axis mapping");
   }
 
-  return mapping.release();
+  return mapping;
 }
 
 AxismapModifier::AxismapModifier() :
-  m_lhs(XBOX_AXIS_UNKNOWN),
-  m_rhs(XBOX_AXIS_UNKNOWN),
-  m_invert(false),
-  m_filters()
+  m_axismap()
 {
 }
 
 void
 AxismapModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
-  // update all filters in all mappings
-  for(std::vector<AxisFilterPtr>::iterator j = m_filters.begin(); j != m_filters.end(); ++j)
-  {
-    (*j)->update(msec_delta);
-  }
-
   XboxGenericMsg newmsg = msg;
 
+  // update all filters in all mappings
+  for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
+  {
+    for(std::vector<AxisFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
+    {
+      (*j)->update(msec_delta);
+    }
+  }
+
   // clear all values in the new msg
-  set_axis_float(newmsg, m_lhs, 0);
-
-  int min = get_axis_min(m_lhs);
-  int max = get_axis_max(m_lhs);
-  int value = get_axis(msg, m_lhs);
-
-  for(std::vector<AxisFilterPtr>::iterator j = m_filters.begin(); j != m_filters.end(); ++j)
+  for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
-    value = (*j)->filter(value, min, max);
+    set_axis_float(newmsg, i->lhs, 0);
   }
 
-  float lhs  = to_float(value, min, max);
-  float nrhs = get_axis_float(newmsg, m_rhs);
-
-  if (m_invert)
+  for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
-    lhs = -lhs;
+    int min = get_axis_min(i->lhs);
+    int max = get_axis_max(i->lhs);
+    int value = get_axis(msg, i->lhs);
+
+    for(std::vector<AxisFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
+    {
+      value = (*j)->filter(value, min, max);
+    }
+
+    float lhs  = to_float(value, min, max);
+    float nrhs = get_axis_float(newmsg, i->rhs);
+
+    if (i->invert)
+    {
+      lhs = -lhs;
+    }
+
+    set_axis_float(newmsg, i->rhs, std::max(std::min(nrhs + lhs, 1.0f), -1.0f));
   }
+  msg = newmsg;
+}
 
-  set_axis_float(newmsg, m_rhs, std::max(std::min(nrhs + lhs, 1.0f), -1.0f));
+void
+AxismapModifier::add(const AxisMapping& mapping)
+{
+  m_axismap.push_back(mapping);
+}
 
-  msg = newmsg; 
+void
+AxismapModifier::add_filter(XboxAxis axis, AxisFilterPtr filter)
+{
+  for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
+  {
+    if (i->lhs == axis)
+    {
+      i->filters.push_back(filter);
+      break;
+    }
+  }
 }
 
 /* EOF */

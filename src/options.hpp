@@ -37,6 +37,10 @@ public:
   ControllerOptions();
 
   uInputCfg uinput;
+
+  boost::shared_ptr<ButtonmapModifier> buttonmap;
+  boost::shared_ptr<AxismapModifier>   axismap;
+
   std::vector<ModifierPtr> modifier;
 };
 
