@@ -27,15 +27,15 @@ public:
   static FourWayRestrictorModifier* from_string(const std::vector<std::string>& args);
 
 public:
-  FourWayRestrictorModifier();
+  FourWayRestrictorModifier(XboxAxis xaxis, XboxAxis yaxis);
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
   Modifier::Priority get_priority() const { return Modifier::kFourWayRestrictorPriority; };
 
 private:
-  FourWayRestrictorModifier(const FourWayRestrictorModifier&);
-  FourWayRestrictorModifier& operator=(const FourWayRestrictorModifier&);
+  const XboxAxis m_xaxis;
+  const XboxAxis m_yaxis;
 };
 
 #endif

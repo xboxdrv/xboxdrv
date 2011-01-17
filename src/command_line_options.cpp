@@ -36,7 +36,6 @@
 #include "options.hpp"
 #include "uinput_deviceid.hpp"
 
-#include "modifier/deadzone_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 #include "modifier/four_way_restrictor_modifier.hpp"
 #include "modifier/dpad_rotation_modifier.hpp"
@@ -827,61 +826,59 @@ CommandLineParser::set_evdev_keymap(const std::string& name, const std::string& 
 void
 CommandLineParser::set_relative_axis(const std::string& name, const std::string& value)
 {
-  m_options->controller.modifier.push_back(ModifierPtr(RelativeAxisModifier::from_string(name, value)));
+  //FIXME:m_options->controller.modifier.push_back(ModifierPtr(RelativeAxisModifier::from_string(name, value)));
 }
 
 void
 CommandLineParser::set_autofire(const std::string& name, const std::string& value)
 {
-  m_options->controller.modifier.push_back(ModifierPtr(AutofireModifier::from_string(name, value)));
+  //FIXME:  m_options->controller.modifier.push_back(ModifierPtr(AutofireModifier::from_string(name, value)));
 }
 
 void
 CommandLineParser::set_calibration(const std::string& name, const std::string& value)
 {
-  m_options->controller.modifier.push_back(ModifierPtr(CalibrationModifier::from_string(name, value)));
+  //FIXME:  m_options->controller.modifier.push_back(ModifierPtr(CalibrationModifier::from_string(name, value)));
 }
 
 void
 CommandLineParser::set_axis_sensitivity(const std::string& name, const std::string& value)
 {
-  m_options->controller.modifier.push_back(ModifierPtr(AxisSensitivityModifier::from_string(name, value)));
+  //FIXME:  m_options->controller.modifier.push_back(ModifierPtr(AxisSensitivityModifier::from_string(name, value)));
 }
 
 void
 CommandLineParser::set_deadzone(const std::string& value)
 {
-  m_options->controller.modifier.push_back(ModifierPtr(new DeadzoneModifier(to_number(32767, value), 0)));
+  //FIXME:  m_options->controller.modifier.push_back(ModifierPtr(new DeadzoneModifier(to_number(32767, value), 0)));
 }
 
 void
 CommandLineParser::set_deadzone_trigger(const std::string& value)
 {
-  m_options->controller.modifier.push_back(ModifierPtr(new DeadzoneModifier(0, to_number(255, value))));
+  //FIXME:  m_options->controller.modifier.push_back(ModifierPtr(new DeadzoneModifier(0, to_number(255, value))));
 }
 
 void
 CommandLineParser::set_square_axis()
 {
-  m_options->controller.modifier.push_back(ModifierPtr(new SquareAxisModifier()));
+  m_options->controller.modifier.push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
+  m_options->controller.modifier.push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
 }
 
 void
 CommandLineParser::set_four_way_restrictor()
 {
-  m_options->controller.modifier.push_back(ModifierPtr(new FourWayRestrictorModifier()));
+  m_options->controller.modifier.push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
+  m_options->controller.modifier.push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
 }
 
 void
 CommandLineParser::set_dpad_rotation(const std::string& value)
 {
-  int degree = boost::lexical_cast<int>(value);
-  degree /= 45;
-  degree %= 8;
-  if (degree < 0) 
-    degree += 8;
-
-  m_options->controller.modifier.push_back(ModifierPtr(new DpadRotationModifier(degree)));
+  std::vector<std::string> args;
+  args.push_back(value);
+  m_options->controller.modifier.push_back(ModifierPtr(DpadRotationModifier::from_string(args)));
 }
 
 /*

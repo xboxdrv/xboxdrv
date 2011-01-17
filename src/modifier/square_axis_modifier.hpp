@@ -27,15 +27,15 @@ public:
   static SquareAxisModifier* from_string(const std::vector<std::string>& args);
 
 public:
-  SquareAxisModifier();
+  SquareAxisModifier(XboxAxis x_axis, XboxAxis y_axis);
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
   Modifier::Priority get_priority() const { return Modifier::kSquareAxisPriority; };
 
 private:
-  SquareAxisModifier(const SquareAxisModifier&);
-  SquareAxisModifier& operator=(const SquareAxisModifier&);
+  XboxAxis m_x_axis;
+  XboxAxis m_y_axis;
 };
 
 #endif

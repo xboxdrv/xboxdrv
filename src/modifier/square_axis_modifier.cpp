@@ -23,7 +23,7 @@
 
 namespace {
 
-void squarify_axis_(int16_t& x_inout, int16_t& y_inout)
+void squarify_axis(int& x_inout, int& y_inout)
 {
   if (x_inout != 0 || y_inout != 0)
   {
@@ -37,21 +37,11 @@ void squarify_axis_(int16_t& x_inout, int16_t& y_inout)
     x *= v;
     y *= v;
 
-    // Convert values to int16_t
-    x_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((x < 0) ? x * 32768 : x * 32767), 32767));
-    y_inout = static_cast<int16_t>(Math::clamp(-32768, static_cast<int>((y < 0) ? y * 32768 : y * 32767), 32767));
+    // Convert values to int
+    x_inout = static_cast<int>(Math::clamp(-32768, static_cast<int>((x < 0) ? x * 32768 : x * 32767), 32767));
+    y_inout = static_cast<int>(Math::clamp(-32768, static_cast<int>((y < 0) ? y * 32768 : y * 32767), 32767));
   }
 }
-
-// Little hack to allow access to bitfield via reference
-#define squarify_axis(x, y)                     \
-  {                                             \
-    int16_t x_ = x;                             \
-    int16_t y_ = y;                             \
-    squarify_axis_(x_, y_);                     \
-    x = x_;                                     \
-    y = y_;                                     \
-  }
 
 } // namespace
 
@@ -59,28 +49,33 @@ void squarify_axis_(int16_t& x_inout, int16_t& y_inout)
 SquareAxisModifier*
 SquareAxisModifier::from_string(const std::vector<std::string>& args)
 {
-  return new SquareAxisModifier;
+  if (args.size() != 2)
+  {
+    throw std::runtime_error("SquareAxisModifier requires two arguments");
+  }
+  else
+  {
+    return new SquareAxisModifier(string2axis(args[0]),
+                                  string2axis(args[1]));
+  }
 }
 
-SquareAxisModifier::SquareAxisModifier()
+SquareAxisModifier::SquareAxisModifier(XboxAxis x_axis, XboxAxis y_axis) :
+  m_x_axis(x_axis),
+  m_y_axis(y_axis)
 {
 }
 
 void
 SquareAxisModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
-  switch (msg.type)
-  {
-    case XBOX_MSG_XBOX:
-      squarify_axis(msg.xbox.x1, msg.xbox.y1);
-      squarify_axis(msg.xbox.x2, msg.xbox.y2);
-      break;
+  int x = get_axis(msg, m_x_axis);
+  int y = get_axis(msg, m_y_axis);
 
-    case XBOX_MSG_XBOX360:
-      squarify_axis(msg.xbox360.x1, msg.xbox360.y1);
-      squarify_axis(msg.xbox360.x2, msg.xbox360.y2);
-      break;
-  }
+  squarify_axis(x, y);
+
+  set_axis(msg, m_x_axis, x);
+  set_axis(msg, m_y_axis, y);
 }
 
 /* EOF */

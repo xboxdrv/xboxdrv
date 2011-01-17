@@ -43,14 +43,9 @@ public:
       otherwise lead to weird results */
   enum Priority
   {
-    kCalibrationPriority,
-    kDeadzonePriority,
     kSquareAxisPriority,
-    kAxisSensitivityPriority,
     kFourWayRestrictorPriority,
     kDpadRotationPriority,
-    kAutofirePriority,
-    kRelativeAxisPriority,
     kAxismapPriority,
     kButtonMapPriority
   };

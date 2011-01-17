@@ -17,14 +17,26 @@
 */
 
 #include "four_way_restrictor_modifier.hpp"
+
+#include <stdexcept>
 
 FourWayRestrictorModifier*
 FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
 {
-  return new FourWayRestrictorModifier;
+  if (args.size() != 2)
+  {
+    throw std::runtime_error("FourWayRestrictorModifier requires two arguments");
+  }
+  else
+  {
+    return new FourWayRestrictorModifier(string2axis(args[0]),
+                                         string2axis(args[1]));
+  }
 }
 
-FourWayRestrictorModifier::FourWayRestrictorModifier()
+FourWayRestrictorModifier::FourWayRestrictorModifier(XboxAxis xaxis, XboxAxis yaxis) :
+  m_xaxis(xaxis),
+  m_yaxis(yaxis)
 {
 }
 

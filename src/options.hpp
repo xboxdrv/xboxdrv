@@ -28,12 +28,8 @@
 #include "uinput_cfg.hpp"
 #include "xpad_device.hpp"
 
-#include "modifier/autofire_modifier.hpp"
 #include "modifier/axismap_modifier.hpp"
-#include "modifier/axis_sensitivty_modifier.hpp"
 #include "modifier/buttonmap_modifier.hpp"
-#include "modifier/calibration_modifier.hpp"
-#include "modifier/relativeaxis_modifier.hpp"
 
 class ControllerOptions
 {

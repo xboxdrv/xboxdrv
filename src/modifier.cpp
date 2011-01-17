@@ -21,15 +21,10 @@
 #include <boost/tokenizer.hpp>
 #include <vector>
 
-#include "modifier/autofire_modifier.hpp"
-#include "modifier/deadzone_modifier.hpp"
 #include "modifier/axismap_modifier.hpp"
-#include "modifier/dpad_rotation_modifier.hpp"
-#include "modifier/axis_sensitivty_modifier.hpp"
-#include "modifier/four_way_restrictor_modifier.hpp"
 #include "modifier/buttonmap_modifier.hpp"
-#include "modifier/relativeaxis_modifier.hpp"
-#include "modifier/calibration_modifier.hpp"
+#include "modifier/dpad_rotation_modifier.hpp"
+#include "modifier/four_way_restrictor_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 
 Modifier*
@@ -52,33 +47,13 @@ Modifier::from_string(const std::string& name, const std::string& value)
 
     std::vector<std::string> args(tokens.begin(), tokens.end());
 
-    if (name == "auto" || name == "autofire")
-    {
-      return AutofireModifier::from_string(args);
-    }
-    else if (name == "dead" || name == "deadzone")
-    {
-      return DeadzoneModifier::from_string(args);
-    }
-    else if (name == "dpad-rotation")
+    if (name == "dpad-rotation")
     {
       return DpadRotationModifier::from_string(args);
-    }
-    else if (name == "sen" || name == "sensitivty"  || name == "axis-sensitivty")
-    {
-      return AxisSensitivityModifier::from_string(args);
     }
     else if (name == "4rest" || name == "four-way-restrictor")
     {
       return FourWayRestrictorModifier::from_string(args);
-    }
-    else if (name == "rel" || name == "relative" || name == "relativeaxis")
-    {
-      return RelativeAxisModifier::from_string(args);
-    }
-    else if (name == "cal" || name == "calibration")
-    {
-      return CalibrationModifier::from_string(args);
     }
     else if (name == "square" || name == "square-axis")
     {

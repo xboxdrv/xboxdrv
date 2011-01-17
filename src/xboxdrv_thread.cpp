@@ -34,15 +34,10 @@
 #include "uinput.hpp"
 #include "xbox_generic_controller.hpp"
 
-#include "modifier/autofire_modifier.hpp"
-#include "modifier/axis_sensitivty_modifier.hpp"
 #include "modifier/axismap_modifier.hpp"
 #include "modifier/buttonmap_modifier.hpp"
-#include "modifier/calibration_modifier.hpp"
-#include "modifier/deadzone_modifier.hpp"
 #include "modifier/dpad_rotation_modifier.hpp"
 #include "modifier/four_way_restrictor_modifier.hpp"
-#include "modifier/relativeaxis_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 
 extern bool global_exit_xboxdrv;
