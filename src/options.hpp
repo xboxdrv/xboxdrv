@@ -42,6 +42,17 @@ public:
   boost::shared_ptr<AxismapModifier>   axismap;
 
   std::vector<ModifierPtr> modifier;
+
+  int  deadzone;
+  int  deadzone_trigger;
+  bool square_axis;
+  bool four_way_restrictor;
+  int  dpad_rotation;
+
+  std::map<XboxAxis, AxisFilterPtr> calibration_map;
+  std::map<XboxAxis, AxisFilterPtr> sensitivity_map;
+  std::map<XboxAxis, AxisFilterPtr> relative_axis_map;
+  std::map<XboxButton, ButtonFilterPtr> autofire_map;
 };
 
 class Options

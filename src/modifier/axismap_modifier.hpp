@@ -23,7 +23,8 @@
 
 #include "modifier.hpp"
 
-struct AxisMapping {
+struct AxisMapping
+{
   static AxisMapping from_string(const std::string& lhs, const std::string& rhs);
 
   XboxAxis lhs;
@@ -39,12 +40,12 @@ public:
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
-  Modifier::Priority get_priority() const { return Modifier::kAxismapPriority; };
-
   void add(const AxisMapping& mapping);
   void add_filter(XboxAxis axis, AxisFilterPtr filter);
 
   std::string str() const;
+
+  bool empty() const { return m_axismap.empty(); }
 
 public:
   std::vector<AxisMapping> m_axismap;

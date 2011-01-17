@@ -126,13 +126,13 @@ std::string
 ButtonmapModifier::str() const
 {
   std::ostringstream out;
-  out << "buttonmap:";
+  out << "buttonmap:\n";
   for(std::vector<ButtonMapping>::const_iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
-    out << btn2string(i->lhs) << "=" << btn2string(i->rhs) << std::endl;
+    out << "  " << btn2string(i->lhs) << "=" << btn2string(i->rhs) << std::endl;
     for(std::vector<ButtonFilterPtr>::const_iterator filter = i->filters.begin(); filter != i->filters.end(); ++filter)
     {
-      out << "  " << (*filter)->str() << std::endl;
+      out << "    " << (*filter)->str() << std::endl;
     }
   }
   return out.str();

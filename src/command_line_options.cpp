@@ -828,15 +828,15 @@ CommandLineParser::set_evdev_keymap(const std::string& name, const std::string& 
 void
 CommandLineParser::set_relative_axis(const std::string& name, const std::string& value)
 {
-  m_options->controller.axismap->add_filter(string2axis(name),
-                                            AxisFilterPtr(new RelativeAxisFilter(boost::lexical_cast<int>(value))));
+  m_options->controller.relative_axis_map[string2axis(name)]
+    = AxisFilterPtr(new RelativeAxisFilter(boost::lexical_cast<int>(value)));
 }
 
 void
 CommandLineParser::set_autofire(const std::string& name, const std::string& value)
 {
-  m_options->controller.buttonmap->add_filter(string2btn(name),
-                                              ButtonFilterPtr(new AutofireButtonFilter(boost::lexical_cast<int>(value), 0)));
+  m_options->controller.autofire_map[string2btn(name)]
+    = ButtonFilterPtr(new AutofireButtonFilter(boost::lexical_cast<int>(value), 0));
 }
 
 void
@@ -852,75 +852,53 @@ CommandLineParser::set_calibration(const std::string& name, const std::string& v
   }
   else
   {
-    m_options->controller.axismap->add_filter(string2axis(name),
-                                              AxisFilterPtr(new CalibrationAxisFilter(boost::lexical_cast<int>(args[0]), 
-                                                                                      boost::lexical_cast<int>(args[1]), 
-                                                                                      boost::lexical_cast<int>(args[2]))));
+    m_options->controller.calibration_map[string2axis(name)]
+      = AxisFilterPtr(new CalibrationAxisFilter(boost::lexical_cast<int>(args[0]), 
+                                                boost::lexical_cast<int>(args[1]), 
+                                                boost::lexical_cast<int>(args[2])));
   }
 }
 
 void
 CommandLineParser::set_axis_sensitivity(const std::string& name, const std::string& value)
 {
-  m_options->controller.axismap->add_filter(string2axis(name),
-                                            AxisFilterPtr(new SensitivityAxisFilter(boost::lexical_cast<float>(value))));
+  m_options->controller.sensitivity_map[string2axis(name)]
+    = AxisFilterPtr(new SensitivityAxisFilter(boost::lexical_cast<float>(value)));
 }
 
 void
 CommandLineParser::set_deadzone(const std::string& value)
 {
-  int deadzone = boost::lexical_cast<int>(value);
-  XboxAxis axes[] = { XBOX_AXIS_X1,
-                      XBOX_AXIS_Y1,
-                      
-                      XBOX_AXIS_X2,
-                      XBOX_AXIS_Y2 };
-
-  for(size_t i = 0; i < sizeof(axes)/sizeof(XboxAxis); ++i)
-  {
-    m_options->controller.axismap->add_filter(axes[i],
-                                              AxisFilterPtr(new DeadzoneAxisFilter(-deadzone,
-                                                                                   deadzone,
-                                                                                   true)));
-  }
+  m_options->controller.deadzone = to_number(32767, value);
 }
 
 void
 CommandLineParser::set_deadzone_trigger(const std::string& value)
 {
-  int deadzone_trigger = boost::lexical_cast<int>(value);
-  XboxAxis axes[] = { XBOX_AXIS_LT,
-                      XBOX_AXIS_RT };
-
-  for(size_t i = 0; i < sizeof(axes)/sizeof(XboxAxis); ++i)
-  {
-    m_options->controller.axismap->add_filter(axes[i],
-                                              AxisFilterPtr(new DeadzoneAxisFilter(-deadzone_trigger,
-                                                                                   deadzone_trigger,
-                                                                                   true)));
-  }
+  m_options->controller.deadzone_trigger = to_number(255, value);
 }
 
 void
 CommandLineParser::set_square_axis()
 {
-  m_options->controller.modifier.push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
-  m_options->controller.modifier.push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
+  m_options->controller.square_axis = true;
 }
 
 void
 CommandLineParser::set_four_way_restrictor()
 {
-  m_options->controller.modifier.push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
-  m_options->controller.modifier.push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
+  m_options->controller.four_way_restrictor = true;
 }
 
 void
 CommandLineParser::set_dpad_rotation(const std::string& value)
 {
-  std::vector<std::string> args;
-  args.push_back(value);
-  m_options->controller.modifier.push_back(ModifierPtr(DpadRotationModifier::from_string(args)));
+  int degree = boost::lexical_cast<int>(value);
+  degree /= 45;
+  degree %= 8;
+  if (degree < 0) degree += 8;
+
+  m_options->controller.dpad_rotation = degree;
 }
 
 void

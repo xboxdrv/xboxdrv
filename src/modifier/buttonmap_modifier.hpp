@@ -21,7 +21,8 @@
 
 #include "modifier.hpp"
 
-struct ButtonMapping {
+struct ButtonMapping
+{
   static ButtonMapping from_string(const std::string& lhs, const std::string& rhs);
 
   XboxButton lhs;
@@ -36,12 +37,12 @@ public:
   
   void update(int msec_delta, XboxGenericMsg& msg);
 
-  Modifier::Priority get_priority() const { return Modifier::kButtonMapPriority; };
-
   void add(const ButtonMapping& mapping);
   void add_filter(XboxButton btn, ButtonFilterPtr filter);
 
   std::string str() const;
+
+  bool empty() const { return m_buttonmap.empty(); }
 
 public:
   std::vector<ButtonMapping> m_buttonmap;

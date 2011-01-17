@@ -64,6 +64,7 @@ XboxdrvThread::~XboxdrvThread()
 
 // FIXME: duplicate code
 namespace {
+
 void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_t rhs)
 {
   lhs = std::min(lhs * gain / 255, 255);
@@ -74,15 +75,132 @@ void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_
   controller->set_rumble(lhs, rhs);
 }
 
-struct SortModifierByPriority
-{ 
-  bool operator()(const ModifierPtr& lhs, const ModifierPtr& rhs) const
-  {
-    return lhs->get_priority() < rhs->get_priority();
-  }
-};
-
 } // namespace
+
+void
+XboxdrvThread::create_modifier(const Options& opts, std::vector<ModifierPtr>* modifier)
+{
+  if (!opts.controller.calibration_map.empty())
+  {
+    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+
+    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.controller.calibration_map.begin();
+        i != opts.controller.calibration_map.end(); ++i)
+    {
+      axismap->add_filter(i->first, i->second); 
+    }
+
+    modifier->push_back(axismap);
+  }
+
+  if (opts.controller.deadzone)
+  {
+    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+
+    XboxAxis axes[] = { XBOX_AXIS_X1,
+                        XBOX_AXIS_Y1,
+                      
+                        XBOX_AXIS_X2,
+                        XBOX_AXIS_Y2 };
+
+    for(size_t i = 0; i < sizeof(axes)/sizeof(XboxAxis); ++i)
+    {
+      axismap->add_filter(axes[i],
+                          AxisFilterPtr(new DeadzoneAxisFilter(-opts.controller.deadzone,
+                                                               opts.controller.deadzone,
+                                                               true)));
+    }
+
+    modifier->push_back(axismap);
+  }
+
+  if (opts.controller.deadzone_trigger)
+  {
+    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+
+    XboxAxis axes[] = { XBOX_AXIS_LT,
+                        XBOX_AXIS_RT };
+
+    for(size_t i = 0; i < sizeof(axes)/sizeof(XboxAxis); ++i)
+    {
+      axismap->add_filter(axes[i],
+                          AxisFilterPtr(new DeadzoneAxisFilter(-opts.controller.deadzone_trigger,
+                                                               opts.controller.deadzone_trigger,
+                                                               true)));
+    }
+
+    modifier->push_back(axismap);
+  }
+
+  if (opts.controller.square_axis)
+  {
+    modifier->push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
+    modifier->push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
+  }
+
+  if (!opts.controller.sensitivity_map.empty())
+  {
+    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+
+    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.controller.sensitivity_map.begin();
+        i != opts.controller.sensitivity_map.end(); ++i)
+    {
+      axismap->add_filter(i->first, i->second); 
+    }
+
+    modifier->push_back(axismap);
+  }
+
+  if (opts.controller.four_way_restrictor)
+  {
+    modifier->push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
+    modifier->push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
+  }
+
+  if (!opts.controller.relative_axis_map.empty())
+  {
+    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+
+    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.controller.relative_axis_map.begin();
+        i != opts.controller.relative_axis_map.end(); ++i)
+    {
+      axismap->add_filter(i->first, i->second); 
+    }
+
+    modifier->push_back(axismap);
+  }
+
+  if (opts.controller.dpad_rotation)
+  {
+    modifier->push_back(ModifierPtr(new DpadRotationModifier(opts.controller.dpad_rotation)));
+  }
+
+  if (!opts.controller.autofire_map.empty())
+  {
+    boost::shared_ptr<ButtonmapModifier> buttonmap(new ButtonmapModifier);
+
+    for(std::map<XboxButton, ButtonFilterPtr>::const_iterator i = opts.controller.autofire_map.begin();
+        i != opts.controller.autofire_map.end(); ++i)
+    {
+      buttonmap->add_filter(i->first, i->second); 
+    }
+
+    modifier->push_back(buttonmap);
+  }
+
+  // axismap, buttonmap comes last, as otherwise they would mess up the button and axis names
+  if (!opts.controller.buttonmap->empty())
+  {
+    modifier->push_back(opts.controller.buttonmap);
+  }
+
+  if (!opts.controller.axismap->empty())
+  {
+    modifier->push_back(opts.controller.axismap);
+  }
+
+  modifier->insert(modifier->end(), opts.controller.modifier.begin(), opts.controller.modifier.end());
+}
 
 void
 XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& opts)
@@ -93,14 +211,8 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
 
   std::vector<ModifierPtr> modifier;
 
-  // Create filter
-  modifier.insert(modifier.end(), opts.controller.modifier.begin(), opts.controller.modifier.end());
-  std::stable_sort(modifier.begin(), modifier.end(), SortModifierByPriority());
-
-  // axismap, buttonmap comes last, as otherwise they would mess up the button and axis names
-  modifier.push_back(opts.controller.buttonmap);
-  modifier.push_back(opts.controller.axismap);
-
+  create_modifier(opts, &modifier);
+  
   std::cout << "Active Modifier:" << std::endl;
   for(std::vector<ModifierPtr>::iterator i = modifier.begin(); i != modifier.end(); ++i)
   {

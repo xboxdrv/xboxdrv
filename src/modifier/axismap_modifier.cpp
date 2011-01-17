@@ -153,13 +153,13 @@ std::string
 AxismapModifier::str() const
 {
   std::ostringstream out;
-  out << "axismap:";
+  out << "axismap:\n";
   for(std::vector<AxisMapping>::const_iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
-    out << axis2string(i->lhs) << "=" << axis2string(i->rhs) << std::endl;
+    out << "  " << axis2string(i->lhs) << "=" << axis2string(i->rhs) << std::endl;
     for(std::vector<AxisFilterPtr>::const_iterator filter = i->filters.begin(); filter != i->filters.end(); ++filter)
     {
-      out << "  " << (*filter)->str() << std::endl;
+      out << "    " << (*filter)->str() << std::endl;
     }
   }
   return out.str();

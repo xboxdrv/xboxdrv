@@ -38,23 +38,10 @@ class Modifier
 public:
   static Modifier* from_string(const std::string& name, const std::string& value);
 
-  /** Priority defines the sort order of modifiers in the modifier
-      stack, well defined order is important as some modifiers would
-      otherwise lead to weird results */
-  enum Priority
-  {
-    kSquareAxisPriority,
-    kFourWayRestrictorPriority,
-    kDpadRotationPriority,
-    kAxismapPriority,
-    kButtonMapPriority
-  };
-
 public:
   virtual ~Modifier() {}
   virtual void update(int msec_delta, XboxGenericMsg& msg) = 0;
 
-  virtual Priority get_priority() const = 0;
   virtual std::string str() const = 0;
 };
 

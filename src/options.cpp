@@ -24,7 +24,17 @@ ControllerOptions::ControllerOptions() :
   uinput(),
   buttonmap(new ButtonmapModifier),
   axismap(new AxismapModifier),
-  modifier()
+  modifier(),
+  deadzone(0),
+  deadzone_trigger(0),
+  square_axis(false),
+  four_way_restrictor(0),
+  dpad_rotation(0),
+
+  calibration_map(),
+  sensitivity_map(),
+  relative_axis_map(),
+  autofire_map()
 {
 }
 

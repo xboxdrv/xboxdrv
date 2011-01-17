@@ -31,8 +31,6 @@ public:
 
   void update(int msec_delta, XboxGenericMsg& msg);
 
-  Modifier::Priority get_priority() const { return Modifier::kFourWayRestrictorPriority; };
-
   std::string str() const;
 
 private:

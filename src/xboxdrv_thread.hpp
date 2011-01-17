@@ -23,6 +23,7 @@
 #include <boost/thread.hpp>
 
 #include "xboxmsg.hpp"
+#include "modifier.hpp"
 
 class Options;
 class uInput;
@@ -44,6 +45,9 @@ public:
   void start_thread(GamepadType type, uInput* uinput, const Options& opts);
   void stop_thread();
   bool try_join_thread();
+
+private:
+  void create_modifier(const Options& opts, std::vector<ModifierPtr>* modifier);
 
 private:
   XboxdrvThread(const XboxdrvThread&);
