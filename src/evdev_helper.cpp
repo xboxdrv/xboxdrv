@@ -28,91 +28,78 @@
 #include "enum_box.hpp"
 #include "evdev_helper.hpp"
 
-class EvDevRelEnum : public EnumBox<int>
+EvDevRelEnum evdev_rel_names;
+EvDevKeyEnum evdev_key_names;
+EvDevAbsEnum evdev_abs_names;
+Keysym2Keycode keysym2keycode;
+
+EvDevRelEnum::EvDevRelEnum() :
+  EnumBox<int>("EV_REL")
 {
-public:
-  EvDevRelEnum() :
-    EnumBox<int>("EV_REL")
-  {
 #include "rel_list.x"
-  }
-} evdev_rel_names;
+}
 
-class EvDevAbsEnum : public EnumBox<int>
-{
-public:
-  EvDevAbsEnum() :
+EvDevAbsEnum::EvDevAbsEnum() :
     EnumBox<int>("EV_ABS")
-  {
+{
 #include "abs_list.x"
-  }
-} evdev_abs_names;
+}
 
-class EvDevKeyEnum : public EnumBox<int>
+
+EvDevKeyEnum::EvDevKeyEnum() :
+  EnumBox<int>("EV_KEY")
 {
-public:
-  EvDevKeyEnum() :
-    EnumBox<int>("EV_KEY")
-  {
 #include "key_list.x"
-  }
-} evdev_key_names;
+}
 
-class Keysym2Keycode
+Keysym2Keycode::Keysym2Keycode() :
+  mapping()
 {
-public:
-  // Map KeySym to kernel keycode
-  std::map<KeySym, int> mapping;
+  //std::cout << "Initing Keysym2Keycode" << std::endl;
 
-  Keysym2Keycode() :
-    mapping()
+  Display* dpy = XOpenDisplay(NULL);
+  if (!dpy)
   {
-    //std::cout << "Initing Keysym2Keycode" << std::endl;
+    // FIXME: Where exactly does this exception go? -> int main() try {} catch {} 
+    throw std::runtime_error("Keysym2Keycode: Couldn't open X11 display");
+  }
+  else
+  {
+    process_keymap(dpy);
+    XCloseDisplay(dpy);
+  }
+}
 
-    Display* dpy = XOpenDisplay(NULL);
-    if (!dpy)
+void 
+Keysym2Keycode::process_keymap(Display* dpy)
+{
+  int min_keycode, max_keycode;
+  XDisplayKeycodes(dpy, &min_keycode, &max_keycode);
+
+  int num_keycodes = max_keycode - min_keycode + 1;
+  int keysyms_per_keycode;
+  KeySym* keymap = XGetKeyboardMapping(dpy, static_cast<KeyCode>(min_keycode),
+                                       num_keycodes,
+                                       &keysyms_per_keycode);
+
+  for(int i = 0; i < num_keycodes; ++i)
+  {
+    if (keymap[i*keysyms_per_keycode] != NoSymbol)
     {
-      throw std::runtime_error("Keysym2Keycode: Couldn't open X11 display");
-    }
-    else
-    {
-      process_keymap(dpy);
-      XCloseDisplay(dpy);
+      KeySym keysym = keymap[i*keysyms_per_keycode];
+      // FIXME: Duplicate entries confuse the conversion
+      // std::map<KeySym, int>::iterator it = mapping.find(keysym);
+      // if (it != mapping.end())
+      //   std::cout << "Duplicate keycode: " << i << std::endl;
+      mapping[keysym] = i;
     }
   }
 
-  void process_keymap(Display* dpy)
-  {
-    int min_keycode, max_keycode;
-    XDisplayKeycodes(dpy, &min_keycode, &max_keycode);
-
-    int num_keycodes = max_keycode - min_keycode + 1;
-    int keysyms_per_keycode;
-    KeySym* keymap = XGetKeyboardMapping(dpy, static_cast<KeyCode>(min_keycode),
-                                         num_keycodes,
-                                         &keysyms_per_keycode);
-
-    for(int i = 0; i < num_keycodes; ++i)
-    {
-      if (keymap[i*keysyms_per_keycode] != NoSymbol)
-      {
-        KeySym keysym = keymap[i*keysyms_per_keycode];
-        // FIXME: Duplicate entries confuse the conversion
-        // std::map<KeySym, int>::iterator it = mapping.find(keysym);
-        // if (it != mapping.end())
-        //   std::cout << "Duplicate keycode: " << i << std::endl;
-        mapping[keysym] = i;
-      }
-    }
-
-    XFree(keymap);
-  }
-};
+  XFree(keymap);
+}
 
 int xkeysym2keycode(const std::string& name)
 {
-  static Keysym2Keycode sym2code;
-
   KeySym keysym = XStringToKeysym(name.substr(3).c_str());
 
   if (keysym == NoSymbol)
@@ -120,8 +107,8 @@ int xkeysym2keycode(const std::string& name)
     throw std::runtime_error("xkeysym2keycode: Couldn't convert name '" + name + "' to xkeysym");
   }
 
-  std::map<KeySym, int>::iterator i = sym2code.mapping.find(keysym);
-  if (i == sym2code.mapping.end())
+  std::map<KeySym, int>::iterator i = keysym2keycode.mapping.find(keysym);
+  if (i == keysym2keycode.mapping.end())
   {
     throw std::runtime_error("xkeysym2keycode: Couldn't convert xkeysym '" + name + "' to evdev keycode");
   }

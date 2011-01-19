@@ -36,6 +36,7 @@ private:
   void run_daemon(const Options& opts);
   void run_list_supported_devices();
   void run_list_supported_devices_xpad();
+  void run_list_enums(uint32_t enums);
   void run_help_devices();
   void run_list_controller();
 

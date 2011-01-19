@@ -287,7 +287,9 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
           std::cout << msg << std::endl;
 
         if (uinput)
+        {
           uinput->send(msg);
+        }
                  
         if (opts.rumble)
         {

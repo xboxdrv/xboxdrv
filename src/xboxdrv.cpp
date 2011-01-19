@@ -38,15 +38,16 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "log.hpp"
 #include "command_line_options.hpp"
 #include "evdev_controller.hpp"
 #include "evdev_helper.hpp"
 #include "helper.hpp"
+#include "log.hpp"
 #include "options.hpp"
 #include "uinput.hpp"
-#include "xbox_generic_controller.hpp"
+#include "word_wrap.hpp"
 #include "xbox_controller_factory.hpp"
+#include "xbox_generic_controller.hpp"
 #include "xboxdrv_daemon.hpp"
 #include "xboxdrv_thread.hpp"
 #include "xboxmsg.hpp"
@@ -630,6 +631,84 @@ Xboxdrv::run_daemon(const Options& opts)
 
   libusb_exit(NULL);
 }
+
+void
+Xboxdrv::run_list_enums(uint32_t enums)
+{
+  const int terminal_width = get_terminal_width();
+
+  if (enums & Options::LIST_ABS)
+  {
+    WordWrap wrap(terminal_width, "  ", ", ");
+
+    std::cout << "EV_ABS:\n  ";
+    for(EvDevRelEnum::const_iterator i = evdev_abs_names.begin();
+        i != evdev_abs_names.end(); ++i)
+    {
+      wrap.add_item(i->second);
+    }
+    std::cout << std::endl << std::endl;
+  }
+  
+  if (enums & Options::LIST_REL)
+  {
+    WordWrap wrap(terminal_width, "  ", ", ");
+    std::cout << "EV_REL:\n  ";
+    for(EvDevRelEnum::const_iterator i = evdev_rel_names.begin();
+        i != evdev_rel_names.end(); ++i)
+    {
+      wrap.add_item(i->second);
+    }
+    std::cout << std::endl << std::endl;
+  }
+  
+  if (enums & Options::LIST_KEY)
+  {
+    WordWrap wrap(terminal_width, "  ", ", ");
+    std::cout << "EV_KEY:\n  ";
+    for(EvDevRelEnum::const_iterator i = evdev_key_names.begin();
+        i != evdev_key_names.end(); ++i)
+    {
+      wrap.add_item(i->second);
+    }
+    std::cout << std::endl << std::endl;
+  }
+  
+  if (enums & Options::LIST_X11KEYSYM)
+  {
+    /*
+    std::cout << "X11KeySym: " << std::endl;
+    for(EvDevRelEnum::const_iterator i = keysym2keycode.begin();
+        i != keysym2keycode.end(); ++i)
+    {
+      std::cout << i->second << ", ";
+    }
+    std::cout << std::endl;
+    */
+  }
+  
+  if (enums & Options::LIST_AXIS)
+  {
+    WordWrap wrap(terminal_width, "  ", ", ");
+    std::cout << "XboxAxis:\n  ";
+    for(int i = 1; i < XBOX_AXIS_MAX; ++i)
+    {
+      wrap.add_item(axis2string(static_cast<XboxAxis>(i)));
+    }
+    std::cout << std::endl << std::endl;
+  }
+  
+  if (enums & Options::LIST_BUTTON)
+  {
+    WordWrap wrap(terminal_width, "  ", ", ");
+    std::cout << "XboxButton:\n  ";
+    for(int i = 1; i < XBOX_BTN_MAX; ++i)
+    {
+      wrap.add_item(btn2string(static_cast<XboxButton>(i)));
+    }
+    std::cout << std::endl << std::endl;
+  }
+}
 
 Xboxdrv::Xboxdrv()
 {
@@ -681,6 +760,10 @@ Xboxdrv::main(int argc, char** argv)
 
       case Options::RUN_DEFAULT:
         run_main(opts);
+        break;
+
+      case Options::PRINT_ENUMS:
+        run_list_enums(opts.list_enums);
         break;
 
       case Options::RUN_DAEMON:

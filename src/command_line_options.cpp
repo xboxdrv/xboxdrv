@@ -116,7 +116,14 @@ enum {
   OPTION_DETACH_KERNEL_DRIVER,
   OPTION_DAEMON_DETACH,
   OPTION_DAEMON_PID_FILE,
-  OPTION_HELP_DEVICES
+  OPTION_HELP_DEVICES,
+  OPTION_LIST_ALL,
+  OPTION_LIST_ABS,
+  OPTION_LIST_REL,
+  OPTION_LIST_KEY,
+  OPTION_LIST_X11KEYSYM,
+  OPTION_LIST_AXIS,
+  OPTION_LIST_BUTTON
 };
 
 CommandLineParser::CommandLineParser() :
@@ -149,6 +156,16 @@ CommandLineParser::init_argp()
     .add_option(OPTION_ALT_CONFIG,    0, "alt-config",   "FILE", "read alternative configuration from FILE ")
     .add_option(OPTION_CONFIG_OPTION,'o', "option",      "NAME=VALUE", "Set the given configuration option") 
     .add_option(OPTION_WRITE_CONFIG,  0, "write-config", "FILE", "rite an example configuration to FILE")
+    .add_newline()
+
+    .add_text("List Options: ")
+    .add_option(OPTION_LIST_ABS,       0, "list-abs",       "", "List all possible EV_ABS names")
+    .add_option(OPTION_LIST_REL,       0, "list-rel",       "", "List all possible EV_REL names")
+    .add_option(OPTION_LIST_KEY,       0, "list-key",       "", "List all possible EV_KEY names")
+    .add_option(OPTION_LIST_X11KEYSYM, 0, "list-x11keysym", "", "List all possible X11KeySym")
+    .add_option(OPTION_LIST_AXIS,      0, "list-axis",      "", "List all possible XboxAxis")
+    .add_option(OPTION_LIST_BUTTON,    0, "list-button",    "", "List all possible XboxButton")
+    .add_option(OPTION_LIST_ALL,       0, "list-all",       "", "List all of the above")
     .add_newline()
 
     .add_text("Daemon Options: ")
@@ -725,6 +742,41 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_HELP_DEVICES:
         opts.mode = Options::PRINT_HELP_DEVICES;
+        break;
+
+      case OPTION_LIST_ALL:
+        opts.mode = Options::PRINT_ENUMS;
+        opts.list_enums |= Options::LIST_ALL;
+        break;
+
+      case OPTION_LIST_ABS:
+        opts.mode = Options::PRINT_ENUMS;
+        opts.list_enums |= Options::LIST_ABS;
+        break;
+
+      case OPTION_LIST_REL:
+        opts.mode = Options::PRINT_ENUMS;
+        opts.list_enums |= Options::LIST_REL;
+        break;
+
+      case OPTION_LIST_KEY:
+        opts.mode = Options::PRINT_ENUMS;
+        opts.list_enums |= Options::LIST_KEY;
+        break;
+
+      case OPTION_LIST_X11KEYSYM:
+        opts.mode = Options::PRINT_ENUMS;
+        opts.list_enums |= Options::LIST_X11KEYSYM;
+        break;
+
+      case OPTION_LIST_AXIS:
+        opts.mode = Options::PRINT_ENUMS;
+        opts.list_enums |= Options::LIST_AXIS;
+        break;
+
+      case OPTION_LIST_BUTTON:
+        opts.mode = Options::PRINT_ENUMS;
+        opts.list_enums |= Options::LIST_BUTTON;
         break;
 
       case ArgParser::REST_ARG:

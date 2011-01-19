@@ -66,8 +66,19 @@ public:
          PRINT_VERSION,
          PRINT_HELP,
          PRINT_HELP_DEVICES,
+         PRINT_ENUMS,
          PRINT_LED_HELP
   } mode;
+
+  enum {
+    LIST_ALL       = ~0,
+    LIST_ABS       = (1<<0),
+    LIST_REL       = (1<<1),
+    LIST_KEY       = (1<<2),
+    LIST_X11KEYSYM = (1<<3),
+    LIST_AXIS      = (1<<4),
+    LIST_BUTTON    = (1<<5)
+  };
 
   // General program options
   bool verbose;
@@ -118,6 +129,8 @@ public:
   std::string pid_file;
 
   std::vector<std::string> exec;
+
+  uint32_t list_enums;
 
   Options();
 };

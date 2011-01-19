@@ -68,7 +68,8 @@ Options::Options() :
   headset_dump(),
   headset_play(),
   detach(false),
-  pid_file()
+  pid_file(),
+  list_enums(0)
 {
 }
 
