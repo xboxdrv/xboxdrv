@@ -98,7 +98,9 @@ X11KeysymEnum::process_keymap(Display* dpy)
       }
       else
       {
-        add(i, keysym_str);
+        std::ostringstream str;
+        str << "XK_" << keysym_str;
+        add(i, str.str());
       }
     }
   }
