@@ -25,13 +25,14 @@
 #include <map>
 #include <ctype.h>
 
+#include "log.hpp"
 #include "enum_box.hpp"
 #include "evdev_helper.hpp"
 
 EvDevRelEnum evdev_rel_names;
 EvDevKeyEnum evdev_key_names;
 EvDevAbsEnum evdev_abs_names;
-Keysym2Keycode keysym2keycode;
+X11KeysymEnum x11keysym_names;
 
 EvDevRelEnum::EvDevRelEnum() :
   EnumBox<int>("EV_REL")
@@ -52,16 +53,13 @@ EvDevKeyEnum::EvDevKeyEnum() :
 #include "key_list.x"
 }
 
-Keysym2Keycode::Keysym2Keycode() :
-  mapping()
+X11KeysymEnum::X11KeysymEnum() :
+  EnumBox<int>("X11Keysym")
 {
-  //std::cout << "Initing Keysym2Keycode" << std::endl;
-
   Display* dpy = XOpenDisplay(NULL);
   if (!dpy)
   {
-    // FIXME: Where exactly does this exception go? -> int main() try {} catch {} 
-    throw std::runtime_error("Keysym2Keycode: Couldn't open X11 display");
+    log_error << "unable to open X11 display, X11 keynames will not be available" << std::endl;
   }
   else
   {
@@ -71,7 +69,7 @@ Keysym2Keycode::Keysym2Keycode() :
 }
 
 void 
-Keysym2Keycode::process_keymap(Display* dpy)
+X11KeysymEnum::process_keymap(Display* dpy)
 {
   int min_keycode, max_keycode;
   XDisplayKeycodes(dpy, &min_keycode, &max_keycode);
@@ -87,11 +85,21 @@ Keysym2Keycode::process_keymap(Display* dpy)
     if (keymap[i*keysyms_per_keycode] != NoSymbol)
     {
       KeySym keysym = keymap[i*keysyms_per_keycode];
+
       // FIXME: Duplicate entries confuse the conversion
       // std::map<KeySym, int>::iterator it = mapping.find(keysym);
       // if (it != mapping.end())
       //   std::cout << "Duplicate keycode: " << i << std::endl;
-      mapping[keysym] = i;
+
+      const char* keysym_str = XKeysymToString(keysym);
+      if (!keysym_str)
+      {
+        log_error << "couldn't convert keysym " << keysym << " to string";
+      }
+      else
+      {
+        add(i, keysym_str);
+      }
     }
   }
 
@@ -100,24 +108,7 @@ Keysym2Keycode::process_keymap(Display* dpy)
 
 int xkeysym2keycode(const std::string& name)
 {
-  KeySym keysym = XStringToKeysym(name.substr(3).c_str());
-
-  if (keysym == NoSymbol)
-  {
-    throw std::runtime_error("xkeysym2keycode: Couldn't convert name '" + name + "' to xkeysym");
-  }
-
-  std::map<KeySym, int>::iterator i = keysym2keycode.mapping.find(keysym);
-  if (i == keysym2keycode.mapping.end())
-  {
-    throw std::runtime_error("xkeysym2keycode: Couldn't convert xkeysym '" + name + "' to evdev keycode");
-  }
-  else
-  {
-    //std::cout << name << " -> " << keysym << " -> " << XKeysymToString(keysym) 
-    //          << " -> " << key2str(i->second) << "(" << i->second << ")" << std::endl;
-    return i->second;
-  }
+  return x11keysym_names[name];
 }
 
 void str2event(const std::string& name, int& type, int& code)

@@ -676,15 +676,14 @@ Xboxdrv::run_list_enums(uint32_t enums)
   
   if (enums & Options::LIST_X11KEYSYM)
   {
-    /*
-    std::cout << "X11KeySym: " << std::endl;
-    for(EvDevRelEnum::const_iterator i = keysym2keycode.begin();
-        i != keysym2keycode.end(); ++i)
+    WordWrap wrap(terminal_width, "  ", ", ");
+    std::cout << "X11Keysym:\n  ";
+    for(X11KeysymEnum::const_iterator i = x11keysym_names.begin();
+        i != x11keysym_names.end(); ++i)
     {
-      std::cout << i->second << ", ";
+      wrap.add_item(i->second);
     }
-    std::cout << std::endl;
-    */
+    std::cout << std::endl << std::endl;
   }
   
   if (enums & Options::LIST_AXIS)

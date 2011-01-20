@@ -58,21 +58,19 @@ public:
   EvDevKeyEnum();
 };
 
-class Keysym2Keycode
+class X11KeysymEnum : public EnumBox<int>
 {
 public:
-  // Map KeySym to kernel keycode
-  std::map<KeySym, int> mapping;
+  X11KeysymEnum();
 
-  Keysym2Keycode();
-
+private:
   void process_keymap(Display* dpy);
 };
 
 extern EvDevRelEnum evdev_rel_names;
 extern EvDevKeyEnum evdev_key_names;
 extern EvDevAbsEnum evdev_abs_names;
-extern Keysym2Keycode keysym2keycode;
+extern X11KeysymEnum x11keysym_names;
 
 #endif
 
