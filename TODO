@@ -39,8 +39,42 @@ $ sudo pbuilder --build ../xboxdrv_0.6.4-2~lucid1.dsc
 $ dput my-ppa ../xboxdrv_0.6.4-2~lucid1_source.changes
 
 
-Stuff to do before 0.6.5 release:
+Stuff to do before 0.7.0 release:
 =================================
+
+Daemon Related Stuff
+====================
+
+* implement --on-connect and --on-disconnect for the daemon
+
+* uinput must be thread safe
+
+* handle multiple controllers in a sane manner (requires cloning of
+  modifier maps, also auto increment of "auto" device id's)
+
+* get rid of uinput.get_uinput(m_code.device_id)->send(EV_ABS, m_code.code, value) turn into:
+  
+  uinput.send(m_code.device_id, EV_ABS, m_code.code, value);
+
+  or
+
+  uinput.send_abs(m_code.device_id, m_code.code, value);
+
+* add: void Uinput::send(XboxGenericMsg& msg, int controller_slot = 0); 
+
+* need magic to assign controller to a slot
+
+* might need magic to give device-ids in a slot fashion: 
+  from: 1-ABS_X   (second uinput device)
+  to:   2.1-ABS_X (third uinput device for the second slot)
+   2.mouse-BTN_MIDDLE ?!
+   1.-BTN_MIDDLE
+   1.auto-BTN_MIDDLE
+   auto-BTN_MIDDLE
+
+
+List Output
+===========
 
 * fix inconsistent case in output of --list-all
 
@@ -52,77 +86,34 @@ Stuff to do before 0.6.5 release:
 * add --list-keys --list-x11-keys --list-abs --list-rel --list-button --list-axis etc.
   - add pretty printer, to make output look nice
 
-* shifted axis without default mapping don't work:
 
-  ./xboxdrv --ui-axismap lb+x1^cal:-64000:0:64000
+* document modifier syntax and provide examples:
 
-  in those cases the default mapping for the unshifted axis should be used
+  --modifier rotate=X:Y:90,square,round
+
+[modifier]
+rotate=X1:Y1:90
+four-way-restrictor=X1:Y1
+square=X1:Y1
+round=X1:Y1
+
+* document significant patches in AUTHORS
+
+* improve output on which uinput devices are created
+
+
+Stuff to do before 0.7.x release:
+=================================
 
 * give a warning when the user uses X as axis, instead of X1 (X is the
   xbox1 analog button), maybe rename X button to btn_x or xbtn ybtn
 
-* new deadzone code (and probably other) must not use boost::lexical_cast<int> but to_number()
+* make chatpad configurable:
 
-* current deadzone code messes up the diagonals
+  --ui-chatpad a=KEY_A,green+a=SHIFT_X+KEY_B,...
 
-* input filter need to have priorities
-
-* move set_deadzone, set_deadzone_trigger and other older config
-  things to later in the app to get it order independed
-
-* might have broken axis and button swapping with recent modifier updates
-
-* document patches in AUTHORS
-
-* modifier syntax:
-
-  --stickmap X/Y^rotate:90^square^round
-
-  --modifier rotate:X:Y:90^square^round
-  --modifier rotate=X:Y:90,square,round
-
-[modifier]
-rotate:X1:Y1:90
-four-way-restrictor:X1:Y1
-square:X1:Y1
-round:X1:Y1
-
-* add:
-
-  --modifier axis-sensitivity:X1=-1.0,Y1=-1.0
-  --modifier axis-sensitivity:X1=-1.0,Y1=-1.0
-  --modifier relative-axis:AXIS=NUM^axis-sensitivity:X1=-1.0,Y1=-1.0
-
-  little ugly, but should be workable. All those modifiers get appened to a modifier stack.
- 
-  old modifier options also still work, but are sorted prior to use, to act the same as in older xboxdrv versions
-
-* get rid of uinput.get_uinput(m_code.device_id)->send(EV_ABS, m_code.code, value) turn into:
-  
-  uinput.send(m_code.device_id, EV_ABS, m_code.code, value);
-
-  or
-
-  uinput.send_abs(m_code.device_id, m_code.code, value);
-
-* add: void Uinput::send(XboxGenericMsg& msg, int controller_slot = 0); 
-* have separate UinputConfig's for each controller_slot
-* need magic to assign controller to a slot
-* might need magic to give device-ids in a slot fashion: 
-  from: 1-ABS_X   (second uinput device)
-  to:   2.1-ABS_X (third uinput device for the second slot)
-   2.mouse-BTN_MIDDLE ?!
-   1.-BTN_MIDDLE
-   1.auto-BTN_MIDDLE
-   auto-BTN_MIDDLE
-
-* add analog emulation for button (i.e. the longer its pressed, the higher the value)
-
-* uinput must be made threadsafe
-
-* write/recycle a proper logging class
-
-* improve output on which uinput devices are created
+* make sure that XK_??? names work with keys that are
+  shifted/mode_switched in the keymap, i.e. send key combination
 
 * can't parse:
  --ui-axismap x2=2-ABS_X,y2=2-ABS_Y
@@ -133,20 +124,21 @@ round:X1:Y1
 
   implement better guessing
 
-* make chatpad configurable:
+* have separate ControllerConfig for each controller_slot
 
-  --ui-chatpad a=KEY_A,green+a=SHIFT_X+KEY_B,...
+* use pretty print to print copyright notice
 
-* make sure that XK_??? names work with keys that are
-  shifted/mode_switched in the keymap, i.e. send key combination
+* current deadzone code messes up the diagonals
+
+* shifted axis without default mapping don't work:
+
+  ./xboxdrv --ui-axismap lb+x1^cal:-64000:0:64000
+
+  in those cases the default mapping for the unshifted axis should be used
+
+* add analog emulation for button (i.e. the longer its pressed, the higher the value)
 
 * write UIEvent::from_string()
-
-* absolute mouse pointer can be created with:
-
-  abs:1-ABS_X, abs:1-ABS_Y, key:1-BTN_LEFT
-
-  document that somewhere, device must not contain REL_X, REL_Y or BTN_A or it won't work in X11  
 
 * --four-way-restrictor for the dpad?
 
@@ -154,29 +146,11 @@ round:X1:Y1
   - always keep last main direction until another main direction got pressed?
   - --disable-dpad-diagonals ur,dl,dl
 
-* better resume/suspend handling? 
+* absolute mouse pointer can be created with:
 
-  usb_interface_read() gets a -ENODEV on suspend/resume, could try to
-  open the connection back up after failure
+  abs:1-ABS_X, abs:1-ABS_Y, key:1-BTN_LEFT
 
-* add udev support, to watch new controllers getting plugged in, allow
-  multiple controllers directly in xboxdrv
-
-XboxdrvDaemon
-=============
-
-  -a FILENAME, --on-attach=FILENAME
-                        Launch EXE when a new controller is connected
-  -d FILENAME, --on-detach=FILENAME
-                        Launch EXE when a controller is detached
-
-* uinput must be thread safe
-
-* use pretty print to print copyright notice
-
-
-Stuff to do before 0.6.x release:
-=================================
+  document that somewhere, device must not contain REL_X, REL_Y or BTN_A or it won't work in X11  
 
 * basic Dualstrike mouse emulation with absolute position:
 
