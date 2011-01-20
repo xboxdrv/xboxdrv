@@ -1964,12 +1964,4 @@
   add(KEY_MIN_INTERESTING, "KEY_MIN_INTERESTING");
 #endif
 
-#ifdef KEY_MAX
-  add(KEY_MAX, "KEY_MAX");
-#endif
-
-#ifdef KEY_CNT
-  add(KEY_CNT, "KEY_CNT");
-#endif
-
 /* EOF */

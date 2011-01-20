@@ -40,12 +40,4 @@
   add(REL_MISC, "REL_MISC");
 #endif
 
-#ifdef REL_MAX
-  add(REL_MAX, "REL_MAX");
-#endif
-
-#ifdef REL_CNT
-  add(REL_CNT, "REL_CNT");
-#endif
-
 /* EOF */

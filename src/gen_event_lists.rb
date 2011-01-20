@@ -6,10 +6,12 @@ def gen_event_list(regex, outfilename)
     fout.puts
     File.new("/usr/include/linux/input.h").grep(regex).each do |i|
       name = i.split[1]; 
-      fout.puts "#ifdef #{name}"
-      fout.puts "  add(%s, \"%s\");" % [name, name]
-      fout.puts "#endif"
-      fout.puts
+      if not name =~ /_MAX$/ and not name =~ /_CNT$/ 
+        fout.puts "#ifdef #{name}"
+        fout.puts "  add(%s, \"%s\");" % [name, name]
+        fout.puts "#endif"
+        fout.puts
+      end
     end
     fout.puts "/* EOF */"
   end

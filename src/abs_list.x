@@ -152,12 +152,4 @@
   add(ABS_MT_PRESSURE, "ABS_MT_PRESSURE");
 #endif
 
-#ifdef ABS_MAX
-  add(ABS_MAX, "ABS_MAX");
-#endif
-
-#ifdef ABS_CNT
-  add(ABS_CNT, "ABS_CNT");
-#endif
-
 /* EOF */
