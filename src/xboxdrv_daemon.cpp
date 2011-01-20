@@ -166,7 +166,7 @@ XboxdrvDaemon::run(const Options& opts)
     if (!opts.quiet) std::cout << "Starting with uinput" << std::endl;
 
     uinput.reset(new uInput(0, 0, // don't have vendor/product ids, so use zero
-                            opts.controller.uinput));
+                            opts.controller.back().uinput));
     // FIXME:
     /* must setup this callback later when we have a controller
        if (opts.uinput_config.force_feedback)

@@ -37,11 +37,11 @@ public:
   ControllerOptions();
 
   uInputCfg uinput;
+  std::vector<ModifierPtr> modifier;
 
+  // everything below gets later converted into modifier
   boost::shared_ptr<ButtonmapModifier> buttonmap;
   boost::shared_ptr<AxismapModifier>   axismap;
-
-  std::vector<ModifierPtr> modifier;
 
   int  deadzone;
   int  deadzone_trigger;
@@ -111,7 +111,7 @@ public:
   std::map<int, XboxButton> evdev_keymap;
 
   // controller options
-  ControllerOptions controller;
+  std::vector<ControllerOptions> controller;
 
   // chatpad options
   bool chatpad;

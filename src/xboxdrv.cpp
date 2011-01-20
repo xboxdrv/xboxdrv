@@ -455,8 +455,8 @@ Xboxdrv::run_main(const Options& opts)
     {
       if (!opts.quiet)
         std::cout << "Starting with uinput" << std::endl;
-      uinput = std::auto_ptr<uInput>(new uInput(dev_type.idVendor, dev_type.idProduct, opts.controller.uinput));
-      if (opts.controller.uinput.force_feedback)
+      uinput = std::auto_ptr<uInput>(new uInput(dev_type.idVendor, dev_type.idProduct, opts.controller.back().uinput));
+      if (opts.controller.back().uinput.force_feedback)
       {
         uinput->set_ff_callback(boost::bind(&set_rumble,  controller.get(), opts.rumble_gain, _1, _2));
       }
@@ -521,7 +521,7 @@ Xboxdrv::print_info(libusb_device* dev,
     std::cout << "LED Status:        " << opts.led << std::endl;
 
   std::cout << "RumbleGain:        " << opts.rumble_gain << std::endl;
-  std::cout << "ForceFeedback:     " << ((opts.controller.uinput.force_feedback) ? "enabled" : "disabled") << std::endl;
+  std::cout << "ForceFeedback:     " << ((opts.controller.back().uinput.force_feedback) ? "enabled" : "disabled") << std::endl;
 }
 
 void

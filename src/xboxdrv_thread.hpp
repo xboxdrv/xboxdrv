@@ -24,6 +24,7 @@
 
 #include "xboxmsg.hpp"
 #include "modifier.hpp"
+#include "controller_config_set.hpp"
 
 class Options;
 class uInput;
@@ -34,6 +35,7 @@ class XboxdrvThread // FIXME: find a better name, XboxdrvControllerLoop?!
 private:
   std::auto_ptr<boost::thread> m_thread;
   std::auto_ptr<XboxGenericController> m_controller;
+  ControllerConfigSet m_config;
   bool m_loop;
 
 public:

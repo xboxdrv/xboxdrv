@@ -22,9 +22,9 @@ Options* g_options;
 
 ControllerOptions::ControllerOptions() :
   uinput(),
+  modifier(),
   buttonmap(new ButtonmapModifier),
   axismap(new AxismapModifier),
-  modifier(),
   deadzone(0),
   deadzone_trigger(0),
   square_axis(false),
@@ -60,6 +60,7 @@ Options::Options() :
   evdev_absmap(),
   evdev_grab(true),
   evdev_debug(false),
+  controller(1),
   chatpad(false),
   chatpad_no_init(false),
   chatpad_debug(false),
