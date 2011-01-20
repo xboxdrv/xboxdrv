@@ -91,9 +91,9 @@ XboxController::find_endpoints()
                     << "(" << ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? "IN" : "OUT") << ")"
                     << std::endl;
 
-        if (altsetting->bInterfaceClass    == LIBUSB_CLASS_VENDOR_SPEC &&
-            altsetting->bInterfaceSubClass == 93 &&
-            altsetting->bInterfaceProtocol == 1)
+        if (altsetting->bInterfaceClass    == 88 &&
+            altsetting->bInterfaceSubClass == 66 &&
+            altsetting->bInterfaceProtocol == 0)
         {
           if (endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK)
           {
