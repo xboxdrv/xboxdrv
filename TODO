@@ -42,6 +42,51 @@ $ dput my-ppa ../xboxdrv_0.6.4-2~lucid1_source.changes
 Stuff to do before 0.6.5 release:
 =================================
 
+* fix inconsistent case in output of --list-all
+
+* turn EnumBox into singleton
+
+* Keysym2Keycode is currently always constructed at startup, even when
+  not used, construct it on demand
+
+* add --list-keys --list-x11-keys --list-abs --list-rel --list-button --list-axis etc.
+  - add pretty printer, to make output look nice
+
+* shifted axis without default mapping don't work:
+
+  ./xboxdrv --ui-axismap lb+x1^cal:-64000:0:64000
+
+  in those cases the default mapping for the unshifted axis should be used
+
+* give a warning when the user uses X as axis, instead of X1 (X is the
+  xbox1 analog button), maybe rename X button to btn_x or xbtn ybtn
+
+* new deadzone code (and probably other) must not use boost::lexical_cast<int> but to_number()
+
+* current deadzone code messes up the diagonals
+
+* input filter need to have priorities
+
+* move set_deadzone, set_deadzone_trigger and other older config
+  things to later in the app to get it order independed
+
+* might have broken axis and button swapping with recent modifier updates
+
+* document patches in AUTHORS
+
+* modifier syntax:
+
+  --stickmap X/Y^rotate:90^square^round
+
+  --modifier rotate:X:Y:90^square^round
+  --modifier rotate=X:Y:90,square,round
+
+[modifier]
+rotate:X1:Y1:90
+four-way-restrictor:X1:Y1
+square:X1:Y1
+round:X1:Y1
+
 * add:
 
   --modifier axis-sensitivity:X1=-1.0,Y1=-1.0
@@ -78,8 +123,6 @@ Stuff to do before 0.6.5 release:
 * write/recycle a proper logging class
 
 * improve output on which uinput devices are created
-
-* add --list-keys --list-x11-keys --list-abs --list-rel --list-button --list-axis etc.
 
 * can't parse:
  --ui-axismap x2=2-ABS_X,y2=2-ABS_Y
@@ -119,7 +162,6 @@ Stuff to do before 0.6.5 release:
 * add udev support, to watch new controllers getting plugged in, allow
   multiple controllers directly in xboxdrv
 
-
 XboxdrvDaemon
 =============
 
@@ -128,13 +170,13 @@ XboxdrvDaemon
   -d FILENAME, --on-detach=FILENAME
                         Launch EXE when a controller is detached
 
-
-Stuff to do before 0.6.x release:
-=================================
-
 * uinput must be thread safe
 
 * use pretty print to print copyright notice
+
+
+Stuff to do before 0.6.x release:
+=================================
 
 * basic Dualstrike mouse emulation with absolute position:
 
@@ -144,12 +186,15 @@ Stuff to do before 0.6.x release:
   --ui-axismap x2^cal:-25000:0:25000=abs:1-ABS_X,y2^cal:-25000:0:25000=abs:1-ABS_Y
   --ui-axismap x1=KEY_LEFT:KEY_RIGHT,y1=KEY_DOWN:KEY_UP  -s
 
-* figure out what to do with deprecated stuff:
+* limit --four-way-restrictor to a single stick, use a standard
+  logical notatino for a single stick that is rusable for other means:
 
-  --deadzone         - can probably stay for convenience
-  --deadzone-trigger - can probably stay for convenience
-  --relative-axis    - should go
-  --autofire         - should go
+  --four-way-restrictor X-Y,X1-Y2
+  --four-way-restrictor XY,X2:Y2
+  --four-way-restrictor X/Y,X2/Y2
+
+Chatpad
+=======
 
 Figure out a way to load custom keymaps:
 
@@ -168,8 +213,6 @@ http://www.x.org/wiki/XKB
 http://sourceforge.net/tracker/download.php?group_id=286545&atid=1214224&file_id=361450&aid=2945171
 
 http://www.x.org/docs/XKB/XKBlib.pdf
-
-* limit --four-way-restrictor to a single axis
 
 * find a way to bring back --no-extra-devices, saves typing
 
@@ -278,11 +321,6 @@ better way then to check for endpoints maybe
 
   [xboxdrv]
   ui-buttonmap = A=BTN_A,B=BTN_B,...
-
-Packaging
-=========
-
-* split xboxdrv-daemon into a separate .deb package
 
 Feature
 =======

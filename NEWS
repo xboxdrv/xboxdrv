@@ -7,6 +7,12 @@ xboxdrv 0.6.5 - (??/Jan/2011)
   don't support it themselves
 * cleaned up axis/button modifier some more
 * startup output got cleaned up
+* fixed double Ctrl-c issue
+* added --modifier MODIFIER,...
+* configuration toggle now works with modifiers too
+* renamed --ui-new to --next
+* renamed --ui-toggle to --toggle
+* fixed incorrect endpoint detection for Xbox1 controller
 
 
 xboxdrv 0.6.4 - (13/Jan/2011)
