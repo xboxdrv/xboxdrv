@@ -255,7 +255,11 @@ KeyButtonEventHandler::KeyButtonEventHandler() :
 }
 
 KeyButtonEventHandler::KeyButtonEventHandler(int code) :
-  m_codes()
+  m_state(false),
+  m_codes(),
+  m_secondary_codes(),
+  m_hold_threshold(0),
+  m_hold_counter(0)
 {
   std::fill_n(m_codes, MAX_MODIFIER + 1, UIEvent::invalid());
   std::fill_n(m_secondary_codes, MAX_MODIFIER + 1, UIEvent::invalid());
