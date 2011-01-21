@@ -73,7 +73,8 @@ Options::Options() :
   pid_file(),
   on_connect(),
   on_disconnect(),
-  list_enums(0)
+  list_enums(0),
+  config_toggle_button(XBOX_BTN_UNKNOWN)
 {
 }
 

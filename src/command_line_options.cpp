@@ -574,14 +574,14 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_NEXT:
         opts.controller.back().uinput.add_input_mapping();
-        if (opts.controller.back().uinput.config_toggle_button == XBOX_BTN_UNKNOWN)
+        if (opts.config_toggle_button == XBOX_BTN_UNKNOWN)
         {
-          opts.controller.back().uinput.config_toggle_button = XBOX_BTN_GUIDE;
+          opts.config_toggle_button = XBOX_BTN_GUIDE;
         }
         break;
 
       case OPTION_TOGGLE:
-        opts.controller.back().uinput.config_toggle_button = string2btn(opt.argument);
+        opts.config_toggle_button = string2btn(opt.argument);
         break;
 
       case OPTION_UI_CLEAR:

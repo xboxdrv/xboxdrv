@@ -135,6 +135,8 @@ public:
 
   uint32_t list_enums;
 
+  XboxButton config_toggle_button;
+
   Options();
 };
 

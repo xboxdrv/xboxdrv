@@ -160,17 +160,6 @@ XboxdrvThread::controller_loop(const Options& opts)
         msg = m_oldrealmsg;
       }
 
-      /*
-        if (code == cfg.config_toggle_button)
-        {
-        if (value)
-        {
-        reset_all_outputs();
-        cfg.next_input_mapping();
-        }
-        }
-      */
-
       // Calc changes in time
       uint32_t this_time = get_time();
       int msec_delta = this_time - last_time;
