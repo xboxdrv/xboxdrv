@@ -483,7 +483,7 @@ Xboxdrv::run_main(const Options& opts)
 
     global_exit_xboxdrv = false;
 
-    XboxdrvThread loop(controller);
+    XboxdrvThread loop(controller, opts);
     loop.controller_loop(dev_type.type, uinput.get(), opts);
           
     if (!opts.quiet) 

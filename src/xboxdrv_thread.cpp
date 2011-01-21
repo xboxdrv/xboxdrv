@@ -45,13 +45,37 @@ extern bool global_exit_xboxdrv;
 
 // FIXME: isolate problametic code to a separate file, instead of pragma
 #pragma GCC diagnostic ignored "-Wold-style-cast"
-
-XboxdrvThread::XboxdrvThread(std::auto_ptr<XboxGenericController> controller) :
+
+XboxdrvThread::XboxdrvThread(std::auto_ptr<XboxGenericController> controller,
+                             const Options& opts) :
   m_thread(),
   m_controller(controller),
   m_config(),
-  m_loop(true)
+  m_loop(true),
+  m_oldmsg(),
+  m_oldrealmsg(),
+  m_child_exec(opts.exec),
+  m_pid(-1),
+  // how long to wait for a controller event before taking care of autofire etc.
+  // 0 == no timeout, FIXME: add an option for that
+  m_timeout(25)
 {
+  memset(&m_oldmsg,     0, sizeof(m_oldmsg));
+  memset(&m_oldrealmsg, 0, sizeof(m_oldrealmsg));
+
+  ControllerConfigPtr config(new ControllerConfig);
+  m_config.add_config(config);
+
+  create_modifier(opts, &config->get_modifier());
+
+  // introspection of the config
+  std::cout << "Active Modifier:" << std::endl;
+  for(std::vector<ModifierPtr>::iterator i = config->get_modifier().begin(); 
+      i != config->get_modifier().end(); 
+      ++i)
+  {
+    std::cout << (*i)->str() << std::endl;
+  }
 }
 
 XboxdrvThread::~XboxdrvThread()
@@ -205,53 +229,66 @@ XboxdrvThread::create_modifier(const Options& opts, std::vector<ModifierPtr>* mo
 }
 
 void
-XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& opts)
+XboxdrvThread::launch_child_process()
 {
-  int timeout = 0; // 0 == no timeout
-  XboxGenericMsg oldmsg; // last data send to uinput
-  XboxGenericMsg oldrealmsg; // last data read from the device
-
-  ControllerConfigPtr config(new ControllerConfig);
-  m_config.add_config(config);
-
-  create_modifier(opts, &config->get_modifier());
-  
-  std::cout << "Active Modifier:" << std::endl;
-  for(std::vector<ModifierPtr>::iterator i = config->get_modifier().begin(); 
-      i != config->get_modifier().end(); 
-      ++i)
-  {
-    std::cout << (*i)->str() << std::endl;
-  }
-
-  // how long to wait for a controller event before taking care of autofire etc.
-  timeout = 25; // FIXME: add an option for that
-
-  memset(&oldmsg,     0, sizeof(oldmsg));
-  memset(&oldrealmsg, 0, sizeof(oldrealmsg));
-
-  pid_t pid = -1;
-
-  if (!opts.exec.empty())
+  if (!m_child_exec.empty())
   { // launch program if one was given
-    pid = fork();
-    if (pid == 0)
+    m_pid = fork();
+    if (m_pid == 0) // child
     {
-      char** argv = static_cast<char**>(malloc(sizeof(char*) * opts.exec.size() + 1));
-      for(size_t i = 0; i < opts.exec.size(); ++i)
+      char** argv = static_cast<char**>(malloc(sizeof(char*) * m_child_exec.size() + 1));
+      for(size_t i = 0; i < m_child_exec.size(); ++i)
       {
-        argv[i] = strdup(opts.exec[i].c_str());
+        argv[i] = strdup(m_child_exec[i].c_str());
       }
-      argv[opts.exec.size()] = NULL;
+      argv[m_child_exec.size()] = NULL;
 
-      if (execvp(opts.exec[0].c_str(), argv) == -1)
+      if (execvp(m_child_exec[0].c_str(), argv) == -1)
       {
-        std::cout << "error: " << opts.exec[0] << ": " << strerror(errno) << std::endl;
+        std::cout << "error: " << m_child_exec[0] << ": " << strerror(errno) << std::endl;
         // FIXME: must signal the parent process
         _exit(EXIT_FAILURE);
       }
     }
   }
+}
+
+void
+XboxdrvThread::watch_chid_process()
+{
+  if (m_pid != -1)
+  {
+    int status = 0;
+    int ret = waitpid(m_pid, &status, WNOHANG);
+
+    // greater 0 means something changed with the process
+    if (ret > 0)
+    {
+      if (WIFEXITED(status))
+      {
+        if (WEXITSTATUS(status) != 0)
+        {
+          std::cout << "error: child program has stopped with exit status " << WEXITSTATUS(status) << std::endl;
+        }
+        else
+        {
+          std::cout << "child program exited successful" << std::endl;
+        }
+        global_exit_xboxdrv = true;
+      }
+      else if (WIFSIGNALED(status))
+      {
+        std::cout << "error: child program was terminated by " << WTERMSIG(status) << std::endl;
+        global_exit_xboxdrv = true;
+      }
+    }
+  }
+}
+
+void
+XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& opts)
+{
+  launch_child_process();
 
   try 
   {
@@ -260,14 +297,14 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
     {
       XboxGenericMsg msg;
 
-      if (m_controller->read(msg, opts.verbose, timeout))
+      if (m_controller->read(msg, opts.verbose, m_timeout))
       {
-        oldrealmsg = msg;
+        m_oldrealmsg = msg;
       }
       else
       {
         // no new data read, so copy the last read data
-        msg = oldrealmsg;
+        msg = m_oldrealmsg;
       }
 
       // Calc changes in time
@@ -276,19 +313,19 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
       last_time = this_time;
 
       // run the controller message through all modifier
-      for(std::vector<ModifierPtr>::iterator i = config->get_modifier().begin();
-          i != config->get_modifier().end(); 
+      for(std::vector<ModifierPtr>::iterator i = m_config.get_config()->get_modifier().begin();
+          i != m_config.get_config()->get_modifier().end(); 
           ++i)
       {
         (*i)->update(msec_delta, msg);
       }
 
-      if (memcmp(&msg, &oldmsg, sizeof(XboxGenericMsg)) != 0)
+      if (memcmp(&msg, &m_oldmsg, sizeof(XboxGenericMsg)) != 0)
       { // Only send a new event out if something has changed,
         // this is useful since some controllers send events
         // even if nothing has changed, deadzone can cause this
         // too
-        oldmsg = msg;
+        m_oldmsg = msg;
 
         if (!opts.silent)
           std::cout << msg << std::endl;
@@ -299,7 +336,8 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
         }
                  
         if (opts.rumble)
-        {
+        { // FIXME: kind of ugly here, should be a filter, but filters
+          // can't talk back to the controller
           if (type == GAMEPAD_XBOX)
           {
             set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox.lt, msg.xbox.rt);
@@ -324,32 +362,7 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
         uinput->update(msec_delta);
       }
 
-      if (pid != -1)
-      {
-        int status = 0;
-        int w = waitpid(pid, &status, WNOHANG);
-
-        if (w > 0)
-        {
-          if (WIFEXITED(status))
-          {
-            if (WEXITSTATUS(status) != 0)
-            {
-              std::cout << "error: child program has stopped with exit status " << WEXITSTATUS(status) << std::endl;
-            }
-            else
-            {
-              std::cout << "child program exited successful" << std::endl;
-            }
-            global_exit_xboxdrv = true;
-          }
-          else if (WIFSIGNALED(status))
-          {
-            std::cout << "error: child program was terminated by " << WTERMSIG(status) << std::endl;
-            global_exit_xboxdrv = true;
-          }
-        }
-      }
+      watch_chid_process();
     }
   }
   catch(const std::exception& err)
@@ -358,7 +371,7 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
     log_error << err.what() << std::endl;
   }
 }
-
+
 void
 XboxdrvThread::start_thread(GamepadType type, uInput* uinput, const Options& opts)
 {
@@ -391,5 +404,5 @@ XboxdrvThread::try_join_thread()
     return false;
   }
 }
-
+
 /* EOF */
