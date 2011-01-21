@@ -181,32 +181,31 @@ DefaultMessageProcessor::create_modifier(const Options& opts, std::vector<Modifi
 }
 
 void
-DefaultMessageProcessor::send(XboxGenericMsg& msg, int msec_delta)
+DefaultMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
 {
-  if (memcmp(&msg, &m_oldmsg, sizeof(XboxGenericMsg)) != 0)
+  if (!m_config.empty())
   {
-    // Only send a new event out if something has changed,
-    // this is useful since some controllers send events
-    // even if nothing has changed, deadzone can cause this
-    // too
-    m_oldmsg = msg;
-
-    if (!m_config.empty())
+    XboxGenericMsg msg = msg_in;
+  
+    // run the controller message through all modifier
+    for(std::vector<ModifierPtr>::iterator i = m_config.get_config()->get_modifier().begin();
+        i != m_config.get_config()->get_modifier().end(); 
+        ++i)
     {
-      // run the controller message through all modifier
-      for(std::vector<ModifierPtr>::iterator i = m_config.get_config()->get_modifier().begin();
-          i != m_config.get_config()->get_modifier().end(); 
-          ++i)
-      {
-        (*i)->update(msec_delta, msg);
-      }
-
-      m_config.get_config()->get_uinput().update(msec_delta);
+      (*i)->update(msec_delta, msg);
     }
 
+    m_config.get_config()->get_uinput().update(msec_delta);
+
     // send current Xbox state to uinput
-    if (!m_config.empty())
+    if (memcmp(&msg, &m_oldmsg, sizeof(XboxGenericMsg)) != 0)
     {
+      // Only send a new event out if something has changed,
+      // this is useful since some controllers send events
+      // even if nothing has changed, deadzone can cause this
+      // too
+      m_oldmsg = msg;
+
       m_config.get_config()->get_uinput().send(msg);
     }
   }

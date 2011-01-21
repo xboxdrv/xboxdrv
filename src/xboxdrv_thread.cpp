@@ -139,7 +139,7 @@ XboxdrvThread::watch_chid_process()
 }
 
 void
-XboxdrvThread::controller_loop(GamepadType type, const Options& opts)
+XboxdrvThread::controller_loop(const Options& opts)
 {
   launch_child_process();
 
@@ -176,36 +176,35 @@ XboxdrvThread::controller_loop(GamepadType type, const Options& opts)
       int msec_delta = this_time - last_time;
       last_time = this_time;
 
+      // output current Xbox gamepad state to stdout
+      if (!opts.silent)
+      {
+        std::cout << msg << std::endl;
+      }
 
-        // output current Xbox gamepad state to stdout
-        if (!opts.silent)
-        {
-          std::cout << msg << std::endl;
-        }
-
-        m_processor.send(msg, msec_delta);
+      m_processor.send(msg, msec_delta);
 
 #ifdef FIXME                 
-        if (opts.rumble)
-        { // FIXME: kind of ugly here, should be a filter, but filters
-          // can't talk back to the controller
-          if (type == GAMEPAD_XBOX)
-          {
-            set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox.lt, msg.xbox.rt);
-          }
-          else if (type == GAMEPAD_XBOX360 ||
-                   type == GAMEPAD_XBOX360_WIRELESS)
-          {
-            set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox360.lt, msg.xbox360.rt);
-          }
-          else if (type == GAMEPAD_FIRESTORM ||
-                   type == GAMEPAD_FIRESTORM_VSB)
-          {
-            set_rumble(m_controller.get(), opts.rumble_gain,
-                       std::min(255, abs((msg.xbox360.y1>>8)*2)), 
-                       std::min(255, abs((msg.xbox360.y2>>8)*2)));
-          }
+      if (opts.rumble)
+      { // FIXME: kind of ugly here, should be a filter, but filters
+        // can't talk back to the controller
+        if (type == GAMEPAD_XBOX)
+        {
+          set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox.lt, msg.xbox.rt);
         }
+        else if (type == GAMEPAD_XBOX360 ||
+                 type == GAMEPAD_XBOX360_WIRELESS)
+        {
+          set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox360.lt, msg.xbox360.rt);
+        }
+        else if (type == GAMEPAD_FIRESTORM ||
+                 type == GAMEPAD_FIRESTORM_VSB)
+        {
+          set_rumble(m_controller.get(), opts.rumble_gain,
+                     std::min(255, abs((msg.xbox360.y1>>8)*2)), 
+                     std::min(255, abs((msg.xbox360.y2>>8)*2)));
+        }
+      }
 #endif
         
       watch_chid_process();
@@ -219,11 +218,11 @@ XboxdrvThread::controller_loop(GamepadType type, const Options& opts)
 }
 
 void
-XboxdrvThread::start_thread(GamepadType type, const Options& opts)
+XboxdrvThread::start_thread(const Options& opts)
 {
   assert(m_thread.get() == 0);
   m_thread.reset(new boost::thread(boost::bind(&XboxdrvThread::controller_loop, this, 
-                                               type, boost::cref(opts))));
+                                               boost::cref(opts))));
 }
 
 void

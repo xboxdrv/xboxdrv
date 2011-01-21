@@ -27,7 +27,7 @@ public:
   MessageProcessor() {}
   virtual ~MessageProcessor() {}
 
-  virtual void send(XboxGenericMsg& msg, int msec_delta) =0;
+  virtual void send(const XboxGenericMsg& msg, int msec_delta) =0;
 
 private:
   MessageProcessor(const MessageProcessor&);

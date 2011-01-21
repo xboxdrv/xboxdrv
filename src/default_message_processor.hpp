@@ -39,7 +39,7 @@ public:
   DefaultMessageProcessor(uInput& uinput, const Options& opts);
   ~DefaultMessageProcessor();
 
-  void send(XboxGenericMsg& msg, int msec_delta);
+  void send(const XboxGenericMsg& msg, int msec_delta);
 
 private:
   void create_modifier(const Options& opts, std::vector<ModifierPtr>* modifier);

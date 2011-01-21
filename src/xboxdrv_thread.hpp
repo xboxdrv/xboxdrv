@@ -53,10 +53,10 @@ public:
 
   // main loop, can be started in a separate thread with
   // start_thread() or used in its own in the main thread
-  void controller_loop(GamepadType type, const Options& opts);
+  void controller_loop(const Options& opts);
 
   // thread control functions
-  void start_thread(GamepadType type, const Options& opts);
+  void start_thread(const Options& opts);
   void stop_thread();
   bool try_join_thread();
 

@@ -343,7 +343,7 @@ XboxdrvDaemon::launch_xboxdrv(uInput* uinput, const XPadDevice& dev_type, const 
     // FIXME: keep these collected somewhere
     DefaultMessageProcessor message_proc(*uinput, opts);
     std::auto_ptr<XboxdrvThread> loop(new XboxdrvThread(message_proc, controller, opts));
-    loop->start_thread(dev_type.type, opts);
+    loop->start_thread(opts);
     m_threads.push_back(loop.release());
   }
 }

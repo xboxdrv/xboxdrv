@@ -486,7 +486,7 @@ Xboxdrv::run_main(const Options& opts)
 
     DefaultMessageProcessor message_proc(*uinput, opts);
     XboxdrvThread loop(message_proc, controller, opts);
-    loop.controller_loop(dev_type.type, opts);
+    loop.controller_loop(opts);
           
     if (!opts.quiet) 
       std::cout << "Shutdown complete" << std::endl;
