@@ -47,7 +47,8 @@ private:
   int m_timeout;
 
 public:
-  XboxdrvThread(std::auto_ptr<XboxGenericController> controller,
+  XboxdrvThread(uInput* uinput,
+                std::auto_ptr<XboxGenericController> controller,
                 const Options& opts);
   ~XboxdrvThread();
 

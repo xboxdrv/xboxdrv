@@ -18,13 +18,13 @@
 
 #include "controller_config.hpp"
 
-ControllerConfig::ControllerConfig() :
+ControllerConfig::ControllerConfig(uInput& uinput) :
   m_modifier(),
-  m_uinput()
+  m_uinput(uinput)
 {
 }
 
-UInputOptions&
+UInputConfig&
 ControllerConfig::get_uinput()
 {
   return m_uinput;

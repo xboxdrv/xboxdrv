@@ -16,33 +16,48 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_CONTROLLER_CONFIG_HPP
-#define HEADER_XBOXDRV_CONTROLLER_CONFIG_HPP
+#ifndef HEADER_XBOXDRV_UINPUT_CONFIG_HPP
+#define HEADER_XBOXDRV_UINPUT_CONFIG_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <vector>
+#include <map>
 
-#include "uinput_config.hpp"
-#include "modifier.hpp"
+#include "axis_map.hpp"
+#include "button_map.hpp"
 
-class ControllerConfig;
-typedef boost::shared_ptr<ControllerConfig> ControllerConfigPtr;
+struct Xbox360Msg;
+struct XboxGenericMsg;
+struct XboxMsg;
 
-class ControllerConfig
+class UInputConfig
 {
 private:
-  std::vector<ModifierPtr> m_modifier;
-  UInputConfig m_uinput;
+  uInput& m_uinput;
+
+  ButtonMap m_btn_map;
+  AxisMap   m_axis_map;
+
+  int  axis_state[XBOX_AXIS_MAX];
+  bool button_state[XBOX_BTN_MAX];
+  bool last_button_state[XBOX_BTN_MAX];
 
 public:
-  ControllerConfig(uInput& uinput);
+  UInputConfig(uInput& uinput);
 
-  UInputConfig& get_uinput();
-  std::vector<ModifierPtr>& get_modifier();
+  void send(XboxGenericMsg& msg); 
+  void update(int msec_delta);
 
 private:
-  ControllerConfig(const ControllerConfig&);
-  ControllerConfig& operator=(const ControllerConfig&);
+  void send(Xbox360Msg& msg);
+  void send(XboxMsg& msg);
+
+  void send_button(XboxButton code, bool value);
+  void send_axis(XboxAxis code, int32_t value);
+
+  void reset_all_outputs();
+
+private:
+  UInputConfig(const UInputConfig&);
+  UInputConfig& operator=(const UInputConfig&);
 };
 
 #endif

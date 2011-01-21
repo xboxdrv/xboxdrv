@@ -46,7 +46,8 @@ extern bool global_exit_xboxdrv;
 // FIXME: isolate problametic code to a separate file, instead of pragma
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
-XboxdrvThread::XboxdrvThread(std::auto_ptr<XboxGenericController> controller,
+XboxdrvThread::XboxdrvThread(uInput* uinput,
+                             std::auto_ptr<XboxGenericController> controller,
                              const Options& opts) :
   m_thread(),
   m_controller(controller),
@@ -63,18 +64,21 @@ XboxdrvThread::XboxdrvThread(std::auto_ptr<XboxGenericController> controller,
   memset(&m_oldmsg,     0, sizeof(m_oldmsg));
   memset(&m_oldrealmsg, 0, sizeof(m_oldrealmsg));
 
-  ControllerConfigPtr config(new ControllerConfig);
-  m_config.add_config(config);
-
-  create_modifier(opts, &config->get_modifier());
-
-  // introspection of the config
-  std::cout << "Active Modifier:" << std::endl;
-  for(std::vector<ModifierPtr>::iterator i = config->get_modifier().begin(); 
-      i != config->get_modifier().end(); 
-      ++i)
+  if (uinput)
   {
-    std::cout << (*i)->str() << std::endl;
+    ControllerConfigPtr config(new ControllerConfig(*uinput));
+    m_config.add_config(config);
+
+    create_modifier(opts, &config->get_modifier());
+  
+    // introspection of the config
+    std::cout << "Active Modifier:" << std::endl;
+    for(std::vector<ModifierPtr>::iterator i = config->get_modifier().begin(); 
+        i != config->get_modifier().end(); 
+        ++i)
+    {
+      std::cout << (*i)->str() << std::endl;
+    }
   }
 }
 
@@ -307,6 +311,17 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
         msg = m_oldrealmsg;
       }
 
+      /*
+        if (code == cfg.config_toggle_button)
+        {
+        if (value)
+        {
+        reset_all_outputs();
+        cfg.next_input_mapping();
+        }
+        }
+      */
+
       // Calc changes in time
       uint32_t this_time = get_time();
       int msec_delta = this_time - last_time;
@@ -327,12 +342,16 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
         // too
         m_oldmsg = msg;
 
+        // output current Xbox gamepad state to stdout
         if (!opts.silent)
-          std::cout << msg << std::endl;
-
-        if (uinput)
         {
-          uinput->send(msg);
+          std::cout << msg << std::endl;
+        }
+
+        // send current Xbox state to uinput
+        if (uinput || !m_config.empty())
+        {
+          m_config.get_config()->get_uinput().send(msg);
         }
                  
         if (opts.rumble)

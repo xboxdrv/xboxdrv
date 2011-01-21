@@ -43,13 +43,9 @@ private:
   int m_vendor_id;
   int m_product_id;
 
-  typedef std::map<int, boost::shared_ptr<LinuxUinput> > uInputDevs;
-  uInputDevs uinput_devs;
+  typedef std::map<int, boost::shared_ptr<LinuxUinput> > UInputDevs;
+  UInputDevs uinput_devs;
   UInputOptions cfg;
-
-  int  axis_state[XBOX_AXIS_MAX];
-  bool button_state[XBOX_BTN_MAX];
-  bool last_button_state[XBOX_BTN_MAX];
 
   struct RelRepeat 
   {
@@ -69,8 +65,8 @@ public:
   uInput(int vendor_id, int product_id, UInputOptions cfg = UInputOptions());
   ~uInput();
 
-  void send(XboxGenericMsg& msg); 
   void update(int msec_delta);
+
   void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
 
   void add_rel(int device_id, int ev_code);
@@ -85,16 +81,6 @@ public:
   LinuxUinput* get_force_feedback_uinput() const;
 
   void create_uinput_device(int device_id);
-
-private:
-  void send(Xbox360Msg& msg);
-  void send(Xbox360GuitarMsg& msg);
-  void send(XboxMsg& msg);
-
-  void send_button(XboxButton code, bool value);
-  void send_axis(XboxAxis code, int32_t value);
-
-  void reset_all_outputs();
 };
 
 #endif

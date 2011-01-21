@@ -38,6 +38,8 @@ public:
   ControllerConfigPtr get_config(int i) const;
   ControllerConfigPtr get_config() const;
 
+  bool empty() const { return m_config.empty(); }
+
 private:
   ControllerConfigSet(const ControllerConfigSet&);
   ControllerConfigSet& operator=(const ControllerConfigSet&);
