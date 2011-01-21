@@ -53,6 +53,7 @@ Options::Options() :
   instant_exit(false),
   no_uinput(false),
   detach_kernel_driver(),
+  timeout(25),
   gamepad_type(GAMEPAD_UNKNOWN),
   vendor_id(-1),
   product_id(-1),

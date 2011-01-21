@@ -57,9 +57,7 @@ XboxdrvThread::XboxdrvThread(uInput* uinput,
   m_oldrealmsg(),
   m_child_exec(opts.exec),
   m_pid(-1),
-  // how long to wait for a controller event before taking care of autofire etc.
-  // 0 == no timeout, FIXME: add an option for that
-  m_timeout(25)
+  m_timeout(opts.timeout)
 {
   memset(&m_oldmsg,     0, sizeof(m_oldmsg));
   memset(&m_oldrealmsg, 0, sizeof(m_oldrealmsg));

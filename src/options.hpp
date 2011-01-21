@@ -94,6 +94,7 @@ public:
   bool instant_exit;
   bool no_uinput;
   bool detach_kernel_driver;
+  int  timeout;
 
   GamepadType gamepad_type;
   

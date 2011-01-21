@@ -110,6 +110,7 @@ enum {
   OPTION_CHATPAD,
   OPTION_CHATPAD_NO_INIT,
   OPTION_CHATPAD_DEBUG,
+  OPTION_TIMEOUT,
   OPTION_HEADSET,
   OPTION_HEADSET_DUMP,
   OPTION_HEADSET_PLAY,
@@ -225,6 +226,8 @@ CommandLineParser::init_argp()
 
     .add_option(OPTION_TOGGLE,             0, "toggle", "BTN", "Set button to use for toggling between configs")
     .add_option(OPTION_TOGGLE,             0, "ui-toggle", "BTN", "")
+
+    .add_option(OPTION_TIMEOUT,            0, "timeout",         "INT",  "Amount of time to wait fo a device event before processing autofire, etc. (default: 25)")
     
     .add_option(OPTION_DEADZONE,           0, "deadzone",         "INT",  "Threshold under which axis events are ignored (default: 0)")
     .add_option(OPTION_DEADZONE_TRIGGER,   0, "deadzone-trigger", "INT",  "Threshold under which trigger events are ignored (default: 0)")
@@ -306,6 +309,7 @@ CommandLineParser::init_ini(Options* opts)
     ("evdev-debug", &opts->evdev_debug)
     ("config", boost::bind(&CommandLineParser::read_config_file, this, opts, _1))
     ("alt-config", boost::bind(&CommandLineParser::read_alt_config_file, this, opts, _1))
+    ("timeout", &opts->timeout)
 
     ("deadzone", boost::bind(&CommandLineParser::set_deadzone, this, _1))
     ("deadzone-trigger", boost::bind(&CommandLineParser::set_deadzone_trigger, this, _1))
@@ -455,6 +459,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_QUIT:
         opts.instant_exit = true;
+        break;
+
+      case OPTION_TIMEOUT:
+        opts.timeout = boost::lexical_cast<int>(opt.argument);
         break;
 
       case OPTION_NO_UINPUT:
