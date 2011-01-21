@@ -225,8 +225,9 @@ CommandLineParser::init_argp()
     .add_option(OPTION_NEXT,               0, "ui-new", "", "", false) // backward compatibility
 
     .add_option(OPTION_TOGGLE,             0, "toggle", "BTN", "Set button to use for toggling between configs")
-    .add_option(OPTION_TOGGLE,             0, "ui-toggle", "BTN", "")
+    .add_option(OPTION_TOGGLE,             0, "ui-toggle", "BTN", "") // backward compatibility
 
+    .add_option(OPTION_MODIFIER,           0, "modifier",        "MOD=ARGS", "Add a modifier to the modifier spec")
     .add_option(OPTION_TIMEOUT,            0, "timeout",         "INT",  "Amount of time to wait fo a device event before processing autofire, etc. (default: 25)")
     
     .add_option(OPTION_DEADZONE,           0, "deadzone",         "INT",  "Threshold under which axis events are ignored (default: 0)")
@@ -573,7 +574,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_NEXT:
-        opts.controller.back().uinput.add_input_mapping();
+        opts.controller.push_back(ControllerOptions());
         if (opts.config_toggle_button == XBOX_BTN_UNKNOWN)
         {
           opts.config_toggle_button = XBOX_BTN_GUIDE;
@@ -1006,7 +1007,7 @@ CommandLineParser::read_config_file(Options* opts, const std::string& filename)
 void
 CommandLineParser::read_alt_config_file(Options* opts, const std::string& filename)
 {
-  opts->controller.back().uinput.add_input_mapping();
+  opts->controller.push_back(ControllerOptions());
   read_config_file(opts, filename);
 }
 

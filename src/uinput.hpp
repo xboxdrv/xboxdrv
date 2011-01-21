@@ -62,7 +62,7 @@ public:
   static bool is_keyboard_button(int ev_code);
 
 public:
-  uInput(int vendor_id, int product_id, UInputOptions cfg = UInputOptions());
+  uInput(int vendor_id, int product_id, UInputOptions cfg);
   ~uInput();
 
   void update(int msec_delta);
@@ -72,6 +72,8 @@ public:
   void add_rel(int device_id, int ev_code);
   void add_abs(int device_id, int ev_code, int min, int max, int fuzz, int flat);
   void add_key(int device_id, int ev_code);
+
+  void finish();
 
   void send_key(int device_id, int ev_code, bool value);
   void send_rel_repetitive(const UIEvent& code, int value, int repeat_interval);

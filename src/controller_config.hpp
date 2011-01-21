@@ -25,6 +25,7 @@
 #include "uinput_config.hpp"
 #include "modifier.hpp"
 
+class ControllerOptions;
 class ControllerConfig;
 typedef boost::shared_ptr<ControllerConfig> ControllerConfigPtr;
 
@@ -35,7 +36,7 @@ private:
   UInputConfig m_uinput;
 
 public:
-  ControllerConfig(uInput& uinput);
+  ControllerConfig(uInput& uinput, const ControllerOptions& opts);
 
   std::vector<ModifierPtr>& get_modifier();
   UInputConfig& get_uinput();

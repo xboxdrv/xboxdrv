@@ -167,7 +167,7 @@ XboxdrvThread::controller_loop(const Options& opts)
 
       // output current Xbox gamepad state to stdout
       if (!opts.silent)
-      {
+      { // FIXME: only print stuff on change
         std::cout << msg << std::endl;
       }
 

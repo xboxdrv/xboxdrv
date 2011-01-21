@@ -24,53 +24,33 @@
 
 UInputOptions::UInputOptions() :
   device_name("Xbox Gamepad (userspace driver)"),
-  force_feedback(false),
-  map(),
-  current_input_map(0)
+  force_feedback(false)
 {
-  map.push_back(InputMapping());
   set_defaults();
 }
 
 ButtonMap&
 UInputOptions::get_btn_map()
 {
-  return map[current_input_map].btn_map;
+  return m_btn_map;
 }
 
 AxisMap& 
 UInputOptions::get_axis_map()
 {
-  return map[current_input_map].axis_map;
+  return m_axis_map;
 }
 
-ButtonMap&
-UInputOptions::get_btn_map(int n)
+const ButtonMap&
+UInputOptions::get_btn_map() const
 {
-  return map[n].btn_map;
+  return m_btn_map;
 }
 
-AxisMap&
-UInputOptions::get_axis_map(int n)
+const AxisMap& 
+UInputOptions::get_axis_map() const
 {
-  return map[n].axis_map;
-}
-
-void
-UInputOptions::add_input_mapping()
-{
-  map.push_back(InputMapping());
-  current_input_map = map.size()-1;
-  set_defaults();
-}
-
-void
-UInputOptions::next_input_mapping()
-{
-  current_input_map += 1;
-  if (current_input_map >= static_cast<int>(map.size()))
-    current_input_map = 0;
-  std::cout << "UInputOptions::next_input_mapping(): " << current_input_map << std::endl;
+  return m_axis_map;
 }
 
 void

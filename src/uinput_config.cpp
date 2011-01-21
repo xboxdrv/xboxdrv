@@ -22,15 +22,19 @@
 #include <iostream>
 
 #include "uinput.hpp"
+#include "uinput_options.hpp"
 
-UInputConfig::UInputConfig(uInput& uinput) :
+UInputConfig::UInputConfig(uInput& uinput, const UInputOptions& opts) :
   m_uinput(uinput),
-  m_btn_map(),
-  m_axis_map()
+  m_btn_map(opts.get_btn_map()),
+  m_axis_map(opts.get_axis_map())
 {
   std::fill_n(axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
   std::fill_n(button_state,      static_cast<int>(XBOX_BTN_MAX),  false);
   std::fill_n(last_button_state, static_cast<int>(XBOX_BTN_MAX),  false);
+
+  m_btn_map.init(uinput);
+  m_axis_map.init(uinput);
 }
 
 void

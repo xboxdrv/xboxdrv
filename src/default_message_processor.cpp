@@ -21,7 +21,9 @@
 #include <string.h>
 #include <iostream>
 
+#include "log.hpp"
 #include "options.hpp"
+#include "uinput.hpp"
 
 #include "modifier/axismap_modifier.hpp"
 #include "modifier/buttonmap_modifier.hpp"
@@ -40,7 +42,7 @@ DefaultMessageProcessor::DefaultMessageProcessor(uInput& uinput, const Options& 
       i != opts.controller.end(); 
       ++i)
   {
-    ControllerConfigPtr config(new ControllerConfig(uinput));
+    ControllerConfigPtr config(new ControllerConfig(uinput, *i));
     create_modifier(*i, &config->get_modifier());
     m_config.add_config(config);
 
@@ -53,6 +55,12 @@ DefaultMessageProcessor::DefaultMessageProcessor(uInput& uinput, const Options& 
       std::cout << (*mod)->str() << std::endl;
     }
   }
+
+  log_info << "UInput finish" << std::endl;
+
+  // After all the ControllerConfig registered their events, finish up
+  // the device creation
+  uinput.finish();
 }
 
 DefaultMessageProcessor::~DefaultMessageProcessor()
@@ -205,6 +213,8 @@ DefaultMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
 
         // switch to the next input mapping
         m_config.next_config();
+
+        log_info << "Next Config" << std::endl;
       }
     }
 

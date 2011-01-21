@@ -35,22 +35,13 @@ public:
   bool force_feedback;
 
 private:
-  struct InputMapping
-  {
-    ButtonMap btn_map;
-    AxisMap   axis_map;
-  };
-
-  std::vector<InputMapping> map;
-  int current_input_map;
+  ButtonMap m_btn_map;
+  AxisMap   m_axis_map;
   
 public:
   /** \addtogroup creation Creation Functions
    ** @{*/
   UInputOptions();
-
-  void add_input_mapping();
-  void next_input_mapping();
     
   /** Sets a button/axis mapping that is equal to the xpad kernel driver */
   void mimic_xpad();
@@ -73,9 +64,8 @@ public:
   ButtonMap& get_btn_map();
   AxisMap&   get_axis_map();
 
-  ButtonMap& get_btn_map(int n);
-  AxisMap&   get_axis_map(int n);
-  int input_mapping_count() const { return static_cast<int>(map.size()); }
+  const ButtonMap& get_btn_map() const;
+  const AxisMap&   get_axis_map() const;
   /** @}*/
 };
 

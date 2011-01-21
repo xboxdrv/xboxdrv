@@ -98,17 +98,6 @@ uInput::uInput(int vendor_id, int product_id, UInputOptions config_) :
     // |- FF_SAW_DOWN
     // '- FF_CUSTOM
   }
-
-  for(int n = 0; n < cfg.input_mapping_count(); ++n)
-  {
-    cfg.get_btn_map(n).init(*this);
-    cfg.get_axis_map(n).init(*this);
-  }
-
-  for(UInputDevs::iterator i = uinput_devs.begin(); i != uinput_devs.end(); ++i)
-  {
-    i->second->finish();
-  }
 }
 
 void
@@ -177,6 +166,15 @@ void
 uInput::add_abs(int device_id, int ev_code, int min, int max, int fuzz, int flat)
 {
   get_uinput(device_id)->add_abs(ev_code, min, max, fuzz, flat);
+}
+
+void
+uInput::finish()
+{
+  for(UInputDevs::iterator i = uinput_devs.begin(); i != uinput_devs.end(); ++i)
+  {
+    i->second->finish();
+  }
 }
 
 void

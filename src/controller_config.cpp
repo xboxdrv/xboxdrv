@@ -18,9 +18,12 @@
 
 #include "controller_config.hpp"
 
-ControllerConfig::ControllerConfig(uInput& uinput) :
+#include "options.hpp"
+#include "uinput_options.hpp"
+
+ControllerConfig::ControllerConfig(uInput& uinput, const ControllerOptions& opts) :
   m_modifier(),
-  m_uinput(uinput)
+  m_uinput(uinput, opts.uinput)
 {
 }
 

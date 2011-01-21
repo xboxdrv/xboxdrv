@@ -28,6 +28,8 @@ struct Xbox360Msg;
 struct XboxGenericMsg;
 struct XboxMsg;
 
+class UInputOptions;
+
 class UInputConfig
 {
 private:
@@ -41,7 +43,7 @@ private:
   bool last_button_state[XBOX_BTN_MAX];
 
 public:
-  UInputConfig(uInput& uinput);
+  UInputConfig(uInput& uinput, const UInputOptions& opts);
 
   void send(XboxGenericMsg& msg); 
   void update(int msec_delta);
