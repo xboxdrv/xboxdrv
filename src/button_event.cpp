@@ -525,7 +525,7 @@ ExecButtonEventHandler::send(uInput& uinput, bool value)
       if (execvp(m_args[0].c_str(), argv) == -1)
       {
         std::cout << "error: ExecButtonEventHandler::send(): " << strerror(errno) << std::endl;
-        exit(EXIT_FAILURE);
+        _exit(EXIT_FAILURE);
       }
     }
   }

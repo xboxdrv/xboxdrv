@@ -248,7 +248,7 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
       {
         std::cout << "error: " << opts.exec[0] << ": " << strerror(errno) << std::endl;
         // FIXME: must signal the parent process
-        exit(EXIT_FAILURE);
+        _exit(EXIT_FAILURE);
       }
     }
   }
