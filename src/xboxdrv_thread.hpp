@@ -27,18 +27,17 @@
 #include "controller_config_set.hpp"
 
 class Options;
-class uInput;
 class XboxGenericController;
+class MessageProcessor;
 
 class XboxdrvThread // FIXME: find a better name, XboxdrvControllerLoop?!
 {
 private:
   std::auto_ptr<boost::thread> m_thread;
+  MessageProcessor& m_processor;
   std::auto_ptr<XboxGenericController> m_controller;
-  ControllerConfigSet m_config;
   bool m_loop;
 
-  XboxGenericMsg m_oldmsg;     /// last data send to uinput
   XboxGenericMsg m_oldrealmsg; /// last data read from the device
 
   std::vector<std::string> m_child_exec;
@@ -47,22 +46,21 @@ private:
   int m_timeout;
 
 public:
-  XboxdrvThread(uInput* uinput,
+  XboxdrvThread(MessageProcessor& processor,
                 std::auto_ptr<XboxGenericController> controller,
                 const Options& opts);
   ~XboxdrvThread();
 
   // main loop, can be started in a separate thread with
   // start_thread() or used in its own in the main thread
-  void controller_loop(GamepadType type, uInput* uinput, const Options& opts);
+  void controller_loop(GamepadType type, const Options& opts);
 
   // thread control functions
-  void start_thread(GamepadType type, uInput* uinput, const Options& opts);
+  void start_thread(GamepadType type, const Options& opts);
   void stop_thread();
   bool try_join_thread();
 
 private:
-  void create_modifier(const Options& opts, std::vector<ModifierPtr>* modifier);
   void launch_child_process();
   void watch_chid_process();
 

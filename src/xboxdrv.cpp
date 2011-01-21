@@ -39,6 +39,7 @@
 #include <unistd.h>
 
 #include "command_line_options.hpp"
+#include "default_message_processor.hpp"
 #include "evdev_controller.hpp"
 #include "evdev_helper.hpp"
 #include "helper.hpp"
@@ -483,8 +484,9 @@ Xboxdrv::run_main(const Options& opts)
 
     global_exit_xboxdrv = false;
 
-    XboxdrvThread loop(uinput.get(), controller, opts);
-    loop.controller_loop(dev_type.type, uinput.get(), opts);
+    DefaultMessageProcessor message_proc(*uinput, opts);
+    XboxdrvThread loop(message_proc, controller, opts);
+    loop.controller_loop(dev_type.type, opts);
           
     if (!opts.quiet) 
       std::cout << "Shutdown complete" << std::endl;

@@ -34,50 +34,26 @@
 #include "options.hpp"
 #include "uinput.hpp"
 #include "xbox_generic_controller.hpp"
-
-#include "modifier/axismap_modifier.hpp"
-#include "modifier/buttonmap_modifier.hpp"
-#include "modifier/dpad_rotation_modifier.hpp"
-#include "modifier/four_way_restrictor_modifier.hpp"
-#include "modifier/square_axis_modifier.hpp"
+#include "message_processor.hpp"
 
 extern bool global_exit_xboxdrv;
 
 // FIXME: isolate problametic code to a separate file, instead of pragma
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
-XboxdrvThread::XboxdrvThread(uInput* uinput,
+XboxdrvThread::XboxdrvThread(MessageProcessor& processor,
                              std::auto_ptr<XboxGenericController> controller,
                              const Options& opts) :
   m_thread(),
+  m_processor(processor),
   m_controller(controller),
-  m_config(),
   m_loop(true),
-  m_oldmsg(),
   m_oldrealmsg(),
   m_child_exec(opts.exec),
   m_pid(-1),
   m_timeout(opts.timeout)
 {
-  memset(&m_oldmsg,     0, sizeof(m_oldmsg));
   memset(&m_oldrealmsg, 0, sizeof(m_oldrealmsg));
-
-  if (uinput)
-  {
-    ControllerConfigPtr config(new ControllerConfig(*uinput));
-    m_config.add_config(config);
-
-    create_modifier(opts, &config->get_modifier());
-  
-    // introspection of the config
-    std::cout << "Active Modifier:" << std::endl;
-    for(std::vector<ModifierPtr>::iterator i = config->get_modifier().begin(); 
-        i != config->get_modifier().end(); 
-        ++i)
-    {
-      std::cout << (*i)->str() << std::endl;
-    }
-  }
 }
 
 XboxdrvThread::~XboxdrvThread()
@@ -104,131 +80,6 @@ void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_
 }
 
 } // namespace
-
-void
-XboxdrvThread::create_modifier(const Options& opts, std::vector<ModifierPtr>* modifier)
-{
-  if (!opts.controller.back().calibration_map.empty())
-  {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.controller.back().calibration_map.begin();
-        i != opts.controller.back().calibration_map.end(); ++i)
-    {
-      axismap->add_filter(i->first, i->second); 
-    }
-
-    modifier->push_back(axismap);
-  }
-
-  if (opts.controller.back().deadzone)
-  {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    XboxAxis axes[] = { XBOX_AXIS_X1,
-                        XBOX_AXIS_Y1,
-                      
-                        XBOX_AXIS_X2,
-                        XBOX_AXIS_Y2 };
-
-    for(size_t i = 0; i < sizeof(axes)/sizeof(XboxAxis); ++i)
-    {
-      axismap->add_filter(axes[i],
-                          AxisFilterPtr(new DeadzoneAxisFilter(-opts.controller.back().deadzone,
-                                                               opts.controller.back().deadzone,
-                                                               true)));
-    }
-
-    modifier->push_back(axismap);
-  }
-
-  if (opts.controller.back().deadzone_trigger)
-  {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    XboxAxis axes[] = { XBOX_AXIS_LT,
-                        XBOX_AXIS_RT };
-
-    for(size_t i = 0; i < sizeof(axes)/sizeof(XboxAxis); ++i)
-    {
-      axismap->add_filter(axes[i],
-                          AxisFilterPtr(new DeadzoneAxisFilter(-opts.controller.back().deadzone_trigger,
-                                                               opts.controller.back().deadzone_trigger,
-                                                               true)));
-    }
-
-    modifier->push_back(axismap);
-  }
-
-  if (opts.controller.back().square_axis)
-  {
-    modifier->push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
-    modifier->push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
-  }
-
-  if (!opts.controller.back().sensitivity_map.empty())
-  {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.controller.back().sensitivity_map.begin();
-        i != opts.controller.back().sensitivity_map.end(); ++i)
-    {
-      axismap->add_filter(i->first, i->second); 
-    }
-
-    modifier->push_back(axismap);
-  }
-
-  if (opts.controller.back().four_way_restrictor)
-  {
-    modifier->push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
-    modifier->push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
-  }
-
-  if (!opts.controller.back().relative_axis_map.empty())
-  {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.controller.back().relative_axis_map.begin();
-        i != opts.controller.back().relative_axis_map.end(); ++i)
-    {
-      axismap->add_filter(i->first, i->second); 
-    }
-
-    modifier->push_back(axismap);
-  }
-
-  if (opts.controller.back().dpad_rotation)
-  {
-    modifier->push_back(ModifierPtr(new DpadRotationModifier(opts.controller.back().dpad_rotation)));
-  }
-
-  if (!opts.controller.back().autofire_map.empty())
-  {
-    boost::shared_ptr<ButtonmapModifier> buttonmap(new ButtonmapModifier);
-
-    for(std::map<XboxButton, ButtonFilterPtr>::const_iterator i = opts.controller.back().autofire_map.begin();
-        i != opts.controller.back().autofire_map.end(); ++i)
-    {
-      buttonmap->add_filter(i->first, i->second); 
-    }
-
-    modifier->push_back(buttonmap);
-  }
-
-  // axismap, buttonmap comes last, as otherwise they would mess up the button and axis names
-  if (!opts.controller.back().buttonmap->empty())
-  {
-    modifier->push_back(opts.controller.back().buttonmap);
-  }
-
-  if (!opts.controller.back().axismap->empty())
-  {
-    modifier->push_back(opts.controller.back().axismap);
-  }
-
-  modifier->insert(modifier->end(), opts.controller.back().modifier.begin(), opts.controller.back().modifier.end());
-}
 
 void
 XboxdrvThread::launch_child_process()
@@ -288,7 +139,7 @@ XboxdrvThread::watch_chid_process()
 }
 
 void
-XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& opts)
+XboxdrvThread::controller_loop(GamepadType type, const Options& opts)
 {
   launch_child_process();
 
@@ -325,20 +176,6 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
       int msec_delta = this_time - last_time;
       last_time = this_time;
 
-      // run the controller message through all modifier
-      for(std::vector<ModifierPtr>::iterator i = m_config.get_config()->get_modifier().begin();
-          i != m_config.get_config()->get_modifier().end(); 
-          ++i)
-      {
-        (*i)->update(msec_delta, msg);
-      }
-
-      if (memcmp(&msg, &m_oldmsg, sizeof(XboxGenericMsg)) != 0)
-      { // Only send a new event out if something has changed,
-        // this is useful since some controllers send events
-        // even if nothing has changed, deadzone can cause this
-        // too
-        m_oldmsg = msg;
 
         // output current Xbox gamepad state to stdout
         if (!opts.silent)
@@ -346,12 +183,9 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
           std::cout << msg << std::endl;
         }
 
-        // send current Xbox state to uinput
-        if (uinput || !m_config.empty())
-        {
-          m_config.get_config()->get_uinput().send(msg);
-        }
-                 
+        m_processor.send(msg, msec_delta);
+
+#ifdef FIXME                 
         if (opts.rumble)
         { // FIXME: kind of ugly here, should be a filter, but filters
           // can't talk back to the controller
@@ -372,13 +206,8 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
                        std::min(255, abs((msg.xbox360.y2>>8)*2)));
           }
         }
-      }
-
-      if (uinput)
-      {
-        uinput->update(msec_delta);
-      }
-
+#endif
+        
       watch_chid_process();
     }
   }
@@ -390,11 +219,11 @@ XboxdrvThread::controller_loop(GamepadType type, uInput* uinput, const Options& 
 }
 
 void
-XboxdrvThread::start_thread(GamepadType type, uInput* uinput, const Options& opts)
+XboxdrvThread::start_thread(GamepadType type, const Options& opts)
 {
   assert(m_thread.get() == 0);
   m_thread.reset(new boost::thread(boost::bind(&XboxdrvThread::controller_loop, this, 
-                                               type, uinput, boost::cref(opts))));
+                                               type, boost::cref(opts))));
 }
 
 void

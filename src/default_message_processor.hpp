@@ -16,33 +16,37 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_CONTROLLER_CONFIG_HPP
-#define HEADER_XBOXDRV_CONTROLLER_CONFIG_HPP
+#ifndef HEADER_XBOXDRV_DEFAULT_MESSAGE_PROCESSOR_HPP
+#define HEADER_XBOXDRV_DEFAULT_MESSAGE_PROCESSOR_HPP
 
-#include <boost/shared_ptr.hpp>
 #include <vector>
 
-#include "uinput_config.hpp"
-#include "modifier.hpp"
+#include "controller_config_set.hpp"
+#include "message_processor.hpp"
 
-class ControllerConfig;
-typedef boost::shared_ptr<ControllerConfig> ControllerConfigPtr;
+class uInput;
+class Options;
 
-class ControllerConfig
+class DefaultMessageProcessor : public MessageProcessor
 {
 private:
-  std::vector<ModifierPtr> m_modifier;
-  UInputConfig m_uinput;
+  uInput& m_uinput;
+  ControllerConfigSet m_config;
+
+  XboxGenericMsg m_oldmsg; /// last data send to uinput
 
 public:
-  ControllerConfig(uInput& uinput);
+  DefaultMessageProcessor(uInput& uinput, const Options& opts);
+  ~DefaultMessageProcessor();
 
-  std::vector<ModifierPtr>& get_modifier();
-  UInputConfig& get_uinput();
+  void send(XboxGenericMsg& msg, int msec_delta);
 
 private:
-  ControllerConfig(const ControllerConfig&);
-  ControllerConfig& operator=(const ControllerConfig&);
+  void create_modifier(const Options& opts, std::vector<ModifierPtr>* modifier);
+
+private:
+  DefaultMessageProcessor(const DefaultMessageProcessor&);
+  DefaultMessageProcessor& operator=(const DefaultMessageProcessor&);
 };
 
 #endif

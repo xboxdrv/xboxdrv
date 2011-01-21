@@ -16,24 +16,24 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "controller_config.hpp"
+#ifndef HEADER_XBOXDRV_MESSAGE_PROCESSOR_HPP
+#define HEADER_XBOXDRV_MESSAGE_PROCESSOR_HPP
 
-ControllerConfig::ControllerConfig(uInput& uinput) :
-  m_modifier(),
-  m_uinput(uinput)
-{
-}
+struct XboxGenericMsg;
 
-std::vector<ModifierPtr>&
-ControllerConfig::get_modifier()
+class MessageProcessor
 {
-  return m_modifier;
-}
+public:
+  MessageProcessor() {}
+  virtual ~MessageProcessor() {}
 
-UInputConfig&
-ControllerConfig::get_uinput()
-{
-  return m_uinput;
-}
+  virtual void send(XboxGenericMsg& msg, int msec_delta) =0;
+
+private:
+  MessageProcessor(const MessageProcessor&);
+  MessageProcessor& operator=(const MessageProcessor&);
+};
+
+#endif
 
 /* EOF */

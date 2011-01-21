@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "default_message_processor.hpp"
 #include "log.hpp"
 #include "options.hpp"
 #include "uinput.hpp"
@@ -340,8 +341,9 @@ XboxdrvDaemon::launch_xboxdrv(uInput* uinput, const XPadDevice& dev_type, const 
     std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
    
     // FIXME: keep these collected somewhere
-    std::auto_ptr<XboxdrvThread> loop(new XboxdrvThread(uinput, controller, opts));
-    loop->start_thread(dev_type.type, uinput, opts);
+    DefaultMessageProcessor message_proc(*uinput, opts);
+    std::auto_ptr<XboxdrvThread> loop(new XboxdrvThread(message_proc, controller, opts));
+    loop->start_thread(dev_type.type, opts);
     m_threads.push_back(loop.release());
   }
 }
