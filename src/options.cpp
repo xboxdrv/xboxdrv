@@ -70,6 +70,8 @@ Options::Options() :
   headset_play(),
   detach(false),
   pid_file(),
+  on_connect(),
+  on_disconnect(),
   list_enums(0)
 {
 }

@@ -127,6 +127,8 @@ public:
   // daemon options
   bool detach;
   std::string pid_file;
+  std::string on_connect;
+  std::string on_disconnect;
 
   std::vector<std::string> exec;
 

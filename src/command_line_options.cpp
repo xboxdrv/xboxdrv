@@ -123,7 +123,9 @@ enum {
   OPTION_LIST_KEY,
   OPTION_LIST_X11KEYSYM,
   OPTION_LIST_AXIS,
-  OPTION_LIST_BUTTON
+  OPTION_LIST_BUTTON,
+  OPTION_DAEMON_ON_CONNECT,
+  OPTION_DAEMON_ON_DISCONNECT
 };
 
 CommandLineParser::CommandLineParser() :
@@ -172,6 +174,8 @@ CommandLineParser::init_argp()
     .add_option(OPTION_DAEMON,        'D', "daemon",    "", "Run as daemon")
     .add_option(OPTION_DAEMON_DETACH,   0, "detach",      "", "Detach the daemon from the current shell")
     .add_option(OPTION_DAEMON_PID_FILE, 0, "pid-file",    "FILE", "Write daemon pid to FILE")
+    .add_option(OPTION_DAEMON_ON_CONNECT,    0, "on-connect", "FILE", "Launch EXE when a new controller is connected")
+    .add_option(OPTION_DAEMON_ON_DISCONNECT, 0, "on-disconnect", "FILE", "Launch EXE when a controller is disconnected")
     .add_newline()
 
     .add_text("Device Options: ")
@@ -328,6 +332,13 @@ CommandLineParser::init_ini(Options* opts)
     ("headset-debug",   &opts->headset_debug)
     ("headset-dump",    &opts->headset_dump)
     ("headset-play",    &opts->headset_play)
+    ;
+
+  m_ini.section("xboxdrv-daemon")
+    ("detach",        &opts->detach)
+    ("pid-file",        &opts->pid_file)
+    ("on-connect",    &opts->on_connect)
+    ("on-disconnect", &opts->on_disconnect)
     ;
 
   m_ini.section("modifier", boost::bind(&CommandLineParser::set_modifier, this, _1, _2));
@@ -697,6 +708,14 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_DAEMON_PID_FILE:
         opts.pid_file = opt.argument;
+        break;
+
+      case OPTION_DAEMON_ON_CONNECT:
+        opts.on_connect = opt.argument;
+        break;
+
+      case OPTION_DAEMON_ON_DISCONNECT:
+        opts.on_disconnect = opt.argument;
         break;
 
       case OPTION_DEVICE_BY_ID:
