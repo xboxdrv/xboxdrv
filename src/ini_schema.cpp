@@ -100,6 +100,10 @@ public:
       return "false";
     }
   }
+
+private:
+  INIPairSchemaBool(const INIPairSchemaBool&);
+  INIPairSchemaBool& operator=(const INIPairSchemaBool&);
 };
 
 class INIPairSchemaInt : public INIPairSchema
@@ -120,6 +124,10 @@ public:
     out << *m_data;
     return out.str();
   }
+
+private:
+  INIPairSchemaInt(const INIPairSchemaInt&);
+  INIPairSchemaInt& operator=(const INIPairSchemaInt&);
 };
 
 class INIPairSchemaFloat : public INIPairSchema
@@ -140,6 +148,10 @@ public:
     out << *m_data;
     return out.str();
   }
+
+private:
+  INIPairSchemaFloat(const INIPairSchemaFloat&);
+  INIPairSchemaFloat& operator=(const INIPairSchemaFloat&);
 };
 
 class INIPairSchemaString : public INIPairSchema
@@ -159,6 +171,10 @@ public:
     // FIXME: implement proper escaping
     return *m_data;
   }
+
+private:
+  INIPairSchemaString(const INIPairSchemaString&);
+  INIPairSchemaString& operator=(const INIPairSchemaString&);
 };
 
 class INIPairSchemaCallback : public INIPairSchema
@@ -185,6 +201,7 @@ public:
 };
 
 INISchemaSection::INISchemaSection(boost::function<void (const std::string&, const std::string&)> callback) :
+  m_schema(),
   m_callback(callback)
 {
 }

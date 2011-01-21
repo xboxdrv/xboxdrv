@@ -150,7 +150,6 @@ private:
   UIEvent m_up_codes[MAX_MODIFIER+1];
   UIEvent m_down_codes[MAX_MODIFIER+1];
   int m_threshold;
-
 };
 
 #endif

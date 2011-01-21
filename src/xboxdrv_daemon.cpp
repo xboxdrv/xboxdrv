@@ -42,7 +42,8 @@ extern bool global_exit_xboxdrv;
 
 XboxdrvDaemon::XboxdrvDaemon() :
   m_udev(0),
-  m_monitor(0)
+  m_monitor(0),
+  m_threads()
 {
   m_udev = udev_new();
     

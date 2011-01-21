@@ -35,6 +35,7 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_quit_thread(false),
   m_read_thread(),
   m_keep_alive_thread(),
+  m_uinput(),
   m_led_state(0)
 {
   if (m_bcdDevice != 0x0110 && m_bcdDevice != 0x0114)

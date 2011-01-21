@@ -625,7 +625,9 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
 
 MacroButtonEventHandler::MacroButtonEventHandler(const std::vector<MacroEvent>& events) :
   m_events(events),
-  m_send_in_progress(false)
+  m_send_in_progress(false),
+  m_countdown(0),
+  m_event_counter()
 {
 }
 

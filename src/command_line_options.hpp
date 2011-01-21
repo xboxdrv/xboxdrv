@@ -73,6 +73,10 @@ private:
 private:
   void init_argp();
   void init_ini(Options* opts);
+
+private:
+  CommandLineParser(const CommandLineParser&);
+  CommandLineParser& operator=(const CommandLineParser&);
 };
 
 extern Options* g_options;

@@ -33,6 +33,8 @@
 
 DefaultMessageProcessor::DefaultMessageProcessor(uInput& uinput, const Options& opts) :
   m_uinput(uinput),
+  m_config(),
+  m_oldmsg(),
   m_config_toggle_button(opts.config_toggle_button)
 {
   memset(&m_oldmsg, 0, sizeof(m_oldmsg));

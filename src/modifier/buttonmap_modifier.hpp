@@ -28,6 +28,12 @@ struct ButtonMapping
   XboxButton lhs;
   XboxButton rhs;
   std::vector<ButtonFilterPtr> filters;
+
+  ButtonMapping() :
+    lhs(XBOX_BTN_UNKNOWN),
+    rhs(XBOX_BTN_UNKNOWN),
+    filters()
+  {}
 };
 
 class ButtonmapModifier : public Modifier

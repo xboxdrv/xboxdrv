@@ -44,7 +44,9 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
   dev_type(),
   handle(),
   endpoint_in(1),
-  endpoint_out(2)
+  endpoint_out(2),
+  m_chatpad(),
+  m_headset()
 {
   find_endpoints();
   if (true) // FIXME

@@ -31,6 +31,13 @@ struct AxisMapping
   XboxAxis rhs;
   bool     invert;
   std::vector<AxisFilterPtr> filters;
+
+  AxisMapping() :
+    lhs(XBOX_AXIS_UNKNOWN),
+    rhs(XBOX_AXIS_UNKNOWN),
+    invert(false),
+    filters()
+  {}
 };
 
 class AxismapModifier : public Modifier 

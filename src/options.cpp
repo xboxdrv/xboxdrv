@@ -55,12 +55,15 @@ Options::Options() :
   detach_kernel_driver(),
   timeout(25),
   gamepad_type(GAMEPAD_UNKNOWN),
+  busid(),
+  devid(),
   vendor_id(-1),
   product_id(-1),
   evdev_device(),
   evdev_absmap(),
   evdev_grab(true),
   evdev_debug(false),
+  evdev_keymap(),
   controller(1),
   chatpad(false),
   chatpad_no_init(false),
@@ -73,6 +76,7 @@ Options::Options() :
   pid_file(),
   on_connect(),
   on_disconnect(),
+  exec(),
   list_enums(0),
   config_toggle_button(XBOX_BTN_UNKNOWN)
 {

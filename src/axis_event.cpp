@@ -207,18 +207,18 @@ RelAxisEventHandler::from_string(const std::string& str)
   return ev.release();
 }
 
-RelAxisEventHandler::RelAxisEventHandler()
+RelAxisEventHandler::RelAxisEventHandler() :
+  m_code(UIEvent::invalid()),
+  m_value(5),
+  m_repeat(10)
 {
-  m_code = UIEvent::invalid();
-  m_value  = 5;
-  m_repeat = 10;
 }
 
-RelAxisEventHandler::RelAxisEventHandler(int device_id, int code, int repeat, float value)
+RelAxisEventHandler::RelAxisEventHandler(int device_id, int code, int repeat, float value) :
+  m_code(UIEvent::create(device_id, EV_REL, code)),
+  m_value(value),
+  m_repeat(repeat)
 {
-  m_code   = UIEvent::create(device_id, EV_REL, code);
-  m_value  = value;
-  m_repeat = repeat;
 }
 
 void
@@ -399,11 +399,13 @@ KeyAxisEventHandler::from_string(const std::string& str)
 }
 
 KeyAxisEventHandler::KeyAxisEventHandler() :
-  m_old_value(0)
+  m_old_value(0),
+  m_up_codes(),
+  m_down_codes(),
+  m_threshold(8000)
 {
   std::fill_n(m_up_codes,   MAX_MODIFIER+1, UIEvent::invalid());
   std::fill_n(m_down_codes, MAX_MODIFIER+1, UIEvent::invalid());
-  m_threshold = 8000;
 }
 
 void

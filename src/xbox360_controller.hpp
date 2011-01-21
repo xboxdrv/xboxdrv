@@ -39,8 +39,6 @@ private:
   std::auto_ptr<Chatpad> m_chatpad;
   std::auto_ptr<Headset> m_headset;
 
-  void find_endpoints();
-
 public:
   Xbox360Controller(libusb_device* dev, 
                     bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
@@ -54,6 +52,9 @@ public:
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
   bool read(XboxGenericMsg& msg, bool verbose, int timeout);
+
+private:
+  void find_endpoints();
 
 private:
   Xbox360Controller (const Xbox360Controller&);

@@ -131,7 +131,8 @@ enum {
 
 CommandLineParser::CommandLineParser() :
   m_argp(),
-  m_ini()
+  m_ini(),
+  m_options()
 {
   init_argp();
 }

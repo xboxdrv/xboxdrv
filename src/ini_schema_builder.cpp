@@ -21,7 +21,8 @@
 #include "ini_schema.hpp"
 
 INISchemaBuilder::INISchemaBuilder(const INISchema& schema) :
-  m_schema(schema)
+  m_schema(schema),
+  m_current_section()
 {
 }
 

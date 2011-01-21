@@ -30,6 +30,8 @@ Headset::Headset(libusb_device_handle* handle,
                  const std::string& dump_filename,
                  const std::string& play_filename) :
   m_handle(handle),
+  m_read_thread(),
+  m_write_thread(),
   m_quit_read_thread(false),
   m_quit_write_thread(false)
 {
