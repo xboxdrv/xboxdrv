@@ -25,7 +25,7 @@
 
 #include "evdev_absmap.hpp"
 #include "modifier.hpp"
-#include "uinput_cfg.hpp"
+#include "uinput_options.hpp"
 #include "xpad_device.hpp"
 
 #include "modifier/axismap_modifier.hpp"
@@ -36,7 +36,7 @@ class ControllerOptions
 public:
   ControllerOptions();
 
-  uInputCfg uinput;
+  UInputOptions uinput;
   std::vector<ModifierPtr> modifier;
 
   // everything below gets later converted into modifier

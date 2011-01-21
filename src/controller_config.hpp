@@ -22,7 +22,7 @@
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
-#include "uinput_cfg.hpp"
+#include "uinput_options.hpp"
 #include "modifier.hpp"
 
 class ControllerConfig;
@@ -32,12 +32,12 @@ class ControllerConfig
 {
 private:
   std::vector<ModifierPtr> m_modifier;
-  uInputCfg m_uinput;
+  UInputOptions m_uinput;
 
 public:
   ControllerConfig();
 
-  uInputCfg& get_uinput();
+  UInputOptions& get_uinput();
   std::vector<ModifierPtr>& get_modifier();
 
 private:

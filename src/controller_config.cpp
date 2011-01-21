@@ -24,7 +24,7 @@ ControllerConfig::ControllerConfig() :
 {
 }
 
-uInputCfg&
+UInputOptions&
 ControllerConfig::get_uinput()
 {
   return m_uinput;

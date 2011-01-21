@@ -27,7 +27,7 @@
 #include "axis_map.hpp"
 #include "xboxmsg.hpp"
 
-class uInputCfg
+class UInputOptions
 {
 public:
   std::string device_name;
@@ -48,7 +48,7 @@ private:
 public:
   /** \addtogroup creation Creation Functions
    ** @{*/
-  uInputCfg();
+  UInputOptions();
 
   void add_input_mapping();
   void next_input_mapping();

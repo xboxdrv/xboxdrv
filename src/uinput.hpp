@@ -29,7 +29,7 @@
 #include "button_event.hpp"
 #include "evdev_helper.hpp"
 #include "linux_uinput.hpp"
-#include "uinput_cfg.hpp"
+#include "uinput_options.hpp"
 #include "xboxdrv.hpp"
 #include "xpad_device.hpp"
 
@@ -45,7 +45,7 @@ private:
 
   typedef std::map<int, boost::shared_ptr<LinuxUinput> > uInputDevs;
   uInputDevs uinput_devs;
-  uInputCfg cfg;
+  UInputOptions cfg;
 
   int  axis_state[XBOX_AXIS_MAX];
   bool button_state[XBOX_BTN_MAX];
@@ -66,7 +66,7 @@ public:
   static bool is_keyboard_button(int ev_code);
 
 public:
-  uInput(int vendor_id, int product_id, uInputCfg cfg = uInputCfg());
+  uInput(int vendor_id, int product_id, UInputOptions cfg = UInputOptions());
   ~uInput();
 
   void send(XboxGenericMsg& msg); 

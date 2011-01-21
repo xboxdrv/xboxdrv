@@ -45,7 +45,7 @@ uInput::is_keyboard_button(int ev_code)
   return (ev_code < 256);
 }
 
-uInput::uInput(int vendor_id, int product_id, uInputCfg config_) :
+uInput::uInput(int vendor_id, int product_id, UInputOptions config_) :
   m_vendor_id(vendor_id),
   m_product_id(product_id),
   uinput_devs(),

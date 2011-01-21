@@ -20,9 +20,9 @@
 #include <iostream>
 #include <linux/input.h>
 
-#include "uinput_cfg.hpp"
+#include "uinput_options.hpp"
 
-uInputCfg::uInputCfg() :
+UInputOptions::UInputOptions() :
   device_name("Xbox Gamepad (userspace driver)"),
   force_feedback(false),
   config_toggle_button(XBOX_BTN_UNKNOWN),
@@ -34,31 +34,31 @@ uInputCfg::uInputCfg() :
 }
 
 ButtonMap&
-uInputCfg::get_btn_map()
+UInputOptions::get_btn_map()
 {
   return map[current_input_map].btn_map;
 }
 
 AxisMap& 
-uInputCfg::get_axis_map()
+UInputOptions::get_axis_map()
 {
   return map[current_input_map].axis_map;
 }
 
 ButtonMap&
-uInputCfg::get_btn_map(int n)
+UInputOptions::get_btn_map(int n)
 {
   return map[n].btn_map;
 }
 
 AxisMap&
-uInputCfg::get_axis_map(int n)
+UInputOptions::get_axis_map(int n)
 {
   return map[n].axis_map;
 }
 
 void
-uInputCfg::add_input_mapping()
+UInputOptions::add_input_mapping()
 {
   map.push_back(InputMapping());
   current_input_map = map.size()-1;
@@ -66,16 +66,16 @@ uInputCfg::add_input_mapping()
 }
 
 void
-uInputCfg::next_input_mapping()
+UInputOptions::next_input_mapping()
 {
   current_input_map += 1;
   if (current_input_map >= static_cast<int>(map.size()))
     current_input_map = 0;
-  std::cout << "uInputCfg::next_input_mapping(): " << current_input_map << std::endl;
+  std::cout << "UInputOptions::next_input_mapping(): " << current_input_map << std::endl;
 }
 
 void
-uInputCfg::mimic_xpad()
+UInputOptions::mimic_xpad()
 {
   device_name = "Microsoft X-Box 360 pad";
 
@@ -115,7 +115,7 @@ uInputCfg::mimic_xpad()
 }
 
 void
-uInputCfg::mouse()
+UInputOptions::mouse()
 {
   get_axis_map().clear();
   get_btn_map().clear();
@@ -147,7 +147,7 @@ uInputCfg::mouse()
 }
 
 void
-uInputCfg::set_defaults()
+UInputOptions::set_defaults()
 {
   get_btn_map().clear();
   get_axis_map().clear();
@@ -194,7 +194,7 @@ uInputCfg::set_defaults()
 }
 
 void
-uInputCfg::trigger_as_button()
+UInputOptions::trigger_as_button()
 {
   get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
   get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::invalid());
@@ -203,7 +203,7 @@ uInputCfg::trigger_as_button()
 }
 
 void
-uInputCfg::trigger_as_zaxis()
+UInputOptions::trigger_as_zaxis()
 {
   get_axis_map().bind(XBOX_AXIS_TRIGGER, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0));
   get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
@@ -211,7 +211,7 @@ uInputCfg::trigger_as_zaxis()
 }
 
 void
-uInputCfg::dpad_as_button()
+UInputOptions::dpad_as_button()
 {
   get_btn_map().bind(XBOX_DPAD_UP,    ButtonEvent::create_key(BTN_BASE));
   get_btn_map().bind(XBOX_DPAD_DOWN,  ButtonEvent::create_key(BTN_BASE2));
@@ -223,7 +223,7 @@ uInputCfg::dpad_as_button()
 }
 
 void
-uInputCfg::dpad_only()
+UInputOptions::dpad_only()
 {
   get_axis_map().bind(XBOX_AXIS_X1, AxisEvent::invalid());
   get_axis_map().bind(XBOX_AXIS_Y1, AxisEvent::invalid());
@@ -235,7 +235,7 @@ uInputCfg::dpad_only()
 }
 
 void
-uInputCfg::set_ui_axismap(const std::string& name, const std::string& value)
+UInputOptions::set_ui_axismap(const std::string& name, const std::string& value)
 {
   AxisEventPtr event;
 
@@ -298,7 +298,7 @@ uInputCfg::set_ui_axismap(const std::string& name, const std::string& value)
 }
 
 void
-uInputCfg::set_ui_buttonmap(const std::string& name, const std::string& value)
+UInputOptions::set_ui_buttonmap(const std::string& name, const std::string& value)
 {
   ButtonEventPtr event;
 
@@ -355,7 +355,7 @@ uInputCfg::set_ui_buttonmap(const std::string& name, const std::string& value)
 }
 
 void
-uInputCfg::guitar()
+UInputOptions::guitar()
 {
   get_btn_map().clear();
   get_axis_map().clear();

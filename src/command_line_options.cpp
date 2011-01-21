@@ -315,14 +315,14 @@ CommandLineParser::init_ini(Options* opts)
 
     // uinput stuff
     ("device-name", &opts->controller.back().uinput.device_name)
-    ("mouse", boost::bind(&uInputCfg::mouse, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
-    ("guitar", boost::bind(&uInputCfg::guitar, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
-    ("trigger-as-button", boost::bind(&uInputCfg::trigger_as_button, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
-    ("trigger-as-zaxis", boost::bind(&uInputCfg::trigger_as_zaxis, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
-    ("dpad-as-button", boost::bind(&uInputCfg::dpad_as_button, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
-    ("dpad-only", boost::bind(&uInputCfg::dpad_only, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
+    ("mouse", boost::bind(&UInputOptions::mouse, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
+    ("guitar", boost::bind(&UInputOptions::guitar, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
+    ("trigger-as-button", boost::bind(&UInputOptions::trigger_as_button, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
+    ("trigger-as-zaxis", boost::bind(&UInputOptions::trigger_as_zaxis, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
+    ("dpad-as-button", boost::bind(&UInputOptions::dpad_as_button, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
+    ("dpad-only", boost::bind(&UInputOptions::dpad_only, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
     ("force-feedback", &opts->controller.back().uinput.force_feedback)
-    ("mimic-xpad", boost::bind(&uInputCfg::mimic_xpad, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
+    ("mimic-xpad", boost::bind(&UInputOptions::mimic_xpad, boost::ref(opts->controller.back().uinput)), boost::function<void ()>())
 
     ("chatpad",         &opts->chatpad)
     ("chatpad-no-init", &opts->chatpad_no_init)
@@ -343,9 +343,9 @@ CommandLineParser::init_ini(Options* opts)
 
   m_ini.section("modifier", boost::bind(&CommandLineParser::set_modifier, this, _1, _2));
 
-  m_ini.section("ui-buttonmap", boost::bind(&uInputCfg::set_ui_buttonmap, 
+  m_ini.section("ui-buttonmap", boost::bind(&UInputOptions::set_ui_buttonmap, 
                                             boost::ref(opts->controller.back().uinput), _1, _2));
-  m_ini.section("ui-axismap",   boost::bind(&uInputCfg::set_ui_axismap, 
+  m_ini.section("ui-axismap",   boost::bind(&UInputOptions::set_ui_axismap, 
                                             boost::ref(opts->controller.back().uinput), _1, _2));
 
   m_ini.section("buttonmap", boost::bind(&CommandLineParser::set_buttonmap, this, _1, _2));
@@ -582,12 +582,12 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_UI_AXISMAP:
-        process_name_value_string(opt.argument, boost::bind(&uInputCfg::set_ui_axismap, 
+        process_name_value_string(opt.argument, boost::bind(&UInputOptions::set_ui_axismap, 
                                                             boost::ref(opts.controller.back().uinput), _1, _2));
         break;
 
       case OPTION_UI_BUTTONMAP:
-        process_name_value_string(opt.argument, boost::bind(&uInputCfg::set_ui_buttonmap, 
+        process_name_value_string(opt.argument, boost::bind(&UInputOptions::set_ui_buttonmap, 
                                                             boost::ref(opts.controller.back().uinput), _1, _2));
         break;
 
