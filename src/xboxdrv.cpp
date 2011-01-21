@@ -297,15 +297,15 @@ Xboxdrv::find_controller(libusb_device** dev,
   {
     if (opts.gamepad_type == GAMEPAD_UNKNOWN)
     {
-      std::cout << "Error: --device-by-path BUS:DEV option must be used in combination with --type TYPE option" << std::endl;
-      exit(EXIT_FAILURE);
+      throw std::runtime_error("--device-by-path BUS:DEV option must be used in combination with --type TYPE option");
     }
     else
     {
       if (!find_controller_by_path(opts.busid, opts.devid, dev))
       {
-        std::cout << "Error: couldn't find device " << opts.busid << ":" << opts.devid << std::endl;
-        exit(EXIT_FAILURE);
+        std::ostringstream out;
+        out << "couldn't find device " << opts.busid << ":" << opts.devid;
+        throw std::runtime_error(out.str());
       }
       else
       {
@@ -324,17 +324,16 @@ Xboxdrv::find_controller(libusb_device** dev,
   {
     if (opts.gamepad_type == GAMEPAD_UNKNOWN)
     {
-      std::cout << "Error: --device-by-id VENDOR:PRODUCT option must be used in combination with --type TYPE option" << std::endl;
-      exit(EXIT_FAILURE);
+      throw std::runtime_error("--device-by-id VENDOR:PRODUCT option must be used in combination with --type TYPE option");
     }
     else 
     {
       if (!find_controller_by_id(opts.controller_id, opts.vendor_id, opts.product_id, dev))
       {
-        std::cout << "Error: couldn't find device with " 
-                  << (boost::format("%04x:%04x") % opts.vendor_id % opts.product_id) 
-                  << std::endl;
-        exit(EXIT_FAILURE);
+        std::ostringstream out;
+        out << "Error: couldn't find device with " 
+            << (boost::format("%04x:%04x") % opts.vendor_id % opts.product_id);
+        throw std::runtime_error(out.str());
       }
       else
       {
@@ -349,8 +348,7 @@ Xboxdrv::find_controller(libusb_device** dev,
   {
     if (!find_xbox360_controller(opts.controller_id, dev, &dev_type))
     {
-      std::cout << "No Xbox or Xbox360 controller found" << std::endl;
-      exit(EXIT_FAILURE);
+      throw std::runtime_error("No Xbox or Xbox360 controller found");
     }
   }
 }
@@ -606,26 +604,38 @@ Xboxdrv::run_daemon(const Options& opts)
 
     if (pid < 0) 
     { // fork error
-      perror("fork");
-      exit(EXIT_FAILURE); 
+      std::ostringstream out;
+      out << "Xboxdrv::run_daemon(): failed to fork(): " << strerror(errno);
+      throw std::runtime_error(out.str());
     }
     else if (pid > 0) 
     { // parent, just exit
-      exit(EXIT_SUCCESS); 
+      _exit(EXIT_SUCCESS);
     }
     else
     { // child, run daemon
       pid_t sid = setsid();
 
-      std::cout << "Sid: " << sid << std::endl;
-
-      if (chdir("/") != 0)
+      if (sid == static_cast<pid_t>(-1))
       {
-        throw std::runtime_error(strerror(errno));
+        std::ostringstream out;
+        out << "Xboxdrv::run_daemon(): failed to setsid(): " << strerror(errno);
+        throw std::runtime_error(out.str());
       }
-
-      XboxdrvDaemon daemon;
-      daemon.run(opts);
+      else
+      {
+        if (chdir("/") != 0)
+        {
+          std::ostringstream out;
+          out << "Xboxdrv::run_daemon(): failed to chdir(\"/\"): " << strerror(errno);
+          throw std::runtime_error(out.str());
+        }
+        else
+        {
+          XboxdrvDaemon daemon;
+          daemon.run(opts);
+        }
+      }
     }
   }
 
