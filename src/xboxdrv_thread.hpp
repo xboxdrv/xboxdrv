@@ -34,7 +34,7 @@ class XboxdrvThread // FIXME: find a better name, XboxdrvControllerLoop?!
 {
 private:
   std::auto_ptr<boost::thread> m_thread;
-  MessageProcessor& m_processor;
+  std::auto_ptr<MessageProcessor> m_processor;
   std::auto_ptr<XboxGenericController> m_controller;
   bool m_loop;
 
@@ -46,7 +46,7 @@ private:
   int m_timeout;
 
 public:
-  XboxdrvThread(MessageProcessor& processor,
+  XboxdrvThread(std::auto_ptr<MessageProcessor> processor,
                 std::auto_ptr<XboxGenericController> controller,
                 const Options& opts);
   ~XboxdrvThread();

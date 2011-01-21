@@ -337,14 +337,11 @@ XboxdrvDaemon::launch_xboxdrv(uInput* uinput, const XPadDevice& dev_type, const 
   }
   else
   {
-    // FIXME: we are memory leaking the controller in the thread
     std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
-   
-    // FIXME: keep these collected somewhere
-    DefaultMessageProcessor message_proc(*uinput, opts);
-    std::auto_ptr<XboxdrvThread> loop(new XboxdrvThread(message_proc, controller, opts));
-    loop->start_thread(opts);
-    m_threads.push_back(loop.release());
+    std::auto_ptr<MessageProcessor> message_proc(new DefaultMessageProcessor(*uinput, opts));
+    std::auto_ptr<XboxdrvThread> thread(new XboxdrvThread(message_proc, controller, opts));
+    thread->start_thread(opts);
+    m_threads.push_back(thread.release());
   }
 }
 

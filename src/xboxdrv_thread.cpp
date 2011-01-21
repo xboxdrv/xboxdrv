@@ -41,7 +41,7 @@ extern bool global_exit_xboxdrv;
 // FIXME: isolate problametic code to a separate file, instead of pragma
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
-XboxdrvThread::XboxdrvThread(MessageProcessor& processor,
+XboxdrvThread::XboxdrvThread(std::auto_ptr<MessageProcessor> processor,
                              std::auto_ptr<XboxGenericController> controller,
                              const Options& opts) :
   m_thread(),
@@ -182,7 +182,7 @@ XboxdrvThread::controller_loop(const Options& opts)
         std::cout << msg << std::endl;
       }
 
-      m_processor.send(msg, msec_delta);
+      m_processor->send(msg, msec_delta);
 
 #ifdef FIXME                 
       if (opts.rumble)
