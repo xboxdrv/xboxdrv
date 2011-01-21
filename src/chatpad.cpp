@@ -352,10 +352,12 @@ Chatpad::send_init()
       ret = libusb_control_transfer(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, this should return the NEW mode)
       if (m_debug) std::cout << "[chatpad] ret: " << usb_strerror(ret) << " " << static_cast<int>(buf[0]) << " " << static_cast<int>(buf[1]) << std::endl;
 
-      if (!(buf[1] & 2))
+      /* FIXME: not proper way to check if the chatpad is alive
+      if (!(buf[1] & 2)) // FIXME: check for {9,0} for bcdDevice==0x114
       {
         throw std::runtime_error("chatpad init failure");
       }
+      */
       // chatpad is enabled, so start with keep alive
     }
   }
