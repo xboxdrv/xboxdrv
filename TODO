@@ -94,17 +94,13 @@ List Output
   -> doesn't really work, as some gamepads just emulate other message
      types, need to restructure the whole messaging infrastructure
 
-* do modifier/filter dump when --verbose is given
-
-* fix inconsistent case in output of --list-all
+* do modifier/filter dump when --verbose is given, make verbose
+  overall more useful
 
 * turn EnumBox into singleton
 
 * Keysym2Keycode is currently always constructed at startup, even when
   not used, construct it on demand
-
-* add --list-keys --list-x11-keys --list-abs --list-rel --list-button --list-axis etc.
-  - add pretty printer, to make output look nice
 
 * document significant patches in AUTHORS
 
@@ -121,6 +117,15 @@ List Output
 
 Stuff to do before 0.7.x release:
 =================================
+
+* allow named sections in INI files:
+
+  [controller1/modifier]
+  [controller1/config1/modifier]
+  [controller2/modifier]
+  [controller2/modifier]
+  [controller3/config1/modifier]
+  [controller3/config2/modifier]
 
 * get rid of set_button()/get_button(), turn the message objects into full classes
 

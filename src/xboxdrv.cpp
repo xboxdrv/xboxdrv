@@ -19,6 +19,7 @@
 #include "xboxdrv.hpp"
 
 #include <boost/format.hpp>
+#include <boost/algorithm/string/join.hpp>
 #include <signal.h>
 #include <stdio.h>
 
@@ -627,75 +628,64 @@ Xboxdrv::run_list_enums(uint32_t enums)
 {
   const int terminal_width = get_terminal_width();
 
+  WordWrap wrap(terminal_width);
+
   if (enums & Options::LIST_ABS)
   {
-    WordWrap wrap(terminal_width, "  ", ", ");
-
-    std::cout << "EV_ABS:\n  ";
-    for(EvDevRelEnum::const_iterator i = evdev_abs_names.begin();
-        i != evdev_abs_names.end(); ++i)
-    {
-      wrap.add_item(i->second);
-    }
-    std::cout << std::endl << std::endl;
+    wrap.println("EV_ABS:");
+    wrap.para("  ", boost::algorithm::join(evdev_abs_names.get_names(), ", "));
+    wrap.newline();
   }
   
   if (enums & Options::LIST_REL)
   {
-    WordWrap wrap(terminal_width, "  ", ", ");
-    std::cout << "EV_REL:\n  ";
-    for(EvDevRelEnum::const_iterator i = evdev_rel_names.begin();
-        i != evdev_rel_names.end(); ++i)
-    {
-      wrap.add_item(i->second);
-    }
-    std::cout << std::endl << std::endl;
+    wrap.println("EV_REL:");
+    wrap.para("  ", boost::algorithm::join(evdev_rel_names.get_names(), ", "));
+    wrap.newline();
   }
   
   if (enums & Options::LIST_KEY)
   {
-    WordWrap wrap(terminal_width, "  ", ", ");
-    std::cout << "EV_KEY:\n  ";
-    for(EvDevRelEnum::const_iterator i = evdev_key_names.begin();
-        i != evdev_key_names.end(); ++i)
-    {
-      wrap.add_item(i->second);
-    }
-    std::cout << std::endl << std::endl;
+    wrap.println("EV_KEY:");
+    wrap.para("  ", boost::algorithm::join(evdev_key_names.get_names(), ", "));
+    wrap.newline();
   }
   
   if (enums & Options::LIST_X11KEYSYM)
   {
-    WordWrap wrap(terminal_width, "  ", ", ");
-    std::cout << "X11Keysym:\n  ";
+    std::vector<std::string> lst;  
     for(X11KeysymEnum::const_iterator i = x11keysym_names.begin();
         i != x11keysym_names.end(); ++i)
     {
-      wrap.add_item(i->second);
+      lst.push_back(i->second);
     }
-    std::cout << std::endl << std::endl;
+    wrap.println("X11Keysym:");
+    wrap.para("  ", boost::algorithm::join(lst, ", "));
+    wrap.newline();
   }
   
   if (enums & Options::LIST_AXIS)
   {
-    WordWrap wrap(terminal_width, "  ", ", ");
-    std::cout << "XboxAxis:\n  ";
+    std::vector<std::string> lst;
     for(int i = 1; i < XBOX_AXIS_MAX; ++i)
     {
-      wrap.add_item(axis2string(static_cast<XboxAxis>(i)));
+      lst.push_back(axis2string(static_cast<XboxAxis>(i)));
     }
-    std::cout << std::endl << std::endl;
+    wrap.println("XboxAxis:");
+    wrap.para("  ", boost::algorithm::join(lst, ", "));
+    wrap.newline();
   }
   
   if (enums & Options::LIST_BUTTON)
   {
-    WordWrap wrap(terminal_width, "  ", ", ");
-    std::cout << "XboxButton:\n  ";
+    std::vector<std::string> lst;
     for(int i = 1; i < XBOX_BTN_MAX; ++i)
     {
-      wrap.add_item(btn2string(static_cast<XboxButton>(i)));
+      lst.push_back(btn2string(static_cast<XboxButton>(i)));
     }
-    std::cout << std::endl << std::endl;
+    wrap.println("XboxButton:");
+    wrap.para("  ", boost::algorithm::join(lst, ", "));
+    wrap.newline();
   }
 }
 

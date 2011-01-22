@@ -1,4 +1,4 @@
-xboxdrv 0.6.5 - (??/Jan/2011)
+xboxdrv 0.7.0 - (??/Jan/2011)
 =============================
 
 * switched to libusb-1.0
@@ -9,12 +9,25 @@ xboxdrv 0.6.5 - (??/Jan/2011)
 * startup output got cleaned up
 * fixed double Ctrl-c issue
 * added --modifier MODIFIER,...
-* configuration toggle now works with modifiers too
+* configuration toggle button now works with modifiers too
 * renamed --ui-new to --next
 * renamed --ui-toggle to --toggle
 * fixed incorrect endpoint detection for Xbox1 controller
 * native Playstation 3 USB controller support
 * added axis rotation modifier
+* renamed A, B, X, Y axis to BTN_A, BTN_B, BTN_X, BTN_Y to avoid
+  confusion with X1, Y1
+* added --list-all, --list-key, -list-rel, ... to display all
+  available symbolic name
+
+
+xboxdrv 0.6.5 - (22/Jan/2011)
+=============================
+
+* fixed incorrect variable initalisation, leading to button presses
+  getting lost sometimes
+* fixed initialisation issue for Chatpad connected to controllers with
+  bcdDevice 0x0114
 
 
 xboxdrv 0.6.4 - (13/Jan/2011)

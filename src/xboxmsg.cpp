@@ -1312,16 +1312,16 @@ XboxAxis string2axis(const std::string& str_)
   else if (str == "trigger" || str == "z" || str == "rudder")
     return XBOX_AXIS_TRIGGER;
 
-  else if (str == "a")
+  else if (str == "btn_a")
     return XBOX_AXIS_A;
 
-  else if (str == "b")
+  else if (str == "btn_b")
     return XBOX_AXIS_B;
 
-  else if (str == "x")
+  else if (str == "btn_x")
     return XBOX_AXIS_X;
 
-  else if (str == "y")
+  else if (str == "btn_y")
     return XBOX_AXIS_Y;
 
   else if (str == "black")
@@ -1355,12 +1355,12 @@ std::string axis2string(XboxAxis axis)
     case XBOX_AXIS_LT: return "LT";
     case XBOX_AXIS_RT: return "RT";
 
-    case XBOX_AXIS_A:     return "a";
-    case XBOX_AXIS_B:     return "b";
-    case XBOX_AXIS_X:     return "x"; 
-    case XBOX_AXIS_Y:     return "y"; 
-    case XBOX_AXIS_BLACK: return "black";
-    case XBOX_AXIS_WHITE: return "white";
+    case XBOX_AXIS_A:     return "BTN_A";
+    case XBOX_AXIS_B:     return "BTN_B";
+    case XBOX_AXIS_X:     return "BTN_X"; 
+    case XBOX_AXIS_Y:     return "BTN_Y"; 
+    case XBOX_AXIS_BLACK: return "Black";
+    case XBOX_AXIS_WHITE: return "White";
   }
   return "unknown";
 }
