@@ -25,16 +25,13 @@ class WordWrap
 {
 private:
   const int m_terminal_width;
-  const std::string m_prefix;
-  const std::string m_separator;
-
-  int m_column;
-  bool m_first_item;
 
 public:
-  WordWrap(int terminal_width, const std::string& prefix, const std::string& separator);
+  WordWrap(int terminal_width);
 
-  void add_item(const std::string& str);
+  void para(const std::string& prefix, const std::string& str) const;
+  void println(const std::string& str);
+  void newline();
 
 private:
   WordWrap(const WordWrap&);

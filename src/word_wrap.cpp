@@ -18,53 +18,46 @@
 
 #include "word_wrap.hpp"
 
-WordWrap::WordWrap(int terminal_width, 
-                   const std::string& prefix, 
-                   const std::string& separator) :
-  m_terminal_width(terminal_width),
-  m_prefix(prefix),
-  m_separator(separator),
-  m_column(0),
-  m_first_item(true)
+#include <boost/tokenizer.hpp>
+
+WordWrap::WordWrap(int terminal_width) :
+  m_terminal_width(terminal_width)
 {
 }
 
 void
-WordWrap::add_item(const std::string& str)
+WordWrap::println(const std::string& str)
 {
-  // FIXME: very incomplete, should do proper word wrap, joining
-  // should probably be moved to a different class.
+  std::cout << str << std::endl;
+}
 
-  // print separator
-  if (!m_first_item)
-  {
-    std::cout << m_separator;
-  }
-  else
-  {
-    m_first_item = false;
-  }
+void
+WordWrap::newline()
+{
+  std::cout << std::endl;
+}
 
-    std::cout << str;
+void
+WordWrap::para(const std::string& prefix, const std::string& str) const
+{
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(str, boost::char_separator<char>(" ", "", boost::drop_empty_tokens));
 
-  /*
-  if (m_column == 0)
+  int len = prefix.size();
+  std::cout << prefix; 
+  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i)
   {
-    std::cout << m_prefix;
-    m_column += m_prefix.size();
-  }
+    if (len + static_cast<int>(i->size()) + 1 >= m_terminal_width)
+    {
+      std::cout << std::endl;
+      std::cout << prefix;
+      len = prefix.size();
+    }
 
-  if (m_column + static_cast<int>(str.length()) > m_terminal_width)
-  {
-    std::cout << std::endl;
-    m_column = 0;
-    add_item(str);
+    std::cout << *i << " ";
+    len += i->size()+1;
   }
-  else
-  {
-    std::cout << str;
-    m_column += str.size();
-    }*/
+  std::cout << std::endl;
 }
 
 /* EOF */
