@@ -14,6 +14,7 @@ xboxdrv 0.6.5 - (??/Jan/2011)
 * renamed --ui-toggle to --toggle
 * fixed incorrect endpoint detection for Xbox1 controller
 * native Playstation 3 USB controller support
+* added axis rotation modifier
 
 
 xboxdrv 0.6.4 - (13/Jan/2011)

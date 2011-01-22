@@ -22,45 +22,37 @@ add libudev, libusb-1.0 to builddependencies
 
 $ cd ../debian/
 $ git checkout master
-$ git-import-orig -u 0.6.4 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.6.4.tar.bz2 
-$ dch -v "0.6.4-1" "xboxdrv 0.6.4 release"
+$ git-import-orig -u 0.7.0 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.7.0.tar.bz2 
+$ dch -v "0.7.0-1" "xboxdrv 0.7.0 release"
 $ git-buildpackage --git-no-create-orig --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build ../xboxdrv_0.6.4-2.dsc
-$ dput my-ppa ../xboxdrv_0.6.4-2_source.changes
+$ sudo pbuilder --build ../xboxdrv_0.7.0-1.dsc
+$ dput my-ppa ../xboxdrv_0.7.0-1_source.changes
 
 # Ubuntu 10.04 (LTS)
 
 $ cd ../debian/
 $ git checkout master-lts
 $ git merge master
-$ dch -b -v "0.6.4-1~lucid1" --distribution lucid "xboxdrv 0.6.4 backport"
+$ dch -b -v "0.7.0-1~lucid1" --distribution lucid "xboxdrv 0.7.0 backport"
 $ git-buildpackage --git-no-create-orig --git-debian-branch=master-lts --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build ../xboxdrv_0.6.4-2~lucid1.dsc
-$ dput my-ppa ../xboxdrv_0.6.4-2~lucid1_source.changes
+$ sudo pbuilder --build ../xboxdrv_0.7.0-1~lucid1.dsc
+$ dput my-ppa ../xboxdrv_0.7.0-1~lucid1_source.changes
 
 
-Stuff to do before 0.6.4 release:
-=================================
-
-* uninited variables in KeyButtonEvent screw things up 
-
-
 Stuff to do before 0.7.0 release:
 =================================
 
 * Playstation 3 controller support
+  - http://www.pabr.org/sixlinux/sixlinux.en.html
+  - http://www.motioninjoy.com/
 
 * fix the FIXME's
-
-* correct chatpad handling for bcd 0x114 type
 
 * fix event output (have it pre-modifier or post-modifier?)
 
 * fix --no-uinput
 
-* something is broken with start/back buttons
-
-* need to hide/disable the toggle button from the normal view
+* need to hide/disable the toggle button from the UIButtonmap
 
 * move XBOX_BTN_UNKNOWN behind XBOX_BTN_MAX, so iteration can start
   from 0 instead of 1, also fix incorrect iterations all over the
@@ -76,17 +68,13 @@ Daemon Related Stuff
 * handle multiple controllers in a sane manner (requires cloning of
   modifier maps, also auto increment of "auto" device id's)
 
-* get rid of uinput.get_uinput(m_code.device_id)->send(EV_ABS, m_code.code, value) turn into:
-  
-  uinput.send(m_code.device_id, EV_ABS, m_code.code, value);
-
-  or
-
-  uinput.send_abs(m_code.device_id, m_code.code, value);
-
 * add: void Uinput::send(XboxGenericMsg& msg, int controller_slot = 0); 
 
-* need magic to assign controller to a slot
+* need magic to assign controller to a slot:
+ 
+  what:  match product/vendor-id, match device name
+  where: match USB path, match /dev/input/??? path
+  when:  just assign them to the next free slot
 
 * might need magic to give device-ids in a slot fashion: 
   from: 1-ABS_X   (second uinput device)
@@ -100,7 +88,11 @@ Daemon Related Stuff
 List Output
 ===========
 
-* make controller type part of the message, instead of manually carrying around type variable
+* make controller type part of the message, instead of manually
+  carrying around type variable: 
+
+  -> doesn't really work, as some gamepads just emulate other message
+     types, need to restructure the whole messaging infrastructure
 
 * do modifier/filter dump when --verbose is given
 
@@ -113,17 +105,6 @@ List Output
 
 * add --list-keys --list-x11-keys --list-abs --list-rel --list-button --list-axis etc.
   - add pretty printer, to make output look nice
-
-
-* document modifier syntax and provide examples:
-
-  --modifier rotate=X:Y:90,square,round
-
-[modifier]
-rotate=X1:Y1:90
-four-way-restrictor=X1:Y1
-square=X1:Y1
-round=X1:Y1
 
 * document significant patches in AUTHORS
 
