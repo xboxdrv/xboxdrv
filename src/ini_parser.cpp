@@ -174,7 +174,7 @@ std::string
 INIParser::get_ident()
 {
   std::ostringstream str;
-  while(peek() != '=' && peek() != ' ' && peek() != '\t')
+  while(peek() != '=' && peek() != ' ' && peek() != '\t' && peek() != '\n')
   {
     str << static_cast<char>(peek());
     next();
