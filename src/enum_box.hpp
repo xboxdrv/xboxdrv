@@ -23,6 +23,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 template<class Enum>
 class EnumBox
@@ -50,7 +51,7 @@ protected:
 
 public:
   typedef typename std::map<Enum, std::string>::iterator iterator;
-  typedef typename std::map<Enum, std::string>::iterator const_iterator;
+  typedef typename std::map<Enum, std::string>::const_iterator const_iterator;
   
   const_iterator begin() const { return m_enum2string.begin(); }
   const_iterator end()   const { return m_enum2string.end();   }
@@ -85,6 +86,26 @@ public:
     {
       return i->second;
     }
+  }
+
+  typename std::vector<Enum> get_values() const
+  {
+    std::vector<Enum> lst;
+    for(const_iterator i = begin(); i != end(); ++i)
+    {
+      lst.push_back(i->first);
+    }
+    return lst;
+  }
+
+  std::vector<std::string> get_names() const
+  {
+    typename std::vector<std::string> lst;
+    for(const_iterator i = begin(); i != end(); ++i)
+    {
+      lst.push_back(i->second);
+    }
+    return lst;
   }
 };
 
