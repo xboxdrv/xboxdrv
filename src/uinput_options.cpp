@@ -16,11 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/tokenizer.hpp>
-#include <iostream>
-#include <linux/input.h>
-
 #include "uinput_options.hpp"
+
+#include <boost/tokenizer.hpp>
+#include <linux/input.h>
 
 UInputOptions::UInputOptions() :
   device_name("Xbox Gamepad (userspace driver)"),

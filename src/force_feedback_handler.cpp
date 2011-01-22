@@ -16,11 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
-#include <iostream>
-#include <assert.h>
-#include "options.hpp"
 #include "force_feedback_handler.hpp"
+
+#include <iostream>
+#include "options.hpp"
 
 std::ostream& operator<<(std::ostream& out, const struct ff_envelope& envelope)
 {

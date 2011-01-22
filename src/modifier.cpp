@@ -19,10 +19,7 @@
 #include "modifier.hpp"
 
 #include <boost/tokenizer.hpp>
-#include <vector>
 
-#include "modifier/axismap_modifier.hpp"
-#include "modifier/buttonmap_modifier.hpp"
 #include "modifier/dpad_rotation_modifier.hpp"
 #include "modifier/four_way_restrictor_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"

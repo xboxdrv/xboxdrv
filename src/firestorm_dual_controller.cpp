@@ -16,15 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "firestorm_dual_controller.hpp"
+
 #include <iostream>
-#include <errno.h>
-#include <stdexcept>
 #include <sstream>
-#include <string.h>
 #include <boost/format.hpp>
 
 #include "helper.hpp"
-#include "firestorm_dual_controller.hpp"
 #include "usb_helper.hpp"
 
 // 044f:b312

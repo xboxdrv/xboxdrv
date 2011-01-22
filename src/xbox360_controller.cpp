@@ -16,22 +16,15 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-#include <stdexcept>
-#include <sstream>
+#include "xbox360_controller.hpp"
+
 #include <iostream>
-#include <fstream>
-#include <boost/format.hpp>
 
 #include "chatpad.hpp"
 #include "headset.hpp"
 #include "helper.hpp"
 #include "options.hpp"
 #include "usb_helper.hpp"
-#include "xbox360_controller.hpp"
-#include "xboxmsg.hpp"
 
 Xbox360Controller::Xbox360Controller(libusb_device* dev_, 
                                      bool chatpad, bool chatpad_no_init, bool chatpad_debug, 

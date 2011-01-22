@@ -20,6 +20,9 @@
 #define HEADER_XBOX360_CONTROLLER_HPP
 
 #include <libusb.h>
+#include <memory>
+#include <string>
+
 #include "xbox_generic_controller.hpp"
 
 class Chatpad;

@@ -18,11 +18,9 @@
 
 #include "uinput_config.hpp"
 
-#include <linux/input.h>
 #include <iostream>
 
 #include "uinput.hpp"
-#include "uinput_options.hpp"
 
 UInputConfig::UInputConfig(uInput& uinput, const UInputOptions& opts) :
   m_uinput(uinput),

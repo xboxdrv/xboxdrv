@@ -18,25 +18,15 @@
 
 #include "xboxdrv_daemon.hpp"
 
-#include <algorithm>
-#include <assert.h>
-#include <boost/bind.hpp>
 #include <boost/format.hpp>
-#include <boost/lexical_cast.hpp>
 #include <fstream>
-#include <iostream>
-#include <stdexcept>
-#include <stdio.h>
-#include <string.h>
 
 #include "default_message_processor.hpp"
 #include "log.hpp"
-#include "options.hpp"
 #include "uinput.hpp"
 #include "usb_helper.hpp"
 #include "xbox_controller_factory.hpp"
 #include "xboxdrv_thread.hpp"
-#include "xpad_device.hpp"
 
 extern bool global_exit_xboxdrv;
 

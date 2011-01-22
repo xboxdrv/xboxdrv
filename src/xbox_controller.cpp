@@ -16,16 +16,15 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <errno.h>
+#include "xbox_controller.hpp"
+
 #include <iostream>
-#include <libusb.h>
 #include <sstream>
 #include <stdexcept>
 #include <string.h>
 
 #include "usb_helper.hpp"
 #include "xboxmsg.hpp"
-#include "xbox_controller.hpp"
 
 XboxController::XboxController(libusb_device* dev_, bool try_detach) :
   dev(dev_),

@@ -18,21 +18,11 @@
 
 #include "xboxdrv_thread.hpp"
 
-#include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <errno.h>
-#include <iostream>
-#include <string.h>
-#include <sys/types.h>
 #include <sys/wait.h>
-#include <vector>
-#include <assert.h>
 
-#include "controller_config.hpp"
 #include "helper.hpp"
 #include "log.hpp"
-#include "modifier.hpp"
 #include "options.hpp"
-#include "uinput.hpp"
 #include "xbox_generic_controller.hpp"
 #include "message_processor.hpp"
 

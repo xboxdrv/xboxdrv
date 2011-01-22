@@ -19,12 +19,8 @@
 #include "evdev_controller.hpp"
 
 #include <boost/format.hpp>
-#include <linux/input.h>
-#include <stdexcept>
 #include <string.h>
 #include <iostream>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
 

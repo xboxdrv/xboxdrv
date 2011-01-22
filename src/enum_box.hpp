@@ -20,8 +20,9 @@
 #define HEADER_XBOXDRV_ENUM_BOX_HPP
 
 #include <map>
-#include <string>
 #include <sstream>
+#include <stdexcept>
+#include <string>
 
 template<class Enum>
 class EnumBox

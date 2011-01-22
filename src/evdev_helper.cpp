@@ -16,18 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <X11/Xlib.h>
+#include "evdev_helper.hpp"
+
 #include <linux/input.h>
-#include <boost/lexical_cast.hpp>
-#include <iostream>
-#include <sstream>
 #include <stdexcept>
-#include <map>
-#include <ctype.h>
 
 #include "log.hpp"
-#include "enum_box.hpp"
-#include "evdev_helper.hpp"
 
 EvDevRelEnum evdev_rel_names;
 EvDevKeyEnum evdev_key_names;
@@ -37,20 +31,20 @@ X11KeysymEnum x11keysym_names;
 EvDevRelEnum::EvDevRelEnum() :
   EnumBox<int>("EV_REL")
 {
-#include "rel_list.x"
+#  include "rel_list.x"
 }
 
 EvDevAbsEnum::EvDevAbsEnum() :
     EnumBox<int>("EV_ABS")
 {
-#include "abs_list.x"
+#  include "abs_list.x"
 }
 
 
 EvDevKeyEnum::EvDevKeyEnum() :
   EnumBox<int>("EV_KEY")
 {
-#include "key_list.x"
+#  include "key_list.x"
 }
 
 X11KeysymEnum::X11KeysymEnum() :

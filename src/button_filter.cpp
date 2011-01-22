@@ -19,7 +19,6 @@
 #include "button_filter.hpp"
 
 #include <iostream>
-#include <sstream>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 

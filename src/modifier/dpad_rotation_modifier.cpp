@@ -20,8 +20,6 @@
 
 #include <stdexcept>
 #include <boost/lexical_cast.hpp>
-
-#include "xboxmsg.hpp"
 
 DpadRotationModifier*
 DpadRotationModifier::from_string(const std::vector<std::string>& args)

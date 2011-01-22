@@ -18,28 +18,14 @@
 
 #include "command_line_options.hpp"
 
-#include <stdio.h>
-#include <iostream>
 #include <fstream>
-#include <stdexcept>
 #include <boost/bind.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/tokenizer.hpp>
-#include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
 
-#include "arg_parser.hpp"
-#include "button_filter.hpp"
 #include "helper.hpp"
 #include "ini_parser.hpp"
 #include "ini_schema_builder.hpp"
-#include "log.hpp"
 #include "options.hpp"
-#include "uinput_deviceid.hpp"
-
-#include "modifier/square_axis_modifier.hpp"
-#include "modifier/four_way_restrictor_modifier.hpp"
-#include "modifier/dpad_rotation_modifier.hpp"
 
 #define RAISE_EXCEPTION(x) do {                         \
     std::ostringstream kiJk8f08d4oMX;                   \

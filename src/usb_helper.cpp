@@ -19,7 +19,6 @@
 #include "usb_helper.hpp"
 
 #include <libusb.h>
-#include <errno.h>
 
 int usb_claim_n_detach_interface(libusb_device_handle* handle, int interface, bool try_detach)
 {

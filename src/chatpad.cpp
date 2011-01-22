@@ -20,8 +20,6 @@
 
 #include <iostream>
 #include <boost/format.hpp>
-#include <libusb.h>
-#include <string.h>
 
 #include "linux_uinput.hpp"
 #include "usb_helper.hpp"

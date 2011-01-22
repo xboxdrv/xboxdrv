@@ -16,15 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
-#include <errno.h>
-#include <stdexcept>
+#include "saitek_p2500_controller.hpp"
+
 #include <sstream>
-#include <string.h>
-#include <boost/format.hpp>
 
 #include "helper.hpp"
-#include "saitek_p2500_controller.hpp"
 #include "usb_helper.hpp"
 
 struct SaitekP2500Msg

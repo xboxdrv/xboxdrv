@@ -16,22 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <algorithm>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <stdexcept>
-#include <iostream>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <linux/input.h>
-#include <linux/uinput.h>
-
-#include "xboxmsg.hpp"
 #include "uinput.hpp"
-#include "uinput_deviceid.hpp"
+
+#include <iostream>
 
 bool
 uInput::is_mouse_button(int ev_code)

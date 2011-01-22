@@ -16,16 +16,14 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "helper.hpp"
+
 #include <iostream>
 #include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <sys/time.h>
-#include <stdlib.h>
 #include <sys/ioctl.h>
-#include <stdio.h>
-
-#include "helper.hpp"
 
 void print_raw_data(std::ostream& out, uint8_t* data, int len)
 {

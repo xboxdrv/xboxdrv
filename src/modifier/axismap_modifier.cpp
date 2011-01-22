@@ -19,7 +19,6 @@
 #include "axismap_modifier.hpp"
 
 #include <boost/tokenizer.hpp>
-#include <memory>
 #include <sstream>
 
 /** converts the arbitary range to [-1,1] */

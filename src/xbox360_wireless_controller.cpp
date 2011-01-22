@@ -16,18 +16,14 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <libusb.h>
-#include <string.h>
-#include <errno.h>
-#include <assert.h>
+#include "xbox360_wireless_controller.hpp"
+
 #include <sstream>
 #include <iostream>
 #include <boost/format.hpp>
-#include <stdexcept>
 
 #include "helper.hpp"
 #include "usb_helper.hpp"
-#include "xbox360_wireless_controller.hpp"
 #include "xboxmsg.hpp"
 
 Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev_, int controller_id, 

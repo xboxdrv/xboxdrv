@@ -16,10 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <linux/input.h>
+#include "uinput_deviceid.hpp"
 
 #include "uinput.hpp"
-#include "uinput_deviceid.hpp"
 
 UIEvent
 UIEvent::create(int device_id, int type, int code) 

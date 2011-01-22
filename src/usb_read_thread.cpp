@@ -16,16 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <assert.h>
-#include <boost/thread/thread.hpp>
-#include <boost/bind.hpp>
+#include "usb_read_thread.hpp"
+
 #include <string.h>
-#include <libusb.h>
-#include <iostream>
 
 #include "log.hpp"
 #include "usb_helper.hpp"
-#include "usb_read_thread.hpp"
 
 USBReadThread::USBReadThread(libusb_device_handle* handle, int endpoint, int len) : 
   m_handle(handle),

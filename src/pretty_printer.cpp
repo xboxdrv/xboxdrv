@@ -16,11 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
-#include <iostream>
-
-#include "helper.hpp"
 #include "pretty_printer.hpp"
+
+#include <iostream>
 
 PrettyPrinter::PrettyPrinter(int terminal_width_)
   : terminal_width(terminal_width_)

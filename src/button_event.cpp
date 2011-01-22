@@ -16,23 +16,14 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <assert.h>
-#include <boost/lexical_cast.hpp>
+#include "button_event.hpp"
+
 #include <boost/tokenizer.hpp>
 #include <errno.h>
 #include <iostream>
-#include <linux/input.h>
-#include <memory>
-#include <stdexcept>
-#include <string.h>
-#include <unistd.h>
 #include <fstream>
 
-#include "helper.hpp"
-#include "button_event.hpp"
-#include "evdev_helper.hpp"
 #include "uinput.hpp"
-#include "uinput_deviceid.hpp"
 
 ButtonEventPtr
 ButtonEvent::invalid()

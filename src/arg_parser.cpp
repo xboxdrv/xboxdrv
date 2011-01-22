@@ -16,16 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iomanip>
-#include <iostream>
-#include <stdexcept>
+#include "arg_parser.hpp"
+
 #include <stdio.h>
-#include <stdint.h>
-#include <boost/format.hpp>
 
 #include "helper.hpp"
 #include "pretty_printer.hpp"
-#include "arg_parser.hpp"
 
 ArgParser::ArgParser() :
   programm(),

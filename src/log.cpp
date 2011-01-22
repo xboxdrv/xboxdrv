@@ -18,8 +18,6 @@
 
 #include "log.hpp"
 
-#include <sstream>
-
 std::string log_pretty_print(const std::string& str)
 {
   // FIXME: very basic, might not work with complex return types

@@ -20,7 +20,6 @@
 
 #include <stdexcept>
 
-#include "options.hpp"
 #include "xbox360_controller.hpp"
 #include "xbox360_wireless_controller.hpp"
 #include "saitek_p2500_controller.hpp"

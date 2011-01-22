@@ -18,40 +18,18 @@
 
 #include "xboxdrv.hpp"
 
-#include <boost/bind.hpp>
 #include <boost/format.hpp>
-#include <boost/function.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/scoped_array.hpp>
-#include <ctype.h>
-#include <errno.h>
-#include <fstream>
-#include <iostream>
-#include <libusb.h>
-#include <math.h>
 #include <signal.h>
 #include <stdio.h>
-#include <string.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <time.h>
-#include <unistd.h>
 
 #include "command_line_options.hpp"
 #include "default_message_processor.hpp"
 #include "evdev_controller.hpp"
-#include "evdev_helper.hpp"
 #include "helper.hpp"
-#include "log.hpp"
-#include "options.hpp"
-#include "uinput.hpp"
 #include "word_wrap.hpp"
 #include "xbox_controller_factory.hpp"
-#include "xbox_generic_controller.hpp"
 #include "xboxdrv_daemon.hpp"
 #include "xboxdrv_thread.hpp"
-#include "xboxmsg.hpp"
 
 // Some ugly global variables, needed for sigint catching
 bool global_exit_xboxdrv = false;

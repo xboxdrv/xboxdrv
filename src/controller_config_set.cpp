@@ -18,8 +18,6 @@
 
 #include "controller_config_set.hpp"
 
-#include <assert.h>
-
 ControllerConfigSet::ControllerConfigSet() :
   m_config(),
   m_current_config(0)

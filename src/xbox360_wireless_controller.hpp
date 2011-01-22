@@ -19,6 +19,9 @@
 #ifndef HEADER_XBOX360_WIRELESS_CONTROLLER_HPP
 #define HEADER_XBOX360_WIRELESS_CONTROLLER_HPP
 
+#include <libusb.h>
+#include <string>
+
 #include "xbox_generic_controller.hpp"
 
 struct XboxGenericMsg;

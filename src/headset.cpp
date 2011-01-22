@@ -21,7 +21,6 @@
 #include <boost/format.hpp>
 #include <fstream>
 #include <iostream>
-#include <string.h>
 
 #include "usb_helper.hpp"
 

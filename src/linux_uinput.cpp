@@ -16,21 +16,15 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "linux_uinput.hpp"
+
 #include <boost/format.hpp>
-#include <assert.h>
 #include <iostream>
 #include <sstream>
-#include <stdexcept>
 #include <errno.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include "evdev_helper.hpp"
+
 #include "force_feedback_handler.hpp"
-#include "linux_uinput.hpp"
 
 LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, uint16_t vendor_, uint16_t product_) :
   m_device_type(device_type),

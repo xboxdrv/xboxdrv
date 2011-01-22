@@ -16,14 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <assert.h>
+#include "xboxmsg.hpp"
+
 #include <boost/format.hpp>
-#include <iostream>
-#include <algorithm>
 
 #include "helper.hpp"
 #include "options.hpp"
-#include "xboxmsg.hpp"
 
 std::string gamepadtype_to_string(const GamepadType& type)
 {

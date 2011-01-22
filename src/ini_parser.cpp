@@ -18,9 +18,6 @@
 
 #include "ini_parser.hpp"
 
-#include <stdlib.h>
-#include <iostream>
-#include <ctype.h>
 #include <stdexcept>
 
 #include "ini_builder.hpp"

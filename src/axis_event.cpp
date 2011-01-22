@@ -16,17 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <linux/input.h>
-#include <assert.h>
+#include "axis_event.hpp"
+
 #include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
-#include <stdlib.h>
 #include <iostream>
 
-#include "axis_event.hpp"
-#include "evdev_helper.hpp"
 #include "uinput.hpp"
-#include "uinput_deviceid.hpp"
 
 AxisEventPtr
 AxisEvent::invalid() 
