@@ -287,22 +287,22 @@ AbsAxisEventHandler::from_string(const std::string& str)
   }
 }
 
-AbsAxisEventHandler::AbsAxisEventHandler()
+AbsAxisEventHandler::AbsAxisEventHandler() :
+  m_code(UIEvent::invalid()),
+  m_min(-32768), // FIXME: this must be properly set
+  m_max(32767),
+  m_fuzz(0),
+  m_flat(0)
 {
-  m_code = UIEvent::invalid();
-  m_min  = -32768; // FIXME: this must be properly set
-  m_max  =  32767;
-  m_fuzz = 0;
-  m_flat = 0;
 }
 
-AbsAxisEventHandler::AbsAxisEventHandler(const UIEvent& code, int min, int max, int fuzz, int flat)
+AbsAxisEventHandler::AbsAxisEventHandler(const UIEvent& code, int min, int max, int fuzz, int flat) :
+  m_code(code),
+  m_min(min),
+  m_max(max),
+  m_fuzz(fuzz),
+  m_flat(flat)
 {
-  m_code  = code;
-  m_min   = min;
-  m_max   = max;
-  m_fuzz  = fuzz;
-  m_flat  = flat;
 }
 
 void
