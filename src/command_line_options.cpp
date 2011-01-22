@@ -298,6 +298,7 @@ CommandLineParser::init_ini(Options* opts)
     ("config", boost::bind(&CommandLineParser::read_config_file, this, opts, _1))
     ("alt-config", boost::bind(&CommandLineParser::read_alt_config_file, this, opts, _1))
     ("timeout", &opts->timeout)
+    ("next", boost::bind(&Options::next_controller, boost::ref(opts)), boost::function<void ()>())
 
     ("deadzone", boost::bind(&CommandLineParser::set_deadzone, this, _1))
     ("deadzone-trigger", boost::bind(&CommandLineParser::set_deadzone_trigger, this, _1))
@@ -565,11 +566,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_NEXT:
-        opts.controller.push_back(ControllerOptions());
-        if (opts.config_toggle_button == XBOX_BTN_UNKNOWN)
-        {
-          opts.config_toggle_button = XBOX_BTN_GUIDE;
-        }
+        opts.next_controller();
         break;
 
       case OPTION_TOGGLE:

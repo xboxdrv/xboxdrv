@@ -138,6 +138,8 @@ public:
   XboxButton config_toggle_button;
 
   Options();
+
+  void next_controller();
 };
 
 extern Options* g_options;

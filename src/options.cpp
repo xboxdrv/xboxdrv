@@ -82,4 +82,14 @@ Options::Options() :
 {
 }
 
+void
+Options::next_controller()
+{
+  controller.push_back(ControllerOptions());
+  if (config_toggle_button == XBOX_BTN_UNKNOWN)
+  {
+    config_toggle_button = XBOX_BTN_GUIDE;
+  }
+}
+
 /* EOF */
