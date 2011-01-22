@@ -219,7 +219,6 @@ RelAxisEventHandler::RelAxisEventHandler(int device_id, int code, int repeat, fl
 void
 RelAxisEventHandler::init(uInput& uinput) const
 {
-  uinput.create_uinput_device(m_code.device_id);
   uinput.add_rel(m_code.device_id, m_code.code);
 }
 
@@ -310,7 +309,6 @@ AbsAxisEventHandler::set_axis_range(int min, int max)
 void
 AbsAxisEventHandler::init(uInput& uinput) const
 {
-  uinput.create_uinput_device(m_code.device_id);
   uinput.add_abs(m_code.device_id, m_code.code, 
                  m_min, m_max, m_fuzz, m_flat);
 }
@@ -323,7 +321,7 @@ AbsAxisEventHandler:: send(uInput& uinput, int value)
     value = (*i)->filter(old_value, value);
     }*/
 
-  uinput.get_uinput(m_code.device_id)->send(EV_ABS, m_code.code, value);
+  uinput.send_abs(m_code.device_id, m_code.code, value);
 }
  
 void
@@ -408,16 +406,13 @@ KeyAxisEventHandler::init(uInput& uinput) const
 {
   for(int i = 0; m_up_codes[i].is_valid(); ++i)
   {
-    uinput.create_uinput_device(m_up_codes[i].device_id);
     uinput.add_key(m_up_codes[i].device_id, m_up_codes[i].code);
   }
 
   for(int i = 0; m_down_codes[i].is_valid(); ++i)
   {
-    uinput.create_uinput_device(m_down_codes[i].device_id);
     uinput.add_key(m_down_codes[i].device_id, m_down_codes[i].code);
   }
-
 }
 
 void

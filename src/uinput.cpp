@@ -87,7 +87,7 @@ uInput::uInput(int vendor_id, int product_id, UInputOptions config_) :
   }
 }
 
-void
+LinuxUinput*
 uInput::create_uinput_device(int device_id)
 {
   // DEVICEID_AUTO should not happen at this point as the user should
@@ -97,7 +97,8 @@ uInput::create_uinput_device(int device_id)
   UInputDevs::iterator it = uinput_devs.find(device_id);
   if (it != uinput_devs.end())
   {
-    // device already exist, which is fine    
+    // device already exist, so return it
+    return it->second.get();
   }
   else
   {
@@ -130,6 +131,8 @@ uInput::create_uinput_device(int device_id)
     uinput_devs.insert(std::pair<int, boost::shared_ptr<LinuxUinput> >(device_id, dev));
 
     std::cout << "Creating uinput device: device_id: " << device_id << ", dev_name: " << dev_name.str() << std::endl;
+
+    return dev.get();
   }
 }
 
@@ -140,19 +143,22 @@ uInput::~uInput()
 void
 uInput::add_key(int device_id, int ev_code)
 {
-  get_uinput(device_id)->add_key(ev_code);
+  LinuxUinput* dev = create_uinput_device(device_id);
+  dev->add_key(ev_code);
 }
 
 void
 uInput::add_rel(int device_id, int ev_code)
 {
-  get_uinput(device_id)->add_rel(ev_code);
+  LinuxUinput* dev = create_uinput_device(device_id);
+  dev->add_rel(ev_code);
 }
 
 void
 uInput::add_abs(int device_id, int ev_code, int min, int max, int fuzz, int flat)
 {
-  get_uinput(device_id)->add_abs(ev_code, min, max, fuzz, flat);
+  LinuxUinput* dev = create_uinput_device(device_id);
+  dev->add_abs(ev_code, min, max, fuzz, flat);
 }
 
 void
@@ -165,16 +171,24 @@ uInput::finish()
 }
 
 void
+uInput::send(int device_id, int ev_type, int ev_code, int value)
+{
+  get_uinput(device_id)->send(ev_type, ev_code, value);
+}
+
+void
+uInput::send_abs(int device_id, int ev_code, int value)
+{
+  assert(ev_code != -1);
+  get_uinput(device_id)->send(EV_ABS, ev_code, value);
+}
+
+void
 uInput::send_key(int device_id, int ev_code, bool value)
 {
-  if (ev_code == -1)
-  {
-    // pass
-  }
-  else
-  {
-    get_uinput(device_id)->send(EV_KEY, ev_code, value);
-  }
+  assert(ev_code != -1);
+
+  get_uinput(device_id)->send(EV_KEY, ev_code, value);
 }
 
 void

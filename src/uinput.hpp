@@ -69,20 +69,38 @@ public:
 
   void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
 
+  /** Device construction functions
+      @{*/
   void add_rel(int device_id, int ev_code);
   void add_abs(int device_id, int ev_code, int min, int max, int fuzz, int flat);
   void add_key(int device_id, int ev_code);
 
+  /** needs to be called to finish device creation and create the
+      device in the kernel */
   void finish();
+  /** @} */
 
+  /** Send events to the kernel
+      @{*/
+  void send(int device_id, int ev_type, int ev_code, int value);
+  void send_abs(int device_id, int ev_code, int value);
   void send_key(int device_id, int ev_code, bool value);
   void send_rel_repetitive(const UIEvent& code, int value, int repeat_interval);
-  void sync();
 
-  LinuxUinput* get_uinput(int device_id) const;
+  /** should be called to single that all events of the current frame
+      have been send */
+  void sync();
+  /** @} */
+
   LinuxUinput* get_force_feedback_uinput() const;
 
-  void create_uinput_device(int device_id);
+private:
+  /** create a LinuxUinput with the given device_id, if some already
+      exist return a pointer to it */
+  LinuxUinput* create_uinput_device(int device_id);
+
+  /** must only be called with a valid device_id */
+  LinuxUinput* get_uinput(int device_id) const;
 };
 
 #endif

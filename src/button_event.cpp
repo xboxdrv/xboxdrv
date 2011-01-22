@@ -262,7 +262,6 @@ KeyButtonEventHandler::init(uInput& uinput) const
 {
   for(int i = 0; m_codes[i].is_valid(); ++i)
   {
-    uinput.create_uinput_device(m_codes[i].device_id);
     uinput.add_key(m_codes[i].device_id, m_codes[i].code);
   }
 
@@ -393,7 +392,6 @@ AbsButtonEventHandler::AbsButtonEventHandler(int code) :
 void
 AbsButtonEventHandler::init(uInput& uinput) const
 {
-  uinput.create_uinput_device(m_code.device_id);
 }
 
 void
@@ -401,7 +399,7 @@ AbsButtonEventHandler::send(uInput& uinput, bool value)
 {
   if (value)
   {
-    uinput.get_uinput(m_code.device_id)->send(EV_ABS, m_code.code, m_value);
+    uinput.send_abs(m_code.device_id, m_code.code, m_value);
   }
 }
 
@@ -453,8 +451,7 @@ RelButtonEventHandler::RelButtonEventHandler(const UIEvent& code) :
 void
 RelButtonEventHandler::init(uInput& uinput) const
 {
-  uinput.create_uinput_device(m_code.device_id);
-  uinput.get_uinput(m_code.device_id)->add_rel(m_code.code);
+  uinput.add_rel(m_code.device_id, m_code.code);
 }
 
 void
@@ -630,7 +627,6 @@ MacroButtonEventHandler::init(uInput& uinput) const
     switch(i->type)
     {
       case MacroEvent::kSendOp:
-        uinput.create_uinput_device(i->send.event.device_id);
         switch(i->send.event.type)
         {
           case EV_REL:
@@ -678,10 +674,10 @@ MacroButtonEventHandler::update(uInput& uinput, int msec_delta)
         switch(m_events[m_event_counter].type)
         {
           case MacroEvent::kSendOp:
-            uinput.get_uinput(m_events[m_event_counter].send.event.device_id)
-              ->send(m_events[m_event_counter].send.event.type,
-                     m_events[m_event_counter].send.event.code,
-                     m_events[m_event_counter].send.value);
+            uinput.send(m_events[m_event_counter].send.event.device_id,
+                        m_events[m_event_counter].send.event.type,
+                        m_events[m_event_counter].send.event.code,
+                        m_events[m_event_counter].send.value);
             break;
 
           case MacroEvent::kWaitOp:
