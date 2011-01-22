@@ -39,8 +39,30 @@ $ sudo pbuilder --build ../xboxdrv_0.6.4-2~lucid1.dsc
 $ dput my-ppa ../xboxdrv_0.6.4-2~lucid1_source.changes
 
 
+Stuff to do before 0.6.4 release:
+=================================
+
+* uninited variables in KeyButtonEvent screw things up 
+
+
 Stuff to do before 0.7.0 release:
 =================================
+
+* fix the FIXME's
+
+* correct chatpad handling for bcd 0x114 type
+
+* fix event output (have it pre-modifier or post-modifier?)
+
+* fix --no-uinput
+
+* something is broken with start/back buttons
+
+* need to hide/disable the toggle button from the normal view
+
+* move XBOX_BTN_UNKNOWN behind XBOX_BTN_MAX, so iteration can start
+  from 0 instead of 1, also fix incorrect iterations all over the
+  place
 
 Daemon Related Stuff
 ====================
@@ -76,6 +98,10 @@ Daemon Related Stuff
 List Output
 ===========
 
+* make controller type part of the message, instead of manually carrying around type variable
+
+* do modifier/filter dump when --verbose is given
+
 * fix inconsistent case in output of --list-all
 
 * turn EnumBox into singleton
@@ -99,11 +125,21 @@ round=X1:Y1
 
 * document significant patches in AUTHORS
 
+      2     Added latest version of runxboxdrv from Michael Rans <rans@email.com>
+      1     Added trigger deadzone patch from Jan Henning Thorsen <git@flodhest.net> with a few changes
+      1     Applied daniel åkerud <daniel.akerud@gmail.com>'s SIGTERM patch
+      1     Applied low latency patch from daniel åkerud <daniel.akerud@gmail.com>
+      1 Author: Aaron Denney <wnoise@ofb.net>
+      1     hal daemon from Thomas Debouverie <debouverie_thomas@yahoo.fr>
+      1     Implemented --ui-buttonmap A=BTN_A@{device_id} ??!?!?
+
 * improve output on which uinput devices are created
 
 
 Stuff to do before 0.7.x release:
 =================================
+
+* document common problems, such as lack of deadzone handling in games
 
 * give a warning when the user uses X as axis, instead of X1 (X is the
   xbox1 analog button), maybe rename X button to btn_x or xbtn ybtn
