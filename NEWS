@@ -1,3 +1,10 @@
+xboxdrv 0.6.5 - (22/Jan/2011)
+=============================
+
+* fixed incorrect variable initalisation, leading to button presses
+  getting lost sometimes
+
+
 xboxdrv 0.6.4 - (13/Jan/2011)
 =============================
 
