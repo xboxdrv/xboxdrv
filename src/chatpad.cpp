@@ -181,34 +181,41 @@ Chatpad::start_threads()
 void
 Chatpad::read_thread()
 {
-  uint8_t data[5];
-  while(!m_quit_thread)
+  try
   {
-    int len = usb_interrupt_read(m_handle, 6, reinterpret_cast<char*>(data), sizeof(data), 0);
-    if (len < 0)
+    uint8_t data[5];
+    while(!m_quit_thread)
     {
-      std::cout << "Error in read_thread" << std::endl;
-      return;
-    }
-    else
-    {
-      if (m_debug)
+      int len = usb_interrupt_read(m_handle, 6, reinterpret_cast<char*>(data), sizeof(data), 0);
+      if (len < 0)
       {
-        std::cout << "[chatpad] read: " << len << "/5: data: " << std::flush;
-        for(int i = 0; i < len; ++i)
+        std::cout << "Error in read_thread" << std::endl;
+        return;
+      }
+      else
+      {
+        if (m_debug)
         {
-          std::cout << boost::format("0x%02x ") % int(data[i]);
+          std::cout << "[chatpad] read: " << len << "/5: data: " << std::flush;
+          for(int i = 0; i < len; ++i)
+          {
+            std::cout << boost::format("0x%02x ") % int(data[i]);
+          }
+          std::cout << std::endl;
         }
-        std::cout << std::endl;
-      }
 
-      if (data[0] == 0x00)
-      {
-        struct ChatpadKeyMsg msg;
-        memcpy(&msg, data, sizeof(msg));
-        process(msg);
+        if (data[0] == 0x00)
+        {
+          struct ChatpadKeyMsg msg;
+          memcpy(&msg, data, sizeof(msg));
+          process(msg);
+        }
       }
     }
+  }
+  catch(const std::exception& err)
+  {
+    std::cout << "Chatpad: " << err.what() << std::endl;
   }
 }
 
@@ -269,16 +276,23 @@ Chatpad::process(const ChatpadKeyMsg& msg)
 void
 Chatpad::keep_alive_thread()
 {
-  // loop and send keep alives
-  while(!m_quit_thread)
+  try 
   {
-    usb_control_msg(m_handle, 0x41, 0x0, 0x1f, 0x02, 0, NULL, 0);
-    if (m_debug) std::cout << "[chatpad] 0x1f" << std::endl;
-    sleep(1);
+    // loop and send keep alives
+    while(!m_quit_thread)
+    {
+      usb_control_msg(m_handle, 0x41, 0x0, 0x1f, 0x02, 0, NULL, 0);
+      if (m_debug) std::cout << "[chatpad] 0x1f" << std::endl;
+      sleep(1);
        
-    usb_control_msg(m_handle, 0x41, 0x0, 0x1e, 0x02, 0, NULL, 0);
-    if (m_debug) std::cout << "[chatpad] 0x1e" << std::endl;
-    sleep(1);
+      usb_control_msg(m_handle, 0x41, 0x0, 0x1e, 0x02, 0, NULL, 0);
+      if (m_debug) std::cout << "[chatpad] 0x1e" << std::endl;
+      sleep(1);
+    }
+  }
+  catch(const std::exception& err)
+  {
+    std::cout << "Chatpad: " << err.what() << std::endl;
   }
 }
 
@@ -332,10 +346,12 @@ Chatpad::send_init()
       ret = usb_control_msg(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, this should return the NEW mode)
       if (m_debug) std::cout << "[chatpad] ret: " << ret << " " << static_cast<int>(buf[0]) << " " << static_cast<int>(buf[1]) << std::endl;
 
-      if (!(buf[1] & 2))
+      /* FIXME: not proper way to check if the chatpad is alive
+      if (!(buf[1] & 2)) // FIXME: check for {9,0} for bcdDevice==0x114
       {
         throw std::runtime_error("chatpad init failure");
       }
+      */
       // chatpad is enabled, so start with keep alive
     }
   }
