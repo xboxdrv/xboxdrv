@@ -48,6 +48,8 @@ Stuff to do before 0.6.4 release:
 Stuff to do before 0.7.0 release:
 =================================
 
+* Playstation 3 controller support
+
 * fix the FIXME's
 
 * correct chatpad handling for bcd 0x114 type

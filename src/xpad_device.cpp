@@ -90,6 +90,8 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_FIRESTORM_VSB,    0x044f, 0xb312, "ThrustMaster, Inc. Firestorm Dual Power (vs b)" },
 
   { GAMEPAD_SAITEK_P2500,     0x06a3, 0xff0c, "Saitek P2500" },
+
+  { GAMEPAD_PLAYSTATION3_USB, 0x054c, 0x0268, "PLAYSTATION(R)3 Controller" }
 };
 
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);

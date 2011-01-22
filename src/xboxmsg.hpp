@@ -31,7 +31,8 @@ enum GamepadType {
   GAMEPAD_XBOX360_GUITAR,
   GAMEPAD_FIRESTORM,
   GAMEPAD_FIRESTORM_VSB,
-  GAMEPAD_SAITEK_P2500
+  GAMEPAD_SAITEK_P2500,
+  GAMEPAD_PLAYSTATION3_USB
 };
 
 enum XboxMsgType {
@@ -122,7 +123,91 @@ struct XboxMsg
   int x2                   :16;
   int y2                   :16;
 } __attribute__((__packed__));
+
+struct Playstation3Msg
+{
+  unsigned int unknown00 :8; // always 01
+  unsigned int unknown01 :8; // always 00
 
+  // 02
+  unsigned int dpad_up    :1; 
+  unsigned int dpad_right :1;
+  unsigned int dpad_down  :1;
+  unsigned int dpad_left  :1;
+
+  unsigned int select  :1; 
+  unsigned int l3      :1;
+  unsigned int r3      :1;
+  unsigned int start   :1;
+
+  // 03
+  unsigned int triangle :1;
+  unsigned int circle   :1;
+  unsigned int cross    :1;
+  unsigned int square   :1;
+
+  unsigned int l2   :1;
+  unsigned int r2   :1;
+  unsigned int l1   :1;
+  unsigned int r1   :1;
+
+  // 04
+  unsigned int unknown04   :7;
+  unsigned int playstation :1;
+
+  unsigned int unknown05 :8; // always 00
+
+  unsigned int x1 :8;
+  unsigned int y1 :8;
+  unsigned int x2 :8;
+  unsigned int y2 :8;
+
+  unsigned int unknown10 :8; // always 00
+  unsigned int unknown11 :8; // always 00
+  unsigned int unknown12 :8; // always 00
+  unsigned int unknown13 :8; // always 00
+
+  unsigned int a_dpad_up    :8;
+  unsigned int a_dpad_right :8;
+  unsigned int a_dpad_down  :8;
+  unsigned int a_dpad_left  :8;
+
+  unsigned int a_l2 :8;
+  unsigned int a_r2 :8;
+  unsigned int a_l1 :8;
+  unsigned int a_r1 :8;
+
+  unsigned int a_triangle :8;
+  unsigned int a_circle   :8;
+  unsigned int a_cross    :8;
+  unsigned int a_square   :8;
+
+  unsigned int unknown26 :8; // always 00
+  unsigned int unknown27 :8; // always 00
+  unsigned int unknown28 :8; // always 00
+
+  // Bluetooth id start (or something like that)
+  unsigned int unknown29 :8;
+  unsigned int unknown30 :8;
+  unsigned int unknown31 :8;
+  unsigned int unknown32 :8;
+  unsigned int unknown33 :8;
+  unsigned int unknown34 :8;
+  unsigned int unknown35 :8;
+  unsigned int unknown36 :8;
+  unsigned int unknown37 :8;
+  unsigned int unknown38 :8;
+  unsigned int unknown39 :8;
+  unsigned int unknown40 :8;
+  // Bluetooth id end
+
+  unsigned int accl_x :16; // little vs big endian!?!
+  unsigned int accl_y :16; // little vs big endian!?!
+  unsigned int accl_z :16; // little vs big endian!?!
+
+  unsigned int unknown47 :8; // always 00
+  unsigned int sign4 :8; // jump's between 05 and 06
+} __attribute__((__packed__));
 
 struct XboxGenericMsg
 {
@@ -130,6 +215,7 @@ struct XboxGenericMsg
   union {
     struct Xbox360Msg xbox360;
     struct XboxMsg    xbox;
+    struct Playstation3Msg ps3;
   };
 };
 

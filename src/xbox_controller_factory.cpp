@@ -20,10 +20,11 @@
 
 #include <stdexcept>
 
+#include "firestorm_dual_controller.hpp"
+#include "playstation3_usb_controller.hpp"
+#include "saitek_p2500_controller.hpp"
 #include "xbox360_controller.hpp"
 #include "xbox360_wireless_controller.hpp"
-#include "saitek_p2500_controller.hpp"
-#include "firestorm_dual_controller.hpp"
 #include "xbox_controller.hpp"
 
 std::auto_ptr<XboxGenericController>
@@ -64,6 +65,9 @@ XboxControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, co
 
     case GAMEPAD_SAITEK_P2500:
       return std::auto_ptr<XboxGenericController>(new SaitekP2500Controller(dev, opts.detach_kernel_driver));
+
+    case GAMEPAD_PLAYSTATION3_USB:
+      return std::auto_ptr<XboxGenericController>(new Playstation3USBController(dev, opts.detach_kernel_driver));
 
     default:
       assert(!"Unknown gamepad type");

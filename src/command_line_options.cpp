@@ -494,6 +494,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         {
           opts.gamepad_type = GAMEPAD_SAITEK_P2500;
         }
+        else if (opt.argument == "playstation3-usb")
+        {
+          opts.gamepad_type = GAMEPAD_PLAYSTATION3_USB;
+        }
         else
         {
           RAISE_EXCEPTION("unknown type: " << opt.argument << '\n'
