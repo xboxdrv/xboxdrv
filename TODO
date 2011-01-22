@@ -141,6 +141,8 @@ round=X1:Y1
 Stuff to do before 0.7.x release:
 =================================
 
+* get rid of set_button()/get_button(), turn the message objects into full classes
+
 * document common problems, such as lack of deadzone handling in games
 
 * give a warning when the user uses X as axis, instead of X1 (X is the

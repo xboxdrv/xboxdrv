@@ -22,6 +22,22 @@
 
 #include "uinput.hpp"
 
+namespace {
+// FIXME: duplicate code
+int16_t u8_to_s16(uint8_t value)
+{
+  // FIXME: verify this
+  if (value < 128)
+  {
+    return -32768 + (value * 32768 / 128);
+  }
+  else
+  {
+    return (value-128) * 32767 / 127;
+  }
+}
+} // namespace
+
 UInputConfig::UInputConfig(uInput& uinput, const UInputOptions& opts) :
   m_uinput(uinput),
   m_btn_map(opts.get_btn_map()),
@@ -48,6 +64,10 @@ UInputConfig::send(XboxGenericMsg& msg)
 
     case XBOX_MSG_XBOX360:
       send(msg.xbox360);
+      break;
+
+    case XBOX_MSG_PS3USB:
+      send(msg.ps3usb);
       break;
         
     default:
@@ -170,6 +190,66 @@ UInputConfig::send(XboxMsg& msg)
   send_axis(XBOX_AXIS_Y, msg.y);
   send_axis(XBOX_AXIS_BLACK, msg.black);
   send_axis(XBOX_AXIS_WHITE, msg.white);
+}
+
+void
+UInputConfig::send(Playstation3USBMsg& msg)
+{
+  // analog stick button
+  send_button(XBOX_BTN_THUMB_L, msg.l3);
+  send_button(XBOX_BTN_THUMB_R, msg.r3);
+
+  // start/back button
+  send_button(XBOX_BTN_START, msg.start);
+  send_button(XBOX_BTN_GUIDE, msg.playstation);
+  send_button(XBOX_BTN_BACK,  msg.select);
+
+  // face button
+  send_button(XBOX_BTN_A, msg.cross);
+  send_button(XBOX_BTN_B, msg.circle);
+  send_button(XBOX_BTN_X, msg.square);
+  send_button(XBOX_BTN_Y, msg.triangle);
+
+  send_button(XBOX_BTN_LB, msg.l1);
+  send_button(XBOX_BTN_RB, msg.r1);
+
+  // trigger
+  send_button(XBOX_BTN_LT, msg.l2);
+  send_button(XBOX_BTN_RT, msg.r2);
+
+  // dpad as button
+  send_button(XBOX_DPAD_UP,    msg.dpad_up);
+  send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
+  send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
+  send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
+
+  send_axis(XBOX_AXIS_LT, msg.a_l2);
+  send_axis(XBOX_AXIS_RT, msg.a_r2);
+
+  send_axis(XBOX_AXIS_TRIGGER, (int(msg.a_r2) - int(msg.a_l1)));
+
+  // analog sticks
+  send_axis(XBOX_AXIS_X1, u8_to_s16(msg.x1));
+  send_axis(XBOX_AXIS_Y1, u8_to_s16(msg.y1));
+  
+  send_axis(XBOX_AXIS_X2, u8_to_s16(msg.x2));
+  send_axis(XBOX_AXIS_Y2, u8_to_s16(msg.y2));
+
+  // dpad as axis
+  if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
+  else if (msg.dpad_down)  send_axis(XBOX_AXIS_DPAD_Y,  1);
+  else                     send_axis(XBOX_AXIS_DPAD_Y,  0);
+
+  if      (msg.dpad_left)  send_axis(XBOX_AXIS_DPAD_X, -1);
+  else if (msg.dpad_right) send_axis(XBOX_AXIS_DPAD_X,  1);
+  else                     send_axis(XBOX_AXIS_DPAD_X,  0);
+
+  send_axis(XBOX_AXIS_A, msg.a_cross);
+  send_axis(XBOX_AXIS_B, msg.a_circle);
+  send_axis(XBOX_AXIS_X, msg.a_square);
+  send_axis(XBOX_AXIS_Y, msg.a_triangle);
+  send_axis(XBOX_AXIS_BLACK, msg.a_l1);
+  send_axis(XBOX_AXIS_WHITE, msg.a_r1);
 }
 
 void

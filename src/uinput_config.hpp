@@ -26,6 +26,7 @@
 
 struct Xbox360Msg;
 struct XboxGenericMsg;
+struct Playstation3USBMsg;
 struct XboxMsg;
 
 class UInputOptions;
@@ -53,6 +54,7 @@ public:
 private:
   void send(Xbox360Msg& msg);
   void send(XboxMsg& msg);
+  void send(Playstation3USBMsg& msg);
 
   void send_button(XboxButton code, bool value);
   void send_axis(XboxAxis code, int32_t value);

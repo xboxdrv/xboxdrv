@@ -92,32 +92,32 @@ Playstation3USBController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else
   {
-    if (true)
+    msg.type = XBOX_MSG_PS3USB;
+    memcpy(&msg.ps3usb, data, sizeof(msg.ps3usb));
+
+    bitswap(msg.ps3usb.accl_x);
+    bitswap(msg.ps3usb.accl_y);
+    bitswap(msg.ps3usb.accl_z);
+
+    if (false)
     {
-      Playstation3Msg ps3_msg;
-      memcpy(&ps3_msg, data, sizeof(ps3_msg));
-
-      bitswap(ps3_msg.accl_x);
-      bitswap(ps3_msg.accl_y);
-      bitswap(ps3_msg.accl_z);
-
       if (false)
       {
         std::cout << boost::format("X:%5d Y:%5d Z:%5d\n") 
-          % (static_cast<int>(ps3_msg.accl_x) - 512) 
-          % (static_cast<int>(ps3_msg.accl_y) - 512)
-          % (static_cast<int>(ps3_msg.accl_z) - 512);
+          % (static_cast<int>(msg.ps3usb.accl_x) - 512) 
+          % (static_cast<int>(msg.ps3usb.accl_y) - 512)
+          % (static_cast<int>(msg.ps3usb.accl_z) - 512);
       }
-      else
+      else if (false)
       {
         std::cout << boost::format("X:%6.3f Y:%6.3f Z:%6.3f\n") 
-          % ((static_cast<int>(ps3_msg.accl_x) - 512) / 116.0f)
-          % ((static_cast<int>(ps3_msg.accl_y) - 512) / 116.0f)
-          % ((static_cast<int>(ps3_msg.accl_z) - 512) / 116.0f);
+          % ((static_cast<int>(msg.ps3usb.accl_x) - 512) / 116.0f)
+          % ((static_cast<int>(msg.ps3usb.accl_y) - 512) / 116.0f)
+          % ((static_cast<int>(msg.ps3usb.accl_z) - 512) / 116.0f);
       }
       // -116 is gravity
     }
-    else
+    else if (false)
     {
       std::cout << len << ": ";
       for(int i = 0; i < len; ++i)
@@ -127,7 +127,8 @@ Playstation3USBController::read(XboxGenericMsg& msg, bool verbose, int timeout)
       }
       std::cout << std::endl;
     }
-    return false;   
+
+    return true;   
   }
 }
 

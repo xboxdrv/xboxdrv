@@ -37,7 +37,8 @@ enum GamepadType {
 
 enum XboxMsgType {
   XBOX_MSG_XBOX,
-  XBOX_MSG_XBOX360
+  XBOX_MSG_XBOX360,
+  XBOX_MSG_PS3USB
 };
 
 struct Xbox360Msg
@@ -124,36 +125,36 @@ struct XboxMsg
   int y2                   :16;
 } __attribute__((__packed__));
 
-struct Playstation3Msg
+struct Playstation3USBMsg
 {
   unsigned int unknown00 :8; // always 01
   unsigned int unknown01 :8; // always 00
 
   // 02
-  unsigned int dpad_up    :1; 
-  unsigned int dpad_right :1;
-  unsigned int dpad_down  :1;
-  unsigned int dpad_left  :1;
-
   unsigned int select  :1; 
   unsigned int l3      :1;
   unsigned int r3      :1;
   unsigned int start   :1;
 
-  // 03
-  unsigned int triangle :1;
-  unsigned int circle   :1;
-  unsigned int cross    :1;
-  unsigned int square   :1;
+  unsigned int dpad_up    :1; 
+  unsigned int dpad_right :1;
+  unsigned int dpad_down  :1;
+  unsigned int dpad_left  :1;
 
+  // 03
   unsigned int l2   :1;
   unsigned int r2   :1;
   unsigned int l1   :1;
   unsigned int r1   :1;
 
+  unsigned int triangle :1;
+  unsigned int circle   :1;
+  unsigned int cross    :1;
+  unsigned int square   :1;
+
   // 04
-  unsigned int unknown04   :7;
   unsigned int playstation :1;
+  unsigned int unknown04   :7;
 
   unsigned int unknown05 :8; // always 00
 
@@ -215,13 +216,14 @@ struct XboxGenericMsg
   union {
     struct Xbox360Msg xbox360;
     struct XboxMsg    xbox;
-    struct Playstation3Msg ps3;
+    struct Playstation3USBMsg ps3usb;
   };
 };
 
 std::ostream& operator<<(std::ostream& out, const GamepadType& type);
 std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg);
 std::ostream& operator<<(std::ostream& out, const XboxMsg& msg);
+std::ostream& operator<<(std::ostream& out, const Playstation3USBMsg& msg);
 std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg);
 
 enum XboxButton {
