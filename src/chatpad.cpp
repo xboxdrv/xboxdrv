@@ -22,6 +22,7 @@
 #include <boost/format.hpp>
 
 #include "linux_uinput.hpp"
+#include "log.hpp"
 #include "usb_helper.hpp"
 
 Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
@@ -197,41 +198,48 @@ Chatpad::start_threads()
 void
 Chatpad::read_thread()
 {
-  uint8_t data[5];
-  while(!m_quit_thread)
+  try 
   {
-    int len = 0;
-    int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 6,
-                                        data, sizeof(data), &len, 0);
-    if (ret != LIBUSB_SUCCESS)
+    uint8_t data[5];
+    while(!m_quit_thread)
     {
-      throw std::runtime_error("-- failure --"); // FIXME
-    }
-
-    if (len < 0)
-    {
-      std::cout << "Error in read_thread" << std::endl;
-      return;
-    }
-    else
-    {
-      if (m_debug)
+      int len = 0;
+      int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 6,
+                                          data, sizeof(data), &len, 0);
+      if (ret != LIBUSB_SUCCESS)
       {
-        std::cout << "[chatpad] read: " << len << "/5: data: " << std::flush;
-        for(int i = 0; i < len; ++i)
+        throw std::runtime_error("-- failure --"); // FIXME
+      }
+
+      if (len < 0)
+      {
+        std::cout << "Error in read_thread" << std::endl;
+        return;
+      }
+      else
+      {
+        if (m_debug)
         {
-          std::cout << boost::format("0x%02x ") % int(data[i]);
+          std::cout << "[chatpad] read: " << len << "/5: data: " << std::flush;
+          for(int i = 0; i < len; ++i)
+          {
+            std::cout << boost::format("0x%02x ") % int(data[i]);
+          }
+          std::cout << std::endl;
         }
-        std::cout << std::endl;
-      }
 
-      if (data[0] == 0x00)
-      {
-        struct ChatpadKeyMsg msg;
-        memcpy(&msg, data, sizeof(msg));
-        process(msg);
+        if (data[0] == 0x00)
+        {
+          struct ChatpadKeyMsg msg;
+          memcpy(&msg, data, sizeof(msg));
+          process(msg);
+        }
       }
     }
+  }
+  catch(const std::exception& err)
+  {
+    log_error << err.what() << std::endl;
   }
 }
 
@@ -287,16 +295,23 @@ Chatpad::process(const ChatpadKeyMsg& msg)
 void
 Chatpad::keep_alive_thread()
 {
-  // loop and send keep alives
-  while(!m_quit_thread)
+  try
   {
-    send_ctrl(0x41, 0x0, 0x1f, 0x02, NULL, 0);
-    if (m_debug) std::cout << "[chatpad] 0x1f" << std::endl;
-    sleep(1);
+    // loop and send keep alives
+    while(!m_quit_thread)
+    {
+      send_ctrl(0x41, 0x0, 0x1f, 0x02, NULL, 0);
+      if (m_debug) std::cout << "[chatpad] 0x1f" << std::endl;
+      sleep(1);
        
-    send_ctrl(0x41, 0x0, 0x1e, 0x02, NULL, 0);
-    if (m_debug) std::cout << "[chatpad] 0x1e" << std::endl;
-    sleep(1);
+      send_ctrl(0x41, 0x0, 0x1e, 0x02, NULL, 0);
+      if (m_debug) std::cout << "[chatpad] 0x1e" << std::endl;
+      sleep(1);
+    }
+  }
+  catch(const std::exception& err)
+  {
+    log_error << err.what() << std::endl;
   }
 }
 
