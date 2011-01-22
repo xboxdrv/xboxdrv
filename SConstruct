@@ -1,5 +1,7 @@
 # -*- python -*-
 
+CacheDir('cache')
+
 env = Environment()
 
 opts = Variables(['custom.py'], ARGUMENTS)
@@ -14,7 +16,7 @@ opts.Add('CXXFLAGS', 'C++ Compiler flags')
 opts.Add('LINKFLAGS', 'Linker Compiler flags')
 opts.Add('CC', 'C Compiler')
 opts.Add('CXX', 'C++ Compiler')
-opts.Add('BUILD', 'Build type: release, development')
+opts.Add('BUILD', 'Build type: release, custom, development')
 
 opts.Update(env)
 Help(opts.GenerateHelpText(env))
@@ -37,6 +39,8 @@ if 'BUILD' in env and env['BUILD'] == 'development':
                             "-Wcast-qual",
                             "-Winit-self", # only works with >= -O1
                             "-Wno-unused-parameter"])
+elif 'BUILD' in env and env['BUILD'] == 'custom':
+    pass
 else:
     env.Append(CPPFLAGS = ['-g', '-O3', '-Wall', '-ansi', '-pedantic'])
 
