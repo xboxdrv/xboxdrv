@@ -22,12 +22,12 @@ Ubuntu Package:
 
 $ cd ../debian/
 $ git checkout master
-$ git-import-orig -u 0.6.5 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.6.5.tar.bz2 
-$ dch -v "0.6.5-1" "xboxdrv 0.6.5 release"
-$ git commit -m  "xboxdrv 0.6.5 release" -a
+$ git-import-orig -u 0.6.6 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.6.6.tar.bz2 
+$ dch -v "0.6.6-1" "xboxdrv 0.6.6 release"
+$ git commit -m  "xboxdrv 0.6.6 release" -a
 $ git-buildpackage --git-no-create-orig --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build xboxdrv_0.6.5-1.dsc
-$ dput my-ppa xboxdrv_0.6.5_source.changes
+$ sudo pbuilder --build xboxdrv_0.6.6-1.dsc
+$ dput my-ppa xboxdrv_0.6.6_source.changes
 
 # Ubuntu 10.04 (LTS)
 
@@ -35,10 +35,10 @@ $ cd ../debian/
 $ git checkout master-lts
 $ git merge master
 $ -- fix conflicts in debian/changelog --
-$ dch -b -v "0.6.5-1~lucid1" --distribution lucid "xboxdrv 0.6.5 backport"
+$ dch -b -v "0.6.6-1~lucid1" --distribution lucid "xboxdrv 0.6.6 backport"
 $ git-buildpackage --git-no-create-orig --git-debian-branch=master-lts --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build xboxdrv_0.6.5-1~lucid1.dsc
-$ dput my-ppa xboxdrv_0.6.5-1~lucid1_source.changes
+$ sudo pbuilder --build xboxdrv_0.6.6-1~lucid1.dsc
+$ dput my-ppa xboxdrv_0.6.6-1~lucid1_source.changes
 
 
 Stuff to do before 0.6.5 release:
