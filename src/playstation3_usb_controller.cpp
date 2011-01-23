@@ -98,26 +98,28 @@ Playstation3USBController::read(XboxGenericMsg& msg, bool verbose, int timeout)
     bitswap(msg.ps3usb.accl_x);
     bitswap(msg.ps3usb.accl_y);
     bitswap(msg.ps3usb.accl_z);
+    bitswap(msg.ps3usb.rot_z);
 
     if (false)
     {
-      if (false)
-      {
-        std::cout << boost::format("X:%5d Y:%5d Z:%5d\n") 
-          % (static_cast<int>(msg.ps3usb.accl_x) - 512) 
-          % (static_cast<int>(msg.ps3usb.accl_y) - 512)
-          % (static_cast<int>(msg.ps3usb.accl_z) - 512);
-      }
-      else if (false)
-      {
-        std::cout << boost::format("X:%6.3f Y:%6.3f Z:%6.3f\n") 
-          % ((static_cast<int>(msg.ps3usb.accl_x) - 512) / 116.0f)
-          % ((static_cast<int>(msg.ps3usb.accl_y) - 512) / 116.0f)
-          % ((static_cast<int>(msg.ps3usb.accl_z) - 512) / 116.0f);
-      }
-      // -116 is gravity
+      std::cout << boost::format("X:%5d Y:%5d Z:%5d RZ:%5d\n") 
+        % (static_cast<int>(msg.ps3usb.accl_x) - 512) 
+        % (static_cast<int>(msg.ps3usb.accl_y) - 512)
+        % (static_cast<int>(msg.ps3usb.accl_z) - 512)
+        % (static_cast<int>(msg.ps3usb.rot_z));
     }
-    else if (false)
+      
+    if (false)
+    {
+      // values are normalized to 1g (-116 is force by gravity)
+      std::cout << boost::format("X:%6.3f Y:%6.3f Z:%6.3f RZ:%6.3f\n") 
+        % ((static_cast<int>(msg.ps3usb.accl_x) - 512) / 116.0f)
+        % ((static_cast<int>(msg.ps3usb.accl_y) - 512) / 116.0f)
+        % ((static_cast<int>(msg.ps3usb.accl_z) - 512) / 116.0f)
+        % ((static_cast<int>(msg.ps3usb.rot_z) - 5));
+    }
+    
+    if (false)
     {
       std::cout << len << ": ";
       for(int i = 0; i < len; ++i)
