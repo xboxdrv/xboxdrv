@@ -31,12 +31,12 @@ int16_t scale_deadzone(int16_t value, const int deadzone)
 {
   float rv = value;
   if (value < -deadzone) {
-    const float scale = 32768 / (32768 - deadzone);
+    const float scale = 32768.0f / (32768.0f - deadzone);
     rv += deadzone;
     rv *= scale;
     rv -= 0.5;
   } else if (value > deadzone) {
-    const float scale = 32767 / (32767 - deadzone);
+    const float scale = 32767.0f / (32767.0f - deadzone);
     rv -= deadzone;
     rv *= scale;
     rv += 0.5;
@@ -48,7 +48,7 @@ int16_t scale_deadzone(int16_t value, const int deadzone)
 
 uint8_t scale_trigger_deadzone(uint8_t value, int deadzone)
 {
-  const float scale = 255 / (255 - deadzone);
+  const float scale = 255.0f / (255.0f - deadzone);
     if (value <= deadzone) {
         return 0;
     } else {
