@@ -206,8 +206,7 @@ struct Playstation3USBMsg
   unsigned int accl_y :16; // little vs big endian!?!
   unsigned int accl_z :16; // little vs big endian!?!
 
-  unsigned int unknown47 :8; // always 00
-  unsigned int sign4 :8; // jump's between 05 and 06
+  unsigned int rot_z :16; // very low res (3 or 4 bits), neutral at 5 or 6
 } __attribute__((__packed__));
 
 struct XboxGenericMsg
