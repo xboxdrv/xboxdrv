@@ -52,7 +52,7 @@ XboxdrvThread::~XboxdrvThread()
   {
     log_info << "waiting for thread to join: " << m_thread->get_id() << std::endl;
     stop_thread(); 
-    log_info << "joined thread: " << m_thread->get_id() << std::endl;
+    log_info << "thread joined" << std::endl;
   }
 }
 
