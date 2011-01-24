@@ -68,8 +68,12 @@ XboxdrvDaemon::cleanup_threads()
   {
     if (i->thread)
     {
-      i->thread->try_join_thread();
-      count += 1;
+      if (i->thread->try_join_thread())
+      {
+        delete i->thread;
+        i->thread = 0;
+        count += 1;
+      }
     }
   }
 
