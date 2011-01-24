@@ -27,7 +27,9 @@
 #include "default_message_processor.hpp"
 #include "evdev_controller.hpp"
 #include "helper.hpp"
+#include "raise_exception.hpp"
 #include "word_wrap.hpp"
+#include "usb_helper.hpp"
 #include "xbox_controller_factory.hpp"
 #include "xboxdrv_daemon.hpp"
 #include "xboxdrv_thread.hpp"
@@ -67,7 +69,7 @@ Xboxdrv::run_list_controller()
   int ret = libusb_init(NULL);
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("-- failure --"); // FIXME
+    raise_exception(std::runtime_error, "libusb_init() failed: " << usb_strerror(ret));
   }
 
   libusb_device** list;
@@ -383,7 +385,7 @@ Xboxdrv::run_main(const Options& opts)
     int ret = libusb_init(NULL);
     if (ret != LIBUSB_SUCCESS)
     {
-      throw std::runtime_error("-- failure --"); // FIXME
+      raise_exception(std::runtime_error, "libusb_init() failed: " << usb_strerror(ret));
     }
     
     // FIXME: this must be libusb_unref_device()'ed, child code must not keep a copy around
@@ -486,10 +488,10 @@ Xboxdrv::print_info(libusb_device* dev,
                     const Options& opts) const
 {
   libusb_device_descriptor desc;
-
-  if (libusb_get_device_descriptor(dev, &desc) != LIBUSB_SUCCESS)
+  int ret = libusb_get_device_descriptor(dev, &desc);
+  if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("-- failure --"); // FIXME
+    raise_exception(std::runtime_error, "libusb_get_device_descriptor() failed: " << usb_strerror(ret));
   }
 
   std::cout << "USB Device:        " << boost::format("%03d:%03d:") 
@@ -579,7 +581,7 @@ Xboxdrv::run_daemon(const Options& opts)
   int ret = libusb_init(NULL);
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("-- failure --"); // FIXME
+    raise_exception(std::runtime_error, "libusb_init() failed: " << usb_strerror(ret));
   }
 
   if (!opts.detach)

@@ -42,6 +42,9 @@ $ dput my-ppa ../xboxdrv_0.7.0-1~lucid1_source.changes
 Stuff to do before 0.7.0 release:
 =================================
 
+* figure out a good place to set the LEDs off when Xboxdrv is quit,
+  just doing it in the destructor causes trouble
+
 * AxisSensitivity filter has overflow issue 
 
 * fix the FIXME's
@@ -57,8 +60,7 @@ Stuff to do before 0.7.0 release:
 Daemon Related Stuff
 ====================
 
-* currently device creation fails as all configurations are assigned
-  to the same virtual device
+* unplugging a controller should reset it to neutral position
 
 * improve output on which uinput devices are created
 
@@ -121,6 +123,8 @@ List Output
 
 Stuff to do before 0.7.x release:
 =================================
+
+* add ABS support to macros
 
 * Playstation 3 controller support
   - http://www.pabr.org/sixlinux/sixlinux.en.html

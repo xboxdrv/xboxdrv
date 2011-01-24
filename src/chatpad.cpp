@@ -24,6 +24,7 @@
 #include "linux_uinput.hpp"
 #include "log.hpp"
 #include "usb_helper.hpp"
+#include "raise_exception.hpp"
 
 Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
                  bool no_init, bool debug) :
@@ -132,7 +133,7 @@ Chatpad::send_ctrl(uint8_t request_type, uint8_t request, uint16_t value, uint16
   int ret = libusb_control_transfer(m_handle, request_type, request, value, index, data, length, 0);
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("-- failure --"); // FIXME
+    raise_exception(std::runtime_error, "libusb_control_transfer() failed: " << usb_strerror(ret));
   }
 }
 
@@ -208,7 +209,7 @@ Chatpad::read_thread()
                                           data, sizeof(data), &len, 0);
       if (ret != LIBUSB_SUCCESS)
       {
-        throw std::runtime_error("-- failure --"); // FIXME
+        raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
       }
 
       if (len < 0)

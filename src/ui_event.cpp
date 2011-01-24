@@ -84,6 +84,8 @@ UIEvent::operator<(const UIEvent& rhs)  const
 void
 UIEvent::resolve_device_id(int slot, bool extra_devices)
 {
+  assert(!m_device_id_resolved);
+
   if (m_slot_id == SLOTID_AUTO)
   {
     m_slot_id = slot;

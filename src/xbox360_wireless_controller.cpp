@@ -23,6 +23,7 @@
 #include <boost/format.hpp>
 
 #include "helper.hpp"
+#include "raise_exception.hpp"
 #include "usb_helper.hpp"
 #include "xboxmsg.hpp"
 
@@ -77,7 +78,7 @@ Xbox360WirelessController::set_rumble(uint8_t left, uint8_t right)
                                       rumblecmd, sizeof(rumblecmd), &transferred, 0);
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("-- failure --"); // FIXME
+    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
   }
 }
 
@@ -93,7 +94,7 @@ Xbox360WirelessController::set_led(uint8_t status)
                                 ledcmd, sizeof(ledcmd), &transferred, 0);
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("-- failure --"); // FIXME:
+    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
   }
 }
 

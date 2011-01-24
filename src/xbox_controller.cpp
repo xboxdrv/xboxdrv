@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include "usb_helper.hpp"
+#include "raise_exception.hpp"
 #include "xboxmsg.hpp"
 
 XboxController::XboxController(libusb_device* dev_, bool try_detach) :
@@ -65,7 +66,7 @@ XboxController::find_endpoints()
   int ret = libusb_get_config_descriptor(dev, 0 /* config_index */, &config);
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("-- failure --"); // FIXME
+    raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));
   }
 
   bool debug_print = false;
@@ -119,7 +120,7 @@ XboxController::set_rumble(uint8_t left, uint8_t right)
                                       rumblecmd, sizeof(rumblecmd), &transferred, 0);
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("-- failure -- "); // FIXME
+    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
   }
 }
 

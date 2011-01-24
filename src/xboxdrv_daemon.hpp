@@ -78,6 +78,8 @@ public:
   void run(const Options& opts);
 
 private:
+  void run_real(const Options& opts);
+
   void cleanup_threads();
   void process_match(const Options& opts, uInput* uinput, struct udev_device* device);
   void print_info(struct udev_device* device);

@@ -22,6 +22,7 @@
 #include <fstream>
 
 #include "default_message_processor.hpp"
+#include "dummy_message_processor.hpp"
 #include "log.hpp"
 #include "uinput.hpp"
 #include "usb_helper.hpp"
@@ -129,10 +130,17 @@ XboxdrvDaemon::process_match(const Options& opts, uInput* uinput, struct udev_de
                      << boost::lexical_cast<int>(devnum_str)
                      << std::endl;
            
-            launch_xboxdrv(uinput,
-                           dev_type, opts,
-                           boost::lexical_cast<int>(busnum_str),
-                           boost::lexical_cast<int>(devnum_str));
+            try 
+            {
+              launch_xboxdrv(uinput,
+                             dev_type, opts,
+                             boost::lexical_cast<int>(busnum_str),
+                             boost::lexical_cast<int>(devnum_str));
+            }
+            catch(const std::exception& err)
+            {
+              log_error << "failed to launch XboxdrvThread: " << err.what() << std::endl;
+            }
           }
         }
         catch(const std::exception& err)
@@ -146,6 +154,19 @@ XboxdrvDaemon::process_match(const Options& opts, uInput* uinput, struct udev_de
 
 void
 XboxdrvDaemon::run(const Options& opts)
+{
+  try 
+  {
+    run_real(opts);
+  }
+  catch(const std::exception& err)
+  {
+    log_error << "fatal exception in XboxdrvDaemon::run(): " << err.what() << std::endl;
+  }
+}
+
+void
+XboxdrvDaemon::run_real(const Options& opts)
 {
   if (!opts.pid_file.empty())
   {
@@ -347,11 +368,6 @@ void
 XboxdrvDaemon::launch_xboxdrv(uInput* uinput, const XPadDevice& dev_type, const Options& opts, 
                               uint8_t busnum, uint8_t devnum)
 {
-  std::cout << "[XboxdrvDaemon] launching " << boost::format("%03d:%03d") 
-    % static_cast<int>(busnum) 
-    % static_cast<int>(devnum)
-            << std::endl;
-
   // FIXME: results must be libusb_unref_device()'ed
   libusb_device* dev = usb_find_device_by_path(busnum, devnum);
 
@@ -361,19 +377,43 @@ XboxdrvDaemon::launch_xboxdrv(uInput* uinput, const XPadDevice& dev_type, const 
   }
   else
   {
+    ControllerSlots::iterator it = m_controller_slots.end();
     for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
     {
       if (i->thread == 0)
       {
-        log_info << "found a free slot: " << (i - m_controller_slots.begin()) << std::endl;
-
-        std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
-        std::auto_ptr<MessageProcessor> message_proc(new DefaultMessageProcessor(*uinput, i->config, opts));
-        std::auto_ptr<XboxdrvThread> thread(new XboxdrvThread(message_proc, controller, opts));
-        thread->start_thread(opts);
-        i->thread = thread.release();
+        it = i;
         break;
+      }      
+    }
+    
+    if (it == m_controller_slots.end())
+    {
+      log_error << "no free controller slot found, controller will be ignored" << std::endl;
+    }
+    else
+    {
+      std::cout << "[XboxdrvDaemon] launching " << boost::format("%03d:%03d")
+        % static_cast<int>(busnum) 
+        % static_cast<int>(devnum)
+                << std::endl;
+
+      log_info << "found a free slot: " << (it - m_controller_slots.begin()) << std::endl;
+
+      std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
+
+      std::auto_ptr<MessageProcessor> message_proc;
+      if (uinput)
+      {
+        message_proc.reset(new DefaultMessageProcessor(*uinput, it->config, opts));
       }
+      else
+      {
+        message_proc.reset(new DummyMessageProcessor());
+      }
+      std::auto_ptr<XboxdrvThread> thread(new XboxdrvThread(message_proc, controller, opts));
+      thread->start_thread(opts);
+      it->thread = thread.release();
     }
   }
 }

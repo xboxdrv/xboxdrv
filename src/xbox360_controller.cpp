@@ -24,6 +24,7 @@
 #include "headset.hpp"
 #include "helper.hpp"
 #include "options.hpp"
+#include "raise_exception.hpp"
 #include "usb_helper.hpp"
 
 Xbox360Controller::Xbox360Controller(libusb_device* dev_, 
@@ -55,10 +56,9 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
     int err;
     if ((err = libusb_set_configuration(handle, 0)) < 0)
     {
-      std::ostringstream out;
-      out << "Error set USB configuration: " << usb_strerror(err) << std::endl
-          << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
-      throw std::runtime_error(out.str());
+      raise_exception(std::runtime_error,
+                      "Error set USB configuration: " << usb_strerror(err) <<
+                      "\nTry to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.");
     }
   }
 
@@ -83,7 +83,8 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
   {
     libusb_device_descriptor desc;
 
-    if (libusb_get_device_descriptor(dev, &desc) == LIBUSB_SUCCESS)
+    ret = libusb_get_device_descriptor(dev, &desc);
+    if (ret == LIBUSB_SUCCESS)
     {
       m_chatpad.reset(new Chatpad(handle, desc.bcdDevice, chatpad_no_init, chatpad_debug));
       m_chatpad->send_init();
@@ -91,7 +92,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
     }
     else
     {
-      throw std::runtime_error("-- failure --"); // FIXME
+      raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));
     }
   }
 
@@ -103,7 +104,6 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
 
 Xbox360Controller::~Xbox360Controller()
 {
-  set_led(0);
   libusb_release_interface(handle, 0); 
   libusb_close(handle);
 }
@@ -115,7 +115,7 @@ Xbox360Controller::find_endpoints()
   int ret = libusb_get_config_descriptor(dev, 0 /* config_index */, &config);
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("-- failure --"); // FIXME
+    raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));
   }
 
   bool debug_print = false;
@@ -171,7 +171,7 @@ Xbox360Controller::set_rumble(uint8_t left, uint8_t right)
                                   &transferred, 0);
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("-- failure --"); // FIXME
+    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
   }
 }
 
@@ -186,7 +186,7 @@ Xbox360Controller::set_led(uint8_t status)
                                   &transferred, 0);
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("-- failure --"); // FIXME
+    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
   }
 }
 
@@ -206,9 +206,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else if (ret != LIBUSB_SUCCESS)
   { // Error
-    std::ostringstream str;
-    str << "Xbox360Controller: libusb_interrupt_transfer(): " << usb_strerror(ret);
-    throw std::runtime_error(str.str());
+    raise_exception(std::runtime_error, "libusb_interrupt_transfer(): " << usb_strerror(ret));
   }
   else if (len == 0)
   {
