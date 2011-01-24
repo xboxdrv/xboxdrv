@@ -112,7 +112,9 @@ public:
   std::map<int, XboxButton> evdev_keymap;
 
   // controller options
-  std::vector<ControllerOptions> controller;
+  typedef std::map<int, ControllerOptions> ControllerConfigs;
+  typedef std::map<int, ControllerConfigs> ControllerSlots;
+  ControllerSlots controllers;
 
   // chatpad options
   bool chatpad;
@@ -137,9 +139,30 @@ public:
 
   XboxButton config_toggle_button;
 
+  int controller_slot;
+  int config_slot;
+
+public:
   Options();
 
+  ControllerConfigs& get_controller_slot();
+  
+  /** Returns the currently active configuration */
+  ControllerOptions& get_controller_options();
+  const ControllerOptions& get_controller_options() const;
+
   void next_controller();
+  void next_config();
+
+  void set_device_name(const std::string& name);
+  void set_mouse();
+  void set_guitar();
+  void set_trigger_as_button();
+  void set_trigger_as_zaxis();
+  void set_dpad_as_button();
+  void set_dpad_only();
+  void set_force_feedback();
+  void set_mimic_xpad();
 };
 
 extern Options* g_options;

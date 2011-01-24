@@ -64,7 +64,7 @@ Options::Options() :
   evdev_grab(true),
   evdev_debug(false),
   evdev_keymap(),
-  controller(1),
+  controllers(),
   chatpad(false),
   chatpad_no_init(false),
   chatpad_debug(false),
@@ -78,18 +78,122 @@ Options::Options() :
   on_disconnect(),
   exec(),
   list_enums(0),
-  config_toggle_button(XBOX_BTN_UNKNOWN)
+  config_toggle_button(XBOX_BTN_UNKNOWN),
+  controller_slot(0),
+  config_slot(0)
 {
+  // create the entry if not already available
+  controllers[controller_slot][config_slot];
+}
+
+Options::ControllerConfigs&
+Options::get_controller_slot()
+{
+  return controllers[controller_slot];
+}
+
+ControllerOptions&
+Options::get_controller_options()
+{
+  return controllers[controller_slot][config_slot];
+}
+
+const ControllerOptions&
+Options::get_controller_options() const
+{
+  ControllerSlots::const_iterator it = controllers.find(controller_slot);
+  if (it == controllers.end())
+  {
+    assert(!"shouldn't happen");
+  }
+  else
+  {
+    ControllerConfigs::const_iterator cfg = it->second.find(config_slot);
+    if (cfg == it->second.end())
+    {
+      assert(!"shouldn't happen either");
+    }
+    else
+    {
+      return cfg->second;
+    }
+  }
 }
 
 void
 Options::next_controller()
 {
-  controller.push_back(ControllerOptions());
+  controller_slot += 1;
+  config_slot = 0;
+
+  // create the entry if not already available
+  controllers[controller_slot][config_slot];
+}
+
+void
+Options::next_config()
+{
+  config_slot += 1;
+
+  // FIXME: move this somewhere else
   if (config_toggle_button == XBOX_BTN_UNKNOWN)
   {
     config_toggle_button = XBOX_BTN_GUIDE;
   }
+
+  // create the entry if not already available
+  controllers[controller_slot][config_slot];
+}
+
+void
+Options::set_device_name(const std::string& name)
+{
+  //get_controller().uinput.mouse();
+}
+
+void
+Options::set_mouse()
+{
+  get_controller_options().uinput.mouse();
+}
+
+void
+Options::set_guitar()
+{
+  get_controller_options().uinput.guitar();
+}
+
+void
+Options::set_trigger_as_button()
+{
+  get_controller_options().uinput.trigger_as_button();
+}
+
+void
+Options::set_trigger_as_zaxis()
+{
+  get_controller_options().uinput.trigger_as_zaxis();
+}
+
+void
+Options::set_dpad_as_button()
+{
+}
+
+void
+Options::set_dpad_only()
+{
+}
+
+void
+Options::set_force_feedback()
+{
+}
+
+void
+Options::set_mimic_xpad()
+{
+  get_controller_options().uinput.mimic_xpad();
 }
 
 /* EOF */

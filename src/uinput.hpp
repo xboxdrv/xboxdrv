@@ -40,12 +40,8 @@ struct Xbox360GuitarMsg;
 class uInput
 {
 private:
-  int m_vendor_id;
-  int m_product_id;
-
   typedef std::map<int, boost::shared_ptr<LinuxUinput> > UInputDevs;
   UInputDevs uinput_devs;
-  UInputOptions cfg;
 
   struct RelRepeat 
   {
@@ -62,7 +58,7 @@ public:
   static bool is_keyboard_button(int ev_code);
 
 public:
-  uInput(int vendor_id, int product_id, UInputOptions cfg);
+  uInput();
   ~uInput();
 
   void update(int msec_delta);

@@ -35,23 +35,31 @@ DefaultMessageProcessor::DefaultMessageProcessor(uInput& uinput, const Options& 
   memset(&m_oldmsg, 0, sizeof(m_oldmsg));
 
   // create ControllerConfigs
-  for(std::vector<ControllerOptions>::const_iterator i = opts.controller.begin();
-      i != opts.controller.end(); 
-      ++i)
+  for(Options::ControllerSlots::const_iterator controller = opts.controllers.begin(); 
+      controller != opts.controllers.end(); ++controller)
   {
-    ControllerConfigPtr config(new ControllerConfig(uinput, *i));
-    create_modifier(*i, &config->get_modifier());
-    m_config.add_config(config);
-
-    // introspection of the config
-    std::cout << "==[[ Active Modifier ]]==" << std::endl;
-    for(std::vector<ModifierPtr>::iterator mod = config->get_modifier().begin(); 
-        mod != config->get_modifier().end(); 
-        ++mod)
+    for(Options::ControllerConfigs::const_iterator i = controller->second.begin();
+        i != controller->second.end(); ++i)
     {
-      std::cout << (*mod)->str() << std::endl;
+      const ControllerOptions& ctrl_opt = i->second;
+
+      ControllerConfigPtr config(new ControllerConfig(uinput, ctrl_opt));
+      create_modifier(ctrl_opt, &config->get_modifier());
+      m_config.add_config(config);
+
+#ifdef FIXME
+      // introspection of the config
+      std::cout << "==[[ Active Modifier ]]==" << std::endl;
+      for(std::vector<ModifierPtr>::iterator mod = config->get_modifier().begin(); 
+          mod != config->get_modifier().end(); 
+          ++mod)
+      {
+        std::cout << (*mod)->str() << std::endl;
+      }
+#endif
     }
   }
+
 
   log_info << "UInput finish" << std::endl;
 

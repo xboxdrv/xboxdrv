@@ -31,14 +31,11 @@ uInput::is_keyboard_button(int ev_code)
 {
   return (ev_code < 256);
 }
-
-uInput::uInput(int vendor_id, int product_id, UInputOptions config_) :
-  m_vendor_id(vendor_id),
-  m_product_id(product_id),
+uInput::uInput() :
   uinput_devs(),
-  cfg(config_),
   rel_repeat_lst()
 {
+#ifdef FIXME
   if (cfg.force_feedback)
   {
     create_uinput_device(DEVICEID_JOYSTICK);
@@ -85,6 +82,7 @@ uInput::uInput(int vendor_id, int product_id, UInputOptions config_) :
     // |- FF_SAW_DOWN
     // '- FF_CUSTOM
   }
+#endif
 }
 
 LinuxUinput*
@@ -104,7 +102,7 @@ uInput::create_uinput_device(int device_id)
   {
     LinuxUinput::DeviceType device_type = LinuxUinput::kGenericDevice;
     std::ostringstream dev_name;
-    dev_name << cfg.device_name;
+    dev_name << "Xbox Gamepad (userspace driver)";
 
     switch (device_id)
     {
@@ -127,7 +125,7 @@ uInput::create_uinput_device(int device_id)
         break;
     }
 
-    boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(device_type, dev_name.str(), m_vendor_id, m_product_id));
+    boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(device_type, dev_name.str(), 0x0000, 0x0000));
     uinput_devs.insert(std::pair<int, boost::shared_ptr<LinuxUinput> >(device_id, dev));
 
     std::cout << "Creating uinput device: device_id: " << device_id << ", dev_name: " << dev_name.str() << std::endl;
