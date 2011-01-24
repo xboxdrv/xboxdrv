@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "uinput_deviceid.hpp"
+#include "ui_event.hpp"
 
 #include "uinput.hpp"
 

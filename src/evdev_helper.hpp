@@ -23,7 +23,7 @@
 #include <X11/Xlib.h>
 
 #include "enum_box.hpp"
-#include "uinput_deviceid.hpp"
+#include "ui_event.hpp"
 
 void str2event(const std::string& name, int& type, int& code);
 int  get_event_type(const std::string& str);

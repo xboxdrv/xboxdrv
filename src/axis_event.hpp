@@ -25,7 +25,7 @@
 #include <vector>
 
 #include "axis_filter.hpp"
-#include "uinput_deviceid.hpp"
+#include "ui_event.hpp"
 
 class uInput;
 class AxisEvent;
