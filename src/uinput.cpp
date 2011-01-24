@@ -19,6 +19,8 @@
 #include "uinput.hpp"
 
 #include <iostream>
+
+#include "log.hpp"
 
 bool
 uInput::is_mouse_button(int ev_code)
@@ -87,7 +89,7 @@ uInput::uInput() :
 
 LinuxUinput*
 uInput::create_uinput_device(int device_id)
-{
+{ 
   // DEVICEID_AUTO should not happen at this point as the user should
   // have called resolve_device_id()
   assert(device_id != DEVICEID_AUTO);
@@ -100,6 +102,7 @@ uInput::create_uinput_device(int device_id)
   }
   else
   {
+    log_info << "create device: " << device_id << std::endl;
     LinuxUinput::DeviceType device_type = LinuxUinput::kGenericDevice;
     std::ostringstream dev_name;
     dev_name << "Xbox Gamepad (userspace driver)";

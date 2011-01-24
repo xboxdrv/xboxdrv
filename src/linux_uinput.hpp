@@ -37,6 +37,8 @@ private:
   uint16_t    vendor;
   uint16_t    product;
 
+  bool m_finished;
+
   int fd;
   uinput_user_dev user_dev;
   bool key_bit;

@@ -193,6 +193,10 @@ XboxdrvDaemon::run(const Options& opts)
     }
 
     log_info << "created " << m_controller_slots.size() << " controller slots" << std::endl;
+
+    // After all the ControllerConfig registered their events, finish up
+    // the device creation
+    uinput->finish();
   }
 
   // Setup udev monitor and enumerate

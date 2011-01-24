@@ -54,10 +54,6 @@ ControllerConfigSet::create(uInput& uinput, const Options::ControllerConfigs& op
   
   log_info << "UInput finish" << std::endl;
 
-  // After all the ControllerConfig registered their events, finish up
-  // the device creation
-  uinput.finish();
-
   return m_config;
 }
 

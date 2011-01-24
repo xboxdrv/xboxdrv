@@ -33,6 +33,7 @@ LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, uint1
   name(name_),
   vendor(vendor_),
   product(product_),
+  m_finished(false),
   fd(-1),
   user_dev(),
   key_bit(false),
@@ -184,6 +185,8 @@ LinuxUinput::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& cal
 void
 LinuxUinput::finish()
 {
+  assert(!m_finished);
+
   // Create some mandatory events that are needed for the kernel/Xorg
   // to register the device as its proper type
   switch(m_device_type)
@@ -243,6 +246,9 @@ LinuxUinput::finish()
     }
   }
 
+  // FIXME: check that the config isn't empty and give a more
+  // meaningful message when it is
+
   log_info << "finish" << std::endl;
   if (ioctl(fd, UI_DEV_CREATE))
   {
@@ -250,6 +256,8 @@ LinuxUinput::finish()
     out << "LinuxUinput: Unable to create UINPUT device: '" << name << "': " << strerror(errno);
     throw std::runtime_error(out.str());
   }
+
+  m_finished = true;
 }
 
 void
