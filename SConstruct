@@ -1,7 +1,5 @@
 # -*- python -*-
 
-CacheDir('cache')
-
 env = Environment()
 
 opts = Variables(['custom.py'], ARGUMENTS)
