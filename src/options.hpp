@@ -146,6 +146,7 @@ public:
   Options();
 
   ControllerConfigs& get_controller_slot();
+  const ControllerConfigs& get_controller_slot() const;
   
   /** Returns the currently active configuration */
   ControllerOptions& get_controller_options();

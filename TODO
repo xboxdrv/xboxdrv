@@ -1,4 +1,4 @@
-Pre Release Testing:
+slPre Release Testing:
 =====================
 
 * check the version number
@@ -44,53 +44,9 @@ Stuff to do before 0.7.0 release:
 
 * AxisSensitivity filter has overflow issue 
 
-* add support for pairing the controller to the PC (or zero)
-
-  --ps3-pair 00:00:00:00:00:00
-  --ps3-pair-with-bluetooth
-
-* Playstation 3 controller support
-  - http://www.pabr.org/sixlinux/sixlinux.en.html
-  - http://www.motioninjoy.com/
-
-  - figure out what the remaining unknown bits mean:
-
-     data from just pluging the controller in and out a few times
-     without much pause inbetween:
-
-     Dualshock3:
-     // leaving controller plugged in for a longer time settles to this:
-      00 00 03 ef 16 00 00 00 00 33 fc 77 01 de
-
-     00 00 03 ef 16 00 00 00 00 33 fc 77 01 de 
-     00 00 03 ef 16 00 00 00 00 33 fc 77 01 c0
-     00 00 02 ee 12 00 00 00 00 12 fc 77 01 de
-           ^^^^^                         ^^^^^
-     00 00 01 ee 12 00 00 00 00 12 fc 77 01 de 
-     00 00 03 ef 16 00 00 00 00 11 fc 77 01 de 
-     00 00 03 ef 16 00 00 00 00 33 fc 77 01 de 
-     00 00 02 ee 12 00 00 00 00 12 fc 77 01 de 
-     wrong ideas: bluetooth master id
-
-     00 00 01 ef 16 00 00 00 00 11 fc 77 01 c0
-     00 00 03 ef 16 00 00 00 00 11 fc 77 01 c0
-
-     SIXAXIS:
-     00 00 06 ee 10 00 00 00 00 06 83 77 01 81 
-     00 00 06 ee 10 00 00 00 00 06 83 77 01
-     00 00 06 ee 10 00 00 00 00 06 83 77 
-
-     // taken from: http://www.pabr.org/sixlinux/sixlinux.en.html
-     00 00 02 ee 10 00 00 00 00 02 b2 77 01 81
-     
-     random guesses: bluetooth id, serial number, calibration data,
-     battery status
-
 * fix the FIXME's
 
 * fix event output (have it pre-modifier or post-modifier?)
-
-* fix --no-uinput
 
 * need to hide/disable the toggle button from the UIButtonmap
 
@@ -101,12 +57,19 @@ Stuff to do before 0.7.0 release:
 Daemon Related Stuff
 ====================
 
+* currently device creation fails as all configurations are assigned
+  to the same virtual device
+
+* improve output on which uinput devices are created
+
+* fix --no-uinput
+
+* uinput must be thread safe
+
 * implement --on-connect and --on-disconnect for the daemon
   - maybe have a more general event interface that allows to run stuff
     on configuration changes, controller plug-ins, etc. (notifiy area as example)
   - also supply useful information as argument
-
-* uinput must be thread safe
 
 * handle multiple controllers in a sane manner (requires cloning of
   modifier maps, also auto increment of "auto" device id's)
@@ -155,11 +118,51 @@ List Output
       1     hal daemon from Thomas Debouverie <debouverie_thomas@yahoo.fr>
       1     Implemented --ui-buttonmap A=BTN_A@{device_id} ??!?!?
 
-* improve output on which uinput devices are created
-
 
 Stuff to do before 0.7.x release:
 =================================
+
+* Playstation 3 controller support
+  - http://www.pabr.org/sixlinux/sixlinux.en.html
+  - http://www.motioninjoy.com/
+
+  - figure out what the remaining unknown bits mean:
+
+     data from just pluging the controller in and out a few times
+     without much pause inbetween:
+
+     Dualshock3:
+     // leaving controller plugged in for a longer time settles to this:
+      00 00 03 ef 16 00 00 00 00 33 fc 77 01 de
+
+     00 00 03 ef 16 00 00 00 00 33 fc 77 01 de 
+     00 00 03 ef 16 00 00 00 00 33 fc 77 01 c0
+     00 00 02 ee 12 00 00 00 00 12 fc 77 01 de
+           ^^^^^                         ^^^^^
+     00 00 01 ee 12 00 00 00 00 12 fc 77 01 de 
+     00 00 03 ef 16 00 00 00 00 11 fc 77 01 de 
+     00 00 03 ef 16 00 00 00 00 33 fc 77 01 de 
+     00 00 02 ee 12 00 00 00 00 12 fc 77 01 de 
+     wrong ideas: bluetooth master id
+
+     00 00 01 ef 16 00 00 00 00 11 fc 77 01 c0
+     00 00 03 ef 16 00 00 00 00 11 fc 77 01 c0
+
+     SIXAXIS:
+     00 00 06 ee 10 00 00 00 00 06 83 77 01 81 
+     00 00 06 ee 10 00 00 00 00 06 83 77 01
+     00 00 06 ee 10 00 00 00 00 06 83 77 
+
+     // taken from: http://www.pabr.org/sixlinux/sixlinux.en.html
+     00 00 02 ee 10 00 00 00 00 02 b2 77 01 81
+     
+     random guesses: bluetooth id, serial number, calibration data,
+     battery status
+
+* add support for pairing the controller to the PC (or zero)
+
+  --ps3-pair 00:00:00:00:00:00
+  --ps3-pair-with-bluetooth
 
 * allow named sections in INI files:
 

@@ -23,6 +23,8 @@
 #include <stdint.h>
 #include <vector>
 
+#include "controller_config_set.hpp"
+
 class Options;
 class uInput;
 struct XPadDevice;
@@ -33,8 +35,41 @@ class XboxdrvDaemon
 private:
   struct udev* m_udev;
   struct udev_monitor* m_monitor;
-  typedef std::vector<XboxdrvThread*> Threads;
-  Threads m_threads;
+
+  struct ControllerSlot
+  {
+    ControllerConfigSetPtr config;
+    XboxdrvThread* thread;
+    
+    ControllerSlot() :
+      config(),
+      thread(0)
+    {}
+
+    ControllerSlot(ControllerConfigSetPtr config_,
+                   XboxdrvThread* thread_ = 0) :
+      config(config_),
+      thread(thread_)
+    {}
+
+    ControllerSlot(const ControllerSlot& rhs) :
+      config(rhs.config),
+      thread(rhs.thread)
+    {}
+
+    ControllerSlot& operator=(const ControllerSlot& rhs)
+    {
+      if (&rhs != this)
+      {
+        config = rhs.config;
+        thread = rhs.thread;
+      }
+      return *this;
+    }
+  };
+  
+  typedef std::vector<ControllerSlot> ControllerSlots;
+  ControllerSlots m_controller_slots;
 
 public:
   XboxdrvDaemon();

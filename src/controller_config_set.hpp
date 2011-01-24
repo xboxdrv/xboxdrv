@@ -19,10 +19,26 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_CONFIG_SET_HPP
 #define HEADER_XBOXDRV_CONTROLLER_CONFIG_SET_HPP
 
+#include <boost/shared_ptr.hpp>
+
 #include "controller_config.hpp"
+#include "options.hpp"
+
+class Options;
+class uInput;
+class ControllerConfigSet;
+
+typedef boost::shared_ptr<ControllerConfigSet> ControllerConfigSetPtr;
 
 class ControllerConfigSet
 {
+public:
+  /** Creates a ControllerConfigSet from the Options object and connects it to uInput */
+  static ControllerConfigSetPtr create(uInput& uinput, const Options::ControllerConfigs& opts);
+
+private:
+  static void create_modifier(const ControllerOptions& options, std::vector<ModifierPtr>* modifier);
+  
 private:
   std::vector<ControllerConfigPtr> m_config;
   int m_current_config;

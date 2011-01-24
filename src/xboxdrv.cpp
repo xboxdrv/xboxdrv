@@ -463,7 +463,8 @@ Xboxdrv::run_main(const Options& opts)
 
     global_exit_xboxdrv = false;
 
-    std::auto_ptr<MessageProcessor> message_proc(new DefaultMessageProcessor(*uinput, opts));
+    ControllerConfigSetPtr config_set = ControllerConfigSet::create(*uinput, opts.get_controller_slot());
+    std::auto_ptr<MessageProcessor> message_proc(new DefaultMessageProcessor(*uinput, config_set, opts));
     XboxdrvThread loop(message_proc, controller, opts);
     loop.controller_loop(opts);
           

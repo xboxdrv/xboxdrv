@@ -24,6 +24,8 @@
 #include <errno.h>
 #include <fcntl.h>
 
+#include "evdev_helper.hpp"
+#include "log.hpp"
 #include "force_feedback_handler.hpp"
 
 LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, uint16_t vendor_, uint16_t product_) :
@@ -42,6 +44,8 @@ LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, uint1
   ff_callback(),
   needs_sync(true)
 {
+  log_info << name << " " << vendor << ":" << product << std::endl;
+
   std::fill_n(abs_lst, ABS_CNT, false);
   std::fill_n(rel_lst, REL_CNT, false);
   std::fill_n(key_lst, KEY_CNT, false);
@@ -93,7 +97,7 @@ LinuxUinput::~LinuxUinput()
 void
 LinuxUinput::add_abs(uint16_t code, int min, int max, int fuzz, int flat)
 {
-  // std::cout << "add_abs: " << abs2str(code) << " (" << min << ", " << max << ") " << name << std::endl;
+  log_info << "add_abs: " << abs2str(code) << " (" << min << ", " << max << ") " << name << std::endl;
 
   if (!abs_lst[code])
   {
@@ -117,7 +121,7 @@ LinuxUinput::add_abs(uint16_t code, int min, int max, int fuzz, int flat)
 void
 LinuxUinput::add_rel(uint16_t code)
 {
-  // std::cout << "add_rel: " << rel2str(code) << " " << name << std::endl;
+  log_info << "add_rel: " << rel2str(code) << " " << name << std::endl;
 
   if (!rel_lst[code])
   {
@@ -136,7 +140,7 @@ LinuxUinput::add_rel(uint16_t code)
 void
 LinuxUinput::add_key(uint16_t code)
 {
-  // std::cout << "add_key: " << btn2str(code) << " " << name << std::endl;
+  log_info << "add_key: " << key2str(code) << " " << name << std::endl;
 
   if (!key_lst[code])
   {
@@ -220,14 +224,26 @@ LinuxUinput::finish()
   user_dev.id.vendor  = vendor;
   user_dev.id.product = product;
 
+  log_info << "'" << user_dev.name << "' " << user_dev.id.vendor << ":" << user_dev.id.product << std::endl;
+
   if (ff_bit)
     user_dev.ff_effects_max = ff_handler->get_max_effects();
 
   //std::cout << "Finalizing uinput: '" << user_dev.name << "'" << std::endl;
 
-  if (write(fd, &user_dev, sizeof(user_dev)) < 0)
-    throw std::runtime_error("uinput:finish: " + name + ": " + strerror(errno));
+  {
+    int write_ret = write(fd, &user_dev, sizeof(user_dev));
+    if (write_ret < 0)
+    {
+      throw std::runtime_error("uinput:finish: " + name + ": " + strerror(errno));
+    }
+    else
+    {
+      log_info << "write return value: " << write_ret << std::endl; 
+    }
+  }
 
+  log_info << "finish" << std::endl;
   if (ioctl(fd, UI_DEV_CREATE))
   {
     std::ostringstream out;

@@ -92,6 +92,20 @@ Options::get_controller_slot()
   return controller_slots[controller_slot];
 }
 
+const Options::ControllerConfigs& 
+Options::get_controller_slot() const
+{
+  ControllerSlots::const_iterator it = controller_slots.find(controller_slot);
+  if (it == controller_slots.end())
+  {
+    assert(!"shouldn't happen");
+  }
+  else
+  {
+    return it->second;
+  }  
+}
+
 ControllerOptions&
 Options::get_controller_options()
 {

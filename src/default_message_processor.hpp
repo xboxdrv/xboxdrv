@@ -32,19 +32,17 @@ class DefaultMessageProcessor : public MessageProcessor
 {
 private:
   uInput& m_uinput;
-  ControllerConfigSet m_config;
+  ControllerConfigSetPtr m_config;
 
   XboxGenericMsg m_oldmsg; /// last data send to uinput
   XboxButton m_config_toggle_button;
 
 public:
-  DefaultMessageProcessor(uInput& uinput, const Options& opts);
+  DefaultMessageProcessor(uInput& uinput, ControllerConfigSetPtr config,
+                          const Options& opts);
   ~DefaultMessageProcessor();
 
   void send(const XboxGenericMsg& msg, int msec_delta);
-
-private:
-  void create_modifier(const ControllerOptions& options, std::vector<ModifierPtr>* modifier);
 
 private:
   DefaultMessageProcessor(const DefaultMessageProcessor&);

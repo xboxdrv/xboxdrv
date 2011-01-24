@@ -22,50 +22,14 @@
 #include "options.hpp"
 #include "uinput.hpp"
 
-#include "modifier/dpad_rotation_modifier.hpp"
-#include "modifier/four_way_restrictor_modifier.hpp"
-#include "modifier/square_axis_modifier.hpp"
-
-DefaultMessageProcessor::DefaultMessageProcessor(uInput& uinput, const Options& opts) :
+DefaultMessageProcessor::DefaultMessageProcessor(uInput& uinput, ControllerConfigSetPtr config, 
+                                                 const Options& opts) :
   m_uinput(uinput),
-  m_config(),
+  m_config(config),
   m_oldmsg(),
   m_config_toggle_button(opts.config_toggle_button)
 {
   memset(&m_oldmsg, 0, sizeof(m_oldmsg));
-
-  // create ControllerConfigs
-  for(Options::ControllerSlots::const_iterator controller = opts.controller_slots.begin(); 
-      controller != opts.controller_slots.end(); ++controller)
-  {
-    for(Options::ControllerConfigs::const_iterator i = controller->second.begin();
-        i != controller->second.end(); ++i)
-    {
-      const ControllerOptions& ctrl_opt = i->second;
-
-      ControllerConfigPtr config(new ControllerConfig(uinput, ctrl_opt));
-      create_modifier(ctrl_opt, &config->get_modifier());
-      m_config.add_config(config);
-
-#ifdef FIXME
-      // introspection of the config
-      std::cout << "==[[ Active Modifier ]]==" << std::endl;
-      for(std::vector<ModifierPtr>::iterator mod = config->get_modifier().begin(); 
-          mod != config->get_modifier().end(); 
-          ++mod)
-      {
-        std::cout << (*mod)->str() << std::endl;
-      }
-#endif
-    }
-  }
-
-
-  log_info << "UInput finish" << std::endl;
-
-  // After all the ControllerConfig registered their events, finish up
-  // the device creation
-  uinput.finish();
 }
 
 DefaultMessageProcessor::~DefaultMessageProcessor()
@@ -73,135 +37,9 @@ DefaultMessageProcessor::~DefaultMessageProcessor()
 }
 
 void
-DefaultMessageProcessor::create_modifier(const ControllerOptions& opts, std::vector<ModifierPtr>* modifier)
-{
-  if (!opts.calibration_map.empty())
-  {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.calibration_map.begin();
-        i != opts.calibration_map.end();
-        ++i)
-    {
-      axismap->add_filter(i->first, i->second); 
-    }
-
-    modifier->push_back(axismap);
-  }
-
-  if (opts.deadzone)
-  {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    XboxAxis axes[] = { XBOX_AXIS_X1,
-                        XBOX_AXIS_Y1,
-                      
-                        XBOX_AXIS_X2,
-                        XBOX_AXIS_Y2 };
-
-    for(size_t i = 0; i < sizeof(axes)/sizeof(XboxAxis); ++i)
-    {
-      axismap->add_filter(axes[i],
-                          AxisFilterPtr(new DeadzoneAxisFilter(-opts.deadzone,
-                                                               opts.deadzone,
-                                                               true)));
-    }
-
-    modifier->push_back(axismap);
-  }
-
-  if (opts.deadzone_trigger)
-  {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    XboxAxis axes[] = { XBOX_AXIS_LT,
-                        XBOX_AXIS_RT };
-
-    for(size_t i = 0; i < sizeof(axes)/sizeof(XboxAxis); ++i)
-    {
-      axismap->add_filter(axes[i],
-                          AxisFilterPtr(new DeadzoneAxisFilter(-opts.deadzone_trigger,
-                                                               opts.deadzone_trigger,
-                                                               true)));
-    }
-
-    modifier->push_back(axismap);
-  }
-
-  if (opts.square_axis)
-  {
-    modifier->push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
-    modifier->push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
-  }
-
-  if (!opts.sensitivity_map.empty())
-  {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.sensitivity_map.begin();
-        i != opts.sensitivity_map.end(); ++i)
-    {
-      axismap->add_filter(i->first, i->second); 
-    }
-
-    modifier->push_back(axismap);
-  }
-
-  if (opts.four_way_restrictor)
-  {
-    modifier->push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
-    modifier->push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
-  }
-
-  if (!opts.relative_axis_map.empty())
-  {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.relative_axis_map.begin();
-        i != opts.relative_axis_map.end(); ++i)
-    {
-      axismap->add_filter(i->first, i->second); 
-    }
-
-    modifier->push_back(axismap);
-  }
-
-  if (opts.dpad_rotation)
-  {
-    modifier->push_back(ModifierPtr(new DpadRotationModifier(opts.dpad_rotation)));
-  }
-
-  if (!opts.autofire_map.empty())
-  {
-    boost::shared_ptr<ButtonmapModifier> buttonmap(new ButtonmapModifier);
-
-    for(std::map<XboxButton, ButtonFilterPtr>::const_iterator i = opts.autofire_map.begin();
-        i != opts.autofire_map.end(); ++i)
-    {
-      buttonmap->add_filter(i->first, i->second); 
-    }
-
-    modifier->push_back(buttonmap);
-  }
-
-  // axismap, buttonmap comes last, as otherwise they would mess up the button and axis names
-  if (!opts.buttonmap->empty())
-  {
-    modifier->push_back(opts.buttonmap);
-  }
-
-  if (!opts.axismap->empty())
-  {
-    modifier->push_back(opts.axismap);
-  }
-
-  modifier->insert(modifier->end(), opts.modifier.begin(), opts.modifier.end());
-}
-
-void
 DefaultMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
 {
-  if (!m_config.empty())
+  if (!m_config->empty())
   {
     XboxGenericMsg msg = msg_in; 
 
@@ -214,24 +52,24 @@ DefaultMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
       if (cur && cur != last)
       {
         // reset old mapping to zero to not get stuck keys/axis
-        m_config.get_config()->get_uinput().reset_all_outputs();
+        m_config->get_config()->get_uinput().reset_all_outputs();
 
         // switch to the next input mapping
-        m_config.next_config();
+        m_config->next_config();
 
         log_info << "Next Config" << std::endl;
       }
     }
 
     // run the controller message through all modifier
-    for(std::vector<ModifierPtr>::iterator i = m_config.get_config()->get_modifier().begin();
-        i != m_config.get_config()->get_modifier().end(); 
+    for(std::vector<ModifierPtr>::iterator i = m_config->get_config()->get_modifier().begin();
+        i != m_config->get_config()->get_modifier().end(); 
         ++i)
     {
       (*i)->update(msec_delta, msg);
     }
 
-    m_config.get_config()->get_uinput().update(msec_delta);
+    m_config->get_config()->get_uinput().update(msec_delta);
 
     // send current Xbox state to uinput
     if (memcmp(&msg, &m_oldmsg, sizeof(XboxGenericMsg)) != 0)
@@ -242,7 +80,7 @@ DefaultMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
       // too
       m_oldmsg = msg;
 
-      m_config.get_config()->get_uinput().send(msg);
+      m_config->get_config()->get_uinput().send(msg);
     }
   }
 }

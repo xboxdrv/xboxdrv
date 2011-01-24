@@ -30,6 +30,9 @@ class Options;
 class XboxGenericController;
 class MessageProcessor;
 
+/** XboxdrvThread handles a single XboxGenericController controller
+    (optionally in a separate thread), reads it messages and passes it
+    to the MessageProcessor */
 class XboxdrvThread // FIXME: find a better name, XboxdrvControllerLoop?!
 {
 private:

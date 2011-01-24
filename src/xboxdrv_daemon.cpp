@@ -33,7 +33,7 @@ extern bool global_exit_xboxdrv;
 XboxdrvDaemon::XboxdrvDaemon() :
   m_udev(0),
   m_monitor(0),
-  m_threads()
+  m_controller_slots()
 {
   m_udev = udev_new();
     
@@ -49,9 +49,10 @@ XboxdrvDaemon::XboxdrvDaemon() :
 
 XboxdrvDaemon::~XboxdrvDaemon()
 {
-  for(Threads::iterator i = m_threads.begin(); i != m_threads.end(); ++i)
+  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
-    delete *i;
+    delete i->thread;
+    i->thread = 0;
   }
 
   udev_monitor_unref(m_monitor);
@@ -61,13 +62,20 @@ XboxdrvDaemon::~XboxdrvDaemon()
 void
 XboxdrvDaemon::cleanup_threads()
 {
-  size_t num_threads = m_threads.size();
-  m_threads.erase(std::remove_if(m_threads.begin(), m_threads.end(), 
-                                 boost::bind(&XboxdrvThread::try_join_thread, _1)),
-                  m_threads.end());
-  if (num_threads != m_threads.size())
+  int count = 0;
+
+  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
-    log_info << "cleaned up " << (num_threads - m_threads.size()) << " thread(s)" << std::endl;
+    if (i->thread)
+    {
+      i->thread->try_join_thread();
+      count += 1;
+    }
+  }
+
+  if (count > 0)
+  {
+    log_info << "cleaned up " << count << " thread(s)" << std::endl;
   }
 }
 
@@ -171,6 +179,20 @@ XboxdrvDaemon::run(const Options& opts)
   {
     if (!opts.quiet)
       std::cout << "Starting without uinput" << std::endl;
+  }
+
+  { // create controller slots
+    int slot_count = 0;
+
+    for(Options::ControllerSlots::const_iterator controller = opts.controller_slots.begin(); 
+        controller != opts.controller_slots.end(); ++controller)
+    {
+      log_info << "creating slot: " << slot_count << std::endl;
+      m_controller_slots.push_back(ControllerSlot(ControllerConfigSet::create(*uinput, controller->second)));
+      slot_count += 1;
+    }
+
+    log_info << "created " << m_controller_slots.size() << " controller slots" << std::endl;
   }
 
   // Setup udev monitor and enumerate
@@ -312,7 +334,8 @@ XboxdrvDaemon::print_info(struct udev_device* device)
 }
 
 void
-XboxdrvDaemon::launch_xboxdrv(uInput* uinput, const XPadDevice& dev_type, const Options& opts, uint8_t busnum, uint8_t devnum)
+XboxdrvDaemon::launch_xboxdrv(uInput* uinput, const XPadDevice& dev_type, const Options& opts, 
+                              uint8_t busnum, uint8_t devnum)
 {
   std::cout << "[XboxdrvDaemon] launching " << boost::format("%03d:%03d") 
     % static_cast<int>(busnum) 
@@ -328,11 +351,20 @@ XboxdrvDaemon::launch_xboxdrv(uInput* uinput, const XPadDevice& dev_type, const 
   }
   else
   {
-    std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
-    std::auto_ptr<MessageProcessor> message_proc(new DefaultMessageProcessor(*uinput, opts));
-    std::auto_ptr<XboxdrvThread> thread(new XboxdrvThread(message_proc, controller, opts));
-    thread->start_thread(opts);
-    m_threads.push_back(thread.release());
+    for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+    {
+      if (i->thread == 0)
+      {
+        log_info << "found a free slot: " << (i - m_controller_slots.begin()) << std::endl;
+
+        std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
+        std::auto_ptr<MessageProcessor> message_proc(new DefaultMessageProcessor(*uinput, i->config, opts));
+        std::auto_ptr<XboxdrvThread> thread(new XboxdrvThread(message_proc, controller, opts));
+        thread->start_thread(opts);
+        i->thread = thread.release();
+        break;
+      }
+    }
   }
 }
 

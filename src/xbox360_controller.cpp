@@ -42,7 +42,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
   m_headset()
 {
   find_endpoints();
-  if (true) // FIXME
+  if (false)
   {
     std::cout << "EP(IN):  " << endpoint_in << std::endl;
     std::cout << "EP(OUT): " << endpoint_out << std::endl;
@@ -207,7 +207,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   else if (ret != LIBUSB_SUCCESS)
   { // Error
     std::ostringstream str;
-    str << "Xbox360Controller: USBError: " << ret << "\n" << usb_strerror(ret);
+    str << "Xbox360Controller: libusb_interrupt_transfer(): " << usb_strerror(ret);
     throw std::runtime_error(str.str());
   }
   else if (len == 0)
