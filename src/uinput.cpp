@@ -201,7 +201,7 @@ uInput::update(int msec_delta)
 
     while (i->second.time_count >= i->second.repeat_interval)
     {
-      get_uinput(i->second.code.device_id)->send(EV_REL, i->second.code.code, i->second.value);
+      get_uinput(i->second.code.get_device_id())->send(EV_REL, i->second.code.code, i->second.value);
       i->second.time_count -= i->second.repeat_interval;
     }
   }
@@ -238,7 +238,7 @@ uInput::send_rel_repetitive(const UIEvent& code, int value, int repeat_interval)
       rel_repeat_lst.insert(std::pair<UIEvent, RelRepeat>(code, rel_rep));
     
       // Send the event once
-      get_uinput(code.device_id)->send(EV_REL, code.code, value);
+      get_uinput(code.get_device_id())->send(EV_REL, code.code, value);
     }
     else
     {

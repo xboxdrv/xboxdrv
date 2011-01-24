@@ -29,20 +29,25 @@ enum {
   DEVICEID_JOYSTICK =  0
 };
 
-struct UIEvent 
+class UIEvent 
 {
 public:
   static UIEvent create(int device_id, int type, int code);
   static UIEvent invalid();
 
 public:
-  void resolve_device_id();
+  void resolve_device_id(int slot, bool extra_devices);
   bool is_valid() const;
   bool operator<(const UIEvent& rhs)  const;
 
-  int device_id;
   int type;
   int code;
+
+  int get_device_id() const;
+
+private:
+  int m_device_id;
+  bool m_device_id_resolved;
 };
 
 /** Takes "1-BTN_A" splits it into "1", "BTN_A" */

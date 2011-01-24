@@ -24,10 +24,10 @@ UIEvent
 UIEvent::create(int device_id, int type, int code) 
 {
   UIEvent ev;
-  ev.device_id = device_id;
+  ev.m_device_id = device_id;
+  ev.m_device_id_resolved = false;
   ev.type      = type;
   ev.code      = code;
-  ev.resolve_device_id();
   return ev;
 }
 
@@ -35,7 +35,8 @@ UIEvent
 UIEvent::invalid()
 {
   UIEvent ev;
-  ev.device_id = DEVICEID_INVALID;
+  ev.m_device_id = DEVICEID_INVALID;
+  ev.m_device_id_resolved = false;
   ev.type      = -1;
   ev.code      = -1;
   return ev;    
@@ -45,7 +46,7 @@ bool
 UIEvent::is_valid() const 
 {
   return 
-    device_id != DEVICEID_INVALID &&
+    m_device_id != DEVICEID_INVALID &&
     type != -1 &&
     code != -1;
 }
@@ -53,7 +54,7 @@ UIEvent::is_valid() const
 bool
 UIEvent::operator<(const UIEvent& rhs)  const
 {
-  if (device_id == rhs.device_id)
+  if (m_device_id == rhs.m_device_id)
   {
     if (type == rhs.type)
     {
@@ -68,7 +69,7 @@ UIEvent::operator<(const UIEvent& rhs)  const
       return true;
     }
   }
-  else if (device_id > rhs.device_id)
+  else if (m_device_id > rhs.m_device_id)
   {
     return false;
   }
@@ -79,36 +80,38 @@ UIEvent::operator<(const UIEvent& rhs)  const
 }
 
 void
-UIEvent::resolve_device_id()
+UIEvent::resolve_device_id(int slot, bool extra_devices)
 {
-  if (device_id == DEVICEID_AUTO)
+  if (m_device_id == DEVICEID_AUTO)
   {
     switch(type)
     {
       case EV_KEY:
         if (uInput::is_mouse_button(code))
         {
-          device_id = DEVICEID_MOUSE;
+          m_device_id = DEVICEID_MOUSE;
         }
         else if (uInput::is_keyboard_button(code))
         {
-          device_id = DEVICEID_KEYBOARD;
+          m_device_id = DEVICEID_KEYBOARD;
         }
         else
         {
-          device_id = DEVICEID_JOYSTICK;
+          m_device_id = DEVICEID_JOYSTICK;
         }
         break;
 
       case EV_REL:
-        device_id = DEVICEID_MOUSE;
+        m_device_id = DEVICEID_MOUSE;
         break;
 
       case EV_ABS:
-        device_id = DEVICEID_JOYSTICK;
+        m_device_id = DEVICEID_JOYSTICK;
         break;
     }
   }
+
+  m_device_id_resolved = true;
 }
 
 /** Takes "1-BTN_A" splits it into "1", "BTN_A" */
@@ -142,6 +145,13 @@ void split_event_name(const std::string& str, std::string* event_str, int* devic
       *device_id = boost::lexical_cast<int>(device);
     }
   }
+}
+
+int
+UIEvent::get_device_id() const
+{
+  assert(m_device_id_resolved);
+  return m_device_id;
 }
 
 /* EOF */

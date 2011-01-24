@@ -219,7 +219,7 @@ RelAxisEventHandler::RelAxisEventHandler(int device_id, int code, int repeat, fl
 void
 RelAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
 {
-  uinput.add_rel(m_code.device_id, m_code.code);
+  uinput.add_rel(m_code.get_device_id(), m_code.code);
 }
 
 void
@@ -242,7 +242,7 @@ std::string
 RelAxisEventHandler::str() const
 {
   std::ostringstream out;
-  out << m_code.device_id << "-" << m_code.code << ":" << m_value << ":" << m_repeat;
+  out << m_code.get_device_id() << "-" << m_code.code << ":" << m_value << ":" << m_repeat;
   return out.str();
 }
 
@@ -309,7 +309,7 @@ AbsAxisEventHandler::set_axis_range(int min, int max)
 void
 AbsAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
 {
-  uinput.add_abs(m_code.device_id, m_code.code, 
+  uinput.add_abs(m_code.get_device_id(), m_code.code, 
                  m_min, m_max, m_fuzz, m_flat);
 }
 
@@ -321,7 +321,7 @@ AbsAxisEventHandler:: send(uInput& uinput, int value)
     value = (*i)->filter(old_value, value);
     }*/
 
-  uinput.send_abs(m_code.device_id, m_code.code, value);
+  uinput.send_abs(m_code.get_device_id(), m_code.code, value);
 }
  
 void
@@ -333,7 +333,7 @@ std::string
 AbsAxisEventHandler::str() const
 {
   std::ostringstream out;
-  out << m_code.device_id << "-" << m_code.code << ":" 
+  out << m_code.get_device_id() << "-" << m_code.code << ":" 
       << m_min << ":" << m_max << ":" 
       << m_fuzz << ":" << m_flat;
   return out.str();
@@ -406,12 +406,12 @@ KeyAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
 {
   for(int i = 0; m_up_codes[i].is_valid(); ++i)
   {
-    uinput.add_key(m_up_codes[i].device_id, m_up_codes[i].code);
+    uinput.add_key(m_up_codes[i].get_device_id(), m_up_codes[i].code);
   }
 
   for(int i = 0; m_down_codes[i].is_valid(); ++i)
   {
-    uinput.add_key(m_down_codes[i].device_id, m_down_codes[i].code);
+    uinput.add_key(m_down_codes[i].get_device_id(), m_down_codes[i].code);
   }
 }
 
@@ -424,28 +424,28 @@ KeyAxisEventHandler::send(uInput& uinput, int value)
     if (value < 0)
     {
       for(int i = 0; m_up_codes[i].is_valid(); ++i)
-        uinput.send_key(m_down_codes[i].device_id, m_down_codes[i].code, false);
+        uinput.send_key(m_down_codes[i].get_device_id(), m_down_codes[i].code, false);
 
       for(int i = 0; m_up_codes[i].is_valid(); ++i)
-        uinput.send_key(m_up_codes[i].device_id, m_up_codes[i].code, true);
+        uinput.send_key(m_up_codes[i].get_device_id(), m_up_codes[i].code, true);
     }
     else // (value > 0)
     { 
       for(int i = 0; m_up_codes[i].is_valid(); ++i)
-        uinput.send_key(m_down_codes[i].device_id, m_down_codes[i].code, true);
+        uinput.send_key(m_down_codes[i].get_device_id(), m_down_codes[i].code, true);
 
       for(int i = 0; m_up_codes[i].is_valid(); ++i)
-        uinput.send_key(m_up_codes[i].device_id, m_up_codes[i].code, false);
+        uinput.send_key(m_up_codes[i].get_device_id(), m_up_codes[i].code, false);
     }
   }
   else if (::abs(m_old_value) >= m_threshold &&
            ::abs(value)       <  m_threshold)
   { // entering zero zone
     for(int i = 0; m_up_codes[i].is_valid(); ++i)
-      uinput.send_key(m_down_codes[i].device_id, m_down_codes[i].code, false);
+      uinput.send_key(m_down_codes[i].get_device_id(), m_down_codes[i].code, false);
 
     for(int i = 0; m_up_codes[i].is_valid(); ++i)
-      uinput.send_key(m_up_codes[i].device_id, m_up_codes[i].code, false);
+      uinput.send_key(m_up_codes[i].get_device_id(), m_up_codes[i].code, false);
   }
 
   m_old_value = value;
@@ -462,7 +462,7 @@ KeyAxisEventHandler::str() const
   std::ostringstream out;
   for(int i = 0; m_up_codes[i].is_valid();)
   {
-    out << m_up_codes[i].device_id << "-" << m_up_codes[i].code;
+    out << m_up_codes[i].get_device_id() << "-" << m_up_codes[i].code;
 
     ++i;
     if (m_up_codes[i].is_valid())
@@ -473,7 +473,7 @@ KeyAxisEventHandler::str() const
 
   for(int i = 0; m_down_codes[i].is_valid();)
   {
-    out << m_down_codes[i].device_id << "-" << m_down_codes[i].code;
+    out << m_down_codes[i].get_device_id() << "-" << m_down_codes[i].code;
 
     ++i;
     if (m_down_codes[i].is_valid())

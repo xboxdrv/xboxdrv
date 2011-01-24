@@ -262,14 +262,14 @@ KeyButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
 {
   for(int i = 0; m_codes[i].is_valid(); ++i)
   {
-    uinput.add_key(m_codes[i].device_id, m_codes[i].code);
+    uinput.add_key(m_codes[i].get_device_id(), m_codes[i].code);
   }
 
   if (m_hold_threshold)
   {
     for(int i = 0; m_secondary_codes[i].is_valid(); ++i)
     {
-      uinput.add_key(m_secondary_codes[i].device_id, m_secondary_codes[i].code);
+      uinput.add_key(m_secondary_codes[i].get_device_id(), m_secondary_codes[i].code);
     }
   }
 }
@@ -286,7 +286,7 @@ KeyButtonEventHandler::send(uInput& uinput, bool value)
       // FIXME: should handle key releases in reverse order
       for(int i = 0; m_codes[i].is_valid(); ++i)
       {
-        uinput.send_key(m_codes[i].device_id, m_codes[i].code, m_state);
+        uinput.send_key(m_codes[i].get_device_id(), m_codes[i].code, m_state);
       }
     }
     else
@@ -303,12 +303,12 @@ KeyButtonEventHandler::send(uInput& uinput, bool value)
           // send both a press and release event after another, aka a "click"
           for(int i = 0; m_codes[i].is_valid(); ++i)
           {
-            uinput.send_key(m_codes[i].device_id, m_codes[i].code, true);
+            uinput.send_key(m_codes[i].get_device_id(), m_codes[i].code, true);
           }
           // FIXME: should do this in reverse order
           for(int i = 0; m_codes[i].is_valid(); ++i)
           {
-            uinput.send_key(m_codes[i].device_id, m_codes[i].code, false);
+            uinput.send_key(m_codes[i].get_device_id(), m_codes[i].code, false);
           }
         }
       }
@@ -323,7 +323,7 @@ KeyButtonEventHandler::send(uInput& uinput, bool value)
           // FIXME: should do in reverse
           for(int i = 0; m_secondary_codes[i].is_valid(); ++i)
           {
-            uinput.send_key(m_secondary_codes[i].device_id, m_secondary_codes[i].code, false);
+            uinput.send_key(m_secondary_codes[i].get_device_id(), m_secondary_codes[i].code, false);
           }
         }
       }
@@ -347,7 +347,7 @@ KeyButtonEventHandler::update(uInput& uinput, int msec_delta)
       // start sending the secondary events
       for(int i = 0; m_secondary_codes[i].is_valid(); ++i)
       {
-        uinput.send_key(m_secondary_codes[i].device_id, m_secondary_codes[i].code, true);
+        uinput.send_key(m_secondary_codes[i].get_device_id(), m_secondary_codes[i].code, true);
       }
       uinput.sync();
     }
@@ -365,7 +365,7 @@ KeyButtonEventHandler::str() const
   std::ostringstream out;
   for(int i = 0; m_codes[i].is_valid();)
   {
-    out << m_codes[i].device_id << "-" << m_codes[i].code;
+    out << m_codes[i].get_device_id() << "-" << m_codes[i].code;
 
     ++i;
     if (m_codes[i].is_valid())
@@ -399,7 +399,7 @@ AbsButtonEventHandler::send(uInput& uinput, bool value)
 {
   if (value)
   {
-    uinput.send_abs(m_code.device_id, m_code.code, m_value);
+    uinput.send_abs(m_code.get_device_id(), m_code.code, m_value);
   }
 }
 
@@ -407,7 +407,7 @@ std::string
 AbsButtonEventHandler::str() const
 {
   std::ostringstream out;
-  out << "abs: " << m_code.device_id << "-" << m_code.code << ":" << m_value; 
+  out << "abs: " << m_code.get_device_id() << "-" << m_code.code << ":" << m_value; 
   return out.str();
 }
 
@@ -451,7 +451,7 @@ RelButtonEventHandler::RelButtonEventHandler(const UIEvent& code) :
 void
 RelButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
 {
-  uinput.add_rel(m_code.device_id, m_code.code);
+  uinput.add_rel(m_code.get_device_id(), m_code.code);
 }
 
 void
@@ -471,7 +471,7 @@ std::string
 RelButtonEventHandler::str() const
 {
   std::ostringstream out;
-  out << "rel:" << m_code.device_id << "-" << m_code.code << ":" << m_value << ":" << m_repeat;
+  out << "rel:" << m_code.get_device_id() << "-" << m_code.code << ":" << m_value << ":" << m_repeat;
   return out.str();
 }
 
@@ -630,11 +630,11 @@ MacroButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices) cons
         switch(i->send.event.type)
         {
           case EV_REL:
-            uinput.add_rel(i->send.event.device_id, i->send.event.code);
+            uinput.add_rel(i->send.event.get_device_id(), i->send.event.code);
             break;
 
           case EV_KEY:
-            uinput.add_key(i->send.event.device_id, i->send.event.code);
+            uinput.add_key(i->send.event.get_device_id(), i->send.event.code);
             break;
 
           default:
@@ -674,7 +674,7 @@ MacroButtonEventHandler::update(uInput& uinput, int msec_delta)
         switch(m_events[m_event_counter].type)
         {
           case MacroEvent::kSendOp:
-            uinput.send(m_events[m_event_counter].send.event.device_id,
+            uinput.send(m_events[m_event_counter].send.event.get_device_id(),
                         m_events[m_event_counter].send.event.type,
                         m_events[m_event_counter].send.event.code,
                         m_events[m_event_counter].send.value);
