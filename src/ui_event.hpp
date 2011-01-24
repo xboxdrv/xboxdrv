@@ -20,13 +20,18 @@
 #define HEADER_XBOXDRV_UI_EVENT_HPP
 
 #include <boost/lexical_cast.hpp>
+#include <stdint.h>
 
 enum {
-  DEVICEID_INVALID  = -4,
-  DEVICEID_KEYBOARD = -3,
-  DEVICEID_MOUSE    = -2,
-  DEVICEID_AUTO     = -1,
+  DEVICEID_INVALID  = static_cast<uint16_t>(-4),
+  DEVICEID_KEYBOARD = static_cast<uint16_t>(-3),
+  DEVICEID_MOUSE    = static_cast<uint16_t>(-2),
+  DEVICEID_AUTO     = static_cast<uint16_t>(-1),
   DEVICEID_JOYSTICK =  0
+};
+
+enum {
+  SLOTID_AUTO = static_cast<uint16_t>(-1)
 };
 
 class UIEvent 
@@ -43,10 +48,11 @@ public:
   int type;
   int code;
 
-  int get_device_id() const;
+  uint32_t get_device_id() const;
 
 private:
-  int m_device_id;
+  uint16_t m_slot_id;
+  uint16_t m_device_id;
   bool m_device_id_resolved;
 };
 

@@ -88,7 +88,7 @@ uInput::uInput() :
 }
 
 LinuxUinput*
-uInput::create_uinput_device(int device_id)
+uInput::create_uinput_device(uint32_t device_id)
 { 
   // DEVICEID_AUTO should not happen at this point as the user should
   // have called resolve_device_id()
@@ -142,21 +142,21 @@ uInput::~uInput()
 }
 
 void
-uInput::add_key(int device_id, int ev_code)
+uInput::add_key(uint32_t device_id, int ev_code)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_key(ev_code);
 }
 
 void
-uInput::add_rel(int device_id, int ev_code)
+uInput::add_rel(uint32_t device_id, int ev_code)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_rel(ev_code);
 }
 
 void
-uInput::add_abs(int device_id, int ev_code, int min, int max, int fuzz, int flat)
+uInput::add_abs(uint32_t device_id, int ev_code, int min, int max, int fuzz, int flat)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_abs(ev_code, min, max, fuzz, flat);
@@ -172,20 +172,20 @@ uInput::finish()
 }
 
 void
-uInput::send(int device_id, int ev_type, int ev_code, int value)
+uInput::send(uint32_t device_id, int ev_type, int ev_code, int value)
 {
   get_uinput(device_id)->send(ev_type, ev_code, value);
 }
 
 void
-uInput::send_abs(int device_id, int ev_code, int value)
+uInput::send_abs(uint32_t device_id, int ev_code, int value)
 {
   assert(ev_code != -1);
   get_uinput(device_id)->send(EV_ABS, ev_code, value);
 }
 
 void
-uInput::send_key(int device_id, int ev_code, bool value)
+uInput::send_key(uint32_t device_id, int ev_code, bool value)
 {
   assert(ev_code != -1);
 
@@ -251,7 +251,7 @@ uInput::send_rel_repetitive(const UIEvent& code, int value, int repeat_interval)
 }
 
 LinuxUinput*
-uInput::get_uinput(int device_id) const
+uInput::get_uinput(uint32_t device_id) const
 {
   UInputDevs::const_iterator it = uinput_devs.find(device_id);
   if (it != uinput_devs.end())

@@ -40,7 +40,7 @@ struct Xbox360GuitarMsg;
 class uInput
 {
 private:
-  typedef std::map<int, boost::shared_ptr<LinuxUinput> > UInputDevs;
+  typedef std::map<uint32_t, boost::shared_ptr<LinuxUinput> > UInputDevs;
   UInputDevs uinput_devs;
 
   struct RelRepeat 
@@ -67,9 +67,9 @@ public:
 
   /** Device construction functions
       @{*/
-  void add_rel(int device_id, int ev_code);
-  void add_abs(int device_id, int ev_code, int min, int max, int fuzz, int flat);
-  void add_key(int device_id, int ev_code);
+  void add_rel(uint32_t device_id, int ev_code);
+  void add_abs(uint32_t device_id, int ev_code, int min, int max, int fuzz, int flat);
+  void add_key(uint32_t device_id, int ev_code);
 
   /** needs to be called to finish device creation and create the
       device in the kernel */
@@ -78,9 +78,9 @@ public:
 
   /** Send events to the kernel
       @{*/
-  void send(int device_id, int ev_type, int ev_code, int value);
-  void send_abs(int device_id, int ev_code, int value);
-  void send_key(int device_id, int ev_code, bool value);
+  void send(uint32_t device_id, int ev_type, int ev_code, int value);
+  void send_abs(uint32_t device_id, int ev_code, int value);
+  void send_key(uint32_t device_id, int ev_code, bool value);
   void send_rel_repetitive(const UIEvent& code, int value, int repeat_interval);
 
   /** should be called to single that all events of the current frame
@@ -93,10 +93,10 @@ public:
 private:
   /** create a LinuxUinput with the given device_id, if some already
       exist return a pointer to it */
-  LinuxUinput* create_uinput_device(int device_id);
+  LinuxUinput* create_uinput_device(uint32_t device_id);
 
   /** must only be called with a valid device_id */
-  LinuxUinput* get_uinput(int device_id) const;
+  LinuxUinput* get_uinput(uint32_t device_id) const;
 };
 
 #endif

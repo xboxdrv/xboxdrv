@@ -24,6 +24,7 @@ UIEvent
 UIEvent::create(int device_id, int type, int code) 
 {
   UIEvent ev;
+  ev.m_slot_id = SLOTID_AUTO;
   ev.m_device_id = device_id;
   ev.m_device_id_resolved = false;
   ev.type      = type;
@@ -35,6 +36,7 @@ UIEvent
 UIEvent::invalid()
 {
   UIEvent ev;
+  ev.m_slot_id = SLOTID_AUTO;
   ev.m_device_id = DEVICEID_INVALID;
   ev.m_device_id_resolved = false;
   ev.type      = -1;
@@ -82,6 +84,11 @@ UIEvent::operator<(const UIEvent& rhs)  const
 void
 UIEvent::resolve_device_id(int slot, bool extra_devices)
 {
+  if (m_slot_id == SLOTID_AUTO)
+  {
+    m_slot_id = slot;
+  }
+
   if (m_device_id == DEVICEID_AUTO)
   {
     switch(type)
@@ -147,11 +154,12 @@ void split_event_name(const std::string& str, std::string* event_str, int* devic
   }
 }
 
-int
+uint32_t
 UIEvent::get_device_id() const
 {
   assert(m_device_id_resolved);
-  return m_device_id;
+
+  return (m_slot_id << 16) | m_device_id;
 }
 
 /* EOF */
