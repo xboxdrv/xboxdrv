@@ -114,7 +114,7 @@ public:
   // controller options
   typedef std::map<int, ControllerOptions> ControllerConfigs;
   typedef std::map<int, ControllerConfigs> ControllerSlots;
-  ControllerSlots controllers;
+  ControllerSlots controller_slots;
 
   // chatpad options
   bool chatpad;

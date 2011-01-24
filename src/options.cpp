@@ -64,7 +64,7 @@ Options::Options() :
   evdev_grab(true),
   evdev_debug(false),
   evdev_keymap(),
-  controllers(),
+  controller_slots(),
   chatpad(false),
   chatpad_no_init(false),
   chatpad_debug(false),
@@ -83,26 +83,26 @@ Options::Options() :
   config_slot(0)
 {
   // create the entry if not already available
-  controllers[controller_slot][config_slot];
+  controller_slots[controller_slot][config_slot];
 }
 
 Options::ControllerConfigs&
 Options::get_controller_slot()
 {
-  return controllers[controller_slot];
+  return controller_slots[controller_slot];
 }
 
 ControllerOptions&
 Options::get_controller_options()
 {
-  return controllers[controller_slot][config_slot];
+  return controller_slots[controller_slot][config_slot];
 }
 
 const ControllerOptions&
 Options::get_controller_options() const
 {
-  ControllerSlots::const_iterator it = controllers.find(controller_slot);
-  if (it == controllers.end())
+  ControllerSlots::const_iterator it = controller_slots.find(controller_slot);
+  if (it == controller_slots.end())
   {
     assert(!"shouldn't happen");
   }
@@ -127,7 +127,7 @@ Options::next_controller()
   config_slot = 0;
 
   // create the entry if not already available
-  controllers[controller_slot][config_slot];
+  controller_slots[controller_slot][config_slot];
 }
 
 void
@@ -142,7 +142,7 @@ Options::next_config()
   }
 
   // create the entry if not already available
-  controllers[controller_slot][config_slot];
+  controller_slots[controller_slot][config_slot];
 }
 
 void

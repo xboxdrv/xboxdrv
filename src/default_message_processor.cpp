@@ -35,8 +35,8 @@ DefaultMessageProcessor::DefaultMessageProcessor(uInput& uinput, const Options& 
   memset(&m_oldmsg, 0, sizeof(m_oldmsg));
 
   // create ControllerConfigs
-  for(Options::ControllerSlots::const_iterator controller = opts.controllers.begin(); 
-      controller != opts.controllers.end(); ++controller)
+  for(Options::ControllerSlots::const_iterator controller = opts.controller_slots.begin(); 
+      controller != opts.controller_slots.end(); ++controller)
   {
     for(Options::ControllerConfigs::const_iterator i = controller->second.begin();
         i != controller->second.end(); ++i)
