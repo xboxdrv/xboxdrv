@@ -38,17 +38,17 @@ int16_t u8_to_s16(uint8_t value)
 }
 } // namespace
 
-UInputConfig::UInputConfig(uInput& uinput, const UInputOptions& opts) :
+UInputConfig::UInputConfig(uInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
-  m_btn_map(opts.get_btn_map()),
+  m_btn_map(opts.get_btn_map()), // FIXME: insert resolve magic right here
   m_axis_map(opts.get_axis_map())
 {
   std::fill_n(axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
   std::fill_n(button_state,      static_cast<int>(XBOX_BTN_MAX),  false);
   std::fill_n(last_button_state, static_cast<int>(XBOX_BTN_MAX),  false);
 
-  m_btn_map.init(uinput);
-  m_axis_map.init(uinput);
+  m_btn_map.init(uinput, slot, extra_devices);
+  m_axis_map.init(uinput, slot, extra_devices);
 }
 
 void

@@ -80,7 +80,8 @@ Options::Options() :
   list_enums(0),
   config_toggle_button(XBOX_BTN_UNKNOWN),
   controller_slot(0),
-  config_slot(0)
+  config_slot(0),
+  extra_devices(true)
 {
   // create the entry if not already available
   controller_slots[controller_slot][config_slot];

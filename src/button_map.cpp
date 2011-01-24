@@ -81,7 +81,7 @@ ButtonMap::clear()
 }
 
 void
-ButtonMap::init(uInput& uinput) const
+ButtonMap::init(uInput& uinput, int slot, bool extra_devices) const
 {
   for(int shift_code = 0; shift_code < XBOX_BTN_MAX; ++shift_code)
   {
@@ -89,7 +89,7 @@ ButtonMap::init(uInput& uinput) const
     {
       if (btn_map[shift_code][code])
       {
-        btn_map[shift_code][code]->init(uinput);
+        btn_map[shift_code][code]->init(uinput, slot, extra_devices);
       }
     }
   }

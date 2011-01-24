@@ -20,9 +20,9 @@
 
 #include "options.hpp"
 
-ControllerConfig::ControllerConfig(uInput& uinput, const ControllerOptions& opts) :
+ControllerConfig::ControllerConfig(uInput& uinput, int slot, bool extra_devices, const ControllerOptions& opts) :
   m_modifier(),
-  m_uinput(uinput, opts.uinput)
+  m_uinput(uinput, slot, extra_devices, opts.uinput)
 {
 }
 

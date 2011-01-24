@@ -36,7 +36,8 @@ private:
   UInputConfig m_uinput;
 
 public:
-  ControllerConfig(uInput& uinput, const ControllerOptions& opts);
+  ControllerConfig(uInput& uinput, int slot, bool extra_devices, 
+                   const ControllerOptions& opts);
 
   std::vector<ModifierPtr>& get_modifier();
   UInputConfig& get_uinput();

@@ -142,6 +142,8 @@ public:
   int controller_slot;
   int config_slot;
 
+  bool extra_devices;
+
 public:
   Options();
 

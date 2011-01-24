@@ -188,7 +188,9 @@ XboxdrvDaemon::run(const Options& opts)
         controller != opts.controller_slots.end(); ++controller)
     {
       log_info << "creating slot: " << slot_count << std::endl;
-      m_controller_slots.push_back(ControllerSlot(ControllerConfigSet::create(*uinput, controller->second)));
+      m_controller_slots.push_back(ControllerSlot(ControllerConfigSet::create(*uinput, slot_count,
+                                                                              opts.extra_devices,
+                                                                              controller->second)));
       slot_count += 1;
     }
 

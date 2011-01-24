@@ -48,7 +48,7 @@ protected:
   ButtonEvent(ButtonEventHandler* handler);
 
 public: 
-  void init(uInput& uinput) const;
+  void init(uInput& uinput, int slot, bool extra_devices) const;
   void send(uInput& uinput, bool value);
   void update(uInput& uinput, int msec_delta);
   std::string str() const;
@@ -68,7 +68,7 @@ class ButtonEventHandler
 public:
   virtual ~ButtonEventHandler() {}
   
-  virtual void init(uInput& uinput) const =0;
+  virtual void init(uInput& uinput, int slot, bool extra_devices) const =0;
   virtual void send(uInput& uinput, bool value) =0;
   virtual void update(uInput& uinput, int msec_delta) =0;
   virtual std::string str() const =0;
@@ -83,7 +83,7 @@ public:
   KeyButtonEventHandler();
   KeyButtonEventHandler(int code);
 
-  void init(uInput& uinput) const;
+  void init(uInput& uinput, int slot, bool extra_devices) const;
   void send(uInput& uinput, bool value);
   void update(uInput& uinput, int msec_delta);
 
@@ -108,7 +108,7 @@ public:
 public:
   AbsButtonEventHandler(int code);
 
-  void init(uInput& uinput) const;
+  void init(uInput& uinput, int slot, bool extra_devices) const;
   void send(uInput& uinput, bool value);
   void update(uInput& uinput, int msec_delta) {}
 
@@ -127,7 +127,7 @@ public:
 public:
   RelButtonEventHandler(const UIEvent& code);
 
-  void init(uInput& uinput) const;
+  void init(uInput& uinput, int slot, bool extra_devices) const;
   void send(uInput& uinput, bool value);
   void update(uInput& uinput, int msec_delta) {}
 
@@ -148,7 +148,7 @@ public:
 public:
   ExecButtonEventHandler(const std::vector<std::string>& args);
 
-  void init(uInput& uinput) const;
+  void init(uInput& uinput, int slot, bool extra_devices) const;
   void send(uInput& uinput, bool value);
   void update(uInput& uinput, int msec_delta) {}
 
@@ -183,7 +183,7 @@ public:
 public:
   MacroButtonEventHandler(const std::vector<MacroEvent>& events);
 
-  void init(uInput& uinput) const;
+  void init(uInput& uinput, int slot, bool extra_devices) const;
   void send(uInput& uinput, bool value);
   void update(uInput& uinput, int msec_delta);
 

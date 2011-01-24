@@ -115,9 +115,9 @@ AxisEvent::add_filter(AxisFilterPtr filter)
 }
 
 void
-AxisEvent::init(uInput& uinput) const
+AxisEvent::init(uInput& uinput, int slot, bool extra_devices) const
 {
-  m_handler->init(uinput);
+  m_handler->init(uinput, slot, extra_devices);
 }
 
 void
@@ -217,7 +217,7 @@ RelAxisEventHandler::RelAxisEventHandler(int device_id, int code, int repeat, fl
 }
 
 void
-RelAxisEventHandler::init(uInput& uinput) const
+RelAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
 {
   uinput.add_rel(m_code.device_id, m_code.code);
 }
@@ -307,7 +307,7 @@ AbsAxisEventHandler::set_axis_range(int min, int max)
 }
 
 void
-AbsAxisEventHandler::init(uInput& uinput) const
+AbsAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
 {
   uinput.add_abs(m_code.device_id, m_code.code, 
                  m_min, m_max, m_fuzz, m_flat);
@@ -402,7 +402,7 @@ KeyAxisEventHandler::KeyAxisEventHandler() :
 }
 
 void
-KeyAxisEventHandler::init(uInput& uinput) const
+KeyAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
 {
   for(int i = 0; m_up_codes[i].is_valid(); ++i)
   {

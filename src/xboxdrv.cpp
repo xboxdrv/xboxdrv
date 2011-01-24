@@ -463,7 +463,9 @@ Xboxdrv::run_main(const Options& opts)
 
     global_exit_xboxdrv = false;
 
-    ControllerConfigSetPtr config_set = ControllerConfigSet::create(*uinput, opts.get_controller_slot());
+    ControllerConfigSetPtr config_set = ControllerConfigSet::create(*uinput, 
+                                                                    0, opts.extra_devices,
+                                                                    opts.get_controller_slot());
 
     // After all the ControllerConfig registered their events, finish up
     // the device creation

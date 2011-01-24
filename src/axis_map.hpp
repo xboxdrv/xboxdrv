@@ -40,7 +40,7 @@ public:
 
   void clear();
 
-  void init(uInput& uinput) const;
+  void init(uInput& uinput, int slot, bool extra_devices) const;
   void update(uInput& uinput, int msec_delta);
 };
 

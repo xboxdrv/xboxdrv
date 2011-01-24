@@ -38,7 +38,7 @@ public:
   ButtonEventPtr lookup(XboxButton code) const;
   ButtonEventPtr lookup(XboxButton shift_code, XboxButton code) const;
 
-  void init(uInput& uinput) const;
+  void init(uInput& uinput, int slot, bool extra_devices) const;
 
   bool send(uInput& uinput, XboxButton code, bool value) const;
   bool send(uInput& uinput, XboxButton shift_code, XboxButton code, bool value) const;

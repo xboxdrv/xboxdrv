@@ -27,7 +27,7 @@
 #include "modifier/square_axis_modifier.hpp"
 
 ControllerConfigSetPtr
-ControllerConfigSet::create(uInput& uinput, const Options::ControllerConfigs& opts)
+ControllerConfigSet::create(uInput& uinput, int slot, bool extra_devices, const Options::ControllerConfigs& opts)
 {  
   ControllerConfigSetPtr m_config(new ControllerConfigSet);
 
@@ -36,7 +36,7 @@ ControllerConfigSet::create(uInput& uinput, const Options::ControllerConfigs& op
   {
     const ControllerOptions& ctrl_opt = i->second;
 
-    ControllerConfigPtr config(new ControllerConfig(uinput, ctrl_opt));
+    ControllerConfigPtr config(new ControllerConfig(uinput, slot, extra_devices, ctrl_opt));
     create_modifier(ctrl_opt, &config->get_modifier());
     m_config->add_config(config);
 

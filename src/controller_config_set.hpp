@@ -34,7 +34,8 @@ class ControllerConfigSet
 {
 public:
   /** Creates a ControllerConfigSet from the Options object and connects it to uInput */
-  static ControllerConfigSetPtr create(uInput& uinput, const Options::ControllerConfigs& opts);
+  static ControllerConfigSetPtr create(uInput& uinput, int slot, bool extra_devices, 
+                                       const Options::ControllerConfigs& opts);
 
 private:
   static void create_modifier(const ControllerOptions& options, std::vector<ModifierPtr>* modifier);
