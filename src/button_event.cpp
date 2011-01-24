@@ -126,7 +126,7 @@ ButtonEvent::add_filter(ButtonFilterPtr filter)
 }
 
 void
-ButtonEvent::init(uInput& uinput, int slot, bool extra_devices) const
+ButtonEvent::init(uInput& uinput, int slot, bool extra_devices)
 {
   return m_handler->init(uinput, slot, extra_devices);
 }
@@ -258,10 +258,11 @@ KeyButtonEventHandler::KeyButtonEventHandler(int code) :
 }
 
 void
-KeyButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
+KeyButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices)
 {
   for(int i = 0; m_codes[i].is_valid(); ++i)
   {
+    m_codes[i].resolve_device_id(slot, extra_devices);
     uinput.add_key(m_codes[i].get_device_id(), m_codes[i].code);
   }
 
@@ -269,6 +270,7 @@ KeyButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
   {
     for(int i = 0; m_secondary_codes[i].is_valid(); ++i)
     {
+      m_secondary_codes[i].resolve_device_id(slot, extra_devices);
       uinput.add_key(m_secondary_codes[i].get_device_id(), m_secondary_codes[i].code);
     }
   }
@@ -390,7 +392,7 @@ AbsButtonEventHandler::AbsButtonEventHandler(int code) :
 }
 
 void
-AbsButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
+AbsButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices)
 {
 }
 
@@ -449,8 +451,9 @@ RelButtonEventHandler::RelButtonEventHandler(const UIEvent& code) :
 }
 
 void
-RelButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
+RelButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices)
 {
+  m_code.resolve_device_id(slot, extra_devices);
   uinput.add_rel(m_code.get_device_id(), m_code.code);
 }
 
@@ -494,7 +497,7 @@ ExecButtonEventHandler::ExecButtonEventHandler(const std::vector<std::string>& a
 }
 
 void
-ExecButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
+ExecButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices)
 {
   // nothing to do
 }
@@ -620,9 +623,9 @@ MacroButtonEventHandler::MacroButtonEventHandler(const std::vector<MacroEvent>& 
 }
 
 void
-MacroButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
+MacroButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices)
 {
-  for(std::vector<MacroEvent>::const_iterator i = m_events.begin(); i != m_events.end(); ++i)
+  for(std::vector<MacroEvent>::iterator i = m_events.begin(); i != m_events.end(); ++i)
   {
     switch(i->type)
     {
@@ -630,10 +633,12 @@ MacroButtonEventHandler::init(uInput& uinput, int slot, bool extra_devices) cons
         switch(i->send.event.type)
         {
           case EV_REL:
+            i->send.event.resolve_device_id(slot, extra_devices),
             uinput.add_rel(i->send.event.get_device_id(), i->send.event.code);
             break;
 
           case EV_KEY:
+            i->send.event.resolve_device_id(slot, extra_devices),
             uinput.add_key(i->send.event.get_device_id(), i->send.event.code);
             break;
 

@@ -115,7 +115,7 @@ AxisEvent::add_filter(AxisFilterPtr filter)
 }
 
 void
-AxisEvent::init(uInput& uinput, int slot, bool extra_devices) const
+AxisEvent::init(uInput& uinput, int slot, bool extra_devices)
 {
   m_handler->init(uinput, slot, extra_devices);
 }
@@ -217,8 +217,9 @@ RelAxisEventHandler::RelAxisEventHandler(int device_id, int code, int repeat, fl
 }
 
 void
-RelAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
+RelAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices)
 {
+  m_code.resolve_device_id(slot, extra_devices);
   uinput.add_rel(m_code.get_device_id(), m_code.code);
 }
 
@@ -307,8 +308,9 @@ AbsAxisEventHandler::set_axis_range(int min, int max)
 }
 
 void
-AbsAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
+AbsAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices)
 {
+  m_code.resolve_device_id(slot, extra_devices);
   uinput.add_abs(m_code.get_device_id(), m_code.code, 
                  m_min, m_max, m_fuzz, m_flat);
 }
@@ -402,15 +404,17 @@ KeyAxisEventHandler::KeyAxisEventHandler() :
 }
 
 void
-KeyAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices) const
+KeyAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices)
 {
   for(int i = 0; m_up_codes[i].is_valid(); ++i)
   {
+    m_up_codes[i].resolve_device_id(slot, extra_devices);
     uinput.add_key(m_up_codes[i].get_device_id(), m_up_codes[i].code);
   }
 
   for(int i = 0; m_down_codes[i].is_valid(); ++i)
   {
+    m_down_codes[i].resolve_device_id(slot, extra_devices);
     uinput.add_key(m_down_codes[i].get_device_id(), m_down_codes[i].code);
   }
 }

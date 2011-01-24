@@ -50,7 +50,7 @@ public:
 
   void add_filter(AxisFilterPtr filter);
 
-  void init(uInput& uinput, int slot, bool extra_devices) const;
+  void init(uInput& uinput, int slot, bool extra_devices);
   void send(uInput& uinput, int value);
   void update(uInput& uinput, int msec_delta);
 
@@ -72,7 +72,7 @@ class AxisEventHandler
 public:
   virtual ~AxisEventHandler() {}
 
-  virtual void init(uInput& uinput, int slot, bool extra_devices) const =0;
+  virtual void init(uInput& uinput, int slot, bool extra_devices) =0;
   virtual void send(uInput& uinput, int value) =0;
   virtual void update(uInput& uinput, int msec_delta) =0;
 
@@ -90,7 +90,7 @@ public:
   RelAxisEventHandler();
   RelAxisEventHandler(int device_id, int code, int repeat = 10, float value = 5);
 
-  void init(uInput& uinput, int slot, bool extra_devices) const;
+  void init(uInput& uinput, int slot, bool extra_devices);
   void send(uInput& uinput, int value);
   void update(uInput& uinput, int msec_delta);
 
@@ -113,7 +113,7 @@ public:
 
   void set_axis_range(int min, int max);
 
-  void init(uInput& uinput, int slot, bool extra_devices) const;
+  void init(uInput& uinput, int slot, bool extra_devices);
   void send(uInput& uinput, int value);
   void update(uInput& uinput, int msec_delta);
 
@@ -135,7 +135,7 @@ public:
 public:
   KeyAxisEventHandler();
 
-  void init(uInput& uinput, int slot, bool extra_devices) const;
+  void init(uInput& uinput, int slot, bool extra_devices);
   void send(uInput& uinput, int value);
   void update(uInput& uinput, int msec_delta);
 
