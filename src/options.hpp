@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "evdev_absmap.hpp"
-#include "modifier.hpp"
 #include "uinput_options.hpp"
 #include "xpad_device.hpp"
 

@@ -21,10 +21,8 @@
 
 #include <linux/input.h>
 #include <string>
-#include <map>
 #include <queue>
 
-#include "xboxmsg.hpp"
 #include "evdev_absmap.hpp"
 #include "xbox_generic_controller.hpp"
 

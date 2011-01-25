@@ -19,7 +19,6 @@
 #include "evdev_helper.hpp"
 
 #include <linux/input.h>
-#include <stdexcept>
 
 #include "log.hpp"
 

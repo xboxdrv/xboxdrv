@@ -18,7 +18,6 @@
 
 #include "xbox_controller.hpp"
 
-#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string.h>

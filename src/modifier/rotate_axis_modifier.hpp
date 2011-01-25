@@ -19,6 +19,8 @@
 #ifndef HEADER_XBOXDRV_MODIFIER_ROTATE_AXIS_MODIFIER_HPP
 #define HEADER_XBOXDRV_MODIFIER_ROTATE_AXIS_MODIFIER_HPP
 
+#include <vector>
+
 #include "modifier.hpp"
 
 class RotateAxisModifier : public Modifier

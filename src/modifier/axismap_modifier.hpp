@@ -21,6 +21,7 @@
 
 #include <vector>
 
+#include "axis_filter.hpp"
 #include "modifier.hpp"
 
 struct AxisMapping

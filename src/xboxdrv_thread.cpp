@@ -22,7 +22,6 @@
 
 #include "helper.hpp"
 #include "log.hpp"
-#include "options.hpp"
 #include "xbox_generic_controller.hpp"
 #include "message_processor.hpp"
 

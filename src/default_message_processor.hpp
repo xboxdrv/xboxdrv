@@ -19,8 +19,6 @@
 #ifndef HEADER_XBOXDRV_DEFAULT_MESSAGE_PROCESSOR_HPP
 #define HEADER_XBOXDRV_DEFAULT_MESSAGE_PROCESSOR_HPP
 
-#include <vector>
-
 #include "controller_config_set.hpp"
 #include "message_processor.hpp"
 

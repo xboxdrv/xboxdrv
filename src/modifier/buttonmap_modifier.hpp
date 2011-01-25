@@ -19,6 +19,9 @@
 #ifndef HEADER_XBOXDRV_MODIFIER_BUTTON_MAP_MODIFIER_HPP
 #define HEADER_XBOXDRV_MODIFIER_BUTTON_MAP_MODIFIER_HPP
 
+#include <vector>
+
+#include "button_filter.hpp"
 #include "modifier.hpp"
 
 struct ButtonMapping

@@ -19,7 +19,6 @@
 #include "default_message_processor.hpp"
 
 #include "log.hpp"
-#include "options.hpp"
 #include "uinput.hpp"
 
 DefaultMessageProcessor::DefaultMessageProcessor(uInput& uinput, ControllerConfigSetPtr config, 

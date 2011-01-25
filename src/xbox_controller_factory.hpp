@@ -19,10 +19,8 @@
 #ifndef HEADER_XBOXDRV_XBOX_CONTROLLER_FACTORY_HPP
 #define HEADER_XBOXDRV_XBOX_CONTROLLER_FACTORY_HPP
 
-#include <memory>
 #include <libusb.h>
 
-#include "xpad_device.hpp"
 #include "options.hpp"
 
 class XboxGenericController;

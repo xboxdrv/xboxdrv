@@ -19,8 +19,6 @@
 #include "linux_uinput.hpp"
 
 #include <boost/format.hpp>
-#include <iostream>
-#include <sstream>
 #include <errno.h>
 #include <fcntl.h>
 

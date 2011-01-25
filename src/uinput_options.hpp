@@ -19,13 +19,8 @@
 #ifndef HEADER_XBOXDRV_UINPUT_CFG_HPP
 #define HEADER_XBOXDRV_UINPUT_CFG_HPP
 
-#include <vector>
-
-#include "axis_event.hpp"
-#include "button_event.hpp"
 #include "button_map.hpp"
 #include "axis_map.hpp"
-#include "xboxmsg.hpp"
 
 class UInputOptions
 {

@@ -19,14 +19,9 @@
 #ifndef HEADER_COMMAND_LINE_OPTIONS_HPP
 #define HEADER_COMMAND_LINE_OPTIONS_HPP
 
-#include <vector>
-#include <map>
-
 #include "arg_parser.hpp"
 #include "ini_schema.hpp"
-#include "modifier.hpp"
 #include "uinput.hpp"
-#include "xboxmsg.hpp"
 
 class Xboxdrv;
 

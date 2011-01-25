@@ -19,8 +19,6 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_CONFIG_SET_HPP
 #define HEADER_XBOXDRV_CONTROLLER_CONFIG_SET_HPP
 
-#include <boost/shared_ptr.hpp>
-
 #include "controller_config.hpp"
 #include "options.hpp"
 

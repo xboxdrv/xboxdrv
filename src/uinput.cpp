@@ -18,8 +18,6 @@
 
 #include "uinput.hpp"
 
-#include <iostream>
-
 #include "log.hpp"
 
 bool

@@ -18,7 +18,6 @@
 
 #include "chatpad.hpp"
 
-#include <iostream>
 #include <boost/format.hpp>
 
 #include "linux_uinput.hpp"
@@ -221,12 +220,12 @@ Chatpad::read_thread()
       {
         if (m_debug)
         {
-          std::cout << "[chatpad] read: " << len << "/5: data: " << std::flush;
+          log_info << "[chatpad] read: " << len << "/5: data: " << std::flush;
           for(int i = 0; i < len; ++i)
           {
-            std::cout << boost::format("0x%02x ") % int(data[i]);
+            log_info << boost::format("0x%02x ") % int(data[i]);
           }
-          std::cout << std::endl;
+          log_info << std::endl;
         }
 
         if (data[0] == 0x00)

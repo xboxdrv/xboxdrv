@@ -18,8 +18,6 @@
 
 #include "xbox360_controller.hpp"
 
-#include <iostream>
-
 #include "chatpad.hpp"
 #include "headset.hpp"
 #include "helper.hpp"

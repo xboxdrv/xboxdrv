@@ -19,7 +19,6 @@
 #ifndef HEADER_EVDEV_HELPER_HPP
 #define HEADER_EVDEV_HELPER_HPP
 
-#include <string>
 #include <X11/Xlib.h>
 
 #include "enum_box.hpp"

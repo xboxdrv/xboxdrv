@@ -21,7 +21,6 @@
 #include <boost/format.hpp>
 #include <iostream>
 #include <sstream>
-#include <stdexcept>
 #include <string.h>
 
 #include "xboxmsg.hpp"

@@ -19,8 +19,6 @@
 #ifndef HEADER_XBOXDRV_UINPUT_CONFIG_HPP
 #define HEADER_XBOXDRV_UINPUT_CONFIG_HPP
 
-#include <map>
-
 #include "axis_map.hpp"
 #include "button_map.hpp"
 

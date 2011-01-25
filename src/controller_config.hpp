@@ -19,9 +19,6 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_CONFIG_HPP
 #define HEADER_XBOXDRV_CONTROLLER_CONFIG_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <vector>
-
 #include "uinput_config.hpp"
 #include "modifier.hpp"
 

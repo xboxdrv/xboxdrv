@@ -19,13 +19,8 @@
 #ifndef HEADER_MODIFIER_HPP
 #define HEADER_MODIFIER_HPP
 
-#include <stdlib.h>
-#include <string>
-#include <vector>
 #include <boost/shared_ptr.hpp>
 
-#include "axis_filter.hpp"
-#include "button_filter.hpp"
 #include "xboxmsg.hpp"
 
 class Modifier;

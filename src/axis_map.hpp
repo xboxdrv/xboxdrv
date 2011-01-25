@@ -19,8 +19,6 @@
 #ifndef HEADER_XBOXDRV_AXIS_MAP_HPP
 #define HEADER_XBOXDRV_AXIS_MAP_HPP
 
-#include <assert.h>
-
 #include "axis_event.hpp"
 #include "xboxmsg.hpp"
 

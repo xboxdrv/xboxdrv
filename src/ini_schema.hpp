@@ -20,7 +20,6 @@
 #define HEADER_XBOXDRV_INI_SCHEMA_HPP
 
 #include <map>
-#include <string>
 #include <boost/function.hpp>
 
 class INIPairSchema

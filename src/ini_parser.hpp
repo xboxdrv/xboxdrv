@@ -19,8 +19,6 @@
 #ifndef HEADER_XBOXDRV_INI_PARSER_HPP
 #define HEADER_XBOXDRV_INI_PARSER_HPP
 
-#include <map>
-#include <string>
 #include <sstream>
 
 class INIBuilder;

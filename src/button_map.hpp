@@ -19,8 +19,6 @@
 #ifndef HEADER_XBOXDRV_BUTTON_MAP_HPP
 #define HEADER_XBOXDRV_BUTTON_MAP_HPP
 
-#include <assert.h>
-
 #include "button_event.hpp"
 #include "xboxmsg.hpp"
 

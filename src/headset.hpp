@@ -20,7 +20,6 @@
 #define HEADER_XBOXDRV_HEADSET_HPP
 
 #include <libusb.h>
-#include <memory>
 #include <boost/thread.hpp>
 
 class Headset

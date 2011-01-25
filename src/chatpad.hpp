@@ -19,8 +19,6 @@
 #ifndef HEADER_XBOXDRV_CHATPAD_HPP
 #define HEADER_XBOXDRV_CHATPAD_HPP
 
-#include <stdint.h>
-#include <memory>
 #include <boost/thread.hpp>
 #include <libusb.h>
 

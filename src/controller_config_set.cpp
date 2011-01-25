@@ -18,8 +18,6 @@
 
 #include "controller_config_set.hpp"
 
-#include "uinput.hpp"
-#include "options.hpp"
 #include "log.hpp"
 
 #include "modifier/dpad_rotation_modifier.hpp"
