@@ -309,6 +309,7 @@ CommandLineParser::init_ini(Options* opts)
     ("timeout", &opts->timeout)
     ("next", boost::bind(&Options::next_config, boost::ref(opts)), boost::function<void ()>())
     ("next-controller", boost::bind(&Options::next_controller, boost::ref(opts)), boost::function<void ()>())
+    ("extra-devices", &opts->extra_devices)
 
     ("deadzone", boost::bind(&CommandLineParser::set_deadzone, this, _1))
     ("deadzone-trigger", boost::bind(&CommandLineParser::set_deadzone_trigger, this, _1))
@@ -660,6 +661,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         {
           opts.led = boost::lexical_cast<int>(opt.argument);
         }
+        break;
+
+      case OPTION_NO_EXTRA_DEVICES:
+        opts.extra_devices = false;
         break;
             
       case OPTION_DPAD_ONLY:
