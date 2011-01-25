@@ -21,7 +21,7 @@
 
 #include <boost/function.hpp>
 
-void print_raw_data(std::ostream& out, uint8_t* buffer, int len);
+std::string raw2str(uint8_t* buffer, int len);
 std::string to_lower(const std::string &str);
 bool is_number(const std::string& str);
 

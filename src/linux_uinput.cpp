@@ -23,8 +23,9 @@
 #include <fcntl.h>
 
 #include "evdev_helper.hpp"
-#include "log.hpp"
 #include "force_feedback_handler.hpp"
+#include "log.hpp"
+#include "raise_exception.hpp"
 
 LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, uint16_t vendor_, uint16_t product_) :
   m_device_type(device_type),
@@ -43,7 +44,7 @@ LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, uint1
   ff_callback(),
   needs_sync(true)
 {
-  log_info << name << " " << vendor << ":" << product << std::endl;
+  log_debug << name << " " << vendor << ":" << product << std::endl;
 
   std::fill_n(abs_lst, ABS_CNT, false);
   std::fill_n(rel_lst, REL_CNT, false);
@@ -96,7 +97,7 @@ LinuxUinput::~LinuxUinput()
 void
 LinuxUinput::add_abs(uint16_t code, int min, int max, int fuzz, int flat)
 {
-  log_info << "add_abs: " << abs2str(code) << " (" << min << ", " << max << ") " << name << std::endl;
+  log_debug << "add_abs: " << abs2str(code) << " (" << min << ", " << max << ") " << name << std::endl;
 
   if (!abs_lst[code])
   {
@@ -120,7 +121,7 @@ LinuxUinput::add_abs(uint16_t code, int min, int max, int fuzz, int flat)
 void
 LinuxUinput::add_rel(uint16_t code)
 {
-  log_info << "add_rel: " << rel2str(code) << " " << name << std::endl;
+  log_debug << "add_rel: " << rel2str(code) << " " << name << std::endl;
 
   if (!rel_lst[code])
   {
@@ -139,7 +140,7 @@ LinuxUinput::add_rel(uint16_t code)
 void
 LinuxUinput::add_key(uint16_t code)
 {
-  log_info << "add_key: " << key2str(code) << " " << name << std::endl;
+  log_debug << "add_key: " << key2str(code) << " " << name << std::endl;
 
   if (!key_lst[code])
   {
@@ -225,7 +226,7 @@ LinuxUinput::finish()
   user_dev.id.vendor  = vendor;
   user_dev.id.product = product;
 
-  log_info << "'" << user_dev.name << "' " << user_dev.id.vendor << ":" << user_dev.id.product << std::endl;
+  log_debug << "'" << user_dev.name << "' " << user_dev.id.vendor << ":" << user_dev.id.product << std::endl;
 
   if (ff_bit)
     user_dev.ff_effects_max = ff_handler->get_max_effects();
@@ -240,19 +241,17 @@ LinuxUinput::finish()
     }
     else
     {
-      log_info << "write return value: " << write_ret << std::endl; 
+      log_debug << "write return value: " << write_ret << std::endl; 
     }
   }
 
   // FIXME: check that the config isn't empty and give a more
   // meaningful message when it is
 
-  log_info << "finish" << std::endl;
+  log_debug << "finish" << std::endl;
   if (ioctl(fd, UI_DEV_CREATE))
   {
-    std::ostringstream out;
-    out << "LinuxUinput: Unable to create UINPUT device: '" << name << "': " << strerror(errno);
-    throw std::runtime_error(out.str());
+    raise_exception(std::runtime_error, "unable to create uinput device: '" << name << "': " << strerror(errno));
   }
 
   m_finished = true;

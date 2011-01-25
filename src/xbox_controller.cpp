@@ -22,6 +22,7 @@
 #include <stdexcept>
 #include <string.h>
 
+#include "log.hpp"
 #include "usb_helper.hpp"
 #include "raise_exception.hpp"
 #include "xboxmsg.hpp"
@@ -36,7 +37,7 @@ XboxController::XboxController(libusb_device* dev_, bool try_detach) :
   int ret = libusb_open(dev, &handle);
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("Error opening Xbox360 controller");
+    raise_exception(std::runtime_error, "libusb_open() failed: " << usb_strerror(ret));
   }
   else
   {
@@ -44,10 +45,9 @@ XboxController::XboxController(libusb_device* dev_, bool try_detach) :
     int err = usb_claim_n_detach_interface(handle, 0, try_detach);
     if (err != 0) 
     {
-      std::ostringstream out;
-      out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
-          << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
-      throw std::runtime_error(out.str());
+      raise_exception(std::runtime_error,
+                      "Error couldn't claim the USB interface: " << strerror(-err) << std::endl <<
+                      "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.");
     }
   }
 }
@@ -143,10 +143,8 @@ XboxController::read(XboxGenericMsg& msg, bool verbose, int timeout)
     return false;
   }
   else if (ret != LIBUSB_SUCCESS)
-  { // Error
-    std::ostringstream str;
-    str << "USBError: " << ret << "\n" << usb_strerror(ret);
-    throw std::runtime_error(str.str());
+  {
+    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
   }
   else if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
   {

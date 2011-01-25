@@ -25,15 +25,16 @@
 #include <sys/time.h>
 #include <sys/ioctl.h>
 
-void print_raw_data(std::ostream& out, uint8_t* data, int len)
+std::string raw2str(uint8_t* data, int len)
 {
-  std::cout << "len: " << len 
-            << " data: ";
-      
+  std::ostringstream out;
+  out << "len: " << len 
+      << " data: ";
+  
   for(int i = 0; i < len; ++i)
-    std::cout << boost::format("0x%02x ") % int(data[i]);
+    out << boost::format("%02x ") % int(data[i]);
 
-  std::cout << std::endl;
+  return out.str();
 }
 
 std::string to_lower(const std::string &str)

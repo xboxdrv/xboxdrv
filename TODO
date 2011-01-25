@@ -42,6 +42,13 @@ $ dput my-ppa ../xboxdrv_0.7.0-1~lucid1_source.changes
 Stuff to do before 0.7.0 release:
 =================================
 
+* log levels:
+
+  debug: only shown when --debug is given
+  info:  shown when --verbose is given
+  warn:  shown by default
+  error: shown by default
+
 * figure out a good place to set the LEDs off when Xboxdrv is quit,
   just doing it in the destructor causes trouble
 

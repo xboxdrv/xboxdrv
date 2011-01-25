@@ -45,17 +45,16 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev_, int co
   const int ret = libusb_open(dev, &handle);
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("Xbox360WirelessController: Error opening Xbox360 controller");
+    raise_exception(std::runtime_error, "libusb_open() failed: " << usb_strerror(ret));
   }
   else
   {
     int err = usb_claim_n_detach_interface(handle, interface, try_detach);
     if (err != 0) 
     {
-      std::ostringstream out;
-      out << "Error couldn't claim the USB interface: " << usb_strerror(err) << std::endl
-          << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
-      throw std::runtime_error(out.str());
+      raise_exception(std::runtime_error,
+                      "Error couldn't claim the USB interface: " << usb_strerror(err) << std::endl <<
+                      "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.");
     }
   }
 }
@@ -121,25 +120,25 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   { // Connection Status Message
     if (data[1] == 0x00) 
     {
-      std::cout << "Connection status: nothing" << std::endl;
+      log_info << "Connection status: nothing" << std::endl;
     } 
     else if (data[1] == 0x80) 
     {
-      std::cout << "Connection status: controller connected" << std::endl;
+      log_info << "Connection status: controller connected" << std::endl;
       set_led(led_status);
     } 
     else if (data[1] == 0x40) 
     {
-      std::cout << "Connection status: headset connected" << std::endl;
+      log_info << "Connection status: headset connected" << std::endl;
     }
     else if (data[1] == 0xc0) 
     {
-      std::cout << "Connection status: controller and headset connected" << std::endl;
+      log_info << "Connection status: controller and headset connected" << std::endl;
       set_led(led_status);
     }
     else
     {
-      std::cout << "Connection status: unknown" << std::endl;
+      log_info << "Connection status: unknown" << std::endl;
     }
   }
   else if (len == 29)
@@ -155,8 +154,8 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
                 % int(data[12])
                 % int(data[13])).str();
       battery_status = data[17];
-      std::cout << "Serial: " << serial << std::endl;
-      std::cout << "Battery Status: " << battery_status << std::endl;
+      log_info << "Serial: " << serial << std::endl;
+      log_info << "Battery Status: " << battery_status << std::endl;
     }
     else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
     { // Event message
@@ -167,7 +166,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
     else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
     { // Battery status
       battery_status = data[4];
-      std::cout << "Battery Status: " << battery_status << std::endl;
+      log_info << "Battery Status: " << battery_status << std::endl;
     }
     else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0xf0)
     {
@@ -176,8 +175,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
     }
     else
     {
-      std::cout << "Unknown: ";
-      print_raw_data(std::cout, data, len);
+      log_debug << "unknown: " << raw2str(data, len) << std::endl;
     }
   }
   else if (len == 0)
@@ -186,8 +184,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else
   {
-    std::cout << "Unknown: ";
-    print_raw_data(std::cout, data, len);
+    log_debug << "unknown: " << raw2str(data, len) << std::endl;
   }
 
   return false;

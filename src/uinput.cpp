@@ -90,7 +90,7 @@ UInput::create_uinput_device(uint32_t device_id)
   }
   else
   {
-    log_info << "create device: " << device_id << std::endl;
+    log_debug << "create device: " << device_id << std::endl;
     LinuxUinput::DeviceType device_type = LinuxUinput::kGenericDevice;
     std::ostringstream dev_name;
     dev_name << "Xbox Gamepad (userspace driver)";
@@ -119,7 +119,7 @@ UInput::create_uinput_device(uint32_t device_id)
     boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(device_type, dev_name.str(), 0x0000, 0x0000));
     uinput_devs.insert(std::pair<int, boost::shared_ptr<LinuxUinput> >(device_id, dev));
 
-    std::cout << "Creating uinput device: device_id: " << device_id << ", dev_name: " << dev_name.str() << std::endl;
+    log_debug << "created uinput device: " << device_id << " - '" << dev_name.str() << "'" << std::endl;
 
     return dev.get();
   }

@@ -38,7 +38,7 @@ std::string log_pretty_print(const std::string& str);
 #define log_error (std::cout << log_pretty_print(__PRETTY_FUNCTION__) << ": ")
 
 /** extra verbose debugging messages */
-#define log_debug (std::cout << log_pretty_print(__PRETTY_FUNCTION__) << ": ")
+#define log_debug if (true); else (std::cout << log_pretty_print(__PRETTY_FUNCTION__) << ": ")
 
 #endif
 

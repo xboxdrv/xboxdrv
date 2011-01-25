@@ -41,15 +41,13 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
   m_headset()
 {
   find_endpoints();
-  if (false)
-  {
-    std::cout << "EP(IN):  " << endpoint_in << std::endl;
-    std::cout << "EP(OUT): " << endpoint_out << std::endl;
-  }
-
+  
+  log_debug << "EP(IN):  " << endpoint_in << std::endl;
+  log_debug << "EP(OUT): " << endpoint_out << std::endl;
+  
   int ret = libusb_open(dev, &handle);
 
-  if (0)
+  if (0) // not needed I guess
   {
     int err;
     if ((err = libusb_set_configuration(handle, 0)) < 0)
@@ -62,7 +60,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
 
   if (ret != LIBUSB_SUCCESS)
   {
-    throw std::runtime_error("Error opening Xbox360 controller");
+    raise_exception(std::runtime_error, "libusb_open() failed: " << usb_strerror(ret));
   }
   else
   {
@@ -235,13 +233,10 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else if (len == 3 && data[0] == 0x08 && data[1] == 0x03)
   {
-    if (!g_options->quiet)
-    {
-      if (data[2] == 0x00)
-        std::cout << "Headset: none";
-      else if (data[2] == 0x02)
-        std::cout << "Headset: none";
-    }
+    if (data[2] == 0x00)
+      log_info << "headset: none" << std::endl;
+    else if (data[2] == 0x02)
+      log_info << "headset: none" << std::endl;
   }
   else if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
   {
@@ -251,8 +246,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else
   {
-    std::cout << "Unknown: ";
-    print_raw_data(std::cout, data, len);
+    log_debug << "unknown: " << raw2str(data, len) << std::endl;
   }
 
   return false;

@@ -86,6 +86,7 @@ private:
   void launch_xboxdrv(UInput* uinput,
                       const XPadDevice& dev_type, const Options& opts, 
                       uint8_t busnum, uint8_t devnum);
+  int get_free_slot_count() const;
   
 private:
   XboxdrvDaemon(const XboxdrvDaemon&);

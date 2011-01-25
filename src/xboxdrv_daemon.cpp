@@ -80,7 +80,9 @@ XboxdrvDaemon::cleanup_threads()
 
   if (count > 0)
   {
-    log_info << "cleaned up " << count << " thread(s)" << std::endl;
+    log_info << "cleaned up " << count << " thread(s), free slots: " 
+             << get_free_slot_count() << "/" << m_controller_slots.size()
+             << std::endl;
   }
 }
 
@@ -124,11 +126,7 @@ XboxdrvDaemon::process_match(const Options& opts, UInput* uinput, struct udev_de
           if (find_xpad_device(vendor, product, &dev_type))
           {
             // 3) Launch thread to handle the device
-            log_info << "Found a valid Xboxdrv controller: " << busnum_str << ":" << devnum_str 
-                     << " -- "
-                     << boost::lexical_cast<int>(busnum_str) << ", "
-                     << boost::lexical_cast<int>(devnum_str)
-                     << std::endl;
+            log_info << "controller detected at " << busnum_str << ":" << devnum_str << std::endl;
            
             try 
             {
@@ -145,7 +143,7 @@ XboxdrvDaemon::process_match(const Options& opts, UInput* uinput, struct udev_de
         }
         catch(const std::exception& err)
         {
-          std::cout << "[XboxdrvDaemon] child thread lauch failure: " << err.what() << std::endl;
+          log_error << "child thread lauch failure: " << err.what() << std::endl;
         }
       }
     }
@@ -161,7 +159,7 @@ XboxdrvDaemon::run(const Options& opts)
   }
   catch(const std::exception& err)
   {
-    log_error << "fatal exception in XboxdrvDaemon::run(): " << err.what() << std::endl;
+    log_error << "fatal exception: " << err.what() << std::endl;
   }
 }
 
@@ -188,7 +186,7 @@ XboxdrvDaemon::run_real(const Options& opts)
   std::auto_ptr<UInput> uinput;
   if (!opts.no_uinput)
   {
-    if (!opts.quiet) std::cout << "Starting with uinput" << std::endl;
+    log_info << "starting with UInput" << std::endl;
 
     uinput.reset(new UInput());
 
@@ -202,11 +200,12 @@ XboxdrvDaemon::run_real(const Options& opts)
   }
   else
   {
-    if (!opts.quiet)
-      std::cout << "Starting without uinput" << std::endl;
+    log_info << "starting without UInput" << std::endl;
   }
 
-  { // create controller slots
+  if (uinput.get())
+  {
+    // create controller slots
     int slot_count = 0;
 
     for(Options::ControllerSlots::const_iterator controller = opts.controller_slots.begin(); 
@@ -224,6 +223,11 @@ XboxdrvDaemon::run_real(const Options& opts)
     // After all the ControllerConfig registered their events, finish up
     // the device creation
     uinput->finish();
+  }
+  else
+  {
+    // just create some empty controller slots
+    m_controller_slots.resize(opts.controller_slots.size());
   }
 
   // Setup udev monitor and enumerate
@@ -393,13 +397,6 @@ XboxdrvDaemon::launch_xboxdrv(UInput* uinput, const XPadDevice& dev_type, const 
     }
     else
     {
-      std::cout << "[XboxdrvDaemon] launching " << boost::format("%03d:%03d")
-        % static_cast<int>(busnum) 
-        % static_cast<int>(devnum)
-                << std::endl;
-
-      log_info << "found a free slot: " << (it - m_controller_slots.begin()) << std::endl;
-
       std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
 
       std::auto_ptr<MessageProcessor> message_proc;
@@ -414,8 +411,32 @@ XboxdrvDaemon::launch_xboxdrv(UInput* uinput, const XPadDevice& dev_type, const 
       std::auto_ptr<XboxdrvThread> thread(new XboxdrvThread(message_proc, controller, opts));
       thread->start_thread(opts);
       it->thread = thread.release();
+
+      log_info << "launched XboxdrvThread for " << boost::format("%03d:%03d")
+        % static_cast<int>(busnum) 
+        % static_cast<int>(devnum)
+               << " in slot " << (it - m_controller_slots.begin())
+               << ", free slots: " 
+               << get_free_slot_count() << "/" << m_controller_slots.size()
+               << std::endl;
     }
   }
+}
+
+int
+XboxdrvDaemon::get_free_slot_count() const
+{
+  int slot_count = 0;
+
+  for(ControllerSlots::const_iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+  {
+    if (i->thread == 0)
+    {
+      slot_count += 1;
+    }
+  }
+
+  return slot_count;
 }
 
 /* EOF */

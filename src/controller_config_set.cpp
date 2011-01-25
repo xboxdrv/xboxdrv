@@ -49,8 +49,6 @@ ControllerConfigSet::create(UInput& uinput, int slot, bool extra_devices, const 
     }
 #endif
   }
-  
-  log_info << "UInput finish" << std::endl;
 
   return m_config;
 }

@@ -28,7 +28,7 @@ DummyMessageProcessor::DummyMessageProcessor()
 void
 DummyMessageProcessor::send(const XboxGenericMsg& msg, int msec_delta)
 {
-  //log_info << msg << std::endl;
+  log_info << msg << std::endl;
 }
 
 /* EOF */
