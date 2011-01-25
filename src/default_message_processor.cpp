@@ -40,6 +40,8 @@ DefaultMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
 {
   if (!m_config->empty())
   {
+    boost::mutex::scoped_lock lock(m_uinput.get_mutex());
+
     XboxGenericMsg msg = msg_in; 
 
     // handling switching of configurations

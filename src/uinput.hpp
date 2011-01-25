@@ -24,6 +24,7 @@
 #include <memory>
 #include <stdexcept>
 #include <boost/shared_ptr.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include "axis_event.hpp"
 #include "button_event.hpp"
@@ -53,9 +54,7 @@ private:
 
   std::map<UIEvent, RelRepeat> rel_repeat_lst;
 
-public:
-  static bool is_mouse_button(int ev_code);
-  static bool is_keyboard_button(int ev_code);
+  boost::mutex m_mutex;
 
 public:
   uInput();
@@ -89,6 +88,8 @@ public:
   /** @} */
 
   LinuxUinput* get_force_feedback_uinput() const;
+
+  boost::mutex& get_mutex() { return m_mutex; }
 
 private:
   /** create a LinuxUinput with the given device_id, if some already

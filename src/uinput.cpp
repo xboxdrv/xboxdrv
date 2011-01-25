@@ -20,20 +20,10 @@
 
 #include "log.hpp"
 
-bool
-uInput::is_mouse_button(int ev_code)
-{
-  return  (ev_code >= BTN_MOUSE && ev_code <= BTN_TASK);
-}
-
-bool
-uInput::is_keyboard_button(int ev_code)
-{
-  return (ev_code < 256);
-}
 uInput::uInput() :
   uinput_devs(),
-  rel_repeat_lst()
+  rel_repeat_lst(),
+  m_mutex()
 {
 #ifdef FIXME
   if (cfg.force_feedback)

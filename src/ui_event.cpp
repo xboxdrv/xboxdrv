@@ -20,6 +20,18 @@
 
 #include "uinput.hpp"
 
+bool
+UIEvent::is_mouse_button(int ev_code)
+{
+  return  (ev_code >= BTN_MOUSE && ev_code <= BTN_TASK);
+}
+
+bool
+UIEvent::is_keyboard_button(int ev_code)
+{
+  return (ev_code < 256);
+}
+
 UIEvent
 UIEvent::create(int device_id, int type, int code) 
 {
@@ -96,11 +108,11 @@ UIEvent::resolve_device_id(int slot, bool extra_devices)
     switch(type)
     {
       case EV_KEY:
-        if (uInput::is_mouse_button(code))
+        if (is_mouse_button(code))
         {
           m_device_id = DEVICEID_MOUSE;
         }
-        else if (uInput::is_keyboard_button(code))
+        else if (is_keyboard_button(code))
         {
           m_device_id = DEVICEID_KEYBOARD;
         }
