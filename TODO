@@ -1,5 +1,5 @@
-slPre Release Testing:
-=====================
+Pre Release Testing:
+====================
 
 * check the version number
 
@@ -48,6 +48,7 @@ Stuff to do before 0.7.0 release:
 
   debug: only shown when --debug is given
   info:  shown when --verbose is given
+  // need something inbetween!?
   warn:  shown by default
   error: shown by default
 
@@ -58,7 +59,8 @@ Stuff to do before 0.7.0 release:
 
 * fix the FIXME's
 
-* fix event output (have it pre-modifier or post-modifier?)
+* fix event output (have it pre-modifier or post-modifier?), don't
+  output on daemon use (ever?!)
 
 * need to hide/disable the toggle button from the UIButtonmap
 
@@ -75,8 +77,6 @@ Daemon Related Stuff
 
 * fix --no-uinput
 
-* uinput must be thread safe
-
 * implement --on-connect and --on-disconnect for the daemon
   - maybe have a more general event interface that allows to run stuff
     on configuration changes, controller plug-ins, etc. (notifiy area as example)
@@ -84,8 +84,6 @@ Daemon Related Stuff
 
 * handle multiple controllers in a sane manner (requires cloning of
   modifier maps, also auto increment of "auto" device id's)
-
-* add: void Uinput::send(XboxGenericMsg& msg, int controller_slot = 0); 
 
 * need magic to assign controller to a slot:
  
@@ -100,7 +98,6 @@ Daemon Related Stuff
    1.-BTN_MIDDLE
    1.auto-BTN_MIDDLE
    auto-BTN_MIDDLE
-
 
 List Output
 ===========
@@ -242,15 +239,8 @@ Stuff to do before 0.7.x release:
  ./xboxdrv-dualstrike \
   --ui-clear \
   --ui-buttonmap rb=key:1-BTN_LEFT,lb=key:1-BTN_RIGHT \
-  --ui-axismap x2^cal:-25000:0:25000=abs:1-ABS_X,y2^cal:-25000:0:25000=abs:1-ABS_Y
+  --ui-axismap x2^cal:-25000:0:25000=abs:1-ABS_X,y2^cal:-25000:0:25000=abs:1-ABS_Y \
   --ui-axismap x1=KEY_LEFT:KEY_RIGHT,y1=KEY_DOWN:KEY_UP  -s
-
-* limit --four-way-restrictor to a single stick, use a standard
-  logical notatino for a single stick that is rusable for other means:
-
-  --four-way-restrictor X-Y,X1-Y2
-  --four-way-restrictor XY,X2:Y2
-  --four-way-restrictor X/Y,X2/Y2
 
 Chatpad
 =======
@@ -311,15 +301,15 @@ http://www.mp3car.com/vbulletin/input-devices/108554-xbox360-chatpad-awsome-back
 
 * Not implementable as they need more then one axis: squareaxis, four-way-restrictor, dpad-rotation
 
-* "couldn't convert 'ABS_y' to enum, not a member of EV_ABS"
- 
-  convert all enum names to uppercase? or does that lead to conflicts in the naming?
-
 * support for Playstation button names maybe? cross, triangle, circle, square, R3, L3, ...?
 
 
-Stuff to do before 0.7.0 release:
+Stuff to do before 0.7.x release:
 =================================
+
+* "couldn't convert 'ABS_y' to enum, not a member of EV_ABS"
+ 
+  convert all enum names to uppercase? or does that lead to conflicts in the naming?
 
 * add extra checks to make sure the evdev buttons and axis given exist on the current device
 
@@ -433,29 +423,18 @@ Blue	X	+18500
 Orange	LB1	+32767
 (None)	(None)	-300
 
-* get rid of guitar, merge into xbox360
-
 * send FF status reports (maybe, is that used by anything?)
 
 * figure out the max values of force feedback effects so that stuff is
   mapped more properly (kind of done, could need verification)
 
-* add --detach option that detaches any existing driver (needed for
-  gamepads that use HID)
-
 * figure out which devices xorg/hal handles as keyboard and how to
   make it always happen, seems to require two keyboard keys, devices
   with only one aren't registered
 
-* display ui-buttonmap in the configuration overview, tricky since we
-  don't differ between default bindings and user created ones, also
-  which bindings get used depends on other configuration options
-
 * report more precisly what devices got created, include device name (HAL has that information)
 
 * add support for LED messages (can this be used by anything?)
-
-* add support for analog buttons (not all that useful, but would still be nice to have)
 
 * include id/wid in device name (would be cleaner, since it makes the
   device unique, but would make Xorg trouble worse)
@@ -471,417 +450,5 @@ http://lists.libsdl.org/pipermail/sdl-libsdl.org/2007-March/060263.html
 - send output to file or so
 usb -d 005:006 -c 5:in,5:out,6:in,7:in,8:out -o /tmp/out, else stdin
 
-Daemon Mode:
-SYSFS{idVendor}=="045e", SYSFS{idProduct}=="028e", RUN+="/home/ingo/projects/xboxdrv/trunk/xboxdrv --daemon"
 
-Unpluging doesn't work and causes xboxdrv processing running amok
-
-Pictures of Xbox360 and controller:
-http://g-prime.net/x360/
-
-Add examples to Readme for specific games
-
-Use cases:
-==========
-* flightsim:
-   expects:     X/Y      Rudder   Throttle
-   XBox:    Left-Stick   LT+RT    Right-Stick(rel)
-
-* FPS:
-   expects:  Mouse-X/Y   Walk-X/Y  Trigger
-   XBox:    Left-Stick   RickStick Trigger(btn)
-
-* 2D Jump Run (done)
-   needs dpad first
-
-
-FIX:
-=====
-  filter auto known unknown messages
-  uinput name should be configurable
-  uinput busid/devid shouldn't be hardcoded
-
-Battery warning: LEDs 1,4 then 2,3 over and over ~10 times rapidly
-
-* a way to send keyboard combination sequences or more general event sequences
-* abs input must be normalized to min/max
-* rel input must be scaleable
-* Cleanup naming conventions
-
-sending rumble is slow and delayed, gets buffered up
-
-* examples in doc for --dpad as buttons and other options
-
-Figure out:
-===========
-Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
-Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
-Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
-Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
-Unknown data: bytes: 3 Data: 0x01 0x03 0x00 
-
-Different Computer/Pad:
-Unknown data: bytes: 3 Data: 0x01 0x03 0x0e
-Unknown data: bytes: 3 Data: 0x02 0x03 0x00
-Unknown data: bytes: 3 Data: 0x03 0x03 0x03
-Unknown data: bytes: 3 Data: 0x08 0x03 0x00
-Unknown data: bytes: 3 Data: 0x01 0x03 0x00
-
-                      /* Happens with XBox360 Controller sometimes
-                         Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
-                         Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
-                         Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
-                         Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
-                         -- different session:
-                         Unknown data: bytes: 3 Data: 0x01 0x03 0x0e 
-                         Unknown data: bytes: 3 Data: 0x02 0x03 0x00 
-                         Unknown data: bytes: 3 Data: 0x03 0x03 0x03 
-                         Unknown data: bytes: 3 Data: 0x08 0x03 0x00 
-                         Unknown data: bytes: 3 Data: 0x01 0x03 0x06 
-
-                      */    
-
------
-Guitar: 
-
-Tilt Sensor: is mapped to the second axis of S2, to LT and RT (three parts)
-- Range for 2nd axis of S2 : -32768 when guitar is straight down and 32767 when she is straight up.
-- Range for LT : ~200 not very precise and ~60 at min.
-- Range for RT : ~190 not very precise and ~55 at min.
-
-    dummy should stay mostly 0, except the position five and six, which
-    are the LT/RT trigger. We can either just ignore them or you can try
-    to find out if they have any meaning.
-     
-
-They control guitar rotation, hmm hard to explain, it's when I rotate the guitar in front of me, it detects if the guitar is in the correct position.
------
-
-* Question: Firestorm Dual Power: How to get rumble to work when there is no endpoint to send data to?
-
-* Guitar Hero Controller:
-  - lsusb -v output looks like a XBox360 controller
-  - usbcat looks like an XBox360 controller
-  - it doesn't report events  
-
-http://forums.gentoo.org/viewtopic-p-5061825.html
-http://gentoo-wiki.com/HOWTO_Xbox_360_controller_on_Linux
-http://happypenguin.org/show?xboxdrv
-http://ubuntuforums.org/showthread.php?t=404577&page=16
-http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver
-
-
- WirelessHIDDevice::receivedMessage(IOMemoryDescriptor *data)
-
-* wireless reports battery level
-
-* disconnecting the pad in use will just let the driver wait forever
-  for new data, any way we can catch a disconnect?
-
-* a way to configure the deadzone for axis (might be needed for some games)
-
-* Add support for dancepad/mats (should just mean cleanup up the
-  buttons/axis not provided by the dancepad/mat)
-
-New Command Line Options:
-
---button-map BTN
-
-  BTN is a list of integers, where each integer corresponds to the
-  event that gets send
-
-  A,B,X,Y,LB,RB,SL,SR,LT,RT,Start,Mode,Back,DPAD-UP,DPAD-DOWN,DPAD-LEFT,DPAD-RIGHT
-  A,B,X,Y,TL2,TR2,TL,TR,
-
-#define BTN_A			0x130
-#define BTN_B			0x131
-#define BTN_C			0x132
-#define BTN_X			0x133
-#define BTN_Y			0x134
-#define BTN_Z			0x135
-#define BTN_TL			0x136
-#define BTN_TR			0x137
-#define BTN_TL2			0x138
-#define BTN_TR2			0x139
-#define BTN_SELECT		0x13a
-#define BTN_START		0x13b
-#define BTN_MODE		0x13c
-#define BTN_THUMBL		0x13d
-#define BTN_THUMBR		0x13e
-
-* add support to remap keys
-
-* allow mouse emulation
-
-* allow swapping of dpad and analog axis, so that dpad is first instead of last
-
-* merge this thing with Pingus Input handling to get a very flexible framework?
-
-* ...
-
-[[ InputDrv ]]
-==============
-
-Needed features:
-================
-* stick to mouse
-* relative-axis (throttle doesn't flip back, a stick does, need to handle that)
-* trigger to button
-* dpad to axis
-* dpad to button
-* inversal of axis
-* soft-axis for dpad
-
-(controller 
-  (button (name   "BTN_X") ;; X and Y send out BTN_X events
-          (device (xbox360-button "Y")
-                  (xbox360-button "X")))
-  (button (name   "BTN_A") 
-          (device (inverse (xbox360-button "Y"))))
-  (axis   (name "ABS_X")
-          ...
-) 
-
-
-Controls:
-=========
- * invert button
- * toggle button
- * autofire button
-
- * invert axis
- * deadzone axis
- * split axis (gas/break)
- * join axis (trigger -> zaxis)
- * non-linear axis (gamma or so)
-
-
-[[ Xorg Input Hotplug ]]
-========================
-
-Not available in Ubuntu and still rough, would work via Dbus, see:
-
-http://www.x.org/wiki/XInputHotplug
-
-d-feet is a Dbus debuging/viewing tool.
-
-Example Dbus stuff:
--------------------
-
-dbus-send --system --type=method_call --print-reply --dest=org.x.config.display0 /org/x/config/0 org.x.config.input.remove uint32:5
-Error org.freedesktop.DBus.Error.ServiceUnknown: The name org.x.config.display0 was not provi
-
-Doing polling seems to lose some events
-
-dbus-send --dest=org.gnome.ScreenSaver
-  /
-
-dbus-send --dest=org.freedesktop.ExampleName               \
- /org/freedesktop/sample/object/name
- org.freedesktop.ExampleInterface.ExampleMethod   \
-                   int32:47 string:'hello world' double:65.32       \
-                   array:string:"1st item","next item","last item"  \
-                   dict:string:int32:"one",1,"two",2,"three",3      \
-                   variant:int32:-8                                 \
-                   objpath:/org/freedesktop/sample/object/name
-
-
-dbus-send --dest=org.x.config.display0 \
- /org/x/config/0 
- org.x.config.input.add
-
-
-dbus-send --dest=org.x.config.display0  /org/x/config/0 org.x.config.input.remove int32:5
- 
-dbus-send \
-  --dest=org.x.config.display0 \
-  org.freedesktop.DBus.Introspectable \
-org.freedesktop.DBus.Introspectable.Introspect \
-
-
-Wine Force Feedback:
-
-
-[ingo@duo:~/projects/xboxdrv/trunk/experimental]$ ~/bin/tombraider-anniversary
-ERROR: Module xpad does not exist in /proc/modules
-USB Device:        003:002
-Controller:        "Microsoft Xbox 360 Controller" (idVendor: 0x045e, idProduct: 0x028e)
-Controller Type:   Xbox360
-Deadzone:          0
-Rumble Debug:      off
-Rumble Speed:      left: 0 right: 0
-LED Status:        auto
-ButtonMap:         none
-AxisMap:           none
-Square Axis:       no
-RelativeAxisMap:   none
-AutoFireMap:       none
-ForceFeedback:     enabled
-Starting with uinput... done
-
-Your Xbox/Xbox360 controller should now be available as:
-  /dev/input/js1
-  /dev/input/event10
-
-Press Ctrl-c to quit
-
-Unknown: len: 3 data: 0x02 0x03 0x00 
-user.reg is not a valid registry file
-fixme:ole:CoInitializeSecurity ((nil),-1,(nil),(nil),0,3,(nil),0,(nil)) - stub!
-err:ole:CoGetClassObject class {9a5ea990-3034-4d6f-9128-01f3c61022bc} not registered
-err:ole:CoGetClassObject class {9a5ea990-3034-4d6f-9128-01f3c61022bc} not registered
-err:ole:create_server class {9a5ea990-3034-4d6f-9128-01f3c61022bc} not registered
-fixme:ole:CoGetClassObject CLSCTX_REMOTE_SERVER not supported
-err:ole:CoGetClassObject no class object {9a5ea990-3034-4d6f-9128-01f3c61022bc} could be created for context 0x17
-fixme:win:EnumDisplayDevicesW ((null),0,0x33ef54,0x00000000), stub!
-fixme:system:SystemParametersInfoW Unimplemented action: 59 (SPI_SETSTICKYKEYS)
-fixme:d3d:IWineD3DDeviceImpl_EvictManagedResources (0x140a78) : stub
-fixme:d3d:IWineD3DDeviceImpl_EvictManagedResources (0x140a78) : stub
-fixme:d3d:IWineD3DDeviceImpl_EvictManagedResources (0x140a78) : stub
-fixme:d3d:IWineD3DDeviceImpl_EvictManagedResources (0x140a78) : stub
-fixme:d3d:IWineD3DDeviceImpl_EvictManagedResources (0x140a78) : stub
-fixme:d3d:IWineD3DDeviceImpl_EvictManagedResources (0x140a78) : stub
-err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
-err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
-err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
-err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
-err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
-err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
-err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
-err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
-err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
-err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
-err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
-err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
-err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
-err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
-fixme:dinput:JoystickAImpl_SetProperty DIPROP_AUTOCENTER(0)
-fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
-err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
-err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
-err:ole:CoGetClassObject class {4590f811-1d3a-11d0-891f-00aa004b2e24} not registered
-err:ole:CoGetClassObject no class object {4590f811-1d3a-11d0-891f-00aa004b2e24} could be created for context 0x1
-Headset: nonetype: 257 code: 1 value: 0
-XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
-EFFECT: FF_CONSTANT level: 0 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
---------------------------------
-type: 21 code: 0 value: 1
-EV_FF: playing effect: effect_id = 0 value: 1
---------------------------------
-type: 257 code: 1 value: 0
-XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
-EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
---------------------------------
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-type: 21 code: 0 value: 1
-EV_FF: playing effect: effect_id = 0 value: 1
---------------------------------
-type: 257 code: 1 value: 0
-XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
-EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
---------------------------------
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-type: 21 code: 0 value: 1
-EV_FF: playing effect: effect_id = 0 value: 1
---------------------------------
-type: 257 code: 1 value: 0
-XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
-EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
---------------------------------
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-type: 21 code: 0 value: 1
-EV_FF: playing effect: effect_id = 0 value: 1
---------------------------------
-type: 257 code: 1 value: 0
-XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
-EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
---------------------------------
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-type: 21 code: 0 value: 1
-EV_FF: playing effect: effect_id = 0 value: 1
---------------------------------
-type: 257 code: 1 value: 0
-XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
-EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
---------------------------------
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-type: 21 code: 0 value: 1
-EV_FF: playing effect: effect_id = 0 value: 1
---------------------------------
-type: 257 code: 1 value: 0
-XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
-EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
---------------------------------
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-type: 21 code: 0 value: 1
-EV_FF: playing effect: effect_id = 0 value: 1
---------------------------------
-type: 257 code: 1 value: 0
-XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
-EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
---------------------------------
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-type: 21 code: 0 value: 1
-EV_FF: playing effect: effect_id = 0 value: 1
---------------------------------
-type: 257 code: 1 value: 0
-XXX FF_UPLOAD: rumble upload: effect_id: 0 effect_type: 82
-EFFECT: FF_CONSTANT level: 26880 envelope: attack_length: 16 attack_level: 32767 fade_length: 16 fade_level: 32767
---------------------------------
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-type: 21 code: 0 value: 1
-EV_FF: playing effect: effect_id = 0 value: 1
---------------------------------
-type: 21 code: 0 value: 0
-EV_FF: playing effect: effect_id = 0 value: 0
---------------------------------
-type: 21 code: 0 value: 0
-EV_FF: playing effect: effect_id = 0 value: 0
---------------------------------
-type: 257 code: 2 value: 0
-FF_ERASE: rumble erase: effect_id = 0
---------------------------------
-
-
-fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
-fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
-fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
-fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
-fixme:dinput:LinuxInputEffectImpl_Download Could not upload effect. Assuming a disconnected device.
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0)
-wine: Unhandled page fault on read access to 0x35545844 at address 0x35545844 (thread 0009), starting debugger...
-Unhandled exception: page fault on read access to 0x35545844 in 32-bit code (0x35545844).
-Register dump:
- CS:0073 SS:007b DS:007b ES:007b FS:0033 GS:003b
- EIP:35545844 ESP:0033f2f8 EBP:0033f324 EFLAGS:00210206(   - 00      - RIP1)
- EAX:12b895d0 EBX:7c08fff4 ECX:116fe938 EDX:1294b6e8
- ESI:12c59178 EDI:116fe920
-Stack dump:
-0x0033f2f8:  7c07d52a 12b895d0 b7ed0094 116fe938
-0x0033f308:  0033f344 0033f344 b7ed0189 7c07d45b
-0x0033f318:  7c08fff4 116fe920 00000000 0033f344
-0x0033f328:  7c06f45f 116fe920 00000001 12b895d0
-0x0033f338:  00000011 03a23650 039fbac0 03a2369c
-0x0033f348:  00412e8a 116fe920 039fbbb0 03a23650
-Backtrace:
-=>1 0x35545844 (0x0033f324)
-  2 0x7c06f45f IDirectInputDevice2AImpl_Release+0x4f() in dinput (0x0033f344)
-  3 0x00412e8a in tra (+0x12e8a) (0x03a2369c)
-  4 0x00000000 (0x00000000)
-0x35545844: addb	%al,0x0(%eax)
-Modules:
-Module	Address			Debug info	Name (88 modules)
-PE	  400000-  c5b000	Export          tra
-PE	18000000-18033000	Deferred        binkw32
-ELF	7b800000-7b93d000	Deferred        kernel32<elf>
-
-
 # EOF #

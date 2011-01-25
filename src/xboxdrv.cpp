@@ -130,7 +130,8 @@ Xboxdrv::run_list_controller()
 }
 
 bool
-Xboxdrv::find_controller_by_path(const std::string& busid_str, const std::string& devid_str, libusb_device** xbox_device) const
+Xboxdrv::find_controller_by_path(const std::string& busid_str, const std::string& devid_str, 
+                                 libusb_device** xbox_device) const
 {
   int busid = boost::lexical_cast<int>(busid_str);
   int devid = boost::lexical_cast<int>(devid_str);
