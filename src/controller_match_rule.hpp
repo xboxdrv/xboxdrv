@@ -16,27 +16,43 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "controller_config.hpp"
+#ifndef HEADER_XBOXDRV_CONTROLLER_MATCH_RULE_HPP
+#define HEADER_XBOXDRV_CONTROLLER_MATCH_RULE_HPP
 
-#include "controller_options.hpp"
-#include "options.hpp"
+#include <string>
 
-ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices, const ControllerOptions& opts) :
-  m_modifier(),
-  m_uinput(uinput, slot, extra_devices, opts.uinput)
+class ControllerMatchRule
 {
-}
+public:
+  enum { 
+    kMatchEverything,
+    kMatchUSBId, 
+    kMatchUSBPath, 
+    kMatchEvdevPath
+  } m_type;
 
-std::vector<ModifierPtr>&
-ControllerConfig::get_modifier()
-{
-  return m_modifier;
-}
+  int m_bus;
+  int m_dev;
+  
+  int m_vendor;
+  int m_product;
 
-UInputConfig&
-ControllerConfig::get_uinput()
-{
-  return m_uinput;
-}
+  std::string m_path;
+
+  ControllerMatchRule() :
+    m_type(kMatchEverything),
+    m_bus(),
+    m_dev(),
+    m_vendor(),
+    m_product(),
+    m_path()
+  {}
+
+  static ControllerMatchRule match_usb_id(int vendor, int product);
+  static ControllerMatchRule match_usb_path(int bus, int dev);
+  static ControllerMatchRule match_evdev_path(const std::string& path);
+};
+
+#endif
 
 /* EOF */

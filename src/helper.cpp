@@ -22,8 +22,29 @@
 #include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
+#include <stdio.h>
 #include <sys/time.h>
 #include <sys/ioctl.h>
+#include <stdexcept>
+
+#include "raise_exception.hpp"
+
+int hexstr2int(const std::string& str)
+{
+  unsigned int value = 0;
+  if (sscanf(str.c_str(), "%x", &value) == 1)
+  {
+    return value;
+  }
+  else if (sscanf(str.c_str(), "0x%x", &value) == 1)
+  {
+    return value;
+  }
+  else
+  {
+    raise_exception(std::runtime_error, "couldn't convert '" << str << "' to int");
+  }
+}
 
 std::string raw2str(uint8_t* data, int len)
 {

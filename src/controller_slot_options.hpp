@@ -16,27 +16,36 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "controller_config.hpp"
+#ifndef HEADER_XBOXDRV_CONTROLLER_SLOT_OPTIONS_HPP
+#define HEADER_XBOXDRV_CONTROLLER_SLOT_OPTIONS_HPP
+
+#include <map>
+#include <vector>
 
 #include "controller_options.hpp"
-#include "options.hpp"
+#include "controller_match_rule.hpp"
 
-ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices, const ControllerOptions& opts) :
-  m_modifier(),
-  m_uinput(uinput, slot, extra_devices, opts.uinput)
+class ControllerSlotOptions
 {
-}
+public:
+  typedef std::map<int, ControllerOptions> Options;
 
-std::vector<ModifierPtr>&
-ControllerConfig::get_modifier()
-{
-  return m_modifier;
-}
+public:
+  ControllerSlotOptions();
 
-UInputConfig&
-ControllerConfig::get_uinput()
-{
-  return m_uinput;
-}
+  void add_match_rule(const ControllerMatchRule& rule);
+
+  ControllerOptions& get_options(int num);
+  const ControllerOptions& get_options(int num) const;
+
+  const std::vector<ControllerMatchRule>& get_match_rules() const;
+  const std::map<int, ControllerOptions>& get_options() const;
+
+private:
+  std::map<int, ControllerOptions> m_options;
+  std::vector<ControllerMatchRule> m_match_rules;
+};
+
+#endif
 
 /* EOF */

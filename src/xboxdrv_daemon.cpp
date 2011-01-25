@@ -214,7 +214,8 @@ XboxdrvDaemon::run_real(const Options& opts)
       log_info << "creating slot: " << slot_count << std::endl;
       m_controller_slots.push_back(ControllerSlot(ControllerConfigSet::create(*uinput, slot_count,
                                                                               opts.extra_devices,
-                                                                              controller->second)));
+                                                                              controller->second),
+                                                  controller->second.get_match_rules()));
       slot_count += 1;
     }
 

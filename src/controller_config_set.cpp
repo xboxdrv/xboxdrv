@@ -19,18 +19,19 @@
 #include "controller_config_set.hpp"
 
 #include "log.hpp"
+#include "controller_options.hpp"
 
 #include "modifier/dpad_rotation_modifier.hpp"
 #include "modifier/four_way_restrictor_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 
 ControllerConfigSetPtr
-ControllerConfigSet::create(UInput& uinput, int slot, bool extra_devices, const Options::ControllerConfigs& opts)
+ControllerConfigSet::create(UInput& uinput, int slot, bool extra_devices, const ControllerSlotOptions& opts)
 {  
   ControllerConfigSetPtr m_config(new ControllerConfigSet);
 
-  for(Options::ControllerConfigs::const_iterator i = opts.begin();
-      i != opts.end(); ++i)
+  for(ControllerSlotOptions::Options::const_iterator i = opts.get_options().begin();
+      i != opts.get_options().end(); ++i)
   {
     const ControllerOptions& ctrl_opt = i->second;
 

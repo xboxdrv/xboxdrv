@@ -16,27 +16,24 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "controller_config.hpp"
-
 #include "controller_options.hpp"
-#include "options.hpp"
 
-ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices, const ControllerOptions& opts) :
-  m_modifier(),
-  m_uinput(uinput, slot, extra_devices, opts.uinput)
-{
-}
+ControllerOptions::ControllerOptions() :
+  uinput(),
+  modifier(),
+  buttonmap(new ButtonmapModifier),
+  axismap(new AxismapModifier),
+  deadzone(0),
+  deadzone_trigger(0),
+  square_axis(false),
+  four_way_restrictor(0),
+  dpad_rotation(0),
 
-std::vector<ModifierPtr>&
-ControllerConfig::get_modifier()
+  calibration_map(),
+  sensitivity_map(),
+  relative_axis_map(),
+  autofire_map()
 {
-  return m_modifier;
-}
-
-UInputConfig&
-ControllerConfig::get_uinput()
-{
-  return m_uinput;
 }
 
 /* EOF */

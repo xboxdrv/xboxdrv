@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "controller_config_set.hpp"
+#include "controller_match_rule.hpp"
 
 class Options;
 class UInput;
@@ -39,21 +40,26 @@ private:
   struct ControllerSlot
   {
     ControllerConfigSetPtr config;
+    std::vector<ControllerMatchRule> match;
     XboxdrvThread* thread;
     
     ControllerSlot() :
       config(),
+      match(),
       thread(0)
     {}
 
     ControllerSlot(ControllerConfigSetPtr config_,
+                   std::vector<ControllerMatchRule> match_,
                    XboxdrvThread* thread_ = 0) :
       config(config_),
+      match(match_),
       thread(thread_)
     {}
 
     ControllerSlot(const ControllerSlot& rhs) :
       config(rhs.config),
+      match(rhs.match),
       thread(rhs.thread)
     {}
 
@@ -62,6 +68,7 @@ private:
       if (&rhs != this)
       {
         config = rhs.config;
+        match  = rhs.match;
         thread = rhs.thread;
       }
       return *this;

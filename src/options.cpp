@@ -18,25 +18,13 @@
 
 #include "options.hpp"
 
+#include <boost/tokenizer.hpp>
+#include <boost/bind.hpp>
+
+#include "helper.hpp"
+#include "raise_exception.hpp"
+
 Options* g_options;
-
-ControllerOptions::ControllerOptions() :
-  uinput(),
-  modifier(),
-  buttonmap(new ButtonmapModifier),
-  axismap(new AxismapModifier),
-  deadzone(0),
-  deadzone_trigger(0),
-  square_axis(false),
-  four_way_restrictor(0),
-  dpad_rotation(0),
-
-  calibration_map(),
-  sensitivity_map(),
-  relative_axis_map(),
-  autofire_map()
-{
-}
 
 Options::Options() :
   mode(RUN_DEFAULT),
@@ -84,16 +72,16 @@ Options::Options() :
   extra_devices(true)
 {
   // create the entry if not already available
-  controller_slots[controller_slot][config_slot];
+  controller_slots[controller_slot].get_options(config_slot);
 }
 
-Options::ControllerConfigs&
+ControllerSlotOptions&
 Options::get_controller_slot()
 {
   return controller_slots[controller_slot];
 }
 
-const Options::ControllerConfigs& 
+const ControllerSlotOptions&
 Options::get_controller_slot() const
 {
   ControllerSlots::const_iterator it = controller_slots.find(controller_slot);
@@ -110,7 +98,7 @@ Options::get_controller_slot() const
 ControllerOptions&
 Options::get_controller_options()
 {
-  return controller_slots[controller_slot][config_slot];
+  return controller_slots[controller_slot].get_options(config_slot);
 }
 
 const ControllerOptions&
@@ -123,8 +111,8 @@ Options::get_controller_options() const
   }
   else
   {
-    ControllerConfigs::const_iterator cfg = it->second.find(config_slot);
-    if (cfg == it->second.end())
+    ControllerSlotOptions::Options::const_iterator cfg = it->second.get_options().find(config_slot);
+    if (cfg == it->second.get_options().end())
     {
       assert(!"shouldn't happen either");
     }
@@ -142,7 +130,7 @@ Options::next_controller()
   config_slot = 0;
 
   // create the entry if not already available
-  controller_slots[controller_slot][config_slot];
+  controller_slots[controller_slot].get_options(config_slot);
 }
 
 void
@@ -157,7 +145,7 @@ Options::next_config()
   }
 
   // create the entry if not already available
-  controller_slots[controller_slot][config_slot];
+  controller_slots[controller_slot].get_options(config_slot);
 }
 
 void
@@ -209,6 +197,69 @@ void
 Options::set_mimic_xpad()
 {
   get_controller_options().uinput.mimic_xpad();
+}
+
+void
+Options::add_match(const std::string& lhs, const std::string& rhs)
+{
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(rhs, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  std::vector<std::string> args(tokens.begin(), tokens.end());
+
+  if (lhs == "usbid")
+  {
+    if (args.size() != 2)
+    {
+      raise_exception(std::runtime_error, "usbid requires VENDOR:PRODUCT argument");
+    }
+    else
+    {
+      int vendor  = hexstr2int(args[0]);
+      int product = hexstr2int(args[1]);
+      get_controller_slot().add_match_rule(ControllerMatchRule::match_usb_id(vendor, product));
+    }
+  }
+  else if (lhs == "usbpath")
+  {
+    if (args.size() != 2)
+    {
+      raise_exception(std::runtime_error, "usbpath requires BUS:DEV argument");
+    }
+    else
+    {
+      int bus = boost::lexical_cast<int>(args[0]);
+      int dev = boost::lexical_cast<int>(args[1]);
+      get_controller_slot().add_match_rule(ControllerMatchRule::match_usb_path(bus, dev));
+    }
+  }
+  else if (lhs == "evdev")
+  {
+    if (args.size() != 1)
+    {
+      raise_exception(std::runtime_error, "evdev rule requires PATH argument");
+    }
+    else
+    {
+      get_controller_slot().add_match_rule(ControllerMatchRule::match_evdev_path(args[0]));
+    }
+  }
+  else
+  {
+    raise_exception(std::runtime_error, "'" << lhs << "' not a valid match rule name");
+  }
+}
+
+void
+Options::set_match(const std::string& str)
+{
+  process_name_value_string(str, boost::bind(&Options::add_match, this, _1, _2));
+}
+
+void
+Options::set_match_group(const std::string& str)
+{
+  // FIXME: not implied
+  assert(!"not implemented");
 }
 
 /* EOF */

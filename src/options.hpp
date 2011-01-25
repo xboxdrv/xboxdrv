@@ -23,36 +23,11 @@
 #include <map>
 #include <vector>
 
+#include "controller_options.hpp"
+#include "controller_slot_options.hpp"
 #include "evdev_absmap.hpp"
 #include "uinput_options.hpp"
 #include "xpad_device.hpp"
-
-#include "modifier/axismap_modifier.hpp"
-#include "modifier/buttonmap_modifier.hpp"
-
-class ControllerOptions
-{
-public:
-  ControllerOptions();
-
-  UInputOptions uinput;
-  std::vector<ModifierPtr> modifier;
-
-  // everything below gets later converted into modifier
-  boost::shared_ptr<ButtonmapModifier> buttonmap;
-  boost::shared_ptr<AxismapModifier>   axismap;
-
-  int  deadzone;
-  int  deadzone_trigger;
-  bool square_axis;
-  bool four_way_restrictor;
-  int  dpad_rotation;
-
-  std::map<XboxAxis, AxisFilterPtr> calibration_map;
-  std::map<XboxAxis, AxisFilterPtr> sensitivity_map;
-  std::map<XboxAxis, AxisFilterPtr> relative_axis_map;
-  std::map<XboxButton, ButtonFilterPtr> autofire_map;
-};
 
 class Options
 {
@@ -111,8 +86,7 @@ public:
   std::map<int, XboxButton> evdev_keymap;
 
   // controller options
-  typedef std::map<int, ControllerOptions> ControllerConfigs;
-  typedef std::map<int, ControllerConfigs> ControllerSlots;
+  typedef std::map<int, ControllerSlotOptions> ControllerSlots;
   ControllerSlots controller_slots;
 
   // chatpad options
@@ -146,8 +120,8 @@ public:
 public:
   Options();
 
-  ControllerConfigs& get_controller_slot();
-  const ControllerConfigs& get_controller_slot() const;
+  ControllerSlotOptions& get_controller_slot();
+  const ControllerSlotOptions& get_controller_slot() const;
   
   /** Returns the currently active configuration */
   ControllerOptions& get_controller_options();
@@ -165,6 +139,10 @@ public:
   void set_dpad_only();
   void set_force_feedback();
   void set_mimic_xpad();
+
+  void add_match(const std::string& lhs, const std::string& rhs);
+  void set_match(const std::string& str);
+  void set_match_group(const std::string& str);
 };
 
 extern Options* g_options;

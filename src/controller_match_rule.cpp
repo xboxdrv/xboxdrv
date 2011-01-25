@@ -16,27 +16,35 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "controller_config.hpp"
+#include "controller_match_rule.hpp"
 
-#include "controller_options.hpp"
-#include "options.hpp"
-
-ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices, const ControllerOptions& opts) :
-  m_modifier(),
-  m_uinput(uinput, slot, extra_devices, opts.uinput)
+ControllerMatchRule
+ControllerMatchRule::match_usb_id(int vendor, int product)
 {
+  ControllerMatchRule rule;
+  rule.m_type = kMatchUSBId;
+  rule.m_vendor = vendor;
+  rule.m_product = product;
+  return rule;
 }
 
-std::vector<ModifierPtr>&
-ControllerConfig::get_modifier()
+ControllerMatchRule
+ControllerMatchRule::match_usb_path(int bus, int dev)
 {
-  return m_modifier;
+  ControllerMatchRule rule;
+  rule.m_type = kMatchUSBPath;
+  rule.m_bus  = bus;
+  rule.m_dev = dev;
+  return rule;
 }
 
-UInputConfig&
-ControllerConfig::get_uinput()
+ControllerMatchRule 
+ControllerMatchRule::match_evdev_path(const std::string& path)
 {
-  return m_uinput;
+  ControllerMatchRule rule;
+  rule.m_type = kMatchEvdevPath;
+  rule.m_path = path;
+  return rule;
 }
 
 /* EOF */

@@ -106,6 +106,8 @@ enum {
   OPTION_DETACH_KERNEL_DRIVER,
   OPTION_DAEMON_DETACH,
   OPTION_DAEMON_PID_FILE,
+  OPTION_DAEMON_MATCH,
+  OPTION_DAEMON_MATCH_GROUP,
   OPTION_HELP_DEVICES,
   OPTION_LIST_ALL,
   OPTION_LIST_ABS,
@@ -167,6 +169,8 @@ CommandLineParser::init_argp()
     .add_option(OPTION_DAEMON_PID_FILE, 0, "pid-file",    "FILE", "Write daemon pid to FILE")
     .add_option(OPTION_DAEMON_ON_CONNECT,    0, "on-connect", "FILE", "Launch EXE when a new controller is connected")
     .add_option(OPTION_DAEMON_ON_DISCONNECT, 0, "on-disconnect", "FILE", "Launch EXE when a controller is disconnected")
+    .add_option(OPTION_DAEMON_MATCH,       0, "match", "RULES",   "Only allow controllers that match any of RULES")
+    //FIXME: .add_option(OPTION_DAEMON_MATCH_GROUP, 0, "match-group", "RULES", "Only allow controllers that match all of RULES")
     .add_newline()
 
     .add_text("Device Options: ")
@@ -398,6 +402,14 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_DAEMON:
         opts.mode = Options::RUN_DAEMON;
+        break;
+
+      case OPTION_DAEMON_MATCH:
+        opts.set_match(opt.argument);
+        break;
+
+      case OPTION_DAEMON_MATCH_GROUP:
+        opts.set_match_group(opt.argument);
         break;
 
       case OPTION_WRITE_CONFIG:
