@@ -85,7 +85,7 @@ XboxdrvDaemon::cleanup_threads()
 }
 
 void
-XboxdrvDaemon::process_match(const Options& opts, uInput* uinput, struct udev_device* device)
+XboxdrvDaemon::process_match(const Options& opts, UInput* uinput, struct udev_device* device)
 {
   // 1) Match vendor/product against the xpad list
   // value = udev_device_get_property_value(device, "ID_VENDOR_ID"); // 045e
@@ -185,12 +185,12 @@ XboxdrvDaemon::run_real(const Options& opts)
   }
 
   // Setup uinput
-  std::auto_ptr<uInput> uinput;
+  std::auto_ptr<UInput> uinput;
   if (!opts.no_uinput)
   {
     if (!opts.quiet) std::cout << "Starting with uinput" << std::endl;
 
-    uinput.reset(new uInput());
+    uinput.reset(new UInput());
 
     // FIXME:
     /* must setup this callback later when we have a controller
@@ -365,7 +365,7 @@ XboxdrvDaemon::print_info(struct udev_device* device)
 }
 
 void
-XboxdrvDaemon::launch_xboxdrv(uInput* uinput, const XPadDevice& dev_type, const Options& opts, 
+XboxdrvDaemon::launch_xboxdrv(UInput* uinput, const XPadDevice& dev_type, const Options& opts, 
                               uint8_t busnum, uint8_t devnum)
 {
   // FIXME: results must be libusb_unref_device()'ed

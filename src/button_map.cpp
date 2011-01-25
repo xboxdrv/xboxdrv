@@ -48,13 +48,13 @@ ButtonMap::lookup(XboxButton shift_code, XboxButton code) const
 }
 
 bool
-ButtonMap::send(uInput& uinput, XboxButton code, bool value) const
+ButtonMap::send(UInput& uinput, XboxButton code, bool value) const
 {
   return send(uinput, XBOX_BTN_UNKNOWN, code, value);
 }
 
 bool
-ButtonMap::send(uInput& uinput, XboxButton shift_code, XboxButton code, bool value) const
+ButtonMap::send(UInput& uinput, XboxButton shift_code, XboxButton code, bool value) const
 {
   const ButtonEventPtr& event = lookup(shift_code, code);
   if (event)
@@ -81,7 +81,7 @@ ButtonMap::clear()
 }
 
 void
-ButtonMap::init(uInput& uinput, int slot, bool extra_devices) const
+ButtonMap::init(UInput& uinput, int slot, bool extra_devices) const
 {
   for(int shift_code = 0; shift_code < XBOX_BTN_MAX; ++shift_code)
   {
@@ -96,7 +96,7 @@ ButtonMap::init(uInput& uinput, int slot, bool extra_devices) const
 }
 
 void
-ButtonMap::update(uInput& uinput, int msec_delta)
+ButtonMap::update(UInput& uinput, int msec_delta)
 {
   for(int shift_code = 0; shift_code < XBOX_BTN_MAX; ++shift_code)
   {

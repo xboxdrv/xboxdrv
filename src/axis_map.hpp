@@ -38,8 +38,8 @@ public:
 
   void clear();
 
-  void init(uInput& uinput, int slot, bool extra_devices) const;
-  void update(uInput& uinput, int msec_delta);
+  void init(UInput& uinput, int slot, bool extra_devices) const;
+  void update(UInput& uinput, int msec_delta);
 };
 
 #endif

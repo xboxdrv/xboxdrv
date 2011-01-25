@@ -115,13 +115,13 @@ AxisEvent::add_filter(AxisFilterPtr filter)
 }
 
 void
-AxisEvent::init(uInput& uinput, int slot, bool extra_devices)
+AxisEvent::init(UInput& uinput, int slot, bool extra_devices)
 {
   m_handler->init(uinput, slot, extra_devices);
 }
 
 void
-AxisEvent::send(uInput& uinput, int value)
+AxisEvent::send(UInput& uinput, int value)
 {
   m_last_raw_value = value;
 
@@ -138,7 +138,7 @@ AxisEvent::send(uInput& uinput, int value)
 }
 
 void
-AxisEvent::update(uInput& uinput, int msec_delta)
+AxisEvent::update(UInput& uinput, int msec_delta)
 {
   for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
   {
@@ -217,14 +217,14 @@ RelAxisEventHandler::RelAxisEventHandler(int device_id, int code, int repeat, fl
 }
 
 void
-RelAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices)
+RelAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 {
   m_code.resolve_device_id(slot, extra_devices);
   uinput.add_rel(m_code.get_device_id(), m_code.code);
 }
 
 void
-RelAxisEventHandler::send(uInput& uinput, int value)
+RelAxisEventHandler::send(UInput& uinput, int value)
 {
   // FIXME: Need to know the min/max of value
   int v = m_value * value / 32767;
@@ -235,7 +235,7 @@ RelAxisEventHandler::send(uInput& uinput, int value)
 }
 
 void
-RelAxisEventHandler::update(uInput& uinput, int msec_delta)
+RelAxisEventHandler::update(UInput& uinput, int msec_delta)
 {
 }
 
@@ -308,7 +308,7 @@ AbsAxisEventHandler::set_axis_range(int min, int max)
 }
 
 void
-AbsAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices)
+AbsAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 {
   m_code.resolve_device_id(slot, extra_devices);
   uinput.add_abs(m_code.get_device_id(), m_code.code, 
@@ -316,7 +316,7 @@ AbsAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices)
 }
 
 void
-AbsAxisEventHandler:: send(uInput& uinput, int value)
+AbsAxisEventHandler:: send(UInput& uinput, int value)
 {
   /*FIXME for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
   {
@@ -327,7 +327,7 @@ AbsAxisEventHandler:: send(uInput& uinput, int value)
 }
  
 void
-AbsAxisEventHandler::update(uInput& uinput, int msec_delta)
+AbsAxisEventHandler::update(UInput& uinput, int msec_delta)
 {
 }
 
@@ -404,7 +404,7 @@ KeyAxisEventHandler::KeyAxisEventHandler() :
 }
 
 void
-KeyAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices)
+KeyAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 {
   for(int i = 0; m_up_codes[i].is_valid(); ++i)
   {
@@ -420,7 +420,7 @@ KeyAxisEventHandler::init(uInput& uinput, int slot, bool extra_devices)
 }
 
 void
-KeyAxisEventHandler::send(uInput& uinput, int value)
+KeyAxisEventHandler::send(UInput& uinput, int value)
 {
   if (::abs(m_old_value) <  m_threshold &&
       ::abs(value)       >= m_threshold)
@@ -456,7 +456,7 @@ KeyAxisEventHandler::send(uInput& uinput, int value)
 }
 
 void
-KeyAxisEventHandler::update(uInput& uinput, int msec_delta)
+KeyAxisEventHandler::update(UInput& uinput, int msec_delta)
 {
 }
 

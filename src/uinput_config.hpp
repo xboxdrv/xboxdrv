@@ -32,7 +32,7 @@ class UInputOptions;
 class UInputConfig
 {
 private:
-  uInput& m_uinput;
+  UInput& m_uinput;
 
   ButtonMap m_btn_map;
   AxisMap   m_axis_map;
@@ -42,7 +42,7 @@ private:
   bool last_button_state[XBOX_BTN_MAX];
 
 public:
-  UInputConfig(uInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);
+  UInputConfig(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);
 
   void send(XboxGenericMsg& msg); 
   void update(int msec_delta);

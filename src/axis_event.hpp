@@ -24,7 +24,7 @@
 #include "axis_filter.hpp"
 #include "ui_event.hpp"
 
-class uInput;
+class UInput;
 class AxisEvent;
 class AxisEventHandler;
 
@@ -47,9 +47,9 @@ public:
 
   void add_filter(AxisFilterPtr filter);
 
-  void init(uInput& uinput, int slot, bool extra_devices);
-  void send(uInput& uinput, int value);
-  void update(uInput& uinput, int msec_delta);
+  void init(UInput& uinput, int slot, bool extra_devices);
+  void send(UInput& uinput, int value);
+  void update(UInput& uinput, int msec_delta);
 
   void set_axis_range(int min, int max);
 
@@ -69,9 +69,9 @@ class AxisEventHandler
 public:
   virtual ~AxisEventHandler() {}
 
-  virtual void init(uInput& uinput, int slot, bool extra_devices) =0;
-  virtual void send(uInput& uinput, int value) =0;
-  virtual void update(uInput& uinput, int msec_delta) =0;
+  virtual void init(UInput& uinput, int slot, bool extra_devices) =0;
+  virtual void send(UInput& uinput, int value) =0;
+  virtual void update(UInput& uinput, int msec_delta) =0;
 
   virtual void set_axis_range(int min, int max) {}
 
@@ -87,9 +87,9 @@ public:
   RelAxisEventHandler();
   RelAxisEventHandler(int device_id, int code, int repeat = 10, float value = 5);
 
-  void init(uInput& uinput, int slot, bool extra_devices);
-  void send(uInput& uinput, int value);
-  void update(uInput& uinput, int msec_delta);
+  void init(UInput& uinput, int slot, bool extra_devices);
+  void send(UInput& uinput, int value);
+  void update(UInput& uinput, int msec_delta);
 
   std::string str() const;
 
@@ -110,9 +110,9 @@ public:
 
   void set_axis_range(int min, int max);
 
-  void init(uInput& uinput, int slot, bool extra_devices);
-  void send(uInput& uinput, int value);
-  void update(uInput& uinput, int msec_delta);
+  void init(UInput& uinput, int slot, bool extra_devices);
+  void send(UInput& uinput, int value);
+  void update(UInput& uinput, int msec_delta);
 
   std::string str() const;
 
@@ -132,9 +132,9 @@ public:
 public:
   KeyAxisEventHandler();
 
-  void init(uInput& uinput, int slot, bool extra_devices);
-  void send(uInput& uinput, int value);
-  void update(uInput& uinput, int msec_delta);
+  void init(UInput& uinput, int slot, bool extra_devices);
+  void send(UInput& uinput, int value);
+  void update(UInput& uinput, int msec_delta);
 
   std::string str() const;
 

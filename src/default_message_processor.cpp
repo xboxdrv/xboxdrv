@@ -21,7 +21,7 @@
 #include "log.hpp"
 #include "uinput.hpp"
 
-DefaultMessageProcessor::DefaultMessageProcessor(uInput& uinput, ControllerConfigSetPtr config, 
+DefaultMessageProcessor::DefaultMessageProcessor(UInput& uinput, ControllerConfigSetPtr config, 
                                                  const Options& opts) :
   m_uinput(uinput),
   m_config(config),

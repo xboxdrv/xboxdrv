@@ -23,7 +23,7 @@
 #include "options.hpp"
 
 class Options;
-class uInput;
+class UInput;
 class ControllerConfigSet;
 
 typedef boost::shared_ptr<ControllerConfigSet> ControllerConfigSetPtr;
@@ -31,8 +31,8 @@ typedef boost::shared_ptr<ControllerConfigSet> ControllerConfigSetPtr;
 class ControllerConfigSet
 {
 public:
-  /** Creates a ControllerConfigSet from the Options object and connects it to uInput */
-  static ControllerConfigSetPtr create(uInput& uinput, int slot, bool extra_devices, 
+  /** Creates a ControllerConfigSet from the Options object and connects it to UInput */
+  static ControllerConfigSetPtr create(UInput& uinput, int slot, bool extra_devices, 
                                        const Options::ControllerConfigs& opts);
 
 private:

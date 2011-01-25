@@ -26,7 +26,7 @@
 #include "controller_config_set.hpp"
 
 class Options;
-class uInput;
+class UInput;
 struct XPadDevice;
 class XboxdrvThread;
 
@@ -81,9 +81,9 @@ private:
   void run_real(const Options& opts);
 
   void cleanup_threads();
-  void process_match(const Options& opts, uInput* uinput, struct udev_device* device);
+  void process_match(const Options& opts, UInput* uinput, struct udev_device* device);
   void print_info(struct udev_device* device);
-  void launch_xboxdrv(uInput* uinput,
+  void launch_xboxdrv(UInput* uinput,
                       const XPadDevice& dev_type, const Options& opts, 
                       uint8_t busnum, uint8_t devnum);
   

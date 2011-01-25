@@ -38,7 +38,7 @@ struct Xbox360Msg;
 struct XboxMsg;
 struct Xbox360GuitarMsg;
   
-class uInput
+class UInput
 {
 private:
   typedef std::map<uint32_t, boost::shared_ptr<LinuxUinput> > UInputDevs;
@@ -57,8 +57,8 @@ private:
   boost::mutex m_mutex;
 
 public:
-  uInput();
-  ~uInput();
+  UInput();
+  ~UInput();
 
   void update(int msec_delta);
 

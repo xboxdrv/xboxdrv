@@ -26,7 +26,6 @@
 struct XPadDevice;
 class Options;
 class Options;
-class uInput;
 class XboxGenericController;
 
 class Xboxdrv

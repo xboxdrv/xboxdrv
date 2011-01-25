@@ -38,7 +38,7 @@ int16_t u8_to_s16(uint8_t value)
 }
 } // namespace
 
-UInputConfig::UInputConfig(uInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
+UInputConfig::UInputConfig(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
   m_btn_map(opts.get_btn_map()), // FIXME: insert resolve magic right here
   m_axis_map(opts.get_axis_map())

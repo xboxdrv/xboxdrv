@@ -22,21 +22,21 @@
 #include "controller_config_set.hpp"
 #include "message_processor.hpp"
 
-class uInput;
+class UInput;
 class Options;
 class ControllerOptions;
 
 class DefaultMessageProcessor : public MessageProcessor
 {
 private:
-  uInput& m_uinput;
+  UInput& m_uinput;
   ControllerConfigSetPtr m_config;
 
   XboxGenericMsg m_oldmsg; /// last data send to uinput
   XboxButton m_config_toggle_button;
 
 public:
-  DefaultMessageProcessor(uInput& uinput, ControllerConfigSetPtr config,
+  DefaultMessageProcessor(UInput& uinput, ControllerConfigSetPtr config,
                           const Options& opts);
   ~DefaultMessageProcessor();
 

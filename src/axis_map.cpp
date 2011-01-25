@@ -61,7 +61,7 @@ AxisMap::clear()
 }
 
 void
-AxisMap::init(uInput& uinput, int slot, bool extra_devices) const
+AxisMap::init(UInput& uinput, int slot, bool extra_devices) const
 {
   for(int shift_code = 0; shift_code < XBOX_BTN_MAX; ++shift_code)
   {
@@ -76,7 +76,7 @@ AxisMap::init(uInput& uinput, int slot, bool extra_devices) const
 }
 
 void
-AxisMap::update(uInput& uinput, int msec_delta)
+AxisMap::update(UInput& uinput, int msec_delta)
 {
   for(int shift_code = 0; shift_code < XBOX_BTN_MAX; ++shift_code)
   {

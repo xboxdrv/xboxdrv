@@ -20,7 +20,7 @@
 
 #include "log.hpp"
 
-uInput::uInput() :
+UInput::UInput() :
   uinput_devs(),
   rel_repeat_lst(),
   m_mutex()
@@ -76,7 +76,7 @@ uInput::uInput() :
 }
 
 LinuxUinput*
-uInput::create_uinput_device(uint32_t device_id)
+UInput::create_uinput_device(uint32_t device_id)
 { 
   // DEVICEID_AUTO should not happen at this point as the user should
   // have called resolve_device_id()
@@ -125,33 +125,33 @@ uInput::create_uinput_device(uint32_t device_id)
   }
 }
 
-uInput::~uInput()
+UInput::~UInput()
 {
 }
 
 void
-uInput::add_key(uint32_t device_id, int ev_code)
+UInput::add_key(uint32_t device_id, int ev_code)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_key(ev_code);
 }
 
 void
-uInput::add_rel(uint32_t device_id, int ev_code)
+UInput::add_rel(uint32_t device_id, int ev_code)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_rel(ev_code);
 }
 
 void
-uInput::add_abs(uint32_t device_id, int ev_code, int min, int max, int fuzz, int flat)
+UInput::add_abs(uint32_t device_id, int ev_code, int min, int max, int fuzz, int flat)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_abs(ev_code, min, max, fuzz, flat);
 }
 
 void
-uInput::finish()
+UInput::finish()
 {
   for(UInputDevs::iterator i = uinput_devs.begin(); i != uinput_devs.end(); ++i)
   {
@@ -160,20 +160,20 @@ uInput::finish()
 }
 
 void
-uInput::send(uint32_t device_id, int ev_type, int ev_code, int value)
+UInput::send(uint32_t device_id, int ev_type, int ev_code, int value)
 {
   get_uinput(device_id)->send(ev_type, ev_code, value);
 }
 
 void
-uInput::send_abs(uint32_t device_id, int ev_code, int value)
+UInput::send_abs(uint32_t device_id, int ev_code, int value)
 {
   assert(ev_code != -1);
   get_uinput(device_id)->send(EV_ABS, ev_code, value);
 }
 
 void
-uInput::send_key(uint32_t device_id, int ev_code, bool value)
+UInput::send_key(uint32_t device_id, int ev_code, bool value)
 {
   assert(ev_code != -1);
 
@@ -181,7 +181,7 @@ uInput::send_key(uint32_t device_id, int ev_code, bool value)
 }
 
 void
-uInput::update(int msec_delta)
+UInput::update(int msec_delta)
 {
   for(std::map<UIEvent, RelRepeat>::iterator i = rel_repeat_lst.begin(); i != rel_repeat_lst.end(); ++i)
   {
@@ -196,7 +196,7 @@ uInput::update(int msec_delta)
 }
 
 void
-uInput::sync()
+UInput::sync()
 {
   for(UInputDevs::iterator i = uinput_devs.begin(); i != uinput_devs.end(); ++i)
   {
@@ -205,7 +205,7 @@ uInput::sync()
 }
 
 void
-uInput::send_rel_repetitive(const UIEvent& code, int value, int repeat_interval)
+UInput::send_rel_repetitive(const UIEvent& code, int value, int repeat_interval)
 {
   if (repeat_interval < 0)
   { // remove rel_repeats from list
@@ -239,7 +239,7 @@ uInput::send_rel_repetitive(const UIEvent& code, int value, int repeat_interval)
 }
 
 LinuxUinput*
-uInput::get_uinput(uint32_t device_id) const
+UInput::get_uinput(uint32_t device_id) const
 {
   UInputDevs::const_iterator it = uinput_devs.find(device_id);
   if (it != uinput_devs.end())
@@ -256,13 +256,13 @@ uInput::get_uinput(uint32_t device_id) const
 }
 
 LinuxUinput*
-uInput::get_force_feedback_uinput() const
+UInput::get_force_feedback_uinput() const
 {
   return get_uinput(0);
 }
 
 void
-uInput::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+UInput::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
 {
   get_force_feedback_uinput()->set_ff_callback(callback);
 }
