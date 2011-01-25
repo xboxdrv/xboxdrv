@@ -25,7 +25,6 @@
 
 struct XPadDevice;
 class Options;
-class Options;
 class XboxGenericController;
 
 class Xboxdrv
@@ -51,6 +50,8 @@ private:
   int  find_evdev_number() const;
   bool find_controller_by_id(int id, int vendor_id, int product_id, libusb_device** xbox_device) const;
   bool find_xbox360_controller(int id, libusb_device** xbox_device, XPadDevice* type) const;
+
+  void print_copyright() const;
 
 public:
   Xboxdrv();

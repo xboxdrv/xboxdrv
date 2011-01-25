@@ -23,6 +23,7 @@
 #include "ini_schema.hpp"
 #include "uinput.hpp"
 
+class Options;
 class Xboxdrv;
 
 class CommandLineParser 

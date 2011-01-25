@@ -349,17 +349,24 @@ void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_
 } // namespace
 
 void
+Xboxdrv::print_copyright() const
+{
+  WordWrap wrap(get_terminal_width());
+  wrap.para("xboxdrv " PACKAGE_VERSION " - http://pingus.seul.org/~grumbel/xboxdrv/");
+  wrap.para("Copyright © 2008-2011 Ingo Ruhnke <grumbel@gmx.de>");
+  wrap.para("Licensed under GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>");
+  wrap.para("This program comes with ABSOLUTELY NO WARRANTY.");
+  wrap.para("This is free software, and you are welcome to redistribute it under certain "
+               "conditions; see the file COPYING for details.");
+  wrap.newline();
+}
+
+void
 Xboxdrv::run_main(const Options& opts)
 {
   if (!opts.quiet)
   {
-    std::cout
-      << "xboxdrv " PACKAGE_VERSION " - http://pingus.seul.org/~grumbel/xboxdrv/\n"
-      << "Copyright © 2008-2011 Ingo Ruhnke <grumbel@gmx.de>\n"
-      << "Licensed under GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
-      << "This program comes with ABSOLUTELY NO WARRANTY.\n"
-      << "This is free software, and you are welcome to redistribute it under certain conditions; see the file COPYING for details.\n";
-    std::cout << std::endl;
+    print_copyright();
   }
 
   std::auto_ptr<XboxGenericController> controller;
@@ -494,7 +501,7 @@ Xboxdrv::print_info(libusb_device* dev,
     raise_exception(std::runtime_error, "libusb_get_device_descriptor() failed: " << usb_strerror(ret));
   }
 
-  std::cout << "USB Device:        " << boost::format("%03d:%03d:") 
+  std::cout << "USB Device:        " << boost::format("%03d:%03d")
     % static_cast<int>(libusb_get_bus_number(dev))
     % static_cast<int>(libusb_get_device_address(dev)) << std::endl;
   std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
@@ -578,6 +585,11 @@ Xboxdrv::run_help_devices()
 void
 Xboxdrv::run_daemon(const Options& opts)
 {
+  if (!opts.quiet)
+  {
+    print_copyright();
+  }
+
   int ret = libusb_init(NULL);
   if (ret != LIBUSB_SUCCESS)
   {

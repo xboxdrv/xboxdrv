@@ -42,6 +42,8 @@ $ dput my-ppa ../xboxdrv_0.7.0-1~lucid1_source.changes
 Stuff to do before 0.7.0 release:
 =================================
 
+* print controller type/name in daemon
+
 * log levels:
 
   debug: only shown when --debug is given

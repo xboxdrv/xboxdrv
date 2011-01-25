@@ -29,6 +29,7 @@ private:
 public:
   WordWrap(int terminal_width);
 
+  void para(const std::string& str) const;
   void para(const std::string& prefix, const std::string& str) const;
   void println(const std::string& str);
   void newline();

@@ -31,7 +31,6 @@
 #include "evdev_helper.hpp"
 #include "linux_uinput.hpp"
 #include "uinput_options.hpp"
-#include "xboxdrv.hpp"
 #include "xpad_device.hpp"
 
 struct Xbox360Msg;

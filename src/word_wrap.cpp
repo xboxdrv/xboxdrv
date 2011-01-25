@@ -38,6 +38,12 @@ WordWrap::newline()
 }
 
 void
+WordWrap::para(const std::string& str) const
+{
+  para("", str);
+}
+
+void
 WordWrap::para(const std::string& prefix, const std::string& str) const
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
