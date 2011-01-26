@@ -41,9 +41,15 @@ public:
   const std::vector<ControllerMatchRule>& get_match_rules() const;
   const std::map<int, ControllerOptions>& get_options() const;
 
+  void set_force_feedback(bool value) { m_force_feedback = value; }
+  bool get_force_feedback() const { return m_force_feedback; }
+
+  int get_ff_device() const { return 0; }
+
 private:
   std::map<int, ControllerOptions> m_options;
   std::vector<ControllerMatchRule> m_match_rules;
+  bool m_force_feedback;
 };
 
 #endif

@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_DEFAULT_MESSAGE_PROCESSOR_HPP
 #define HEADER_XBOXDRV_DEFAULT_MESSAGE_PROCESSOR_HPP
 
-#include "controller_config_set.hpp"
+#include "controller_slot_config.hpp"
 #include "message_processor.hpp"
 
 class UInput;
@@ -30,17 +30,22 @@ class DefaultMessageProcessor : public MessageProcessor
 {
 private:
   UInput& m_uinput;
-  ControllerConfigSetPtr m_config;
+  ControllerSlotConfigPtr m_config;
 
   XboxGenericMsg m_oldmsg; /// last data send to uinput
   XboxButton m_config_toggle_button;
 
+  int m_rumble_gain;
+  boost::function<void (uint8_t, uint8_t)> m_rumble_callback;
+
 public:
-  DefaultMessageProcessor(UInput& uinput, ControllerConfigSetPtr config,
+  DefaultMessageProcessor(UInput& uinput, ControllerSlotConfigPtr config,
                           const Options& opts);
   ~DefaultMessageProcessor();
 
   void send(const XboxGenericMsg& msg, int msec_delta);
+  void set_rumble(uint8_t lhs, uint8_t rhs);
+  void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
 
 private:
   DefaultMessageProcessor(const DefaultMessageProcessor&);

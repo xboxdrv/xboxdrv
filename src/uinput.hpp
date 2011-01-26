@@ -61,13 +61,14 @@ public:
 
   void update(int msec_delta);
 
-  void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
+  void set_ff_callback(int device_id, const boost::function<void (uint8_t, uint8_t)>& callback);
 
   /** Device construction functions
       @{*/
   void add_rel(uint32_t device_id, int ev_code);
   void add_abs(uint32_t device_id, int ev_code, int min, int max, int fuzz, int flat);
   void add_key(uint32_t device_id, int ev_code);
+  void add_ff(uint32_t device_id, uint16_t code);
 
   /** needs to be called to finish device creation and create the
       device in the kernel */
@@ -85,8 +86,6 @@ public:
       have been send */
   void sync();
   /** @} */
-
-  LinuxUinput* get_force_feedback_uinput() const;
 
   boost::mutex& get_mutex() { return m_mutex; }
 

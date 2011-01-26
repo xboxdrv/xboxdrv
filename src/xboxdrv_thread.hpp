@@ -24,7 +24,7 @@
 
 #include "xboxmsg.hpp"
 #include "modifier.hpp"
-#include "controller_config_set.hpp"
+#include "controller_slot_config.hpp"
 
 class Options;
 class XboxGenericController;

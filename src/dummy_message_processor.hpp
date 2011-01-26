@@ -26,7 +26,9 @@ class DummyMessageProcessor : public MessageProcessor
 private:
 public:
   DummyMessageProcessor();
+
   void send(const XboxGenericMsg& msg, int msec_delta);
+  void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
 
 private:
   DummyMessageProcessor(const DummyMessageProcessor&);

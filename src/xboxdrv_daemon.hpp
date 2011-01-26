@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <vector>
 
-#include "controller_config_set.hpp"
+#include "controller_slot_config.hpp"
 #include "controller_match_rule.hpp"
 
 class Options;
@@ -40,7 +40,7 @@ private:
   struct ControllerSlot
   {
     int id;
-    ControllerConfigSetPtr config;
+    ControllerSlotConfigPtr config;
     std::vector<ControllerMatchRule> rules;
     XboxdrvThread* thread;
     
@@ -52,7 +52,7 @@ private:
     {}
 
     ControllerSlot(int id_,
-                   ControllerConfigSetPtr config_,
+                   ControllerSlotConfigPtr config_,
                    std::vector<ControllerMatchRule> rules_,
                    XboxdrvThread* thread_ = 0) :
       id(id_),

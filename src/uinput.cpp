@@ -25,54 +25,6 @@ UInput::UInput() :
   rel_repeat_lst(),
   m_mutex()
 {
-#ifdef FIXME
-  if (cfg.force_feedback)
-  {
-    create_uinput_device(DEVICEID_JOYSTICK);
-  }
-
-  // LED
-  //ioctl(fd, UI_SET_EVBIT, EV_LED);
-  //ioctl(fd, UI_SET_LEDBIT, LED_MISC);
-
-  if (cfg.force_feedback)
-  {
-    // 
-    get_force_feedback_uinput()->add_ff(FF_RUMBLE);
-    get_force_feedback_uinput()->add_ff(FF_PERIODIC);
-    get_force_feedback_uinput()->add_ff(FF_CONSTANT);
-    get_force_feedback_uinput()->add_ff(FF_RAMP);
-
-    // Periodic effect subtypes
-    get_force_feedback_uinput()->add_ff(FF_SINE);
-    get_force_feedback_uinput()->add_ff(FF_TRIANGLE);
-    get_force_feedback_uinput()->add_ff(FF_SQUARE);
-    get_force_feedback_uinput()->add_ff(FF_SAW_UP);
-    get_force_feedback_uinput()->add_ff(FF_SAW_DOWN);
-    get_force_feedback_uinput()->add_ff(FF_CUSTOM);
-
-    // Gain support
-    get_force_feedback_uinput()->add_ff(FF_GAIN);
-
-    // Unsupported effects
-    // get_force_feedback_uinput()->add_ff(FF_SPRING);
-    // get_force_feedback_uinput()->add_ff(FF_FRICTION);
-    // get_force_feedback_uinput()->add_ff(FF_DAMPER);
-    // get_force_feedback_uinput()->add_ff(FF_INERTIA);
-
-    // FF_GAIN     - relative strength of rumble
-    // FF_RUMBLE   - basic rumble (delay, time)
-    // FF_CONSTANT - envelope, emulate with rumble
-    // FF_RAMP     - same as constant, except strength grows
-    // FF_PERIODIC - envelope
-    // |- FF_SINE      types of periodic effects
-    // |- FF_TRIANGLE
-    // |- FF_SQUARE
-    // |- FF_SAW_UP
-    // |- FF_SAW_DOWN
-    // '- FF_CUSTOM
-  }
-#endif
 }
 
 LinuxUinput*
@@ -148,6 +100,13 @@ UInput::add_abs(uint32_t device_id, int ev_code, int min, int max, int fuzz, int
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_abs(ev_code, min, max, fuzz, flat);
+}
+
+void
+UInput::add_ff(uint32_t device_id, uint16_t code)
+{
+  LinuxUinput* dev = create_uinput_device(device_id);
+  dev->add_ff(code);
 }
 
 void
@@ -255,16 +214,10 @@ UInput::get_uinput(uint32_t device_id) const
   }
 }
 
-LinuxUinput*
-UInput::get_force_feedback_uinput() const
-{
-  return get_uinput(0);
-}
-
 void
-UInput::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+UInput::set_ff_callback(int device_id, const boost::function<void (uint8_t, uint8_t)>& callback)
 {
-  get_force_feedback_uinput()->set_ff_callback(callback);
+  get_uinput(device_id)->set_ff_callback(callback);
 }
 
 /* EOF */

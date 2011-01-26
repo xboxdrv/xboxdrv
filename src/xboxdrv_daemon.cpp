@@ -138,7 +138,7 @@ XboxdrvDaemon::cleanup_threads()
 void
 XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
 {
-  if (false)
+  if (true)
   {
     print_info(device);
   }
@@ -206,14 +206,6 @@ XboxdrvDaemon::init_uinput(const Options& opts)
 
     m_uinput.reset(new UInput());
 
-    // FIXME:
-    /* must setup this callback later when we have a controller
-       if (opts.uinput_config.force_feedback)
-       {
-       uinput->set_ff_callback(boost::bind(&set_rumble,  controller.get(), opts.rumble_gain, _1, _2));
-       }
-    */
-
     // create controller slots
     int slot_count = 0;
 
@@ -222,9 +214,9 @@ XboxdrvDaemon::init_uinput(const Options& opts)
     {
       log_info << "creating slot: " << slot_count << std::endl;
       m_controller_slots.push_back(ControllerSlot(m_controller_slots.size(),
-                                                  ControllerConfigSet::create(*m_uinput, slot_count,
-                                                                              opts.extra_devices,
-                                                                              controller->second),
+                                                  ControllerSlotConfig::create(*m_uinput, slot_count,
+                                                                               opts.extra_devices,
+                                                                               controller->second),
                                                   controller->second.get_match_rules()));
       slot_count += 1;
     }

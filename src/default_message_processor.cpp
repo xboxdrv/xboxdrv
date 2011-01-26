@@ -21,12 +21,15 @@
 #include "log.hpp"
 #include "uinput.hpp"
 
-DefaultMessageProcessor::DefaultMessageProcessor(UInput& uinput, ControllerConfigSetPtr config, 
+DefaultMessageProcessor::DefaultMessageProcessor(UInput& uinput, 
+                                                 ControllerSlotConfigPtr config, 
                                                  const Options& opts) :
   m_uinput(uinput),
   m_config(config),
   m_oldmsg(),
-  m_config_toggle_button(opts.config_toggle_button)
+  m_config_toggle_button(opts.config_toggle_button),
+  m_rumble_gain(opts.rumble_gain),
+  m_rumble_callback()
 {
   memset(&m_oldmsg, 0, sizeof(m_oldmsg));
 }
@@ -84,6 +87,24 @@ DefaultMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
       m_config->get_config()->get_uinput().send(msg);
     }
   }
+}
+
+void
+DefaultMessageProcessor::set_rumble(uint8_t lhs, uint8_t rhs)
+{
+  if (m_rumble_callback)
+  {
+    lhs = std::min(lhs * m_rumble_gain / 255, 255);
+    rhs = std::min(rhs * m_rumble_gain / 255, 255);
+  
+    m_rumble_callback(lhs, rhs);
+  }
+}
+
+void
+DefaultMessageProcessor::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+{
+  m_config->set_ff_callback(callback);
 }
 
 /* EOF */

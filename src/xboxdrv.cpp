@@ -336,19 +336,6 @@ Xboxdrv::find_controller(libusb_device** dev,
   }
 }
 
-// FIXME: duplicate code
-namespace {
-void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_t rhs)
-{
-  lhs = std::min(lhs * gain / 255, 255);
-  rhs = std::min(rhs * gain / 255, 255);
-  
-  //std::cout << (int)lhs << " " << (int)rhs << std::endl;
-
-  controller->set_rumble(lhs, rhs);
-}
-} // namespace
-
 void
 Xboxdrv::print_copyright() const
 {
@@ -444,10 +431,6 @@ Xboxdrv::run_main(const Options& opts)
       if (!opts.quiet)
         std::cout << "Starting with uinput" << std::endl;
       uinput = std::auto_ptr<UInput>(new UInput());
-      if (opts.get_controller_options().uinput.force_feedback) // FIXME: wrong
-      {
-        uinput->set_ff_callback(boost::bind(&set_rumble,  controller.get(), opts.rumble_gain, _1, _2));
-      }
     }
     else
     {
@@ -473,15 +456,16 @@ Xboxdrv::run_main(const Options& opts)
 
     global_exit_xboxdrv = false;
 
-    ControllerConfigSetPtr config_set = ControllerConfigSet::create(*uinput, 
-                                                                    0, opts.extra_devices,
-                                                                    opts.get_controller_slot());
+    ControllerSlotConfigPtr config_set = ControllerSlotConfig::create(*uinput, 
+                                                                      0, opts.extra_devices,
+                                                                      opts.get_controller_slot());
 
     // After all the ControllerConfig registered their events, finish up
     // the device creation
     uinput->finish();
 
     std::auto_ptr<MessageProcessor> message_proc(new DefaultMessageProcessor(*uinput, config_set, opts));
+
     XboxdrvThread loop(message_proc, controller, opts);
     loop.controller_loop(opts);
           

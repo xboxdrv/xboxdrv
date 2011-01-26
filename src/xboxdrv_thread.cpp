@@ -43,6 +43,9 @@ XboxdrvThread::XboxdrvThread(std::auto_ptr<MessageProcessor> processor,
   m_timeout(opts.timeout)
 {
   memset(&m_oldrealmsg, 0, sizeof(m_oldrealmsg));
+
+  // connect the processor to the controller to allow rumble
+  m_processor->set_ff_callback(boost::bind(&XboxGenericController::set_rumble, m_controller.get(), _1, _2));
 }
 
 XboxdrvThread::~XboxdrvThread()

@@ -233,10 +233,28 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else if (len == 3 && data[0] == 0x08 && data[1] == 0x03)
   {
+    // FIXME: maybe a proper indicator for the actvity on the chatpad
+    // port, so that we don't have to send chatpad init
     if (data[2] == 0x00)
-      log_info << "headset: none" << std::endl;
+    {
+      log_info << "peripheral: none" << std::endl;
+    }
+    else if (data[2] == 0x01)
+    {
+      log_info << "peripheral: chatpad" << std::endl;
+    }
     else if (data[2] == 0x02)
-      log_info << "headset: none" << std::endl;
+    {
+      log_info << "peripheral: headset" << std::endl;
+    }
+    else if (data[2] == 0x03)
+    {
+      log_info << "peripheral: headset, chatpad" << std::endl;
+    }
+    else
+    {
+      log_info << "peripheral: unknown: " << int(data[2]) << std::endl;
+    }
   }
   else if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
   {

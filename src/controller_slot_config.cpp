@@ -16,19 +16,22 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "controller_config_set.hpp"
+#include "controller_slot_config.hpp"
 
-#include "log.hpp"
+#include <boost/bind.hpp>
+
 #include "controller_options.hpp"
+#include "log.hpp"
+#include "uinput.hpp"
 
 #include "modifier/dpad_rotation_modifier.hpp"
 #include "modifier/four_way_restrictor_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 
-ControllerConfigSetPtr
-ControllerConfigSet::create(UInput& uinput, int slot, bool extra_devices, const ControllerSlotOptions& opts)
+ControllerSlotConfigPtr
+ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const ControllerSlotOptions& opts)
 {  
-  ControllerConfigSetPtr m_config(new ControllerConfigSet);
+  ControllerSlotConfigPtr m_config(new ControllerSlotConfig);
 
   for(ControllerSlotOptions::Options::const_iterator i = opts.get_options().begin();
       i != opts.get_options().end(); ++i)
@@ -51,11 +54,57 @@ ControllerConfigSet::create(UInput& uinput, int slot, bool extra_devices, const 
 #endif
   }
 
+  // LED
+  //ioctl(fd, UI_SET_EVBIT, EV_LED);
+  //ioctl(fd, UI_SET_LEDBIT, LED_MISC);
+
+  if (opts.get_force_feedback())
+  {
+    // FF_GAIN     - relative strength of rumble
+    // FF_RUMBLE   - basic rumble (delay, time)
+    // FF_CONSTANT - envelope, emulate with rumble
+    // FF_RAMP     - same as constant, except strength grows
+    // FF_PERIODIC - envelope
+    // |- FF_SINE      types of periodic effects
+    // |- FF_TRIANGLE
+    // |- FF_SQUARE
+    // |- FF_SAW_UP
+    // |- FF_SAW_DOWN
+    // '- FF_CUSTOM
+
+    int ff_device = opts.get_ff_device();
+
+    // basic types
+    uinput.add_ff(ff_device, FF_RUMBLE);
+    uinput.add_ff(ff_device, FF_PERIODIC);
+    uinput.add_ff(ff_device, FF_CONSTANT);
+    uinput.add_ff(ff_device, FF_RAMP);
+
+    // periodic effect subtypes
+    uinput.add_ff(ff_device, FF_SINE);
+    uinput.add_ff(ff_device, FF_TRIANGLE);
+    uinput.add_ff(ff_device, FF_SQUARE);
+    uinput.add_ff(ff_device, FF_SAW_UP);
+    uinput.add_ff(ff_device, FF_SAW_DOWN);
+    uinput.add_ff(ff_device, FF_CUSTOM);
+
+    // gin support
+    uinput.add_ff(ff_device, FF_GAIN);
+
+    // Unsupported effects
+    // uinput.add_ff(ff_device, FF_SPRING);
+    // uinput.add_ff(ff_device, FF_FRICTION);
+    // uinput.add_ff(ff_device, FF_DAMPER);
+    // uinput.add_ff(ff_device, FF_INERTIA);
+
+    uinput.set_ff_callback(ff_device, boost::bind(&ControllerSlotConfig::set_rumble, m_config.get(), _1, _2));
+  }
+
   return m_config;
 }
 
 void
-ControllerConfigSet::create_modifier(const ControllerOptions& opts, std::vector<ModifierPtr>* modifier)
+ControllerSlotConfig::create_modifier(const ControllerOptions& opts, std::vector<ModifierPtr>* modifier)
 {
   if (!opts.calibration_map.empty())
   {
@@ -180,14 +229,15 @@ ControllerConfigSet::create_modifier(const ControllerOptions& opts, std::vector<
   modifier->insert(modifier->end(), opts.modifier.begin(), opts.modifier.end());
 }
 
-ControllerConfigSet::ControllerConfigSet() :
+ControllerSlotConfig::ControllerSlotConfig() :
   m_config(),
-  m_current_config(0)
+  m_current_config(0),
+  m_rumble_callback()
 {
 }
 
 void
-ControllerConfigSet::next_config()
+ControllerSlotConfig::next_config()
 {
   m_current_config += 1;
 
@@ -198,7 +248,7 @@ ControllerConfigSet::next_config()
 }
 
 void
-ControllerConfigSet::prev_config()
+ControllerSlotConfig::prev_config()
 {
   m_current_config -= 1;
   
@@ -209,13 +259,13 @@ ControllerConfigSet::prev_config()
 }
 
 int
-ControllerConfigSet::config_count() const
+ControllerSlotConfig::config_count() const
 {
   return static_cast<int>(m_config.size());
 }
 
 ControllerConfigPtr
-ControllerConfigSet::get_config(int i) const
+ControllerSlotConfig::get_config(int i) const
 {
   assert(i >= 0);
   assert(i < static_cast<int>(m_config.size()));
@@ -224,7 +274,7 @@ ControllerConfigSet::get_config(int i) const
 }
 
 ControllerConfigPtr
-ControllerConfigSet::get_config() const
+ControllerSlotConfig::get_config() const
 {
   assert(!m_config.empty());
 
@@ -232,9 +282,24 @@ ControllerConfigSet::get_config() const
 }
 
 void
-ControllerConfigSet::add_config(ControllerConfigPtr config)
+ControllerSlotConfig::add_config(ControllerConfigPtr config)
 {
   m_config.push_back(config);
+}
+
+void
+ControllerSlotConfig::set_rumble(uint8_t strong, uint8_t weak)
+{
+  if (m_rumble_callback)
+  {
+    m_rumble_callback(strong, weak);
+  }
+}
+
+void
+ControllerSlotConfig::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+{
+  m_rumble_callback = callback;
 }
 
 /* EOF */

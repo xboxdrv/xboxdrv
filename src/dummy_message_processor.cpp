@@ -31,4 +31,9 @@ DummyMessageProcessor::send(const XboxGenericMsg& msg, int msec_delta)
   log_info << msg << std::endl;
 }
 
+void
+DummyMessageProcessor::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+{
+}
+
 /* EOF */
