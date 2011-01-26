@@ -24,6 +24,7 @@
 #include <stdio.h>
 
 #include "command_line_options.hpp"
+#include "dummy_message_processor.hpp"
 #include "default_message_processor.hpp"
 #include "evdev_controller.hpp"
 #include "helper.hpp"
@@ -456,15 +457,23 @@ Xboxdrv::run_main(const Options& opts)
 
     global_exit_xboxdrv = false;
 
-    ControllerSlotConfigPtr config_set = ControllerSlotConfig::create(*uinput, 
-                                                                      0, opts.extra_devices,
-                                                                      opts.get_controller_slot());
+    std::auto_ptr<MessageProcessor> message_proc;
+    if (uinput.get())
+    {
+      ControllerSlotConfigPtr config_set = ControllerSlotConfig::create(*uinput, 
+                                                                        0, opts.extra_devices,
+                                                                        opts.get_controller_slot());
 
-    // After all the ControllerConfig registered their events, finish up
-    // the device creation
-    uinput->finish();
+      // After all the ControllerConfig registered their events, finish up
+      // the device creation
+      uinput->finish();
 
-    std::auto_ptr<MessageProcessor> message_proc(new DefaultMessageProcessor(*uinput, config_set, opts));
+      message_proc.reset(new DefaultMessageProcessor(*uinput, config_set, opts));
+    }
+    else
+    {
+      message_proc.reset(new DummyMessageProcessor);
+    }
 
     XboxdrvThread loop(message_proc, controller, opts);
     loop.controller_loop(opts);
