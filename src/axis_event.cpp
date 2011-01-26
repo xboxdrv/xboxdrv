@@ -19,8 +19,9 @@
 #include "axis_event.hpp"
 
 #include <boost/tokenizer.hpp>
-#include <iostream>
+#include <string>
 
+#include "log.hpp"
 #include "uinput.hpp"
 
 AxisEventPtr
@@ -83,17 +84,17 @@ AxisEvent::from_string(const std::string& str)
         ev.reset(new AxisEvent(KeyAxisEventHandler::from_string(str)));
         break;
 
-      case -1:
-        std::cout << "--------- invalid --------------" << std::endl;
+      case -1: // void/none
         ev = invalid();
         break;
 
       default:
-        assert(!"AxisEvent::from_string(): should never be reached");
+        assert(!"should never be reached");
     }
   }
 
-  //std::cout << "AxisEvent::from_string():\n  in:  " << str << "\n  out: " << ev->str() << std::endl;
+  log_debug("in:  " << str);
+  log_debug("out: " << ev->str());
 
   return ev;
 }

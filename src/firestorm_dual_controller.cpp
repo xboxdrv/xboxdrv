@@ -18,11 +18,11 @@
 
 #include "firestorm_dual_controller.hpp"
 
-#include <iostream>
 #include <sstream>
 #include <boost/format.hpp>
 
 #include "helper.hpp"
+#include "log.hpp"
 #include "usb_helper.hpp"
 
 // 044f:b312
@@ -141,16 +141,16 @@ FirestormDualController::set_led(uint8_t status)
 }
 
 bool
-FirestormDualController::read(XboxGenericMsg& msg, bool verbose, int timeout)
+FirestormDualController::read(XboxGenericMsg& msg, int timeout)
 {
   if (is_vsb)
-    return read_vsb(msg, verbose, timeout);
+    return read_vsb(msg, timeout);
   else
-    return read_default(msg, verbose, timeout);
+    return read_default(msg, timeout);
 }
 
 bool
-FirestormDualController::read_vsb(XboxGenericMsg& msg, bool verbose, int timeout)
+FirestormDualController::read_vsb(XboxGenericMsg& msg, int timeout)
 {
   Firestorm_vsb_Msg data;
   int len = 0;
@@ -171,12 +171,13 @@ FirestormDualController::read_vsb(XboxGenericMsg& msg, bool verbose, int timeout
   {
     if (0)
     { // debug output
+      std::ostringstream str;
       for(size_t i = 0; i < sizeof(data); ++i)
       {
         uint8_t v = reinterpret_cast<char*>(&data)[i];
-        std::cout << boost::format("0x%02x ") % static_cast<int>(v);
+        str << boost::format("0x%02x ") % static_cast<int>(v);
       }
-      std::cout << std::endl;
+      log_debug(str.str());
     }
 
     memset(&msg, 0, sizeof(msg));
@@ -233,7 +234,7 @@ FirestormDualController::read_vsb(XboxGenericMsg& msg, bool verbose, int timeout
 }
 
 bool
-FirestormDualController::read_default(XboxGenericMsg& msg, bool verbose, int timeout)
+FirestormDualController::read_default(XboxGenericMsg& msg, int timeout)
 {
   FirestormMsg data;
   int len = 0;

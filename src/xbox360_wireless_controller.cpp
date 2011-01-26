@@ -97,7 +97,7 @@ Xbox360WirelessController::set_led(uint8_t status)
 }
 
 bool
-Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
+Xbox360WirelessController::read(XboxGenericMsg& msg, int timeout)
 {
   uint8_t data[32];
   int len = 0;

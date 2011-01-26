@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_WORD_WRAP_HPP
 #define HEADER_XBOXDRV_WORD_WRAP_HPP
 
-#include <iostream>
+#include <string>
 
 class WordWrap
 {

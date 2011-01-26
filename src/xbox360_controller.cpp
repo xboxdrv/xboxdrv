@@ -183,7 +183,7 @@ Xbox360Controller::set_led(uint8_t status)
 }
 
 bool
-Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
+Xbox360Controller::read(XboxGenericMsg& msg, int timeout)
 {
   uint8_t data[32];
   int len = 0;
@@ -212,14 +212,11 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else if (len == 3 && data[0] == 0x03 && data[1] == 0x03)
   { 
-    if (verbose)
-    {
-      // data[2] == 0x00 means that rumble is disabled
-      // data[2] == 0x01 unknown, but rumble works
-      // data[2] == 0x02 unknown, but rumble works
-      // data[2] == 0x03 is default with rumble enabled
-      log_info("Xbox360Controller: rumble status: " << int(data[2]));
-    }
+    // data[2] == 0x00 means that rumble is disabled
+    // data[2] == 0x01 unknown, but rumble works
+    // data[2] == 0x02 unknown, but rumble works
+    // data[2] == 0x03 is default with rumble enabled
+    log_info("rumble status: " << int(data[2]));
   }
   else if (len == 3 && data[0] == 0x08 && data[1] == 0x03)
   {

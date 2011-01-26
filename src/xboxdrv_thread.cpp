@@ -128,7 +128,7 @@ XboxdrvThread::controller_loop(const Options& opts)
     {
       XboxGenericMsg msg;
 
-      if (m_controller->read(msg, opts.verbose, m_timeout))
+      if (m_controller->read(msg, m_timeout))
       {
         m_oldrealmsg = msg;
 

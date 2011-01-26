@@ -220,8 +220,7 @@ std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg)
   out << boost::format("  LT:%3d RT:%3d")
     % int(msg.lt) % int(msg.rt);
 
-  if (g_options->verbose)
-    out << " Dummy: " << msg.dummy1 << " " << msg.dummy2 << " " << msg.dummy3;
+  // out << " Dummy: " << msg.dummy1 << " " << msg.dummy2 << " " << msg.dummy3;
 
   return out;
 }
@@ -260,8 +259,7 @@ std::ostream& operator<<(std::ostream& out, const XboxMsg& msg)
     % int(msg.lt) 
     % int(msg.rt);
 
-  if (g_options->verbose)
-    out << " Dummy: " << msg.dummy;
+  // out << " Dummy: " << msg.dummy;
 
   return out;
 }

@@ -20,8 +20,9 @@
 
 #include <boost/format.hpp>
 #include <fstream>
-#include <iostream>
 
+#include "helper.hpp"
+#include "raise_exception.hpp"
 #include "usb_helper.hpp"
 
 Headset::Headset(libusb_device_handle* handle, 
@@ -84,7 +85,7 @@ Headset::write_thread(const std::string& filename)
     throw std::runtime_error(out.str());    
   }
 
-  std::cout << "[headset] starting playback: " << filename << std::endl;
+  log_info("starting playback: " << filename);
 
   uint8_t data[32];
   while(in)
@@ -103,14 +104,12 @@ Headset::write_thread(const std::string& filename)
                                                 &transferred, 0);
       if (ret != LIBUSB_SUCCESS)
       {
-        std::ostringstream out;
-        out << "[headset] " << usb_strerror(ret);
-        throw std::runtime_error(out.str());
+        raise_exception(std::runtime_error, "libusb_interrupt_transfer failed: " << usb_strerror(ret));
       }
     }
   }
 
-  std::cout << "[headset] finished playback: " << filename << std::endl;
+  log_info("finished playback: " << filename);
 }
 
 void
@@ -124,9 +123,7 @@ Headset::read_thread(const std::string& filename, bool debug)
   
     if (!*out)
     {
-      std::ostringstream outstr;
-      outstr << "[headset] " << filename << ": " << strerror(errno);
-      throw std::runtime_error(outstr.str());
+      raise_exception(std::runtime_error, filename << ": " << strerror(errno));
     }
   }
 
@@ -147,7 +144,7 @@ Headset::read_thread(const std::string& filename, bool debug)
     {
       if (len == 0)
       {
-        std::cout << "[headset] -- empty read --" << std::endl;
+        log_debug("-- empty read --");
       }
       else
       {
@@ -156,15 +153,7 @@ Headset::read_thread(const std::string& filename, bool debug)
           out->write(reinterpret_cast<char*>(data), sizeof(data));
         }
 
-        if (debug)
-        {
-          std::cout << "[headset] ";
-          for(int i = 0; i < len; ++i)
-          {
-            std::cout << boost::format("0x%02x ") % int(data[i]);
-          }
-          std::cout << std::endl;
-        }
+        log_debug(raw2str(data, len));
       }
     }
   }

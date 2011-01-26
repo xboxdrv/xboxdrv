@@ -21,7 +21,6 @@
 #include <boost/format.hpp>
 #include <fstream>
 #include <stdexcept>
-#include <iostream>
 
 #include "uinput_message_processor.hpp"
 #include "dummy_message_processor.hpp"
@@ -139,7 +138,7 @@ XboxdrvDaemon::cleanup_threads()
 void
 XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
 {
-  if (false)
+  if (g_logger.get_log_level() >= Logger::kDebug)
   {
     print_info(device);
   }
@@ -156,8 +155,8 @@ XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
     XPadDevice dev_type;
     if (!find_xpad_device(vendor, product, &dev_type))
     {
-      log_info("ignoring " << boost::format("%04x:%04x") % vendor % product <<
-               " not a valid Xboxdrv device");
+      log_debug("ignoring " << boost::format("%04x:%04x") % vendor % product <<
+                " not a valid Xboxdrv device");
     }
     else
     {  
@@ -337,7 +336,7 @@ XboxdrvDaemon::run_loop(const Options& opts)
     if (!device)
     {
       // seem to be normal, do we get this when the given device is filtered out?
-      std::cout << "udev device couldn't be read: " << device << std::endl;
+      log_debug("udev device couldn't be read: " << device);
     }
     else
     {
@@ -355,77 +354,77 @@ XboxdrvDaemon::run_loop(const Options& opts)
 void
 XboxdrvDaemon::print_info(struct udev_device* device)
 {
-  std::cout << "/---------------------------------------------" << std::endl;
-  std::cout << "devpath: " << udev_device_get_devpath(device) << std::endl;
+  log_debug("/---------------------------------------------");
+  log_debug("devpath: " << udev_device_get_devpath(device));
   
   if (udev_device_get_action(device))
-    std::cout << "action: " << udev_device_get_action(device) << std::endl;
-  //std::cout << "init: " << udev_device_get_is_initialized(device) << std::endl;
+    log_debug("action: " << udev_device_get_action(device));
+  //log_debug("init: " << udev_device_get_is_initialized(device));
 
   if (udev_device_get_subsystem(device))
-    std::cout << "subsystem: " << udev_device_get_subsystem(device) << std::endl;
+    log_debug("subsystem: " << udev_device_get_subsystem(device));
 
   if (udev_device_get_devtype(device))
-    std::cout << "devtype:   " << udev_device_get_devtype(device) << std::endl;
+    log_debug("devtype:   " << udev_device_get_devtype(device));
 
   if (udev_device_get_syspath(device))
-    std::cout << "syspath:   " << udev_device_get_syspath(device) << std::endl;
+    log_debug("syspath:   " << udev_device_get_syspath(device));
 
   if (udev_device_get_sysname(device))
-    std::cout << "sysname:   " << udev_device_get_sysname(device) << std::endl;
+    log_debug("sysname:   " << udev_device_get_sysname(device));
 
   if (udev_device_get_sysnum(device))
-    std::cout << "sysnum:    " << udev_device_get_sysnum(device) << std::endl;
+    log_debug("sysnum:    " << udev_device_get_sysnum(device));
 
   if (udev_device_get_devnode(device))
-    std::cout << "devnode:   " << udev_device_get_devnode(device) << std::endl;
+    log_debug("devnode:   " << udev_device_get_devnode(device));
 
   if (udev_device_get_driver(device))
-    std::cout << "driver:    " << udev_device_get_driver(device) << std::endl;
+    log_debug("driver:    " << udev_device_get_driver(device));
 
   if (udev_device_get_action(device))
-    std::cout << "action:    " << udev_device_get_action(device) << std::endl;
+    log_debug("action:    " << udev_device_get_action(device));
           
   //udev_device_get_sysattr_value(device, "busnum");
   //udev_device_get_sysattr_value(device, "devnum");
 
   {
-    std::cout << "list: " << std::endl;
+    log_debug("list: ");
     struct udev_list_entry* it = udev_device_get_tags_list_entry(device);
     while((it = udev_list_entry_get_next(it)) != 0)
     {         
-      std::cout << "  " 
+      log_debug("  " 
                 << udev_list_entry_get_name(it) << " = "
                 << udev_list_entry_get_value(it)
-                << std::endl;
+               );
     }
   }
           
   {
-    std::cout << "properties: " << std::endl;
+    log_debug("properties: ");
     struct udev_list_entry* it = udev_device_get_properties_list_entry(device);
     while((it = udev_list_entry_get_next(it)) != 0)
     {         
-      std::cout << "  " 
+      log_debug("  " 
                 << udev_list_entry_get_name(it) << " = "
                 << udev_list_entry_get_value(it)
-                << std::endl;
+               );
     }
   }
           
   {
-    std::cout << "devlist: " << std::endl;
+    log_debug("devlist: ");
     struct udev_list_entry* it = udev_device_get_tags_list_entry(device);
     while((it = udev_list_entry_get_next(it)) != 0)
     {         
-      std::cout << "  " 
+      log_debug("  " 
                 << udev_list_entry_get_name(it) << " = "
                 << udev_list_entry_get_value(it)
-                << std::endl;
+               );
     }
   }
 
-  std::cout << "\\----------------------------------------------" << std::endl;
+  log_debug("\\----------------------------------------------");
 }
 
 XboxdrvDaemon::ControllerSlot*

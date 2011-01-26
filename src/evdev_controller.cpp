@@ -20,11 +20,11 @@
 
 #include <boost/format.hpp>
 #include <string.h>
-#include <iostream>
 #include <fcntl.h>
 #include <errno.h>
 
 #include "evdev_helper.hpp"
+#include "log.hpp"
 
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
@@ -62,7 +62,7 @@ EvdevController::EvdevController(const std::string& filename,
     char c_name[1024] = "unknown";
     ioctl(m_fd, EVIOCGNAME(sizeof(c_name)), c_name);
     m_name = c_name;
-    std::cout << "Name: " << m_name << std::endl;
+    log_debug("name: " << m_name);
   }
 
   if (m_grab)
@@ -99,7 +99,7 @@ EvdevController::EvdevController(const std::string& filename,
         struct input_absinfo absinfo;
         ioctl(m_fd, EVIOCGABS(i), &absinfo);
         
-        std::cout << boost::format("abs: %-20s min: %6d max: %6d") % abs2str(i) % absinfo.minimum % absinfo.maximum << std::endl;
+        log_debug(boost::format("abs: %-20s min: %6d max: %6d") % abs2str(i) % absinfo.minimum % absinfo.maximum);
         m_absinfo[i] = absinfo;
         //abs2idx[i] = abs_port_out.size();
         //abs_port_out.push_back(new AbsPortOut("EvdevDriver:abs", absinfo.minimum, absinfo.maximum));
@@ -110,7 +110,7 @@ EvdevController::EvdevController(const std::string& filename,
     {
       if (test_bit(i, rel_bit))
       {
-        std::cout << "rel: " << rel2str(i) << std::endl;
+        log_debug("rel: " << rel2str(i));
         //rel2idx[i] = rel_port_out.size();
         //rel_port_out.push_back(new RelPortOut("EvdevDriver:rel"));
       }
@@ -120,7 +120,7 @@ EvdevController::EvdevController(const std::string& filename,
     {
       if (test_bit(i, key_bit))
       {
-        std::cout << "key: " << key2str(i) << std::endl;
+        log_debug("key: " << key2str(i));
         //key2idx[i] = btn_port_out.size();
         //btn_port_out.push_back(new BtnPortOut("EvdevDriver:btn"));
       }
@@ -148,19 +148,19 @@ EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
     switch(ev.type)
     {
       case EV_KEY:
-        std::cout << "[evdev] EV_KEY " << key2str(ev.code) << " " << ev.value << std::endl;
+        log_debug("EV_KEY " << key2str(ev.code) << " " << ev.value);
         break;
 
       case EV_REL:
-        std::cout << "[evdev] EV_REL " << rel2str(ev.code) << " " << ev.value << std::endl;
+        log_debug("EV_REL " << rel2str(ev.code) << " " << ev.value);
         break;
 
       case EV_ABS:
-        std::cout << "[evdev] EV_ABS " << abs2str(ev.code) << " " << ev.value << std::endl;
+        log_debug("EV_ABS " << abs2str(ev.code) << " " << ev.value);
         break;
 
       case EV_SYN:
-        std::cout << "------------------- sync -------------------" << std::endl;
+        log_debug("------------------- sync -------------------");
         break;
 
       case EV_MSC:
@@ -169,7 +169,7 @@ EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
         break;
 
       default:
-        std::cout << "[evdev] unknown: " << ev.type << " " << ev.code << " " << ev.value << std::endl;
+        log_debug("unknown: " << ev.type << " " << ev.code << " " << ev.value);
         break;
     }
   }
@@ -221,7 +221,7 @@ EvdevController::read_data_to_buffer()
 }
 
 bool
-EvdevController::read(XboxGenericMsg& msg, bool verbose, int timeout)
+EvdevController::read(XboxGenericMsg& msg, int timeout)
 {
   read_data_to_buffer();
 

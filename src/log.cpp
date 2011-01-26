@@ -46,7 +46,16 @@ Logger::Logger() :
 {}
 
 void
-Logger::set_level(LogLevel level)
+Logger::incr_log_level(LogLevel level)
+{
+  if (get_log_level() < level)
+  {
+    set_log_level(level);    
+  }
+}
+
+void
+Logger::set_log_level(LogLevel level)
 {
   m_log_level = level;
 }

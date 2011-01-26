@@ -55,7 +55,6 @@ public:
   };
 
   // General program options
-  bool verbose;
   bool silent;
   bool quiet;
   bool rumble;
@@ -101,7 +100,7 @@ public:
   std::string headset_play;
 
   // daemon options
-  bool detach;
+  bool detach; 
   std::string pid_file;
   std::string on_connect;
   std::string on_disconnect;
@@ -130,6 +129,10 @@ public:
   void next_controller();
   void next_config();
 
+  void set_verbose();
+  void set_debug();
+  void set_quiet();
+
   void set_device_name(const std::string& name);
   void set_mouse();
   void set_guitar();
@@ -140,9 +143,14 @@ public:
   void set_force_feedback(const std::string& value);
   void set_mimic_xpad();
 
+  void set_daemon();
+  void set_daemon_detach(bool value);
+  
   void add_match(const std::string& lhs, const std::string& rhs);
   void set_match(const std::string& str);
   void set_match_group(const std::string& str);
+
+  void finish();
 };
 
 extern Options* g_options;

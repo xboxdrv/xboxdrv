@@ -49,7 +49,8 @@ private:
 
 public:
   Logger();
-  void set_level(LogLevel level);
+  void incr_log_level(LogLevel level);
+  void set_log_level(LogLevel level);
   LogLevel get_log_level() const;
   void append(LogLevel level, const std::string& str);
   void append_unchecked(LogLevel level, const std::string& str);

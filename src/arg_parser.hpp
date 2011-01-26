@@ -19,8 +19,9 @@
 #ifndef HEADER_ARG_PARSER_HPP
 #define HEADER_ARG_PARSER_HPP
 
-#include <iostream>
+#include <iosfwd>
 #include <vector>
+#include <string>
 
 class ArgParser
 {
@@ -95,7 +96,7 @@ public:
                         bool visible = true);
 
   ParsedOptions parse_args(int argc, char** argv);
-  void print_help(std::ostream& out = std::cout) const;
+  void print_help(std::ostream& out) const;
   
   bool next();
   int  get_key();

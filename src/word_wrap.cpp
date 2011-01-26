@@ -19,6 +19,7 @@
 #include "word_wrap.hpp"
 
 #include <boost/tokenizer.hpp>
+#include <iostream>
 
 WordWrap::WordWrap(int terminal_width) :
   m_terminal_width(terminal_width)

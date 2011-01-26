@@ -19,12 +19,12 @@
 #include "chatpad.hpp"
 
 #include <boost/format.hpp>
-#include <iostream>
 
+#include "helper.hpp"
 #include "linux_uinput.hpp"
 #include "log.hpp"
-#include "usb_helper.hpp"
 #include "raise_exception.hpp"
+#include "usb_helper.hpp"
 
 Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
                  bool no_init, bool debug) :
@@ -211,24 +211,11 @@ Chatpad::read_thread()
       {
         raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
       }
-
-      if (len < 0)
-      {
-        std::cout << "Error in read_thread" << std::endl;
-        return;
-      }
       else
       {
         if (g_logger.get_log_level() > Logger::kDebug)
         {
-          std::ostringstream str;
-          str << "read: " << len << "/5: data: ";
-          for(int i = 0; i < len; ++i)
-          {
-            str << boost::format("0x%02x ") % int(data[i]);
-          }
-
-          log_debug(str);
+          log_debug("read: " << len << "/5: data: " << raw2str(data, len));
         }
         
         if (data[0] == 0x00)
@@ -304,11 +291,11 @@ Chatpad::keep_alive_thread()
     while(!m_quit_thread)
     {
       send_ctrl(0x41, 0x0, 0x1f, 0x02, NULL, 0);
-      if (m_debug) std::cout << "[chatpad] 0x1f" << std::endl;
+      log_debug("0x1f");
       sleep(1);
        
       send_ctrl(0x41, 0x0, 0x1e, 0x02, NULL, 0);
-      if (m_debug) std::cout << "[chatpad] 0x1e" << std::endl;
+      log_debug("0x1e");
       sleep(1);
     }
   }
@@ -328,17 +315,17 @@ Chatpad::send_init()
 
     // these three will fail, but are necessary to have the later ones succeed
     ret = libusb_control_transfer(m_handle, 0x40, 0xa9, 0xa30c, 0x4423, NULL, 0, 0);
-    if (m_debug) std::cout << "[chatpad] ret: " << usb_strerror(ret) << std::endl;
+    log_debug("ret: " << usb_strerror(ret));
 
     ret = libusb_control_transfer(m_handle, 0x40, 0xa9, 0x2344, 0x7f03, NULL, 0, 0);
-    if (m_debug) std::cout << "[chatpad] ret: " << usb_strerror(ret) << std::endl;
+    log_debug("ret: " << usb_strerror(ret));
 
     ret = libusb_control_transfer(m_handle, 0x40, 0xa9, 0x5839, 0x6832, NULL, 0, 0);
-    if (m_debug) std::cout << "[chatpad] ret: " << usb_strerror(ret) << std::endl;
+    log_debug("ret: " << usb_strerror(ret));
 
     // make chatpad ready
     ret = libusb_control_transfer(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, will return a mode)
-    if (m_debug) std::cout << "[chatpad] ret: " << usb_strerror(ret) << " " << static_cast<int>(buf[0]) << " " << static_cast<int>(buf[1])<< std::endl;
+    log_debug("ret: " << usb_strerror(ret) << " " << static_cast<int>(buf[0]) << " " << static_cast<int>(buf[1]));
 
     if (buf[1] & 2)
     {
@@ -363,10 +350,10 @@ Chatpad::send_init()
       }
 
       ret = libusb_control_transfer(m_handle, 0x40, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (send 2 bytes, data must be 0x09 0x00)
-      if (m_debug) std::cout << "[chatpad] ret: " << usb_strerror(ret) << std::endl;
+      log_debug("ret: " << usb_strerror(ret));
  
       ret = libusb_control_transfer(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, this should return the NEW mode)
-      if (m_debug) std::cout << "[chatpad] ret: " << usb_strerror(ret) << " " << static_cast<int>(buf[0]) << " " << static_cast<int>(buf[1]) << std::endl;
+      log_debug("ret: " << usb_strerror(ret) << " " << static_cast<int>(buf[0]) << " " << static_cast<int>(buf[1]));
 
       /* FIXME: not proper way to check if the chatpad is alive
          if (!(buf[1] & 2)) // FIXME: check for {9,0} for bcdDevice==0x114
@@ -380,15 +367,15 @@ Chatpad::send_init()
 
   // only when we get "01 02" back is the chatpad ready
   libusb_control_transfer(m_handle, 0x41, 0x0, 0x1f, 0x02, 0, NULL, 0);
-  if (m_debug) std::cout << "[chatpad] 0x1f" << std::endl;
+  log_debug("0x1f");
   sleep(1);
        
   libusb_control_transfer(m_handle, 0x41, 0x0, 0x1e, 0x02, 0, NULL, 0);
-  if (m_debug) std::cout << "[chatpad] 0x1e" << std::endl;
+  log_debug("0x1e");
 
   // can't send 1b before 1f before one rotation
   libusb_control_transfer(m_handle, 0x41, 0x0, 0x1b, 0x02, 0, NULL, 0);
-  if (m_debug) std::cout << "[chatpad] 0x1b" << std::endl;
+  log_debug("0x1b");
 }
 
 /* EOF */

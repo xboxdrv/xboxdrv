@@ -41,11 +41,11 @@ public:
   void set_led(uint8_t status);
 
   /** @param timeout   timeout in msec, 0 means forever */
-  bool read(XboxGenericMsg& msg, bool verbose, int timeout);
+  bool read(XboxGenericMsg& msg, int timeout);
 
 private:
-  bool read_default(XboxGenericMsg& msg, bool verbose, int timeout);
-  bool read_vsb(XboxGenericMsg& msg, bool verbose, int timeout);
+  bool read_default(XboxGenericMsg& msg, int timeout);
+  bool read_vsb(XboxGenericMsg& msg, int timeout);
 
 private:
   FirestormDualController(const FirestormDualController&);

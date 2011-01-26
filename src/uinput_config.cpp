@@ -18,8 +18,6 @@
 
 #include "uinput_config.hpp"
 
-#include <iostream>
-
 #include "uinput.hpp"
 
 namespace {
@@ -71,8 +69,7 @@ UInputConfig::send(XboxGenericMsg& msg)
       break;
         
     default:
-      std::cout << "XboxGenericMsg type: " << msg.type << std::endl;
-      assert(!"UInputConfig: Unknown XboxGenericMsg type");
+      assert(!"never reached");
   }
 
   m_uinput.sync();
@@ -257,13 +254,6 @@ UInputConfig::update(int msec_delta)
 {
   m_btn_map.update(m_uinput, msec_delta);
   m_axis_map.update(m_uinput, msec_delta);
-
-#ifdef FIXME
-  if (cfg.force_feedback)
-  {
-    get_force_feedback_uinput()->update_force_feedback(msec_delta);
-  }
-#endif
 
   m_uinput.sync();
 }

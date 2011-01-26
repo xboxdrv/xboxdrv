@@ -37,7 +37,7 @@ public:
      @param timeout   timeout in msec, 0 means forever 
      @return true if something was read, false otherwise
    */  
-  virtual bool read(XboxGenericMsg& msg, bool verbose, int timeout) =0;
+  virtual bool read(XboxGenericMsg& msg, int timeout) =0;
 
 private:
   XboxGenericController (const XboxGenericController&);

@@ -19,12 +19,14 @@
 #include "command_line_options.hpp"
 
 #include <fstream>
+#include <iostream>
 #include <boost/bind.hpp>
 #include <boost/tokenizer.hpp>
 
 #include "helper.hpp"
 #include "ini_parser.hpp"
 #include "ini_schema_builder.hpp"
+#include "log.hpp"
 #include "options.hpp"
 
 #define RAISE_EXCEPTION(x) do {                         \
@@ -39,6 +41,7 @@ enum {
   OPTION_HELP,
   OPTION_VERBOSE,
   OPTION_VERSION,
+  OPTION_DEBUG,
   OPTION_QUIET,
   OPTION_SILENT,
   OPTION_DAEMON,
@@ -140,13 +143,13 @@ CommandLineParser::init_argp()
     .add_option(OPTION_HELP,         'h', "help",         "", "display this help and exit")
     .add_option(OPTION_VERSION,      'V', "version",      "", "print the version number and exit")
     .add_option(OPTION_VERBOSE,      'v', "verbose",      "", "print verbose messages")
-    .add_option(OPTION_HELP_LED,      0,  "help-led",     "", "list possible values for the led")
-    .add_option(OPTION_HELP_DEVICES,  0,  "help-devices", "", "list supported devices")
+    .add_option(OPTION_DEBUG,         0,  "debug",   "",  "be even more verbose then --verbose")
     .add_option(OPTION_SILENT,       's', "silent",  "",  "do not display events on console")
     .add_option(OPTION_QUIET,         0,  "quiet",   "",  "do not display startup text")
     .add_option(OPTION_LIST_CONTROLLER, 'L', "list-controller", "", "list available controllers")
-    .add_option(OPTION_LIST_SUPPORTED_DEVICES, 0, "list-supported-devices", "", "list supported devices (used by xboxdrv-daemon.py)")
-    .add_option(OPTION_LIST_SUPPORTED_DEVICES_XPAD, 0, "list-supported-devices-xpad", "", "list supported devices in xpad.c style")
+    .add_newline()
+
+    .add_text("Configuration Options: ")
     .add_option(OPTION_CONFIG,       'c', "config",      "FILE", "read configuration from FILE")
     .add_option(OPTION_ALT_CONFIG,    0, "alt-config",   "FILE", "read alternative configuration from FILE ")
     .add_option(OPTION_CONFIG_OPTION,'o', "option",      "NAME=VALUE", "Set the given configuration option") 
@@ -154,6 +157,10 @@ CommandLineParser::init_argp()
     .add_newline()
 
     .add_text("List Options: ")
+    .add_option(OPTION_LIST_SUPPORTED_DEVICES, 0, "list-supported-devices", "", "list supported devices (used by xboxdrv-daemon.py)")
+    .add_option(OPTION_LIST_SUPPORTED_DEVICES_XPAD, 0, "list-supported-devices-xpad", "", "list supported devices in xpad.c style")
+    .add_option(OPTION_HELP_LED,      0,  "help-led",     "", "list possible values for the led")
+    .add_option(OPTION_HELP_DEVICES,  0,  "help-devices", "", "list supported devices")
     .add_option(OPTION_LIST_ABS,       0, "list-abs",       "", "List all possible EV_ABS names")
     .add_option(OPTION_LIST_REL,       0, "list-rel",       "", "List all possible EV_REL names")
     .add_option(OPTION_LIST_KEY,       0, "list-key",       "", "List all possible EV_KEY names")
@@ -288,7 +295,7 @@ CommandLineParser::init_ini(Options* opts)
   m_ini.clear();
 
   m_ini.section("xboxdrv")
-    ("verbose", &opts->verbose)
+    ("verbose", boost::bind(&Options::set_verbose, boost::ref(opts)), boost::function<void ()>())
     ("silent", &opts->silent)
     ("quiet",  &opts->quiet)
     ("rumble", &opts->rumble)
@@ -343,8 +350,10 @@ CommandLineParser::init_ini(Options* opts)
     ;
 
   m_ini.section("xboxdrv-daemon")
-    ("detach",        &opts->detach)
-    ("pid-file",        &opts->pid_file)
+    ("detach",        
+     boost::bind(&Options::set_daemon_detach, boost::ref(opts), true),
+     boost::bind(&Options::set_daemon_detach, boost::ref(opts), false))
+    ("pid-file",      &opts->pid_file)
     ("on-connect",    &opts->on_connect)
     ("on-disconnect", &opts->on_disconnect)
     ;
@@ -389,19 +398,23 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
           
       case OPTION_VERBOSE:
-        opts.verbose = true;
+        opts.set_verbose();
         break;
 
       case OPTION_QUIET:
-        opts.quiet   = true;
+        opts.quiet = true;
         break;
 
       case OPTION_SILENT:
         opts.silent = true;
         break;
 
+      case OPTION_DEBUG:
+        opts.set_debug();
+        break;
+
       case OPTION_DAEMON:
-        opts.mode = Options::RUN_DAEMON;
+        opts.set_daemon();
         break;
 
       case OPTION_DAEMON_MATCH:
@@ -736,7 +749,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_DAEMON_DETACH:
-        opts.detach = true;
+        opts.set_daemon_detach(true);
         break;
 
       case OPTION_DAEMON_PID_FILE:
@@ -845,6 +858,8 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
     }
   }
+
+  options->finish();
 }
 
 void

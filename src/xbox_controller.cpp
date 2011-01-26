@@ -126,7 +126,7 @@ XboxController::set_led(uint8_t status)
 }
 
 bool
-XboxController::read(XboxGenericMsg& msg, bool verbose, int timeout)
+XboxController::read(XboxGenericMsg& msg, int timeout)
 {
   // FIXME: Add tracking for duplicate data packages (send by logitech controller)
   uint8_t data[32];

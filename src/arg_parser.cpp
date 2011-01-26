@@ -19,6 +19,7 @@
 #include "arg_parser.hpp"
 
 #include <stdio.h>
+#include <ostream>
 
 #include "helper.hpp"
 #include "pretty_printer.hpp"

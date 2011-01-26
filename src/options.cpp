@@ -28,7 +28,6 @@ Options* g_options;
 
 Options::Options() :
   mode(RUN_DEFAULT),
-  verbose(false),
   silent (false),
   quiet  (false),
   rumble (false),
@@ -149,6 +148,18 @@ Options::next_config()
 }
 
 void
+Options::set_verbose()
+{
+  g_logger.incr_log_level(Logger::kInfo);
+}
+
+void
+Options::set_debug()
+{
+  g_logger.incr_log_level(Logger::kDebug);
+}
+
+void
 Options::set_device_name(const std::string& name)
 {
   //get_controller().uinput.mouse();
@@ -198,6 +209,31 @@ void
 Options::set_mimic_xpad()
 {
   get_controller_options().uinput.mimic_xpad();
+}
+
+void
+Options::set_daemon()
+{
+  mode = RUN_DAEMON;
+  silent = true;
+}
+
+void
+Options::set_daemon_detach(bool value)
+{
+  detach = value;
+  if (detach)
+  {
+    silent = true;
+    quiet  = true;
+  }
+}
+
+void
+Options::set_quiet()
+{
+  quiet  = true;
+  silent = true;
 }
 
 void
@@ -261,6 +297,12 @@ Options::set_match_group(const std::string& str)
 {
   // FIXME: not implied
   assert(!"not implemented");
+}
+
+void
+Options::finish()
+{
+  // FIXME: add some checks for conflicting options here
 }
 
 /* EOF */

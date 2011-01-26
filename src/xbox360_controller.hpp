@@ -54,7 +54,7 @@ public:
 
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
-  bool read(XboxGenericMsg& msg, bool verbose, int timeout);
+  bool read(XboxGenericMsg& msg, int timeout);
 
 private:
   void find_endpoints();

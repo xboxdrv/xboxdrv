@@ -20,6 +20,7 @@
 
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <iostream>
 #include <signal.h>
 #include <stdio.h>
 
@@ -498,19 +499,15 @@ Xboxdrv::print_info(libusb_device* dev,
   std::cout << "USB Device:        " << boost::format("%03d:%03d")
     % static_cast<int>(libusb_get_bus_number(dev))
     % static_cast<int>(libusb_get_device_address(dev)) << std::endl;
-  std::cout << "Controller:        " << boost::format("\"%s\" (idVendor: 0x%04x, idProduct: 0x%04x)")
-    % dev_type.name % uint16_t(desc.idVendor) % uint16_t(desc.idProduct) << std::endl;
+  std::cout << "Controller:        " << dev_type.name << std::endl;
+  std::cout << "Vendor/Product:    " << boost::format("%04x:%04x")
+    % uint16_t(desc.idVendor) % uint16_t(desc.idProduct) << std::endl;
   if (dev_type.type == GAMEPAD_XBOX360_WIRELESS)
     std::cout << "Wireless Port:     " << opts.wireless_id << std::endl;
-  std::cout << "Controller Type:   " << dev_type.type << std::endl;
-  std::cout << "Rumble Debug:      " << (opts.rumble ? "on" : "off") << std::endl;
-  std::cout << "Rumble Speed:      " << "left: " << opts.rumble_l << " right: " << opts.rumble_r << std::endl;
-  if (opts.led == -1)
-    std::cout << "LED Status:        " << "auto" << std::endl;
   else
-    std::cout << "LED Status:        " << opts.led << std::endl;
+    std::cout << "Wireless Port:     -" << std::endl;
+  std::cout << "Controller Type:   " << dev_type.type << std::endl;
 
-  std::cout << "RumbleGain:        " << opts.rumble_gain << std::endl;
   //std::cout << "ForceFeedback:     " << ((opts.controller.back().uinput.force_feedback) ? "enabled" : "disabled") << std::endl;
 }
 

@@ -18,7 +18,6 @@
 
 #include "helper.hpp"
 
-#include <iostream>
 #include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>

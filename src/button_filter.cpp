@@ -18,9 +18,9 @@
 
 #include "button_filter.hpp"
 
-#include <iostream>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
+#include <iostream>
 
 ButtonFilterPtr
 ButtonFilter::from_string(const std::string& str)

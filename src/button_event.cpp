@@ -20,9 +20,9 @@
 
 #include <boost/tokenizer.hpp>
 #include <errno.h>
-#include <iostream>
 #include <fstream>
 
+#include "log.hpp"
 #include "uinput.hpp"
 
 ButtonEventPtr
@@ -519,7 +519,7 @@ ExecButtonEventHandler::send(UInput& uinput, bool value)
 
       if (execvp(m_args[0].c_str(), argv) == -1)
       {
-        std::cout << "error: ExecButtonEventHandler::send(): " << strerror(errno) << std::endl;
+        log_error("exec failed: " << strerror(errno));
         _exit(EXIT_FAILURE);
       }
     }

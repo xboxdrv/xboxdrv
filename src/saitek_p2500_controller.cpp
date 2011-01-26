@@ -109,7 +109,7 @@ SaitekP2500Controller::set_led(uint8_t status)
 }
 
 bool
-SaitekP2500Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
+SaitekP2500Controller::read(XboxGenericMsg& msg, int timeout)
 {
   SaitekP2500Msg data;
   int len = 0;
