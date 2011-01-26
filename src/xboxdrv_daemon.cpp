@@ -22,7 +22,7 @@
 #include <fstream>
 #include <stdexcept>
 
-#include "default_message_processor.hpp"
+#include "uinput_message_processor.hpp"
 #include "dummy_message_processor.hpp"
 #include "helper.hpp"
 #include "log.hpp"
@@ -484,7 +484,7 @@ XboxdrvDaemon::launch_xboxdrv(const XPadDevice& dev_type, const Options& opts,
     std::auto_ptr<MessageProcessor> message_proc;
     if (m_uinput.get())
     {
-      message_proc.reset(new DefaultMessageProcessor(*m_uinput, slot.config, opts));
+      message_proc.reset(new UInputMessageProcessor(*m_uinput, slot.config, opts));
     }
     else
     {

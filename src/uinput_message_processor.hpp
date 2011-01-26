@@ -26,7 +26,7 @@ class UInput;
 class Options;
 class ControllerOptions;
 
-class DefaultMessageProcessor : public MessageProcessor
+class UInputMessageProcessor : public MessageProcessor
 {
 private:
   UInput& m_uinput;
@@ -39,17 +39,17 @@ private:
   boost::function<void (uint8_t, uint8_t)> m_rumble_callback;
 
 public:
-  DefaultMessageProcessor(UInput& uinput, ControllerSlotConfigPtr config,
+  UInputMessageProcessor(UInput& uinput, ControllerSlotConfigPtr config,
                           const Options& opts);
-  ~DefaultMessageProcessor();
+  ~UInputMessageProcessor();
 
   void send(const XboxGenericMsg& msg, int msec_delta);
   void set_rumble(uint8_t lhs, uint8_t rhs);
   void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
 
 private:
-  DefaultMessageProcessor(const DefaultMessageProcessor&);
-  DefaultMessageProcessor& operator=(const DefaultMessageProcessor&);
+  UInputMessageProcessor(const UInputMessageProcessor&);
+  UInputMessageProcessor& operator=(const UInputMessageProcessor&);
 };
 
 #endif

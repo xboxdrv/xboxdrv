@@ -25,7 +25,7 @@
 
 #include "command_line_options.hpp"
 #include "dummy_message_processor.hpp"
-#include "default_message_processor.hpp"
+#include "uinput_message_processor.hpp"
 #include "evdev_controller.hpp"
 #include "helper.hpp"
 #include "raise_exception.hpp"
@@ -468,7 +468,7 @@ Xboxdrv::run_main(const Options& opts)
       // the device creation
       uinput->finish();
 
-      message_proc.reset(new DefaultMessageProcessor(*uinput, config_set, opts));
+      message_proc.reset(new UInputMessageProcessor(*uinput, config_set, opts));
     }
     else
     {

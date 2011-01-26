@@ -16,12 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "default_message_processor.hpp"
+#include "uinput_message_processor.hpp"
 
 #include "log.hpp"
 #include "uinput.hpp"
 
-DefaultMessageProcessor::DefaultMessageProcessor(UInput& uinput, 
+UInputMessageProcessor::UInputMessageProcessor(UInput& uinput, 
                                                  ControllerSlotConfigPtr config, 
                                                  const Options& opts) :
   m_uinput(uinput),
@@ -34,12 +34,12 @@ DefaultMessageProcessor::DefaultMessageProcessor(UInput& uinput,
   memset(&m_oldmsg, 0, sizeof(m_oldmsg));
 }
 
-DefaultMessageProcessor::~DefaultMessageProcessor()
+UInputMessageProcessor::~UInputMessageProcessor()
 {
 }
 
 void
-DefaultMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
+UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
 {
   if (!m_config->empty())
   {
@@ -91,7 +91,7 @@ DefaultMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
 }
 
 void
-DefaultMessageProcessor::set_rumble(uint8_t lhs, uint8_t rhs)
+UInputMessageProcessor::set_rumble(uint8_t lhs, uint8_t rhs)
 {
   if (m_rumble_callback)
   {
@@ -103,7 +103,7 @@ DefaultMessageProcessor::set_rumble(uint8_t lhs, uint8_t rhs)
 }
 
 void
-DefaultMessageProcessor::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+UInputMessageProcessor::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
 {
   m_config->set_ff_callback(callback);
 }
