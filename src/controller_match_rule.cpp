@@ -18,6 +18,33 @@
 
 #include "controller_match_rule.hpp"
 
+#include <assert.h>
+
+bool
+ControllerMatchRule::match(int vendor, int product,
+                           int bus, int dev) const
+{
+  switch(m_type)
+  {
+    case kMatchEverything:
+      return true;
+
+    case kMatchUSBId:
+      return (vendor == m_vendor && product == m_product);
+
+    case kMatchUSBPath:
+      return (bus == m_bus && dev == m_dev);
+
+    case kMatchEvdevPath:
+      assert(!"not implemented");
+      return false;
+      
+    default:
+      assert(!"never reached");
+      return false;
+  }
+}
+
 ControllerMatchRule
 ControllerMatchRule::match_usb_id(int vendor, int product)
 {

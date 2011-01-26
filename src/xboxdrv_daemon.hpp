@@ -39,27 +39,32 @@ private:
 
   struct ControllerSlot
   {
+    int id;
     ControllerConfigSetPtr config;
-    std::vector<ControllerMatchRule> match;
+    std::vector<ControllerMatchRule> rules;
     XboxdrvThread* thread;
     
     ControllerSlot() :
+      id(),
       config(),
-      match(),
+      rules(),
       thread(0)
     {}
 
-    ControllerSlot(ControllerConfigSetPtr config_,
-                   std::vector<ControllerMatchRule> match_,
+    ControllerSlot(int id_,
+                   ControllerConfigSetPtr config_,
+                   std::vector<ControllerMatchRule> rules_,
                    XboxdrvThread* thread_ = 0) :
+      id(id_),
       config(config_),
-      match(match_),
+      rules(rules_),
       thread(thread_)
     {}
 
     ControllerSlot(const ControllerSlot& rhs) :
+      id(rhs.id),
       config(rhs.config),
-      match(rhs.match),
+      rules(rhs.rules),
       thread(rhs.thread)
     {}
 
@@ -67,8 +72,9 @@ private:
     {
       if (&rhs != this)
       {
+        id     = rhs.id;
         config = rhs.config;
-        match  = rhs.match;
+        rules  = rhs.rules;
         thread = rhs.thread;
       }
       return *this;
@@ -94,12 +100,15 @@ private:
 
   void run_loop(const Options& opts);
 
+  ControllerSlot* find_free_slot(uint16_t vendor, uint16_t product,
+                                 int bus, int dev) const;
+
   void cleanup_threads();
-  void process_match(const Options& opts, UInput* uinput, struct udev_device* device);
+  void process_match(const Options& opts, struct udev_device* device);
   void print_info(struct udev_device* device);
-  void launch_xboxdrv(UInput* uinput,
-                      const XPadDevice& dev_type, const Options& opts, 
-                      uint8_t busnum, uint8_t devnum);
+  void launch_xboxdrv(const XPadDevice& dev_type, const Options& opts, 
+                      uint8_t busnum, uint8_t devnum,
+                      ControllerSlot& slot);
   int get_free_slot_count() const;
   
 private:

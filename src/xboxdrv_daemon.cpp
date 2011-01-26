@@ -24,6 +24,7 @@
 
 #include "default_message_processor.hpp"
 #include "dummy_message_processor.hpp"
+#include "helper.hpp"
 #include "log.hpp"
 #include "raise_exception.hpp"
 #include "uinput.hpp"
@@ -32,6 +33,61 @@
 #include "xboxdrv_thread.hpp"
 
 extern bool global_exit_xboxdrv;
+
+namespace {
+
+bool get_usb_id(udev_device* device, uint16_t* vendor_id, uint16_t* product_id)
+{
+  const char* vendor_id_str  = udev_device_get_property_value(device, "ID_VENDOR_ID");
+  if (!vendor_id_str)
+  {
+    return false;
+  }
+  else
+  {
+    *vendor_id = hexstr2int(vendor_id_str);
+  }
+
+  const char* product_id_str = udev_device_get_property_value(device, "ID_MODEL_ID");
+  if (!product_id_str)
+  {
+    return false;
+  }
+  else
+  {
+    *product_id = hexstr2int(product_id_str);
+  }
+
+  return true;
+}
+
+bool get_usb_path(udev_device* device, int* bus, int* dev)
+{
+  // busnum:devnum are decimal, not hex
+  const char* busnum_str = udev_device_get_property_value(device, "BUSNUM");
+  if (!busnum_str)
+  {
+    return false;
+  }
+  else
+  {
+    *bus = boost::lexical_cast<int>(busnum_str);
+  }
+
+  const char* devnum_str = udev_device_get_property_value(device, "DEVNUM");
+  if (!devnum_str)
+  {
+    return false;
+  }
+  else
+  {
+    *dev = boost::lexical_cast<int>(devnum_str);
+  }
+
+  return true;
+}
+
+} // namespace
 
 XboxdrvDaemon::XboxdrvDaemon() :
   m_udev(0),
@@ -80,72 +136,57 @@ XboxdrvDaemon::cleanup_threads()
 }
 
 void
-XboxdrvDaemon::process_match(const Options& opts, UInput* uinput, struct udev_device* device)
+XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
 {
   if (true)
   {
     print_info(device);
   }
 
-  // 1) Match vendor/product against the xpad list
-  // value = udev_device_get_property_value(device, "ID_VENDOR_ID"); // 045e
-  // value = udev_device_get_property_value(device, "ID_MODEL_ID");  // 028e
-  // value = udev_device_get_property_value(device, "ID_REVISION");  // 0110 aka bcd
-  // PRODUCT = "45e/28e/110"
+  uint16_t vendor;
+  uint16_t product;
 
-  const char* product_str = udev_device_get_property_value(device, "PRODUCT");
-  if (product_str)
+  if (!get_usb_id(device, &vendor, &product))
   {
-    unsigned int vendor = 0;
-    unsigned int product = 0; 
-    unsigned int bcd = 0;
-    if (sscanf(product_str, "%x/%x/%x", &vendor, &product, &bcd) != 3)
+    log_warning << "couldn't get vendor:product" << std::endl;
+  }
+  else
+  {
+    XPadDevice dev_type;
+    if (!find_xpad_device(vendor, product, &dev_type))
     {
-      std::cout << "[XboxdrvDaemon] couldn't parse PRODUCT = " << product_str << std::endl;
+      log_info << "ignoring " << boost::format("%04x:%04x") % vendor % product
+               << " not a valid Xboxdrv device" << std::endl;
     }
     else
-    {
-      if (false)
-        std::cout << "Product parse: " 
-                  << boost::format("%03x/%03x/%03x == %s") % vendor % product % bcd % product_str
-                  << std::endl;
-
-      // FIXME: could do this after we know that vendor/product are good
-      // 2) Get busnum and devnum        
-      // busnum:devnum are decimal, not hex
-      const char* busnum_str = udev_device_get_property_value(device, "BUSNUM");
-      const char* devnum_str = udev_device_get_property_value(device, "DEVNUM");
-
-      if (busnum_str && devnum_str)
+    {  
+      int bus;
+      int dev;
+      if (!get_usb_path(device, &bus, &dev))
       {
-        try 
+        log_warning << "couldn't get bus:dev" << std::endl;
+      }
+      else
+      {
+        ControllerSlot* slot = find_free_slot(vendor, product, bus, dev);
+        if (!slot)
         {
-          XPadDevice dev_type;
-          if (find_xpad_device(vendor, product, &dev_type))
-          {
-            // 3) Launch thread to handle the device
-            log_info << "controller detected at " << busnum_str << ":" << devnum_str << std::endl;
-           
-            try 
-            {
-              launch_xboxdrv(uinput,
-                             dev_type, opts,
-                             boost::lexical_cast<int>(busnum_str),
-                             boost::lexical_cast<int>(devnum_str));
-            }
-            catch(const std::exception& err)
-            {
-              log_error << "failed to launch XboxdrvThread: " << err.what() << std::endl;
-            }
-          }
+          log_error << "no free controller slot found, controller will be ignored" << std::endl;
         }
-        catch(const std::exception& err)
+        else
         {
-          log_error << "child thread lauch failure: " << err.what() << std::endl;
+          try 
+          {
+            launch_xboxdrv(dev_type, opts, bus, dev, *slot);
+          }
+          catch(const std::exception& err)
+          {
+            log_error << "failed to launch XboxdrvThread: " << err.what() << std::endl;
+          }
         }
       }
     }
-  }  
+  }
 }
 
 void
@@ -180,7 +221,8 @@ XboxdrvDaemon::init_uinput(const Options& opts)
         controller != opts.controller_slots.end(); ++controller)
     {
       log_info << "creating slot: " << slot_count << std::endl;
-      m_controller_slots.push_back(ControllerSlot(ControllerConfigSet::create(*m_uinput, slot_count,
+      m_controller_slots.push_back(ControllerSlot(m_controller_slots.size(),
+                                                  ControllerConfigSet::create(*m_uinput, slot_count,
                                                                               opts.extra_devices,
                                                                               controller->second),
                                                   controller->second.get_match_rules()));
@@ -241,7 +283,7 @@ XboxdrvDaemon::init_udev_monitor(const Options& opts)
       //std::cout << "Enum: " << path << std::endl;
 
       struct udev_device* device = udev_device_new_from_syspath(m_udev, path);
-      process_match(opts, m_uinput.get(), device);
+      process_match(opts, device);
       udev_device_unref(device);
     }
     udev_enumerate_unref(enumerate);
@@ -307,7 +349,7 @@ XboxdrvDaemon::run_loop(const Options& opts)
 
       if (action && strcmp(action, "add") == 0)
       {
-        process_match(opts, m_uinput.get(), device);
+        process_match(opts, device);
       }
     }
     udev_device_unref(device);
@@ -390,9 +432,45 @@ XboxdrvDaemon::print_info(struct udev_device* device)
   std::cout << "\\----------------------------------------------" << std::endl;
 }
 
+XboxdrvDaemon::ControllerSlot*
+XboxdrvDaemon::find_free_slot(uint16_t vendor, uint16_t product,
+                              int bus, int dev) const
+{
+  // first pass, look for slots where the rules match the given vendor:product, bus:dev
+  for(ControllerSlots::const_iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+  {
+    if (i->thread == 0)
+    {
+      // found a free slot, check if the rules match
+      for(std::vector<ControllerMatchRule>::const_iterator rule = i->rules.begin(); rule != i->rules.end(); ++rule)
+      {
+        if (rule->match(vendor, product, bus, dev))
+        {
+          // FIXME: ugly const_cast
+          return const_cast<ControllerSlot*>(&(*i));
+        }
+      }
+    }
+  }
+
+  // second path, look for slots that don't have any rules and thus match everything
+  for(ControllerSlots::const_iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+  {
+    if (i->thread == 0 && i->rules.empty())
+    {
+      // FIXME: ugly const_cast
+      return const_cast<ControllerSlot*>(&(*i));
+    }
+  }
+    
+  // no free slot found
+  return 0;
+}
+
 void
-XboxdrvDaemon::launch_xboxdrv(UInput* uinput, const XPadDevice& dev_type, const Options& opts, 
-                              uint8_t busnum, uint8_t devnum)
+XboxdrvDaemon::launch_xboxdrv(const XPadDevice& dev_type, const Options& opts, 
+                              uint8_t busnum, uint8_t devnum,
+                              ControllerSlot& slot)
 {
   // FIXME: results must be libusb_unref_device()'ed
   libusb_device* dev = usb_find_device_by_path(busnum, devnum);
@@ -403,45 +481,28 @@ XboxdrvDaemon::launch_xboxdrv(UInput* uinput, const XPadDevice& dev_type, const 
   }
   else
   {
-    ControllerSlots::iterator it = m_controller_slots.end();
-    for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+    std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
+
+    std::auto_ptr<MessageProcessor> message_proc;
+    if (m_uinput.get())
     {
-      if (i->thread == 0)
-      {
-        it = i;
-        break;
-      }      
-    }
-    
-    if (it == m_controller_slots.end())
-    {
-      log_error << "no free controller slot found, controller will be ignored" << std::endl;
+      message_proc.reset(new DefaultMessageProcessor(*m_uinput, slot.config, opts));
     }
     else
     {
-      std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
-
-      std::auto_ptr<MessageProcessor> message_proc;
-      if (uinput)
-      {
-        message_proc.reset(new DefaultMessageProcessor(*uinput, it->config, opts));
-      }
-      else
-      {
-        message_proc.reset(new DummyMessageProcessor());
-      }
-      std::auto_ptr<XboxdrvThread> thread(new XboxdrvThread(message_proc, controller, opts));
-      thread->start_thread(opts);
-      it->thread = thread.release();
-
-      log_info << "launched XboxdrvThread for " << boost::format("%03d:%03d")
-        % static_cast<int>(busnum) 
-        % static_cast<int>(devnum)
-               << " in slot " << (it - m_controller_slots.begin())
-               << ", free slots: " 
-               << get_free_slot_count() << "/" << m_controller_slots.size()
-               << std::endl;
+      message_proc.reset(new DummyMessageProcessor());
     }
+
+    std::auto_ptr<XboxdrvThread> thread(new XboxdrvThread(message_proc, controller, opts));
+    thread->start_thread(opts);
+    slot.thread = thread.release();
+
+    log_info << "launched XboxdrvThread for " << boost::format("%03d:%03d")
+      % static_cast<int>(busnum) 
+      % static_cast<int>(devnum)
+             << " in slot " << slot.id << ", free slots: " 
+             << get_free_slot_count() << "/" << m_controller_slots.size()
+             << std::endl;
   }
 }
 
