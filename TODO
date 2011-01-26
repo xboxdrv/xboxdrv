@@ -78,12 +78,7 @@ Daemon Related Stuff
 
 * cleanup device_id, don't manually do (slot<<16) | devid
 
-* need to properly tear down the rumble callback to avoid calling it
-  before XboxGenericController gets destructed
-
 * get rid of all std::cout stuff, redirect it somewhere else
-
-* unplugging a controller should reset it to neutral position
 
 * improve output on which uinput devices are created
 

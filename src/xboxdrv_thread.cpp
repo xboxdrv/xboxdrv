@@ -164,6 +164,15 @@ XboxdrvThread::controller_loop(const Options& opts)
     // catch read errors from USB and other stuff that can go wrong
     log_error << err.what() << std::endl;
   }
+
+  {
+    // send a event with everything set to zero, so that the input
+    // device doesn't end up with a non-centered state
+    XboxGenericMsg msg;
+    msg.type = XBOX_MSG_XBOX360;
+    memset(&msg.xbox360, 0, sizeof(msg.xbox360));
+    m_processor->send(msg, 0);
+  }
 }
 
 void
