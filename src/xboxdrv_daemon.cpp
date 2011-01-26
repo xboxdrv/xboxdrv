@@ -31,6 +31,7 @@
 #include "usb_helper.hpp"
 #include "xbox_controller_factory.hpp"
 #include "xboxdrv_thread.hpp"
+#include "xbox_generic_controller.hpp"
 
 extern bool global_exit_xboxdrv;
 
@@ -138,7 +139,7 @@ XboxdrvDaemon::cleanup_threads()
 void
 XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
 {
-  if (true)
+  if (false)
   {
     print_info(device);
   }
@@ -477,6 +478,8 @@ XboxdrvDaemon::launch_xboxdrv(const XPadDevice& dev_type, const Options& opts,
   else
   {
     std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
+
+    controller->set_led(2 + (slot.id % 4));
 
     std::auto_ptr<MessageProcessor> message_proc;
     if (m_uinput.get())
