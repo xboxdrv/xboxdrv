@@ -28,8 +28,8 @@
 
 class Options;
 class UInput;
-struct XPadDevice;
 class XboxdrvThread;
+struct XPadDevice;
 
 class XboxdrvDaemon
 {
@@ -78,6 +78,8 @@ private:
   typedef std::vector<ControllerSlot> ControllerSlots;
   ControllerSlots m_controller_slots;
 
+  std::auto_ptr<UInput> m_uinput;
+
 public:
   XboxdrvDaemon();
   ~XboxdrvDaemon();
@@ -85,7 +87,12 @@ public:
   void run(const Options& opts);
 
 private:
-  void run_real(const Options& opts);
+  void create_pid_file(const Options& opts);
+  void init_uinput(const Options& opts);
+  void init_udev();
+  void init_udev_monitor(const Options& opts);
+
+  void run_loop(const Options& opts);
 
   void cleanup_threads();
   void process_match(const Options& opts, UInput* uinput, struct udev_device* device);

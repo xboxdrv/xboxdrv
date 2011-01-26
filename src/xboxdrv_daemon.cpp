@@ -20,10 +20,12 @@
 
 #include <boost/format.hpp>
 #include <fstream>
+#include <stdexcept>
 
 #include "default_message_processor.hpp"
 #include "dummy_message_processor.hpp"
 #include "log.hpp"
+#include "raise_exception.hpp"
 #include "uinput.hpp"
 #include "usb_helper.hpp"
 #include "xbox_controller_factory.hpp"
@@ -34,18 +36,9 @@ extern bool global_exit_xboxdrv;
 XboxdrvDaemon::XboxdrvDaemon() :
   m_udev(0),
   m_monitor(0),
-  m_controller_slots()
+  m_controller_slots(),
+  m_uinput()
 {
-  m_udev = udev_new();
-    
-  if (!m_udev)
-  {
-    throw std::runtime_error("udev init failure");
-  }
-  else
-  {
-    // do nothing, stuff is done in run()
-  }
 }
 
 XboxdrvDaemon::~XboxdrvDaemon()
@@ -89,6 +82,11 @@ XboxdrvDaemon::cleanup_threads()
 void
 XboxdrvDaemon::process_match(const Options& opts, UInput* uinput, struct udev_device* device)
 {
+  if (true)
+  {
+    print_info(device);
+  }
+
   // 1) Match vendor/product against the xpad list
   // value = udev_device_get_property_value(device, "ID_VENDOR_ID"); // 045e
   // value = udev_device_get_property_value(device, "ID_MODEL_ID");  // 028e
@@ -151,44 +149,21 @@ XboxdrvDaemon::process_match(const Options& opts, UInput* uinput, struct udev_de
 }
 
 void
-XboxdrvDaemon::run(const Options& opts)
+XboxdrvDaemon::init_uinput(const Options& opts)
 {
-  try 
-  {
-    run_real(opts);
-  }
-  catch(const std::exception& err)
-  {
-    log_error << "fatal exception: " << err.what() << std::endl;
-  }
-}
-
-void
-XboxdrvDaemon::run_real(const Options& opts)
-{
-  if (!opts.pid_file.empty())
-  {
-    log_info << "writing pid file: " << opts.pid_file << std::endl;
-    std::ofstream out(opts.pid_file.c_str());
-    if (!out)
-    {
-      std::ostringstream str;
-      str << opts.pid_file << ": " << strerror(errno);
-      throw std::runtime_error(str.str());
-    }
-    else
-    {
-      out << getpid() << std::endl;
-    }
-  }
-
   // Setup uinput
-  std::auto_ptr<UInput> uinput;
-  if (!opts.no_uinput)
+  if (opts.no_uinput)
+  {
+    log_info << "starting without UInput" << std::endl;
+
+    // just create some empty controller slots
+    m_controller_slots.resize(opts.controller_slots.size());
+  }
+  else
   {
     log_info << "starting with UInput" << std::endl;
 
-    uinput.reset(new UInput());
+    m_uinput.reset(new UInput());
 
     // FIXME:
     /* must setup this callback later when we have a controller
@@ -197,14 +172,7 @@ XboxdrvDaemon::run_real(const Options& opts)
        uinput->set_ff_callback(boost::bind(&set_rumble,  controller.get(), opts.rumble_gain, _1, _2));
        }
     */
-  }
-  else
-  {
-    log_info << "starting without UInput" << std::endl;
-  }
 
-  if (uinput.get())
-  {
     // create controller slots
     int slot_count = 0;
 
@@ -212,7 +180,7 @@ XboxdrvDaemon::run_real(const Options& opts)
         controller != opts.controller_slots.end(); ++controller)
     {
       log_info << "creating slot: " << slot_count << std::endl;
-      m_controller_slots.push_back(ControllerSlot(ControllerConfigSet::create(*uinput, slot_count,
+      m_controller_slots.push_back(ControllerSlot(ControllerConfigSet::create(*m_uinput, slot_count,
                                                                               opts.extra_devices,
                                                                               controller->second),
                                                   controller->second.get_match_rules()));
@@ -223,14 +191,26 @@ XboxdrvDaemon::run_real(const Options& opts)
 
     // After all the ControllerConfig registered their events, finish up
     // the device creation
-    uinput->finish();
+    m_uinput->finish();
   }
-  else
-  {
-    // just create some empty controller slots
-    m_controller_slots.resize(opts.controller_slots.size());
-  }
+}
 
+void
+XboxdrvDaemon::init_udev()
+{
+  assert(!m_udev);
+
+  m_udev = udev_new();
+   
+  if (!m_udev)
+  {
+    raise_exception(std::runtime_error, "udev init failure");
+  }
+}
+
+void
+XboxdrvDaemon::init_udev_monitor(const Options& opts)
+{
   // Setup udev monitor and enumerate
   m_monitor = udev_monitor_new_from_netlink(m_udev, "udev");
   udev_monitor_filter_add_match_subsystem_devtype(m_monitor, "usb", "usb_device");
@@ -261,12 +241,53 @@ XboxdrvDaemon::run_real(const Options& opts)
       //std::cout << "Enum: " << path << std::endl;
 
       struct udev_device* device = udev_device_new_from_syspath(m_udev, path);
-      process_match(opts, uinput.get(), device);
+      process_match(opts, m_uinput.get(), device);
       udev_device_unref(device);
     }
     udev_enumerate_unref(enumerate);
-  }
+  } 
+}
 
+void
+XboxdrvDaemon::create_pid_file(const Options& opts)
+{
+  if (!opts.pid_file.empty())
+  {
+    log_info << "writing pid file: " << opts.pid_file << std::endl;
+    std::ofstream out(opts.pid_file.c_str());
+    if (!out)
+    {
+      raise_exception(std::runtime_error, "failed to create pid file: " << opts.pid_file << ": " << strerror(errno));
+    }
+    else
+    {
+      out << getpid() << std::endl;
+    }
+  }
+}
+
+void
+XboxdrvDaemon::run(const Options& opts)
+{
+  try 
+  {
+    create_pid_file(opts);
+
+    init_uinput(opts);
+    init_udev();
+    init_udev_monitor(opts);
+
+    run_loop(opts);
+  }
+  catch(const std::exception& err)
+  {
+    log_error << "fatal exception: " << err.what() << std::endl;
+  }
+}
+
+void
+XboxdrvDaemon::run_loop(const Options& opts)
+{
   while(!global_exit_xboxdrv)
   {
     // FIXME: udev_monitor_receive_device() will block, must break out of it somehow
@@ -286,7 +307,7 @@ XboxdrvDaemon::run_real(const Options& opts)
 
       if (action && strcmp(action, "add") == 0)
       {
-        process_match(opts, uinput.get(), device);
+        process_match(opts, m_uinput.get(), device);
       }
     }
     udev_device_unref(device);
@@ -298,74 +319,74 @@ XboxdrvDaemon::print_info(struct udev_device* device)
 {
   std::cout << "/---------------------------------------------" << std::endl;
   std::cout << "devpath: " << udev_device_get_devpath(device) << std::endl;
-  std::cout << "action: " << udev_device_get_action(device) << std::endl;
+  
+  if (udev_device_get_action(device))
+    std::cout << "action: " << udev_device_get_action(device) << std::endl;
   //std::cout << "init: " << udev_device_get_is_initialized(device) << std::endl;
 
-  if (strcmp(udev_device_get_action(device), "add") == 0)
+  if (udev_device_get_subsystem(device))
+    std::cout << "subsystem: " << udev_device_get_subsystem(device) << std::endl;
+
+  if (udev_device_get_devtype(device))
+    std::cout << "devtype:   " << udev_device_get_devtype(device) << std::endl;
+
+  if (udev_device_get_syspath(device))
+    std::cout << "syspath:   " << udev_device_get_syspath(device) << std::endl;
+
+  if (udev_device_get_sysname(device))
+    std::cout << "sysname:   " << udev_device_get_sysname(device) << std::endl;
+
+  if (udev_device_get_sysnum(device))
+    std::cout << "sysnum:    " << udev_device_get_sysnum(device) << std::endl;
+
+  if (udev_device_get_devnode(device))
+    std::cout << "devnode:   " << udev_device_get_devnode(device) << std::endl;
+
+  if (udev_device_get_driver(device))
+    std::cout << "driver:    " << udev_device_get_driver(device) << std::endl;
+
+  if (udev_device_get_action(device))
+    std::cout << "action:    " << udev_device_get_action(device) << std::endl;
+          
+  //udev_device_get_sysattr_value(device, "busnum");
+  //udev_device_get_sysattr_value(device, "devnum");
+
   {
-    if (udev_device_get_subsystem(device))
-      std::cout << "subsystem: " << udev_device_get_subsystem(device) << std::endl;
-
-    if (udev_device_get_devtype(device))
-      std::cout << "devtype:   " << udev_device_get_devtype(device) << std::endl;
-
-    if (udev_device_get_syspath(device))
-      std::cout << "syspath:   " << udev_device_get_syspath(device) << std::endl;
-
-    if (udev_device_get_sysname(device))
-      std::cout << "sysname:   " << udev_device_get_sysname(device) << std::endl;
-
-    if (udev_device_get_sysnum(device))
-      std::cout << "sysnum:    " << udev_device_get_sysnum(device) << std::endl;
-
-    if (udev_device_get_devnode(device))
-      std::cout << "devnode:   " << udev_device_get_devnode(device) << std::endl;
-
-    if (udev_device_get_driver(device))
-      std::cout << "driver:    " << udev_device_get_driver(device) << std::endl;
-
-    if (udev_device_get_action(device))
-      std::cout << "action:    " << udev_device_get_action(device) << std::endl;
-          
-    udev_device_get_sysattr_value(device, "busnum");
-    udev_device_get_sysattr_value(device, "devnum");
-
-    {
-      std::cout << "list: " << std::endl;
-      struct udev_list_entry* it = udev_device_get_tags_list_entry(device);
-      while((it = udev_list_entry_get_next(it)) != 0)
-      {         
-        std::cout << "  " 
-                  << udev_list_entry_get_name(it) << " = "
-                  << udev_list_entry_get_value(it)
-                  << std::endl;
-      }
-    }
-          
-    {
-      std::cout << "properties: " << std::endl;
-      struct udev_list_entry* it = udev_device_get_properties_list_entry(device);
-      while((it = udev_list_entry_get_next(it)) != 0)
-      {         
-        std::cout << "  " 
-                  << udev_list_entry_get_name(it) << " = "
-                  << udev_list_entry_get_value(it)
-                  << std::endl;
-      }
-    }
-          
-    {
-      std::cout << "devlist: " << std::endl;
-      struct udev_list_entry* it = udev_device_get_tags_list_entry(device);
-      while((it = udev_list_entry_get_next(it)) != 0)
-      {         
-        std::cout << "  " 
-                  << udev_list_entry_get_name(it) << " = "
-                  << udev_list_entry_get_value(it)
-                  << std::endl;
-      }
+    std::cout << "list: " << std::endl;
+    struct udev_list_entry* it = udev_device_get_tags_list_entry(device);
+    while((it = udev_list_entry_get_next(it)) != 0)
+    {         
+      std::cout << "  " 
+                << udev_list_entry_get_name(it) << " = "
+                << udev_list_entry_get_value(it)
+                << std::endl;
     }
   }
+          
+  {
+    std::cout << "properties: " << std::endl;
+    struct udev_list_entry* it = udev_device_get_properties_list_entry(device);
+    while((it = udev_list_entry_get_next(it)) != 0)
+    {         
+      std::cout << "  " 
+                << udev_list_entry_get_name(it) << " = "
+                << udev_list_entry_get_value(it)
+                << std::endl;
+    }
+  }
+          
+  {
+    std::cout << "devlist: " << std::endl;
+    struct udev_list_entry* it = udev_device_get_tags_list_entry(device);
+    while((it = udev_list_entry_get_next(it)) != 0)
+    {         
+      std::cout << "  " 
+                << udev_list_entry_get_name(it) << " = "
+                << udev_list_entry_get_value(it)
+                << std::endl;
+    }
+  }
+
   std::cout << "\\----------------------------------------------" << std::endl;
 }
 
