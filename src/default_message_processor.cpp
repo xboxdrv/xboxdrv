@@ -73,6 +73,7 @@ DefaultMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
       (*i)->update(msec_delta, msg);
     }
 
+    m_uinput.update(msec_delta);
     m_config->get_config()->get_uinput().update(msec_delta);
 
     // send current Xbox state to uinput

@@ -71,8 +71,8 @@ ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const
     // |- FF_SAW_UP
     // |- FF_SAW_DOWN
     // '- FF_CUSTOM
-
-    int ff_device = opts.get_ff_device();
+    
+    uint32_t ff_device = (slot<<16) | opts.get_ff_device();
 
     // basic types
     uinput.add_ff(ff_device, FF_RUMBLE);

@@ -137,7 +137,7 @@ public:
   void set_trigger_as_zaxis();
   void set_dpad_as_button();
   void set_dpad_only();
-  void set_force_feedback();
+  void set_force_feedback(const std::string& value);
   void set_mimic_xpad();
 
   void add_match(const std::string& lhs, const std::string& rhs);

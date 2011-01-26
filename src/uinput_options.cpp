@@ -23,7 +23,6 @@
 
 UInputOptions::UInputOptions() :
   device_name("Xbox Gamepad (userspace driver)"),
-  force_feedback(false),
   m_btn_map(),
   m_axis_map()
 {

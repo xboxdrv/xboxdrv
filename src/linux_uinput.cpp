@@ -288,7 +288,7 @@ LinuxUinput::sync()
 }
 
 void
-LinuxUinput::update_force_feedback(int msec_delta)
+LinuxUinput::update(int msec_delta)
 {
   if (ff_bit)
   {

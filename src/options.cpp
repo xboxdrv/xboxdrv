@@ -189,8 +189,9 @@ Options::set_dpad_only()
 }
 
 void
-Options::set_force_feedback()
+Options::set_force_feedback(const std::string& value)
 {
+  get_controller_slot().set_force_feedback(boost::lexical_cast<bool>(value));
 }
 
 void

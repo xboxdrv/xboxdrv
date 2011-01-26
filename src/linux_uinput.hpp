@@ -82,7 +82,7 @@ public:
   /** Sends out a sync event if there is a need for it. */
   void sync();
 
-  void update_force_feedback(int msec_delta);
+  void update(int msec_delta);
 
 private:
   LinuxUinput (const LinuxUinput&);

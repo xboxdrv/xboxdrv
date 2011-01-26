@@ -152,6 +152,11 @@ UInput::update(int msec_delta)
       i->second.time_count -= i->second.repeat_interval;
     }
   }
+
+  for(UInputDevs::iterator i = uinput_devs.begin(); i != uinput_devs.end(); ++i)
+  {
+    i->second->update(msec_delta);
+  }
 }
 
 void

@@ -255,8 +255,6 @@ UInputConfig::send(Playstation3USBMsg& msg)
 void
 UInputConfig::update(int msec_delta)
 {
-  m_uinput.update(msec_delta);
-
   m_btn_map.update(m_uinput, msec_delta);
   m_axis_map.update(m_uinput, msec_delta);
 

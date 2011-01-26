@@ -329,7 +329,7 @@ CommandLineParser::init_ini(Options* opts)
     ("trigger-as-zaxis",  boost::bind(&Options::set_trigger_as_zaxis, boost::ref(opts)),  boost::function<void ()>())
     ("dpad-as-button",    boost::bind(&Options::set_dpad_as_button, boost::ref(opts)),    boost::function<void ()>())
     ("dpad-only",         boost::bind(&Options::set_dpad_only, boost::ref(opts)),         boost::function<void ()>())
-    ("force-feedback",    boost::bind(&Options::set_force_feedback, boost::ref(opts)),    boost::function<void ()>())
+    ("force-feedback",    boost::bind(&Options::set_force_feedback, boost::ref(opts), _1))
     ("mimic-xpad",        boost::bind(&Options::set_mimic_xpad, boost::ref(opts)),        boost::function<void ()>())
 
     ("chatpad",         &opts->chatpad)
@@ -562,7 +562,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_FORCE_FEEDBACK:
-        opts.get_controller_options().uinput.force_feedback = true;
+        opts.get_controller_slot().set_force_feedback(true);
         break;
 
       case OPTION_RUMBLE_GAIN:

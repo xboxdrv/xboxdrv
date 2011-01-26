@@ -58,21 +58,6 @@ XboxdrvThread::~XboxdrvThread()
   }
 }
 
-// FIXME: duplicate code
-namespace {
-
-void set_rumble(XboxGenericController* controller, int gain, uint8_t lhs, uint8_t rhs)
-{
-  lhs = std::min(lhs * gain / 255, 255);
-  rhs = std::min(rhs * gain / 255, 255);
-  
-  //std::cout << (int)lhs << " " << (int)rhs << std::endl;
-
-  controller->set_rumble(lhs, rhs);
-}
-
-} // namespace
-
 void
 XboxdrvThread::launch_child_process()
 {
@@ -165,28 +150,11 @@ XboxdrvThread::controller_loop(const Options& opts)
 
       m_processor->send(msg, msec_delta);
 
-#ifdef FIXME                 
       if (opts.rumble)
-      { // FIXME: kind of ugly here, should be a filter, but filters
-        // can't talk back to the controller
-        if (type == GAMEPAD_XBOX)
-        {
-          set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox.lt, msg.xbox.rt);
-        }
-        else if (type == GAMEPAD_XBOX360 ||
-                 type == GAMEPAD_XBOX360_WIRELESS)
-        {
-          set_rumble(m_controller.get(), opts.rumble_gain, msg.xbox360.lt, msg.xbox360.rt);
-        }
-        else if (type == GAMEPAD_FIRESTORM ||
-                 type == GAMEPAD_FIRESTORM_VSB)
-        {
-          set_rumble(m_controller.get(), opts.rumble_gain,
-                     std::min(255, abs((msg.xbox360.y1>>8)*2)), 
-                     std::min(255, abs((msg.xbox360.y2>>8)*2)));
-        }
+      {
+        m_controller->set_rumble(get_axis(msg, XBOX_AXIS_LT), 
+                                 get_axis(msg, XBOX_AXIS_RT));
       }
-#endif
         
       watch_chid_process();
     }

@@ -27,8 +27,6 @@ class UInputOptions
 public:
   std::string device_name;
 
-  bool force_feedback;
-
 private:
   ButtonMap m_btn_map;
   AxisMap   m_axis_map;
