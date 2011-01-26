@@ -1,16 +1,16 @@
 [[ Xbox/Xbox360 USB Gamepad Driver for Userspace ]]
 ===================================================
 
-This is a Xbox/Xbox360 gamepad driver for Linux that works in
+Xboxdrv is a Xbox/Xbox360 gamepad driver for Linux that works in
 userspace. It is an alternative to the xpad kernel driver and has
 support for Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless
 gamepads. The Xbox360 guitar and some Xbox1 dancemats might work too.
 The Xbox 360 racing wheel is not supported, but shouldn't be to hard
 to add if somebody is interested.
 
-The Xbox360 chatpad does currently not work and the headset does
-neither. There has been some work on reverse enginiering, but no
-usable results.
+Some basic support for the Xbox360 Chatpad on USB controller is
+provided, Chatpad on wireless ones is not supported. The headset is
+not supported, but you can dump raw data from it.
 
 This driver is only of interest if the xpad kernel driver doesn't work
 for you or if you want more configurabity. If the xpad kernel driver

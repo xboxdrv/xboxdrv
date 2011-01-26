@@ -42,23 +42,18 @@ $ dput my-ppa ../xboxdrv_0.7.0-1~lucid1_source.changes
 Stuff to do before 0.7.0 release:
 =================================
 
-* update docu on force feedback for multi controller
+* get rid of all std::cout stuff when using detached daemon, redirect
+  log output to a file somewhere else: 
 
-* rename --list-key to --help-key?
-
-* print controller type/name in daemon (little tricky as that is only
-  known after opening the USB connection)
-
-* log levels:
-
-  debug: only shown when --debug is given
-  info:  shown when --verbose is given
-  // need something inbetween!?
-  warn:  shown by default
-  error: shown by default
+  --silent:  stops event output
+  --quiet:   stops all stdout output (automatically used when --detach is given)
+  --verbose: print info level log output
+  --debug:   print debug level log output
+  --log-level: only log stuff at LEVEL or below
 
 * figure out a good place to set the LEDs off when Xboxdrv is quit,
-  just doing it in the destructor causes trouble
+  just doing it in the destructor causes trouble, as the usbdev might
+  be no longer usable (when controller got unplugged)
 
 * AxisSensitivity filter has overflow issue 
 
@@ -67,6 +62,7 @@ Stuff to do before 0.7.0 release:
 * need to hide/disable the toggle button from the UIButtonmap
   - maybe implement some full post-parsing option verification to
     check for conflicts and necessary modifications?
+  - Options::finish() to do final things?
 
 * move XBOX_BTN_UNKNOWN behind XBOX_BTN_MAX, so iteration can start
   from 0 instead of 1, also fix incorrect iterations all over the
@@ -76,11 +72,52 @@ Stuff to do before 0.7.0 release:
 Daemon Related Stuff
 ====================
 
+* improve output on which uinput devices are created
+
 * cleanup device_id, don't manually do (slot<<16) | devid
 
-* get rid of all std::cout stuff, redirect it somewhere else
+* might need magic to give device-ids in a slot fashion: 
+  from: 1-ABS_X   (second uinput device)
+  to:   2.1-ABS_X (third uinput device for the second slot)
+   2.mouse-BTN_MIDDLE ?!
+   1.-BTN_MIDDLE
+   1.auto-BTN_MIDDLE
+   auto-BTN_MIDDLE
 
-* improve output on which uinput devices are created
+  change syntax: BTN_MIDDLE@mouse, BTN_MIDDLE@2.mouse
+
+  must make sure it doesn't conflict with anything
+
+List Output
+===========
+
+* update docu on force feedback for multi controller
+
+* rename --list-key to --help-key?
+
+* do modifier/filter dump when --verbose is given, make verbose
+  overall more useful
+
+* turn EnumBox into singleton
+
+* Keysym2Keycode is currently always constructed at startup, even when
+  not used, construct it on demand
+
+* document significant patches in AUTHORS
+
+      2     Added latest version of runxboxdrv from Michael Rans <rans@email.com>
+      1     Added trigger deadzone patch from Jan Henning Thorsen <git@flodhest.net> with a few changes
+      1     Applied daniel åkerud <daniel.akerud@gmail.com>'s SIGTERM patch
+      1     Applied low latency patch from daniel åkerud <daniel.akerud@gmail.com>
+      1 Author: Aaron Denney <wnoise@ofb.net>
+      1     hal daemon from Thomas Debouverie <debouverie_thomas@yahoo.fr>
+      1     Implemented --ui-buttonmap A=BTN_A@{device_id} ??!?!?
+
+Stuff to do before 0.7.1 release:
+=================================
+
+* print controller type/name in daemon (little tricky as that is only
+  known after opening the USB connection)
 
 * need magic to assign controller to a slot:
  
@@ -106,42 +143,6 @@ Daemon Related Stuff
   
   * match again sysname could make sense, seems somewhat constant: "5-2"
     Xbox1 controller results in "5-2.1", due to being really two devices
- 
-* might need magic to give device-ids in a slot fashion: 
-  from: 1-ABS_X   (second uinput device)
-  to:   2.1-ABS_X (third uinput device for the second slot)
-   2.mouse-BTN_MIDDLE ?!
-   1.-BTN_MIDDLE
-   1.auto-BTN_MIDDLE
-   auto-BTN_MIDDLE
-
-  change syntax: BTN_MIDDLE@mouse, BTN_MIDDLE@2.mouse
-
-  must make sure it doesn't conflict with anything
-
-List Output
-===========
-
-* do modifier/filter dump when --verbose is given, make verbose
-  overall more useful
-
-* turn EnumBox into singleton
-
-* Keysym2Keycode is currently always constructed at startup, even when
-  not used, construct it on demand
-
-* document significant patches in AUTHORS
-
-      2     Added latest version of runxboxdrv from Michael Rans <rans@email.com>
-      1     Added trigger deadzone patch from Jan Henning Thorsen <git@flodhest.net> with a few changes
-      1     Applied daniel åkerud <daniel.akerud@gmail.com>'s SIGTERM patch
-      1     Applied low latency patch from daniel åkerud <daniel.akerud@gmail.com>
-      1 Author: Aaron Denney <wnoise@ofb.net>
-      1     hal daemon from Thomas Debouverie <debouverie_thomas@yahoo.fr>
-      1     Implemented --ui-buttonmap A=BTN_A@{device_id} ??!?!?
-
-Stuff to do before 0.7.1 release:
-=================================
 
 * implement --on-connect and --on-disconnect for the daemon
   - maybe have a more general event interface that allows to run stuff
