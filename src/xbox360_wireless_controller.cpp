@@ -120,25 +120,25 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   { // Connection Status Message
     if (data[1] == 0x00) 
     {
-      log_info << "Connection status: nothing" << std::endl;
+      log_info("connection status: nothing");
     } 
     else if (data[1] == 0x80) 
     {
-      log_info << "Connection status: controller connected" << std::endl;
+      log_info("connection status: controller connected");
       set_led(led_status);
     } 
     else if (data[1] == 0x40) 
     {
-      log_info << "Connection status: headset connected" << std::endl;
+      log_info("Connection status: headset connected");
     }
     else if (data[1] == 0xc0) 
     {
-      log_info << "Connection status: controller and headset connected" << std::endl;
+      log_info("Connection status: controller and headset connected");
       set_led(led_status);
     }
     else
     {
-      log_info << "Connection status: unknown" << std::endl;
+      log_info("Connection status: unknown");
     }
   }
   else if (len == 29)
@@ -154,8 +154,8 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
                 % int(data[12])
                 % int(data[13])).str();
       battery_status = data[17];
-      log_info << "Serial: " << serial << std::endl;
-      log_info << "Battery Status: " << battery_status << std::endl;
+      log_info("Serial: " << serial);
+      log_info("Battery Status: " << battery_status);
     }
     else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
     { // Event message
@@ -166,7 +166,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
     else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
     { // Battery status
       battery_status = data[4];
-      log_info << "Battery Status: " << battery_status << std::endl;
+      log_info("battery status: " << battery_status);
     }
     else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0xf0)
     {
@@ -175,7 +175,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
     }
     else
     {
-      log_debug << "unknown: " << raw2str(data, len) << std::endl;
+      log_debug("unknown: " << raw2str(data, len));
     }
   }
   else if (len == 0)
@@ -184,7 +184,7 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else
   {
-    log_debug << "unknown: " << raw2str(data, len) << std::endl;
+    log_debug("unknown: " << raw2str(data, len));
   }
 
   return false;

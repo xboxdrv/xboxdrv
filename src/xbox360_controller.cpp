@@ -42,8 +42,8 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev_,
 {
   find_endpoints();
   
-  log_debug << "EP(IN):  " << endpoint_in << std::endl;
-  log_debug << "EP(OUT): " << endpoint_out << std::endl;
+  log_debug("EP(IN):  " << endpoint_in);
+  log_debug("EP(OUT): " << endpoint_out);
   
   int ret = libusb_open(dev, &handle);
 
@@ -114,8 +114,6 @@ Xbox360Controller::find_endpoints()
     raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));
   }
 
-  bool debug_print = false;
-
   // FIXME: no need to search all interfaces, could just check the one we acutally use
   for(const libusb_interface* interface = config->interface;
       interface != config->interface + config->bNumInterfaces;
@@ -125,16 +123,14 @@ Xbox360Controller::find_endpoints()
         altsetting != interface->altsetting + interface->num_altsetting;
         ++altsetting)
     {
-      if (debug_print) std::cout << "  Interface: " << static_cast<int>(altsetting->bInterfaceNumber) << std::endl;
+      log_debug("Interface: " << static_cast<int>(altsetting->bInterfaceNumber));
           
       for(const libusb_endpoint_descriptor* endpoint = altsetting->endpoint; 
           endpoint != altsetting->endpoint + altsetting->bNumEndpoints; 
           ++endpoint)
       {
-        if (debug_print) 
-          std::cout << "    Endpoint: " << int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK)
-                    << "(" << ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? "IN" : "OUT") << ")"
-                    << std::endl;
+        log_debug("    Endpoint: " << int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK) <<
+                  "(" << ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? "IN" : "OUT") << ")");
 
         if (altsetting->bInterfaceClass    == LIBUSB_CLASS_VENDOR_SPEC &&
             altsetting->bInterfaceSubClass == 93 &&
@@ -206,19 +202,13 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else if (len == 0)
   {
-    if (verbose)
-    {
-      std::cout << "zero length read" << std::endl;
-      // happens with the Xbox360 controller every now and then, just
-      // ignore, seems harmless, so just ignore
-    }
+    // happens with the Xbox360 controller every now and then, just
+    // ignore, seems harmless, so just ignore
+    log_debug("zero length read");
   }
   else if (len == 3 && data[0] == 0x01 && data[1] == 0x03)
   { 
-    if (verbose)
-    {
-      std::cout << "Xbox360Controller: LED Status: " << int(data[2]) << std::endl;
-    }
+    log_info("Xbox360Controller: LED Status: " << int(data[2]));
   }
   else if (len == 3 && data[0] == 0x03 && data[1] == 0x03)
   { 
@@ -228,7 +218,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
       // data[2] == 0x01 unknown, but rumble works
       // data[2] == 0x02 unknown, but rumble works
       // data[2] == 0x03 is default with rumble enabled
-      std::cout << "Xbox360Controller: Rumble Status: " << int(data[2]) << std::endl;
+      log_info("Xbox360Controller: rumble status: " << int(data[2]));
     }
   }
   else if (len == 3 && data[0] == 0x08 && data[1] == 0x03)
@@ -237,23 +227,23 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
     // port, so that we don't have to send chatpad init
     if (data[2] == 0x00)
     {
-      log_info << "peripheral: none" << std::endl;
+      log_info("peripheral: none");
     }
     else if (data[2] == 0x01)
     {
-      log_info << "peripheral: chatpad" << std::endl;
+      log_info("peripheral: chatpad");
     }
     else if (data[2] == 0x02)
     {
-      log_info << "peripheral: headset" << std::endl;
+      log_info("peripheral: headset");
     }
     else if (data[2] == 0x03)
     {
-      log_info << "peripheral: headset, chatpad" << std::endl;
+      log_info("peripheral: headset, chatpad");
     }
     else
     {
-      log_info << "peripheral: unknown: " << int(data[2]) << std::endl;
+      log_info("peripheral: unknown: " << int(data[2]));
     }
   }
   else if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
@@ -264,7 +254,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, bool verbose, int timeout)
   }
   else
   {
-    log_debug << "unknown: " << raw2str(data, len) << std::endl;
+    log_debug("unknown: " << raw2str(data, len));
   }
 
   return false;

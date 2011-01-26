@@ -52,7 +52,7 @@ X11KeysymEnum::X11KeysymEnum() :
   Display* dpy = XOpenDisplay(NULL);
   if (!dpy)
   {
-    log_error << "unable to open X11 display, X11 keynames will not be available" << std::endl;
+    log_error("unable to open X11 display, X11 keynames will not be available");
   }
   else
   {
@@ -87,7 +87,7 @@ X11KeysymEnum::process_keymap(Display* dpy)
       const char* keysym_str = XKeysymToString(keysym);
       if (!keysym_str)
       {
-        log_error << "couldn't convert keysym " << keysym << " to string";
+        log_warn("couldn't convert keysym " << keysym << " to string");
       }
       else
       {

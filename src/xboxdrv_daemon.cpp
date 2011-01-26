@@ -21,6 +21,7 @@
 #include <boost/format.hpp>
 #include <fstream>
 #include <stdexcept>
+#include <iostream>
 
 #include "uinput_message_processor.hpp"
 #include "dummy_message_processor.hpp"
@@ -130,9 +131,8 @@ XboxdrvDaemon::cleanup_threads()
 
   if (count > 0)
   {
-    log_info << "cleaned up " << count << " thread(s), free slots: " 
-             << get_free_slot_count() << "/" << m_controller_slots.size()
-             << std::endl;
+    log_info("cleaned up " << count << " thread(s), free slots: " <<
+             get_free_slot_count() << "/" << m_controller_slots.size());
   }
 }
 
@@ -149,15 +149,15 @@ XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
 
   if (!get_usb_id(device, &vendor, &product))
   {
-    log_warning << "couldn't get vendor:product" << std::endl;
+    log_warn("couldn't get vendor:product");
   }
   else
   {
     XPadDevice dev_type;
     if (!find_xpad_device(vendor, product, &dev_type))
     {
-      log_info << "ignoring " << boost::format("%04x:%04x") % vendor % product
-               << " not a valid Xboxdrv device" << std::endl;
+      log_info("ignoring " << boost::format("%04x:%04x") % vendor % product <<
+               " not a valid Xboxdrv device");
     }
     else
     {  
@@ -165,14 +165,14 @@ XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
       int dev;
       if (!get_usb_path(device, &bus, &dev))
       {
-        log_warning << "couldn't get bus:dev" << std::endl;
+        log_warn("couldn't get bus:dev");
       }
       else
       {
         ControllerSlot* slot = find_free_slot(vendor, product, bus, dev);
         if (!slot)
         {
-          log_error << "no free controller slot found, controller will be ignored" << std::endl;
+          log_error("no free controller slot found, controller will be ignored");
         }
         else
         {
@@ -182,7 +182,7 @@ XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
           }
           catch(const std::exception& err)
           {
-            log_error << "failed to launch XboxdrvThread: " << err.what() << std::endl;
+            log_error("failed to launch XboxdrvThread: " << err.what());
           }
         }
       }
@@ -196,14 +196,14 @@ XboxdrvDaemon::init_uinput(const Options& opts)
   // Setup uinput
   if (opts.no_uinput)
   {
-    log_info << "starting without UInput" << std::endl;
+    log_info("starting without UInput");
 
     // just create some empty controller slots
     m_controller_slots.resize(opts.controller_slots.size());
   }
   else
   {
-    log_info << "starting with UInput" << std::endl;
+    log_info("starting with UInput");
 
     m_uinput.reset(new UInput());
 
@@ -213,7 +213,7 @@ XboxdrvDaemon::init_uinput(const Options& opts)
     for(Options::ControllerSlots::const_iterator controller = opts.controller_slots.begin(); 
         controller != opts.controller_slots.end(); ++controller)
     {
-      log_info << "creating slot: " << slot_count << std::endl;
+      log_info("creating slot: " << slot_count);
       m_controller_slots.push_back(ControllerSlot(m_controller_slots.size(),
                                                   ControllerSlotConfig::create(*m_uinput, slot_count,
                                                                                opts.extra_devices,
@@ -222,7 +222,7 @@ XboxdrvDaemon::init_uinput(const Options& opts)
       slot_count += 1;
     }
 
-    log_info << "created " << m_controller_slots.size() << " controller slots" << std::endl;
+    log_info("created " << m_controller_slots.size() << " controller slots");
 
     // After all the ControllerConfig registered their events, finish up
     // the device creation
@@ -291,7 +291,7 @@ XboxdrvDaemon::create_pid_file(const Options& opts)
 {
   if (!opts.pid_file.empty())
   {
-    log_info << "writing pid file: " << opts.pid_file << std::endl;
+    log_info("writing pid file: " << opts.pid_file);
     std::ofstream out(opts.pid_file.c_str());
     if (!out)
     {
@@ -319,7 +319,7 @@ XboxdrvDaemon::run(const Options& opts)
   }
   catch(const std::exception& err)
   {
-    log_error << "fatal exception: " << err.what() << std::endl;
+    log_error("fatal exception: " << err.what());
   }
 }
 
@@ -473,7 +473,7 @@ XboxdrvDaemon::launch_xboxdrv(const XPadDevice& dev_type, const Options& opts,
 
   if (!dev)
   {
-    log_error << "USB device disappeared before it could be opened" << std::endl;
+    log_error("USB device disappeared before it could be opened");
   }
   else
   {
@@ -495,12 +495,11 @@ XboxdrvDaemon::launch_xboxdrv(const XPadDevice& dev_type, const Options& opts,
     thread->start_thread(opts);
     slot.thread = thread.release();
 
-    log_info << "launched XboxdrvThread for " << boost::format("%03d:%03d")
+    log_info("launched XboxdrvThread for " << boost::format("%03d:%03d")
       % static_cast<int>(busnum) 
       % static_cast<int>(devnum)
              << " in slot " << slot.id << ", free slots: " 
-             << get_free_slot_count() << "/" << m_controller_slots.size()
-             << std::endl;
+             << get_free_slot_count() << "/" << m_controller_slots.size());
   }
 }
 

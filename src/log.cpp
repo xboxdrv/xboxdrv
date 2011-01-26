@@ -18,6 +18,10 @@
 
 #include "log.hpp"
 
+#include <iostream>
+
+Logger g_logger;
+
 std::string log_pretty_print(const std::string& str)
 {
   // FIXME: very basic, might not work with complex return types
@@ -35,6 +39,45 @@ std::string log_pretty_print(const std::string& str)
   }
 
   return str.substr(function_start);
+}
+
+Logger::Logger() :
+  m_log_level(kWarning)
+{}
+
+void
+Logger::set_level(LogLevel level)
+{
+  m_log_level = level;
+}
+
+Logger::LogLevel
+Logger::get_log_level() const
+{
+  return m_log_level;
+}
+
+void
+Logger::append_unchecked(LogLevel level, const std::string& str)
+{
+  switch(level)
+  {
+    case kError:   std::cout << "[ERROR] "; break;
+    case kWarning: std::cout << "[WARN] "; break;
+    case kInfo:    std::cout << "[INFO] "; break;
+    case kDebug:   std::cout << "[DEBUG] "; break;
+  }
+    
+  std::cout << str << std::endl;
+}
+
+void
+Logger::append(LogLevel level, const std::string& str) 
+{
+  if (m_log_level >= level)
+  {
+    append_unchecked(level, str);
+  }
 }
 
 /* EOF */

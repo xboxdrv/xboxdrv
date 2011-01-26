@@ -19,6 +19,7 @@
 #include "chatpad.hpp"
 
 #include <boost/format.hpp>
+#include <iostream>
 
 #include "linux_uinput.hpp"
 #include "log.hpp"
@@ -218,16 +219,18 @@ Chatpad::read_thread()
       }
       else
       {
-        if (m_debug)
+        if (g_logger.get_log_level() > Logger::kDebug)
         {
-          log_info << "read: " << len << "/5: data: " << std::flush;
+          std::ostringstream str;
+          str << "read: " << len << "/5: data: ";
           for(int i = 0; i < len; ++i)
           {
-            log_info << boost::format("0x%02x ") % int(data[i]);
+            str << boost::format("0x%02x ") % int(data[i]);
           }
-          log_info << std::endl;
-        }
 
+          log_debug(str);
+        }
+        
         if (data[0] == 0x00)
         {
           struct ChatpadKeyMsg msg;
@@ -239,7 +242,7 @@ Chatpad::read_thread()
   }
   catch(const std::exception& err)
   {
-    log_error << err.what() << std::endl;
+    log_error(err.what());
   }
 }
 
@@ -311,7 +314,7 @@ Chatpad::keep_alive_thread()
   }
   catch(const std::exception& err)
   {
-    log_error << err.what() << std::endl;
+    log_error(err.what());
   }
 }
 
@@ -366,10 +369,10 @@ Chatpad::send_init()
       if (m_debug) std::cout << "[chatpad] ret: " << usb_strerror(ret) << " " << static_cast<int>(buf[0]) << " " << static_cast<int>(buf[1]) << std::endl;
 
       /* FIXME: not proper way to check if the chatpad is alive
-      if (!(buf[1] & 2)) // FIXME: check for {9,0} for bcdDevice==0x114
-      {
-        throw std::runtime_error("chatpad init failure");
-      }
+         if (!(buf[1] & 2)) // FIXME: check for {9,0} for bcdDevice==0x114
+         {
+         throw std::runtime_error("chatpad init failure");
+         }
       */
       // chatpad is enabled, so start with keep alive
     }

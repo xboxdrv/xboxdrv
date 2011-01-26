@@ -61,7 +61,7 @@ UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
         // switch to the next input mapping
         m_config->next_config();
 
-        log_info << "Next Config" << std::endl;
+        log_info("switched to config: " << m_config->get_current_config());
       }
     }
 

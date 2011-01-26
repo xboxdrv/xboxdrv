@@ -18,6 +18,7 @@
 
 #include "xboxdrv_thread.hpp"
 
+#include <iostream>
 #include <sys/wait.h>
 
 #include "helper.hpp"
@@ -52,9 +53,9 @@ XboxdrvThread::~XboxdrvThread()
 {
   if (m_thread.get())
   {
-    log_info << "waiting for thread to join: " << m_thread->get_id() << std::endl;
+    log_info("waiting for thread to join: " << m_thread->get_id());
     stop_thread(); 
-    log_info << "thread joined" << std::endl;
+    log_info("thread joined");
   }
 }
 
@@ -75,7 +76,7 @@ XboxdrvThread::launch_child_process()
 
       if (execvp(m_child_exec[0].c_str(), argv) == -1)
       {
-        std::cout << "error: " << m_child_exec[0] << ": " << strerror(errno) << std::endl;
+        log_error("error: " << m_child_exec[0] << ": " << strerror(errno));
         // FIXME: must signal the parent process
         _exit(EXIT_FAILURE);
       }
@@ -98,17 +99,17 @@ XboxdrvThread::watch_chid_process()
       {
         if (WEXITSTATUS(status) != 0)
         {
-          std::cout << "error: child program has stopped with exit status " << WEXITSTATUS(status) << std::endl;
+          log_error("child program has stopped with exit status " << WEXITSTATUS(status));
         }
         else
         {
-          std::cout << "child program exited successful" << std::endl;
+          log_info("child program exited successful");
         }
         global_exit_xboxdrv = true;
       }
       else if (WIFSIGNALED(status))
       {
-        std::cout << "error: child program was terminated by " << WTERMSIG(status) << std::endl;
+        log_error("child program was terminated by " << WTERMSIG(status));
         global_exit_xboxdrv = true;
       }
     }
@@ -162,7 +163,7 @@ XboxdrvThread::controller_loop(const Options& opts)
   catch(const std::exception& err)
   {
     // catch read errors from USB and other stuff that can go wrong
-    log_error << err.what() << std::endl;
+    log_error(err.what());
   }
 
   {

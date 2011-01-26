@@ -44,7 +44,7 @@ LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, uint1
   ff_callback(),
   needs_sync(true)
 {
-  log_debug << name << " " << vendor << ":" << product << std::endl;
+  log_debug(name << " " << vendor << ":" << product);
 
   std::fill_n(abs_lst, ABS_CNT, false);
   std::fill_n(rel_lst, REL_CNT, false);
@@ -97,7 +97,7 @@ LinuxUinput::~LinuxUinput()
 void
 LinuxUinput::add_abs(uint16_t code, int min, int max, int fuzz, int flat)
 {
-  log_debug << "add_abs: " << abs2str(code) << " (" << min << ", " << max << ") " << name << std::endl;
+  log_debug("add_abs: " << abs2str(code) << " (" << min << ", " << max << ") " << name);
 
   if (!abs_lst[code])
   {
@@ -121,7 +121,7 @@ LinuxUinput::add_abs(uint16_t code, int min, int max, int fuzz, int flat)
 void
 LinuxUinput::add_rel(uint16_t code)
 {
-  log_debug << "add_rel: " << rel2str(code) << " " << name << std::endl;
+  log_debug("add_rel: " << rel2str(code) << " " << name);
 
   if (!rel_lst[code])
   {
@@ -140,7 +140,7 @@ LinuxUinput::add_rel(uint16_t code)
 void
 LinuxUinput::add_key(uint16_t code)
 {
-  log_debug << "add_key: " << key2str(code) << " " << name << std::endl;
+  log_debug("add_key: " << key2str(code) << " " << name);
 
   if (!key_lst[code])
   {
@@ -226,7 +226,7 @@ LinuxUinput::finish()
   user_dev.id.vendor  = vendor;
   user_dev.id.product = product;
 
-  log_debug << "'" << user_dev.name << "' " << user_dev.id.vendor << ":" << user_dev.id.product << std::endl;
+  log_debug("'" << user_dev.name << "' " << user_dev.id.vendor << ":" << user_dev.id.product);
 
   if (ff_bit)
     user_dev.ff_effects_max = ff_handler->get_max_effects();
@@ -241,14 +241,14 @@ LinuxUinput::finish()
     }
     else
     {
-      log_debug << "write return value: " << write_ret << std::endl; 
+      log_debug("write return value: " << write_ret);
     }
   }
 
   // FIXME: check that the config isn't empty and give a more
   // meaningful message when it is
 
-  log_debug << "finish" << std::endl;
+  log_debug("finish");
   if (ioctl(fd, UI_DEV_CREATE))
   {
     raise_exception(std::runtime_error, "unable to create uinput device: '" << name << "': " << strerror(errno));
@@ -296,10 +296,7 @@ LinuxUinput::update(int msec_delta)
 
     ff_handler->update(msec_delta);
 
-    if (0)
-      std::cout << boost::format("%5d %5d") 
-        % ff_handler->get_weak_magnitude() 
-        % ff_handler->get_strong_magnitude() << std::endl;
+    log_info(boost::format("%5d %5d") % ff_handler->get_strong_magnitude() % ff_handler->get_weak_magnitude());
 
     if (ff_callback)
     {
@@ -314,7 +311,9 @@ LinuxUinput::update(int msec_delta)
     if (ret < 0)
     {
       if (errno != EAGAIN)
-        std::cout << "Error: " << strerror(errno) << " " << ret << std::endl;
+      {
+        log_error("failed to read from file description: " << ret << ": " << strerror(errno));
+      }
     }
     else if (ret == sizeof(ev))
     { // successful read
@@ -326,7 +325,7 @@ LinuxUinput::update(int msec_delta)
           if (ev.code == LED_MISC)
           {
             // FIXME: implement this
-            std::cout << "unimplemented: Set LED status: " << ev.value << std::endl;
+            log_info("unimplemented: set LED status: " << ev.value);
           }
           break;
 
@@ -385,19 +384,19 @@ LinuxUinput::update(int msec_delta)
             break;
 
             default: 
-              std::cout << "Unhandled event code read" << std::endl;
+              log_warn("unhandled event code read");
               break;
           }
           break;
 
         default:
-          std::cout << "Unhandled event type read: " << ev.type << std::endl;
+          log_warn("unhandled event type read: " << ev.type);
           break;
       }
     }
     else
     {
-      std::cout << "uInput::update: short read: " << ret << std::endl;
+      log_warn("short read: " << ret);
     }
   }
 }

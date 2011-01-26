@@ -113,7 +113,7 @@ USBReadThread::run()
     }
     else
     {
-      log_error << "error while reading from USB: " << usb_strerror(ret) << std::endl;
+      log_error("error while reading from USB: " << usb_strerror(ret));
       m_stop = true;
     }
   }

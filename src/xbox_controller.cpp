@@ -68,8 +68,6 @@ XboxController::find_endpoints()
     raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));
   }
 
-  bool debug_print = false;
-
   // FIXME: no need to search all interfaces, could just check the one we acutally use
   for(const libusb_interface* interface = config->interface;
       interface != config->interface + config->bNumInterfaces;
@@ -79,17 +77,15 @@ XboxController::find_endpoints()
         altsetting != interface->altsetting + interface->num_altsetting;
         ++altsetting)
     {
-      if (debug_print) std::cout << "  Interface: " << static_cast<int>(altsetting->bInterfaceNumber) << std::endl;
+      log_debug("  Interface: " << static_cast<int>(altsetting->bInterfaceNumber));
           
       for(const libusb_endpoint_descriptor* endpoint = altsetting->endpoint; 
           endpoint != altsetting->endpoint + altsetting->bNumEndpoints; 
           ++endpoint)
       {
-        if (debug_print)
-          std::cout << "    Endpoint: " << int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK)
-                    << "(" << ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? "IN" : "OUT") << ")"
-                    << std::endl;
-
+        log_debug("    Endpoint: " << int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK) <<
+                  "(" << ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? "IN" : "OUT") << ")");
+                  
         if (altsetting->bInterfaceClass    == 88 &&
             altsetting->bInterfaceSubClass == 66 &&
             altsetting->bInterfaceProtocol == 0)
