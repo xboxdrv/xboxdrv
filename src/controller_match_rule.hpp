@@ -51,9 +51,9 @@ public:
   bool match(int vendor, int product,
              int bus, int dev) const;
 
-  static ControllerMatchRule match_usb_id(int vendor, int product);
-  static ControllerMatchRule match_usb_path(int bus, int dev);
-  static ControllerMatchRule match_evdev_path(const std::string& path);
+  static ControllerMatchRule create_usb_id(int vendor, int product);
+  static ControllerMatchRule create_usb_path(int bus, int dev);
+  static ControllerMatchRule create_evdev_path(const std::string& path);
 };
 
 #endif

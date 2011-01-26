@@ -138,7 +138,7 @@ XboxdrvDaemon::cleanup_threads()
 void
 XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
 {
-  if (true)
+  if (false)
   {
     print_info(device);
   }
@@ -277,13 +277,16 @@ XboxdrvDaemon::init_udev_monitor(const Options& opts)
     udev_list_entry_foreach(dev_list_entry, devices) 
     {
       // name is path, value is NULL
-      const char* path  = udev_list_entry_get_name(dev_list_entry) ;
-      //const char* value = udev_list_entry_get_value(dev_list_entry);
-      
-      //std::cout << "Enum: " << path << std::endl;
+      const char* path = udev_list_entry_get_name(dev_list_entry);
 
       struct udev_device* device = udev_device_new_from_syspath(m_udev, path);
-      process_match(opts, device);
+
+      // manually filter for devtype, as udev enumerate can't do it by itself
+      const char* devtype = udev_device_get_devtype(device);
+      if (devtype && strcmp(devtype, "usb_device") == 0)
+      {
+        process_match(opts, device);
+      }
       udev_device_unref(device);
     }
     udev_enumerate_unref(enumerate);

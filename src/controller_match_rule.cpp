@@ -46,7 +46,7 @@ ControllerMatchRule::match(int vendor, int product,
 }
 
 ControllerMatchRule
-ControllerMatchRule::match_usb_id(int vendor, int product)
+ControllerMatchRule::create_usb_id(int vendor, int product)
 {
   ControllerMatchRule rule;
   rule.m_type = kMatchUSBId;
@@ -56,7 +56,7 @@ ControllerMatchRule::match_usb_id(int vendor, int product)
 }
 
 ControllerMatchRule
-ControllerMatchRule::match_usb_path(int bus, int dev)
+ControllerMatchRule::create_usb_path(int bus, int dev)
 {
   ControllerMatchRule rule;
   rule.m_type = kMatchUSBPath;
@@ -66,7 +66,7 @@ ControllerMatchRule::match_usb_path(int bus, int dev)
 }
 
 ControllerMatchRule 
-ControllerMatchRule::match_evdev_path(const std::string& path)
+ControllerMatchRule::create_evdev_path(const std::string& path)
 {
   ControllerMatchRule rule;
   rule.m_type = kMatchEvdevPath;

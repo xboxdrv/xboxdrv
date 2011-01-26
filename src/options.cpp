@@ -216,7 +216,7 @@ Options::add_match(const std::string& lhs, const std::string& rhs)
     {
       int vendor  = hexstr2int(args[0]);
       int product = hexstr2int(args[1]);
-      get_controller_slot().add_match_rule(ControllerMatchRule::match_usb_id(vendor, product));
+      get_controller_slot().add_match_rule(ControllerMatchRule::create_usb_id(vendor, product));
     }
   }
   else if (lhs == "usbpath")
@@ -229,7 +229,7 @@ Options::add_match(const std::string& lhs, const std::string& rhs)
     {
       int bus = boost::lexical_cast<int>(args[0]);
       int dev = boost::lexical_cast<int>(args[1]);
-      get_controller_slot().add_match_rule(ControllerMatchRule::match_usb_path(bus, dev));
+      get_controller_slot().add_match_rule(ControllerMatchRule::create_usb_path(bus, dev));
     }
   }
   else if (lhs == "evdev")
@@ -240,7 +240,7 @@ Options::add_match(const std::string& lhs, const std::string& rhs)
     }
     else
     {
-      get_controller_slot().add_match_rule(ControllerMatchRule::match_evdev_path(args[0]));
+      get_controller_slot().add_match_rule(ControllerMatchRule::create_evdev_path(args[0]));
     }
   }
   else
