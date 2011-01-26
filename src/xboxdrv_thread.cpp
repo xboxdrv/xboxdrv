@@ -130,6 +130,12 @@ XboxdrvThread::controller_loop(const Options& opts)
       if (m_controller->read(msg, opts.verbose, m_timeout))
       {
         m_oldrealmsg = msg;
+
+        // output current Xbox gamepad state to stdout
+        if (!opts.silent)
+        {
+          std::cout << msg << std::endl;
+        }
       }
       else
       {
@@ -141,12 +147,6 @@ XboxdrvThread::controller_loop(const Options& opts)
       uint32_t this_time = get_time();
       int msec_delta = this_time - last_time;
       last_time = this_time;
-
-      // output current Xbox gamepad state to stdout
-      if (!opts.silent)
-      { // FIXME: only print stuff on change
-        std::cout << msg << std::endl;
-      }
 
       m_processor->send(msg, msec_delta);
 
