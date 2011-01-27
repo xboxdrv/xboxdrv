@@ -675,8 +675,8 @@ Xboxdrv::run_list_enums(uint32_t enums)
   if (enums & Options::LIST_X11KEYSYM)
   {
     std::vector<std::string> lst;  
-    for(X11KeysymEnum::const_iterator i = x11keysym_names.begin();
-        i != x11keysym_names.end(); ++i)
+    for(X11KeysymEnum::const_iterator i = get_x11keysym_names().begin();
+        i != get_x11keysym_names().end(); ++i)
     {
       lst.push_back(i->second);
     }

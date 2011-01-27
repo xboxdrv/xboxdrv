@@ -66,10 +66,10 @@ private:
   void process_keymap(Display* dpy);
 };
 
-extern EvDevRelEnum evdev_rel_names;
-extern EvDevKeyEnum evdev_key_names;
-extern EvDevAbsEnum evdev_abs_names;
-extern X11KeysymEnum x11keysym_names;
+extern EvDevRelEnum  evdev_rel_names;
+extern EvDevKeyEnum  evdev_key_names;
+extern EvDevAbsEnum  evdev_abs_names;
+const X11KeysymEnum& get_x11keysym_names();
 
 #endif
 

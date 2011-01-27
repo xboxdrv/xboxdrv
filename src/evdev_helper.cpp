@@ -25,7 +25,12 @@
 EvDevRelEnum evdev_rel_names;
 EvDevKeyEnum evdev_key_names;
 EvDevAbsEnum evdev_abs_names;
-X11KeysymEnum x11keysym_names;
+
+const X11KeysymEnum& get_x11keysym_names()
+{
+  static X11KeysymEnum x11keysym_names;
+  return x11keysym_names;
+}
 
 EvDevRelEnum::EvDevRelEnum() :
   EnumBox<int>("EV_REL")
@@ -103,7 +108,7 @@ X11KeysymEnum::process_keymap(Display* dpy)
 
 int xkeysym2keycode(const std::string& name)
 {
-  return x11keysym_names[name];
+  return get_x11keysym_names()[name];
 }
 
 void str2event(const std::string& name, int& type, int& code)

@@ -46,14 +46,11 @@ List Output
 ===========
 
 * update docu on force feedback for multi controller
-
-* turn EnumBox into singleton
-
-* Keysym2Keycode is currently always constructed at startup, even when
-  not used, construct it on demand to avoid X11 server connection
 
 Stuff to do before 0.7.1 release:
 =================================
+
+* turn EnumBox into singleton
 
 * allow --modifier help, --ui-buttonmap X2^help
 
