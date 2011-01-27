@@ -1,4 +1,4 @@
-xboxdrv 0.7.0 - (??/Jan/2011)
+xboxdrv 0.7.0 - (28/Jan/2011)
 =============================
 
 * switched to libusb-1.0
@@ -10,7 +10,7 @@ xboxdrv 0.7.0 - (??/Jan/2011)
 * fixed double Ctrl-c issue
 * added --modifier MODIFIER,...
 * configuration toggle button now works with modifiers too
-* renamed --ui-new to --next
+* renamed --ui-new to --next-config
 * renamed --ui-toggle to --toggle
 * fixed incorrect endpoint detection for Xbox1 controller
 * native Playstation 3 USB controller support

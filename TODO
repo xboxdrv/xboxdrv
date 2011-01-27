@@ -42,17 +42,10 @@ $ dput my-ppa ../xboxdrv_0.7.0-1~lucid1_source.changes
 Stuff to do before 0.7.0 release:
 =================================
 
-Daemon Related Stuff
-====================
-
-* cleanup device_id, don't manually do (slot<<16) | devid
-
 List Output
 ===========
 
 * update docu on force feedback for multi controller
-
-* rename --list-key to --help-key? -> yep
 
 * turn EnumBox into singleton
 
@@ -61,6 +54,11 @@ List Output
 
 Stuff to do before 0.7.1 release:
 =================================
+
+* allow --modifier help, --ui-buttonmap X2^help
+
+* cleanup device_id, don't manually do (slot<<16) | devid (only an
+  issue in force feedback code)
 
 * figure out a good place to set the LEDs off when Xboxdrv is quit,
   just doing it in the destructor causes trouble, as the usbdev might
