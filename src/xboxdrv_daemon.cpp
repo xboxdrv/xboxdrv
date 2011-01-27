@@ -328,7 +328,6 @@ XboxdrvDaemon::run_loop(const Options& opts)
   while(!global_exit_xboxdrv)
   {
     // FIXME: udev_monitor_receive_device() will block, must break out of it somehow
-    // FIXME: we bust udev_unref_monitor() this
     struct udev_device* device = udev_monitor_receive_device(m_monitor);
 
     cleanup_threads();
@@ -346,8 +345,9 @@ XboxdrvDaemon::run_loop(const Options& opts)
       {
         process_match(opts, device);
       }
+
+      udev_device_unref(device);
     }
-    udev_device_unref(device);
   }
 }
 

@@ -38,7 +38,7 @@ int16_t u8_to_s16(uint8_t value)
 
 UInputConfig::UInputConfig(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
-  m_btn_map(opts.get_btn_map()), // FIXME: insert resolve magic right here
+  m_btn_map(opts.get_btn_map()), 
   m_axis_map(opts.get_axis_map())
 {
   std::fill_n(axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
@@ -267,7 +267,7 @@ UInputConfig::send_button(XboxButton code, bool value)
 
     // in case a shift button was changed, we have to clear all
     // connected buttons
-    for(int i = 0; i < XBOX_BTN_MAX; ++i) // iterate over all buttons
+    for(int i = 1; i < XBOX_BTN_MAX; ++i) // iterate over all buttons
     {
       if (button_state[i])
       {
@@ -285,7 +285,7 @@ UInputConfig::send_button(XboxButton code, bool value)
     }
 
     // Shifted button events
-    for(int i = 0; i < XBOX_BTN_MAX; ++i)
+    for(int i = 1; i < XBOX_BTN_MAX; ++i)
     {
       if (button_state[i]) // shift button is pressed
       {

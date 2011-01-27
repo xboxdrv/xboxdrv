@@ -317,13 +317,8 @@ AbsAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 }
 
 void
-AbsAxisEventHandler:: send(UInput& uinput, int value)
+AbsAxisEventHandler::send(UInput& uinput, int value)
 {
-  /*FIXME for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
-  {
-    value = (*i)->filter(old_value, value);
-    }*/
-
   uinput.send_abs(m_code.get_device_id(), m_code.code, value);
 }
  

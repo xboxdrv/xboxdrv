@@ -201,7 +201,7 @@ LinuxUinput::finish()
       break;
 
     case kJoystickDevice:
-      // FIXME: the kernel and SDL have different rules for joystick
+      // the kernel and SDL have different rules for joystick
       // detection, so this is more a hack then a proper solution
       if (!key_lst[BTN_A])
       {

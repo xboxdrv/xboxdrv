@@ -180,8 +180,6 @@ std::ostream& operator<<(std::ostream& out, const Playstation3USBMsg& msg)
     % static_cast<int>(msg.a_l1)
     % static_cast<int>(msg.a_r1);
 
-  // FIXME: include analog buttons to
-
   out << boost::format("  L2:%3d R2:%3d")
     % int(msg.a_l2) % int(msg.a_r2);
 

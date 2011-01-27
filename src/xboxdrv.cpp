@@ -205,8 +205,12 @@ Xboxdrv::find_controller_by_id(int id, int vendor_id, int product_id, libusb_dev
     libusb_device* dev = list[dev_it];
     libusb_device_descriptor desc;
 
-    // FIXME: we silently ignore failures
-    if (libusb_get_device_descriptor(dev, &desc) == LIBUSB_SUCCESS)
+    int ret = libusb_get_device_descriptor(dev, &desc);
+    if (ret != LIBUSB_SUCCESS)
+    {
+      log_warn("libusb_get_device_descriptor() failed: " << usb_strerror(ret));
+    }
+    else
     {
       if (desc.idVendor  == vendor_id &&
           desc.idProduct == product_id)
@@ -243,8 +247,12 @@ Xboxdrv::find_xbox360_controller(int id, libusb_device** xbox_device, XPadDevice
     libusb_device* dev = list[dev_it];
     libusb_device_descriptor desc;
 
-    // FIXME: we silently ignore failures
-    if (libusb_get_device_descriptor(dev, &desc) == LIBUSB_SUCCESS)
+    int ret = libusb_get_device_descriptor(dev, &desc);
+    if (ret != LIBUSB_SUCCESS)
+    {
+      log_warn("libusb_get_device_descriptor() failed: " << usb_strerror(ret));
+    }
+    else
     {
       for(int i = 0; i < xpad_devices_count; ++i)
       {
