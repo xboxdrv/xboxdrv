@@ -21,7 +21,6 @@
 #include <boost/format.hpp>
 
 #include "helper.hpp"
-#include "options.hpp"
 
 int16_t u8_to_s16(uint8_t value)
 {

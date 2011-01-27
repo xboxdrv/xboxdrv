@@ -18,11 +18,8 @@
 
 #include "chatpad.hpp"
 
-#include <boost/format.hpp>
-
 #include "helper.hpp"
 #include "linux_uinput.hpp"
-#include "log.hpp"
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
 

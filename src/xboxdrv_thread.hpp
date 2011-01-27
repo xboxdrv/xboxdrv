@@ -19,11 +19,8 @@
 #ifndef HEADER_XBOXDRV_XBOXDRV_THREAD_HPP
 #define HEADER_XBOXDRV_XBOXDRV_THREAD_HPP
 
-#include <memory>
 #include <boost/thread.hpp>
 
-#include "xboxmsg.hpp"
-#include "modifier.hpp"
 #include "controller_slot_config.hpp"
 
 class Options;

@@ -20,8 +20,6 @@
 
 #include <boost/bind.hpp>
 
-#include "controller_options.hpp"
-#include "log.hpp"
 #include "uinput.hpp"
 
 #include "modifier/dpad_rotation_modifier.hpp"

@@ -24,7 +24,6 @@
 
 #include "evdev_helper.hpp"
 #include "force_feedback_handler.hpp"
-#include "log.hpp"
 #include "raise_exception.hpp"
 
 LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, uint16_t vendor_, uint16_t product_) :

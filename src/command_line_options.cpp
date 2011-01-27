@@ -23,10 +23,10 @@
 #include <boost/bind.hpp>
 #include <boost/tokenizer.hpp>
 
+#include "evdev_helper.hpp"
 #include "helper.hpp"
 #include "ini_parser.hpp"
 #include "ini_schema_builder.hpp"
-#include "log.hpp"
 #include "options.hpp"
 
 #include "axisfilter/relative_axis_filter.hpp"

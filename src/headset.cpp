@@ -18,7 +18,6 @@
 
 #include "headset.hpp"
 
-#include <boost/format.hpp>
 #include <fstream>
 
 #include "helper.hpp"

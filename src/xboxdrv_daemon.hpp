@@ -20,11 +20,8 @@
 #define HEADER_XBOXDRV_XBOXDRV_DAEMON_HPP
 
 #include <libudev.h>
-#include <stdint.h>
-#include <vector>
 
 #include "controller_slot_config.hpp"
-#include "controller_match_rule.hpp"
 
 class Options;
 class UInput;

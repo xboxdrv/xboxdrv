@@ -19,6 +19,7 @@
 #include "uinput_config.hpp"
 
 #include "uinput.hpp"
+#include "uinput_options.hpp"
 
 namespace {
 // FIXME: duplicate code

@@ -22,7 +22,6 @@
 #include <stdexcept>
 #include <string.h>
 
-#include "log.hpp"
 #include "usb_helper.hpp"
 #include "raise_exception.hpp"
 #include "xboxmsg.hpp"

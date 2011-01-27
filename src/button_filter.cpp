@@ -20,7 +20,6 @@
 
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
-#include <iostream>
 
 #include "buttonfilter/autofire_button_filter.hpp"
 #include "buttonfilter/invert_button_filter.hpp"

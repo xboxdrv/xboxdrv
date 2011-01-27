@@ -19,19 +19,10 @@
 #ifndef HEADER_UINPUT_HPP
 #define HEADER_UINPUT_HPP
 
-#include <vector>
-#include <map>
-#include <memory>
-#include <stdexcept>
-#include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include "axis_event.hpp"
-#include "button_event.hpp"
-#include "evdev_helper.hpp"
 #include "linux_uinput.hpp"
-#include "uinput_options.hpp"
-#include "xpad_device.hpp"
 
 struct Xbox360Msg;
 struct XboxMsg;

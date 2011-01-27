@@ -19,7 +19,6 @@
 #include "controller_config.hpp"
 
 #include "controller_options.hpp"
-#include "options.hpp"
 
 ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices, const ControllerOptions& opts) :
   m_modifier(),

@@ -20,12 +20,10 @@
 
 #include <boost/format.hpp>
 #include <fstream>
-#include <stdexcept>
 
 #include "uinput_message_processor.hpp"
 #include "dummy_message_processor.hpp"
 #include "helper.hpp"
-#include "log.hpp"
 #include "raise_exception.hpp"
 #include "uinput.hpp"
 #include "usb_helper.hpp"

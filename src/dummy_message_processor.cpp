@@ -18,9 +18,6 @@
 
 #include "dummy_message_processor.hpp"
 
-#include "log.hpp"
-#include "xboxmsg.hpp"
-
 DummyMessageProcessor::DummyMessageProcessor()
 {
 }

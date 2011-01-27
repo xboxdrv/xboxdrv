@@ -19,8 +19,6 @@
 #ifndef HEADER_USB_READ_THREAD_HPP
 #define HEADER_USB_READ_THREAD_HPP
 
-#include <memory>
-#include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/condition.hpp>
 #include <boost/shared_array.hpp>

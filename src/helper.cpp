@@ -24,7 +24,6 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <sys/ioctl.h>
-#include <stdexcept>
 
 #include "raise_exception.hpp"
 

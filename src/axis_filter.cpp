@@ -19,11 +19,7 @@
 #include "axis_filter.hpp"
 
 #include <boost/lexical_cast.hpp>
-#include <boost/tokenizer.hpp>
-#include <iostream>
-#include <math.h>
-
-#include "helper.hpp"
+#include <stdexcept>
 
 #include "axisfilter/calibration_axis_filter.hpp"
 #include "axisfilter/deadzone_axis_filter.hpp"
