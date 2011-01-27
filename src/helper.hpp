@@ -20,6 +20,7 @@
 #define HEADER_HELPER_HPP
 
 #include <boost/function.hpp>
+#include <stdint.h>
 
 int hexstr2int(const std::string& str);
 

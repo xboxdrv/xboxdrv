@@ -39,12 +39,6 @@ $ sudo pbuilder --build ../xboxdrv_0.7.0-1~lucid1.dsc
 $ dput my-ppa ../xboxdrv_0.7.0-1~lucid1_source.changes
 
 
-Stuff to do before 0.7.0 release:
-=================================
-
-* test test test, document
-
-
 Stuff to do before 0.7.1 release:
 =================================
 

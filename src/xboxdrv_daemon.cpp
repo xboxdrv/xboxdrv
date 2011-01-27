@@ -386,6 +386,8 @@ XboxdrvDaemon::print_info(struct udev_device* device)
   //udev_device_get_sysattr_value(device, "busnum");
   //udev_device_get_sysattr_value(device, "devnum");
 
+#if FIXME
+  // only works with newer versions of libudev
   {
     log_debug("list: ");
     struct udev_list_entry* it = udev_device_get_tags_list_entry(device);
@@ -421,6 +423,7 @@ XboxdrvDaemon::print_info(struct udev_device* device)
                );
     }
   }
+#endif
 
   log_debug("\\----------------------------------------------");
 }

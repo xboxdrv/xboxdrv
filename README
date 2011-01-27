@@ -32,6 +32,8 @@ Required libraries and tools:
 
  * g++ - GNU C++ Compiler
  * libusb-1.0
+ * pkg-config
+ * libudev
  * boost
  * scons
  * uinput (userspace input kernel module)
@@ -50,9 +52,11 @@ On Ubuntu 10.10 you can install all the required libraries via:
      libboost1.42-dev \
      libboost-thread1.42-dev \
      scons \
+     pkg-config \
      libusb-1.0-0-dev \
      git-core \
      libx11-dev \
+     libudev-dev \
      x11proto-core-dev \
      python-dbus
 

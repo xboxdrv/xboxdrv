@@ -21,6 +21,7 @@
 
 #include <boost/function.hpp>
 #include <linux/uinput.h>
+#include <stdint.h>
 
 class ForceFeedbackHandler;
 

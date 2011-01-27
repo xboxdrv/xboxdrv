@@ -20,6 +20,7 @@
 
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/scoped_array.hpp>
 #include <iostream>
 #include <signal.h>
 #include <stdio.h>
