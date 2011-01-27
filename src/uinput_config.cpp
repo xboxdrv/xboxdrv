@@ -115,10 +115,10 @@ UInputConfig::send(Xbox360Msg& msg)
 
   // analog sticks
   send_axis(XBOX_AXIS_X1,  msg.x1);
-  send_axis(XBOX_AXIS_Y1, -msg.y1);
+  send_axis(XBOX_AXIS_Y1, ~msg.y1);
   
   send_axis(XBOX_AXIS_X2,  msg.x2);
-  send_axis(XBOX_AXIS_Y2, -msg.y2);
+  send_axis(XBOX_AXIS_Y2, ~msg.y2);
 
   // dpad
   if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
@@ -167,10 +167,10 @@ UInputConfig::send(XboxMsg& msg)
 
   // analog sticks
   send_axis(XBOX_AXIS_X1,  msg.x1);
-  send_axis(XBOX_AXIS_Y1, -msg.y1);
+  send_axis(XBOX_AXIS_Y1, ~msg.y1);
 
   send_axis(XBOX_AXIS_X2,  msg.x2);
-  send_axis(XBOX_AXIS_Y2, -msg.y2);
+  send_axis(XBOX_AXIS_Y2, ~msg.y2);
 
   // dpad as axis
   if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
