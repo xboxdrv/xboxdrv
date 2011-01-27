@@ -143,6 +143,8 @@ class DeviceManager:
         return None
     
 if __name__ == '__main__':
+    print "Warning: xboxdrv-daemon is obsolete, it will be removed in future releases, use 'xboxdrv --daemon' instead."
+    
     # parse options
     parser = OptionParser(usage = "%prog [OPTIONS] -- [XBOXDRV ARGS]",
                           version = "0.4.14",

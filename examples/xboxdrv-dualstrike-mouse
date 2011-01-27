@@ -1,0 +1,18 @@
+#!/bin/sh
+
+xboxdrv \
+  --evdev /dev/input/event9 \
+  --evdev-absmap ABS_X=X1,ABS_Y=y1 \
+  --evdev-absmap ABS_HAT0X=dpad_x,ABS_HAT0Y=dpad_y \
+  --evdev-keymap BTN_BASE=LB,BTN_BASE2=RB \
+  --evdev-keymap BTN_BASE3=guide,BTN_TOP2=start,BTN_PINKIE=back \
+  --evdev-keymap BTN_THUMB=x,BTN_TOP=a,BTN_THUMB2=b,BTN_TRIGGER=y \
+  \
+ --ui-clear \
+  --ui-buttonmap rb=BTN_LEFT,lb=BTN_RIGHT,start=KEY_ESC,back=KEY_F1 \
+  --ui-buttonmap a=KEY_SPACE \
+  --ui-axismap X1=REL_X:20,Y1=REL_Y:20 \
+  --ui-axismap DPAD_X=KEY_A:KEY_D:1,DPAD_Y=KEY_W:KEY_S:1 \
+  -s "$@"
+
+# EOF #
