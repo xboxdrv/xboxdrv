@@ -20,19 +20,6 @@
 
 #include "helper.hpp"
 
-namespace {
-
-inline float abs_to_float(int value, int min, int max)
-{
-  float ret =
-    static_cast<float>(value - min) /
-    static_cast<float>(max - min) * 2.0f - 1.0f;
-  
-  return Math::clamp(-1.0f, ret, 1.0f);
-}
-
-} // namespace
-
 EvdevAbsMap::EvdevAbsMap() :
   m_plus_map(),
   m_minus_map(),
@@ -75,7 +62,7 @@ EvdevAbsMap::process(XboxGenericMsg& msg, int code, int value, int min, int max)
     {
       // '+ 1' so that we round up, instead of round down 
       const int center = (max - min + 1) / 2;
-      const float v = abs_to_float(value, center, min);
+      const float v = to_float(value, center, min);
       set_axis_float(msg, it->second, v); 
     }
   }
@@ -86,7 +73,7 @@ EvdevAbsMap::process(XboxGenericMsg& msg, int code, int value, int min, int max)
     {
       // '+ 1' so that we round up, instead of round down 
       const int center = (max - min + 1) / 2;
-      const float v = abs_to_float(value, center, max);
+      const float v = to_float(value, center, max);
       set_axis_float(msg, it->second, v);       
     }
   }
@@ -96,7 +83,7 @@ EvdevAbsMap::process(XboxGenericMsg& msg, int code, int value, int min, int max)
     if (it != m_both_map.end())
     {
       // '+ 1' so that we round up, instead of round down 
-      const float v = abs_to_float(value, min, max);
+      const float v = to_float(value, min, max);
       set_axis_float(msg, it->second, v); 
     }
   }

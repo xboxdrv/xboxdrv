@@ -133,6 +133,31 @@ uint32_t get_time()
   return tv.tv_sec * 1000 + tv.tv_usec/1000;
 }
 
+float to_float(int value, int min, int max)
+{
+  assert(value >= min);
+  assert(value <= max);
+
+  // FIXME: '+1' is kind of a hack to
+  // get the center at 0 for the
+  // [-32768, 32767] case
+  int center = (max + min + 1)/2;
+
+  if (value < center)
+  {
+    return static_cast<float>(value - center) / static_cast<float>(center - min);
+  }
+  else // (value >= center)
+  {
+    return static_cast<float>(value - center) / static_cast<float>(max - center);
+  }
+}
+
+int from_float(float value, int min, int max)
+{
+  return (value + 1.0f) / 2.0f * static_cast<float>(max - min) + min;
+}
+
 int get_terminal_width()
 {
   struct winsize w;
