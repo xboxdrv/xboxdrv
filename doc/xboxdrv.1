@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 2010-05-05 0.6.3 "User Commands"
+.TH "xboxdrv " 1 2010-05-05 0.7.0 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -60,20 +60,23 @@ Print the version number and exit.
 \*(T<\fB\-v\fR\*(T>, \*(T<\fB\-\-verbose\fR\*(T>
 Print verbose messages.
 .TP 
+\*(T<\fB\-\-debug\fR\*(T>
+Print even more verbose messages then \*(T<\fB\-\-verbose\fR\*(T>.
+.TP 
+\*(T<\fB\-s\fR\*(T>, \*(T<\fB\-\-silent\fR\*(T>
+Do not display controller events on the terminal. For
+regular use this option should alway be used as output
+data to the terminal can eat up quite a bit of CPU.
+.TP 
+\*(T<\fB\-\-quiet\fR\*(T>
+Do not display startup text and suppress most other output.
+.SS "LIST OPTIONS"
+.TP 
 \*(T<\fB\-\-help\-led\fR\*(T>
 List possible values for the led.
 .TP 
 \*(T<\fB\-\-help\-devices\fR\*(T>
 List supported devices.
-.TP 
-\*(T<\fB\-s\fR\*(T>, \*(T<\fB\-\-silent\fR\*(T>
-Do not display events on console.
-.TP 
-\*(T<\fB\-\-quiet\fR\*(T>
-Do not display startup text.
-.TP 
-\*(T<\fB\-L\fR\*(T>, \*(T<\fB\-\-list\-controller\fR\*(T>
-List available controllers on the system.
 .TP 
 \*(T<\fB\-\-list\-supported\-devices\fR\*(T>
 List supported devices (used by xboxdrv-daemon.py).
@@ -81,9 +84,35 @@ List supported devices (used by xboxdrv-daemon.py).
 \*(T<\fB\-\-list\-supported\-devices\-xpad\fR\*(T>
 List supported devices in \*(T<\fIxpad.c\fR\*(T> style.
 .TP 
-\*(T<\fB\-D\fR\*(T>, \*(T<\fB\-\-daemon\fR\*(T>
-Run xboxdrv as daemon. This option hasn't been tested
-much and it is not recommented to be used.
+\*(T<\fB\-\-help\-abs\fR\*(T>
+List all allowed EV_ABS symbols.
+.TP 
+\*(T<\fB\-\-help\-rel\fR\*(T>
+List all allowed EV_REL symbols.
+.TP 
+\*(T<\fB\-\-help\-key\fR\*(T>
+List all allowed EV_KEY symbols.
+.TP 
+\*(T<\fB\-\-help\-x11keysym\fR\*(T>
+List all allowed X11 Keysym symbols.
+.TP 
+\*(T<\fB\-\-help\-axis\fR\*(T>
+List all allowed XboxAxis symbols.
+.TP 
+\*(T<\fB\-\-help\-button\fR\*(T>
+List all allowed XboxButton symbols.
+.TP 
+\*(T<\fB\-\-help\-all\fR\*(T>
+List all symbols that can be used
+in \*(T<\fB\-\-ui\-buttonmap\fR\*(T>, \*(T<\fB\-\-ui\-axismap\fR\*(T>, \*(T<\fB\-\-buttonmap\fR\*(T>
+and \*(T<\fB\-\-axismap\fR\*(T>. This option is the same as
+\*(T<\fB\-\-help\-abs\fR\*(T>,
+\*(T<\fB\-\-help\-rel\fR\*(T>,
+\*(T<\fB\-\-help\-key\fR\*(T>,
+\*(T<\fB\-\-help\-x11keysym\fR\*(T>,
+\*(T<\fB\-\-help\-axis\fR\*(T> and
+\*(T<\fB\-\-help\-button\fR\*(T>.
+.SS "CONFIG FILE OPTIONS"
 .TP 
 \*(T<\fB\-c\fR\*(T>, \*(T<\fB\-\-config\fR\*(T> \fIFILE\fR
 Reads configuration information from \fIFILE\fR.
@@ -147,7 +176,7 @@ start=KEY_ESC
 .TP 
 \*(T<\fB\-\-alt\-config\fR\*(T> \fIFILE\fR
 A shortcut for
-writing \*(T<\fB\-\-ui\-new\fR\*(T> \*(T<\fB\-\-config\fR\*(T> \fIFILE\fR.
+writing \*(T<\fB\-\-next\-config\fR\*(T> \*(T<\fB\-\-config\fR\*(T> \fIFILE\fR.
 
 To load multiple configuration options use:
 
@@ -160,13 +189,52 @@ Set an option as if it would come from a config file from the command line.
 .TP 
 \*(T<\fB\-\-write\-config\fR\*(T> \fIFILE\fR
 Write an example configuration file to \fIFILE\fR.
+.SS "DAEMON OPTIONS"
+.TP 
+\*(T<\fB\-D\fR\*(T>, \*(T<\fB\-\-daemon\fR\*(T>
+Run xboxdrv as daemon. If this option is given xboxdrv
+will listen to udev for USB connection events and launch
+driver threads for newly connected controllers.
+
+Configuration options can still be supplied as usual.
+Note however that xboxdrv when run as daemon will not
+create new uinput devices on demand, instead it will
+only create devices once at startup for the given
+configurations and then assign new controllers to these
+configurations. While this means xboxdrv can't support
+an unlimited number of controllers, it also means that
+xboxdrv can allow hot plugging even for applications
+that don't support it themselves, as applications will
+only see the permanent device files, not the controller
+that xboxdrv will change around under the hood.
+
+An example configuration that supports three controller
+would look like this:
+
+.nf
+\*(T<xboxdrv \-\-daemon \e
+    # config options for the first controller
+  \-\-next\-controller \e
+    # config options for the second controller
+  \-\-next\-controller
+    # config options for the third controller\*(T>
+.fi
+
+The \*(T<\fB\-\-match\fR\*(T> option can be used to limit
+the controller slots to only those controllers that
+match the given RULE and thus be used to assign
+configurations only to specific controllers.
+.TP 
+\*(T<\fB\-\-detach\fR\*(T>
+Detaches xboxdrv from the current shell, only valid
+if \*(T<\fB\-\-daemon\fR\*(T> is given.
+.TP 
+\*(T<\fB\-\-pid\-file\fR\*(T> \fIFILE\fR
+Write the xboxdrv daemon process id to FILE.
 .SS "DEVICE OPTIONS"
 .TP 
-\*(T<\fB\-d\fR\*(T>, \*(T<\fB\-\-detach\-kernel\-driver\fR\*(T>
-Detaches the kernel driver that is currently associated
-with the given device. This is useful when you have the
-xpad module loaded and want to use xboxdrv without
-unloading it.
+\*(T<\fB\-L\fR\*(T>, \*(T<\fB\-\-list\-controller\fR\*(T>
+List available controllers on the system.
 .TP 
 \*(T<\fB\-i\fR\*(T>, \*(T<\fB\-\-id\fR\*(T> \fIN\fR
 Use controller with id N (default: 0),
@@ -177,13 +245,20 @@ of available controller.
 Use wireless controller with wid N (default: 0).
 .TP 
 \*(T<\fB\-\-device\-by\-path\fR\*(T> \fIBUS:DEV\fR
-Use device BUS:DEV, do not do any scanning
+Use the controller at BUS:DEV, do not do any automatic
+scanning. Useful for cases when a controller isn't known
+by xboxdrv, but supports one of the given protocols.
 .TP 
 \*(T<\fB\-\-device\-by\-id\fR\*(T> \fIVENDOR:PRODUCT\fR
-Use device that matches VENDOR:PRODUCT (as returned by \fBlsusb\fR)
+Use device that matches VENDOR:PRODUCT (as returned
+by \fBlsusb\fR). Useful for cases when a
+controller isn't known by xboxdrv, but supports one of
+the given protocols.
 .TP 
 \*(T<\fB\-\-type\fR\*(T> \fITYPE\fR
-Ignore autodetection and enforce the controller type. Possible values for \fITYPE\fR:
+Ignore autodetection and enforce the controller type.
+Possible values
+for \fITYPE\fR:
 .RS 
 .TP 0.2i
 \(bu
@@ -201,6 +276,12 @@ xbox360-wireless
 \(bu
 xbox360-guitar
 .RE
+.TP 
+\*(T<\fB\-d\fR\*(T>, \*(T<\fB\-\-detach\-kernel\-driver\fR\*(T>
+Detaches the kernel driver that is currently associated
+with the given device. This is useful when you have the
+xpad module loaded and want to use xboxdrv without
+unloading it.
 .SS "EVDEV OPTION"
 .TP 
 \*(T<\fB\-\-evdev\fR\*(T> \fIDEVICE\fR
@@ -379,6 +460,17 @@ blink once
 T}
 .TE
 .TP 
+\*(T<\fB\-\-rumble\-gain\fR\*(T> \fIAMOUNT\fR
+You can change the rumble strength via:
+
+.nf
+\*(T<$ xboxdrv \-\-rumble\-gain 50%\*(T>
+.fi
+
+Values larger then 100% are possible as well and will
+amplify small rumble commands, rumble commands already
+at the maximum will stay unchanged.
+.TP 
 \*(T<\fB\-q\fR\*(T>, \*(T<\fB\-\-quit\fR\*(T>
 Exit xboxdrv after setting LED or rumble values.
 .SS "CHATPAD OPTIONS (EXPERIMENTAL)"
@@ -434,17 +526,10 @@ Note that you must close the application that is using force feedback
 always before you close the xboxdrv driver, else you might end up with
 a hanging non-interruptable xboxdrv process that will require a reboot
 to get rid of.
-.TP 
-\*(T<\fB\-\-rumble\-gain\fR\*(T> \fIAMOUNT\fR
-You can change the rumble strength via:
 
-.nf
-\*(T<$ xboxdrv \-\-rumble\-gain 50%\*(T>
-.fi
-
-Values larger then 100% are possible as well and will
-amplify small rumble commands, rumble commands already
-at the maximum will stay unchanged.
+When using xboxdrv in daemon mode with multiple
+controller slots you have to enable force feedback for
+each slot separately.
 .TP 
 \*(T<\fB\-R\fR\*(T>, \*(T<\fB\-\-test\-rumble\fR\*(T>
 Pressing LT will move the left rumble motor and pressing
@@ -454,34 +539,77 @@ testing the rumble motors.
 .TP 
 \*(T<\fB\-r\fR\*(T>, \*(T<\fB\-\-rumble\fR\*(T> \fIL,R\fR
 Set the speed for both rumble motors. Values from 0 to 255 are accepted, the default is 0,0.
+.SS "CONTROLLER SLOT OPTIONS"
+Controller slots are used when running xboxdrv in daemon mode.
+Each slot represents a complete controller configuration. If
+you want to use multiple controller in daemon mode you have to
+supply multiple controller slots.
+.TP 
+\*(T<\fB\-\-controller\-slot\fR\*(T> \fIN\fR
+Switches to the controller slot with the number N, numbering starts at zero.
+.TP 
+\*(T<\fB\-\-next\-controller\fR\*(T>
+Switches to the next controller slot.
+.TP 
+\*(T<\fB\-\-match\fR\*(T> \fIRULE,...\fR
+Limits a controller slot to devices that match RULE.
+Possible match rules are:
+
+.nf
+\*(T<usbid={VENDOR}:{PRODUCT}\*(T>
+.fi
+.SS "CONFIG SLOT OPTIONS"
+You can use multple configurations, called config slots, with
+your controller. You switch between those multiple
+configurations by pressing the Guide button by default, but
+you can also set another button via the option \*(T<\fB\-\-toggle\fR\*(T>.
+.TP 
+\*(T<\fB\-\-config\-slot\fR\*(T> \fINUM\fR
+Select the config slot \fINUM\fR.
+.TP 
+\*(T<\fB\-\-next\-config\fR\*(T>
+Allows the creation of an alternative uinput
+configuration to which one can toggle at runtime by
+pressing the ui-toggle button (defaults to guide).
+
+.nf
+\*(T<$ xboxdrv \e
+    \-\-mouse \e
+  \-\-next\-config 
+    \-\-ui\-axismap X1=ABS_X,Y1=ABS_Y \e
+    \-\-ui\-buttonmap A=JS_0,B=JS_1\*(T>
+.fi
+
+The above configuration would install mouse emulation as
+first configuration and a simple joystick emulation as
+second configuration. Allowing toggling between mouse
+emulation and joystick handling by pressing the guide
+button.
+
+Not that \*(T<\fB\-\-next\-config\fR\*(T> is currently limited
+to only configurations done
+with \*(T<\fB\-\-ui\-buttonmap\fR\*(T>
+and \*(T<\fB\-\-ui\-axismap\fR\*(T>, autofire, throttle
+emulation, deadzones and all other things can currently
+not be switched at runtime.
+.TP 
+\*(T<\fB\-\-toggle\fR\*(T> \fIXBOXBTN\fR
+Sets the button that will be used to toggle between
+different different configurations.
 .SS "CONFIGURATION OPTIONS"
 .TP 
-\*(T<\fB\-\-deadzone \fR\*(T>\fINUM\fR
-The deadzone is the area at which the sticks do not report any
-events. The default is zero, which gives the best sensitifity but
-might also cause trouble in some games in that the character or camera
-might move without moving the stick. To fix this one has to set the
-value to something higher:
-
-.nf
-\*(T<$ xboxdrv \-\-deadzone 4000\*(T>
-.fi
-
-A value of 4000 works quite well for most games.
-
-You can also give the deadzone in percentage:
-
-.nf
-\*(T<$ xboxdrv \-\-deadzone 15%\*(T>
-.fi
+\*(T<\fB\-\-modifier \fR\*(T>\fIMOD\fR
+Add a modifier to the modifier stack, see
+[Modifier] for
+a full list of possible modifier.
 .TP 
-\*(T<\fB\-\-deadzone\-trigger \fR\*(T>\fINUM\fR
-The left and right trigger have a separate deadzone value which can be
-specified with:
-
-.nf
-\*(T<$ xboxdrv \-\-deadzone\-trigger 15%  \*(T>
-.fi
+\*(T<\fB\-\-timeout \fR\*(T>\fIMSEC\fR
+Specify the number of miliseconds that xboxdrv will wait
+for events from the controller before moving on and
+processing things like auto-fire or relative-axis.
+Default value is 25, smaller values will give you a
+higher resoultion auto fire, but will waste some more
+CPU.
 .TP 
 \*(T<\fB\-b, \-\-buttonmap BUTTON=BUTTON,...\fR\*(T>
 Button remapping is available via the \*(T<\fB\-\-buttonmap\fR\*(T> option. If you want
@@ -556,6 +684,8 @@ T}	T{
 guitar buttons
 T}
 .TE
+
+Just like with \*(T<\fB\-\-ui\-buttonmap\fR\*(T> you can add button filter to each button.
 .TP 
 \*(T<\fB\-\-axismap\fR\*(T> \fIAXIS=MAPPING,...\fR
 Axis remapping is available via --axismap and works the same as button
@@ -576,10 +706,165 @@ Possible axis names are: x1, y1, x2, y2, lt, rt
 
 Swaping lt or rt with x1, y1, x2, y2 will not work properly, since
 their range is different.
+
+Just like with \*(T<\fB\-\-ui\-axismap\fR\*(T> you can add axis filter to each axis.
+.SS "MODIFIER PRESET CONFIGURATION OPTIONS"
+The options in this sections are sortcuts
+for \*(T<\fB\-\-modifier\fR\*(T>.
+Unlike \*(T<\fB\-\-modifier\fR\*(T> they are not order
+depended, but have a predefined order that is used no matter
+the order in which the options are given.
+.TP 
+\*(T<\fB\-\-autofire BUTTON=FREQUENCY,...\fR\*(T>
+Autofire mapping allows you to let a button automatically fire with a
+given frequency in miliseconds:
+
+.nf
+\*(T<$ xboxdrv \-\-autofire A=250\*(T>
+.fi
+
+Combining \*(T<\fB\-\-autofire\fR\*(T> with button map allows you to have one button act
+as autofire while another one, emitting the same signal, acts normally.
+
+.nf
+\*(T<$ xboxdrv \-\-autofire B=250 \-\-buttonmap B=A\*(T>
+.fi
+.TP 
+\*(T<\fB\-\-axis\-sensitivty \fR\*(T>\fIAXIS=SENSITIVITY\fR,...
+The sensitive of an axis can be adjusted via --axis-sensitivty:
+
+.nf
+\*(T<$ xboxdrv \-\-axis\-sensitivty X1=\-1.0,Y1=\-1.0\*(T>
+.fi
+
+A value of 0 gives you the default linear sensitivity,
+values larger then 0 will give you higher sensitivity,
+while values smaller then 0 will give you lower
+sensitivity. Sensitivity values in the range of [-1, 1]
+will generally give good results, everything beyond that
+won't be of much practical use.
+
+Sensitivity works by applying:
+
+.nf
+\*(T<t = 2 ** sensitivity;
+pos = (1.0f \- (1.0f \- pos) ** t) ** (1 / t);\*(T>
+.fi
+
+To the value of the axis, this means that both the
+minimum value and the maximum value of the axis will
+always stay the same, just the response inbetween
+changes.
+
+For a complete freeform way to change the axis response
+see the \*(T<\fBResponse Curve Filter\fR\*(T>.
+.TP 
+\*(T<\fB\-\-calibration \fR\*(T>\fICALIBRATIONSPEC\fR
+If your gamepad for some reason can't reach the maximum value or isn't
+centered properly you can fix that via the calibration options:
+
+.nf
+\*(T<$ xboxdrv \-\-calibration X2=\-32768:0:32767\*(T>
+.fi
+
+X2 is the axis name and the three values that follow are min, center
+and max. Simply insert the values that jstest reports when your axis
+is in the respective positions.
+
+You can also use the calibration option if you want to make your
+joystick more sensitive. A setting of:
+
+.nf
+\*(T<xboxdrv \-\-calibration AXIS=MIN:CENTER:MAX,...\*(T>
+.fi
+
+Will cause the joystick device report maximum position when your
+stick is only moved half the way.
+.TP 
+\*(T<\fB\-\-deadzone \fR\*(T>\fINUM\fR
+The deadzone is the area at which the sticks do not report any
+events. The default is zero, which gives the best sensitifity but
+might also cause trouble in some games in that the character or camera
+might move without moving the stick. To fix this one has to set the
+value to something higher:
+
+.nf
+\*(T<$ xboxdrv \-\-deadzone 4000\*(T>
+.fi
+
+A value of 4000 works quite well for most games.
+
+You can also give the deadzone in percentage:
+
+.nf
+\*(T<$ xboxdrv \-\-deadzone 15%\*(T>
+.fi
+.TP 
+\*(T<\fB\-\-deadzone\-trigger \fR\*(T>\fINUM\fR
+The left and right trigger have a separate deadzone value which can be
+specified with:
+
+.nf
+\*(T<$ xboxdrv \-\-deadzone\-trigger 15%  \*(T>
+.fi
+.TP 
+\*(T<\fB\-\-dpad\-rotation\fR\*(T> \fIDEGREE\fR
+Allows you to rotate the
+dpad. \fIDEGREE\fR
+must be a multiple of 45. This can be useful in
+isometric games where the playfield itself is rotated,
+thus a:
+
+.nf
+\*(T<xboxdrv \-\-dpad\-rotation 45\*(T>
+.fi
+
+Will give you controls that are relative to your
+character instead of your viewpoint.
+.TP 
+\*(T<\fB\-\-four\-way\-restrictor\fR\*(T>
+The \*(T<\fB\-\-four\-way\-restrictor\fR\*(T> option allows to
+limit the movement on both analogsticks to only four
+directions (up, down, left, right), the diagonals (up/left,
+up/right, down/left, down/right) are filtered out from the
+output. This option is useful for games such as Tetris, that
+don't need diagonals and where you don't want to accidently
+trigger the down-move while trying to do a left/right move.
+.TP 
+\*(T<\fB\-\-relative\-axis AXIS=NUM,...\fR\*(T>
+The function \*(T<\fB\-\-relative\-axis\fR\*(T> allows you
+to change the behaviour of an axis so that your movement
+of it moves its value up or down instead of applying it
+directly. This allows you to simulate throttle control
+for flightsim games.
+
+Since the axis might be upside down, you might want to use
+the \*(T<\fB\-\-axismap\fR\*(T> function to reverse it.
+
+.nf
+\*(T<$ xboxdrv \-\-relative\-axis y2=64000 \-\-axismap \-y2=y2\*(T>
+.fi
+.TP 
+\*(T<\fB\-\-square\-axis\fR\*(T>
+The Xbox360 gamepad, as most other current day gamepads,
+features a circular movement range, which restricts the
+movement so that the distance to the center never gets
+beyond 1. This means that when you have the controller
+at the top/left the value reported is (0.7, 0.7)
+(i.e. length 1, angle 45) instead of (1,1). This
+behaviour is different then most classic PC joysticks,
+which had a square range and would report (1,1) when
+hold in the top/left corner.
+
+Some old games (i.e. mostly DOS stuff) require a
+square movement range and will not function properly
+with the Xbox360 gamepad. Via the
+\*(T<\fB\-\-square\-axis\fR\*(T> option you can work around this issue and diagonals will
+be reported as (1,1).
 .SS "UINPUT PRESET CONFIGURATION OPTIONS"
 The following options are simple shortcuts for common
-configurations that can be accomplished
-by \*(T<\fB\-\-ui\-buttonmap\fR\*(T>
+configurations that can be accomplished manually 
+by using \*(T<\fB\-\-ui\-buttonmap\fR\*(T>
 and \*(T<\fB\-\-ui\-axismap\fR\*(T>.
 .TP 
 \*(T<\fB\-\-trigger\-as\-button\fR\*(T>
@@ -632,46 +917,25 @@ Causes xboxdrv to use the same axis and button names as the xpad kernel driver.
 .SS "UINPUT CONFIGURATION OPTIONS"
 .TP 
 \*(T<\fB\-\-no\-uinput\fR\*(T>
-Do not try to start uinput event dispatching, useful for debugging.
+Do not to start UInput, instead simply read events from the controller, useful for debugging.
+.TP 
+\*(T<\fB\-\-no\-extra\-devices\fR\*(T>
+By default xboxdrv will allocate multiple uinput devices
+and sort events to each of them. Thus mouse related
+events like BTN_LEFT or REL_X will go to a virtual mouse
+device, while ABS_X events would go to a virtual
+joystick device. This option disables that automatism
+and all events will go to the same virtual device.
+Manual assignment to a specific device is still possible.
 .TP 
 \*(T<\fB\-\-name DEVNAME\fR\*(T>
-Changes the descriptive name the device will have
-.TP 
-\*(T<\fB\-\-ui\-new\fR\*(T>
-Allows the creation of an alternative uinput
-configuration to which one can toggle at runtime by
-pressing the ui-toggle button (defaults to guide).
-
-.nf
-\*(T<$ xboxdrv \e
-    \-\-mouse \e
-  \-\-ui\-new 
-    \-\-ui\-axismap X1=ABS_X,Y1=ABS_Y \e
-    \-\-ui\-buttonmap A=JS_0,B=JS_1\*(T>
-.fi
-
-The above configuration would install mouse emulation as
-first configuration and a simple joystick emulation as
-second configuration. Allowing toggling between mouse
-emulation and joystick handling by pressing the guide
-button.
-
-Not that \*(T<\fB\-\-ui\-new\fR\*(T> is currently limited
-to only configurations done
-with \*(T<\fB\-\-ui\-buttonmap\fR\*(T>
-and \*(T<\fB\-\-ui\-axismap\fR\*(T>, autofire, throttle
-emulation, deadzones and all other things can currently
-not be switched at runtime.
+Changes the descriptive name the device will have.
 .TP 
 \*(T<\fB\-\-ui\-clear\fR\*(T>
 Removes all uinput mappings and will leave the driver in
 a blank state and only map those things you added
 yourself. If you only want to get rid of individual
 buttons you can use the 'void' event.
-.TP 
-\*(T<\fB\-\-ui\-toggle\fR\*(T> \fIXBOXBTN\fR
-Sets the button that will be used to toggle between
-different uinput configurations.
 .TP 
 \*(T<\fB\-\-ui\-buttonmap\fR\*(T> \fIUIBUTTONSPEC,...\fR
 .nf
@@ -762,19 +1026,28 @@ symbolic names for the devices into which xboxdrv will
 sort events that look like a mouse or keyboard
 event. The final determination of which device gets
 handled as what will be done by the Kernel or Xorg
-depending on what events a device provides.
+depending on what events a device provides. 
 
 An example configuration makeing use of device_id would look like this:
 
 .nf
 \*(T<xboxdrv \-s \e
   \-\-ui\-clear \e
-  \-\-ui\-buttonmap A=0\-JS_0,B=0\-JS_1 \-\-ui\-axismap X2=1\-ABS_X,Y2=1\-ABS_Y
-  \-\-ui\-buttonmap X=1\-JS_0,Y=1\-JS_1 \-\-ui\-axismap X2=1\-ABS_X,Y2=1\-ABS_Y\*(T>
+  \-\-ui\-buttonmap A=JS_0@0,B=JS_1@0 \-\-ui\-axismap X2=ABS_X@0,Y2=ABS_Y@0
+  \-\-ui\-buttonmap X=JS_0@0,Y=1\-JS_1@0 \-\-ui\-axismap X2=ABS_X@1,Y2=ABS_Y@1\*(T>
 .fi
 
 In this example the left stick creates a joystick device
 and the right stick creates a separate joystick device.
+
+When using multiple controller slots you can
+additionally append the slot id and thus assign events
+across controller slot boundaries. The syntax for that
+is:
+
+.nf
+\*(T<BTN_A@{deviceid}.{slotid}\*(T>
+.fi
 
 Instead of giving just a single button, it is also
 possible to give two buttons
@@ -906,147 +1179,6 @@ This allows you to send ABS_X events normally and ABS_RX
 events when the LB button is held down.
 
 For information on how to use axis filters, see [Axis Filter].
-.TP 
-\*(T<\fB\-\-square\-axis\fR\*(T>
-The Xbox360 gamepad, as most other current day gamepads,
-features a circular movement range, which restricts the
-movement so that the distance to the center never gets
-beyond 1. This means that when you have the controller
-at the top/left the value reported is (0.7, 0.7)
-(i.e. length 1, angle 45) instead of (1,1). This
-behaviour is different then most classic PC joysticks,
-which had a square range and would report (1,1) when
-hold in the top/left corner.
-
-Some old games (i.e. mostly DOS stuff) require a
-square movement range and will not function properly
-with the Xbox360 gamepad. Via the
-\*(T<\fB\-\-square\-axis\fR\*(T> option you can work around this issue and diagonals will
-be reported as (1,1).
-.TP 
-\*(T<\fB\-\-four\-way\-restrictor\fR\*(T>
-The \*(T<\fB\-\-four\-way\-restrictor\fR\*(T> option allows to
-limit the movement on both analogsticks to only four
-directions (up, down, left, right), the diagonals (up/left,
-up/right, down/left, down/right) are filtered out from the
-output. This option is useful for games such as Tetris, that
-don't need diagonals and where you don't want to accidently
-trigger the down-move while trying to do a left/right move.
-.TP 
-\*(T<\fB\-\-dpad\-rotation\fR\*(T> \fIDEGREE\fR
-Allows you to rotate the
-dpad. \fIDEGREE\fR
-must be a multiple of 45. This can be useful in
-isometric games where the playfield itself is rotated,
-thus a:
-
-.nf
-\*(T<xboxdrv \-\-dpad\-rotation 45\*(T>
-.fi
-
-Will give you controls that are relative to your
-character instead of your viewpoint.
-.TP 
-\*(T<\fB\-\-axis\-sensitivty \fR\*(T>\fIAXIS=SENSITIVITY\fR,...
-The sensitive of an axis can be adjusted via --axis-sensitivty:
-
-.nf
-\*(T<$ xboxdrv \-\-axis\-sensitivty X1=\-1.0,Y1=\-1.0\*(T>
-.fi
-
-A value of 0 gives you the default linear sensitivity,
-values larger then 0 will give you higher sensitivity,
-while values smaller then 0 will give you lower
-sensitivity. Sensitivity values in the range of [-1, 1]
-will generally give good results, everything beyond that
-won't be of much practical use.
-
-Sensitivity works by applying:
-
-.nf
-\*(T<t = 2 ** sensitivity;
-pos = (1.0f \- (1.0f \- pos) ** t) ** (1 / t);\*(T>
-.fi
-
-To the value of the axis, this means that both the
-minimum value and the maximum value of the axis will
-always stay the same, just the response inbetween
-changes.
-
-For a complete freeform way to change the axis response
-see the \*(T<\fBResponse Curve Filter\fR\*(T>.
-.TP 
-\*(T<\fB\-\-relative\-axis AXIS=NUM,...\fR\*(T>
-The function \*(T<\fB\-\-relative\-axis\fR\*(T> allows you
-to change the behaviour of an axis so that your movement
-of it moves its value up or down instead of applying it
-directly. This allows you to simulate throttle control
-for flightsim games.
-
-Since the axis might be upside down, you might want to use
-the \*(T<\fB\-\-axismap\fR\*(T> function to reverse it.
-
-.nf
-\*(T<$ xboxdrv \-\-relative\-axis y2=64000 \-\-axismap \-y2=y2\*(T>
-.fi
-.TP 
-\*(T<\fB\-\-autofire BUTTON=FREQUENCY\fR\*(T>
-Autofire mapping allows you to let a button automatically fire with a
-given frequency in miliseconds:
-
-.nf
-\*(T<$ xboxdrv \-\-autofire A=250\*(T>
-.fi
-
-Combining \*(T<\fB\-\-autofire\fR\*(T> with button map allows you to have one button act
-as autofire while another one, emitting the same signal, acts normally.
-
-.nf
-\*(T<$ xboxdrv \-\-autofire B=250 \-\-buttonmap B=A\*(T>
-.fi
-.TP 
-\*(T<\fB\-\-calibration \fR\*(T>\fICALIBRATIONSPEC\fR
-If your gamepad for some reason can't reach the maximum value or isn't
-centered properly you can fix that via the calibration options:
-
-.nf
-\*(T<$ xboxdrv \-\-calibration X2=\-32768:0:32767\*(T>
-.fi
-
-X2 is the axis name and the three values that follow are min, center
-and max. Simply insert the values that jstest reports when your axis
-is in the respective positions.
-
-You can also use the calibration option if you want to make your
-joystick more sensitive. A setting of:
-
-.nf
-\*(T<xboxdrv \-\-calibration AXIS=MIN:CENTER:MAX,...\*(T>
-.fi
-
-Will cause the joystick device report maximum position when your
-stick is only moved half the way.
-.TP 
-\*(T<\fB\-\-axis\-sensitivty \fR\*(T>\fIAXIS=SENSITIVITY\fR,...
-The sensitive of an axis can be adjusted via --axis-sensitivty:
-
-.nf
-\*(T<$ xboxdrv \-\-axis\-sensitivty X1=\-2.0,Y1=\-2.0\*(T>
-.fi
-
-A value of 0 gives you the default linear sensitivity, values larger
-then 0 will give you heigher sensitivity, while values smaller then 0
-will give you lower sensitivity.
-
-Sensitivity works by applying:
-
-.nf
-\*(T<t = 2 ** sensitivity;
-pos = (1.0f \- (1.0f \- pos) ** t) ** (1 / t);\*(T>
-.fi
-
-To the value of the axis, thus both the min and max position will
-always stay the same, only the values inbetween change.
 .SH "INPUT FILTER"
 Input filter allow to manipulate the events that come from the
 controller. They can be used
@@ -1130,6 +1262,28 @@ goes through it to, this is useful for debugging the
 filter. A \fISTRING\fR can be
 provided as parameter that will be outputed before the
 event.
+.SS MODIFIER
+While button and axis filter only apply to a single axis or
+button at a time, modifiers apply to the complete controller
+at once and can thus be used to perform modifications that
+require input from multiple axis or buttons. Most of the
+modifiers explained below replicate functionality provided by
+regular options, but allow more fine tuning, such as limiting
+the effects to a single analog stick instead of just applyig
+it to all. Note that modifiers are applied one after the
+other, so order is important.
+.TP 
+\*(T<\fBdpad\-rotate\fR\*(T>=\fIDEGREE\fR
+See \*(T<\fB\-\-dpad\-rotation\fR\*(T>.
+.TP 
+\*(T<\fB4wayrest\fR\*(T>, \*(T<\fBfour\-way\-restrictor\fR\*(T>=\fIXAXIS\fR:\fIYAXIS\fR
+See \*(T<\fB\-\-four\-way\-restrictor\fR\*(T>.
+.TP 
+\*(T<\fBsquare\fR\*(T>, \*(T<\fBsquare\-axis\fR\*(T>=\fIXAXIS\fR:\fIYAXIS\fR
+See \*(T<\fB\-\-square\-axis\fR\*(T>.
+.TP 
+\*(T<\fBrotate\fR\*(T>=\fIXAXIS\fR:\fIYAXIS\fR:\fIDEGREE\fR:\fIMIRROR\fR
+Rotates the stick given by \fIXAXIS\fR and \fIYAXIS\fR by \fIDEGREE\fR and optionally \fIMIRRORS\fR it.
 .SH "RUNNING XBOXDRV"
 Plug in your Xbox360 gamepad and then unload the xpad driver via:
 .PP
@@ -1362,10 +1516,10 @@ to register two uinput configuration with xboxdrv, this works
 via:
 .PP
 .nf
-\*(T<$ xboxdrv \-\-ui\-new \-\-mouse\*(T>
+\*(T<$ xboxdrv \-\-next\-config \-\-mouse\*(T>
 .fi
 .PP
-The \*(T<\fB\-\-ui\-new\fR\*(T> option will open up a second
+The \*(T<\fB\-\-next\-config\fR\*(T> option will open up a second
 configuration and all configuration options on the right side
 of it will go there, while everything on the left side of it
 will go into the first configuration. Toggling between the

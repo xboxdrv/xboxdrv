@@ -42,13 +42,13 @@ $ dput my-ppa ../xboxdrv_0.7.0-1~lucid1_source.changes
 Stuff to do before 0.7.0 release:
 =================================
 
-List Output
-===========
+* test test test, document
 
-* update docu on force feedback for multi controller
 
 Stuff to do before 0.7.1 release:
 =================================
+
+* --name DEVNAME must work with multple controller slots and multiple devices
 
 * turn EnumBox into singleton
 

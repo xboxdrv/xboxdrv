@@ -49,7 +49,7 @@ Modifier::from_string(const std::string& name, const std::string& value)
     {
       return DpadRotationModifier::from_string(args);
     }
-    else if (name == "4rest" || name == "four-way-restrictor")
+    else if (name == "4wayrest" || name == "four-way-restrictor")
     {
       return FourWayRestrictorModifier::from_string(args);
     }
