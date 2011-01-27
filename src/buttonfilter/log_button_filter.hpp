@@ -1,6 +1,6 @@
 /*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2010 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,28 +16,24 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_BUTTON_FILTER_HPP
-#define HEADER_XBOXDRV_BUTTON_FILTER_HPP
+#ifndef HEADER_XBOXDRV_BUTTONFILTER_LOG_BUTTON_FILTER_HPP
+#define HEADER_XBOXDRV_BUTTONFILTER_LOG_BUTTON_FILTER_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <string>
+#include "button_filter.hpp"
 
-class ButtonFilter;
-
-typedef boost::shared_ptr<ButtonFilter> ButtonFilterPtr;
-
-class ButtonFilter
+class LogButtonFilter : public ButtonFilter
 {
 public:
-  static ButtonFilterPtr from_string(const std::string& str);
+  static LogButtonFilter* from_string(const std::string& str);
 
 public:
-  ButtonFilter() {}
-  virtual ~ButtonFilter() {}
+  LogButtonFilter(const std::string& name);
 
-  virtual bool filter(bool value) =0;
-  virtual void update(int msec_delta) {}
-  virtual std::string str() const = 0;
+  bool filter(bool value);
+  std::string str() const;
+
+private:
+  std::string m_name;
 };
 
 #endif

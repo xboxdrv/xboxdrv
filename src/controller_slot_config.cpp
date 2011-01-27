@@ -28,6 +28,8 @@
 #include "modifier/four_way_restrictor_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 
+#include "axisfilter/deadzone_axis_filter.hpp"
+
 ControllerSlotConfigPtr
 ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const ControllerSlotOptions& opts)
 {  

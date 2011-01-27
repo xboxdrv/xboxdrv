@@ -21,6 +21,18 @@
 
 #include <boost/function.hpp>
 
+/** converts the arbitary range to [-1,1] */
+inline float to_float(int value, int min, int max)
+{
+  return static_cast<float>(value - min) / static_cast<float>(max - min) * 2.0f - 1.0f;
+}
+
+/** converts the range [-1,1] to [min,max] */
+inline int from_float(float value, int min, int max)
+{
+  return (value + 1.0f) / 2.0f * static_cast<float>(max - min) + min;
+}
+
 int hexstr2int(const std::string& str);
 
 std::string raw2str(uint8_t* buffer, int len);

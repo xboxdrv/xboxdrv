@@ -41,115 +41,6 @@ public:
   virtual std::string str() const = 0;
 };
 
-class InvertAxisFilter : public AxisFilter
-{
-public:
-  InvertAxisFilter() {}
-  ~InvertAxisFilter() {}
-
-  int filter(int value, int min, int max);
-  std::string str() const;
-};
-
-class SensitivityAxisFilter : public AxisFilter
-{
-public:
-  static SensitivityAxisFilter* from_string(const std::string& str);
-
-public:
-  SensitivityAxisFilter(float sensitivity);
-
-  int filter(int value, int min, int max);
-  std::string str() const;
-
-private:
-  float m_sensitivity;
-};
-
-class CalibrationAxisFilter : public AxisFilter
-{
-public:
-  static CalibrationAxisFilter* from_string(const std::string& str);
-
-public:
-  CalibrationAxisFilter(int min, int center, int max);
-
-  int filter(int value, int min, int max);
-  std::string str() const;
-
-private:
-  int m_min;
-  int m_center;
-  int m_max;
-};
-
-class DeadzoneAxisFilter : public AxisFilter
-{
-public:
-  static DeadzoneAxisFilter* from_string(const std::string& str);
-
-public:
-  DeadzoneAxisFilter(int min_deadzone, int max_deathzone, bool smooth);
-
-  int filter(int value, int min, int max);
-  std::string str() const;
-
-private:
-  int m_min_deadzone;
-  int m_max_deadzone;
-  bool m_smooth;
-};
-
-class RelativeAxisFilter : public AxisFilter
-{
-public:
-  static RelativeAxisFilter* from_string(const std::string& str);
-
-public:
-  RelativeAxisFilter(int speed);
-
-  void update(int msec_delta);
-  int filter(int value, int min, int max);
-  std::string str() const;
-
-private:
-  int m_speed;
-
-  float m_float_speed;
-  float m_value;
-  float m_state;
-};
-
-class ResponseCurveAxisFilter : public AxisFilter
-{
-public: 
-  static ResponseCurveAxisFilter* from_string(const std::string& str);
-
-public:
-  ResponseCurveAxisFilter(const std::vector<int>& samples);
-
-  int filter(int value, int min, int max);
-  std::string str() const;
-
-private:
-  std::vector<int> m_samples;
-};
-
-class LogAxisFilter : public AxisFilter
-{
-public: 
-  static LogAxisFilter* from_string(const std::string& str);
-
-public:
-  LogAxisFilter(const std::string& name);
-
-  int filter(int value, int min, int max);
-  std::string str() const;
-
-private:
-  std::string m_name;
-};
-
 #endif
 
 /* EOF */

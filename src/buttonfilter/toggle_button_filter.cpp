@@ -1,6 +1,6 @@
 /*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2010 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,30 +16,33 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_BUTTON_FILTER_HPP
-#define HEADER_XBOXDRV_BUTTON_FILTER_HPP
+#include "buttonfilter/toggle_button_filter.hpp"
 
-#include <boost/shared_ptr.hpp>
-#include <string>
-
-class ButtonFilter;
-
-typedef boost::shared_ptr<ButtonFilter> ButtonFilterPtr;
-
-class ButtonFilter
+ToggleButtonFilter::ToggleButtonFilter() :
+  m_state(false),
+  m_last_value(false)
 {
-public:
-  static ButtonFilterPtr from_string(const std::string& str);
+}
 
-public:
-  ButtonFilter() {}
-  virtual ~ButtonFilter() {}
+bool
+ToggleButtonFilter::filter(bool value)
+{
+  if (value != m_last_value)
+  {
+    if (value)
+    {
+      m_state = !m_state;
+    }
 
-  virtual bool filter(bool value) =0;
-  virtual void update(int msec_delta) {}
-  virtual std::string str() const = 0;
-};
+    m_last_value = value;
+  }
+  return m_state;
+}
 
-#endif
+std::string
+ToggleButtonFilter::str() const
+{
+  return "toggle";
+}
 
 /* EOF */

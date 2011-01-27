@@ -1,6 +1,6 @@
 /*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2010 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,28 +16,26 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_BUTTON_FILTER_HPP
-#define HEADER_XBOXDRV_BUTTON_FILTER_HPP
+#ifndef HEADER_XBOXDRV_AXISFILTER_CALIBRATION_AXIS_FILTER_HPP
+#define HEADER_XBOXDRV_AXISFILTER_CALIBRATION_AXIS_FILTER_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <string>
+#include "axis_filter.hpp"
 
-class ButtonFilter;
-
-typedef boost::shared_ptr<ButtonFilter> ButtonFilterPtr;
-
-class ButtonFilter
+class CalibrationAxisFilter : public AxisFilter
 {
 public:
-  static ButtonFilterPtr from_string(const std::string& str);
+  static CalibrationAxisFilter* from_string(const std::string& str);
 
 public:
-  ButtonFilter() {}
-  virtual ~ButtonFilter() {}
+  CalibrationAxisFilter(int min, int center, int max);
 
-  virtual bool filter(bool value) =0;
-  virtual void update(int msec_delta) {}
-  virtual std::string str() const = 0;
+  int filter(int value, int min, int max);
+  std::string str() const;
+
+private:
+  int m_min;
+  int m_center;
+  int m_max;
 };
 
 #endif

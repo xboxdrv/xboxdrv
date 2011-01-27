@@ -1,6 +1,6 @@
 /*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2010 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,30 +16,32 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_BUTTON_FILTER_HPP
-#define HEADER_XBOXDRV_BUTTON_FILTER_HPP
+#include "invert_axis_filter.hpp"
 
-#include <boost/shared_ptr.hpp>
-#include <string>
-
-class ButtonFilter;
-
-typedef boost::shared_ptr<ButtonFilter> ButtonFilterPtr;
-
-class ButtonFilter
+int
+InvertAxisFilter::filter(int value, int min, int max)
 {
-public:
-  static ButtonFilterPtr from_string(const std::string& str);
+  int center = (max + min + 1)/2; // FIXME: '+1' is kind of a hack to
+                                  // get the center at 0 for the
+                                  // [-32768, 32767] case
+  if (value < center)
+  {
+    return (max - center) * (value - center) / (min - center) + center;
+  }
+  else if (value > center)
+  {
+    return (min - center) * (value - center) / (max - center) + center;
+  }
+  else
+  {
+    return value;
+  }
+}
 
-public:
-  ButtonFilter() {}
-  virtual ~ButtonFilter() {}
-
-  virtual bool filter(bool value) =0;
-  virtual void update(int msec_delta) {}
-  virtual std::string str() const = 0;
-};
-
-#endif
+std::string
+InvertAxisFilter::str() const
+{
+  return "invert";
+}
 
 /* EOF */

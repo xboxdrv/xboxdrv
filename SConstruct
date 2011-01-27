@@ -76,6 +76,8 @@ env = conf.Finish()
 
 env.Program('xboxdrv',
             Glob('src/*.cpp') +
+            Glob('src/axisfilter/*.cpp') +
+            Glob('src/buttonfilter/*.cpp') +
             Glob('src/modifier/*.cpp'))
 
 # EOF #

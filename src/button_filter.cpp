@@ -21,7 +21,12 @@
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <iostream>
-
+
+#include "buttonfilter/autofire_button_filter.hpp"
+#include "buttonfilter/invert_button_filter.hpp"
+#include "buttonfilter/log_button_filter.hpp"
+#include "buttonfilter/toggle_button_filter.hpp"
+
 ButtonFilterPtr
 ButtonFilter::from_string(const std::string& str)
 {
@@ -55,163 +60,5 @@ ButtonFilter::from_string(const std::string& str)
     throw std::runtime_error(out.str());
   }
 }
-
-ToggleButtonFilter::ToggleButtonFilter() :
-  m_state(false),
-  m_last_value(false)
-{
-}
 
-bool
-ToggleButtonFilter::filter(bool value)
-{
-  if (value != m_last_value)
-  {
-    if (value)
-    {
-      m_state = !m_state;
-    }
-
-    m_last_value = value;
-  }
-  return m_state;
-}
-
-std::string
-ToggleButtonFilter::str() const
-{
-  return "toggle";
-}
-
-bool
-InvertButtonFilter::filter(bool value)
-{
-  return !value;
-}
-
-std::string
-InvertButtonFilter::str() const
-{
-  return "invert";
-}
-
-AutofireButtonFilter*
-AutofireButtonFilter::from_string(const std::string& str)
-{
-  int rate  = 50;
-  int delay = 0;
-
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
-  {
-    switch(idx)
-    {
-      case 0: rate  = boost::lexical_cast<int>(*t); break;
-      case 1: delay = boost::lexical_cast<int>(*t); break;
-      default: throw std::runtime_error("to many arguments"); break;
-    }
-  }
-
-  return new AutofireButtonFilter(rate, delay);
-}
-
-AutofireButtonFilter::AutofireButtonFilter(int rate, int delay) :
-  m_state(false),
-  m_autofire(false),
-  m_rate(rate),
-  m_delay(delay),
-  m_counter(0)
-{
-}
-
-void
-AutofireButtonFilter::update(int msec_delta)
-{
-  if (m_state)
-  {
-    m_counter += msec_delta;
-
-    if (m_counter > m_delay)
-    {
-      m_autofire = true;
-    }
-  }
-}
-
-bool
-AutofireButtonFilter::filter(bool value)
-{
-  m_state = value;
-
-  if (!value)
-  {
-    m_counter  = 0;
-    m_autofire = false;
-    return false;
-  }
-  else
-  { // auto fire
-    if (m_autofire)
-    {
-      if (m_counter > m_rate)
-      {
-        m_counter = 0;
-        return true;
-      }
-      else
-      {
-        return false;
-      }
-    }
-    else
-    {
-      return true;
-    }
-  }
-}
-
-std::string
-AutofireButtonFilter::str() const
-{
-  std::ostringstream out;
-  out << "auto:" << m_rate << ":" << m_delay;
-  return out.str();
-}
-
-LogButtonFilter*
-LogButtonFilter::from_string(const std::string& str)
-{
-  return new LogButtonFilter(str);
-}
-
-LogButtonFilter::LogButtonFilter(const std::string& name) :
-  m_name(name)
-{
-}
-
-bool
-LogButtonFilter::filter(bool value)
-{
-  if (m_name.empty())
-  {
-    std::cout << value << std::endl;
-  }
-  else
-  {
-    std::cout << m_name << ": " << value << std::endl;
-  }
-
-  return value;
-}
-
-std::string
-LogButtonFilter::str() const
-{
-  std::ostringstream out;
-  out << "log:" << m_name;
-  return out.str();  
-}
-
 /* EOF */

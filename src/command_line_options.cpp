@@ -29,6 +29,11 @@
 #include "log.hpp"
 #include "options.hpp"
 
+#include "axisfilter/relative_axis_filter.hpp"
+#include "axisfilter/calibration_axis_filter.hpp"
+#include "axisfilter/sensitivity_axis_filter.hpp"
+#include "buttonfilter/autofire_button_filter.hpp"
+
 #define RAISE_EXCEPTION(x) do {                         \
     std::ostringstream kiJk8f08d4oMX;                   \
     kiJk8f08d4oMX << x;                                 \
