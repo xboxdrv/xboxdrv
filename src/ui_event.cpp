@@ -135,45 +135,81 @@ UIEvent::resolve_device_id(int slot, bool extra_devices)
   m_device_id_resolved = true;
 }
 
-/** Takes "1-BTN_A" splits it into "1", "BTN_A" */
-void split_event_name(const std::string& str, std::string* event_str, int* device_id)
-{
-  std::string::size_type p = str.find('-');
-  if (p == std::string::npos)
-  {
-    *event_str = str;
-    *device_id = DEVICEID_AUTO;
-  }
-  else
-  {
-    *event_str = str.substr(p+1);
-    std::string device = str.substr(0, p);
-
-    if (device == "auto")
-    {
-      *device_id = DEVICEID_AUTO;
-    }
-    else if (device == "mouse")
-    {
-      *device_id = DEVICEID_MOUSE;
-    }
-    else if (device == "keyboard")
-    {
-      *device_id = DEVICEID_KEYBOARD;
-    }
-    else
-    {
-      *device_id = boost::lexical_cast<int>(device);
-    }
-  }
-}
-
 uint32_t
 UIEvent::get_device_id() const
 {
   assert(m_device_id_resolved);
 
   return (m_slot_id << 16) | m_device_id;
+}
+
+namespace {
+
+int str2deviceid(const std::string& device)
+{
+  if (device == "auto" || device.empty())
+  {
+    return DEVICEID_AUTO;
+  }
+  else if (device == "mouse")
+  {
+    return DEVICEID_MOUSE;
+  }
+  else if (device == "keyboard")
+  {
+    return DEVICEID_KEYBOARD;
+  }
+  else if (device == "joystick")
+  {
+    return DEVICEID_JOYSTICK;
+  }
+  else
+  {
+    return boost::lexical_cast<int>(device);
+  }
+}
+
+int str2slotid(const std::string& slot)
+{
+  if (slot == "auto" || slot.empty())
+  {
+    return SLOTID_AUTO;
+  }
+  else
+  {
+    return boost::lexical_cast<int>(slot);
+  }
+}
+
+}
+
+void split_event_name(const std::string& str, std::string* event_str, int* slot_id, int* device_id)
+{
+  std::string::size_type p = str.find('@');
+  if (p == std::string::npos)
+  {
+    *event_str = str;
+    *slot_id   = SLOTID_AUTO;
+    *device_id = DEVICEID_AUTO;
+  }
+  else
+  {
+    *event_str = str.substr(0, p);
+    std::string device = str.substr(p+1);
+    
+    p = device.find(".");
+    
+    if (p == std::string::npos)
+    {
+      *slot_id   = SLOTID_AUTO;
+      *device_id = str2deviceid(device);
+    }
+    else
+    {
+      *slot_id   = str2slotid(device.substr(p+1));
+      *device_id = str2deviceid(device.substr(0, p));
+    }
+  }
 }
 
 /* EOF */

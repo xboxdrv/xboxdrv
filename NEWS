@@ -19,6 +19,7 @@ xboxdrv 0.7.0 - (??/Jan/2011)
   confusion with X1, Y1
 * added --list-all, --list-key, -list-rel, ... to display all
   available symbolic name
+* changed device_id syntax from 1-BTN_A to now BTN_A@1
 
 
 xboxdrv 0.6.5 - (22/Jan/2011)

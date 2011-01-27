@@ -223,25 +223,28 @@ int str2rel(const std::string& name)
 
 UIEvent str2key_event(const std::string& str)
 {
+  int slot_id;
   int device_id;
   std::string rest;
-  split_event_name(str, &rest, &device_id);
+  split_event_name(str, &rest, &slot_id, &device_id);
   return UIEvent::create(device_id, EV_KEY, str2key(rest));
 }
 
 UIEvent str2rel_event(const std::string& str)
 {
+  int slot_id;
   int device_id;
   std::string rest;
-  split_event_name(str, &rest, &device_id);
+  split_event_name(str, &rest, &slot_id, &device_id);
   return UIEvent::create(device_id, EV_REL, str2rel(rest));
 }
 
 UIEvent str2abs_event(const std::string& str)
 {
+  int slot_id;
   int device_id;
   std::string rest;
-  split_event_name(str, &rest, &device_id);
+  split_event_name(str, &rest, &slot_id, &device_id);
   return UIEvent::create(device_id, EV_ABS, str2abs(rest));
 }
 
