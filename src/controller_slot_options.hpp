@@ -33,12 +33,12 @@ public:
 public:
   ControllerSlotOptions();
 
-  void add_match_rule(const ControllerMatchRule& rule);
+  void add_match_rule(ControllerMatchRulePtr rule);
 
   ControllerOptions& get_options(int num);
   const ControllerOptions& get_options(int num) const;
 
-  const std::vector<ControllerMatchRule>& get_match_rules() const;
+  const std::vector<ControllerMatchRulePtr>& get_match_rules() const;
   const std::map<int, ControllerOptions>& get_options() const;
 
   void set_force_feedback(bool value) { m_force_feedback = value; }
@@ -48,7 +48,7 @@ public:
 
 private:
   std::map<int, ControllerOptions> m_options;
-  std::vector<ControllerMatchRule> m_match_rules;
+  std::vector<ControllerMatchRulePtr> m_match_rules;
   bool m_force_feedback;
 };
 

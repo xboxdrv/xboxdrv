@@ -50,12 +50,12 @@ ControllerSlotOptions::get_options(int num) const
 }
 
 void
-ControllerSlotOptions::add_match_rule(const ControllerMatchRule& rule)
+ControllerSlotOptions::add_match_rule(ControllerMatchRulePtr rule)
 {
   m_match_rules.push_back(rule);
 }
 
-const std::vector<ControllerMatchRule>&
+const std::vector<ControllerMatchRulePtr>&
 ControllerSlotOptions::get_match_rules() const
 {
   return m_match_rules;

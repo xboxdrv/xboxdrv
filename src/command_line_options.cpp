@@ -228,7 +228,7 @@ CommandLineParser::init_argp()
     .add_option(OPTION_CONTROLLER_SLOT,    0, "controller-slot", "N", "Use controller slot N")
     .add_option(OPTION_NEXT_CONTROLLER,    0, "next-controller", "", "Create a new controller entry")
     .add_option(OPTION_DAEMON_MATCH,       0, "match", "RULES",   "Only allow controllers that match any of RULES")
-    //FIXME: .add_option(OPTION_DAEMON_MATCH_GROUP, 0, "match-group", "RULES", "Only allow controllers that match all of RULES")
+    .add_option(OPTION_DAEMON_MATCH_GROUP, 0, "match-group", "RULES", "Only allow controllers that match all of RULES")
     .add_newline()
 
     .add_text("Config Slot Options: ")

@@ -166,9 +166,7 @@ XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
       }
       else
       {
-        const char* serial = udev_device_get_property_value(device, "ID_SERIAL_SHORT");
-
-        ControllerSlot* slot = find_free_slot(vendor, product, bus, dev, serial);
+        ControllerSlot* slot = find_free_slot(device);
         if (!slot)
         {
           log_error("no free controller slot found, controller will be ignored");
@@ -431,9 +429,7 @@ XboxdrvDaemon::print_info(struct udev_device* device)
 }
 
 XboxdrvDaemon::ControllerSlot*
-XboxdrvDaemon::find_free_slot(uint16_t vendor, uint16_t product,
-                              int bus, int dev,
-                              const char* serial) const
+XboxdrvDaemon::find_free_slot(udev_device* dev) const
 {
   // first pass, look for slots where the rules match the given vendor:product, bus:dev
   for(ControllerSlots::const_iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
@@ -441,9 +437,9 @@ XboxdrvDaemon::find_free_slot(uint16_t vendor, uint16_t product,
     if (i->thread == 0)
     {
       // found a free slot, check if the rules match
-      for(std::vector<ControllerMatchRule>::const_iterator rule = i->rules.begin(); rule != i->rules.end(); ++rule)
+      for(std::vector<ControllerMatchRulePtr>::const_iterator rule = i->rules.begin(); rule != i->rules.end(); ++rule)
       {
-        if (rule->match(vendor, product, bus, dev, serial))
+        if ((*rule)->match(dev))
         {
           // FIXME: ugly const_cast
           return const_cast<ControllerSlot*>(&(*i));

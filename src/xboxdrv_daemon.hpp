@@ -38,7 +38,7 @@ private:
   {
     int id;
     ControllerSlotConfigPtr config;
-    std::vector<ControllerMatchRule> rules;
+    std::vector<ControllerMatchRulePtr> rules;
     XboxdrvThread* thread;
     
     ControllerSlot() :
@@ -50,7 +50,7 @@ private:
 
     ControllerSlot(int id_,
                    ControllerSlotConfigPtr config_,
-                   std::vector<ControllerMatchRule> rules_,
+                   std::vector<ControllerMatchRulePtr> rules_,
                    XboxdrvThread* thread_ = 0) :
       id(id_),
       config(config_),
@@ -97,8 +97,7 @@ private:
 
   void run_loop(const Options& opts);
 
-  ControllerSlot* find_free_slot(uint16_t vendor, uint16_t product,
-                                 int bus, int dev, const char* serial) const;
+  ControllerSlot* find_free_slot(udev_device* dev) const;
 
   void cleanup_threads();
   void process_match(const Options& opts, struct udev_device* device);

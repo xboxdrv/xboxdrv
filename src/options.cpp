@@ -239,62 +239,7 @@ Options::set_quiet()
 void
 Options::add_match(const std::string& lhs, const std::string& rhs)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(rhs, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  std::vector<std::string> args(tokens.begin(), tokens.end());
-
-  if (lhs == "usbid")
-  {
-    if (args.size() != 2)
-    {
-      raise_exception(std::runtime_error, "usbid requires VENDOR:PRODUCT argument");
-    }
-    else
-    {
-      int vendor  = hexstr2int(args[0]);
-      int product = hexstr2int(args[1]);
-      get_controller_slot().add_match_rule(ControllerMatchRule::create_usb_id(vendor, product));
-    }
-  }
-  else if (lhs == "usbpath")
-  {
-    if (args.size() != 2)
-    {
-      raise_exception(std::runtime_error, "usbpath requires BUS:DEV argument");
-    }
-    else
-    {
-      int bus = boost::lexical_cast<int>(args[0]);
-      int dev = boost::lexical_cast<int>(args[1]);
-      get_controller_slot().add_match_rule(ControllerMatchRule::create_usb_path(bus, dev));
-    }
-  }
-  else if (lhs == "usbserial")
-  {
-    if (args.size() != 1)
-    {
-      raise_exception(std::runtime_error, "usbserial rule requires SERIAL argument");
-    }
-    else
-    {
-      get_controller_slot().add_match_rule(ControllerMatchRule::create_usb_serial(args[0]));
-    }
-  }
-  else if (lhs == "evdev")
-  {
-    if (args.size() != 1)
-    {
-      raise_exception(std::runtime_error, "evdev rule requires PATH argument");
-    }
-    else
-    {
-      get_controller_slot().add_match_rule(ControllerMatchRule::create_evdev_path(args[0]));
-    }
-  }
-  else
-  {
-    raise_exception(std::runtime_error, "'" << lhs << "' not a valid match rule name");
-  }
+  get_controller_slot().add_match_rule(ControllerMatchRule::from_string(lhs, rhs));
 }
 
 void
@@ -306,8 +251,11 @@ Options::set_match(const std::string& str)
 void
 Options::set_match_group(const std::string& str)
 {
-  // FIXME: not implied
-  assert(!"not implemented");
+  boost::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
+
+  process_name_value_string(str, boost::bind(&ControllerMatchRuleGroup::add_rule_from_string, group, _1, _2));
+
+  get_controller_slot().add_match_rule(group);
 }
 
 void
