@@ -1455,10 +1455,8 @@ DEVICEID     = NUMBER ;]]></programlisting>
               your keyboard (i.e. dvorak on a qwerty keyboard).
             </para>
             <para>
-              A full list of X11 keysyms is available at
-              <filename>/usr/include/X11/keysymdef.h</filename>, note that you can only use those that
-              are reachable by your current keymap. Keysyms that are reachable via
-              multiple keycodes might break the mapping from keysym to evdev code.
+              A full list of valid X11 keysyms can be optained
+              with <option>--help-x11keysym</option>.
             </para>
             <para>
               For joystick buttons there is in addition to the <keysym>BTN_JOYSTICK</keysym>, <keysym>BTN_X</keysym>,
