@@ -207,8 +207,8 @@ FirestormDualController::read_vsb(XboxGenericMsg& msg, int timeout)
     msg.xbox360.y2 = scale_8to16(data.y2 - 128);
 
     // Invert the axis
-    msg.xbox360.y1 = negate_16(msg.xbox360.y1);
-    msg.xbox360.y2 = negate_16(msg.xbox360.y2);
+    msg.xbox360.y1 = s16_invert(msg.xbox360.y1);
+    msg.xbox360.y2 = s16_invert(msg.xbox360.y2);
 
     // data.dpad == 0xf0 -> dpad centered
     // data.dpad == 0xe0 -> dpad-only mode is enabled
@@ -281,8 +281,8 @@ FirestormDualController::read_default(XboxGenericMsg& msg, int timeout)
     msg.xbox360.y2 = scale_8to16(data.y2 - 128);
 
     // Invert the axis
-    msg.xbox360.y1 = negate_16(msg.xbox360.y1);
-    msg.xbox360.y2 = negate_16(msg.xbox360.y2);
+    msg.xbox360.y1 = s16_invert(msg.xbox360.y1);
+    msg.xbox360.y2 = s16_invert(msg.xbox360.y2);
 
     // data.dpad == 0xf0 -> dpad centered
     // data.dpad == 0xe0 -> dpad-only mode is enabled

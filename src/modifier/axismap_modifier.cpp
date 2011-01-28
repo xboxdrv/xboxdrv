@@ -21,11 +21,7 @@
 #include <boost/tokenizer.hpp>
 #include <sstream>
 
-/** converts the arbitary range to [-1,1] */
-inline float to_float(int value, int min, int max)
-{
-  return static_cast<float>(value - min) / static_cast<float>(max - min) * 2.0f - 1.0f;
-}
+#include "helper.hpp"
 
 AxisMapping
 AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)

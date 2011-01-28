@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <sys/ioctl.h>
+#include <iostream>
 
 #include "raise_exception.hpp"
 
@@ -132,11 +133,8 @@ uint32_t get_time()
   return tv.tv_sec * 1000 + tv.tv_usec/1000;
 }
 
-float to_float(int value, int min, int max)
+float to_float_no_range_check(int value, int min, int max)
 {
-  assert(value >= min);
-  assert(value <= max);
-
   // FIXME: '+1' is kind of a hack to
   // get the center at 0 for the
   // [-32768, 32767] case
@@ -150,6 +148,14 @@ float to_float(int value, int min, int max)
   {
     return static_cast<float>(value - center) / static_cast<float>(max - center);
   }
+}
+
+float to_float(int value, int min, int max)
+{
+  assert(value >= min);
+  assert(value <= max);
+
+  return to_float_no_range_check(value, min, max);
 }
 
 int from_float(float value, int min, int max)

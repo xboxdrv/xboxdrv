@@ -6,7 +6,10 @@ xboxdrv 0.7.1 - (??/???/2011)
 * new match rule usbserial=SERIAL
 * fixed LED not getting switched off on shutdown
 * man-page update and cleanup
+* added --match-group
 * new version of runxboxdrv
+* fixed axis inversion issue in --axismap
+* fixed assertion in relative axis filter
 
 
 xboxdrv 0.7.0 - (28/Jan/2011)

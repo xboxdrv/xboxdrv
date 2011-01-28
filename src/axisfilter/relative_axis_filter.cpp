@@ -22,7 +22,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "helper.hpp"
-
+
 RelativeAxisFilter*
 RelativeAxisFilter::from_string(const std::string& str)
 {
@@ -42,7 +42,7 @@ RelativeAxisFilter::from_string(const std::string& str)
 
   return new RelativeAxisFilter(speed);
 }
-
+
 RelativeAxisFilter::RelativeAxisFilter(int speed) :
   m_speed(speed),
   m_float_speed(0.0f),
@@ -63,7 +63,7 @@ RelativeAxisFilter::filter(int value, int min, int max)
 {
   m_value = to_float(value, min, max);
 
-  m_float_speed = to_float(m_speed, min, max);
+  m_float_speed = to_float_no_range_check(m_speed, min, max);
 
   return from_float(m_state, min, max);
 }
@@ -75,5 +75,5 @@ RelativeAxisFilter::str() const
   out << "relativeaxis:" << m_speed;
   return out.str();
 }
-
+
 /* EOF */
