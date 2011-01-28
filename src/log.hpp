@@ -20,6 +20,7 @@
 #define HEADER_XBOXDRV_LOG_HPP
 
 #include <string>
+#include <sstream>
 
 /** Takes __PRETTY_FUNCTION__ and tries to shorten it to the form:
     Classname::function() */
