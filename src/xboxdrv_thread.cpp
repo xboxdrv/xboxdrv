@@ -159,6 +159,9 @@ XboxdrvThread::controller_loop(const Options& opts)
         
       watch_chid_process();
     }
+
+    // set LED back to black
+    m_controller->set_led(0);
   }
   catch(const std::exception& err)
   {
