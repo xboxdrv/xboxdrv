@@ -153,17 +153,6 @@ ControllerMatchRule::from_string(const std::string& lhs,
       return ControllerMatchRulePtr(new ControllerMatchRuleProperty("ID_VENDOR_ID", args[0]));
     }
   }
-  else if (lhs == "property")
-  {
-    if (args.size() != 1)
-    {
-      raise_exception(std::runtime_error, "property two arguments");
-    }
-    else
-    {
-      return ControllerMatchRulePtr(new ControllerMatchRuleProperty(args[0], args[1]));
-    }
-  }
   else if (lhs == "product")
   {
     if (args.size() != 1)
@@ -173,6 +162,17 @@ ControllerMatchRule::from_string(const std::string& lhs,
     else
     {
       return ControllerMatchRulePtr(new ControllerMatchRuleProperty("ID_MODEL_ID", args[0]));
+    }
+  }
+  else if (lhs == "property")
+  {
+    if (args.size() != 2)
+    {
+      raise_exception(std::runtime_error, "property two arguments");
+    }
+    else
+    {
+      return ControllerMatchRulePtr(new ControllerMatchRuleProperty(args[0], args[1]));
     }
   }
   else if (lhs == "usbpath")
