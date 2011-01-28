@@ -616,39 +616,11 @@ class RunXBoxDrv(object):
             out = RunXBoxDrv.getNext(myProc)
             print out
         
-    def xboxdrvconfiguration(self):        
-        parser = ConfigParser.ConfigParser()
-        parser.optionxform = str
-    
-        if not parser.read(self.configfile):
-            raise Exception("XBoxDrv game config not found: " + self.configfile)
-    
-        cfg = dict([(s, dict(parser.items(s))) for s in parser.sections()])
-        optionlist = []
-        for sectionname in cfg:
-            section = cfg[sectionname]
-            if sectionname == "options":
-                for inkey in section:
-                    key, value = self.checkminusvalue(inkey, section[inkey])
-                    if value == "true":
-                        optionlist.append("--%s" % key)
-                    else:
-                        optionlist.append("--%s=%s" % (key, value))
-                continue
-            paramline = ""
-            for inkey in section:
-                key, value = self.checkminusvalue(inkey, section[inkey])
-                paramline = "%s%s=%s," % (paramline, key, value)
-            if paramline.endswith(","):
-                optionlist.append("--%s" % sectionname)
-                optionlist.append(paramline[:-1])
-        return optionlist
-        
     def process(self):
         commandlist = [self.xboxdrvpath]
 
         if self.configfile:
-             commandlist = commandlist + self.xboxdrvconfiguration()
+             commandlist = commandlist + ["--config=%s" % self.configfile]
         print commandlist        
         myProc = Process(commandlist)
         with_timeout(1, self.checkLoaded, myProc)        
@@ -679,12 +651,12 @@ def main():
     usage = "Usage: %prog [options] [command [args]]"
     parser = OptionParser(usage)
 
-    parser.add_option("--cfg", help="xboxdrv configuration")
+    parser.add_option("--config", help="xboxdrv configuration")
     parser.add_option("--xboxdrv", help="full path to xboxdrv")
     parser.add_option("--sudo", help="sudo command to use")
     (options, args) = parser.parse_args()
 
-    runxboxdrv = RunXBoxDrv(options.cfg, options.xboxdrv, options.sudo, args)
+    runxboxdrv = RunXBoxDrv(options.config, options.xboxdrv, options.sudo, args)
     runxboxdrv.process()
 
 if __name__ == "__main__":

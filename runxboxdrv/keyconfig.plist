@@ -1,0 +1,65 @@
+{
+	key_roll_left				= "a";
+	key_roll_right				= "s";
+	key_pitch_forward			= "[";
+	key_pitch_back				= "'";
+	key_yaw_left				= ",";
+	key_yaw_right				= ".";
+
+	key_increase_speed			= 255;		// up arrow
+	key_decrease_speed			= 254;		// down arrow
+	key_inject_fuel				= "i";
+
+	key_fire_lasers				= "w";
+	key_launch_missile			= 13;
+	key_next_missile			= "y";
+	key_ecm						= "e";
+
+	key_target_incoming_missile		= "T";
+	key_target_missile			= "t";
+	key_untarget_missile		= "u";
+	key_ident_system			= "r";
+
+	key_scanner_zoom			= "z";
+	key_scanner_unzoom			= "Z";
+
+	key_launch_escapepod		= 27;		// escape
+	key_energy_bomb				= "\t";		// tab
+
+	key_galactic_hyperspace		= "g";
+	key_hyperspace				= "h";
+	key_jumpdrive				= "j";
+
+	key_dump_cargo				= "D";
+	key_rotate_cargo			= "R";
+
+	key_autopilot				= "C";
+	key_autopilot_target		= "c";
+	key_autodock				= "d";
+	key_docking_clearance_request		= "L";
+
+	key_snapshot				= "*";
+	key_docking_music			= "s";
+
+	key_advanced_nav_array		= "n";
+	key_map_home				= 302;		// Home
+	key_map_info				= "O";
+
+	key_pausebutton				= "p";
+	key_show_fps				= "F";
+	key_mouse_control			= "M";
+
+	key_comms_log				= "m";
+	key_next_compass_mode		= "b";
+
+	key_cloaking_device			= "0";
+
+	key_contract_info			= "o";
+
+	key_next_target				= 252;		// right arrow
+	key_previous_target			= 253;		// left arrow
+
+	key_custom_view				= "v";
+
+	key_dump_target_state		= "H";
+}
