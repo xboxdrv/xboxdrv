@@ -1,3 +1,10 @@
+xboxdrv 0.7.1 - (??/???/2011)
+=============================
+
+* compatibility with older libudev versions
+* fixed some missing #include directives
+
+
 xboxdrv 0.7.0 - (28/Jan/2011)
 =============================
 
