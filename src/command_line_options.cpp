@@ -937,29 +937,29 @@ CommandLineParser::set_device_name(const std::string& name, const std::string& v
 {
   // FIXME: insert magic to resolve symbolic names
   std::string::size_type p = name.find('.');
+
+  uint16_t device_id;
+  uint16_t slot_id;
+
   if (p == std::string::npos)
   {
-    uint16_t device_id = str2deviceid(name.substr());
-    uint16_t slot_id   = m_options->controller_slot;
-
-    uint32_t devid = UInput::create_device_id(slot_id, device_id);
-      
-    m_options->uinput_device_names[devid] = value;
+     device_id = str2deviceid(name.substr());
+     slot_id   = SLOTID_AUTO;
+  }
+  else if (p == 0)
+  {
+    device_id = DEVICEID_AUTO;
+    slot_id   = str2slotid(name.substr(p+1));
   }
   else
   {
-    uint16_t device_id = str2deviceid(name.substr(0, p));
-    uint16_t slot_id   = str2slotid(name.substr(p+1));
-
-    if (slot_id == DEVICEID_AUTO)
-    {
-      slot_id = m_options->controller_slot;
-    }
-
-    uint32_t devid = UInput::create_device_id(slot_id, device_id);
-      
-    m_options->uinput_device_names[devid] = value;
+    device_id = str2deviceid(name.substr(0, p));
+    slot_id   = str2slotid(name.substr(p+1));
   }
+
+  uint32_t devid = UInput::create_device_id(slot_id, device_id);
+      
+  m_options->uinput_device_names[devid] = value;
 }
 
 void

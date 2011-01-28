@@ -18,6 +18,8 @@
 
 #include "uinput.hpp"
 
+#include <iostream>
+
 #include "log.hpp"
 
 UInput::UInput() :
@@ -77,15 +79,26 @@ UInput::get_device_name(uint32_t device_id) const
         std::ostringstream str;
         str << it->second;
         if (slot_id > 0)
-        {
-          str << " #" << slot_id;
+        { 
+          str << " #" << (slot_id+1);
         }
         return str.str();
       }
       else
       {
         std::ostringstream str;
-        str << "Xbox Gamepad (userspace driver)";
+
+        it = m_device_names.find(create_device_id(SLOTID_AUTO, DEVICEID_AUTO));
+
+        if (it != m_device_names.end())
+        {
+          str << it->second;
+        }
+        else
+        {
+          str << "Xbox Gamepad (userspace driver)";
+        }
+
         switch(type_id)
         {
           case DEVICEID_JOYSTICK:
@@ -105,7 +118,7 @@ UInput::get_device_name(uint32_t device_id) const
         }
         if (slot_id > 0)
         {
-          str << " #" << slot_id;
+          str << " #" << (slot_id+1);
         }
         return str.str();      
       }
