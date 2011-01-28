@@ -5,6 +5,8 @@ xboxdrv 0.7.1 - (??/???/2011)
 * fixed some missing #include directives
 * new match rule usbserial=SERIAL
 * fixed LED not getting switched off on shutdown
+* man-page update and cleanup
+* new version of runxboxdrv
 
 
 xboxdrv 0.7.0 - (28/Jan/2011)

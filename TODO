@@ -49,12 +49,6 @@ Stuff to do before 0.7.1 release:
 
 * update debian package description
 
-* update the later man page sections, they are pretty much out of date
-
-* write a tutorial
-
-* write lots of well documented examples
-
 * need magic to assign controller to a slot:
  
   what:  match product/vendor-id, match device name
