@@ -37,7 +37,7 @@ well as more complicated things like mouse and keyboard emulation,
 auto-fire and throttle control emulation.
 .PP
 It is also possible for \fBxboxdrv\fR to read input
-data directly from an event device, this allows to use the
+data directly from an event device, this allows the use of the
 configurability of \fBxboxdrv\fR on regular PC
 joysticks, keyboards and mice and thus
 lets \fBxboxdrv\fR serve a similar purpose
@@ -47,7 +47,9 @@ option \*(T<\fB\-\-evdev\fR\*(T> below for more information.
 When a \*(T<\fBCOMMAND\fR\*(T> is provided xboxdrv will launch
 that application and be running till that application exits.
 This is a convenience function to make it easier to use xboxdrv
-in wrapper scripts.
+in wrapper scripts. See the section
+[Writing Start-Up Scripts for Games]
+for more information.
 .SH OPTIONS
 .SS "GENERAL OPTIONS"
 .TP 
@@ -1285,6 +1287,7 @@ See \*(T<\fB\-\-square\-axis\fR\*(T>.
 \*(T<\fBrotate\fR\*(T>=\fIXAXIS\fR:\fIYAXIS\fR:\fIDEGREE\fR:\fIMIRROR\fR
 Rotates the stick given by \fIXAXIS\fR and \fIYAXIS\fR by \fIDEGREE\fR and optionally \fIMIRRORS\fR it.
 .SH "RUNNING XBOXDRV"
+.SS "USING A SINGLE CONTROLLER"
 Plug in your Xbox360 gamepad and then unload the xpad driver via:
 .PP
 .nf
@@ -1298,9 +1301,10 @@ If you want to permanently unload it add the following line to
 \*(T<blacklist xpad\*(T>
 .fi
 .PP
-Next you have to load the uinput kernel module which allows userspace
-programms to create input devices and the joydev module which gives
-you the \*(T<\fI/dev/input/jsX\fR\*(T> device:
+Next you have to load the uinput kernel module which allows
+userspace programms to create virtual input devices and the
+joydev module handles the \*(T<\fI/dev/input/jsX\fR\*(T>
+devices:
 .PP
 .nf
 \*(T<$ modprobe uinput
@@ -1325,18 +1329,36 @@ should often be enough) start the driver as root via:
 \*(T<$ sudo xboxdrv\*(T>
 .fi
 .PP
-This will create /dev/input/js0 and allow you to access the gamepad
-from any game. To exit the driver press Ctrl-c. 
-If you have multiple wired controllers you need to start multiple instances
-of the xboxdrv driver and append the -i argument like this:
+This will create /dev/input/js0 and allow you to access the
+gamepad from any game. To exit the driver press Ctrl-c.
+.PP
+By default xboxdrv will echo all controller events to the
+console, this makes it easy to see if things are properly
+working, but will eat a lot of CPU, thus it is strongly
+recomment to disabled that output with
+the \*(T<\fB\-\-silent\fR\*(T> option.
+.PP
+The trigger buttons are handled by xboxdrv normally as axis,
+giving you analog feedback, while this reproduces the Xbox360
+controller the most accurately, it will confuse many and only
+be useful in a few, racing games mainly. So in the majority of
+cases it is recomment to change the triggers to regular buttons via:
+.PP
+.nf
+\*(T<$ xboxdrv \-\-trigger\-as\-button\*(T>
+.fi
+.SS "USING MULTIPLE CONTROLLER"
+If you want to use multiple wired controllers you need to start
+multiple instances of the xboxdrv driver and append the -i
+argument to select the appropriate controller like this:
 .PP
 .nf
 \*(T<$ xboxdrv \-i 1\*(T>
 .fi
 .PP
-If you have multiple wireless controller you need to start multiple
-instances of the xboxdrv driver and append the --wid argument like
-this:
+If you have multiple wireless controller you need to start
+multiple instances of the xboxdrv driver and append
+the \*(T<\fB\-\-wid\fR\*(T> option like this:
 .PP
 .nf
 \*(T<$ xboxdrv \-\-wid 1\*(T>
@@ -1344,41 +1366,56 @@ this:
 .PP
 You have to sync the wireless controller as usual.
 .PP
-This will then use the second detected controller, see to see which id
-your controller has:
+To see a list of all the controllers that xboxdrv detects
+being connected to your system use:
 .PP
 .nf
 \*(T<$ xboxdrv \-\-list\-controller\*(T>
 .fi
-.PP
-When everything works as expected it is recomment that you run xboxdrv
-with the silent option:
-.PP
-.nf
-\*(T<$ xboxdrv \-\-silent\*(T>
-.fi
-.PP
-This will suppress the logging of events to the console and will
-gurantee that no uneccesarry CPU cycles are wasted.
-.PP
-If you want to abuse the led or rumble of the gamepad for notification
-in scripts you can do see via:
+.SS "HOTPLUGGING AND XBOXDRV DAEMON"
+To allow hotplugging of gamepads xboxdrv has to be run in
+daemon mode. This is accomplished with
+the \*(T<\fB\-\-daemon\fR\*(T> option:
 .PP
 .nf
-\*(T<$ xboxdrv \-\-led 10 \-\-rumble 30,30 \-\-quit\*(T>
+\*(T<$ xboxdrv \-\-daemon\*(T>
 .fi
 .PP
-This will cause a mild rumble and the led to rotate, you can stop it
-again via, which also happens to be the command you can use to stop
-your Xbox360 controller from blinking:
+When launched in daemon mode xboxdrv will listen to udev
+events and thus be notified whenever a new USB device gets
+plugged into the computer. It will then match that device
+against its list of supported devices and launch a separate
+thread to handle that gamepad.
+.PP
+Note that xboxdrv will not allow an arbitarily large number of
+controllers to be used in that mode, it can only handle as
+many controllers as you have allocated controller slots at
+startup. New slots can be allocated
+with \*(T<\fB\-\-next\-controller\fR\*(T> and by default one
+slot is always allocated, thus to support three controller you
+would run it with:
 .PP
 .nf
-\*(T<$ xboxdrv \-\-\-led 0 \-\-rumble 0,0 \-\-quit\*(T>
+\*(T<$ xboxdrv \-\-daemon \-\-next\-controller \-\-next\-controller\*(T>
 .fi
 .PP
-For rumble to work make sure you have connected the
-controller to a USB port that has enough power, an unpowered USB
-hub might not work.
+Each controller slot can be configured individually and you
+can limit which gamepad gets assigned to which slot with
+the \*(T<\fB\-\-match\fR\*(T> option.
+.PP
+Note that xboxdrv will create the virtual uinput devices on
+startup, not when a gamepad gets plugged in, this allows to
+plug in gamepads even after a game or an application like XBMC
+has already been launched and still have it all function
+properly. 
+.PP
+In daemon mode xboxdrv can be detached from the current shell
+via \*(T<\fB\-\-detach\fR\*(T>, to get a handle on it to kill
+it you can write its pid via the \*(T<\fB\-\-pid\-file\fR\*(T>:
+.PP
+.nf
+\*(T<$ sudo xboxdrv \-\-daemon \-\-detach \-\-pid\-file /var/run/xboxdrv.pid\*(T>
+.fi
 .SH TESTING
 Knowing how to test a xboxdrv configuration is absolutely crucial in
 understanding what is wrong in a given setup. Testing the
@@ -1394,23 +1431,26 @@ joystick devices are derived from the event device, so if you want to
 fix some issue on the joystick device, you have to fix the event
 device.
 .PP
-evtest is available in the tools/ directory, you might also find it in
-your distribution.
+evtest is available in the tools/ directory or as part of your
+distribution in the package \*(T<\fIevtest\fR\*(T>. your
+distribution.
 .SS JSTEST
 jstest lets you read the output out of a joystick event device (/dev/input/js0).
 .PP
 jstest is available in the tools/ directory or as part of your
-distribution.
+distribution \*(T<\fIjoystick\fR\*(T>.
 .SS SDL-JSTEST
 sdl-jstest lets you see events as games using SDL see them. This is
 very important when you want to set and test the SDL_LINUX_JOYSTICK
 environment variables.
 .PP
-Currently available via:
+It is currently available via:
 .PP
 .nf
 \*(T<$ svn co svn://svn.berlios.de/windstille/trunk/sdl\-jstest\*(T>
 .fi
+.PP
+Or from the same Ubuntu PPA that also contains xboxdrv in the package \*(T<\fIsdl\-jstest\fR\*(T>.
 .SS XEV
 xev lets you see the events that Xorg sees. Note however that you
 might not see all events, since some will be grapped by your Window
@@ -1421,9 +1461,18 @@ xev is part of every Linux distribution, on Ubuntu its available via:
 .nf
 \*(T<$ apt\-get install x11\-utils\*(T>
 .fi
-.SS JSCALC
-Do not use this tool, for current day joysticks it doesn't do
-anything useful, so don't touch it, it won't fix your problems.
+.SS "JSCALC AND JSCALIBRATOR"
+Both of these tools lets you calibrate your gamepad, however
+with pretty much all current gamepads this is no longer
+needed and actually harmful as it might overwrite a perfectly
+good working configuration with a broken one (unplugging the
+gamepad or a reboot will fix that). So avoid them unless you
+clearly understand the issues of using them.
+.PP
+If your gamepad produces incorrect data and you do want to
+calibrate it you might want to check out the
+option \*(T<\fB\-\-calibration\fR\*(T>, which lets you tweak
+the way xboxdrv interprets your gamepad data.
 .SS MOUSE
 No tools for testing the output on /dev/input/mouseX are known.
 .SS NOTE
@@ -1457,12 +1506,15 @@ The left and right trigger get turned into digital buttons. All axis
 except the dpad are ignored. RB and RT are mapped to act as if buttons
 1,2 and 3 are pressed simultaniously (useful for some special
 attacks). Instead of using the native button names, the
-1,2,3,... aliases are used, which makes things easier to edit:
+1,2,3,... aliases are used, which makes things a little easier to read:
 .PP
 .nf
-\*(T<$ xboxdrv \-\-dpad\-only \e
-  \-\-trigger\-as\-button  \e
-  \-\-buttonmap lb=1,x=2,y=3,lt=4,a=5,b=6,rb=1,rb=2,rb=3,rt=4,rt=5,rt=6\*(T>
+\*(T<$ xboxdrv \e
+  \-\-dpad\-only \e
+  \-\-trigger\-as\-button \e
+  \-\-buttonmap lb=1,x=2,y=3,lt=4,a=5,b=6 \e
+  \-\-buttonmap rb=1,rb=2,rb=3 \e
+  \-\-buttonmap rt=4,rt=5,rt=6\*(T>
 .fi
 .SS "CH FLIGHTSTICK EMULATION IN DOSBOX:"
 In \*(T<\fIdosbox.conf\fR\*(T> set:
@@ -1525,6 +1577,32 @@ of it will go there, while everything on the left side of it
 will go into the first configuration. Toggling between the
 configurations works with the guide button, you can have as
 many configuratios as you want.
+.SH "WRITING START-UP SCRIPTS FOR GAMES"
+When you want full game specific configurability and automatic
+launching of xboxdrv, it is easiest to write little startup
+scripts for your games that will launch xboxdrv, launch your
+game and then when the game is finished tear down xboxdrv:
+.PP
+.nf
+\*(T<#!/bin/sh
+
+exec xboxdrv \e
+  \-\-trigger\-as\-button \-s \e
+  \-\- \e
+  your_favorite_game
+
+# EOF #\*(T>
+.fi
+.PP
+Here \*(T<\fIyour_favorite_game\fR\*(T> is the executable
+of your game and is passed to xboxdrv as last argument. This
+will cause xboxdrv to start the game and keep running as long as
+the game is running, when the game is done, xboxdrv will quit
+automatically.
+.PP
+If you want to pass parameters to the game you have to add
+a \*(T<\fB\-\-\fR\*(T> separator, as otherwise your options to
+the game would be eaten up by xboxdrv.
 .SH "SDL NOTES"
 To let SDL know which axis act as a hat and which act as normal axis
 you have to set an environment variable:
@@ -1564,15 +1642,16 @@ SDL_JOYSTICK_DEVICE
 Joystick device to use in the linux joystick driver, in addition to the usual: \*(T<\fI/dev/js*\fR\*(T>, \*(T<\fI/dev/input/event*\fR\*(T>, \*(T<\fI/dev/input/js*\fR\*(T>
 .SH TROUBLESHOOTING
 .SS "\(dqNO XBOX OR XBOX360 CONTROLLER FOUND\(dq"
-This means that either your controller isn't plugged in or not
-recognized by the driver. To fix this you need to know the idVendor
-and the idProduct numbers, which you can find out via:
+This means that either your controller isn't plugged in or is
+not recognized by the driver. To fix this you need to know the
+idVendor and the idProduct numbers, which you can find out
+via:
 .PP
 .nf
 \*(T<$ lsusb \-v\*(T>
 .fi
 .PP
-Once done you can try to add them to this array in \*(T<\fIxpad_device.cpp\fR\*(T>:
+Once done you can try to add them to this array in \*(T<\fIsrc/xpad_device.cpp\fR\*(T>:
 .PP
 .nf
 \*(T<XPadDevice xpad_devices[] = { ... }\*(T>
@@ -1600,20 +1679,6 @@ of:
 .fi
 .PP
 Along with all the "Unknown data" lines you get. 
-.SS "PROGRAM STARTS AND THEN JUST DOES NOTHING"
-This is what the program is supposed to do. After you started it, it
-will give you basically two devices, a new /dev/input/eventX and a
-/dev/input/jsX. You can access and test your controller with jstest
-and evtest applications (available from your distribution or in the
-tools/ subdirectory). Or in case you want just see if your driver is
-working correctly you can pass the -v option:
-.PP
-.nf
-\*(T<$ xboxdrv \-v\*(T>
-.fi
-.PP
-This will cause the driver to output all the events that it received
-from the controller.
 .SS "\(dqERROR: NO STUITABLE UINPUT DEVICE FOUND\(dq"
 Make sure that uinput and joydev kernel modules are loaded. Make sure
 that you have a /dev/input/uinput, /dev/uinput or /dev/misc/uinput and
@@ -1629,7 +1694,7 @@ itself works with:
 You have to sync the controller befor it can be used, restart of the
 driver isn't needed and the driver should let you now when it recieves
 a connection after you sync the controller.
-.SH "KEYBOARD EMULATION"
+.SS "KEYBOARD EMULATION"
 When you try to let xboxdrv send a keyboard events
 via \*(T<\fB\-\-ui\-buttonmap\fR\*(T>
 or \*(T<\fB\-\-ui\-axismap\fR\*(T> Xorg must register the device
@@ -1652,7 +1717,50 @@ containing:
 .fi
 .PP
 This will tell HAL and later Xorg that xboxdrv acts as keyboard.
-.SH "XORG TROUBLE"
+.SS "WACOM ISSUES"
+In some older kernels a Wacom graphic tablet creates a
+joystick device, so xboxdrv or any other real joysticks ends
+up as \*(T<\fI/dev/input/js1\fR\*(T> instead
+of \*(T<\fI/dev/input/js0\fR\*(T>. In many games this
+causes the joystick to not function any more.
+.PP
+A temporary workaround for this is to simply delete the joystick
+device js0 and replace it with a symbolic link js1 via:
+.PP
+.nf
+\*(T<$ sudo ln \-sf /dev/input/js1 /dev/input/js0\*(T>
+.fi
+.PP
+This workaround will only last till the next reboot, since the device
+names are dynamically created, but for the time being there doesn't
+seem to any other way to easily work around this issue. 
+.PP
+In newer kernels this issue is fixed.
+.SS "UINPUT ISSUES"
+On Ubuntu 9.04 the permissions of the uinput device have
+changed to 0640, meaning only root has access to the device.
+To change this back so that users in the group root have
+access the device and in turn can run xboxdrv without sudo you
+have to create a file
+called \*(T<\fI/etc/udev/rules.d/55\-permissions\-uinput.rules\fR\*(T>
+with the content:
+.PP
+.nf
+\*(T<KERNEL=="uinput", MODE="0660", GROUP="root"\*(T>
+.fi
+.SS "WINE ISSUES"
+When using the Xbox360 gamepad in Wine it is not specially
+handled as Xbox360 gamepad, but as generic DirectInput gamepad.
+This means games will not display the proper button labels, but
+just numbers (i.e. 'Btn1' instead of 'A' for example). Aside
+from that it should work fine.
+.PP
+XInput support (the Microsoft DirectInput replacment, not the
+Xorg xinput) is as of January 2011 not implemented in Wine, so
+games that require XInput and don't have an DirectInput fallback
+will not work with a Xbox360 controller, unofficial patches
+however do exist.
+.SH "XORG ISSUES"
 If you start xboxdrv and instead of having a fully working
 joystick, you end up controlling the mouse that might be due to
 recent changes in Xorg and its device hotplug handling. There
@@ -1711,45 +1819,6 @@ properly. So unless you are already familiar with editing Xorg you
 better avoid this workaround. Workaround 3) has basically the same
 effect, except that auto detection only gets disabled for the single
 device it is causing problems.
-.SH "WACOM TROUBLE"
-In recent kernels a Wacom graphic tablet creates a joystick device, so
-xboxdrv or any other real joysticks ends up as \*(T<\fI/dev/input/js1\fR\*(T> instead
-of \*(T<\fI/dev/input/js0\fR\*(T>. In many games this causes the joystick to not
-function any more.
-.PP
-A temporary workaround for this is to simply delete the joystick
-device js0 and replace it with a symbolic link js1 via:
-.PP
-.nf
-\*(T<$ sudo ln \-sf /dev/input/js1 /dev/input/js0\*(T>
-.fi
-.PP
-This workaround will only last till the next reboot, since the device
-names are dynamically created, but for the time being there doesn't
-seem to any other way to easily work around this issue. 
-.SH "UINPUT TROUBLE"
-On Ubuntu 9.04 the permissions of the uinput device have changed to
-0640, meaning only root has access to the device. To change this back
-so that users in the group root have access the device and in turn can
-run xboxdrv without sudo you have to create a file called:
-.PP
-\*(T<\fI/etc/udev/rules.d/55\-permissions\-uinput.rules\fR\*(T>
-.PP
-With the content:
-.PP
-.nf
-\*(T<KERNEL=="uinput", MODE="0660", GROUP="root"\*(T>
-.fi
-.SH "WINE TROUBLE"
-When using the Xbox360 gamepad in Wine it is not specially handled as
-Xbox360 gamepad, this means games will not display the proper button
-labels, but just numbers (i.e. 'Btn1' instead of 'A' for
-example). Aside from that it should work fine.
-.PP
-XInput support (the DirectInput replacment, not the Xorg xinput)
-is as of August 2010 not implemented in Wine, so games that
-require XInput and don't have an DirectInput fallback will not
-work with a Xbox360 controller, unofficial patches however do exist.
 .SH "FORCE FEEDBACK PROGRAMMING"
 For documentation on the FF interface see:
 .TP 0.2i
@@ -1771,53 +1840,34 @@ information can be found at:
 \fBfftest\fR is an application you can use to test the force feedback
 interface.
 .PP
-Force feedback is disabed by default since it seems to causes trouble
-in certain application, namely "Tomb Raider: Legend" when run in Wine
-it crashes at startup when rumble is enabled, while it works perfectly
-normal when rumble is disabled.
-.PP
-"Tomb Raider: Anniversary" running in Wine seems to work together with
-xboxdrv and rumble, but hasn't been intensivly tested.
-.SH "WRITING START-UP SCRIPTS FOR GAMES"
-When you want configurability and automatic launching, it is recomment
-that you write little startup scripts for your games, such as this:
-.PP
-.nf
-\*(T<#!/bin/sh
-
-# Start xboxdrv and remember its PID in the variable XBOXPID
-xboxdrv \-\-trigger\-as\-button \-s &amp;
-XBOXPID=$!
-
-# Give xboxdrv a second to startup and create the device
-sleep 1
-
-# Launch your favorite game
-your_favorite_game
-
-# Kill xboxdrv and wait for it to finish
-kill $XBOXPID
-wait $XBOXPID
-
-# EOF #\*(T>
-.fi
-.PP
-That way you can individually configure every game and not
-have to worry about launching xboxdrv manually.
+Force feedback is disabed by default since it causes trouble in
+certain application. "Tomb Raider: Legend" for example when run
+in Wine crashes at startup when rumble is enabled, while it
+works perfectly normal when rumble is disabled.
 .SH BUGS
+.SS "X11 KEYSYM ISSUES"
 X11 keysyms might not work correctly in \*(T<\fB\-\-ui\-buttonmap a=XK_Foobar\fR\*(T>
 when Foobar is mapped to multiple keycodes in the keymap. 
 .PP
 Workaround: Use \fBKEY_\fR instead or cleanup your keymap
 .PP
+Newer versions of Xorg will also do perform some auto
+configuration that might lead to your keymap being switched
+whenever a new keyboard is detected, in cases of custom
+Xmodmaps this might confuse xboxdrv and make the XK_ style
+names unusable. No workaround for that is known right now.
+.SS "NON-INTERRUPTABLE PROCESSES DUE TO FORCE FEEDBACK"
 Force feedback support is brittle, if you Ctrl-c the driver in the
 wrong moment you will end up with a dead uninterruptable process and
 basically have to reboot. This looks like it might be a kernel issue
 and not a xboxdrv one.
 .PP
 Workaround: Kill the app that uses xboxdrv before xboxdrv itself.
+.SS "BUG REPORTS AND FEATURE REQUESTS"
+If you have bug reports or feature request report them by
+email to:
 .PP
-Report bugs to Ingo Ruhnke <\*(T<grumbel@gmx.de\*(T>>.
+Ingo Ruhnke <\*(T<grumbel@gmx.de\*(T>>
 .SH COPYRIGHT
 Copyright \(co 2010 Ingo Ruhnke <\*(T<grumbel@gmx.de\*(T>>
 License GPLv3+: GNU GPL version 3 or later
@@ -1826,9 +1876,9 @@ License GPLv3+: GNU GPL version 3 or later
 are free to change and redistribute it. There is NO WARRANTY,
 to the extent permitted by law.
 .SH "SEE ALSO"
-\fBxboxdrv-daemon\fR(1), 
 \fBevtest\fR(1), 
 \fBjstest\fR(1), 
+\fBjstest-gtk\fR(1), 
 \fBxev\fR(1),
 \fBfftest\fR(1),
 \fBlsusb\fR(1)

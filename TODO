@@ -42,6 +42,15 @@ $ dput my-ppa ../xboxdrv_0.7.1-1~lucid1_source.changes
 Stuff to do before 0.7.1 release:
 =================================
 
+* improve output in daemon mode, when --quiet is not given print the number of allocated controller slots
+
+* [ERROR] XboxdrvDaemon::process_match(): no free controller slot found, controller will be ignored
+  - should include info about what controller is ignored
+
+* update debian package description
+
+* update the later man page sections, they are pretty much out of date
+
 * write a tutorial
 
 * write lots of well documented examples
@@ -71,8 +80,10 @@ Stuff to do before 0.7.1 release:
   * match again sysname could make sense, seems somewhat constant: "5-2"
     Xbox1 controller results in "5-2.1", due to being really two devices
 
-  * add match rule for usb iSerial (might be the only way to tell
-    similar devices appart)
+  * redesign match rules and only use single argument? would make
+    match group more logical:
+
+    --match-group vendor=045f,product=028f
 
 * fix bugs that pop up
 
