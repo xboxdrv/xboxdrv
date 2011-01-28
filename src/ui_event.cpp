@@ -140,7 +140,7 @@ UIEvent::get_device_id() const
 {
   assert(m_device_id_resolved);
 
-  return (m_slot_id << 16) | m_device_id;
+  return UInput::create_device_id(m_slot_id, m_device_id);
 }
 
 namespace {

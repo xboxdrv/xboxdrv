@@ -30,6 +30,12 @@ struct Xbox360GuitarMsg;
   
 class UInput
 {
+public:
+  static inline uint32_t create_device_id(uint16_t slot_id, uint16_t device_id)
+  {
+    return (slot_id << 16) | device_id;
+  }
+
 private:
   typedef std::map<uint32_t, boost::shared_ptr<LinuxUinput> > UInputDevs;
   UInputDevs uinput_devs;
