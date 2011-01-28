@@ -554,12 +554,17 @@ Switches to the controller slot with the number N, numbering starts at zero.
 Switches to the next controller slot.
 .TP 
 \*(T<\fB\-\-match\fR\*(T> \fIRULE,...\fR
-Limits a controller slot to devices that match RULE.
-Possible match rules are:
+Limits a controller slot to devices that match any one
+of the given rules. Possible match rules are:
 
 .nf
 \*(T<usbid={VENDOR}:{PRODUCT}\*(T>
 .fi
+.TP 
+\*(T<\fB\-\-match\-group\fR\*(T> \fIRULE,...\fR
+Limits a controller slot to devices that match all of
+the given rules. Possible match rules are the same as
+for \*(T<\fB\-\-match\fR\*(T>.
 .SS "CONFIG SLOT OPTIONS"
 You can use multple configurations, called config slots, with
 your controller. You switch between those multiple
@@ -1480,11 +1485,22 @@ If the tools provide no output at all, this might not be due to a
 wrong configuration, but due to Xorg grabbing your event device and
 locking it, see Xorg section for possible fixes.
 .SH EXAMPLES
+.SS "TURNING TRIGGERS INTO BUTTONS"
+By default xboxdrv will handle the trigger as analog axis, not
+buttons, while this is beneficial for racing games, it will
+confuse many other games, thus xboxdrv provides an easy way to
+change the handling into buttons via
+the \*(T<\fB\-\-trigger\-as\-button\fR\*(T> option:
+.PP
+.nf
+\*(T<$ xboxdrv \-\-trigger\-as\-button \-s \*(T>
+.fi
 .SS "KEYBOARD EMULATION"
-The following configuration works for games that are
-played with keyboard, like Flash games or games that don't
-support a joystick. You might have to adjust the keybindings
-to fit the game:
+The following configuration will cause xboxdrv to emulate a
+keyboard, which can be useful for games that are played with
+keyboard, like Flash games or games that don't support a
+joystick. Since different games use different keyboard keys
+you might have to adjust the keybindings to fit the game:
 .PP
 .nf
 \*(T<$ xboxdrv \e
@@ -1492,21 +1508,13 @@ to fit the game:
   \-\-ui\-buttonmap a=XK_a,b=XK_b,x=XK_x,y=XK_y \e
   \-\-ui\-buttonmap dl=XK_Left,dr=XK_Right,du=XK_Up,dd=XK_Down\*(T>
 .fi
-.SS "PRINCE OF PERSIA OR TOMB RAIDER ANNIVERSARY IN WINE "
-Start \fBxboxdrv\fR with:
-.PP
-.nf
-\*(T<$ xboxdrv \-\-trigger\-as\-button \-s \*(T>
-.fi
-.PP
-The triggers are not regonized in these games when they
-are analog, so we have to handle them as buttons.
-.SS "FIGHTING GAMES WITH DATEL ARCADE PRO JOYSTICK:"
-The left and right trigger get turned into digital buttons. All axis
-except the dpad are ignored. RB and RT are mapped to act as if buttons
-1,2 and 3 are pressed simultaniously (useful for some special
-attacks). Instead of using the native button names, the
-1,2,3,... aliases are used, which makes things a little easier to read:
+.SS "FIGHTING GAMES:"
+In this configuration the left and right trigger get turned
+into digital buttons. All axis except the dpad are ignored. RB
+and RT are mapped to act as if buttons 1,2 and 3 are pressed
+simultaniously which is useful for some special attacks.
+Instead of using the native button names, the 1,2,3,...
+aliases are used, which makes things a little easier to read:
 .PP
 .nf
 \*(T<$ xboxdrv \e
@@ -1532,8 +1540,43 @@ Start xboxdrv with:
   \-\-relative\-axis y2=64000 \-\-axismap \-y2=x2,x2=y2\*(T>
 .fi
 .PP
-Your right analog stick will act as trottle control, the trigger as
-rudder.
+Your right analog stick will act as trottle control, the
+trigger as rudder. Using \*(T<\fB\-\-modifier\fR\*(T> to
+install a four-way restrictor might also be worth a
+consideration to not accidently touch the throttle when the
+rudder is moved.
+.SS "USING MOUSE EMULATION AND JOYSTICK AT THE SAME TIME"
+To use mouse emulation and joystick at the same time you have
+to register two configuration with xboxdrv, this works via:
+.PP
+.nf
+\*(T<$ xboxdrv \-\-next\-config \-\-mouse\*(T>
+.fi
+.PP
+The \*(T<\fB\-\-next\-config\fR\*(T> option will open up a second
+configuration and all configuration options on the right side
+of it will go there, while everything on the left side of it
+will go into the first configuration. Toggling between the
+configurations works with the guide button, you can have as
+many configuratios as you want.
+.SS "MAPPING EVERY BUTTON MULTIPLE"
+Some games might require more buttons then your gamepad has,
+in those situation it can be useful to map a button twice by
+using shifted buttons:
+.PP
+.nf
+\*(T<$ xboxdrv \e
+  \-\-ui\-clear \e
+  \-\-ui\-axismap X1=ABS_X,Y1=ABS_Y \e
+  \-\-ui\-buttonmap a=JS_0,b=JS_1,x=JS_2,y=JS_3 \e
+  \-\-ui\-buttonmap lb+a=JS_4,lb+b=JS_5,lb+x=JS_6,lb+y=JS_7 \e
+  \-\-ui\-buttonmap rb+a=JS_8,rb+b=JS_9,rb+x=JS_10,rb+y=JS_11
+\*(T>.fi
+.PP
+Here all face buttons are get mapped three times, once when
+pressed normally, once when pressed while LB is held down and
+once when RB is held down, thus given you for the six buttons
+12 virtual ones.
 .SS SAUERBRATEN
 First analogstick gets mapped te cursor keys, second
 analogstick gets mapped to mouse. Note: This is just an
@@ -1562,21 +1605,6 @@ configuration, you have to do tweaking yourself.
   \-\-ui\-buttonmap back=KEY_TAB,start=KEY_ESC \e
   \-s \-\-deadzone 6000 \-\-dpad\-as\-button \-\-trigger\-as\-button\*(T>
 .fi
-.SS "USING MOUSE EMULATION AND JOYSTICK AT THE SAME TIME"
-To use mouse emulation and joystick at the same time you have
-to register two uinput configuration with xboxdrv, this works
-via:
-.PP
-.nf
-\*(T<$ xboxdrv \-\-next\-config \-\-mouse\*(T>
-.fi
-.PP
-The \*(T<\fB\-\-next\-config\fR\*(T> option will open up a second
-configuration and all configuration options on the right side
-of it will go there, while everything on the left side of it
-will go into the first configuration. Toggling between the
-configurations works with the guide button, you can have as
-many configuratios as you want.
 .SH "WRITING START-UP SCRIPTS FOR GAMES"
 When you want full game specific configurability and automatic
 launching of xboxdrv, it is easiest to write little startup

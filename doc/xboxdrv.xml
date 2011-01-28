@@ -850,10 +850,21 @@ start=KEY_ESC
           <term><option>--match</option> <replaceable class="parameter">RULE,...</replaceable></term>
           <listitem>
             <para>
-              Limits a controller slot to devices that match RULE.
-              Possible match rules are:
+              Limits a controller slot to devices that match any one
+              of the given rules. Possible match rules are:
             </para>
             <programlisting>usbid={VENDOR}:{PRODUCT}</programlisting>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--match-group</option> <replaceable class="parameter">RULE,...</replaceable></term>
+          <listitem>
+            <para>
+              Limits a controller slot to devices that match all of
+              the given rules. Possible match rules are the same as
+              for <option>--match</option>.
+            </para>
           </listitem>
         </varlistentry>
       </variablelist>
@@ -2119,13 +2130,29 @@ $ modprobe joydev]]></programlisting>
 
   <refsect1>
     <title>Examples</title>
+
+    <refsect2>
+      <title>Turning triggers into buttons</title>
+      <para>
+        By default xboxdrv will handle the trigger as analog axis, not
+        buttons, while this is beneficial for racing games, it will
+        confuse many other games, thus xboxdrv provides an easy way to
+        change the handling into buttons via
+        the <option>--trigger-as-button</option> option:
+      </para>
+
+      <programlisting><![CDATA[$ xboxdrv --trigger-as-button -s ]]></programlisting>
+    </refsect2>
+
     <refsect2>
       <title>Keyboard Emulation</title>
-
-      <para>The following configuration works for games that are
-        played with keyboard, like Flash games or games that don't
-        support a joystick. You might have to adjust the keybindings
-        to fit the game:</para>
+      <para>
+        The following configuration will cause xboxdrv to emulate a
+        keyboard, which can be useful for games that are played with
+        keyboard, like Flash games or games that don't support a
+        joystick. Since different games use different keyboard keys
+        you might have to adjust the keybindings to fit the game:
+      </para>
 
       <programlisting><![CDATA[$ xboxdrv \
   --ui-clear \
@@ -2134,28 +2161,15 @@ $ modprobe joydev]]></programlisting>
     </refsect2>
 
     <refsect2>
-      <title>
-        Prince of Persia or Tomb Raider Anniversary in Wine
-      </title>
-
+      <title>Fighting games:</title>
       <para>
-        Start <command>xboxdrv</command> with:
+        In this configuration the left and right trigger get turned
+        into digital buttons. All axis except the dpad are ignored. RB
+        and RT are mapped to act as if buttons 1,2 and 3 are pressed
+        simultaniously which is useful for some special attacks.
+        Instead of using the native button names, the 1,2,3,...
+        aliases are used, which makes things a little easier to read:
       </para>
-
-      <programlisting><![CDATA[$ xboxdrv --trigger-as-button -s ]]></programlisting>
-
-      <para>The triggers are not regonized in these games when they
-        are analog, so we have to handle them as buttons.</para>
-    </refsect2>
-
-    <refsect2>
-      <title>Fighting games with Datel Arcade Pro Joystick:</title>
-
-      <para>The left and right trigger get turned into digital buttons. All axis
-        except the dpad are ignored. RB and RT are mapped to act as if buttons
-        1,2 and 3 are pressed simultaniously (useful for some special
-        attacks). Instead of using the native button names, the
-        1,2,3,... aliases are used, which makes things a little easier to read:</para>
 
       <programlisting><![CDATA[$ xboxdrv \
   --dpad-only \
@@ -2178,8 +2192,52 @@ joysticktype = ch]]></programlisting>
   --trigger-as-zaxis --square-axis \
   --relative-axis y2=64000 --axismap -y2=x2,x2=y2]]></programlisting>
 
-      <para>Your right analog stick will act as trottle control, the trigger as
-        rudder.</para>
+      <para>
+        Your right analog stick will act as trottle control, the
+        trigger as rudder. Using <option>--modifier</option> to
+        install a four-way restrictor might also be worth a
+        consideration to not accidently touch the throttle when the
+        rudder is moved.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>Using mouse emulation and joystick at the same time</title>
+      <para>
+        To use mouse emulation and joystick at the same time you have
+        to register two configuration with xboxdrv, this works via:
+      </para>
+      <programlisting><![CDATA[$ xboxdrv --next-config --mouse]]></programlisting>
+      <para>
+        The <option>--next-config</option> option will open up a second
+        configuration and all configuration options on the right side
+        of it will go there, while everything on the left side of it
+        will go into the first configuration. Toggling between the
+        configurations works with the guide button, you can have as
+        many configuratios as you want.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>Mapping every button multiple</title>
+      <para>
+        Some games might require more buttons then your gamepad has,
+        in those situation it can be useful to map a button twice by
+        using shifted buttons:
+      </para>
+      <programlisting><![CDATA[$ xboxdrv \
+  --ui-clear \
+  --ui-axismap X1=ABS_X,Y1=ABS_Y \
+  --ui-buttonmap a=JS_0,b=JS_1,x=JS_2,y=JS_3 \
+  --ui-buttonmap lb+a=JS_4,lb+b=JS_5,lb+x=JS_6,lb+y=JS_7 \
+  --ui-buttonmap rb+a=JS_8,rb+b=JS_9,rb+x=JS_10,rb+y=JS_11
+]]></programlisting>      
+      <para>
+        Here all face buttons are get mapped three times, once when
+        pressed normally, once when pressed while LB is held down and
+        once when RB is held down, thus given you for the six buttons
+        12 virtual ones.
+      </para>
     </refsect2>
 
     <refsect2>
@@ -2201,7 +2259,6 @@ joysticktype = ch]]></programlisting>
 
     <refsect2>
       <title>Warsow</title>
-
       <para>
         Note: This is just an incomplete example, not a perfectly playable
         configuration, you have to do tweaking yourself.
@@ -2215,24 +2272,6 @@ joysticktype = ch]]></programlisting>
   --ui-buttonmap dl=KEY_4,dr=KEY_2,du=REL_WHEEL:-1:150,dd=REL_WHEEL:1:150 \
   --ui-buttonmap back=KEY_TAB,start=KEY_ESC \
   -s --deadzone 6000 --dpad-as-button --trigger-as-button]]></programlisting>
-    </refsect2>
-
-    <refsect2>
-      <title>Using mouse emulation and joystick at the same time</title>
-      <para>
-        To use mouse emulation and joystick at the same time you have
-        to register two uinput configuration with xboxdrv, this works
-        via:
-      </para>
-      <programlisting><![CDATA[$ xboxdrv --next-config --mouse]]></programlisting>
-      <para>
-        The <option>--next-config</option> option will open up a second
-        configuration and all configuration options on the right side
-        of it will go there, while everything on the left side of it
-        will go into the first configuration. Toggling between the
-        configurations works with the guide button, you can have as
-        many configuratios as you want.
-      </para>
     </refsect2>
   </refsect1>
 
