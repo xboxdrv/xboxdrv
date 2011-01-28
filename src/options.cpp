@@ -23,6 +23,7 @@
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
+#include "uinput.hpp"
 
 Options* g_options;
 
@@ -68,7 +69,8 @@ Options::Options() :
   config_toggle_button(XBOX_BTN_UNKNOWN),
   controller_slot(0),
   config_slot(0),
-  extra_devices(true)
+  extra_devices(true),
+  uinput_device_names()
 {
   // create the entry if not already available
   controller_slots[controller_slot].get_options(config_slot);
@@ -162,7 +164,8 @@ Options::set_debug()
 void
 Options::set_device_name(const std::string& name)
 {
-  //get_controller().uinput.mouse();
+  uint32_t device_id = UInput::create_device_id(controller_slot, DEVICEID_AUTO);
+  uinput_device_names[device_id] = name;
 }
 
 void
@@ -192,11 +195,13 @@ Options::set_trigger_as_zaxis()
 void
 Options::set_dpad_as_button()
 {
+  // FIXME: implement me
 }
 
 void
 Options::set_dpad_only()
 {
+  // FIXME: implement me
 }
 
 void

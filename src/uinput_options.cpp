@@ -22,7 +22,6 @@
 #include <linux/input.h>
 
 UInputOptions::UInputOptions() :
-  device_name("Xbox Gamepad (userspace driver)"),
   m_btn_map(),
   m_axis_map()
 {
@@ -56,7 +55,8 @@ UInputOptions::get_axis_map() const
 void
 UInputOptions::mimic_xpad()
 {
-  device_name = "Microsoft X-Box 360 pad";
+  // FIXME: need to set this somewhere:
+  // device_name = "Microsoft X-Box 360 pad";
 
   get_btn_map().bind(XBOX_BTN_START, ButtonEvent::create_key(BTN_START));
   get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEvent::create_key(BTN_MODE));

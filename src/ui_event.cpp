@@ -143,8 +143,6 @@ UIEvent::get_device_id() const
   return UInput::create_device_id(m_slot_id, m_device_id);
 }
 
-namespace {
-
 int str2deviceid(const std::string& device)
 {
   if (device == "auto" || device.empty())
@@ -179,8 +177,6 @@ int str2slotid(const std::string& slot)
   {
     return boost::lexical_cast<int>(slot);
   }
-}
-
 }
 
 void split_event_name(const std::string& str, std::string* event_str, int* slot_id, int* device_id)

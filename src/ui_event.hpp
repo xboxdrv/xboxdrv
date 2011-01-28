@@ -68,6 +68,9 @@ private:
  */
 void split_event_name(const std::string& str, std::string* event_str, int* slot_id, int* device_id);
 
+int str2deviceid(const std::string& device);
+int str2slotid(const std::string& slot);
+
 #endif
 
 /* EOF */

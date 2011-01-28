@@ -42,6 +42,21 @@ $ dput my-ppa ../xboxdrv_0.7.1-1~lucid1_source.changes
 Stuff to do before 0.7.1 release:
 =================================
 
+* implement set_dpad_as_button(), set_dpad_only()
+
+* --name DEVNAME must work with multple controller slots and multiple
+    devices, also allow a way to rename mouse and keyboard emulation devices
+
+    turn --name into --ui-name SLOT=foo
+
+  --ui-name 1=MouseEmulation:0500:0500,2=Keyboard,mouse=Mouse
+  --ui-name 1=MouseEmulation,2=Keyboard,mouse=Mouse
+  --ui-vendor =
+  --ui-product 
+  --ui-bcdversion
+
+* document match rules
+
 * improve output in daemon mode, when --quiet is not given print the number of allocated controller slots
 
 * [ERROR] XboxdrvDaemon::process_match(): no free controller slot found, controller will be ignored
@@ -119,8 +134,6 @@ Stuff to do before 0.7.2 release:
   - --disable-dpad-diagonals ur,dl,dl
 
   * extend usbid match rule to bcd device
-
-* --name DEVNAME must work with multple controller slots and multiple devices
 
 * cleanup device_id, don't manually do (slot<<16) | devid (only an
   issue in force feedback code)

@@ -44,6 +44,8 @@ public:
   void create_ini_schema(Options* opts);
 
 private:
+  void set_device_name(const std::string& name, const std::string& value);
+
   void set_ui_buttonmap(const std::string& name, const std::string& value);
   void set_ui_axismap(const std::string& name, const std::string& value);
   void set_modifier(const std::string& name, const std::string& value);

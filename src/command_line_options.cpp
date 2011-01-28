@@ -28,6 +28,7 @@
 #include "ini_parser.hpp"
 #include "ini_schema_builder.hpp"
 #include "options.hpp"
+#include "ui_event.hpp"
 
 #include "axisfilter/relative_axis_filter.hpp"
 #include "axisfilter/calibration_axis_filter.hpp"
@@ -67,6 +68,7 @@ enum {
   OPTION_BUTTONMAP,
   OPTION_AXISMAP,
   OPTION_NAME,
+  OPTION_DEVICE_NAME,
   OPTION_NEXT_CONFIG,
   OPTION_NEXT_CONTROLLER,
   OPTION_CONFIG_SLOT,
@@ -271,7 +273,8 @@ CommandLineParser::init_argp()
     .add_text("Uinput Configuration Options: ")
     .add_option(OPTION_NO_UINPUT,          0, "no-uinput",   "", "do not try to start uinput event dispatching")
     .add_option(OPTION_NO_EXTRA_DEVICES,   0, "no-extra-devices",  "", "Do not create separate virtual keyboard and mouse devices, just use a single virtual device")
-    .add_option(OPTION_NAME,               0, "name",             "DEVNAME", "Changes the descriptive name the device will have")
+    .add_option(OPTION_NAME,               0, "name",            "NAME", "Changes the name prefix used for devices in the current slot")
+    .add_option(OPTION_DEVICE_NAME,        0, "device-name",     "DEVID=NAME", "Changes the descriptive name the given device")
     .add_option(OPTION_UI_CLEAR,           0, "ui-clear",         "",     "Removes all existing uinput bindings")
     .add_option(OPTION_UI_BUTTONMAP,       0, "ui-buttonmap",     "MAP",  "Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)")
     .add_option(OPTION_UI_AXISMAP,         0, "ui-axismap",       "MAP",  "Changes the uinput events send when moving a axis (example: X1=ABS_X2)")
@@ -609,8 +612,12 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_axismap, this, _1, _2));
         break;
                     
+      case OPTION_DEVICE_NAME:
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_device_name, this, _1, _2));
+        break;
+
       case OPTION_NAME:
-        opts.get_controller_options().uinput.device_name = opt.argument;
+        opts.set_device_name(opt.argument);
         break;
 
       case OPTION_NEXT_CONFIG:
@@ -923,6 +930,36 @@ void
 CommandLineParser::set_modifier(const std::string& name, const std::string& value)
 {
   m_options->get_controller_options().modifier.push_back(ModifierPtr(Modifier::from_string(name, value)));
+}
+
+void
+CommandLineParser::set_device_name(const std::string& name, const std::string& value)
+{
+  // FIXME: insert magic to resolve symbolic names
+  std::string::size_type p = name.find('.');
+  if (p == std::string::npos)
+  {
+    uint16_t device_id = str2deviceid(name.substr());
+    uint16_t slot_id   = m_options->controller_slot;
+
+    uint32_t devid = UInput::create_device_id(slot_id, device_id);
+      
+    m_options->uinput_device_names[devid] = value;
+  }
+  else
+  {
+    uint16_t device_id = str2deviceid(name.substr(0, p));
+    uint16_t slot_id   = str2slotid(name.substr(p+1));
+
+    if (slot_id == DEVICEID_AUTO)
+    {
+      slot_id = m_options->controller_slot;
+    }
+
+    uint32_t devid = UInput::create_device_id(slot_id, device_id);
+      
+    m_options->uinput_device_names[devid] = value;
+  }
 }
 
 void

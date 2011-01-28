@@ -116,6 +116,8 @@ public:
 
   bool extra_devices;
 
+  std::map<uint32_t, std::string> uinput_device_names;
+
 public:
   Options();
 

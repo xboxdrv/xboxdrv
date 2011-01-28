@@ -24,9 +24,6 @@
 
 class UInputOptions
 {
-public:
-  std::string device_name;
-
 private:
   ButtonMap m_btn_map;
   AxisMap   m_axis_map;

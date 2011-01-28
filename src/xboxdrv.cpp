@@ -443,6 +443,7 @@ Xboxdrv::run_main(const Options& opts)
       if (!opts.quiet)
         std::cout << "Starting with uinput" << std::endl;
       uinput = std::auto_ptr<UInput>(new UInput());
+      uinput->set_device_names(opts.uinput_device_names);
     }
     else
     {
