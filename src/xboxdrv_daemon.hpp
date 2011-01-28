@@ -98,7 +98,7 @@ private:
   void run_loop(const Options& opts);
 
   ControllerSlot* find_free_slot(uint16_t vendor, uint16_t product,
-                                 int bus, int dev) const;
+                                 int bus, int dev, const char* serial) const;
 
   void cleanup_threads();
   void process_match(const Options& opts, struct udev_device* device);

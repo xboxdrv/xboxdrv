@@ -22,7 +22,8 @@
 
 bool
 ControllerMatchRule::match(int vendor, int product,
-                           int bus, int dev) const
+                           int bus, int dev,
+                           const char* serial) const
 {
   switch(m_type)
   {
@@ -34,6 +35,9 @@ ControllerMatchRule::match(int vendor, int product,
 
     case kMatchUSBPath:
       return (bus == m_bus && dev == m_dev);
+
+    case kMatchUSBSerial:
+      return serial && (m_serial == serial);
 
     case kMatchEvdevPath:
       assert(!"not implemented");
@@ -50,7 +54,7 @@ ControllerMatchRule::create_usb_id(int vendor, int product)
 {
   ControllerMatchRule rule;
   rule.m_type = kMatchUSBId;
-  rule.m_vendor = vendor;
+  rule.m_vendor  = vendor;
   rule.m_product = product;
   return rule;
 }
@@ -62,6 +66,15 @@ ControllerMatchRule::create_usb_path(int bus, int dev)
   rule.m_type = kMatchUSBPath;
   rule.m_bus  = bus;
   rule.m_dev = dev;
+  return rule;
+}
+
+ControllerMatchRule
+ControllerMatchRule::create_usb_serial(const std::string& serial)
+{
+  ControllerMatchRule rule;
+  rule.m_type = kMatchUSBSerial;
+  rule.m_serial = serial;
   return rule;
 }
 

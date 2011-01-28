@@ -28,6 +28,7 @@ public:
     kMatchEverything,
     kMatchUSBId, 
     kMatchUSBPath, 
+    kMatchUSBSerial,
     kMatchEvdevPath
   } m_type;
 
@@ -39,20 +40,25 @@ public:
 
   std::string m_path;
 
+  std::string m_serial;
+
   ControllerMatchRule() :
     m_type(kMatchEverything),
     m_bus(),
     m_dev(),
     m_vendor(),
     m_product(),
-    m_path()
+    m_path(),
+    m_serial()
   {}
 
   bool match(int vendor, int product,
-             int bus, int dev) const;
+             int bus, int dev,
+             const char* serial) const;
 
   static ControllerMatchRule create_usb_id(int vendor, int product);
   static ControllerMatchRule create_usb_path(int bus, int dev);
+  static ControllerMatchRule create_usb_serial(const std::string& serial);
   static ControllerMatchRule create_evdev_path(const std::string& path);
 };
 

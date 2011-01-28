@@ -269,6 +269,17 @@ Options::add_match(const std::string& lhs, const std::string& rhs)
       get_controller_slot().add_match_rule(ControllerMatchRule::create_usb_path(bus, dev));
     }
   }
+  else if (lhs == "usbserial")
+  {
+    if (args.size() != 1)
+    {
+      raise_exception(std::runtime_error, "usbserial rule requires SERIAL argument");
+    }
+    else
+    {
+      get_controller_slot().add_match_rule(ControllerMatchRule::create_usb_serial(args[0]));
+    }
+  }
   else if (lhs == "evdev")
   {
     if (args.size() != 1)
