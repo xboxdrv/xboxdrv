@@ -42,6 +42,27 @@ $ dput my-ppa ../xboxdrv_0.7.1-1~lucid1_source.changes
 Stuff to do before 0.7.1 release:
 =================================
 
+* -trigger=trigger is broken
+
+* remove uinput.send_rel_repetitive() replace with just EventHandler::update()
+
+* mapping trigger=REL_WHEEL:5:100 doesn't work
+
+* make dummy joystick axis, mouse button creation optional
+
+* --ui-axismap LT=KEY_A:KEY_B:1 
+
+Here KEY_B is the key you want to send and KEY_A is a random other key
+that you don't need. It's a hack as mapping both to KEY_B seems to
+cause some trouble with automatic key repeat for some reason. Note
+that you must not combine this with --trigger-as-zaxis as that will
+disable LT and RT
+
+* in INI files allow:
+
+  [xboxdrv]
+  ui-buttonmap = A=BTN_A,B=BTN_B,...
+
 * how exactly does daemon interact with wireless pads?! allow --wid --id for daemon
 
 * fix device name of mimic_xpad
@@ -78,6 +99,30 @@ Stuff to do before 0.7.1 release:
 
 * do modifier/filter dump when --verbose is given, make verbose
   overall more useful
+
+
+* write example ini configs (as documented source for user customization):
+
+  * default config
+
+  * two joysticks with one stick
+ 
+  * all buttons and axis shifted by LB and RB
+
+  * evdev joystick to xbox360
+
+  * dosbox flightstick emulation
+
+  * high sensitivty
+
+  * mouse emulation
+
+* give some response curve examples:
+
+  # Low sensitivity on the stick when LB is pressed:
+
+ --ui-axismap lb+y1^resp:-8000:0:8000=ABS_Y,y1=ABS_Y,lb+x1^resp:-8000:0:8000=ABS_X,x1=ABS_X
+
 
 
 Stuff to do before 0.7.2 release:
@@ -229,12 +274,6 @@ Stuff to do before 0.7.x release:
 
 * write UIEvent::from_string()
 
-* absolute mouse pointer can be created with:
-
-  abs:1-ABS_X, abs:1-ABS_Y, key:1-BTN_LEFT
-
-  document that somewhere, device must not contain REL_X, REL_Y or BTN_A or it won't work in X11  
-
 * basic Dualstrike mouse emulation with absolute position:
 
  ./xboxdrv-dualstrike \
@@ -275,50 +314,11 @@ http://www.mp3car.com/vbulletin/input-devices/108554-xbox360-chatpad-awsome-back
 * guitar handling was changed in a4e1003cba0ff925358ce5ed84d2bf9a728e93d6 
 
 * REL_ events could need acceleration support, as mouse emulation is currently kind of imprecise
-
-* write example ini configs (as documented source for user customization):
-
-  * default config
-
-  * two joysticks with one stick
- 
-  * all buttons and axis shifted by LB and RB
-
-  * evdev joystick to xbox360
-
-  * dosbox flightstick emulation
-
-  * high sensitivty
-
-  * mouse emulation
-
-* give some response curve examples:
-
-  # Low sensitivity on the stick when LB is pressed:
-
- --ui-axismap lb+y1^resp:-8000:0:8000=ABS_Y,y1=ABS_Y,lb+x1^resp:-8000:0:8000=ABS_X,x1=ABS_X
-
-* Not implementable as they need more then one axis: squareaxis, four-way-restrictor, dpad-rotation
-
 
 Stuff to do before 0.7.x release:
 =================================
 
-* "couldn't convert 'ABS_y' to enum, not a member of EV_ABS"
- 
-  convert all enum names to uppercase? or does that lead to conflicts in the naming?
-
 * add extra checks to make sure the evdev buttons and axis given exist on the current device
-
-* make dummy joystick axis, mouse button creation optional
-
-* --ui-axismap LT=KEY_A:KEY_B:1 
-
-Here KEY_B is the key you want to send and KEY_A is a random other key
-that you don't need. It's a hack as mapping both to KEY_B seems to
-cause some trouble with automatic key repeat for some reason. Note
-that you must not combine this with --trigger-as-zaxis as that will
-disable LT and RT
 
 * invert y axis on --evdev
 
@@ -327,14 +327,6 @@ disable LT and RT
 * axis emulation
 
   --ui-axisemulation A:B=ABS_X:5
-
-* bcdDevice (product release version) seem to indicate type (to many
-  possible versions, not enough data):
-
-new controller with merged endpoints: bcdDevice: 0x0114
-old ones: 1.10
-
-better way then to check for endpoints maybe
 
 * match by protocol not, just vendor/product, from xpad.c:
 
@@ -354,38 +346,12 @@ better way then to check for endpoints maybe
 
   --ui-axismap LT=KEY_A:KEY_A:1
 
-* in INI files allow:
-
-  [xboxdrv]
-  ui-buttonmap = A=BTN_A,B=BTN_B,...
-
 Feature
 =======
 
 * figure out a way to make userspace force feedback driver not become dead processes
 
-* better keyboard emulation via analog sticks: axis must not be
-  handled separately as this leads to issues with the diagonals (see
-  mail from Matthew G <matt@remort.org>) (maybe relative axis can help?)
-
 * test TR:Anniversary with max effect 16
-
-Stuff to do before 0.6.0 release:
-=================================
-
-* add Playstation3 controller config to examples, convert to ini (done)
-  needs new config for bluetooth mode
-
- ./xboxdrv  \
-  --evdev /dev/input/event6 \
-  --evdev-absmap ABS_X=x1,ABS_Y=y1 \
-  --evdev-absmap ABS_Z=x2,ABS_RZ=y2 \
-  --evdev-absmap ABS_#48=lt,ABS_#49=rt \
-  --evdev-keymap BTN_THUMB=tl,BTN_THUMB2=tr \
-  --evdev-keymap BTN_BASE5=lb,BTN_BASE6=rb  \
-  --evdev-keymap KEY_#302=a,KEY_#301=b,BTN_DEAD=x,KEY_#300=y \
-  --evdev-keymap BTN_TRIGGER=back,KEY_#720=guide,BTN_TOP=start \
-  --evdev-keymap BTN_TOP2=du,BTN_PINKIE=dr,BTN_BASE=dd,BTN_BASE2=dl
 
 
 fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 

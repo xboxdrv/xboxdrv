@@ -6,6 +6,10 @@
 # maps directly to screen coordinates, this is accomplished by the
 # combination of extra-devices=false and having ABS_X, ABS_Y and
 # BTN_LEFT in the configuration.
+#
+# For regular Xbox360 controllers this configuration isn't all that
+# useful in practice, but for some controllers like the Sidewinder
+# Dualstrike it can be helpful.
 
 [xboxdrv]
 dpad-as-button=true
@@ -22,8 +26,8 @@ square = X1:Y1
 [ui-axismap]
 X1 = ABS_X
 Y1 = ABS_Y
-X2^dead:4000          = REL_HWHEEL:5:100
-Y2^invert^dead:4000   = REL_WHEEL:5:100
+X2^dead:4000 = REL_HWHEEL:5:100
+Y2^invert^dead:4000 = REL_WHEEL:5:100
 lt = void
 rt = void
 
