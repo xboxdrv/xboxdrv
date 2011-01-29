@@ -21,6 +21,7 @@
 #include <boost/format.hpp>
 
 #include "helper.hpp"
+#include "raise_exception.hpp"
 
 int16_t u8_to_s16(uint8_t value)
 {
@@ -1278,7 +1279,7 @@ XboxButton string2btn(const std::string& str_)
     return XBOX_DPAD_RIGHT;
 
   else
-    throw std::runtime_error("couldn't convert string \"" + str + "\" to button");
+    raise_exception(std::runtime_error, "couldn't convert string \"" + str + "\" to XboxButton");
 }
 
 XboxAxis string2axis(const std::string& str_)
@@ -1326,7 +1327,7 @@ XboxAxis string2axis(const std::string& str_)
     return XBOX_AXIS_BLACK;
 
   else
-    return XBOX_AXIS_UNKNOWN;
+    raise_exception(std::runtime_error, "couldn't convert string \"" + str + "\" to XboxAxis");
 }
 
 std::string axis2string(XboxAxis axis)
