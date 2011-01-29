@@ -87,8 +87,9 @@ bool get_usb_path(udev_device* device, int* bus, int* dev)
 }
 
 } // namespace
-
-XboxdrvDaemon::XboxdrvDaemon() :
+
+XboxdrvDaemon::XboxdrvDaemon(const Options& opts) :
+  m_opts(opts),
   m_udev(0),
   m_monitor(0),
   m_controller_slots(),
@@ -122,6 +123,8 @@ XboxdrvDaemon::cleanup_threads()
         delete i->thread;
         i->thread = 0;
         count += 1;
+
+        on_disconnect();
       }
     }
   }
@@ -495,6 +498,8 @@ XboxdrvDaemon::launch_xboxdrv(const XPadDevice& dev_type, const Options& opts,
     thread->start_thread(opts);
     slot.thread = thread.release();
 
+    on_connect();
+
     log_info("launched XboxdrvThread for " << boost::format("%03d:%03d")
       % static_cast<int>(busnum) 
       % static_cast<int>(devnum)
@@ -517,6 +522,20 @@ XboxdrvDaemon::get_free_slot_count() const
   }
 
   return slot_count;
+}
+
+void
+XboxdrvDaemon::on_connect()
+{
+  log_info("launching connect script");
+  spawn_exe(m_opts.on_connect);
+}
+
+void
+XboxdrvDaemon::on_disconnect()
+{
+  log_info("launching disconnect script");
+  spawn_exe(m_opts.on_disconnect);
 }
 
 /* EOF */

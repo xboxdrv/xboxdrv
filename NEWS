@@ -14,6 +14,7 @@ xboxdrv 0.7.1 - (??/???/2011)
 * fixed --dpad-only
 * added support for Playstation button names (triangle,
   circle, square, cross, L1, L2, L3, R1, R2, R3)
+* added --on-connect and --on-disconnect to xboxdrv --daemon
 
 
 xboxdrv 0.7.0 - (28/Jan/2011)

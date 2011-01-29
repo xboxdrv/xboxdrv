@@ -600,7 +600,7 @@ Xboxdrv::run_daemon(const Options& opts)
 
   if (!opts.detach)
   {
-    XboxdrvDaemon daemon;
+    XboxdrvDaemon daemon(opts);
     daemon.run(opts);
   }
   else
@@ -637,7 +637,7 @@ Xboxdrv::run_daemon(const Options& opts)
         }
         else
         {
-          XboxdrvDaemon daemon;
+          XboxdrvDaemon daemon(opts);
           daemon.run(opts);
         }
       }

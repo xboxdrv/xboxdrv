@@ -56,6 +56,7 @@ Stuff to do before 0.7.1 release:
 
 * fix device name of mimic_xpad
 
+
 * allow multiple controllers in non-daemon mode
 
 * improve output in daemon mode, when --quiet is not given print the
@@ -89,11 +90,6 @@ Stuff to do before 0.7.1 release:
 * remember controllers that couldn't be used when all slots where full
   and use them when a slot got free
 
-* implement --on-connect and --on-disconnect for the daemon
-  - maybe have a more general event interface that allows to run stuff
-    on configuration changes, controller plug-ins, etc. (notifiy area as example)
-  - also supply useful information as argument
-
 * improve output on which uinput devices are created (even with udev
   there doesn't seem to be a bullet proof way to detect what gets
   created)
@@ -104,6 +100,8 @@ Stuff to do before 0.7.1 release:
 
 Stuff to do before 0.7.2 release:
 =================================
+
+* add extra arguments to --on-connect and --on-disconnect (controller name, usb path, etc.)
 
 * boost::lexical_cast<> error messages are useless, make some better ones
 

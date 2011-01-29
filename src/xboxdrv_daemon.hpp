@@ -31,6 +31,7 @@ struct XPadDevice;
 class XboxdrvDaemon
 {
 private:
+  const Options& m_opts;
   struct udev* m_udev;
   struct udev_monitor* m_monitor;
 
@@ -84,7 +85,7 @@ private:
   std::auto_ptr<UInput> m_uinput;
 
 public:
-  XboxdrvDaemon();
+  XboxdrvDaemon(const Options& opts);
   ~XboxdrvDaemon();
 
   void run(const Options& opts);
@@ -107,6 +108,9 @@ private:
                       ControllerSlot& slot);
   int get_free_slot_count() const;
   
+  void on_connect();
+  void on_disconnect();
+
 private:
   XboxdrvDaemon(const XboxdrvDaemon&);
   XboxdrvDaemon& operator=(const XboxdrvDaemon&);

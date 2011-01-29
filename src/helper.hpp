@@ -21,6 +21,7 @@
 
 #include <boost/function.hpp>
 #include <stdint.h>
+#include <vector>
 
 int hexstr2int(const std::string& str);
 
@@ -73,6 +74,8 @@ float to_float_no_range_check(int value, int min, int max);
 int from_float(float value, int min, int max);
 
 int get_terminal_width();
+void spawn_exe(const std::vector<std::string>& args);
+void spawn_exe(const std::string& arg0);
 
 #endif
 
