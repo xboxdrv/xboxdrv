@@ -418,10 +418,10 @@ Xboxdrv::run_main(const Options& opts)
   int jsdev_number = find_jsdev_number();
   int evdev_number = find_evdev_number();
 
-  if (opts.led == -1)
+  if (opts.get_controller_slot().get_led_status() == -1)
     controller->set_led(2 + jsdev_number % 4);
   else
-    controller->set_led(opts.led);
+    controller->set_led(opts.get_controller_slot().get_led_status());
 
   if (opts.rumble_l != -1 && opts.rumble_r != -1)
   { // Only set rumble when explicitly requested

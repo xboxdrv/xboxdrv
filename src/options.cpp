@@ -32,7 +32,6 @@ Options::Options() :
   silent (false),
   quiet  (false),
   rumble (false),
-  led    (-1),
   rumble_l(-1),
   rumble_r(-1),
   rumble_gain(255),
@@ -159,6 +158,12 @@ void
 Options::set_debug()
 {
   g_logger.incr_log_level(Logger::kDebug);
+}
+
+void
+Options::set_led(const std::string& value)
+{
+  get_controller_slot().set_led_status(boost::lexical_cast<int>(value));
 }
 
 void

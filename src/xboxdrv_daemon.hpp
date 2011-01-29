@@ -40,22 +40,26 @@ private:
     int id;
     ControllerSlotConfigPtr config;
     std::vector<ControllerMatchRulePtr> rules;
+    int led_status;
     XboxdrvThread* thread;
     
     ControllerSlot() :
       id(),
       config(),
       rules(),
+      led_status(-1),
       thread(0)
     {}
 
     ControllerSlot(int id_,
                    ControllerSlotConfigPtr config_,
                    std::vector<ControllerMatchRulePtr> rules_,
+                   int led_status_,
                    XboxdrvThread* thread_ = 0) :
       id(id_),
       config(config_),
       rules(rules_),
+      led_status(led_status_),
       thread(thread_)
     {}
 
@@ -63,6 +67,7 @@ private:
       id(rhs.id),
       config(rhs.config),
       rules(rhs.rules),
+      led_status(rhs.led_status),
       thread(rhs.thread)
     {}
 
@@ -73,6 +78,7 @@ private:
         id     = rhs.id;
         config = rhs.config;
         rules  = rhs.rules;
+        led_status = rhs.led_status;
         thread = rhs.thread;
       }
       return *this;

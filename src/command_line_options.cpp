@@ -317,7 +317,7 @@ CommandLineParser::init_ini(Options* opts)
     ("silent", &opts->silent)
     ("quiet",  &opts->quiet)
     ("rumble", &opts->rumble)
-    ("led", &opts->led)
+    ("led", boost::bind(&Options::set_led, boost::ref(opts), _1))
     ("rumble-l", &opts->rumble_l)
     ("rumble-r", &opts->rumble_r)
     ("rumble-gain", &opts->rumble_gain)
@@ -706,7 +706,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         }
         else
         {
-          opts.led = boost::lexical_cast<int>(opt.argument);
+          opts.set_led(opt.argument);
         }
         break;
 

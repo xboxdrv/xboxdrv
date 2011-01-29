@@ -58,7 +58,6 @@ public:
   bool silent;
   bool quiet;
   bool rumble;
-  int  led;
   int  rumble_l;
   int  rumble_r;
   int  rumble_gain;
@@ -135,6 +134,7 @@ public:
   void set_debug();
   void set_quiet();
 
+  void set_led(const std::string& value);
   void set_device_name(const std::string& name);
   void set_mouse();
   void set_guitar();

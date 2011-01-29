@@ -25,7 +25,8 @@
 ControllerSlotOptions::ControllerSlotOptions() :
   m_options(),
   m_match_rules(),
-  m_force_feedback(false)
+  m_force_feedback(false),
+  m_led_status(-1)
 {
 }
 

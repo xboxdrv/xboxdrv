@@ -219,7 +219,8 @@ XboxdrvDaemon::init_uinput(const Options& opts)
                                                   ControllerSlotConfig::create(*m_uinput, slot_count,
                                                                                opts.extra_devices,
                                                                                controller->second),
-                                                  controller->second.get_match_rules()));
+                                                  controller->second.get_match_rules(),
+                                                  controller->second.get_led_status()));
       slot_count += 1;
     }
 
@@ -482,7 +483,14 @@ XboxdrvDaemon::launch_xboxdrv(const XPadDevice& dev_type, const Options& opts,
   {
     std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
 
-    controller->set_led(2 + (slot.id % 4));
+    if (slot.led_status == -1)
+    {
+      controller->set_led(2 + (slot.id % 4));
+    }
+    else
+    {
+      controller->set_led(slot.led_status);
+    }
 
     std::auto_ptr<MessageProcessor> message_proc;
     if (m_uinput.get())
