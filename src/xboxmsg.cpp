@@ -850,8 +850,8 @@ void set_axis_float(XboxGenericMsg& msg, XboxAxis axis, float v)
           break;
 
         case XBOX_AXIS_TRIGGER:
-          msg.xbox360.lt = v < 0 ? int(v*255) : 0;
-          msg.xbox360.rt = v > 0 ? int(v*255) : 0;
+          msg.xbox360.lt = v < 0 ? static_cast<int>(-v*255) : 0;
+          msg.xbox360.rt = v > 0 ? static_cast<int>(v*255) : 0;
           break;
         
         case XBOX_AXIS_DPAD_X:
@@ -914,8 +914,8 @@ void set_axis_float(XboxGenericMsg& msg, XboxAxis axis, float v)
           break;
 
         case XBOX_AXIS_TRIGGER:
-          msg.xbox.lt = v < 0 ? int(v*255) : 0;
-          msg.xbox.rt = v > 0 ? int(v*255) : 0;
+          msg.xbox.lt = v < 0 ? static_cast<int>(-v*255) : 0;
+          msg.xbox.rt = v > 0 ? static_cast<int>(v*255) : 0;
           break;
 
         case XBOX_AXIS_DPAD_X:
@@ -978,8 +978,8 @@ void set_axis_float(XboxGenericMsg& msg, XboxAxis axis, float v)
           break;
 
         case XBOX_AXIS_TRIGGER:
-          msg.ps3usb.a_l2 = v < 0 ? int(v*255) : 0;
-          msg.ps3usb.a_r2 = v > 0 ? int(v*255) : 0;
+          msg.ps3usb.a_l2 = v < 0 ? static_cast<int>(-v*255) : 0;
+          msg.ps3usb.a_r2 = v > 0 ? static_cast<int>(v*255) : 0;
           break;
 
         case XBOX_AXIS_DPAD_X:
