@@ -28,6 +28,7 @@
 #include "helper.hpp"
 #include "ini_parser.hpp"
 #include "ini_schema_builder.hpp"
+#include "raise_exception.hpp"
 #include "options.hpp"
 #include "ui_event.hpp"
 
@@ -35,14 +36,6 @@
 #include "axisfilter/calibration_axis_filter.hpp"
 #include "axisfilter/sensitivity_axis_filter.hpp"
 #include "buttonfilter/autofire_button_filter.hpp"
-
-#define RAISE_EXCEPTION(x) do {                         \
-    std::ostringstream kiJk8f08d4oMX;                   \
-    kiJk8f08d4oMX << x;                                 \
-    throw std::runtime_error(kiJk8f08d4oMX.str());      \
-  } while(0)
-
-Options* g__options = 0;
 
 enum {
   OPTION_HELP,
@@ -528,7 +521,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         }
         else
         {
-          RAISE_EXCEPTION(opt.option << " expected an argument in form INT,INT");
+          raise_exception(std::runtime_error, opt.option << " expected an argument in form INT,INT");
         }
         break;
 
@@ -587,7 +580,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         }
         else
         {
-          RAISE_EXCEPTION("unknown type: " << opt.argument << '\n'
+          raise_exception(std::runtime_error, "unknown type: " << opt.argument << '\n'
                           << "Possible types are:\n"
                           << " * xbox\n"
                           << " * xbox-mat\n"
@@ -832,7 +825,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
           }
           else
           {
-            RAISE_EXCEPTION(opt.option << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)");
+            raise_exception(std::runtime_error, opt.option << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)");
           }
           break;
         }
@@ -844,7 +837,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
           if (sscanf(opt.argument.c_str(), "%3s:%3s", busid, devid) != 2)
           {  
-            RAISE_EXCEPTION(opt.option << " expected an argument in form BUS:DEV (i.e. 006:003)");
+            raise_exception(std::runtime_error, opt.option << " expected an argument in form BUS:DEV (i.e. 006:003)");
           }
           else
           {
@@ -906,12 +899,11 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case ArgParser::REST_ARG:
-        //RAISE_EXCEPTION("unknown command line option: " << opt.argument);
         opts.exec.push_back(opt.argument);
         break;
 
       default:
-        RAISE_EXCEPTION("unknown command line option: " << opt.option);
+        raise_exception(std::runtime_error, "unknown command line option: " << opt.option);
         break;
     }
   }
@@ -978,8 +970,8 @@ CommandLineParser::set_device_name(const std::string& name, const std::string& v
 
   if (p == std::string::npos)
   {
-     device_id = str2deviceid(name.substr());
-     slot_id   = SLOTID_AUTO;
+    device_id = str2deviceid(name.substr());
+    slot_id   = SLOTID_AUTO;
   }
   else if (p == 0)
   {
@@ -1126,13 +1118,12 @@ CommandLineParser::set_dpad_rotation(const std::string& value)
 void
 CommandLineParser::read_config_file(Options* opts, const std::string& filename)
 {
-  std::cout << "CommandLineParser::read_config_file: " << filename << std::endl;
+  log_info("reading '" << filename << "'");
+
   std::ifstream in(filename.c_str());
   if (!in)
   {
-    std::ostringstream str;
-    str << "Couldn't open " << filename;
-    throw std::runtime_error(str.str());
+    raise_exception(std::runtime_error, "couldn't open: " << filename);
   }
   else
   {
