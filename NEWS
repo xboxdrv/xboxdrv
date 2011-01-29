@@ -10,6 +10,8 @@ xboxdrv 0.7.1 - (??/???/2011)
 * new version of runxboxdrv
 * fixed axis inversion issue in --axismap
 * fixed assertion in relative axis filter
+* fixed --dpad-as-button
+* fixed --dpad-only
 
 
 xboxdrv 0.7.0 - (28/Jan/2011)

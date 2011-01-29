@@ -195,13 +195,13 @@ Options::set_trigger_as_zaxis()
 void
 Options::set_dpad_as_button()
 {
-  // FIXME: implement me
+  get_controller_options().uinput.dpad_as_button();
 }
 
 void
 Options::set_dpad_only()
 {
-  // FIXME: implement me
+  get_controller_options().uinput.dpad_only();
 }
 
 void
