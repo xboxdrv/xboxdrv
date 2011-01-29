@@ -1,0 +1,49 @@
+# Absolute Cursor Example
+# =======================
+#
+# This example configures the controller to act as mouse, but instead
+# of moving around the cursor via relative motion, the sticks position
+# maps directly to screen coordinates, this is accomplished by the
+# combination of extra-devices=false and having ABS_X, ABS_Y and
+# BTN_LEFT in the configuration.
+
+[xboxdrv]
+dpad-as-button=true
+
+# an absolute pointing device must have at least ABS_X, ABS_Y and
+# BTN_LEFT in a single device, as those would be sorted into separate
+# devices by the auto device creator, we have to disabled it to get
+# them all in a single one
+extra-devices=false
+
+[modifier]
+square = X1:Y1
+
+[ui-axismap]
+X1 = ABS_X
+Y1 = ABS_Y
+X2^dead:4000          = REL_HWHEEL:5:100
+Y2^invert^dead:4000   = REL_WHEEL:5:100
+lt = void
+rt = void
+
+[ui-buttonmap]
+a  = BTN_LEFT
+b  = BTN_RIGHT
+x  = BTN_MIDDLE
+y  = KEY_ENTER
+rb = KEY_PAGEDOWN
+lb = KEY_PAGEUP
+
+[ui-buttonmap]
+dl = KEY_LEFT
+dr = KEY_RIGHT
+du = KEY_UP
+dd = KEY_DOWN
+
+[ui-buttonmap]
+start = KEY_FORWARD
+back  = KEY_BACK
+guide = KEY_ESC
+
+# EOF #
