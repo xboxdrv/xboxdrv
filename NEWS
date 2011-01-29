@@ -16,6 +16,7 @@ xboxdrv 0.7.1 - (??/???/2011)
   circle, square, cross, L1, L2, L3, R1, R2, R3)
 * added --on-connect and --on-disconnect to xboxdrv --daemon
 * added ability to set LED per controller slot
+* added --usb-debug
 
 
 xboxdrv 0.7.0 - (28/Jan/2011)

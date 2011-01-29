@@ -44,10 +44,6 @@ Stuff to do before 0.7.1 release:
 
 * how exactly does daemon interact with wireless pads?! allow --wid --id for daemon
 
-* add option to increase libusb debug level
-
-* add --device-usbid TYPE.SLOT=VENDOR:PRODUCT:VERSION
-
 * fix device name of mimic_xpad
 
 * improve output in daemon mode, when --quiet is not given print the
@@ -60,6 +56,7 @@ Stuff to do before 0.7.1 release:
 
 * print controller type/name in daemon (little tricky as that is only
   known after opening the USB connection)
+  -> easy use information from xpad_devices instead of query the USB device directly
 
 * update debian package description
 
@@ -91,6 +88,8 @@ Stuff to do before 0.7.1 release:
 
 Stuff to do before 0.7.2 release:
 =================================
+
+* add --device-usbid TYPE.SLOT=VENDOR:PRODUCT:VERSION
 
 * allow multiple controllers in non-daemon mode
 

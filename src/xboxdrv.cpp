@@ -395,6 +395,11 @@ Xboxdrv::run_main(const Options& opts)
       raise_exception(std::runtime_error, "libusb_init() failed: " << usb_strerror(ret));
     }
     
+    if (opts.usb_debug)
+    {
+      libusb_set_debug(NULL, 3);
+    }
+
     // FIXME: this must be libusb_unref_device()'ed, child code must not keep a copy around
     libusb_device* dev = 0;
   
@@ -596,6 +601,11 @@ Xboxdrv::run_daemon(const Options& opts)
   if (ret != LIBUSB_SUCCESS)
   {
     raise_exception(std::runtime_error, "libusb_init() failed: " << usb_strerror(ret));
+  }
+
+  if (opts.usb_debug)
+  {
+    libusb_set_debug(NULL, 3);
   }
 
   if (!opts.detach)

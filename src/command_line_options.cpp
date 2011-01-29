@@ -50,6 +50,7 @@ enum {
   OPTION_DEBUG,
   OPTION_QUIET,
   OPTION_SILENT,
+  OPTION_USB_DEBUG,
   OPTION_DAEMON,
   OPTION_CONFIG_OPTION,
   OPTION_CONFIG,
@@ -153,6 +154,7 @@ CommandLineParser::init_argp()
     .add_option(OPTION_DEBUG,         0,  "debug",   "",  "be even more verbose then --verbose")
     .add_option(OPTION_SILENT,       's', "silent",  "",  "do not display events on console")
     .add_option(OPTION_QUIET,         0,  "quiet",   "",  "do not display startup text")
+    .add_option(OPTION_USB_DEBUG,     0,  "usb-debug", "",  "enable log messages from libusb")
     .add_newline()
 
     .add_text("List Options: ")
@@ -316,6 +318,7 @@ CommandLineParser::init_ini(Options* opts)
     ("verbose", boost::bind(&Options::set_verbose, boost::ref(opts)), boost::function<void ()>())
     ("silent", &opts->silent)
     ("quiet",  &opts->quiet)
+    ("usb-debug",  &opts->usb_debug)
     ("rumble", &opts->rumble)
     ("led", boost::bind(&Options::set_led, boost::ref(opts), _1))
     ("rumble-l", &opts->rumble_l)
@@ -429,6 +432,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_DEBUG:
         opts.set_debug();
+        break;
+
+      case OPTION_USB_DEBUG:
+        opts.set_usb_debug();
         break;
 
       case OPTION_DAEMON:

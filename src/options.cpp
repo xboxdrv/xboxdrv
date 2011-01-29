@@ -69,7 +69,8 @@ Options::Options() :
   controller_slot(0),
   config_slot(0),
   extra_devices(true),
-  uinput_device_names()
+  uinput_device_names(),
+  usb_debug(false)
 {
   // create the entry if not already available
   controller_slots[controller_slot].get_options(config_slot);
@@ -158,6 +159,12 @@ void
 Options::set_debug()
 {
   g_logger.incr_log_level(Logger::kDebug);
+}
+
+void
+Options::set_usb_debug()
+{
+  usb_debug = true;
 }
 
 void

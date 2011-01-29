@@ -117,6 +117,8 @@ public:
 
   std::map<uint32_t, std::string> uinput_device_names;
 
+  bool usb_debug;
+
 public:
   Options();
 
@@ -132,6 +134,7 @@ public:
 
   void set_verbose();
   void set_debug();
+  void set_usb_debug();
   void set_quiet();
 
   void set_led(const std::string& value);
