@@ -21,6 +21,7 @@
 #include <fstream>
 #include <iostream>
 #include <boost/bind.hpp>
+#include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
 
 #include "evdev_helper.hpp"
@@ -390,6 +391,33 @@ CommandLineParser::init_ini(Options* opts)
   m_ini.section("relative-axis",   boost::bind(&CommandLineParser::set_relative_axis, this, _1, _2));
   m_ini.section("calibration",   boost::bind(&CommandLineParser::set_calibration, this, _1, _2));
   m_ini.section("axis-sensitivity",   boost::bind(&CommandLineParser::set_axis_sensitivity, this, _1, _2));
+
+  for(int controller = 0; controller <= 9; ++controller)
+  {
+    for(int config = 0; config <= 9; ++config)
+    {
+      m_ini.section((boost::format("controller%d/config%d/modifier") % controller % config).str(),
+                    boost::bind(&CommandLineParser::set_modifier_n, this, controller, config, _1, _2));
+      m_ini.section((boost::format("controller%d/config%d/ui-buttonmap") % controller % config).str(),
+                    boost::bind(&CommandLineParser::set_ui_buttonmap_n, this, controller, config, _1, _2));
+      m_ini.section((boost::format("controller%d/config%d/ui-axismap") % controller % config).str(), 
+                    boost::bind(&CommandLineParser::set_ui_axismap_n, this, controller, config, _1, _2));
+
+      m_ini.section((boost::format("controller%d/config%d/buttonmap") % controller % config).str(),
+                    boost::bind(&CommandLineParser::set_buttonmap_n, this, controller, config, _1, _2));
+      m_ini.section((boost::format("controller%d/config%d/axismap") % controller % config).str(), 
+                    boost::bind(&CommandLineParser::set_axismap_n,   this, controller, config, _1, _2));
+
+      m_ini.section((boost::format("controller%d/config%d/autofire") % controller % config).str(), 
+                    boost::bind(&CommandLineParser::set_autofire_n, this, controller, config, _1, _2));
+      m_ini.section((boost::format("controller%d/config%d/relative-axis") % controller % config).str(), 
+                    boost::bind(&CommandLineParser::set_relative_axis_n, this, controller, config, _1, _2));
+      m_ini.section((boost::format("controller%d/config%d/calibration") % controller % config).str(), 
+                    boost::bind(&CommandLineParser::set_calibration_n, this, controller, config, _1, _2));
+      m_ini.section((boost::format("controller%d/config%d/axis-sensitivity") % controller % config).str(), 
+                    boost::bind(&CommandLineParser::set_axis_sensitivity_n, this, controller, config, _1, _2));
+    }
+  }
 
   m_ini.section("evdev-absmap", boost::bind(&CommandLineParser::set_evdev_absmap, this, _1, _2));
   m_ini.section("evdev-keymap", boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
@@ -1119,6 +1147,69 @@ CommandLineParser::read_alt_config_file(Options* opts, const std::string& filena
 {
   opts->next_config();
   read_config_file(opts, filename);
+}
+
+void
+CommandLineParser::set_ui_buttonmap_n(int controller, int config, const std::string& name, const std::string& value)
+{
+  m_options->controller_slots[controller].get_options(config)
+    .uinput.set_ui_buttonmap(name, value);
+}
+
+void
+CommandLineParser::set_ui_axismap_n(int controller, int config, const std::string& name, const std::string& value)
+{
+  m_options->controller_slots[controller].get_options(config)
+    .uinput.set_ui_axismap(name, value);
+}
+
+void
+CommandLineParser::set_modifier_n(int controller, int config, const std::string& name, const std::string& value)
+{
+  m_options->controller_slots[controller].get_options(config)
+    .modifier.push_back(ModifierPtr(Modifier::from_string(name, value)));
+}
+
+void
+CommandLineParser::set_axismap_n(int controller, int config, const std::string& name, const std::string& value)
+{
+  m_options->controller_slots[controller].get_options(config)
+    .axismap->add(AxisMapping::from_string(name, value));
+}
+
+void
+CommandLineParser::set_buttonmap_n(int controller, int config, const std::string& name, const std::string& value)
+{
+  m_options->controller_slots[controller].get_options(config)
+    .buttonmap->add(ButtonMapping::from_string(name, value));
+}
+
+void
+CommandLineParser::set_relative_axis_n(int controller, int config, const std::string& name, const std::string& value)
+{
+  m_options->controller_slots[controller].get_options(config)
+    .relative_axis_map[string2axis(name)] = AxisFilterPtr(new RelativeAxisFilter(boost::lexical_cast<int>(value)));
+}
+
+void
+CommandLineParser::set_autofire_n(int controller, int config, const std::string& name, const std::string& value)
+{
+  m_options->controller_slots[controller].get_options(config)
+    .autofire_map[string2btn(name)] = ButtonFilterPtr(new AutofireButtonFilter(boost::lexical_cast<int>(value), 0));
+}
+
+void
+CommandLineParser::set_calibration_n(int controller, int config, const std::string& name, const std::string& value)
+{
+  // FIXME: not implemented
+  assert(!"implement me");
+}
+
+void
+CommandLineParser::set_axis_sensitivity_n(int controller, int config, const std::string& name, const std::string& value)
+{
+  m_options->controller_slots[controller].get_options(config)
+    .sensitivity_map[string2axis(name)] = AxisFilterPtr(new SensitivityAxisFilter(boost::lexical_cast<float>(value)));
 }
 
 /* EOF */

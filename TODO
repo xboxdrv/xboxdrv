@@ -62,14 +62,8 @@ Stuff to do before 0.7.1 release:
 
 * valgrind before release
 
-* allow named sections in INI files (start numbering at 0 or 1?):
-
-  [controller1/modifier]
-  [controller1/config1/modifier]
-  [controller2/modifier]
-  [controller2/modifier]
-  [controller3/config1/modifier]
-  [controller3/config2/modifier]
+* allow named sections in INI files (start numbering at 0 or 1,
+  calibration is missing)
 
 * check how daemon reacts on suspend
   - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
