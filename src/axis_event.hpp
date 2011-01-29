@@ -66,14 +66,19 @@ private:
 
 class AxisEventHandler
 {
+protected:
+  int m_min;
+  int m_max;
+
 public:
+  AxisEventHandler();
   virtual ~AxisEventHandler() {}
 
   virtual void init(UInput& uinput, int slot, bool extra_devices) =0;
   virtual void send(UInput& uinput, int value) =0;
   virtual void update(UInput& uinput, int msec_delta) =0;
 
-  virtual void set_axis_range(int min, int max) {}
+  virtual void set_axis_range(int min, int max);
 
   virtual std::string str() const =0;
 };
@@ -108,8 +113,6 @@ public:
   AbsAxisEventHandler();
   AbsAxisEventHandler(const UIEvent& code, int min, int max, int fuzz, int flat);
 
-  void set_axis_range(int min, int max);
-
   void init(UInput& uinput, int slot, bool extra_devices);
   void send(UInput& uinput, int value);
   void update(UInput& uinput, int msec_delta);
@@ -118,8 +121,6 @@ public:
 
 private:
   UIEvent m_code;
-  int m_min;
-  int m_max;
   int m_fuzz;
   int m_flat;
 };

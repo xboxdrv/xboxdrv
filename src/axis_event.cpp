@@ -165,6 +165,19 @@ AxisEvent::str() const
   return m_handler->str();
 }
 
+AxisEventHandler::AxisEventHandler() :
+  m_min(-1),
+  m_max(+1)
+{
+}
+
+void
+AxisEventHandler::set_axis_range(int min, int max)
+{
+  m_min = min;
+  m_max = max;
+}
+
 RelAxisEventHandler*
 RelAxisEventHandler::from_string(const std::string& str)
 {
@@ -227,8 +240,14 @@ RelAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 void
 RelAxisEventHandler::send(UInput& uinput, int value)
 {
-  // FIXME: Need to know the min/max of value
-  int v = m_value * value / 32767;
+  float value_f;
+  if (value < 0)
+    value_f = static_cast<float>(value) / static_cast<float>(-m_min);
+  else
+    value_f = static_cast<float>(value) / static_cast<float>(m_max);
+
+  int v = static_cast<int>(m_value * value_f);
+
   if (v == 0)
     uinput.send_rel_repetitive(m_code, v, -1);
   else
@@ -285,8 +304,6 @@ AbsAxisEventHandler::from_string(const std::string& str)
 
 AbsAxisEventHandler::AbsAxisEventHandler() :
   m_code(UIEvent::invalid()),
-  m_min(-32768), // FIXME: this must be properly set
-  m_max(32767),
   m_fuzz(0),
   m_flat(0)
 {
@@ -294,18 +311,10 @@ AbsAxisEventHandler::AbsAxisEventHandler() :
 
 AbsAxisEventHandler::AbsAxisEventHandler(const UIEvent& code, int min, int max, int fuzz, int flat) :
   m_code(code),
-  m_min(min),
-  m_max(max),
   m_fuzz(fuzz),
   m_flat(flat)
 {
-}
-
-void
-AbsAxisEventHandler::set_axis_range(int min, int max)
-{
-  m_min = min;
-  m_max = max;
+  set_axis_range(min, max);
 }
 
 void
