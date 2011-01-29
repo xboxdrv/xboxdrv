@@ -21,6 +21,7 @@
 #include <boost/tokenizer.hpp>
 #include <sstream>
 
+#include "axisfilter/invert_axis_filter.hpp"
 #include "helper.hpp"
 
 AxisMapping
@@ -88,7 +89,7 @@ AxismapModifier::update(int msec_delta, XboxGenericMsg& msg)
     }
   }
 
-  // clear all values in the new msg
+  // clear all lhs values in the newmsg, keep rhs
   for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
     set_axis_float(newmsg, i->lhs, 0);
@@ -100,20 +101,31 @@ AxismapModifier::update(int msec_delta, XboxGenericMsg& msg)
     int max = get_axis_max(i->lhs);
     int value = get_axis(msg, i->lhs);
 
+    if (i->invert)
+    {
+      InvertAxisFilter inv;
+      value = inv.filter(value, min, max);
+    }
+
     for(std::vector<AxisFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
     {
       value = (*j)->filter(value, min, max);
     }
 
-    float lhs  = to_float(value, min, max);
-    float nrhs = get_axis_float(newmsg, i->rhs);
+    float lhs = to_float(value, min, max);
 
-    if (i->invert)
+    if (i->lhs == i->rhs)
     {
-      lhs = -lhs;
+      set_axis_float(newmsg, i->rhs, lhs);
     }
-
-    set_axis_float(newmsg, i->rhs, std::max(std::min(nrhs + lhs, 1.0f), -1.0f));
+    else
+    {
+      // FIXME: this primitive merge kind of works for regular axis,
+      // but doesn't work for half axis which have their center at
+      // -1.0f
+      float rhs = get_axis_float(newmsg, i->rhs);
+      set_axis_float(newmsg, i->rhs, Math::clamp(-1.0f, lhs + rhs, 1.0f));
+    }
   }
   msg = newmsg;
 }
