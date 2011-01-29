@@ -142,7 +142,7 @@ UInput::create_uinput_device(uint32_t device_id)
   else
   {
     log_debug("create device: " << device_id);
-    LinuxUinput::DeviceType device_type = LinuxUinput::kGenericDevice;
+    LinuxUinput::DeviceType device_type;
 
     switch (device_id)
     {
@@ -155,10 +155,11 @@ UInput::create_uinput_device(uint32_t device_id)
         break;
       
       case DEVICEID_KEYBOARD:
-        device_type = LinuxUinput::kGenericDevice;
+        device_type = LinuxUinput::kKeyboardDevice;
         break;
 
       default:
+        device_type = LinuxUinput::kGenericDevice;
         break;
     }
 

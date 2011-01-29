@@ -23,11 +23,12 @@
 #include <stdint.h>
 
 enum {
-  DEVICEID_INVALID  = static_cast<uint16_t>(-4),
-  DEVICEID_KEYBOARD = static_cast<uint16_t>(-3),
-  DEVICEID_MOUSE    = static_cast<uint16_t>(-2),
+  DEVICEID_INVALID  = static_cast<uint16_t>(-5),
+  DEVICEID_KEYBOARD = static_cast<uint16_t>(-4),
+  DEVICEID_MOUSE    = static_cast<uint16_t>(-3),
+  DEVICEID_JOYSTICK = static_cast<uint16_t>(-2),
   DEVICEID_AUTO     = static_cast<uint16_t>(-1),
-  DEVICEID_JOYSTICK =  0
+  DEVICEID_GENERIC  = static_cast<uint16_t>(0)
 };
 
 enum {

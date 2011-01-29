@@ -193,6 +193,10 @@ LinuxUinput::finish()
       // nothing to be done
       break;
 
+    case kKeyboardDevice:
+      // FIXME: do something clever
+      break;
+
     case kMouseDevice:
       add_rel(REL_X);
       add_rel(REL_Y);

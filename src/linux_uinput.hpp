@@ -28,7 +28,7 @@ class ForceFeedbackHandler;
 class LinuxUinput
 {
 public:
-  enum DeviceType { kGenericDevice, kMouseDevice, kJoystickDevice };
+  enum DeviceType { kGenericDevice, kKeyboardDevice, kMouseDevice, kJoystickDevice };
 
 private:
   DeviceType  m_device_type;
