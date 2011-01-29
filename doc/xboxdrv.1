@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 2010-05-05 0.7.0 "User Commands"
+.TH "xboxdrv " 1 2010-05-05 0.7.1 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -983,10 +983,8 @@ by the X11 keymap and will often not report what you
 expect in case you use a keymap that is different then
 your keyboard (i.e. dvorak on a qwerty keyboard).
 
-A full list of X11 keysyms is available at
-\*(T<\fI/usr/include/X11/keysymdef.h\fR\*(T>, note that you can only use those that
-are reachable by your current keymap. Keysyms that are reachable via
-multiple keycodes might break the mapping from keysym to evdev code.
+A full list of valid X11 keysyms can be optained
+with \*(T<\fB\-\-help\-x11keysym\fR\*(T>.
 
 For joystick buttons there is in addition to the \fBBTN_JOYSTICK\fR, \fBBTN_X\fR,
 etc. macros the special name \fBJS_$NUM\fR, which sets the given button to
@@ -1493,7 +1491,24 @@ change the handling into buttons via
 the \*(T<\fB\-\-trigger\-as\-button\fR\*(T> option:
 .PP
 .nf
-\*(T<$ xboxdrv \-\-trigger\-as\-button \-s \*(T>
+\*(T<$ xboxdrv \-\-trigger\-as\-button\*(T>
+.fi
+.SS "CONFIGURE A DEADZONE"
+Many gamepads don't center exactly at zero, but at random
+values around it. This 'noise' can confuse some games and is
+thus be best filtered out, this can be accomplished with:
+.PP
+.nf
+\*(T<$ xboxdrv \-\-deadzone 25%\*(T>
+.fi
+.PP
+The percentance is the amount of noise that will get filtered
+out, you can also give raw device values if you leave out the
+% sign. If you want to have a deadzone only on a specific axis
+you have to use axis filter:
+.PP
+.nf
+\*(T<$ xboxdrv \-\-buttonmap X1^deadzone:15000\*(T>
 .fi
 .SS "KEYBOARD EMULATION"
 The following configuration will cause xboxdrv to emulate a

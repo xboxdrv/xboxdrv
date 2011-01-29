@@ -2139,7 +2139,24 @@ $ modprobe joydev]]></programlisting>
         the <option>--trigger-as-button</option> option:
       </para>
 
-      <programlisting><![CDATA[$ xboxdrv --trigger-as-button -s ]]></programlisting>
+      <programlisting><![CDATA[$ xboxdrv --trigger-as-button]]></programlisting>
+    </refsect2>
+
+    <refsect2>
+      <title>Configure a deadzone</title>
+      <para>
+        Many gamepads don't center exactly at zero, but at random
+        values around it. This 'noise' can confuse some games and is
+        thus be best filtered out, this can be accomplished with:
+      </para>
+      <programlisting><![CDATA[$ xboxdrv --deadzone 25%]]></programlisting>
+      <para>
+        The percentance is the amount of noise that will get filtered
+        out, you can also give raw device values if you leave out the
+        % sign. If you want to have a deadzone only on a specific axis
+        you have to use axis filter:
+      </para>
+      <programlisting><![CDATA[$ xboxdrv --buttonmap X1^deadzone:15000]]></programlisting>
     </refsect2>
 
     <refsect2>

@@ -42,6 +42,8 @@ $ dput my-ppa ../xboxdrv_0.7.1-1~lucid1_source.changes
 Stuff to do before 0.7.1 release:
 =================================
 
+* make more use of percentance values (in deadzone filter for example)
+
 * add option to increase libusb debug level
 
 * document --device-name TYPE.SLOT=NAME, --name
@@ -50,19 +52,20 @@ Stuff to do before 0.7.1 release:
 
 * fix device name of mimic_xpad
 
-* boost::lexical_cast<> error messages are useless, make some better ones
-
 * allow multiple controllers in non-daemon mode
-
-* couldn't convert 'XK_Page_Up' to enum, not a member of X11Keysym
-  currenty code can't handle multple names for a single key
 
 * document match rules
 
-* improve output in daemon mode, when --quiet is not given print the number of allocated controller slots
+* improve output in daemon mode, when --quiet is not given print the
+  number of allocated controller slots
+
+* add introspection to filters and modifier stack
 
 * [ERROR] XboxdrvDaemon::process_match(): no free controller slot found, controller will be ignored
   - should include info about what controller is ignored
+
+* print controller type/name in daemon (little tricky as that is only
+  known after opening the USB connection)
 
 * update debian package description
 
@@ -89,9 +92,21 @@ Stuff to do before 0.7.1 release:
     on configuration changes, controller plug-ins, etc. (notifiy area as example)
   - also supply useful information as argument
 
+* improve output on which uinput devices are created (even with udev
+  there doesn't seem to be a bullet proof way to detect what gets
+  created)
+
+* do modifier/filter dump when --verbose is given, make verbose
+  overall more useful
+
 
 Stuff to do before 0.7.2 release:
 =================================
+
+* boost::lexical_cast<> error messages are useless, make some better ones
+
+* couldn't convert 'XK_Page_Up' to enum, not a member of X11Keysym
+  currenty code can't handle multple names for a single key
 
 * --match again sysname could make sense, seems somewhat constant:
   "5-2" Xbox1 controller results in "5-2.1", due to being really two
@@ -104,9 +119,6 @@ Stuff to do before 0.7.2 release:
   - --disable-dpad-diagonals ur,dl,dl
 
   * extend usbid match rule to bcd device
-
-* cleanup device_id, don't manually do (slot<<16) | devid (only an
-  issue in force feedback code)
 
 * get rid of all std::cout stuff when using detached daemon, redirect
   log output to a file somewhere else: 
@@ -122,16 +134,14 @@ Stuff to do before 0.7.3 release:
 
 * turn EnumBox into singleton
 
+* allow EnumBox to have multiple names per values per key
+
 * allow --modifier help, --ui-buttonmap X2^help
 
-* move XBOX_BTN_UNKNOWN behind XBOX_BTN_MAX, so iteration can start
-  from 0 instead of 1, also fix incorrect iterations all over the
-  place -> doesn't work as some code uses XBOX_BTN_UNKNOWN as 'no
-  button is pressed'
-
-* improve output on which uinput devices are created (even with udev
-  there doesn't seem to be a bullet proof way to detect what gets
-  created)
+* move XBOX_BTN_UNKNOWN behind XBOX_BTN_MAX (or make it -1), so
+  iteration can start from 0 instead of 1, also fix incorrect
+  iterations all over the place -> doesn't work as some code uses
+  XBOX_BTN_UNKNOWN as 'no button is pressed'
 
 * document significant patches in AUTHORS
 
@@ -143,16 +153,10 @@ Stuff to do before 0.7.3 release:
       1     hal daemon from Thomas Debouverie <debouverie_thomas@yahoo.fr>
       1     Implemented --ui-buttonmap A=BTN_A@{device_id} ??!?!?
 
-* do modifier/filter dump when --verbose is given, make verbose
-  overall more useful
-
 * need to hide/disable the toggle button from the UIButtonmap
   - maybe implement some full post-parsing option verification to
     check for conflicts and necessary modifications?
   - Options::finish() to do final things?
-
-* print controller type/name in daemon (little tricky as that is only
-  known after opening the USB connection)
 
 
 Stuff to do before 0.7.x release:
@@ -160,7 +164,7 @@ Stuff to do before 0.7.x release:
 
 * -R, --rumble-test is broken for FirestormDualController (has no analog triggers)
 
-* add ABS support to macros (need to deal with min/max)
+* add ABS support to macros events (need to deal with min/max)
 
 * Playstation 3 controller support
   - http://www.pabr.org/sixlinux/sixlinux.en.html
@@ -205,8 +209,6 @@ Stuff to do before 0.7.x release:
   --ps3-pair-with-bluetooth
 
 * get rid of set_button()/get_button(), turn the message objects into full classes
-
-* document common problems, such as lack of deadzone handling in games
 
 * make chatpad configurable:
 
