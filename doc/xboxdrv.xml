@@ -853,7 +853,72 @@ start=KEY_ESC
               Limits a controller slot to devices that match any one
               of the given rules. Possible match rules are:
             </para>
-            <programlisting>usbid={VENDOR}:{PRODUCT}</programlisting>
+            <variablelist>
+
+              <varlistentry>
+                <term>usbid=<replaceable>VENDOR</replaceable>:<replaceable>PRODUCT</replaceable></term>
+                <listitem>
+                  <para>
+                    Match controllers that have the
+                    given USB vendor and product ids.
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>vendor=<replaceable>VENDOR</replaceable></term>
+                <listitem>
+                  <para>
+                    Match controllers that have the
+                    given USB idVendor.
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>product=<replaceable>PRODUCT</replaceable></term>
+                <listitem>
+                  <para>
+                    Match controllers that have the
+                    given USB idProduct.
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>property=<replaceable>PROPERTY</replaceable>:<replaceable>VALUE</replaceable></term>
+                <listitem>
+                  <para>
+                    Match against an arbitary udev property, with
+                    name <replaceable>PROPERTY</replaceable> and
+                    value <replaceable>VALUE</replaceable>.
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>usbpath=<replaceable>BUS</replaceable>:<replaceable>DEV</replaceable></term>
+                <listitem>
+                  <para>
+                    Match against the USB path given
+                    by <replaceable>BUS</replaceable>
+                    and <replaceable>DEV</replaceable>.
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>usbserial=<replaceable>SERIAL</replaceable></term>
+                <listitem>
+                  <para>
+                    Match against the USB iSerial number.
+                  </para>
+                </listitem>
+              </varlistentry>
+
+
+            </variablelist>
+
           </listitem>
         </varlistentry>
 

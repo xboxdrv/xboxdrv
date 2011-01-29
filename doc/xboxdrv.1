@@ -556,10 +556,33 @@ Switches to the next controller slot.
 \*(T<\fB\-\-match\fR\*(T> \fIRULE,...\fR
 Limits a controller slot to devices that match any one
 of the given rules. Possible match rules are:
-
-.nf
-\*(T<usbid={VENDOR}:{PRODUCT}\*(T>
-.fi
+.RS 
+.TP 
+usbid=\fIVENDOR\fR:\fIPRODUCT\fR
+Match controllers that have the
+given USB vendor and product ids.
+.TP 
+vendor=\fIVENDOR\fR
+Match controllers that have the
+given USB idVendor.
+.TP 
+product=\fIPRODUCT\fR
+Match controllers that have the
+given USB idProduct.
+.TP 
+property=\fIPROPERTY\fR:\fIVALUE\fR
+Match against an arbitary udev property, with
+name \fIPROPERTY\fR and
+value \fIVALUE\fR.
+.TP 
+usbpath=\fIBUS\fR:\fIDEV\fR
+Match against the USB path given
+by \fIBUS\fR
+and \fIDEV\fR.
+.TP 
+usbserial=\fISERIAL\fR
+Match against the USB iSerial number.
+.RE
 .TP 
 \*(T<\fB\-\-match\-group\fR\*(T> \fIRULE,...\fR
 Limits a controller slot to devices that match all of

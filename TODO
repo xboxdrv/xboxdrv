@@ -42,6 +42,10 @@ $ dput my-ppa ../xboxdrv_0.7.1-1~lucid1_source.changes
 Stuff to do before 0.7.1 release:
 =================================
 
+* how exactly does daemon interact with wireless pads?! allow --wid --id for daemon
+
+* make --led LED part of ControllerSlotOptions to use with multiple controller
+
 * make more use of percentance values (in deadzone filter for example)
 
 * add option to increase libusb debug level
@@ -53,8 +57,6 @@ Stuff to do before 0.7.1 release:
 * fix device name of mimic_xpad
 
 * allow multiple controllers in non-daemon mode
-
-* document match rules
 
 * improve output in daemon mode, when --quiet is not given print the
   number of allocated controller slots
@@ -161,6 +163,8 @@ Stuff to do before 0.7.3 release:
 
 Stuff to do before 0.7.x release:
 =================================
+
+* add Wiimote and PS3 bluetooth support 
 
 * -R, --rumble-test is broken for FirestormDualController (has no analog triggers)
 
