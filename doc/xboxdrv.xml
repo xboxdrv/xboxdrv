@@ -1457,10 +1457,27 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
         </varlistentry>
 
         <varlistentry>
-          <term><option>--name DEVNAME</option></term>
+          <term><option>--name NAME</option></term>
           <listitem>
             <para>
-              Changes the descriptive name the device will have.
+              Changes the descriptive name the device will have. This
+              options acts the same as
+              --device-name <replaceable>CURRENTSLOT</replaceable>.auto=<replaceable>NAME</replaceable>
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--device-name TYPE.SLOT=NAME</option></term>
+          <listitem>
+            <para>
+              Changes the descriptive name the device will
+              have. <replaceable>TYPE</replaceable> is one of <constant>mouse</constant>,
+              <constant>keyboard</constant>, <constant>joystick</constant>, <constant>auto</constant>
+              or a number. <replaceable>SLOT</replaceable> is a slot
+              number or <constant>auto</constant>.
+              The <constant>auto</constant> name acts as wild card and
+              matches everything.
             </para>
           </listitem>
         </varlistentry>

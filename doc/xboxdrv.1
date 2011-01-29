@@ -958,8 +958,19 @@ joystick device. This option disables that automatism
 and all events will go to the same virtual device.
 Manual assignment to a specific device is still possible.
 .TP 
-\*(T<\fB\-\-name DEVNAME\fR\*(T>
-Changes the descriptive name the device will have.
+\*(T<\fB\-\-name NAME\fR\*(T>
+Changes the descriptive name the device will have. This
+options acts the same as
+--device-name \fICURRENTSLOT\fR.auto=\fINAME\fR
+.TP 
+\*(T<\fB\-\-device\-name TYPE.SLOT=NAME\fR\*(T>
+Changes the descriptive name the device will
+have. \fITYPE\fR is one of mouse,
+keyboard, joystick, auto
+or a number. \fISLOT\fR is a slot
+number or auto.
+The auto name acts as wild card and
+matches everything.
 .TP 
 \*(T<\fB\-\-ui\-clear\fR\*(T>
 Removes all uinput mappings and will leave the driver in

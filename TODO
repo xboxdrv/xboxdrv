@@ -44,20 +44,11 @@ Stuff to do before 0.7.1 release:
 
 * how exactly does daemon interact with wireless pads?! allow --wid --id for daemon
 
-* make --led LED part of ControllerSlotOptions to use with multiple controller
-
-* make more use of percentance values (in deadzone filter for example)
-
 * add option to increase libusb debug level
-
-* document --device-name TYPE.SLOT=NAME, --name
 
 * add --device-usbid TYPE.SLOT=VENDOR:PRODUCT:VERSION
 
 * fix device name of mimic_xpad
-
-
-* allow multiple controllers in non-daemon mode
 
 * improve output in daemon mode, when --quiet is not given print the
   number of allocated controller slots
@@ -100,6 +91,10 @@ Stuff to do before 0.7.1 release:
 
 Stuff to do before 0.7.2 release:
 =================================
+
+* allow multiple controllers in non-daemon mode
+
+* make more use of percentance values (in deadzone filter for example)
 
 * add extra arguments to --on-connect and --on-disconnect (controller name, usb path, etc.)
 
