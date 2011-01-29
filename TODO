@@ -42,18 +42,20 @@ $ dput my-ppa ../xboxdrv_0.7.1-1~lucid1_source.changes
 Stuff to do before 0.7.1 release:
 =================================
 
-* implement set_dpad_as_button(), set_dpad_only()
+* add option to increase libusb debug level
 
-* --name DEVNAME must work with multple controller slots and multiple
-    devices, also allow a way to rename mouse and keyboard emulation devices
+* document --device-name TYPE.SLOT=NAME, --name
 
-    turn --name into --ui-name SLOT=foo
+* add --device-usbid TYPE.SLOT=VENDOR:PRODUCT:VERSION
 
-  --ui-name 1=MouseEmulation:0500:0500,2=Keyboard,mouse=Mouse
-  --ui-name 1=MouseEmulation,2=Keyboard,mouse=Mouse
-  --ui-vendor =
-  --ui-product 
-  --ui-bcdversion
+* fix device name of mimic_xpad
+
+* boost::lexical_cast<> error messages are useless, make some better ones
+
+* allow multiple controllers in non-daemon mode
+
+* couldn't convert 'XK_Page_Up' to enum, not a member of X11Keysym
+  currenty code can't handle multple names for a single key
 
 * document match rules
 
@@ -63,38 +65,6 @@ Stuff to do before 0.7.1 release:
   - should include info about what controller is ignored
 
 * update debian package description
-
-* need magic to assign controller to a slot:
- 
-  what:  match product/vendor-id, match device name
-  where: match USB path, match /dev/input/??? path
-  when:  just assign them to the next free slot
-
-  --match RULE,...       # match any of the given rules
-  --match-group RULE,... # match all of the given rules
-
-  Rules:
-  ======
-  usbpath=005:003 (implicit vendor/product match)
-  usbid=045f:028f
-  evdev=/dev/input/event5
-  (no rules means it always matches)
-
-  1) search for match
-  2) if no match is found search slots without rules
-
-  * matching by usbpath makes very little sense, as the dev argument
-    gets incremented with each replug, bus alone might be usable
-  
-  * match again sysname could make sense, seems somewhat constant: "5-2"
-    Xbox1 controller results in "5-2.1", due to being really two devices
-
-  * redesign match rules and only use single argument? would make
-    match group more logical:
-
-    --match-group vendor=045f,product=028f
-
-* fix bugs that pop up
 
 * valgrind before release
 
@@ -107,16 +77,12 @@ Stuff to do before 0.7.1 release:
   [controller3/config1/modifier]
   [controller3/config2/modifier]
 
-* support for Playstation button names maybe? cross, triangle, circle, square, R3, L3, ...?
-
 * check how daemon reacts on suspend
+  - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
+    controller leads to LIBUSB_ERROR_OTHER
 
 * remember controllers that couldn't be used when all slots where full
   and use them when a slot got free
-
-* figure out a good place to set the LEDs off when Xboxdrv is quit,
-  just doing it in the destructor causes trouble, as the usbdev might
-  be no longer usable (when controller got unplugged)
 
 * implement --on-connect and --on-disconnect for the daemon
   - maybe have a more general event interface that allows to run stuff
@@ -126,6 +92,10 @@ Stuff to do before 0.7.1 release:
 
 Stuff to do before 0.7.2 release:
 =================================
+
+* --match again sysname could make sense, seems somewhat constant:
+  "5-2" Xbox1 controller results in "5-2.1", due to being really two
+  devices, would help to now how exactly those are formed
 
 * --four-way-restrictor for the dpad?
 

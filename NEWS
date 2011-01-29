@@ -12,6 +12,8 @@ xboxdrv 0.7.1 - (??/???/2011)
 * fixed assertion in relative axis filter
 * fixed --dpad-as-button
 * fixed --dpad-only
+* added support for Playstation button names (triangle,
+  circle, square, cross, L1, L2, L3, R1, R2, R3)
 
 
 xboxdrv 0.7.0 - (28/Jan/2011)

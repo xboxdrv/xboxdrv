@@ -1239,33 +1239,33 @@ XboxButton string2btn(const std::string& str_)
 
   if (str == "start")
     return XBOX_BTN_START;
-  else if (str == "guide")
+  else if (str == "guide" || str == "ps")
     return XBOX_BTN_GUIDE;
-  else if (str == "back")
+  else if (str == "back" || str == "select")
     return XBOX_BTN_BACK;
 
-  else if (str == "a" || str == "1" || str == "green")
+  else if (str == "a" || str == "1" || str == "green" || str == "cross")
     return XBOX_BTN_A;
-  else if (str == "b" || str == "2" || str == "red")
+  else if (str == "b" || str == "2" || str == "red" || str == "circle")
     return XBOX_BTN_B;
-  else if (str == "x" || str == "3" || str == "blue")
+  else if (str == "x" || str == "3" || str == "blue" || str == "square")
     return XBOX_BTN_X;
-  else if (str == "y" || str == "4" || str == "yellow")
+  else if (str == "y" || str == "4" || str == "yellow" || str == "triangle")
     return XBOX_BTN_Y;
 
-  else if (str == "lb" || str == "5" || str == "orange" || str == "white")
+  else if (str == "lb" || str == "5" || str == "orange" || str == "white" || str == "l1")
     return XBOX_BTN_LB;
-  else if (str == "rb" || str == "6" || str == "black")
+  else if (str == "rb" || str == "6" || str == "black" || str == "r1")
     return XBOX_BTN_RB;
 
-  else if (str == "lt" || str == "7")
+  else if (str == "lt" || str == "7" || str == "l2")
     return XBOX_BTN_LT;
-  else if (str == "rt" || str == "8")
+  else if (str == "rt" || str == "8" || str == "r2")
     return XBOX_BTN_RT;
 
-  else if (str == "tl")
+  else if (str == "tl" || str == "l3")
     return XBOX_BTN_THUMB_L;
-  else if (str == "tr")
+  else if (str == "tr" || str == "r3")
     return XBOX_BTN_THUMB_R;
 
   else if (str == "du" || str == "up")
@@ -1294,9 +1294,9 @@ XboxAxis string2axis(const std::string& str_)
   else if (str == "y2" || str == "tilt")
     return XBOX_AXIS_Y2;
   
-  else if (str == "lt")
+  else if (str == "lt" || str == "l2")
     return XBOX_AXIS_LT;
-  else if (str == "rt")
+  else if (str == "rt" || str == "r2")
     return XBOX_AXIS_RT;
 
   else if (str == "dpad_x")
@@ -1307,23 +1307,23 @@ XboxAxis string2axis(const std::string& str_)
   else if (str == "trigger" || str == "z" || str == "rudder")
     return XBOX_AXIS_TRIGGER;
 
-  else if (str == "btn_a")
+  else if (str == "btn_a" || str == "cross")
     return XBOX_AXIS_A;
 
-  else if (str == "btn_b")
+  else if (str == "btn_b" || str == "circle")
     return XBOX_AXIS_B;
 
-  else if (str == "btn_x")
+  else if (str == "btn_x" || str == "square")
     return XBOX_AXIS_X;
 
-  else if (str == "btn_y")
+  else if (str == "btn_y" || str == "triangle")
     return XBOX_AXIS_Y;
 
-  else if (str == "black")
-    return XBOX_AXIS_BLACK;
-
-  else if (str == "white")
+  else if (str == "white" || str == "lb"|| str == "l1")
     return XBOX_AXIS_WHITE;
+
+  else if (str == "black" || str == "rb" || str == "r1")
+    return XBOX_AXIS_BLACK;
 
   else
     return XBOX_AXIS_UNKNOWN;
