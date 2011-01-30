@@ -1,0 +1,54 @@
+# Evdev Example
+# =============
+#
+# Xboxdrv allows to not only the use of Xbox1 and Xbox360 controllers,
+# but also every other controller supported by Linux. To use them they
+# have however to be remapped to the Xbox360 button layout. While this
+# process is a bit chumbersome, such a configuration can be reused and
+# layout on top of regular xboxdrv configuration, i.e. if you store
+# your evdev to Xbox360 in the file evdev.xboxdrv and your custom
+# xboxdrv configuration in xbox360.xboxdrv you can use them both at
+# the same time with:
+# 
+#   xboxdrv -c evdev.xboxdrv -c xbox360.xboxdrv
+#
+# The following example is for the Microsoft Sidewinder Precision 2
+# joystick.
+
+[xboxdrv]
+# Using the 'by-id' name is recomment, as it is static, while an
+# /dev/input/eventX name can change depending on what other USB
+# devices you use.
+evdev = /dev/input/by-id/usb-Microsoft_SideWinder_Precision_2_Joystick-event-joystick
+
+# This displays events received from the controller, if you are
+# working on a configuration you want to set this to true:
+evdev-debug = false
+
+# Grabbing the device prevents other applications from accessing it,
+# this is needed most of the time te prevent applications from
+# receiving events twice.
+evdev-grab = true
+
+[evdev-absmap]
+ABS_HAT0X = dpad_x
+ABS_HAT0Y = dpad_y
+
+ABS_X = X1
+ABS_Y = Y1
+
+ABS_RZ = X2
+ABS_THROTTLE = Y2
+
+[evdev-keymap]
+BTN_TRIGGER = A
+BTN_THUMB   = B
+BTN_TOP     = Y
+BTN_THUMB2  = X
+
+BTN_PINKIE = start
+BTN_BASE   = back
+BTN_TOP2   = LB
+BTN_BASE2  = RB
+
+# EOF #

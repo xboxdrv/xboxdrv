@@ -57,8 +57,6 @@ Documentation
 
 * write example ini configs (as documented source for user customization):
 
-  * evdev joystick to xbox360
-
   * high sensitivty
 
 * give some response curve examples:
