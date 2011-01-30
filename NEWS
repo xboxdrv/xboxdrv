@@ -11,6 +11,7 @@ xboxdrv 0.7.1 - (30/Jan/2011)
 * added [controller0/config0/modifier] style sections to the ini file
 * added new match rules: usbserial=SERIAL, vendor=VENDOR, product=PRODUCT
   and property=PROPERTY:VALUE
+* added some example configurations to examples/
 * fixed issues with older libudev versions
 * fixed LED not getting switched off on shutdown
 * fixed some missing #include directives
