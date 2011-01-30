@@ -1,11 +1,17 @@
 xboxdrv 0.7.1 - (??/???/2011)
 =============================
 
-* compatibility with older libudev versions
-* new match rules: usbserial=SERIAL, vendor=VENDOR, product=PRODUCT
-  and property=PROPERTY:VALUE
 * added --match-group
-* man-page updates and cleanup
+* added --on-connect and --on-disconnect to xboxdrv --daemon
+* added --usb-debug
+* added --no-extra-events
+* added support for Playstation button names (triangle,
+  circle, square, cross, L1, L2, L3, R1, R2, R3)
+* added ability to set LED per controller slot
+* added [controller0/config0/modifier] style sections to the ini file
+* added new match rules: usbserial=SERIAL, vendor=VENDOR, product=PRODUCT
+  and property=PROPERTY:VALUE
+* fixed issues with older libudev versions
 * fixed LED not getting switched off on shutdown
 * fixed some missing #include directives
 * fixed axis inversion issue in --axismap
@@ -13,12 +19,7 @@ xboxdrv 0.7.1 - (??/???/2011)
 * fixed --dpad-as-button
 * fixed --dpad-only
 * fixed issue with using --trigger-as-zaxis in combination with axisfilter
-* added support for Playstation button names (triangle,
-  circle, square, cross, L1, L2, L3, R1, R2, R3)
-* added --on-connect and --on-disconnect to xboxdrv --daemon
-* added ability to set LED per controller slot
-* added --usb-debug
-* added [controller0/config0/modifier] style sections to the ini file
+* man-page updates and cleanup
 * new version of runxboxdrv
 
 

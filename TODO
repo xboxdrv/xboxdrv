@@ -42,6 +42,10 @@ $ dput my-ppa ../xboxdrv_0.7.1-1~lucid1_source.changes
 Stuff to do before 0.7.1 release:
 =================================
 
+* add [controller0/config0] support for ControllerOptions
+
+* add [controller0] support for ControllerSlotOptions
+
 * --ui-axismap LT=KEY_A:KEY_B:1 
 
 Here KEY_B is the key you want to send and KEY_A is a random other key
