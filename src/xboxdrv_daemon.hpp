@@ -22,6 +22,7 @@
 #include <libudev.h>
 
 #include "controller_slot_config.hpp"
+#include "controller_slot.hpp"
 
 class Options;
 class UInput;
@@ -35,56 +36,7 @@ private:
   struct udev* m_udev;
   struct udev_monitor* m_monitor;
 
-  struct ControllerSlot
-  {
-    int id;
-    ControllerSlotConfigPtr config;
-    std::vector<ControllerMatchRulePtr> rules;
-    int led_status;
-    XboxdrvThread* thread;
-    
-    ControllerSlot() :
-      id(),
-      config(),
-      rules(),
-      led_status(-1),
-      thread(0)
-    {}
-
-    ControllerSlot(int id_,
-                   ControllerSlotConfigPtr config_,
-                   std::vector<ControllerMatchRulePtr> rules_,
-                   int led_status_,
-                   XboxdrvThread* thread_ = 0) :
-      id(id_),
-      config(config_),
-      rules(rules_),
-      led_status(led_status_),
-      thread(thread_)
-    {}
-
-    ControllerSlot(const ControllerSlot& rhs) :
-      id(rhs.id),
-      config(rhs.config),
-      rules(rhs.rules),
-      led_status(rhs.led_status),
-      thread(rhs.thread)
-    {}
-
-    ControllerSlot& operator=(const ControllerSlot& rhs)
-    {
-      if (&rhs != this)
-      {
-        id     = rhs.id;
-        config = rhs.config;
-        rules  = rhs.rules;
-        led_status = rhs.led_status;
-        thread = rhs.thread;
-      }
-      return *this;
-    }
-  };
-  
+ 
   typedef std::vector<ControllerSlot> ControllerSlots;
   ControllerSlots m_controller_slots;
 
@@ -104,7 +56,7 @@ private:
 
   void run_loop(const Options& opts);
 
-  ControllerSlot* find_free_slot(udev_device* dev) const;
+  ControllerSlot* find_free_slot(udev_device* dev);
 
   void cleanup_threads();
   void process_match(const Options& opts, struct udev_device* device);
@@ -114,8 +66,8 @@ private:
                       ControllerSlot& slot);
   int get_free_slot_count() const;
   
-  void on_connect();
-  void on_disconnect();
+  void on_connect(const ControllerSlot& slot);
+  void on_disconnect(const ControllerSlot& slot);
 
 private:
   XboxdrvDaemon(const XboxdrvDaemon&);

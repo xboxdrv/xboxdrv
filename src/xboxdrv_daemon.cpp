@@ -101,8 +101,7 @@ XboxdrvDaemon::~XboxdrvDaemon()
 {
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
-    delete i->thread;
-    i->thread = 0;
+    i->disconnect();
   }
 
   udev_monitor_unref(m_monitor);
@@ -116,15 +115,12 @@ XboxdrvDaemon::cleanup_threads()
 
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
-    if (i->thread)
+    if (i->is_connected())
     {
-      if (i->thread->try_join_thread())
+      if (i->try_disconnect())
       {
-        delete i->thread;
-        i->thread = 0;
         count += 1;
-
-        on_disconnect();
+        on_disconnect(*i);
       }
     }
   }
@@ -433,33 +429,32 @@ XboxdrvDaemon::print_info(struct udev_device* device)
   log_debug("\\----------------------------------------------");
 }
 
-XboxdrvDaemon::ControllerSlot*
-XboxdrvDaemon::find_free_slot(udev_device* dev) const
+ControllerSlot*
+XboxdrvDaemon::find_free_slot(udev_device* dev)
 {
   // first pass, look for slots where the rules match the given vendor:product, bus:dev
-  for(ControllerSlots::const_iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
-    if (i->thread == 0)
+    if (!i->is_connected())
     {
       // found a free slot, check if the rules match
-      for(std::vector<ControllerMatchRulePtr>::const_iterator rule = i->rules.begin(); rule != i->rules.end(); ++rule)
+      for(std::vector<ControllerMatchRulePtr>::const_iterator rule = i->get_rules().begin(); 
+          rule != i->get_rules().end(); ++rule)
       {
         if ((*rule)->match(dev))
         {
-          // FIXME: ugly const_cast
-          return const_cast<ControllerSlot*>(&(*i));
+          return &(*i);
         }
       }
     }
   }
 
   // second path, look for slots that don't have any rules and thus match everything
-  for(ControllerSlots::const_iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
-    if (i->thread == 0 && i->rules.empty())
+    if (!i->is_connected() && i->get_rules().empty())
     {
-      // FIXME: ugly const_cast
-      return const_cast<ControllerSlot*>(&(*i));
+      return &(*i);
     }
   }
     
@@ -483,19 +478,19 @@ XboxdrvDaemon::launch_xboxdrv(const XPadDevice& dev_type, const Options& opts,
   {
     std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
 
-    if (slot.led_status == -1)
+    if (slot.get_led_status() == -1)
     {
-      controller->set_led(2 + (slot.id % 4));
+      controller->set_led(2 + (slot.get_id() % 4));
     }
     else
     {
-      controller->set_led(slot.led_status);
+      controller->set_led(slot.get_led_status());
     }
 
     std::auto_ptr<MessageProcessor> message_proc;
     if (m_uinput.get())
     {
-      message_proc.reset(new UInputMessageProcessor(*m_uinput, slot.config, opts));
+      message_proc.reset(new UInputMessageProcessor(*m_uinput, slot.get_config(), opts));
     }
     else
     {
@@ -504,14 +499,14 @@ XboxdrvDaemon::launch_xboxdrv(const XPadDevice& dev_type, const Options& opts,
 
     std::auto_ptr<XboxdrvThread> thread(new XboxdrvThread(message_proc, controller, opts));
     thread->start_thread(opts);
-    slot.thread = thread.release();
+    slot.connect(thread.release());
 
-    on_connect();
+    on_connect(slot);
 
     log_info("launched XboxdrvThread for " << boost::format("%03d:%03d")
       % static_cast<int>(busnum) 
       % static_cast<int>(devnum)
-             << " in slot " << slot.id << ", free slots: " 
+             << " in slot " << slot.get_id() << ", free slots: " 
              << get_free_slot_count() << "/" << m_controller_slots.size());
   }
 }
@@ -523,7 +518,7 @@ XboxdrvDaemon::get_free_slot_count() const
 
   for(ControllerSlots::const_iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
-    if (i->thread == 0)
+    if (!i->is_connected())
     {
       slot_count += 1;
     }
@@ -533,14 +528,14 @@ XboxdrvDaemon::get_free_slot_count() const
 }
 
 void
-XboxdrvDaemon::on_connect()
+XboxdrvDaemon::on_connect(const ControllerSlot& slot)
 {
   log_info("launching connect script");
   spawn_exe(m_opts.on_connect);
 }
 
 void
-XboxdrvDaemon::on_disconnect()
+XboxdrvDaemon::on_disconnect(const ControllerSlot& slot)
 {
   log_info("launching disconnect script");
   spawn_exe(m_opts.on_disconnect);
