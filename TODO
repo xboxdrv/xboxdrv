@@ -46,6 +46,8 @@ Stuff to do before 0.7.1 release:
 
 * add [controller0] support for ControllerSlotOptions
 
+* BTN_A@joystick.1 doesn't work for a single joystick, why?
+
 Documentation
 =============
 
@@ -57,8 +59,6 @@ Documentation
 
   * default config
 
-  * two joysticks with one stick
- 
   * all buttons and axis shifted by LB and RB
 
   * evdev joystick to xbox360
@@ -66,8 +66,6 @@ Documentation
   * dosbox flightstick emulation
 
   * high sensitivty
-
-  * mouse emulation
 
 * give some response curve examples:
 

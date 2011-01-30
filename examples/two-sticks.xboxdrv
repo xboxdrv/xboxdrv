@@ -1,0 +1,34 @@
+# Two Sticks
+# ==========
+#
+# This configuration gives you two virtual joysticks with a single
+# gamepad. Your left analogstick will be mapped to the first stick and
+# your second analog stick to the second. A and B will be mapped to
+# the first stick, and X and Y to the second.
+#
+# Note how the @0 and @1 suffixes are used to assign the event to a
+# different virtual device.
+
+[xboxdrv]
+# clear the default configuration, so we start empty
+ui-clear = true
+
+# Configuration for the first virtual joystick
+[ui-axismap]
+X1 = ABS_X@0
+Y1 = ABS_Y@0
+
+[ui-buttonmap]
+A = BTN_JOYSTICK@0
+B = BTN_THUMB@0
+
+# Configuration for the second virtual joystick
+[ui-axismap]
+X2 = ABS_X@1
+Y2 = ABS_Y@1
+
+[ui-buttonmap]
+X = BTN_JOYSTICK@1
+Y = BTN_THUMB@1
+
+# EOF #
