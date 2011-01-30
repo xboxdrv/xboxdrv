@@ -33,6 +33,10 @@ private:
   std::vector<ControllerMatchRulePtr> m_rules;
   int m_led_status;
   XboxdrvThread* m_thread;
+
+  uint8_t m_busnum;
+  uint8_t m_devnum;
+  XPadDevice m_dev_type;
     
 public:
   ControllerSlot() :
@@ -40,7 +44,10 @@ public:
     m_config(),
     m_rules(),
     m_led_status(-1),
-    m_thread(0)
+    m_thread(0),
+    m_busnum(),
+    m_devnum(),
+    m_dev_type()
   {}
 
   ControllerSlot(int id_,
@@ -52,7 +59,10 @@ public:
     m_config(config_),
     m_rules(rules_),
     m_led_status(led_status_),
-    m_thread(thread_)
+    m_thread(thread_),
+    m_busnum(),
+    m_devnum(),
+    m_dev_type()
   {}
 
   ControllerSlot(const ControllerSlot& rhs) :
@@ -60,7 +70,10 @@ public:
     m_config(rhs.m_config),
     m_rules(rhs.m_rules),
     m_led_status(rhs.m_led_status),
-    m_thread(rhs.m_thread)
+    m_thread(rhs.m_thread),
+    m_busnum(rhs.m_busnum),
+    m_devnum(rhs.m_devnum),
+    m_dev_type(rhs.m_dev_type)
   {}
 
   ControllerSlot& operator=(const ControllerSlot& rhs)
@@ -72,12 +85,17 @@ public:
       m_rules  = rhs.m_rules;
       m_led_status = rhs.m_led_status;
       m_thread = rhs.m_thread;
+      m_busnum = rhs.m_busnum;
+      m_devnum = rhs.m_devnum;
+      m_dev_type = rhs.m_dev_type;
     }
     return *this;
   }
 
   bool is_connected() const;
-  void connect(XboxdrvThread* thread);
+  void connect(XboxdrvThread* thread, 
+               uint8_t busnum, uint8_t devnum,
+               const XPadDevice& dev_type);
   void disconnect();
   bool try_disconnect();
 
@@ -85,6 +103,10 @@ public:
   int get_led_status() const { return m_led_status; }
   int get_id() const { return m_id; }
   ControllerSlotConfigPtr get_config() const { return m_config; }
+
+  std::string get_usbpath() const;
+  std::string get_usbid() const;
+  std::string get_name() const;
 };
 
 #endif

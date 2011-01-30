@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exec notify-send  "Xboxdrv" "Controller connected ${RANDOM} $*" -t 1000
+exec notify-send -i gtk-connect "Controller connected:" "$3\n$2\n$1"
 
 # EOF #
 

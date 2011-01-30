@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exec notify-send  "Xboxdrv" "Controller disconnected ${RANDOM} $*" -t 1000
+exec notify-send -i gtk-disconnect "Controller disconnected" "$3\n$2\n$1"
 
 # EOF #
 

@@ -18,13 +18,21 @@
 
 #include "controller_slot.hpp"
 
+#include <boost/format.hpp>
+
 #include "xboxdrv_thread.hpp"
 
 void
-ControllerSlot::connect(XboxdrvThread* thread)
+ControllerSlot::connect(XboxdrvThread* thread,
+                        uint8_t busnum, uint8_t devnum,
+                        const XPadDevice& dev_type)
 {
-  assert(thread == 0);
+  assert(m_thread == 0);
   m_thread = thread;
+
+  m_busnum = busnum;
+  m_devnum = devnum;
+  m_dev_type = dev_type;
 }
 
 void
@@ -54,6 +62,24 @@ bool
 ControllerSlot::is_connected() const
 {
   return m_thread;
+}
+
+std::string
+ControllerSlot::get_usbpath() const
+{
+  return (boost::format("%03d:%03d") % static_cast<int>(m_busnum) % static_cast<int>(m_devnum)).str();
+}
+
+std::string
+ControllerSlot::get_usbid() const
+{
+  return (boost::format("%04x:%04x") % m_dev_type.idVendor % m_dev_type.idProduct).str();
+}
+
+std::string
+ControllerSlot::get_name() const
+{
+  return m_dev_type.name;
 }
 
 /* EOF */

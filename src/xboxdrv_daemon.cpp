@@ -499,7 +499,7 @@ XboxdrvDaemon::launch_xboxdrv(const XPadDevice& dev_type, const Options& opts,
 
     std::auto_ptr<XboxdrvThread> thread(new XboxdrvThread(message_proc, controller, opts));
     thread->start_thread(opts);
-    slot.connect(thread.release());
+    slot.connect(thread.release(), busnum, devnum, dev_type);
 
     on_connect(slot);
 
@@ -530,15 +530,26 @@ XboxdrvDaemon::get_free_slot_count() const
 void
 XboxdrvDaemon::on_connect(const ControllerSlot& slot)
 {
-  log_info("launching connect script");
-  spawn_exe(m_opts.on_connect);
+  log_info("launching connect script: " << m_opts.on_connect);
+  std::vector<std::string> args;
+  args.push_back(m_opts.on_connect);
+  args.push_back(slot.get_usbpath());
+  args.push_back(slot.get_usbid());
+  args.push_back(slot.get_name());
+  spawn_exe(args);
 }
 
 void
 XboxdrvDaemon::on_disconnect(const ControllerSlot& slot)
 {
-  log_info("launching disconnect script");
-  spawn_exe(m_opts.on_disconnect);
+  log_info("launching disconnect script: " << m_opts.on_disconnect);
+
+  std::vector<std::string> args;
+  args.push_back(m_opts.on_disconnect);
+  args.push_back(slot.get_usbpath());
+  args.push_back(slot.get_usbid());
+  args.push_back(slot.get_name());
+  spawn_exe(args);
 }
 
 /* EOF */

@@ -411,6 +411,33 @@ start=KEY_ESC
             </para>
           </listitem>
         </varlistentry>
+
+        <varlistentry>
+          <term><option>--on-connect</option> <replaceable class="parameter">EXE</replaceable></term>
+          <listitem>
+            <para>
+              Launches <replaceable class="parameter">EXE</replaceable>
+              when a controller gets connected. As arguments
+              "<replaceable>BUSDEV</replaceable>:<replaceable>DEVNUM</replaceable>",
+              "<replaceable>idVendor</replaceable>:<replaceable>idProduct</replaceable>",
+              "<replaceable>NAME</replaceable> are provided.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--on-disconnect</option> <replaceable class="parameter">EXE</replaceable></term>
+          <listitem>
+            <para>
+              Launches <replaceable class="parameter">EXE</replaceable>
+              when a controller gets disconnected. As arguments
+              "<replaceable>BUSDEV</replaceable>:<replaceable>DEVNUM</replaceable>",
+              "<replaceable>idVendor</replaceable>:<replaceable>idProduct</replaceable>",
+              "<replaceable>NAME</replaceable> are provided.
+            </para>
+          </listitem>
+        </varlistentry>
+
       </variablelist>
     </refsect2>
     
@@ -1486,6 +1513,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
               switch this behaviour off.
             </para>
           </listitem>
+        </varlistentry>
 
         <varlistentry>
           <term><option>--name NAME</option></term>
