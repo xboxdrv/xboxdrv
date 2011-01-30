@@ -130,6 +130,8 @@ public:
   ControllerOptions& get_controller_options();
   const ControllerOptions& get_controller_options() const;
 
+  void set_ui_clear();
+
   void next_controller();
   void next_config();
 

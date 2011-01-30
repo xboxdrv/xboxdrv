@@ -365,6 +365,7 @@ CommandLineParser::init_ini(Options* opts)
     ("headset-debug",   &opts->headset_debug)
     ("headset-dump",    &opts->headset_dump)
     ("headset-play",    &opts->headset_play)
+    ("ui-clear",        boost::bind(&Options::set_ui_clear, boost::ref(opts)), boost::function<void ()>())
     ;
 
   m_ini.section("xboxdrv-daemon")
@@ -672,8 +673,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_UI_CLEAR:
-        opts.get_controller_options().uinput.get_axis_map().clear();
-        opts.get_controller_options().uinput.get_btn_map().clear();
+        opts.set_ui_clear();
         break;
 
       case OPTION_UI_AXISMAP:

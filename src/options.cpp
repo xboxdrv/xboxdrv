@@ -126,6 +126,13 @@ Options::get_controller_options() const
 }
 
 void
+Options::set_ui_clear()
+{
+  get_controller_options().uinput.get_axis_map().clear();
+  get_controller_options().uinput.get_btn_map().clear();
+}
+
+void
 Options::next_controller()
 {
   controller_slot += 1;
