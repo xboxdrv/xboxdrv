@@ -19,9 +19,10 @@
 #include "evdev_controller.hpp"
 
 #include <boost/format.hpp>
-#include <string.h>
-#include <fcntl.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <iostream>
+#include <string.h>
 
 #include "evdev_helper.hpp"
 #include "log.hpp"
@@ -148,19 +149,19 @@ EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
     switch(ev.type)
     {
       case EV_KEY:
-        log_debug("EV_KEY " << key2str(ev.code) << " " << ev.value);
+        std::cout << "EV_KEY " << key2str(ev.code) << " " << ev.value << std::endl;
         break;
 
       case EV_REL:
-        log_debug("EV_REL " << rel2str(ev.code) << " " << ev.value);
+        std::cout << "EV_REL " << rel2str(ev.code) << " " << ev.value << std::endl;
         break;
 
       case EV_ABS:
-        log_debug("EV_ABS " << abs2str(ev.code) << " " << ev.value);
+        std::cout << "EV_ABS " << abs2str(ev.code) << " " << ev.value << std::endl;
         break;
 
       case EV_SYN:
-        log_debug("------------------- sync -------------------");
+        std::cout << "------------------- sync -------------------" << std::endl;
         break;
 
       case EV_MSC:
@@ -169,7 +170,7 @@ EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
         break;
 
       default:
-        log_debug("unknown: " << ev.type << " " << ev.code << " " << ev.value);
+        log_info("unknown: " << ev.type << " " << ev.code << " " << ev.value);
         break;
     }
   }
