@@ -59,11 +59,7 @@ Documentation
 
   * default config
 
-  * all buttons and axis shifted by LB and RB
-
   * evdev joystick to xbox360
-
-  * dosbox flightstick emulation
 
   * high sensitivty
 
@@ -78,6 +74,11 @@ Stuff to do before 0.7.2 release:
 =================================
 
 * write relaxation modifier/filter
+
+* make extra-event creation a bit more clever, i.e. only create BTN_A
+  when needed, not when another button is present that can be used to
+  identify the device as joystick, also document exactly which
+  buttons/axis combinations are valid.
 
 Daemon
 ======

@@ -1,0 +1,33 @@
+# Shift Example
+# =============
+#
+# In this example all the face buttons are mapped three times, one for
+# regular presses, once while LB is held down and once when RB is held
+# down
+
+[xboxdrv]
+ui-clear = true
+
+[ui-axismap]
+X1 = ABS_X
+Y1 = ABS_Y
+
+[ui-buttonmap]
+A = JS_0
+B = JS_1
+X = JS_2
+Y = JS_3
+
+# LB shifting
+LB+A = JS_4
+LB+B = JS_5
+LB+X = JS_6
+LB+Y = JS_7
+
+# RB shifting
+RB+A = JS_8
+RB+B = JS_9
+RB+X = JS_10
+RB+Y = JS_11
+
+# EOF #
