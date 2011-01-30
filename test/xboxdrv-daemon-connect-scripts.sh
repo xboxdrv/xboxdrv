@@ -5,6 +5,6 @@ exec ./xboxdrv --daemon \
   --on-disconnect test/on-disconnect.sh \
   --next-controller \
   --next-controller \
-  --next-controller
+  --next-controller "$@"
 
 # EOF #

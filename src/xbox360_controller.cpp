@@ -208,7 +208,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, int timeout)
   }
   else if (len == 3 && data[0] == 0x01 && data[1] == 0x03)
   { 
-    log_info("Xbox360Controller: LED Status: " << int(data[2]));
+    log_debug("Xbox360Controller: LED Status: " << int(data[2]));
   }
   else if (len == 3 && data[0] == 0x03 && data[1] == 0x03)
   { 
