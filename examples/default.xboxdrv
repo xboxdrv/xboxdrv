@@ -1,0 +1,126 @@
+# Default Example
+# ===============
+#
+# This is simply the default xboxdrv configuration, replicated as INI
+# file with a few comments
+
+[xboxdrv]
+# Debugging output and verbosity
+# silent    = false
+# verbose   = false
+# usb-debug = false
+
+# timeout = 25
+
+# config = otherconfig.xboxdrv
+# alt-config = otherconfig.xboxdrv
+
+# busid = 
+# devid = 
+
+# Chatpad 
+# chatpad         = false
+# chatpad-debug   = false
+# chatpad-no-init = false
+
+# controller-id = 0
+# detach-kernel-driver = true
+# device-name = <not implemented>
+# evdev = 
+# evdev-debug = true
+# evdev-grab = true
+# extra-devices = true
+# extra-events = true
+# force-feedback = 
+
+# Headset
+# headset = false
+# headset-debug = false
+# headset-dump = /tmp/out.raw
+# headset-play = /tmp/in.raw
+
+# instant-exit = false
+# led = -1
+# next = true
+# next-controller = true
+# no-uinput = true
+# product-id = -1
+# quiet = false
+# rumble = false
+# rumble-gain = 255
+# rumble-l = -1
+# rumble-r = -1
+
+# deadzone = 0
+# deadzone-trigger = 0
+# mimic-xpad = true
+# mouse = true
+# square-axis = true
+# trigger-as-button = true
+# trigger-as-zaxis  = true
+# dpad-as-button = true
+# dpad-only = true
+# dpad-rotation = 45
+# four-way-restrictor = 
+# guitar = true
+
+# vendor-id = -1
+# wireless-id = 0
+
+[xboxdrv-daemon]
+# detach = true
+# on-connect = /home/juser/bin/on-connect.sh
+# on-disconnect = /home/juser/bin/on-connect.sh
+# pid-file = /var/run/xboxdrv.pid
+
+[autofire]
+
+[axis-sensitivity]
+
+[axismap]
+
+[buttonmap]
+
+[calibration]
+
+[evdev-absmap]
+
+[evdev-keymap]
+
+[modifier]
+
+[relative-axis]
+
+[xboxdrv]
+ui-clear = true
+
+[ui-axismap]
+X1 = ABS_X
+Y1 = ABS_Y
+
+X2 = ABS_RX
+Y2 = ABS_RY
+
+LT = ABS_BRAKE
+RT = ABS_GAS
+
+DPAD_X = ABS_HAT0X
+DPAD_Y = ABS_HAT0Y
+
+[ui-buttonmap]
+start  = BTN_START
+guide  = BTN_MODE
+back   = BTN_SELECT
+
+A = BTN_A
+B = BTN_B
+X = BTN_X
+Y = BTN_Y
+
+LB = BTN_TL
+RB = BTN_TR
+
+TL = BTN_THUMBL
+TR = BTN_THUMBR
+
+# EOF #
