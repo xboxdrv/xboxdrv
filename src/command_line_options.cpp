@@ -542,7 +542,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_MIMIC_XPAD:
-        opts.get_controller_options().uinput.mimic_xpad();
+        opts.set_mimic_xpad();
         break;
 
       case OPTION_TYPE:

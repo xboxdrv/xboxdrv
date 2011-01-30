@@ -43,10 +43,16 @@ ButtonEvent::create_abs(int code)
   return ButtonEvent::create(new AbsButtonEventHandler(code));
 }
 
+ButtonEventPtr 
+ButtonEvent::create_key(int device_id, int code)
+{
+  return ButtonEvent::create(new KeyButtonEventHandler(device_id, code));
+}
+
 ButtonEventPtr
 ButtonEvent::create_key(int code)
 {
-  return ButtonEvent::create(new KeyButtonEventHandler(code));
+  return ButtonEvent::create(new KeyButtonEventHandler(DEVICEID_AUTO, code));
 }
 
 ButtonEventPtr
@@ -245,7 +251,7 @@ KeyButtonEventHandler::KeyButtonEventHandler() :
   std::fill_n(m_secondary_codes, MAX_MODIFIER + 1, UIEvent::invalid());
 }
 
-KeyButtonEventHandler::KeyButtonEventHandler(int code) :
+KeyButtonEventHandler::KeyButtonEventHandler(int device_id, int code) :
   m_state(false),
   m_codes(),
   m_secondary_codes(),
@@ -254,7 +260,7 @@ KeyButtonEventHandler::KeyButtonEventHandler(int code) :
 {
   std::fill_n(m_codes, MAX_MODIFIER + 1, UIEvent::invalid());
   std::fill_n(m_secondary_codes, MAX_MODIFIER + 1, UIEvent::invalid());
-  m_codes[0] = UIEvent::create(DEVICEID_AUTO, EV_KEY, code);
+  m_codes[0] = UIEvent::create(device_id, EV_KEY, code);
 }
 
 void

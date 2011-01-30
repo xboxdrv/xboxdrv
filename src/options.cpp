@@ -233,6 +233,12 @@ Options::set_force_feedback(const std::string& value)
 void
 Options::set_mimic_xpad()
 {
+  // BTN_BACK is recognized as mouse button, so we have to disallow
+  // automatic allocation
+  extra_devices = false;
+  extra_events  = false;
+
+  set_device_name("Microsoft X-Box 360 pad");
   get_controller_options().uinput.mimic_xpad();
 }
 

@@ -37,6 +37,7 @@ public:
   static ButtonEventPtr invalid();
   static ButtonEventPtr create(ButtonEventHandler* handler);
   static ButtonEventPtr create_key(int code);
+  static ButtonEventPtr create_key(int device_id, int code);
   static ButtonEventPtr create_key();
   static ButtonEventPtr create_abs(int code);
   static ButtonEventPtr create_rel(int code);
@@ -79,7 +80,7 @@ public:
 
 public:
   KeyButtonEventHandler();
-  KeyButtonEventHandler(int code);
+  KeyButtonEventHandler(int deviceid, int code);
 
   void init(UInput& uinput, int slot, bool extra_devices);
   void send(UInput& uinput, bool value);
