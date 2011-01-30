@@ -205,7 +205,7 @@ XboxdrvDaemon::init_uinput(const Options& opts)
   {
     log_info("starting with UInput");
 
-    m_uinput.reset(new UInput());
+    m_uinput.reset(new UInput(opts.extra_events));
     m_uinput->set_device_names(opts.uinput_device_names);
 
     // create controller slots

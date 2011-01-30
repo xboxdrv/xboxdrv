@@ -42,14 +42,6 @@ $ dput my-ppa ../xboxdrv_0.7.1-1~lucid1_source.changes
 Stuff to do before 0.7.1 release:
 =================================
 
-* -trigger=trigger is broken
-
-* remove uinput.send_rel_repetitive() replace with just EventHandler::update()
-
-* mapping trigger=REL_WHEEL:5:100 doesn't work
-
-* make dummy joystick axis, mouse button creation optional
-
 * --ui-axismap LT=KEY_A:KEY_B:1 
 
 Here KEY_B is the key you want to send and KEY_A is a random other key
@@ -62,6 +54,9 @@ disable LT and RT
 
   [xboxdrv]
   ui-buttonmap = A=BTN_A,B=BTN_B,...
+
+  - in general cleanup config handling, turn almost everything into
+    proper functions and use the same functions for both cmdline and ini
 
 * how exactly does daemon interact with wireless pads?! allow --wid --id for daemon
 
@@ -127,6 +122,8 @@ disable LT and RT
 
 Stuff to do before 0.7.2 release:
 =================================
+
+* remove uinput.send_rel_repetitive() replace with just EventHandler::update()
 
 * add --device-usbid TYPE.SLOT=VENDOR:PRODUCT:VERSION
 

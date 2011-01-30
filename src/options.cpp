@@ -69,6 +69,7 @@ Options::Options() :
   controller_slot(0),
   config_slot(0),
   extra_devices(true),
+  extra_events(true),
   uinput_device_names(),
   usb_debug(false)
 {

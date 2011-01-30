@@ -22,11 +22,12 @@
 
 #include "log.hpp"
 
-UInput::UInput() :
+UInput::UInput(bool extra_events) :
   m_uinput_devs(),
   m_device_names(),
   m_rel_repeat_lst(),
-  m_mutex()
+  m_mutex(),
+  m_extra_events(extra_events)
 {
 }
 
@@ -144,23 +145,30 @@ UInput::create_uinput_device(uint32_t device_id)
     log_debug("create device: " << device_id);
     LinuxUinput::DeviceType device_type;
 
-    switch (device_id)
+    if (!m_extra_events)
     {
-      case DEVICEID_JOYSTICK:
-        device_type = LinuxUinput::kJoystickDevice;
-        break;
+      device_type = LinuxUinput::kGenericDevice;
+    }
+    else
+    {
+      switch (device_id)
+      {
+        case DEVICEID_JOYSTICK:
+          device_type = LinuxUinput::kJoystickDevice;
+          break;
 
-      case DEVICEID_MOUSE:
-        device_type = LinuxUinput::kMouseDevice;
-        break;
+        case DEVICEID_MOUSE:
+          device_type = LinuxUinput::kMouseDevice;
+          break;
       
-      case DEVICEID_KEYBOARD:
-        device_type = LinuxUinput::kKeyboardDevice;
-        break;
+        case DEVICEID_KEYBOARD:
+          device_type = LinuxUinput::kKeyboardDevice;
+          break;
 
-      default:
-        device_type = LinuxUinput::kGenericDevice;
-        break;
+        default:
+          device_type = LinuxUinput::kGenericDevice;
+          break;
+      }
     }
 
     std::string dev_name = get_device_name(device_id);

@@ -64,9 +64,10 @@ private:
   std::map<UIEvent, RelRepeat> m_rel_repeat_lst;
 
   boost::mutex m_mutex;
+  bool m_extra_events;
 
 public:
-  UInput();
+  UInput(bool extra_events);
   ~UInput();
 
   void update(int msec_delta);

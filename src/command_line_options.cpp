@@ -56,6 +56,7 @@ enum {
   OPTION_NO_UINPUT,
   OPTION_MIMIC_XPAD,
   OPTION_NO_EXTRA_DEVICES,
+  OPTION_NO_EXTRA_EVENTS,
   OPTION_TYPE,
   OPTION_FORCE_FEEDBACK,
   OPTION_RUMBLE_GAIN,
@@ -269,6 +270,7 @@ CommandLineParser::init_argp()
     .add_text("Uinput Configuration Options: ")
     .add_option(OPTION_NO_UINPUT,          0, "no-uinput",   "", "do not try to start uinput event dispatching")
     .add_option(OPTION_NO_EXTRA_DEVICES,   0, "no-extra-devices",  "", "Do not create separate virtual keyboard and mouse devices, just use a single virtual device")
+    .add_option(OPTION_NO_EXTRA_EVENTS,    0, "no-extra-events",  "", "Do not create dummy events to facilitate device type detection")
     .add_option(OPTION_NAME,               0, "name",            "NAME", "Changes the name prefix used for devices in the current slot")
     .add_option(OPTION_DEVICE_NAME,        0, "device-name",     "DEVID=NAME", "Changes the descriptive name the given device")
     .add_option(OPTION_UI_CLEAR,           0, "ui-clear",         "",     "Removes all existing uinput bindings")
@@ -336,6 +338,7 @@ CommandLineParser::init_ini(Options* opts)
     ("next", boost::bind(&Options::next_config, boost::ref(opts)), boost::function<void ()>())
     ("next-controller", boost::bind(&Options::next_controller, boost::ref(opts)), boost::function<void ()>())
     ("extra-devices", &opts->extra_devices)
+    ("extra-events", &opts->extra_events)
 
     ("deadzone", boost::bind(&CommandLineParser::set_deadzone, this, _1))
     ("deadzone-trigger", boost::bind(&CommandLineParser::set_deadzone_trigger, this, _1))
@@ -740,6 +743,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_NO_EXTRA_DEVICES:
         opts.extra_devices = false;
+        break;
+
+      case OPTION_NO_EXTRA_EVENTS:
+        opts.extra_events = false;
         break;
             
       case OPTION_DPAD_ONLY:

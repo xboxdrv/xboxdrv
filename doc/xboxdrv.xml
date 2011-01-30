@@ -1449,12 +1449,43 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
               and sort events to each of them. Thus mouse related
               events like BTN_LEFT or REL_X will go to a virtual mouse
               device, while ABS_X events would go to a virtual
-              joystick device. This option disables that automatism
-              and all events will go to the same virtual device.
-              Manual assignment to a specific device is still possible.
+              joystick device and KEY_ESC would go to a virtual
+              keyboard device.
+            </para>
+            <para>
+              This option disables that automatism and all events will
+              go to the same virtual device.
+            </para>
+            <para>
+              Manual assignment to a specific device (i.e.
+              KEY_ESC@keyboard, BTN_A@joystick, ...) is still possible.
             </para>
           </listitem>
         </varlistentry>
+
+        <varlistentry>
+          <term><option>--no-extra-events</option></term>
+          <listitem>
+            <para>
+              By default xboxdrv will allocate multiple uinput devices
+              and sort events to each of them. Thus mouse related
+              events like BTN_LEFT or REL_X will go to a virtual mouse
+              device, while ABS_X events would go to a virtual
+              joystick device and KEY_ESC would go to a virtual
+              keyboard device.
+            </para>
+            <para>
+              To make sure sure that a mouse, keyboard or joystick
+              device is properly detected by Xorg, the kernel or
+              libraries such SDL xboxdrv will insert extra dummy
+              events. For example a mouse device needs REL_X and REL_Y
+              events to be detected as such, but a configuration that
+              only wants to emulate the mouse buttons won't provide
+              those, thus xboxdrv will add them automatically.
+              The <option>--no-extra-events</option> option will
+              switch this behaviour off.
+            </para>
+          </listitem>
 
         <varlistentry>
           <term><option>--name NAME</option></term>

@@ -114,6 +114,7 @@ public:
   int config_slot;
 
   bool extra_devices;
+  bool extra_events;
 
   std::map<uint32_t, std::string> uinput_device_names;
 
