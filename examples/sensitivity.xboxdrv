@@ -1,0 +1,43 @@
+# Axis Sensitivty Example
+# =======================
+#
+# You can adjust the axis sensitivty by a few means, the sensitivty
+# modifier, the deadzone and the response curve. The deadzone is the
+# most basic one, it just filters out the noise around the center. The
+# sensitivty adjust the sensitivity curve via a simple value, while
+# the response curve gives you close to complete control over the axis
+# response.
+#
+# In this example the sensitivity of the left stick is reduced a bit
+# when LB is held down, giving you more resolution for small movement,
+# and increased when RB is held down. On the right stick all negative
+# Y values are removed from the response via an axisfilter
+
+# values between [-1, 1] gives reasonably results, above that is
+# allowed to but quickly becomes useless in practice
+# [axis-sensitivity]
+# X1 = -0.5
+# Y1 = -0.5
+
+[xboxdrv]
+# messing around with sensitivity can currently screw up diagonal
+# movement, using square-axis can sometimes help a bit with that.
+# square-axis=true
+
+[ui-axismap]
+X1=ABS_X
+Y1=ABS_Y
+
+LB+X1^sen:-1.0=ABS_X
+LB+Y1^sen:-1.0=ABS_Y
+
+RB+X1^sen:1.0=ABS_X
+RB+Y1^sen:1.0=ABS_Y
+
+[axismap]
+# a response curve maps the input values [-1,1] of the controller onto
+# an arbitary other range
+Y2^resp:0:0:32767 = 
+
+# EOF #
+ 

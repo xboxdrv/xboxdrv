@@ -42,12 +42,6 @@ $ dput my-ppa ../xboxdrv_0.7.1-1~lucid1_source.changes
 Stuff to do before 0.7.1 release:
 =================================
 
-* add [controller0/config0] support for ControllerOptions
-
-* add [controller0] support for ControllerSlotOptions
-
-* BTN_A@joystick.1 doesn't work for a single joystick, why?
-
 Documentation
 =============
 
@@ -55,19 +49,15 @@ Documentation
 
 * copy examples to documentation dir in the Ubuntu packages
 
-* write example ini configs (as documented source for user customization):
-
-  * high sensitivty
-
-* give some response curve examples:
-
-  # Low sensitivity on the stick when LB is pressed:
-
- --ui-axismap lb+y1^resp:-8000:0:8000=ABS_Y,y1=ABS_Y,lb+x1^resp:-8000:0:8000=ABS_X,x1=ABS_X
-
 
 Stuff to do before 0.7.2 release:
 =================================
+
+* add [controller0/config0] support for ControllerOptions
+
+* add [controller0] support for ControllerSlotOptions
+
+* BTN_A@joystick.1 doesn't work for a single joystick, why?
 
 * write relaxation modifier/filter
 
