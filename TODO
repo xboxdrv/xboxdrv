@@ -46,59 +46,12 @@ Stuff to do before 0.7.1 release:
 
 * add [controller0] support for ControllerSlotOptions
 
-* --ui-axismap LT=KEY_A:KEY_B:1 
-
-Here KEY_B is the key you want to send and KEY_A is a random other key
-that you don't need. It's a hack as mapping both to KEY_B seems to
-cause some trouble with automatic key repeat for some reason. Note
-that you must not combine this with --trigger-as-zaxis as that will
-disable LT and RT
-
-* in INI files allow:
-
-  [xboxdrv]
-  ui-buttonmap = A=BTN_A,B=BTN_B,...
-
-  - in general cleanup config handling, turn almost everything into
-    proper functions and use the same functions for both cmdline and ini
-
-* how exactly does daemon interact with wireless pads?! allow --wid --id for daemon
-
-* fix device name of mimic_xpad
-
-* improve output in daemon mode, when --quiet is not given print the
-  number of allocated controller slots
-
-* add introspection to filters and modifier stack
-
-* [ERROR] XboxdrvDaemon::process_match(): no free controller slot found, controller will be ignored
-  - should include info about what controller is ignored
-
-* print controller type/name in daemon (little tricky as that is only
-  known after opening the USB connection)
-  -> easy use information from xpad_devices instead of query the USB device directly
+Documentation
+=============
 
 * update debian package description
 
-* valgrind before release
-
-* allow named sections in INI files (start numbering at 0 or 1,
-  calibration is missing)
-
-* check how daemon reacts on suspend
-  - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
-    controller leads to LIBUSB_ERROR_OTHER
-
-* remember controllers that couldn't be used when all slots where full
-  and use them when a slot got free
-
-* improve output on which uinput devices are created (even with udev
-  there doesn't seem to be a bullet proof way to detect what gets
-  created)
-
-* do modifier/filter dump when --verbose is given, make verbose
-  overall more useful
-
+* copy examples to documentation dir in the Ubuntu packages
 
 * write example ini configs (as documented source for user customization):
 
@@ -122,10 +75,52 @@ disable LT and RT
 
  --ui-axismap lb+y1^resp:-8000:0:8000=ABS_Y,y1=ABS_Y,lb+x1^resp:-8000:0:8000=ABS_X,x1=ABS_X
 
-
 
 Stuff to do before 0.7.2 release:
 =================================
+
+* write relaxation modifier/filter
+
+Daemon
+======
+
+* improve output in daemon mode, when --quiet is not given print the
+  number of allocated controller slots
+
+* how exactly does daemon interact with wireless pads?! allow --wid --id for daemon
+
+Other Stuff
+===========
+
+* in INI files allow:
+
+  [xboxdrv]
+  ui-buttonmap = A=BTN_A,B=BTN_B,...
+
+  - in general cleanup config handling, turn almost everything into
+    proper functions and use the same functions for both cmdline and ini
+
+* --ui-axismap LT=KEY_A:KEY_B:1 
+
+Here KEY_B is the key you want to send and KEY_A is a random other key
+that you don't need. It's a hack as mapping both to KEY_B seems to
+cause some trouble with automatic key repeat for some reason. Note
+that you must not combine this with --trigger-as-zaxis as that will
+disable LT and RT
+
+* check how daemon reacts on suspend
+  - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
+    controller leads to LIBUSB_ERROR_OTHER
+
+* remember controllers that couldn't be used when all slots where full
+  and use them when a slot got free
+
+* improve output on which uinput devices are created (even with udev
+  there doesn't seem to be a bullet proof way to detect what gets
+  created)
+
+* do modifier/filter dump when --verbose is given, make verbose
+  overall more useful
 
 * remove uinput.send_rel_repetitive() replace with just EventHandler::update()
 
