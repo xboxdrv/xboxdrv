@@ -1,0 +1,7 @@
+# an invalid configuration that should produce errors when parsed by
+# xboxdrv
+
+[invalid-random-section-name]
+invalid-variable = random-value
+
+# EOF #

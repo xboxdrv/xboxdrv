@@ -1,0 +1,31 @@
+# CH Flightstick Emulation
+# ========================
+#
+# This configuration is for old flight simulations in Dosbox. First
+# you have to adjust your Dosbox configuration to interpreted the
+# given joystick as CH Flightstick. To do so set in "dosbox.conf":
+#
+# [joystick]
+# joysticktype = ch
+#
+# With the following configuration your right analog stick will act as
+# trottle control, the trigger as rudder. The left stick will be
+# expanded to a square movement range and the rest of the buttons acts
+# as usual.
+#
+# For a proper experience you might want to map some of the remaining
+# buttons to game specific keyboard keys.
+
+[xboxdrv]
+trigger-as-zaxis = true
+square-axis = true
+
+[relative-axis]
+y2 = 64000 
+
+[axismap]
+-y2=x2
+x2=y2
+
+# EOF #
+ 

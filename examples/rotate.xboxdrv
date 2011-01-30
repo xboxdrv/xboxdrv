@@ -1,0 +1,57 @@
+# Rotate the left stick
+# =====================
+#
+# This example install multiple configurations, each with the left
+# stick rotated by 45, thus pressing the guide button will result in
+# the stick movement being shifted by 45 degree each time.
+#
+# This is mostly for fun, but can be used to remap the controls in
+# some isometric games from the dialogonals to straight axis. See also
+# dpad-rotation for a similar effect done to the dpad. 
+
+[modifier]
+rotate = X1:Y1:45
+
+[xboxdrv]
+next=true
+
+[modifier]
+rotate = X1:Y1:90
+
+[xboxdrv]
+next=true
+
+[modifier]
+rotate = X1:Y1:135
+
+[xboxdrv]
+next=true
+
+[modifier]
+rotate = X1:Y1:180
+
+[xboxdrv]
+next=true
+
+[modifier]
+rotate = X1:Y1:225
+
+[xboxdrv]
+next=true
+
+[modifier]
+rotate = X1:Y1:270
+
+[xboxdrv]
+next=true
+
+[modifier]
+rotate = X1:Y1:315
+
+[xboxdrv]
+next=true
+
+[modifier]
+rotate = X1:Y1:0
+
+# EOF #

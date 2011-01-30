@@ -1,0 +1,8 @@
+# an invalid configuration that should produce errors when parsed by
+# xboxdrv
+
+[ui-axismap]
+rtl = random-value
+invalid-variable = random-value
+
+# EOF #

@@ -1,9 +1,20 @@
+# Mouse Emulation
+# ===============
+#
+# This configuration file emulates a mouse. The left stick controls
+# the cursor, the right stick becomes a horizontal and vertical scroll
+# wheel, the dpad acts as cursor keys, the start and back buttons
+# become forward and back buttons, the guide button escape and LB and
+# RB become page up and page down and the face button act as mouse
+# button.
+
 [xboxdrv]
-deadzone=4000
-trigger-as-zaxis=true
-dpad-as-button=true
+deadzone=4000 # to avoid cursor jitter we use a deadzone
+trigger-as-zaxis=true # both triggers acts as single axis
+dpad-as-button=true # easier to map the dpad as buttons
 
 [axismap]
+# if we don't invert some axis things would be upside down
 -y2=y2
 -trigger=trigger
 
@@ -32,7 +43,5 @@ dd=KEY_DOWN
 start=KEY_FORWARD
 back=KEY_BACK
 guide=KEY_ESC
-tl=void
-tr=void
 
 # EOF #
