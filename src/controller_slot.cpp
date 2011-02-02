@@ -20,14 +20,54 @@
 
 #include <boost/format.hpp>
 
-#include "xboxdrv_thread.hpp"
+ControllerSlot::ControllerSlot() :
+  m_id(),
+  m_config(),
+  m_rules(),
+  m_led_status(-1),
+  m_thread(),
+  m_busnum(),
+  m_devnum(),
+  m_dev_type()
+{}
+
+ControllerSlot::ControllerSlot(int id_,
+                               ControllerSlotConfigPtr config_,
+                               std::vector<ControllerMatchRulePtr> rules_,
+                               int led_status_,
+                               XboxdrvThreadPtr thread_) :
+  m_id(id_),
+  m_config(config_),
+  m_rules(rules_),
+  m_led_status(led_status_),
+  m_thread(thread_),
+  m_busnum(),
+  m_devnum(),
+  m_dev_type()
+{}
 
 void
-ControllerSlot::connect(XboxdrvThread* thread,
+ControllerSlot::connect(XboxdrvThreadPtr thread)
+{
+  assert(!m_thread);
+  m_thread = thread;
+
+  m_busnum = 0;
+  m_devnum = 0;
+  
+  // FIXME: hack this info should be stored in the thread
+  m_dev_type.type = GAMEPAD_XBOX360;
+  m_dev_type.idVendor  = 0;
+  m_dev_type.idProduct = 0;
+  m_dev_type.name = "unset";
+}
+
+void
+ControllerSlot::connect(XboxdrvThreadPtr thread,
                         uint8_t busnum, uint8_t devnum,
                         const XPadDevice& dev_type)
 {
-  assert(m_thread == 0);
+  assert(!m_thread);
   m_thread = thread;
 
   m_busnum = busnum;
@@ -35,11 +75,12 @@ ControllerSlot::connect(XboxdrvThread* thread,
   m_dev_type = dev_type;
 }
 
-void
+XboxdrvThreadPtr
 ControllerSlot::disconnect()
 {
-  delete m_thread;
-  m_thread = 0;
+  XboxdrvThreadPtr thread = m_thread;
+  m_thread.reset();
+  return thread;
 }
 
 bool

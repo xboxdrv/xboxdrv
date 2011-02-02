@@ -20,12 +20,16 @@
 #define HEADER_XBOXDRV_XBOXDRV_THREAD_HPP
 
 #include <boost/thread.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "controller_slot_config.hpp"
 
 class Options;
 class XboxGenericController;
 class MessageProcessor;
+class XboxdrvThread;
+
+typedef boost::shared_ptr<XboxdrvThread> XboxdrvThreadPtr;
 
 /** XboxdrvThread handles a single XboxGenericController controller
     (optionally in a separate thread), reads it messages and passes it
@@ -59,6 +63,8 @@ public:
   void start_thread(const Options& opts);
   void stop_thread();
   bool try_join_thread();
+
+  bool is_active() const;
 
 private:
   void launch_child_process();

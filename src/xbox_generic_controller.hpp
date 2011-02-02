@@ -39,6 +39,8 @@ public:
    */  
   virtual bool read(XboxGenericMsg& msg, int timeout) =0;
 
+  virtual bool is_active() const { return true; }
+
 private:
   XboxGenericController (const XboxGenericController&);
   XboxGenericController& operator= (const XboxGenericController&);

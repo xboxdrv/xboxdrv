@@ -23,6 +23,7 @@
 
 #include "controller_slot_config.hpp"
 #include "controller_slot.hpp"
+#include "wakeup_pipe.hpp"
 
 class Options;
 class UInput;
@@ -35,12 +36,16 @@ private:
   const Options& m_opts;
   struct udev* m_udev;
   struct udev_monitor* m_monitor;
-
  
-  typedef std::vector<ControllerSlot> ControllerSlots;
+  typedef std::vector<ControllerSlotPtr> ControllerSlots;
   ControllerSlots m_controller_slots;
+  
+  typedef std::vector<XboxdrvThreadPtr> Threads;
+  Threads m_inactive_threads;
 
   std::auto_ptr<UInput> m_uinput;
+
+  WakeupPipe m_wakeup_pipe;
 
 public:
   XboxdrvDaemon(const Options& opts);
@@ -56,18 +61,26 @@ private:
 
   void run_loop(const Options& opts);
 
-  ControllerSlot* find_free_slot(udev_device* dev);
+  ControllerSlotPtr find_free_slot(udev_device* dev);
+  ControllerSlotPtr find_free_slot(XboxdrvThreadPtr thread);
 
+  void enumerate_udev_devices(const Options& opts);
   void cleanup_threads();
   void process_match(const Options& opts, struct udev_device* device);
   void print_info(struct udev_device* device);
   void launch_xboxdrv(const XPadDevice& dev_type, const Options& opts, 
                       uint8_t busnum, uint8_t devnum,
-                      ControllerSlot& slot);
+                      ControllerSlotPtr slot);
   int get_free_slot_count() const;
+  void check_thread_status();
   
-  void on_connect(const ControllerSlot& slot);
-  void on_disconnect(const ControllerSlot& slot);
+  bool connect_to_slot(XboxdrvThreadPtr thread);
+
+  void connect(ControllerSlotPtr slot, XboxdrvThreadPtr thread);
+  XboxdrvThreadPtr disconnect(ControllerSlotPtr slot);
+
+  void on_connect(ControllerSlotPtr slot);
+  void on_disconnect(ControllerSlotPtr slot);
 
 private:
   XboxdrvDaemon(const XboxdrvDaemon&);

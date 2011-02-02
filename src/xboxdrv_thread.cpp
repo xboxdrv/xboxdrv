@@ -178,6 +178,12 @@ XboxdrvThread::controller_loop(const Options& opts)
     m_processor->send(msg, 0);
   }
 }
+
+bool
+XboxdrvThread::is_active() const
+{
+  return m_controller->is_active();
+}
 
 void
 XboxdrvThread::start_thread(const Options& opts)

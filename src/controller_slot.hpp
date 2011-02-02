@@ -20,10 +20,16 @@
 #define HEADER_XBOXDRV_CONTROLLER_SLOT_HPP
 
 #include <vector>
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 
 #include "controller_slot_config.hpp"
+#include "xboxdrv_thread.hpp"
 
-class XboxdrvThread;
+class ControllerSlot;
+
+typedef boost::shared_ptr<ControllerSlot> ControllerSlotPtr;
+typedef boost::shared_ptr<ControllerSlot> ControllerSlotWeakPtr;
 
 class ControllerSlot
 {
@@ -32,71 +38,26 @@ private:
   ControllerSlotConfigPtr m_config;
   std::vector<ControllerMatchRulePtr> m_rules;
   int m_led_status;
-  XboxdrvThread* m_thread;
+  XboxdrvThreadPtr m_thread;
 
   uint8_t m_busnum;
   uint8_t m_devnum;
   XPadDevice m_dev_type;
     
 public:
-  ControllerSlot() :
-    m_id(),
-    m_config(),
-    m_rules(),
-    m_led_status(-1),
-    m_thread(0),
-    m_busnum(),
-    m_devnum(),
-    m_dev_type()
-  {}
-
+  ControllerSlot();
   ControllerSlot(int id_,
                  ControllerSlotConfigPtr config_,
                  std::vector<ControllerMatchRulePtr> rules_,
                  int led_status_,
-                 XboxdrvThread* thread_ = 0) :
-    m_id(id_),
-    m_config(config_),
-    m_rules(rules_),
-    m_led_status(led_status_),
-    m_thread(thread_),
-    m_busnum(),
-    m_devnum(),
-    m_dev_type()
-  {}
-
-  ControllerSlot(const ControllerSlot& rhs) :
-    m_id(rhs.m_id),
-    m_config(rhs.m_config),
-    m_rules(rhs.m_rules),
-    m_led_status(rhs.m_led_status),
-    m_thread(rhs.m_thread),
-    m_busnum(rhs.m_busnum),
-    m_devnum(rhs.m_devnum),
-    m_dev_type(rhs.m_dev_type)
-  {}
-
-  ControllerSlot& operator=(const ControllerSlot& rhs)
-  {
-    if (&rhs != this)
-    {
-      m_id     = rhs.m_id;
-      m_config = rhs.m_config;
-      m_rules  = rhs.m_rules;
-      m_led_status = rhs.m_led_status;
-      m_thread = rhs.m_thread;
-      m_busnum = rhs.m_busnum;
-      m_devnum = rhs.m_devnum;
-      m_dev_type = rhs.m_dev_type;
-    }
-    return *this;
-  }
+                 XboxdrvThreadPtr thread_ = XboxdrvThreadPtr());
 
   bool is_connected() const;
-  void connect(XboxdrvThread* thread, 
+  void connect(XboxdrvThreadPtr thread, 
                uint8_t busnum, uint8_t devnum,
                const XPadDevice& dev_type);
-  void disconnect();
+  void connect(XboxdrvThreadPtr thread);
+  XboxdrvThreadPtr disconnect();
   bool try_disconnect();
 
   const std::vector<ControllerMatchRulePtr>& get_rules() const { return m_rules; }
@@ -107,6 +68,8 @@ public:
   std::string get_usbpath() const;
   std::string get_usbid() const;
   std::string get_name() const;
+  
+  XboxdrvThreadPtr get_thread() const { return m_thread; }
 };
 
 #endif
