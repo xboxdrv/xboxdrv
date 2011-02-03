@@ -595,6 +595,7 @@ XboxdrvDaemon::launch_xboxdrv(udev_device* udev_dev,
   }
   else
   {
+    // FIXME: wireless controllers need to create 4 controllers out of a single USB device
     std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
 
     if (slot->get_led_status() == -1)
@@ -616,21 +617,23 @@ XboxdrvDaemon::launch_xboxdrv(udev_device* udev_dev,
       message_proc.reset(new DummyMessageProcessor());
     }
 
-    XboxdrvThreadPtr thread(new XboxdrvThread(message_proc, controller, opts));
-
     if (controller->is_active())
     {
       // active controllers get directly connected to a slot
+      XboxdrvThreadPtr thread(new XboxdrvThread(message_proc, controller, opts));
+      thread->start_thread(opts);
       connect(slot, thread);
     }
     else
     {
       // inactive ones, such as wireless controllers that aren't yet
       // synced get put on hold and only get connected once activated
-      thread->set_compatible_slots(find_compatible_slots(udev_dev));
-    }
+      controller->set_activation_cb(boost::bind(&XboxdrvDaemon::wakeup, this));
 
-    thread->start_thread(opts);
+      XboxdrvThreadPtr thread(new XboxdrvThread(message_proc, controller, opts));
+      thread->set_compatible_slots(find_compatible_slots(udev_dev));
+      thread->start_thread(opts);
+    }
   }
 }
 
@@ -715,6 +718,12 @@ XboxdrvDaemon::on_disconnect(ControllerSlotPtr slot)
     args.push_back(thread->get_name());
     spawn_exe(args);
   }
+}
+
+void
+XboxdrvDaemon::wakeup()
+{
+  m_wakeup_pipe.send_wakeup();
 }
 
 /* EOF */

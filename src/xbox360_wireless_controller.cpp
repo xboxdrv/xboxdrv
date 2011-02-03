@@ -35,7 +35,8 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev_, int co
   interface(),
   battery_status(),
   serial(),
-  led_status(0)
+  led_status(0),
+  m_activation_cb()
 {
   assert(controller_id >= 0 && controller_id < 4);
   
@@ -201,8 +202,17 @@ Xbox360WirelessController::set_active(bool v)
   if (m_active != v)
   {
     m_active = v;
-    // FIXME: insert code to signal the daemon, probablly best done with a boost::function<>
+    if (m_activation_cb)
+    {
+      m_activation_cb();
+    }
   }
+}
+
+void
+Xbox360WirelessController::set_activation_cb(const boost::function<void ()> callback)
+{
+  m_activation_cb = callback;
 }
 
 /* EOF */

@@ -82,6 +82,8 @@ private:
   void on_connect(ControllerSlotPtr slot);
   void on_disconnect(ControllerSlotPtr slot);
 
+  void wakeup();
+  
 private:
   XboxdrvDaemon(const XboxdrvDaemon&);
   XboxdrvDaemon& operator=(const XboxdrvDaemon&);

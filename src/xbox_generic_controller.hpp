@@ -21,11 +21,12 @@
 
 #include <stdint.h>
 
+#include <boost/function.hpp>
+
 struct XboxGenericMsg;
 
 class XboxGenericController
 {
-private:
 public:
   XboxGenericController() {}
   virtual ~XboxGenericController() {}
@@ -40,6 +41,7 @@ public:
   virtual bool read(XboxGenericMsg& msg, int timeout) =0;
 
   virtual bool is_active() const { return true; }
+  virtual void set_activation_cb(const boost::function<void ()> callback) {}
 
 private:
   XboxGenericController (const XboxGenericController&);

@@ -22,40 +22,55 @@ add libudev, libusb-1.0 to builddependencies
 
 $ cd ../debian/
 $ git checkout master
-$ git-import-orig -u 0.7.1 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.7.1.tar.bz2 
-$ dch -v "0.7.1-1" "xboxdrv 0.7.1 release"
+$ git-import-orig -u 0.7.2 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.7.2.tar.bz2 
+$ dch -v "0.7.2-1" "xboxdrv 0.7.2 release"
 $ git-buildpackage --git-no-create-orig --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build ../xboxdrv_0.7.1-1.dsc
-$ dput my-ppa ../xboxdrv_0.7.1-1_source.changes
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-maverick.tgz ../xboxdrv_0.7.2-1.dsc
+$ dput my-ppa ../xboxdrv_0.7.2-1_source.changes
 
 # Ubuntu 10.04 (LTS)
 
 $ cd ../debian/
 $ git checkout master-lts
 $ git merge master
-$ dch -b -v "0.7.1-1~lucid1" --distribution lucid "xboxdrv 0.7.1 backport"
+$ dch -b -v "0.7.2-1~lucid1" --distribution lucid "xboxdrv 0.7.2 backport"
 $ git-buildpackage --git-no-create-orig --git-debian-branch=master-lts --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build ../xboxdrv_0.7.1-1~lucid1.dsc
-$ dput my-ppa ../xboxdrv_0.7.1-1~lucid1_source.changes
-
-
-Stuff to do before 0.7.1 release:
-=================================
-
-Documentation
-=============
-
-* update debian package description
-
-* copy examples to documentation dir in the Ubuntu packages
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv_0.7.2-1~lucid1.dsc
+$ dput my-ppa ../xboxdrv_0.7.2-1~lucid1_source.changes
 
 
 Stuff to do before 0.7.2 release:
 =================================
 
+* factory must create four wireless controllers for each wireless USB device
+
+* add match rule for wireless id
+
+* add --exclued, --exclude-group as ControllerMatchRules
+
+* XboxdrvThread or XboxGenericController must hold information on
+  their: bus:dev, vendor:product and other potentially useful
+  information, match rule must match against controller, not
+  udev_device
+   -> doesn't work, as we don't have a controller at that point
+   -> match against abstract ControllerInfo object?
+   -> get_busnum()
+   -> get_devnum()
+
+   -> figure out potential matches early and save the valid slots?
+      -> ugly but could work
+
+* turn ControllerSlot into ControllerSlotPtr (careful with loop in the refcount)
+
+* allow setting a --default-name from which all other controller names
+  are derived
+
 * add [controller0/config0] support for ControllerOptions
 
 * add [controller0] support for ControllerSlotOptions
+
+* sort options a bit more between global ones, slot local ones and
+  config local ones
 
 * BTN_A@joystick.1 doesn't work for a single joystick, why?
 
@@ -66,13 +81,29 @@ Stuff to do before 0.7.2 release:
   identify the device as joystick, also document exactly which
   buttons/axis combinations are valid.
 
+* allow something like:
+
+  void = BTN_A
+
+  to create empty events on uinput
+
 Daemon
 ======
 
 * improve output in daemon mode, when --quiet is not given print the
   number of allocated controller slots
 
-* how exactly does daemon interact with wireless pads?! allow --wid --id for daemon
+* how exactly does daemon interact with wireless pads?! 
+  -> it doesn't, only used the first gamepad or the one given by --wid
+  -> either use all, allow an option to say how many to use
+  -> launch listener threads on each port, but only 'activate' the
+     slot when the controller is connected
+
+* after every thread cleanup, to an enumeration over all USB devices,
+  find those not currently used by a Slot and recreate them, this
+  should fix resume issues, this would also fix the issue with
+  ignoring controllers when all slots are full
+
 
 Other Stuff
 ===========
@@ -96,6 +127,9 @@ disable LT and RT
 * check how daemon reacts on suspend
   - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
     controller leads to LIBUSB_ERROR_OTHER
+  - errno is set to EBUSY
+  - the device handle can't be reused, device has to be reallocated
+  - integrate this with the "keep backlog of devices currently in use"
 
 * remember controllers that couldn't be used when all slots where full
   and use them when a slot got free
@@ -181,43 +215,6 @@ Stuff to do before 0.7.x release:
 * -R, --rumble-test is broken for FirestormDualController (has no analog triggers)
 
 * add ABS support to macros events (need to deal with min/max)
-
-* Playstation 3 controller support
-  - http://www.pabr.org/sixlinux/sixlinux.en.html
-  - http://www.motioninjoy.com/
-
-  - figure out what the remaining unknown bits mean:
-
-     data from just pluging the controller in and out a few times
-     without much pause inbetween:
-
-     Dualshock3:
-     // leaving controller plugged in for a longer time settles to this:
-      00 00 03 ef 16 00 00 00 00 33 fc 77 01 de
-
-     00 00 03 ef 16 00 00 00 00 33 fc 77 01 de 
-     00 00 03 ef 16 00 00 00 00 33 fc 77 01 c0
-     00 00 02 ee 12 00 00 00 00 12 fc 77 01 de
-           ^^^^^                         ^^^^^
-     00 00 01 ee 12 00 00 00 00 12 fc 77 01 de 
-     00 00 03 ef 16 00 00 00 00 11 fc 77 01 de 
-     00 00 03 ef 16 00 00 00 00 33 fc 77 01 de 
-     00 00 02 ee 12 00 00 00 00 12 fc 77 01 de 
-     wrong ideas: bluetooth master id
-
-     00 00 01 ef 16 00 00 00 00 11 fc 77 01 c0
-     00 00 03 ef 16 00 00 00 00 11 fc 77 01 c0
-
-     SIXAXIS:
-     00 00 06 ee 10 00 00 00 00 06 83 77 01 81 
-     00 00 06 ee 10 00 00 00 00 06 83 77 01
-     00 00 06 ee 10 00 00 00 00 06 83 77 
-
-     // taken from: http://www.pabr.org/sixlinux/sixlinux.en.html
-     00 00 02 ee 10 00 00 00 00 02 b2 77 01 81
-     
-     random guesses: bluetooth id, serial number, calibration data,
-     battery status
 
 * add support for pairing the controller to the PC (or zero)
 
@@ -369,10 +366,52 @@ Orange	LB1	+32767
 
 * add support for LED messages (can this be used by anything?)
 
-* include id/wid in device name (would be cleaner, since it makes the
-  device unique, but would make Xorg trouble worse)
+
+Stuff to do before 0.8.0 release:
+=================================
+
+* Playstation 3 controller bluetooth support
+  - http://www.pabr.org/sixlinux/sixlinux.en.html
+  - http://www.motioninjoy.com/
+
+  - figure out what the remaining unknown bits mean:
+
+     data from just pluging the controller in and out a few times
+     without much pause inbetween:
+
+     Dualshock3:
+     // leaving controller plugged in for a longer time settles to this:
+      00 00 03 ef 16 00 00 00 00 33 fc 77 01 de
+
+     00 00 03 ef 16 00 00 00 00 33 fc 77 01 de 
+     00 00 03 ef 16 00 00 00 00 33 fc 77 01 c0
+     00 00 02 ee 12 00 00 00 00 12 fc 77 01 de
+           ^^^^^                         ^^^^^
+     00 00 01 ee 12 00 00 00 00 12 fc 77 01 de 
+     00 00 03 ef 16 00 00 00 00 11 fc 77 01 de 
+     00 00 03 ef 16 00 00 00 00 33 fc 77 01 de 
+     00 00 02 ee 12 00 00 00 00 12 fc 77 01 de 
+     wrong ideas: bluetooth master id
+
+     00 00 01 ef 16 00 00 00 00 11 fc 77 01 c0
+     00 00 03 ef 16 00 00 00 00 11 fc 77 01 c0
+
+     SIXAXIS:
+     00 00 06 ee 10 00 00 00 00 06 83 77 01 81 
+     00 00 06 ee 10 00 00 00 00 06 83 77 01
+     00 00 06 ee 10 00 00 00 00 06 83 77 
+
+     // taken from: http://www.pabr.org/sixlinux/sixlinux.en.html
+     00 00 02 ee 10 00 00 00 00 02 b2 77 01 81
+     
+     random guesses: bluetooth id, serial number, calibration data,
+     battery status
+
+* Wiimote support (either native or via libcwiid
 
 
+Random Stuff
+============
 http://lists.libsdl.org/pipermail/sdl-libsdl.org/2007-March/060263.html
 
 - fix http://userweb.kernel.org/~dtor/eviocgbit-bug.html in evtest
@@ -382,6 +421,5 @@ http://lists.libsdl.org/pipermail/sdl-libsdl.org/2007-March/060263.html
 - read from stdin on the main thread
 - send output to file or so
 usb -d 005:006 -c 5:in,5:out,6:in,7:in,8:out -o /tmp/out, else stdin
-
 
 # EOF #

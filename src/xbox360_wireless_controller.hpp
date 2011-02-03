@@ -40,6 +40,8 @@ private:
   std::string serial;
   int led_status;
 
+  boost::function<void ()> m_activation_cb;
+
 public:
   Xbox360WirelessController(libusb_device* dev, int controller_id, bool try_detach);
   virtual ~Xbox360WirelessController();
@@ -49,6 +51,7 @@ public:
   bool read(XboxGenericMsg& msg, int timeout);
   uint8_t get_battery_status() const;
   bool is_active() const { return m_active; }
+  void set_activation_cb(const boost::function<void ()> callback);
   
 private:
   void set_active(bool v);
