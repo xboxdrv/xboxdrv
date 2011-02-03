@@ -31,6 +31,7 @@ struct XPadDevice;
 class Xbox360WirelessController : public XboxGenericController
 {
 private:
+  bool m_active;
   libusb_device* dev;
   libusb_device_handle* handle;
   int endpoint;
@@ -47,6 +48,11 @@ public:
   void set_led(uint8_t status);
   bool read(XboxGenericMsg& msg, int timeout);
   uint8_t get_battery_status() const;
+  bool is_active() const { return m_active; }
+  
+private:
+  void set_active(bool v);
+
 private:
   Xbox360WirelessController (const Xbox360WirelessController&);
   Xbox360WirelessController& operator= (const Xbox360WirelessController&);

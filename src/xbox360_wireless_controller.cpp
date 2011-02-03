@@ -28,6 +28,7 @@
 
 Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev_, int controller_id, 
                                                      bool try_detach) :
+  m_active(false),
   dev(dev_),
   handle(),
   endpoint(),
@@ -121,11 +122,13 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, int timeout)
     if (data[1] == 0x00) 
     {
       log_info("connection status: nothing");
+      set_active(false);
     } 
     else if (data[1] == 0x80) 
     {
       log_info("connection status: controller connected");
       set_led(led_status);
+      set_active(true);
     } 
     else if (data[1] == 0x40) 
     {
@@ -143,6 +146,8 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, int timeout)
   }
   else if (len == 29)
   {
+    set_active(true);
+
     if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
     { // Initial Announc Message
       serial = (boost::format("%2x:%2x:%2x:%2x:%2x:%2x:%2x")
@@ -188,6 +193,16 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, int timeout)
   }
 
   return false;
+}
+
+void
+Xbox360WirelessController::set_active(bool v)
+{
+  if (m_active != v)
+  {
+    m_active = v;
+    // FIXME: insert code to signal the daemon, probablly best done with a boost::function<>
+  }
 }
 
 /* EOF */
