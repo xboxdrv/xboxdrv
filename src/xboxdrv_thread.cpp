@@ -41,7 +41,11 @@ XboxdrvThread::XboxdrvThread(std::auto_ptr<MessageProcessor> processor,
   m_oldrealmsg(),
   m_child_exec(opts.exec),
   m_pid(-1),
-  m_timeout(opts.timeout)
+  m_timeout(opts.timeout),
+  m_usbpath("-1:-1"), // FIXME: set those proper somehow
+  m_usbid("-1:-1"),
+  m_name("not implemented"),
+  m_compatible_slots()
 {
   memset(&m_oldrealmsg, 0, sizeof(m_oldrealmsg));
 
@@ -215,6 +219,40 @@ XboxdrvThread::try_join_thread()
   else
   {
     return false;
+  }
+}
+
+std::string
+XboxdrvThread::get_usbpath() const
+{
+  return m_usbpath;
+}
+   
+std::string 
+XboxdrvThread::get_usbid() const
+{
+  return m_usbid;
+}
+
+std::string
+XboxdrvThread::get_name() const
+{
+  return m_name;
+}
+
+std::vector<ControllerSlotWeakPtr> 
+XboxdrvThread::get_compatible_slots() const
+{
+  return m_compatible_slots;
+}
+
+void
+XboxdrvThread::set_compatible_slots(const std::vector<ControllerSlotPtr>& slots)
+{
+  m_compatible_slots.clear();
+  for(std::vector<ControllerSlotPtr>::const_iterator i = slots.begin(); i != slots.end(); ++i)
+  {
+    m_compatible_slots.push_back(*i);
   }
 }
 

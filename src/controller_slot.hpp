@@ -20,16 +20,9 @@
 #define HEADER_XBOXDRV_CONTROLLER_SLOT_HPP
 
 #include <vector>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
 
 #include "controller_slot_config.hpp"
 #include "xboxdrv_thread.hpp"
-
-class ControllerSlot;
-
-typedef boost::shared_ptr<ControllerSlot> ControllerSlotPtr;
-typedef boost::shared_ptr<ControllerSlot> ControllerSlotWeakPtr;
 
 class ControllerSlot
 {
@@ -39,11 +32,7 @@ private:
   std::vector<ControllerMatchRulePtr> m_rules;
   int m_led_status;
   XboxdrvThreadPtr m_thread;
-
-  uint8_t m_busnum;
-  uint8_t m_devnum;
-  XPadDevice m_dev_type;
-    
+  
 public:
   ControllerSlot();
   ControllerSlot(int id_,
@@ -53,9 +42,6 @@ public:
                  XboxdrvThreadPtr thread_ = XboxdrvThreadPtr());
 
   bool is_connected() const;
-  void connect(XboxdrvThreadPtr thread, 
-               uint8_t busnum, uint8_t devnum,
-               const XPadDevice& dev_type);
   void connect(XboxdrvThreadPtr thread);
   XboxdrvThreadPtr disconnect();
   bool try_disconnect();
@@ -64,11 +50,7 @@ public:
   int get_led_status() const { return m_led_status; }
   int get_id() const { return m_id; }
   ControllerSlotConfigPtr get_config() const { return m_config; }
-
-  std::string get_usbpath() const;
-  std::string get_usbid() const;
-  std::string get_name() const;
-  
+ 
   XboxdrvThreadPtr get_thread() const { return m_thread; }
 };
 

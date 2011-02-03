@@ -23,6 +23,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "controller_slot_config.hpp"
+#include "controller_slot_ptr.hpp"
 
 class Options;
 class XboxGenericController;
@@ -48,6 +49,12 @@ private:
   pid_t m_pid;
 
   int m_timeout;
+  
+  std::string m_usbpath;
+  std::string m_usbid;
+  std::string m_name;
+
+  std::vector<ControllerSlotWeakPtr> m_compatible_slots;
 
 public:
   XboxdrvThread(std::auto_ptr<MessageProcessor> processor,
@@ -65,6 +72,13 @@ public:
   bool try_join_thread();
 
   bool is_active() const;
+
+  std::string get_usbpath() const;
+  std::string get_usbid() const;
+  std::string get_name() const;
+
+  std::vector<ControllerSlotWeakPtr> get_compatible_slots() const;
+  void set_compatible_slots(const std::vector<ControllerSlotPtr>& slots);
 
 private:
   void launch_child_process();

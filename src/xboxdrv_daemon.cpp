@@ -186,7 +186,7 @@ XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
         {
           try 
           {
-            launch_xboxdrv(dev_type, opts, bus, dev, slot);
+            launch_xboxdrv(device, dev_type, opts, bus, dev, slot);
           }
           catch(const std::exception& err)
           {
@@ -340,35 +340,39 @@ XboxdrvDaemon::run(const Options& opts)
 void
 XboxdrvDaemon::check_thread_status()
 {
-  // Check for inactive threads and free the slots
+  // check for inactive threads and free the slots
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
+    // if a slot contains an inactive thread, disconnect it and save
+    // the thread for later when it might be active again
     if (!(*i)->get_thread()->is_active())
     {
-      // FIXME: found a slot with an inactive thread, do something with it:
-      // 1) disconnect it from slot
-      // 2) put it somewhere
+      XboxdrvThreadPtr thread = disconnect(*i);
+      m_inactive_threads.push_back(thread);
     }
   }
 
-  // Check for activated threads and connect them to a slot
+  // check for activated threads and connect them to a slot
   for(Threads::iterator i = m_inactive_threads.begin(); i != m_inactive_threads.end(); ++i)
   {
     if ((*i)->is_active())
     {
-      if (!connect_to_slot(*i))
+      ControllerSlotPtr slot = find_free_slot(*i);
+      if (!slot)
       {
         log_info("couldn't find a free slot for activated controller");
       }
       else
       {
+        connect(slot, *i);
+
         // successfully connected the thread, so set it to NULL and cleanup later
-        i->reset();
+        *i = XboxdrvThreadPtr();
       }
     }
   }
 
-  // Cleanup inactive threads
+  // cleanup inactive threads
   m_inactive_threads.erase(std::remove(m_inactive_threads.begin(), m_inactive_threads.end(), XboxdrvThreadPtr()),
                            m_inactive_threads.end());
 }
@@ -376,37 +380,18 @@ XboxdrvDaemon::check_thread_status()
 ControllerSlotPtr
 XboxdrvDaemon::find_free_slot(XboxdrvThreadPtr thread)
 {
-  log_error("not implemented");
-  return ControllerSlotPtr();
-}
-
-bool
-XboxdrvDaemon::connect_to_slot(XboxdrvThreadPtr thread)
-{
-  ControllerSlotPtr slot = find_free_slot(thread);
-  if (!slot)
+  const std::vector<ControllerSlotWeakPtr>& slots = thread->get_compatible_slots();
+  for(std::vector<ControllerSlotWeakPtr>::const_iterator i = slots.begin(); 
+      i != slots.end();
+      ++i)
   {
-    return false;
+    ControllerSlotPtr slot = i->lock();
+    if (!slot->is_connected())
+    {
+      return slot;
+    }
   }
-  {
-    connect(slot, thread);
-    return true;
-  }
-}
-
-void
-XboxdrvDaemon::connect(ControllerSlotPtr slot, XboxdrvThreadPtr thread)
-{
-  slot->connect(thread);
-  on_connect(slot);
-}
-
-XboxdrvThreadPtr
-XboxdrvDaemon::disconnect(ControllerSlotPtr slot)
-{
-  XboxdrvThreadPtr thread = slot->disconnect();
-  on_disconnect(slot);
-  return thread;
+  return ControllerSlotPtr();  
 }
 
 void
@@ -565,8 +550,39 @@ XboxdrvDaemon::find_free_slot(udev_device* dev)
   return ControllerSlotPtr();
 }
 
+std::vector<ControllerSlotPtr>
+XboxdrvDaemon::find_compatible_slots(udev_device* dev)
+{
+  std::vector<ControllerSlotPtr> lst;
+  
+  // add all slots with matching rules
+  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+  {
+    for(std::vector<ControllerMatchRulePtr>::const_iterator rule = (*i)->get_rules().begin(); 
+        rule != (*i)->get_rules().end(); ++rule)
+    {
+      if ((*rule)->match(dev))
+      {
+        lst.push_back(*i);
+      }
+    }
+  }
+
+  // add all slots without any rules at all (i.e. match everything)
+  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+  {
+    if ((*i)->get_rules().empty())
+    {
+      lst.push_back(*i);
+    }
+  }
+    
+  return lst;
+}
+
 void
-XboxdrvDaemon::launch_xboxdrv(const XPadDevice& dev_type, const Options& opts, 
+XboxdrvDaemon::launch_xboxdrv(udev_device* udev_dev,
+                              const XPadDevice& dev_type, const Options& opts, 
                               uint8_t busnum, uint8_t devnum,
                               ControllerSlotPtr slot)
 {
@@ -601,16 +617,20 @@ XboxdrvDaemon::launch_xboxdrv(const XPadDevice& dev_type, const Options& opts,
     }
 
     XboxdrvThreadPtr thread(new XboxdrvThread(message_proc, controller, opts));
+
+    if (controller->is_active())
+    {
+      // active controllers get directly connected to a slot
+      connect(slot, thread);
+    }
+    else
+    {
+      // inactive ones, such as wireless controllers that aren't yet
+      // synced get put on hold and only get connected once activated
+      thread->set_compatible_slots(find_compatible_slots(udev_dev));
+    }
+
     thread->start_thread(opts);
-    slot->connect(thread, busnum, devnum, dev_type);
-
-    on_connect(slot);
-
-    log_info("launched XboxdrvThread for " << boost::format("%03d:%03d")
-             % static_cast<int>(busnum) 
-             % static_cast<int>(devnum)
-             << " in slot " << slot->get_id() << ", free slots: " 
-             << get_free_slot_count() << "/" << m_controller_slots.size());
   }
 }
 
@@ -631,12 +651,34 @@ XboxdrvDaemon::get_free_slot_count() const
 }
 
 void
+XboxdrvDaemon::connect(ControllerSlotPtr slot, XboxdrvThreadPtr thread)
+{
+  slot->connect(thread);
+  on_connect(slot);
+
+  log_info("controller connected: " 
+           << thread->get_usbpath() << " "
+           << thread->get_usbid() << " "
+           << "'" << thread->get_name() << "'");
+
+  log_info("launched XboxdrvThread for " << thread->get_usbpath()
+           << " in slot " << slot->get_id() << ", free slots: " 
+           << get_free_slot_count() << "/" << m_controller_slots.size());
+}
+
+XboxdrvThreadPtr
+XboxdrvDaemon::disconnect(ControllerSlotPtr slot)
+{
+  XboxdrvThreadPtr thread = slot->disconnect();
+  on_disconnect(slot);
+  return thread;
+}
+
+void
 XboxdrvDaemon::on_connect(ControllerSlotPtr slot)
 {
-  log_info("controller connected: " 
-           << slot->get_usbpath() << " "
-           << slot->get_usbid() << " "
-           << "'" << slot->get_name() << "'");
+  XboxdrvThreadPtr thread = slot->get_thread();
+  assert(thread);
 
   if (!m_opts.on_connect.empty())
   {
@@ -644,9 +686,9 @@ XboxdrvDaemon::on_connect(ControllerSlotPtr slot)
 
     std::vector<std::string> args;
     args.push_back(m_opts.on_connect);
-    args.push_back(slot->get_usbpath());
-    args.push_back(slot->get_usbid());
-    args.push_back(slot->get_name());
+    args.push_back(thread->get_usbpath());
+    args.push_back(thread->get_usbid());
+    args.push_back(thread->get_name());
     spawn_exe(args);
   }
 }
@@ -654,10 +696,13 @@ XboxdrvDaemon::on_connect(ControllerSlotPtr slot)
 void
 XboxdrvDaemon::on_disconnect(ControllerSlotPtr slot)
 {
+  XboxdrvThreadPtr thread = slot->get_thread();
+  assert(thread);
+
   log_info("controller disconnected: " 
-           << slot->get_usbpath() << " "
-           << slot->get_usbid() << " "
-           << "'" << slot->get_name() << "'");
+           << thread->get_usbpath() << " "
+           << thread->get_usbid() << " "
+           << "'" << thread->get_name() << "'");
 
   if (!m_opts.on_disconnect.empty())
   {
@@ -665,9 +710,9 @@ XboxdrvDaemon::on_disconnect(ControllerSlotPtr slot)
 
     std::vector<std::string> args;
     args.push_back(m_opts.on_disconnect);
-    args.push_back(slot->get_usbpath());
-    args.push_back(slot->get_usbid());
-    args.push_back(slot->get_name());
+    args.push_back(thread->get_usbpath());
+    args.push_back(thread->get_usbid());
+    args.push_back(thread->get_name());
     spawn_exe(args);
   }
 }

@@ -61,6 +61,7 @@ private:
 
   void run_loop(const Options& opts);
 
+  std::vector<ControllerSlotPtr> find_compatible_slots(udev_device* dev);
   ControllerSlotPtr find_free_slot(udev_device* dev);
   ControllerSlotPtr find_free_slot(XboxdrvThreadPtr thread);
 
@@ -68,14 +69,13 @@ private:
   void cleanup_threads();
   void process_match(const Options& opts, struct udev_device* device);
   void print_info(struct udev_device* device);
-  void launch_xboxdrv(const XPadDevice& dev_type, const Options& opts, 
+  void launch_xboxdrv(udev_device* dev,
+                      const XPadDevice& dev_type, const Options& opts, 
                       uint8_t busnum, uint8_t devnum,
                       ControllerSlotPtr slot);
   int get_free_slot_count() const;
   void check_thread_status();
   
-  bool connect_to_slot(XboxdrvThreadPtr thread);
-
   void connect(ControllerSlotPtr slot, XboxdrvThreadPtr thread);
   XboxdrvThreadPtr disconnect(ControllerSlotPtr slot);
 
