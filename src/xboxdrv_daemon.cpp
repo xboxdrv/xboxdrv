@@ -29,9 +29,9 @@
 #include "select.hpp"
 #include "uinput.hpp"
 #include "usb_helper.hpp"
-#include "xbox_controller_factory.hpp"
+#include "controller_factory.hpp"
 #include "xboxdrv_thread.hpp"
-#include "xbox_generic_controller.hpp"
+#include "controller.hpp"
 
 extern bool global_exit_xboxdrv;
 
@@ -596,7 +596,7 @@ XboxdrvDaemon::launch_xboxdrv(udev_device* udev_dev,
   else
   {
     // FIXME: wireless controllers need to create 4 controllers out of a single USB device
-    std::auto_ptr<XboxGenericController> controller = XboxControllerFactory::create(dev_type, dev, opts);
+    ControllerPtr controller = ControllerFactory::create(dev_type, dev, opts);
 
     if (slot->get_led_status() == -1)
     {

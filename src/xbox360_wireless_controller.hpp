@@ -22,13 +22,13 @@
 #include <libusb.h>
 #include <string>
 
-#include "xbox_generic_controller.hpp"
+#include "controller.hpp"
 
 struct XboxGenericMsg;
 struct XPadDevice;
 
 /** */
-class Xbox360WirelessController : public XboxGenericController
+class Xbox360WirelessController : public Controller
 {
 private:
   bool m_active;

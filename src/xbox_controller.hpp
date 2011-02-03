@@ -21,11 +21,11 @@
 
 #include <libusb.h>
 
-#include "xbox_generic_controller.hpp"
+#include "controller.hpp"
 
 struct XPadDevice;
 
-class XboxController : public XboxGenericController
+class XboxController : public Controller
 {
 private:
   libusb_device* dev;

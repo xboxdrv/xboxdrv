@@ -23,13 +23,13 @@
 #include <memory>
 #include <string>
 
-#include "xbox_generic_controller.hpp"
+#include "controller.hpp"
 
 class Chatpad;
 class Headset;
 struct XPadDevice;
 
-class Xbox360Controller : public XboxGenericController
+class Xbox360Controller : public Controller
 {
 private:
   libusb_device* dev;

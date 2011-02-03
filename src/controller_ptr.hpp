@@ -16,34 +16,14 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_PLAYSTATION3_USB_CONTROLLER_HPP
-#define HEADER_XBOXDRV_PLAYSTATION3_USB_CONTROLLER_HPP
+#ifndef HEADER_XBOXDRV_CONTROLLER_PTR_HPP
+#define HEADER_XBOXDRV_CONTROLLER_PTR_HPP
 
-#include <libusb.h>
+#include <boost/shared_ptr.hpp>
 
-#include "controller.hpp"
+class Controller;
 
-class Playstation3USBController : public Controller
-{
-private:
-  libusb_device_handle* m_handle;
-
-  int endpoint_in;
-  int endpoint_out;
-
-public:
-  Playstation3USBController(libusb_device* dev, bool try_detach);
-  ~Playstation3USBController();
-
-  void set_rumble(uint8_t left, uint8_t right);
-  void set_led(uint8_t status);
-
-  bool read(XboxGenericMsg& msg, int timeout);
-
-private:
-  Playstation3USBController(const Playstation3USBController&);
-  Playstation3USBController& operator=(const Playstation3USBController&);
-};
+typedef boost::shared_ptr<Controller> ControllerPtr;
 
 #endif
 

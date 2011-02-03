@@ -21,9 +21,9 @@
 
 #include <libusb.h>
 #include "xboxmsg.hpp"
-#include "xbox_generic_controller.hpp"
+#include "controller.hpp"
 
-class SaitekP2500Controller : public XboxGenericController
+class SaitekP2500Controller : public Controller
 {
 private:
   libusb_device* dev;

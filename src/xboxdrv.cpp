@@ -34,13 +34,12 @@
 #include "uinput_message_processor.hpp"
 #include "usb_helper.hpp"
 #include "word_wrap.hpp"
-#include "xbox_controller_factory.hpp"
+#include "controller_factory.hpp"
 #include "xboxdrv_daemon.hpp"
 #include "xboxdrv_thread.hpp"
 
 // Some ugly global variables, needed for sigint catching
 bool global_exit_xboxdrv = false;
-XboxGenericController* global_controller = 0;
 
 void on_sigint(int)
 {
@@ -369,19 +368,19 @@ Xboxdrv::run_main(const Options& opts)
     print_copyright();
   }
 
-  std::auto_ptr<XboxGenericController> controller;
+  ControllerPtr controller;
 
   XPadDevice dev_type;
 
   if (!opts.evdev_device.empty())
   { // normal PC joystick via evdev
-    controller = std::auto_ptr<XboxGenericController>(new EvdevController(opts.evdev_device, 
-                                                                          opts.evdev_absmap, 
-                                                                          opts.evdev_keymap,
-                                                                          opts.evdev_grab,
-                                                                          opts.evdev_debug));
+    controller = ControllerPtr(new EvdevController(opts.evdev_device, 
+                                                   opts.evdev_absmap, 
+                                                   opts.evdev_keymap,
+                                                   opts.evdev_grab,
+                                                   opts.evdev_debug));
 
-    // FIXME: ugly, should be part of XboxGenericController
+    // FIXME: ugly, should be part of Controller
     dev_type.type = GAMEPAD_XBOX360;
     dev_type.idVendor  = 0;
     dev_type.idProduct = 0;
@@ -414,11 +413,9 @@ Xboxdrv::run_main(const Options& opts)
       if (!opts.quiet)
         print_info(dev, dev_type, opts);
 
-      controller = XboxControllerFactory::create(dev_type, dev, opts);
+      controller = ControllerFactory::create(dev_type, dev, opts);
     }
   }
-
-  global_controller = controller.get();
 
   int jsdev_number = find_jsdev_number();
   int evdev_number = find_evdev_number();

@@ -21,9 +21,9 @@
 
 #include <libusb.h>
 #include "xboxmsg.hpp"
-#include "xbox_generic_controller.hpp"
+#include "controller.hpp"
 
-class FirestormDualController : public XboxGenericController
+class FirestormDualController : public Controller
 {
 private:
   bool is_vsb;

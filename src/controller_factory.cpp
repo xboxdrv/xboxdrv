@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "xbox_controller_factory.hpp"
+#include "controller_factory.hpp"
 
 #include <stdexcept>
 
@@ -27,12 +27,13 @@
 #include "xbox360_wireless_controller.hpp"
 #include "xbox_controller.hpp"
 
-std::auto_ptr<XboxGenericController>
-XboxControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const Options& opts)
+ControllerPtr
+ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const Options& opts)
 {
   switch (dev_type.type)
   {
     case GAMEPAD_XBOX360_PLAY_N_CHARGE: 
+      // FIXME: only trigger this error message in single-instance mode, not in daemon mode
       throw std::runtime_error("The Xbox360 Play&Charge cable is for recharging only, it does not transmit data, "
                                "thus xboxdrv can't support it. You have to get a wireless receiver:\n"
                                "\n"
@@ -41,11 +42,11 @@ XboxControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, co
 
     case GAMEPAD_XBOX:
     case GAMEPAD_XBOX_MAT:
-      return std::auto_ptr<XboxGenericController>(new XboxController(dev, opts.detach_kernel_driver));
+      return ControllerPtr(new XboxController(dev, opts.detach_kernel_driver));
 
     case GAMEPAD_XBOX360:
     case GAMEPAD_XBOX360_GUITAR:
-      return std::auto_ptr<XboxGenericController>(new Xbox360Controller(dev, 
+      return ControllerPtr(new Xbox360Controller(dev, 
                                                                         opts.chatpad, opts.chatpad_no_init, opts.chatpad_debug,
                                                                         opts.headset, 
                                                                         opts.headset_debug, 
@@ -55,19 +56,19 @@ XboxControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, co
       break;
 
     case GAMEPAD_XBOX360_WIRELESS:
-      return std::auto_ptr<XboxGenericController>(new Xbox360WirelessController(dev, opts.wireless_id, opts.detach_kernel_driver));
+      return ControllerPtr(new Xbox360WirelessController(dev, opts.wireless_id, opts.detach_kernel_driver));
 
     case GAMEPAD_FIRESTORM:
-      return std::auto_ptr<XboxGenericController>(new FirestormDualController(dev, false, opts.detach_kernel_driver));
+      return ControllerPtr(new FirestormDualController(dev, false, opts.detach_kernel_driver));
 
     case GAMEPAD_FIRESTORM_VSB:
-      return std::auto_ptr<XboxGenericController>(new FirestormDualController(dev, true, opts.detach_kernel_driver));
+      return ControllerPtr(new FirestormDualController(dev, true, opts.detach_kernel_driver));
 
     case GAMEPAD_SAITEK_P2500:
-      return std::auto_ptr<XboxGenericController>(new SaitekP2500Controller(dev, opts.detach_kernel_driver));
+      return ControllerPtr(new SaitekP2500Controller(dev, opts.detach_kernel_driver));
 
     case GAMEPAD_PLAYSTATION3_USB:
-      return std::auto_ptr<XboxGenericController>(new Playstation3USBController(dev, opts.detach_kernel_driver));
+      return ControllerPtr(new Playstation3USBController(dev, opts.detach_kernel_driver));
 
     default:
       assert(!"Unknown gamepad type");

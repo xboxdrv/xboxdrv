@@ -25,11 +25,11 @@
 
 struct XboxGenericMsg;
 
-class XboxGenericController
+class Controller
 {
 public:
-  XboxGenericController() {}
-  virtual ~XboxGenericController() {}
+  Controller() {}
+  virtual ~Controller() {}
 
   virtual void set_rumble(uint8_t left, uint8_t right) =0;
   virtual void set_led(uint8_t status)   =0;
@@ -44,8 +44,8 @@ public:
   virtual void set_activation_cb(const boost::function<void ()> callback) {}
 
 private:
-  XboxGenericController (const XboxGenericController&);
-  XboxGenericController& operator= (const XboxGenericController&);
+  Controller (const Controller&);
+  Controller& operator= (const Controller&);
 };
 
 #endif

@@ -22,19 +22,18 @@
 #include <libusb.h>
 
 #include "options.hpp"
+#include "controller_ptr.hpp"
 
-class XboxGenericController;
-
-class XboxControllerFactory
+class ControllerFactory
 {
 public:
-  static std::auto_ptr<XboxGenericController> create(const XPadDevice& dev_type, 
-                                                     libusb_device* dev, 
-                                                     const Options& opts);
+  static ControllerPtr create(const XPadDevice& dev_type, 
+                              libusb_device* dev, 
+                              const Options& opts);
 
 private:
-  XboxControllerFactory(const XboxControllerFactory&);
-  XboxControllerFactory& operator=(const XboxControllerFactory&);
+  ControllerFactory(const ControllerFactory&);
+  ControllerFactory& operator=(const ControllerFactory&);
 };
 
 #endif

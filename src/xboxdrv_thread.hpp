@@ -24,23 +24,23 @@
 
 #include "controller_slot_config.hpp"
 #include "controller_slot_ptr.hpp"
+#include "controller_ptr.hpp"
 
 class Options;
-class XboxGenericController;
 class MessageProcessor;
 class XboxdrvThread;
 
 typedef boost::shared_ptr<XboxdrvThread> XboxdrvThreadPtr;
 
-/** XboxdrvThread handles a single XboxGenericController controller
-    (optionally in a separate thread), reads it messages and passes it
-    to the MessageProcessor */
+/** XboxdrvThread handles a single Controller (optionally in a
+    separate thread), reads it messages and passes it to the
+    MessageProcessor */
 class XboxdrvThread // FIXME: find a better name, XboxdrvControllerLoop?!
 {
 private:
   std::auto_ptr<boost::thread> m_thread;
   std::auto_ptr<MessageProcessor> m_processor;
-  std::auto_ptr<XboxGenericController> m_controller;
+  ControllerPtr m_controller;
   bool m_loop;
 
   XboxGenericMsg m_oldrealmsg; /// last data read from the device
@@ -58,7 +58,7 @@ private:
 
 public:
   XboxdrvThread(std::auto_ptr<MessageProcessor> processor,
-                std::auto_ptr<XboxGenericController> controller,
+                ControllerPtr controller,
                 const Options& opts);
   ~XboxdrvThread();
 

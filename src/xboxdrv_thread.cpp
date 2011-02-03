@@ -23,7 +23,7 @@
 
 #include "helper.hpp"
 #include "log.hpp"
-#include "xbox_generic_controller.hpp"
+#include "controller.hpp"
 #include "message_processor.hpp"
 
 extern bool global_exit_xboxdrv;
@@ -32,7 +32,7 @@ extern bool global_exit_xboxdrv;
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
 XboxdrvThread::XboxdrvThread(std::auto_ptr<MessageProcessor> processor,
-                             std::auto_ptr<XboxGenericController> controller,
+                             ControllerPtr controller,
                              const Options& opts) :
   m_thread(),
   m_processor(processor),
@@ -50,7 +50,7 @@ XboxdrvThread::XboxdrvThread(std::auto_ptr<MessageProcessor> processor,
   memset(&m_oldrealmsg, 0, sizeof(m_oldrealmsg));
 
   // connect the processor to the controller to allow rumble
-  m_processor->set_ff_callback(boost::bind(&XboxGenericController::set_rumble, m_controller.get(), _1, _2));
+  m_processor->set_ff_callback(boost::bind(&Controller::set_rumble, m_controller.get(), _1, _2));
 }
 
 XboxdrvThread::~XboxdrvThread()

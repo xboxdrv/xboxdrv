@@ -24,11 +24,11 @@
 #include <queue>
 
 #include "evdev_absmap.hpp"
-#include "xbox_generic_controller.hpp"
+#include "controller.hpp"
 
 class EvdevAbsMap;
 
-class EvdevController : public XboxGenericController
+class EvdevController : public Controller
 {
 private:
   int m_fd;
