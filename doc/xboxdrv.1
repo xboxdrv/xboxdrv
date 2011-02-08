@@ -233,6 +233,20 @@ if \*(T<\fB\-\-daemon\fR\*(T> is given.
 .TP 
 \*(T<\fB\-\-pid\-file\fR\*(T> \fIFILE\fR
 Write the xboxdrv daemon process id to FILE.
+.TP 
+\*(T<\fB\-\-on\-connect\fR\*(T> \fIEXE\fR
+Launches \fIEXE\fR
+when a controller gets connected. As arguments
+"\fIBUSDEV\fR:\fIDEVNUM\fR",
+"\fIidVendor\fR:\fIidProduct\fR",
+"\fINAME\fR are provided.
+.TP 
+\*(T<\fB\-\-on\-disconnect\fR\*(T> \fIEXE\fR
+Launches \fIEXE\fR
+when a controller gets disconnected. As arguments
+"\fIBUSDEV\fR:\fIDEVNUM\fR",
+"\fIidVendor\fR:\fIidProduct\fR",
+"\fINAME\fR are provided.
 .SS "DEVICE OPTIONS"
 .TP 
 \*(T<\fB\-L\fR\*(T>, \*(T<\fB\-\-list\-controller\fR\*(T>
@@ -954,9 +968,32 @@ By default xboxdrv will allocate multiple uinput devices
 and sort events to each of them. Thus mouse related
 events like BTN_LEFT or REL_X will go to a virtual mouse
 device, while ABS_X events would go to a virtual
-joystick device. This option disables that automatism
-and all events will go to the same virtual device.
-Manual assignment to a specific device is still possible.
+joystick device and KEY_ESC would go to a virtual
+keyboard device.
+
+This option disables that automatism and all events will
+go to the same virtual device.
+
+Manual assignment to a specific device (i.e.
+KEY_ESC@keyboard, BTN_A@joystick, ...) is still possible.
+.TP 
+\*(T<\fB\-\-no\-extra\-events\fR\*(T>
+By default xboxdrv will allocate multiple uinput devices
+and sort events to each of them. Thus mouse related
+events like BTN_LEFT or REL_X will go to a virtual mouse
+device, while ABS_X events would go to a virtual
+joystick device and KEY_ESC would go to a virtual
+keyboard device.
+
+To make sure sure that a mouse, keyboard or joystick
+device is properly detected by Xorg, the kernel or
+libraries such SDL xboxdrv will insert extra dummy
+events. For example a mouse device needs REL_X and REL_Y
+events to be detected as such, but a configuration that
+only wants to emulate the mouse buttons won't provide
+those, thus xboxdrv will add them automatically.
+The \*(T<\fB\-\-no\-extra\-events\fR\*(T> option will
+switch this behaviour off.
 .TP 
 \*(T<\fB\-\-name NAME\fR\*(T>
 Changes the descriptive name the device will have. This
@@ -1323,6 +1360,19 @@ See \*(T<\fB\-\-square\-axis\fR\*(T>.
 .TP 
 \*(T<\fBrotate\fR\*(T>=\fIXAXIS\fR:\fIYAXIS\fR:\fIDEGREE\fR:\fIMIRROR\fR
 Rotates the stick given by \fIXAXIS\fR and \fIYAXIS\fR by \fIDEGREE\fR and optionally \fIMIRRORS\fR it.
+.TP 
+\*(T<\fBstat\fR\*(T>, \*(T<\fBstatistic\fR\*(T>
+The statistic modifier doesn't actually modify anything,
+instead it collects statistics on the controller, such
+as how many times a button has been pressed. The results
+of the collections will be displayed on shutdown of
+xboxdrv.
+
+Note that the stat modifier is part of the modifier
+stack, thus to get correct results you must make sure
+that it comes first in the stack when it should work on
+real events and not be confused by auto-fire or similar
+modifications.
 .SH "RUNNING XBOXDRV"
 .SS "USING A SINGLE CONTROLLER"
 Plug in your Xbox360 gamepad and then unload the xpad driver via:

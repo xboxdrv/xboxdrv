@@ -2008,6 +2008,26 @@ NAME       = STRING ;]]></programlisting>
             </para>
           </listitem>
         </varlistentry>
+
+        <varlistentry>
+          <term><option>stat</option>, <option>statistic</option></term>
+          <listitem>
+            <para>
+              The statistic modifier doesn't actually modify anything,
+              instead it collects statistics on the controller, such
+              as how many times a button has been pressed. The results
+              of the collections will be displayed on shutdown of
+              xboxdrv.
+            </para>
+            <para>
+              Note that the stat modifier is part of the modifier
+              stack, thus to get correct results you must make sure
+              that it comes first in the stack when it should work on
+              real events and not be confused by auto-fire or similar
+              modifications.
+            </para>
+          </listitem>
+        </varlistentry>
       </variablelist>
     </refsect2>
   </refsect1>
