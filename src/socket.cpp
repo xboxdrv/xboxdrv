@@ -18,6 +18,8 @@
 
 #include "socket.hpp"
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <iostream>
 #include <sys/types.h>
 #include <sys/un.h>
@@ -32,25 +34,37 @@
 SocketPtr
 Socket::create_unix(const std::string& filename)
 {
-  if (filename.size() >= 108/*UNIX_PATH_MAX*/) // why is there no public define?!
+  if (filename.size() >= sizeof(sockaddr_un::sun_path))
   {
     raise_exception(std::runtime_error, "socket filename is beyond maximum length");
   }
   
+  // FIXME: most other apps store their sockets into a directory,
+  // instead of directly, why?
   sockaddr_un addr;
   memset(&addr, 0, sizeof(addr));
   addr.sun_family = AF_UNIX;
   strcpy(addr.sun_path, filename.c_str());
-
   SocketPtr sock(new Socket(AF_UNIX, SOCK_STREAM));
-  sock->connect(reinterpret_cast<sockaddr*>(&addr), sizeof(sockaddr_un));
+
+  // FIXME: feels dirty to just overwrite the already exist socket
+  // file, but seems to be the only way to avoid potential "address
+  // already in use" issues, might still be a good idea to try to
+  // clean up the socket properly in the destructor
+  unlink(filename.c_str());
+  
+  int prev_mask = umask(0177); // only allow u+rw bits
+  sock->bind(reinterpret_cast<sockaddr*>(&addr), sizeof(sockaddr_un));
+  umask(prev_mask);
+
+  sock->listen();
   return sock;
 }
 
 SocketPtr
 Socket::connect_unix(const std::string& filename)
 {
-  if (filename.size() >= 108/*UNIX_PATH_MAX*/) // why is there no public define?!
+  if (filename.size() >= sizeof(sockaddr_un::sun_path))
   {
     raise_exception(std::runtime_error, "socket filename is beyond maximum length");
   }
@@ -290,7 +304,7 @@ int main(int argc, char** argv)
   {
     if (argc == 2)
     {
-      std::cout << "creating socket at: " << argv[1] << std::endl;
+      std::cout << "creating unix domain socket at: " << argv[1] << std::endl;
       std::vector<SocketPtr> connections;
       SocketPtr sock = Socket::create_unix(argv[1]);
       
