@@ -114,83 +114,86 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, int timeout)
   }
   else  if (ret != LIBUSB_SUCCESS)
   { // Error
-    std::ostringstream str;
-    str << "USBError: " << ret << "\n" << usb_strerror(ret);
-    throw std::runtime_error(str.str());
+    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
   }
-  else if (len == 2 && data[0] == 0x08) 
-  { // Connection Status Message
-    if (data[1] == 0x00) 
-    {
-      log_info("connection status: nothing");
-      set_active(false);
-    } 
-    else if (data[1] == 0x80) 
-    {
-      log_info("connection status: controller connected");
-      set_led(led_status);
-      set_active(true);
-    } 
-    else if (data[1] == 0x40) 
-    {
-      log_info("Connection status: headset connected");
-    }
-    else if (data[1] == 0xc0) 
-    {
-      log_info("Connection status: controller and headset connected");
-      set_led(led_status);
-    }
-    else
-    {
-      log_info("Connection status: unknown");
-    }
-  }
-  else if (len == 29)
+  else
   {
-    set_active(true);
+    //std::cout << raw2str(data, len) << std::endl;
 
-    if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
-    { // Initial Announc Message
-      serial = (boost::format("%2x:%2x:%2x:%2x:%2x:%2x:%2x")
-                % int(data[7])
-                % int(data[8])
-                % int(data[9])
-                % int(data[10])
-                % int(data[11])
-                % int(data[12])
-                % int(data[13])).str();
-      battery_status = data[17];
-      log_info("Serial: " << serial);
-      log_info("Battery Status: " << battery_status);
-    }
-    else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
-    { // Event message
-      msg.type    = XBOX_MSG_XBOX360;
-      memcpy(&msg.xbox360, data+4, sizeof(Xbox360Msg));
-      return true;
-    }
-    else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
-    { // Battery status
-      battery_status = data[4];
-      log_info("battery status: " << battery_status);
-    }
-    else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0xf0)
+    if (len == 0)
     {
-      // 0x00 0x00 0x00 0xf0 0x00 ... is send after each button
-      // press, doesn't seem to contain any information
+      // ignore
+    }
+    else if (len == 2 && data[0] == 0x08) 
+    { // Connection Status Message
+      if (data[1] == 0x00) 
+      {
+        log_info("connection status: nothing");
+        set_active(false);
+      } 
+      else if (data[1] == 0x80) 
+      {
+        log_info("connection status: controller connected");
+        set_led(led_status);
+        set_active(true);
+      } 
+      else if (data[1] == 0x40) 
+      {
+        log_info("Connection status: headset connected");
+      }
+      else if (data[1] == 0xc0) 
+      {
+        log_info("Connection status: controller and headset connected");
+        set_led(led_status);
+      }
+      else
+      {
+        log_info("Connection status: unknown");
+      }
+    }
+    else if (len == 29)
+    {
+      set_active(true);
+
+      if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
+      { // Initial Announc Message
+        serial = (boost::format("%2x:%2x:%2x:%2x:%2x:%2x:%2x")
+                  % int(data[7])
+                  % int(data[8])
+                  % int(data[9])
+                  % int(data[10])
+                  % int(data[11])
+                  % int(data[12])
+                  % int(data[13])).str();
+        battery_status = data[17];
+        log_info("Serial: " << serial);
+        log_info("Battery Status: " << battery_status);
+      }
+      else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
+      { // Event message
+        msg.type    = XBOX_MSG_XBOX360;
+        memcpy(&msg.xbox360, data+4, sizeof(Xbox360Msg));
+        return true;
+      }
+      else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
+      { // Battery status
+        battery_status = data[4];
+        log_info("battery status: " << battery_status);
+      }
+      else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0xf0)
+      {
+        // 0x00 0x00 0x00 0xf0 0x00 ... is send after each button
+        // press, doesn't seem to contain any information
+      }
+      else
+      {
+        log_debug("unknown: " << raw2str(data, len));
+      }
     }
     else
     {
       log_debug("unknown: " << raw2str(data, len));
     }
-  }
-  else if (len == 0)
-  {
-    // ignore
-  }
-  else
-  {
-    log_debug("unknown: " << raw2str(data, len));
   }
 
   return false;
