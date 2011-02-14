@@ -42,6 +42,43 @@ $ dput my-ppa ../xboxdrv_0.7.2-1~lucid1_source.changes
 Stuff to do before 0.7.2 release:
 =================================
 
+* look at Joy2key for better mouse support (mouse acceleration)
+
+* reenable USBThread, maybe add a way to cancel stuff to it if possible?
+
+* add a fun modifier that counts button presses and other useless stuff
+
+  - count button presses (done)
+  - count time a button is held down, both in min:sec and percent
+  - count distance an axis travels
+
+* give proper exit code when no controller is found
+
+* add FIFO/Socket or Dbus to send commands to xboxdrv (FIFO is
+  easiest, but least flexible, dbus is new and cool, but an extra
+  dependency)
+
+ dbus-send --session --type=method_call \
+   --print-reply \
+   --dest=org.gnome.Rhythmbox \
+   /org/gnome/Rhythmbox/Player \
+   org.freedesktop.DBus.Introspectable.Introspect
+
+* add --ui-buttonmap A=KEY_A:KEY_B:1000:1 
+
+  the last 0/1 parameter tells if it should do:
+
+   - 0: send on release
+   - 1: always send when pressed
+
+  different games might require different behaviours, so it should be an user option
+
+* add double shift buttons: L+R+start
+
+* add execv: that takes arguments in ARG0:ARG1,... style
+
+* add system: that takes arguments "ARG0 ARG1 ..." style
+
 * factory must create four wireless controllers for each wireless USB device
 
 * add match rule for wireless id
