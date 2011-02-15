@@ -36,7 +36,7 @@
 #include "word_wrap.hpp"
 #include "controller_factory.hpp"
 #include "xboxdrv_daemon.hpp"
-#include "xboxdrv_thread.hpp"
+#include "controller_thread.hpp"
 
 // Some ugly global variables, needed for sigint catching
 bool global_exit_xboxdrv = false;
@@ -489,8 +489,9 @@ Xboxdrv::run_main(const Options& opts)
       message_proc.reset(new DummyMessageProcessor);
     }
 
-    XboxdrvThread loop(message_proc, controller, opts);
-    loop.controller_loop(opts);
+    ControllerThread thread(controller, opts);
+    thread.set_message_proc(message_proc);
+    thread.controller_loop(opts);
           
     if (!opts.quiet) 
       std::cout << "Shutdown complete" << std::endl;

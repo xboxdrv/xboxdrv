@@ -30,7 +30,7 @@
 #include "uinput.hpp"
 #include "usb_helper.hpp"
 #include "controller_factory.hpp"
-#include "xboxdrv_thread.hpp"
+#include "controller_thread.hpp"
 #include "controller.hpp"
 
 extern bool global_exit_xboxdrv;
@@ -119,13 +119,12 @@ XboxdrvDaemon::cleanup_threads()
 
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
-    if ((*i)->is_connected())
+    if ((*i)->is_connected() && (*i)->can_disconnect())
     {
-      if ((*i)->try_disconnect())
-      {
-        count += 1;
-        on_disconnect(*i);
-      }
+      count += 1;
+      // FIXME: we kill the thread in try_disconnect() but on_disconnect() needs it
+      on_disconnect(*i);
+      (*i)->disconnect();
     }
   }
 
@@ -149,7 +148,7 @@ XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
 
   if (!get_usb_id(device, &vendor, &product))
   {
-    log_warn("couldn't get vendor:product");
+    log_warn("couldn't get vendor:product, ignoring device");
   }
   else
   {
@@ -169,29 +168,13 @@ XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
       }
       else
       {
-        ControllerSlotPtr slot = find_free_slot(device);
-        if (!slot)
+        try 
         {
-          log_error("no free controller slot found, controller will be ignored: "
-                    << boost::format("%03d:%03d %04x:%04x '%s'")
-                    % bus
-                    % dev
-                    % dev_type.idVendor
-                    % dev_type.idProduct
-                    % dev_type.name);
-
-          // m_unused_controllers += 1;
+          launch_controller_thread(device, dev_type, opts, bus, dev);
         }
-        else
+        catch(const std::exception& err)
         {
-          try 
-          {
-            launch_xboxdrv(device, dev_type, opts, bus, dev, slot);
-          }
-          catch(const std::exception& err)
-          {
-            log_error("failed to launch XboxdrvThread: " << err.what());
-          }
+          log_error("failed to launch ControllerThread: " << err.what());
         }
       }
     }
@@ -345,9 +328,9 @@ XboxdrvDaemon::check_thread_status()
   {
     // if a slot contains an inactive thread, disconnect it and save
     // the thread for later when it might be active again
-    if (!(*i)->get_thread()->is_active())
+    if ((*i)->get_thread() && !(*i)->get_thread()->is_active())
     {
-      XboxdrvThreadPtr thread = disconnect(*i);
+      ControllerThreadPtr thread = disconnect(*i);
       m_inactive_threads.push_back(thread);
     }
   }
@@ -355,30 +338,37 @@ XboxdrvDaemon::check_thread_status()
   // check for activated threads and connect them to a slot
   for(Threads::iterator i = m_inactive_threads.begin(); i != m_inactive_threads.end(); ++i)
   {
-    if ((*i)->is_active())
+    if (!*i)
     {
-      ControllerSlotPtr slot = find_free_slot(*i);
-      if (!slot)
+      log_error("NULL in m_inactive_threads, shouldn't happen");
+    }
+    else
+    {
+      if ((*i)->is_active())
       {
-        log_info("couldn't find a free slot for activated controller");
-      }
-      else
-      {
-        connect(slot, *i);
+        ControllerSlotPtr slot = find_free_slot(*i);
+        if (!slot)
+        {
+          log_info("couldn't find a free slot for activated controller");
+        }
+        else
+        {
+          connect(slot, *i);
 
-        // successfully connected the thread, so set it to NULL and cleanup later
-        *i = XboxdrvThreadPtr();
+          // successfully connected the thread, so set it to NULL and cleanup later
+          *i = ControllerThreadPtr();
+        }
       }
     }
   }
 
   // cleanup inactive threads
-  m_inactive_threads.erase(std::remove(m_inactive_threads.begin(), m_inactive_threads.end(), XboxdrvThreadPtr()),
+  m_inactive_threads.erase(std::remove(m_inactive_threads.begin(), m_inactive_threads.end(), ControllerThreadPtr()),
                            m_inactive_threads.end());
 }
 
 ControllerSlotPtr
-XboxdrvDaemon::find_free_slot(XboxdrvThreadPtr thread)
+XboxdrvDaemon::find_free_slot(ControllerThreadPtr thread)
 {
   const std::vector<ControllerSlotWeakPtr>& slots = thread->get_compatible_slots();
   for(std::vector<ControllerSlotWeakPtr>::const_iterator i = slots.begin(); 
@@ -397,6 +387,15 @@ XboxdrvDaemon::find_free_slot(XboxdrvThreadPtr thread)
 void
 XboxdrvDaemon::run_loop(const Options& opts)
 {
+  // 1) when a wakeup event arrives, we check thread status and add
+  //    controllers that have become active and remove ones that have
+  //    become inactive
+  // 2) when new controller arrives via udev, we add it, if no free
+  //    slots are found, we ignore it till its plugged out and in
+  //    again, this is by design, to avoid situations where replugging
+  //    an working controller would result in an previously unused one
+  //    grapping its slot, thus we get a more static mapping (however,
+  //    still not a perfect one)
   while(!global_exit_xboxdrv)
   {
     log_debug("going to wait in select()");
@@ -405,6 +404,9 @@ XboxdrvDaemon::run_loop(const Options& opts)
     sel.add_fd(m_wakeup_pipe.get_read_fd());
     sel.wait();
     log_debug("select() is done");
+
+    // cleanup threads that are no longer running
+    cleanup_threads();
 
     if (sel.is_ready(m_wakeup_pipe.get_read_fd()))
     {
@@ -415,8 +417,6 @@ XboxdrvDaemon::run_loop(const Options& opts)
     if (sel.is_ready(udev_monitor_get_fd(m_monitor)))
     {
       struct udev_device* device = udev_monitor_receive_device(m_monitor);
-
-      cleanup_threads();
 
       if (!device)
       {
@@ -581,10 +581,9 @@ XboxdrvDaemon::find_compatible_slots(udev_device* dev)
 }
 
 void
-XboxdrvDaemon::launch_xboxdrv(udev_device* udev_dev,
-                              const XPadDevice& dev_type, const Options& opts, 
-                              uint8_t busnum, uint8_t devnum,
-                              ControllerSlotPtr slot)
+XboxdrvDaemon::launch_controller_thread(udev_device* udev_dev,
+                                        const XPadDevice& dev_type, const Options& opts, 
+                                        uint8_t busnum, uint8_t devnum)
 {
   // FIXME: results must be libusb_unref_device()'ed
   libusb_device* dev = usb_find_device_by_path(busnum, devnum);
@@ -595,44 +594,55 @@ XboxdrvDaemon::launch_xboxdrv(udev_device* udev_dev,
   }
   else
   {
-    // FIXME: wireless controllers need to create 4 controllers out of a single USB device
-    ControllerPtr controller = ControllerFactory::create(dev_type, dev, opts);
+    std::vector<ControllerPtr> controllers = ControllerFactory::create_multiple(dev_type, dev, opts);
+    for(std::vector<ControllerPtr>::iterator i = controllers.begin();
+        i != controllers.end(); 
+        ++i)
+    {
+      ControllerPtr& controller = *i;
 
-    if (slot->get_led_status() == -1)
-    {
-      controller->set_led(2 + (slot->get_id() % 4));
-    }
-    else
-    {
-      controller->set_led(slot->get_led_status());
-    }
+      if (controller->is_active())
+      {
+        // controller is active, so launch a thread if we have a free slot
+        ControllerSlotPtr slot = find_free_slot(udev_dev);
+        if (!slot)
+        {
+          log_error("no free controller slot found, controller will be ignored: "
+              << boost::format("%03d:%03d %04x:%04x '%s'")
+                    % static_cast<int>(busnum)
+                    % static_cast<int>(devnum)
+                    % dev_type.idVendor
+                    % dev_type.idProduct
+                    % dev_type.name);
+        }
+        else
+        {
+          std::auto_ptr<MessageProcessor> message_proc;
+          if (m_uinput.get())
+          {
+            message_proc.reset(new UInputMessageProcessor(*m_uinput, slot->get_config(), opts));
+          }
+          else
+          {
+            message_proc.reset(new DummyMessageProcessor());
+          }
 
-    std::auto_ptr<MessageProcessor> message_proc;
-    if (m_uinput.get())
-    {
-      message_proc.reset(new UInputMessageProcessor(*m_uinput, slot->get_config(), opts));
-    }
-    else
-    {
-      message_proc.reset(new DummyMessageProcessor());
-    }
+          ControllerThreadPtr thread(new ControllerThread(controller, opts));
+          thread->set_message_proc(message_proc); 
+          connect(slot, thread);
+          thread->start_thread(opts);
+        }
+      }
+      else // if (!controller->is_active())
+      {
+        controller->set_activation_cb(boost::bind(&XboxdrvDaemon::wakeup, this));
 
-    if (controller->is_active())
-    {
-      // active controllers get directly connected to a slot
-      XboxdrvThreadPtr thread(new XboxdrvThread(message_proc, controller, opts));
-      thread->start_thread(opts);
-      connect(slot, thread);
-    }
-    else
-    {
-      // inactive ones, such as wireless controllers that aren't yet
-      // synced get put on hold and only get connected once activated
-      controller->set_activation_cb(boost::bind(&XboxdrvDaemon::wakeup, this));
-
-      XboxdrvThreadPtr thread(new XboxdrvThread(message_proc, controller, opts));
-      thread->set_compatible_slots(find_compatible_slots(udev_dev));
-      thread->start_thread(opts);
+        // controller is inactive, so put it on the back log till it gets active
+        ControllerThreadPtr thread(new ControllerThread(controller, opts));
+        thread->set_compatible_slots(find_compatible_slots(udev_dev));
+        thread->start_thread(opts);
+        m_inactive_threads.push_back(thread);
+      }
     }
   }
 }
@@ -654,8 +664,38 @@ XboxdrvDaemon::get_free_slot_count() const
 }
 
 void
-XboxdrvDaemon::connect(ControllerSlotPtr slot, XboxdrvThreadPtr thread)
+XboxdrvDaemon::connect(ControllerSlotPtr slot, ControllerThreadPtr thread)
 {
+  log_info("connecting slot to thread");
+
+  {
+    // set the LED status
+    if (slot->get_led_status() == -1)
+    {
+      thread->get_controller()->set_led(2 + (slot->get_id() % 4));
+    }
+    else
+    {
+      thread->get_controller()->set_led(slot->get_led_status());
+    }
+  }
+  
+  {
+    // connect thread with the current slots message proc
+    // FIXME: Could get rid of MessageProcessor and just use
+    // ControllerSlot?! Or a callback to ControllerSlot.
+    std::auto_ptr<MessageProcessor> message_proc;
+    if (m_uinput.get())
+    {
+      message_proc.reset(new UInputMessageProcessor(*m_uinput, slot->get_config(), m_opts));
+    }
+    else
+    {
+      message_proc.reset(new DummyMessageProcessor());
+    }
+    thread->set_message_proc(message_proc);
+  }
+  
   slot->connect(thread);
   on_connect(slot);
 
@@ -664,15 +704,15 @@ XboxdrvDaemon::connect(ControllerSlotPtr slot, XboxdrvThreadPtr thread)
            << thread->get_usbid() << " "
            << "'" << thread->get_name() << "'");
 
-  log_info("launched XboxdrvThread for " << thread->get_usbpath()
+  log_info("launched ControllerThread for " << thread->get_usbpath()
            << " in slot " << slot->get_id() << ", free slots: " 
            << get_free_slot_count() << "/" << m_controller_slots.size());
 }
 
-XboxdrvThreadPtr
+ControllerThreadPtr
 XboxdrvDaemon::disconnect(ControllerSlotPtr slot)
 {
-  XboxdrvThreadPtr thread = slot->disconnect();
+  ControllerThreadPtr thread = slot->disconnect();
   on_disconnect(slot);
   return thread;
 }
@@ -680,7 +720,7 @@ XboxdrvDaemon::disconnect(ControllerSlotPtr slot)
 void
 XboxdrvDaemon::on_connect(ControllerSlotPtr slot)
 {
-  XboxdrvThreadPtr thread = slot->get_thread();
+  ControllerThreadPtr thread = slot->get_thread();
   assert(thread);
 
   if (!m_opts.on_connect.empty())
@@ -699,7 +739,7 @@ XboxdrvDaemon::on_connect(ControllerSlotPtr slot)
 void
 XboxdrvDaemon::on_disconnect(ControllerSlotPtr slot)
 {
-  XboxdrvThreadPtr thread = slot->get_thread();
+  ControllerThreadPtr thread = slot->get_thread();
   assert(thread);
 
   log_info("controller disconnected: " 
@@ -723,6 +763,7 @@ XboxdrvDaemon::on_disconnect(ControllerSlotPtr slot)
 void
 XboxdrvDaemon::wakeup()
 {
+  log_info("received wakeup call");
   m_wakeup_pipe.send_wakeup();
 }
 

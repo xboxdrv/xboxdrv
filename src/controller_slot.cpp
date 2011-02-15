@@ -32,7 +32,7 @@ ControllerSlot::ControllerSlot(int id_,
                                ControllerSlotConfigPtr config_,
                                std::vector<ControllerMatchRulePtr> rules_,
                                int led_status_,
-                               XboxdrvThreadPtr thread_) :
+                               ControllerThreadPtr thread_) :
   m_id(id_),
   m_config(config_),
   m_rules(rules_),
@@ -41,28 +41,27 @@ ControllerSlot::ControllerSlot(int id_,
 {}
 
 void
-ControllerSlot::connect(XboxdrvThreadPtr thread)
+ControllerSlot::connect(ControllerThreadPtr thread)
 {
   assert(!m_thread);
   m_thread = thread;
 }
 
-XboxdrvThreadPtr
+ControllerThreadPtr
 ControllerSlot::disconnect()
 {
-  XboxdrvThreadPtr thread = m_thread;
+  ControllerThreadPtr thread = m_thread;
   m_thread.reset();
   return thread;
 }
 
 bool
-ControllerSlot::try_disconnect()
+ControllerSlot::can_disconnect()
 {
   assert(m_thread);
 
   if (m_thread->try_join_thread())
   {
-    disconnect();
     return true;
   }
   else

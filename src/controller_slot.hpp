@@ -22,7 +22,7 @@
 #include <vector>
 
 #include "controller_slot_config.hpp"
-#include "xboxdrv_thread.hpp"
+#include "controller_thread.hpp"
 
 class ControllerSlot
 {
@@ -31,7 +31,7 @@ private:
   ControllerSlotConfigPtr m_config;
   std::vector<ControllerMatchRulePtr> m_rules;
   int m_led_status;
-  XboxdrvThreadPtr m_thread;
+  ControllerThreadPtr m_thread;
   
 public:
   ControllerSlot();
@@ -39,19 +39,19 @@ public:
                  ControllerSlotConfigPtr config_,
                  std::vector<ControllerMatchRulePtr> rules_,
                  int led_status_,
-                 XboxdrvThreadPtr thread_ = XboxdrvThreadPtr());
+                 ControllerThreadPtr thread_ = ControllerThreadPtr());
 
   bool is_connected() const;
-  void connect(XboxdrvThreadPtr thread);
-  XboxdrvThreadPtr disconnect();
-  bool try_disconnect();
+  void connect(ControllerThreadPtr thread);
+  ControllerThreadPtr disconnect();
+  bool can_disconnect();
 
   const std::vector<ControllerMatchRulePtr>& get_rules() const { return m_rules; }
   int get_led_status() const { return m_led_status; }
   int get_id() const { return m_id; }
   ControllerSlotConfigPtr get_config() const { return m_config; }
  
-  XboxdrvThreadPtr get_thread() const { return m_thread; }
+  ControllerThreadPtr get_thread() const { return m_thread; }
 };
 
 #endif

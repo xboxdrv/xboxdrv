@@ -28,14 +28,14 @@
 
 class Options;
 class MessageProcessor;
-class XboxdrvThread;
+class ControllerThread;
 
-typedef boost::shared_ptr<XboxdrvThread> XboxdrvThreadPtr;
+typedef boost::shared_ptr<ControllerThread> ControllerThreadPtr;
 
-/** XboxdrvThread handles a single Controller (optionally in a
+/** ControllerThread handles a single Controller (optionally in a
     separate thread), reads it messages and passes it to the
     MessageProcessor */
-class XboxdrvThread // FIXME: find a better name, XboxdrvControllerLoop?!
+class ControllerThread // FIXME: find a better name, XboxdrvControllerLoop?!
 {
 private:
   std::auto_ptr<boost::thread> m_thread;
@@ -57,10 +57,9 @@ private:
   std::vector<ControllerSlotWeakPtr> m_compatible_slots;
 
 public:
-  XboxdrvThread(std::auto_ptr<MessageProcessor> processor,
-                ControllerPtr controller,
-                const Options& opts);
-  ~XboxdrvThread();
+  ControllerThread(ControllerPtr controller,
+                   const Options& opts);
+  ~ControllerThread();
 
   // main loop, can be started in a separate thread with
   // start_thread() or used in its own in the main thread
@@ -80,13 +79,17 @@ public:
   std::vector<ControllerSlotWeakPtr> get_compatible_slots() const;
   void set_compatible_slots(const std::vector<ControllerSlotPtr>& slots);
 
+  void set_message_proc(std::auto_ptr<MessageProcessor> processor);
+
+  ControllerPtr get_controller() const { return m_controller; }
+
 private:
   void launch_child_process();
   void watch_chid_process();
 
 private:
-  XboxdrvThread(const XboxdrvThread&);
-  XboxdrvThread& operator=(const XboxdrvThread&);
+  ControllerThread(const ControllerThread&);
+  ControllerThread& operator=(const ControllerThread&);
 };
 
 #endif
