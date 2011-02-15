@@ -712,9 +712,8 @@ XboxdrvDaemon::connect(ControllerSlotPtr slot, ControllerThreadPtr thread)
 ControllerThreadPtr
 XboxdrvDaemon::disconnect(ControllerSlotPtr slot)
 {
-  ControllerThreadPtr thread = slot->disconnect();
   on_disconnect(slot);
-  return thread;
+  return slot->disconnect();
 }
 
 void
