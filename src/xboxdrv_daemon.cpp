@@ -33,8 +33,6 @@
 #include "controller_thread.hpp"
 #include "controller.hpp"
 
-extern bool global_exit_xboxdrv;
-
 namespace {
 
 bool get_usb_id(udev_device* device, uint16_t* vendor_id, uint16_t* product_id)
@@ -96,8 +94,7 @@ XboxdrvDaemon::XboxdrvDaemon(const Options& opts) :
   m_monitor(0),
   m_controller_slots(),
   m_inactive_threads(),
-  m_uinput(),
-  m_wakeup_pipe()
+  m_uinput()
 {
 }
 
@@ -312,12 +309,104 @@ XboxdrvDaemon::run(const Options& opts)
     init_udev();
     init_udev_monitor(opts);
 
-    run_loop(opts);
+    // we don't use glib threads, but we still need to init the thread
+    // system to make glib thread safe
+    g_thread_init(NULL);
+
+    GMainLoop* gmain = g_main_loop_new(NULL, false);
+
+    GIOChannel* udev_channel = g_io_channel_unix_new(udev_monitor_get_fd(m_monitor));
+    g_io_add_watch(udev_channel, 
+                   static_cast<GIOCondition>(G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP),
+                   &XboxdrvDaemon::on_udev_data_wrap, this);
+
+    log_info("launching into glib main loop");
+    g_main_loop_run(gmain);
+    log_info("glib main loop finished");
+
+    g_io_channel_unref(udev_channel);
+    g_main_loop_unref(gmain);
   }
   catch(const std::exception& err)
   {
     log_error("fatal exception: " << err.what());
   }
+}
+
+bool
+XboxdrvDaemon::on_wakeup()
+{
+  log_info("got a wakeup call");
+  cleanup_threads();
+  check_thread_status();
+  return false; // remove the registered idle callback
+}
+
+bool
+XboxdrvDaemon::on_udev_data(GIOChannel* channel, GIOCondition condition)
+{
+  if (condition == G_IO_OUT)
+  {
+    log_error("data can be written");
+  }
+  else if (condition == G_IO_PRI)
+  {
+    log_error("data can be read");
+  }
+  else if (condition == G_IO_ERR)
+  {
+    log_error("data error");
+  }
+  else if (condition != G_IO_IN)
+  {
+    log_error("unknown condition: " << condition);
+  }
+  else
+  {  
+    log_info("trying to read data from udev");
+    cleanup_threads();
+  
+    log_info("trying to read data from udev monitor");
+    struct udev_device* device = udev_monitor_receive_device(m_monitor);
+    log_info("got data from udev monitor");
+
+    if (!device)
+    {
+      // seem to be normal, do we get this when the given device is filtered out?
+      log_debug("udev device couldn't be read: " << device);
+    }
+    else
+    {
+      const char* action = udev_device_get_action(device);
+
+      if (action && strcmp(action, "add") == 0)
+      {
+        process_match(m_opts, device);
+      }
+
+      udev_device_unref(device);
+    }
+  }
+ 
+  return true;
+}
+
+bool
+XboxdrvDaemon::on_dbus_data(GIOChannel* channel, GIOCondition condition)
+{
+  return true;
+}
+
+gboolean
+XboxdrvDaemon::on_udev_data_wrap(GIOChannel* channel, GIOCondition condition, gpointer data)
+{
+  return static_cast<XboxdrvDaemon*>(data)->on_udev_data(channel, condition);
+}
+
+gboolean
+XboxdrvDaemon::on_dbus_data_wrap(GIOChannel* channel, GIOCondition condition, gpointer data)
+{
+  return static_cast<XboxdrvDaemon*>(data)->on_dbus_data(channel, condition);
 }
 
 void
@@ -382,60 +471,6 @@ XboxdrvDaemon::find_free_slot(ControllerThreadPtr thread)
     }
   }
   return ControllerSlotPtr();  
-}
-
-void
-XboxdrvDaemon::run_loop(const Options& opts)
-{
-  // 1) when a wakeup event arrives, we check thread status and add
-  //    controllers that have become active and remove ones that have
-  //    become inactive
-  // 2) when new controller arrives via udev, we add it, if no free
-  //    slots are found, we ignore it till its plugged out and in
-  //    again, this is by design, to avoid situations where replugging
-  //    an working controller would result in an previously unused one
-  //    grapping its slot, thus we get a more static mapping (however,
-  //    still not a perfect one)
-  while(!global_exit_xboxdrv)
-  {
-    log_debug("going to wait in select()");
-    Select sel;
-    sel.add_fd(udev_monitor_get_fd(m_monitor));
-    sel.add_fd(m_wakeup_pipe.get_read_fd());
-    sel.wait();
-    log_debug("select() is done");
-
-    // cleanup threads that are no longer running
-    cleanup_threads();
-
-    if (sel.is_ready(m_wakeup_pipe.get_read_fd()))
-    {
-      log_debug("got a wakeup call");
-      check_thread_status();
-    }
-
-    if (sel.is_ready(udev_monitor_get_fd(m_monitor)))
-    {
-      struct udev_device* device = udev_monitor_receive_device(m_monitor);
-
-      if (!device)
-      {
-        // seem to be normal, do we get this when the given device is filtered out?
-        log_debug("udev device couldn't be read: " << device);
-      }
-      else
-      {
-        const char* action = udev_device_get_action(device);
-
-        if (action && strcmp(action, "add") == 0)
-        {
-          process_match(opts, device);
-        }
-
-        udev_device_unref(device);
-      }
-    }
-  }
 }
 
 void
@@ -608,7 +643,7 @@ XboxdrvDaemon::launch_controller_thread(udev_device* udev_dev,
         if (!slot)
         {
           log_error("no free controller slot found, controller will be ignored: "
-              << boost::format("%03d:%03d %04x:%04x '%s'")
+                    << boost::format("%03d:%03d %04x:%04x '%s'")
                     % static_cast<int>(busnum)
                     % static_cast<int>(devnum)
                     % dev_type.idVendor
@@ -668,6 +703,7 @@ XboxdrvDaemon::connect(ControllerSlotPtr slot, ControllerThreadPtr thread)
 {
   log_info("connecting slot to thread");
 
+  try 
   {
     // set the LED status
     if (slot->get_led_status() == -1)
@@ -678,6 +714,10 @@ XboxdrvDaemon::connect(ControllerSlotPtr slot, ControllerThreadPtr thread)
     {
       thread->get_controller()->set_led(slot->get_led_status());
     }
+  }
+  catch(const std::exception& err)
+  {
+    log_error("failed to set led: " << err.what());
   }
   
   {
@@ -759,11 +799,20 @@ XboxdrvDaemon::on_disconnect(ControllerSlotPtr slot)
   }
 }
 
+gboolean
+XboxdrvDaemon::on_wakeup_wrap(gpointer data)
+{
+  log_info("wrapper called");
+  return static_cast<XboxdrvDaemon*>(data)->on_wakeup();
+}
+
 void
 XboxdrvDaemon::wakeup()
 {
   log_info("received wakeup call");
-  m_wakeup_pipe.send_wakeup();
+  g_idle_add(&XboxdrvDaemon::on_wakeup_wrap, this);
+  g_main_context_wakeup(NULL);
+  log_info("idle_add called");
 }
 
 /* EOF */

@@ -20,10 +20,10 @@
 #define HEADER_XBOXDRV_XBOXDRV_DAEMON_HPP
 
 #include <libudev.h>
+#include <glib.h>
 
 #include "controller_slot_config.hpp"
 #include "controller_slot.hpp"
-#include "wakeup_pipe.hpp"
 
 class Options;
 class UInput;
@@ -45,8 +45,6 @@ private:
 
   std::auto_ptr<UInput> m_uinput;
 
-  WakeupPipe m_wakeup_pipe;
-
 public:
   XboxdrvDaemon(const Options& opts);
   ~XboxdrvDaemon();
@@ -58,8 +56,6 @@ private:
   void init_uinput(const Options& opts);
   void init_udev();
   void init_udev_monitor(const Options& opts);
-
-  void run_loop(const Options& opts);
 
   std::vector<ControllerSlotPtr> find_compatible_slots(udev_device* dev);
   ControllerSlotPtr find_free_slot(udev_device* dev);
@@ -82,7 +78,16 @@ private:
   void on_disconnect(ControllerSlotPtr slot);
 
   void wakeup();
-  
+
+  bool on_wakeup();
+  bool on_udev_data(GIOChannel* channel, GIOCondition condition);
+  bool on_dbus_data(GIOChannel* channel, GIOCondition condition);
+
+private:
+  static gboolean on_udev_data_wrap(GIOChannel* channel, GIOCondition condition, gpointer data);
+  static gboolean on_dbus_data_wrap(GIOChannel* channel, GIOCondition condition, gpointer data);
+  static gboolean on_wakeup_wrap(gpointer data);
+
 private:
   XboxdrvDaemon(const XboxdrvDaemon&);
   XboxdrvDaemon& operator=(const XboxdrvDaemon&);
