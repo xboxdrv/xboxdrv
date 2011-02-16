@@ -42,6 +42,10 @@ $ dput my-ppa ../xboxdrv_0.7.2-1~lucid1_source.changes
 Stuff to do before 0.7.2 release:
 =================================
 
+* daemon on regular xboxdrv have different controller orderings
+
+* swap controller slots via dbus
+
 * look at Joy2key for better mouse support (mouse acceleration)
 
 * reenable USBThread, maybe add a way to cancel stuff to it if possible?

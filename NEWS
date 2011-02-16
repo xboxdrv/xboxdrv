@@ -2,6 +2,7 @@ xboxdrv 0.7.2 - (??/Feb/2011)
 =============================
 
 * added statistic modifier that counts how often buttons are pressed
+* added support for multiple wireless controller in daemon
 
 
 xboxdrv 0.7.1 - (30/Jan/2011)
