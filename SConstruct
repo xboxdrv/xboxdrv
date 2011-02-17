@@ -1,5 +1,7 @@
 # -*- python -*-
 
+import subprocess
+
 env = Environment()
 
 opts = Variables(['custom.py'], ARGUMENTS)
@@ -77,10 +79,21 @@ if not conf.CheckLib('boost_thread-mt', language='C++'):
 
 env = conf.Finish()
 
-env.Command("src/xboxdrv_dbus_glue.h", "src/xboxdrv_dbus.xml",
-            "dbus-binding-tool --mode=glib-server $SOURCE --prefix=xboxdrv > $TARGET")
+def build_dbus_glue(target, source, env):
+    xml = subprocess.Popen(["dbus-binding-tool", "--mode=glib-server", "--prefix=xboxdrv", source[0].get_path()],
+                           stdout=subprocess.PIPE).communicate()[0]
+
+    # converting void to a function pointer is forbidden in C++, thus we use a union instead
+    xml = xml.replace("callback = (GMarshalFunc_BOOLEAN__POINTER) (marshal_data ? marshal_data : cc->callback);",
+                      "union { GMarshalFunc_BOOLEAN__POINTER fn; void* obj; } conv;\n  "
+                      "conv.obj = (marshal_data ? marshal_data : cc->callback);\n  "
+                      "callback = conv.fn;")
+
+    with open(target[0].get_path(), "w") as f:
+        f.write(xml)
+    
+env.Command("src/xboxdrv_dbus_glue.hpp", "src/xboxdrv_dbus.xml", build_dbus_glue)
 env.Program('xboxdrv',
-            Glob('src/*.c') +
             Glob('src/*.cpp') +
             Glob('src/axisfilter/*.cpp') +
             Glob('src/buttonfilter/*.cpp') +

@@ -36,7 +36,7 @@
 #include "controller_thread.hpp"
 #include "controller.hpp"
 #include "xboxdrv_g_daemon.hpp"
-#include "xboxdrv_dbus_glue.h"
+#include "xboxdrv_dbus_glue.hpp"
 
 namespace {
 
