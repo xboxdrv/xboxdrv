@@ -42,6 +42,7 @@ elif 'BUILD' in env and env['BUILD'] == 'custom':
 else:
     env.Append(CPPFLAGS = ['-g', '-O3', '-Wall', '-ansi', '-pedantic'])
 
+env.ParseConfig("pkg-config --cflags --libs dbus-glib-1 | sed 's/-I/-isystem/g'")
 env.ParseConfig("pkg-config --cflags --libs glib-2.0 | sed 's/-I/-isystem/g'")
 env.ParseConfig("pkg-config --cflags --libs gthread-2.0 | sed 's/-I/-isystem/g'")
 env.ParseConfig("pkg-config --cflags --libs libusb-1.0 | sed 's/-I/-isystem/g'")
@@ -76,7 +77,10 @@ if not conf.CheckLib('boost_thread-mt', language='C++'):
 
 env = conf.Finish()
 
+env.Command("src/xboxdrv_dbus_glue.h", "src/xboxdrv_dbus.xml",
+            "dbus-binding-tool --mode=glib-server $SOURCE --prefix=xboxdrv > $TARGET")
 env.Program('xboxdrv',
+            Glob('src/*.c') +
             Glob('src/*.cpp') +
             Glob('src/axisfilter/*.cpp') +
             Glob('src/buttonfilter/*.cpp') +

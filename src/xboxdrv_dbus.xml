@@ -1,0 +1,8 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+          "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/seul/Xboxdrv/Daemon">
+  <interface name="org.seul.Xboxdrv.Daemon">
+    <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="xboxdrv_g_daemon"/>
+    <method name="Status" />
+  </interface>
+</node>

@@ -21,6 +21,7 @@
 
 #include <libudev.h>
 #include <glib.h>
+#include <dbus/dbus-glib.h>
 
 #include "controller_slot_config.hpp"
 #include "controller_slot.hpp"
@@ -51,11 +52,16 @@ public:
 
   void run(const Options& opts);
 
+  void status();
+
 private:
   void create_pid_file(const Options& opts);
   void init_uinput(const Options& opts);
   void init_udev();
   void init_udev_monitor(const Options& opts);
+
+  void init_g_udev();
+  void init_g_dbus();
 
   std::vector<ControllerSlotPtr> find_compatible_slots(udev_device* dev);
   ControllerSlotPtr find_free_slot(udev_device* dev);
@@ -81,11 +87,9 @@ private:
 
   bool on_wakeup();
   bool on_udev_data(GIOChannel* channel, GIOCondition condition);
-  bool on_dbus_data(GIOChannel* channel, GIOCondition condition);
 
 private:
   static gboolean on_udev_data_wrap(GIOChannel* channel, GIOCondition condition, gpointer data);
-  static gboolean on_dbus_data_wrap(GIOChannel* channel, GIOCondition condition, gpointer data);
   static gboolean on_wakeup_wrap(gpointer data);
 
 private:

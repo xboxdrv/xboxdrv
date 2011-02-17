@@ -21,6 +21,9 @@
 #include <boost/format.hpp>
 #include <fstream>
 #include <iostream>
+#include <dbus/dbus-glib.h>
+#include <dbus/dbus-glib-lowlevel.h>
+#include <dbus/dbus.h>
 
 #include "uinput_message_processor.hpp"
 #include "dummy_message_processor.hpp"
@@ -32,6 +35,8 @@
 #include "controller_factory.hpp"
 #include "controller_thread.hpp"
 #include "controller.hpp"
+#include "xboxdrv_g_daemon.hpp"
+#include "xboxdrv_dbus_glue.h"
 
 namespace {
 
@@ -299,6 +304,59 @@ XboxdrvDaemon::create_pid_file(const Options& opts)
 }
 
 void
+XboxdrvDaemon::init_g_udev()
+{
+  GIOChannel* udev_channel = g_io_channel_unix_new(udev_monitor_get_fd(m_monitor));
+  g_io_add_watch(udev_channel, 
+                 static_cast<GIOCondition>(G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP),
+                 &XboxdrvDaemon::on_udev_data_wrap, this);
+
+  g_io_channel_unref(udev_channel);
+}
+
+void
+XboxdrvDaemon::init_g_dbus()
+{
+
+  GError* gerror = NULL;
+  // this calls automatically sets up connection to the main loop
+  DBusGConnection* connection = dbus_g_bus_get(DBUS_BUS_SESSION, &gerror);
+  if (!connection)
+  {
+    std::ostringstream out;
+    out << "failed to open connection to bus: " << gerror->message;
+    g_error_free(gerror);
+    throw std::runtime_error(out.str());
+  }
+  else
+  {
+    DBusError error;
+    dbus_error_init(&error);
+    int ret = dbus_bus_request_name(dbus_g_connection_get_connection(connection),
+                                    "org.seul.Xboxdrv",
+                                    DBUS_NAME_FLAG_REPLACE_EXISTING,
+                                    &error);
+  
+    if (dbus_error_is_set(&error))
+    { 
+      std::ostringstream out;
+      out << "failed to get unique dbus name: " <<  error.message;
+      dbus_error_free(&error);
+      throw std::runtime_error(out.str());
+    }
+
+    if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) 
+    { 
+      raise_exception(std::runtime_error, "failed to become primary owner of dbus name");
+    }
+
+    XboxdrvGDaemon* daemon = xboxdrv_g_daemon_new(this);
+    dbus_g_object_type_install_info(XBOXDRV_TYPE_G_DAEMON, &dbus_glib_xboxdrv_object_info);
+    dbus_g_connection_register_g_object(connection, "/org/seul/Xboxdrv/Daemon", G_OBJECT(daemon));
+  }
+}
+
+void
 XboxdrvDaemon::run(const Options& opts)
 {
   try 
@@ -309,22 +367,21 @@ XboxdrvDaemon::run(const Options& opts)
     init_udev();
     init_udev_monitor(opts);
 
+    g_type_init();
+
     // we don't use glib threads, but we still need to init the thread
     // system to make glib thread safe
     g_thread_init(NULL);
 
     GMainLoop* gmain = g_main_loop_new(NULL, false);
 
-    GIOChannel* udev_channel = g_io_channel_unix_new(udev_monitor_get_fd(m_monitor));
-    g_io_add_watch(udev_channel, 
-                   static_cast<GIOCondition>(G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP),
-                   &XboxdrvDaemon::on_udev_data_wrap, this);
-
+    init_g_udev();
+    init_g_dbus();
+    
     log_info("launching into glib main loop");
     g_main_loop_run(gmain);
     log_info("glib main loop finished");
 
-    g_io_channel_unref(udev_channel);
     g_main_loop_unref(gmain);
   }
   catch(const std::exception& err)
@@ -391,22 +448,10 @@ XboxdrvDaemon::on_udev_data(GIOChannel* channel, GIOCondition condition)
   return true;
 }
 
-bool
-XboxdrvDaemon::on_dbus_data(GIOChannel* channel, GIOCondition condition)
-{
-  return true;
-}
-
 gboolean
 XboxdrvDaemon::on_udev_data_wrap(GIOChannel* channel, GIOCondition condition, gpointer data)
 {
   return static_cast<XboxdrvDaemon*>(data)->on_udev_data(channel, condition);
-}
-
-gboolean
-XboxdrvDaemon::on_dbus_data_wrap(GIOChannel* channel, GIOCondition condition, gpointer data)
-{
-  return static_cast<XboxdrvDaemon*>(data)->on_dbus_data(channel, condition);
 }
 
 void
@@ -813,6 +858,35 @@ XboxdrvDaemon::wakeup()
   g_idle_add(&XboxdrvDaemon::on_wakeup_wrap, this);
   g_main_context_wakeup(NULL);
   log_info("idle_add called");
+}
+
+void
+XboxdrvDaemon::status()
+{
+  std::cout << "slots: " << m_controller_slots.size() << std::endl;
+  std::cout << "inactive controller: " << m_inactive_threads.size() << std::endl;
+  std::cout << "slots: " << std::endl;
+  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+  {
+    std::cout << "slot: ";
+
+    if ((*i)->is_connected())
+    {
+      std::cout << (*i)->get_thread()->get_name() << std::endl;
+    }
+    else
+    {
+      std::cout << "<inactive>" << std::endl;
+    }
+  }  
+  std::cout << std::endl;
+
+  std::cout << "inactive: " << std::endl;
+  for(Threads::iterator i = m_inactive_threads.begin(); i != m_inactive_threads.end(); ++i)
+  {
+    std::cout << "controller: " << (*i)->get_name() << std::endl;
+  }
+  std::cout << std::endl;
 }
 
 /* EOF */
