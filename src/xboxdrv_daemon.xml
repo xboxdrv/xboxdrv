@@ -1,0 +1,29 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+          "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.seul.Xboxdrv.Daemon">
+    <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="xboxdrv_g_daemon"/>
+    <method name="Status">
+    </method>
+    <!--
+    <method name="SetLed">
+      <arg name="status" type="i" direction="in" />
+    </method>
+
+    <method name="SetRumble">
+      <arg name="strong" type="i" direction="in" />
+      <arg name="weak"   type="i" direction="in" />
+    </method>
+
+    reset_leds
+    shutdown, quit, exit
+    set_config SLOT CFG
+    set_led SLOT STATUS
+    set_rumble SLOT STRONG WEAK 
+    disconnect SLOT
+    rumble_enable SLOT
+    rumble_disable SLOT
+    set_rumble_gain SLOT GAIN
+    -->
+  </interface>
+</node>

@@ -36,7 +36,9 @@
 #include "controller_thread.hpp"
 #include "controller.hpp"
 #include "xboxdrv_g_daemon.hpp"
-#include "xboxdrv_dbus_glue.hpp"
+#include "xboxdrv_g_controller.hpp"
+#include "xboxdrv_daemon_glue.hpp"
+#include "xboxdrv_controller_glue.hpp"
 
 namespace {
 
@@ -310,7 +312,6 @@ XboxdrvDaemon::init_g_udev()
   g_io_add_watch(udev_channel, 
                  static_cast<GIOCondition>(G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP),
                  &XboxdrvDaemon::on_udev_data_wrap, this);
-
   g_io_channel_unref(udev_channel);
 }
 
@@ -350,9 +351,19 @@ XboxdrvDaemon::init_g_dbus()
       raise_exception(std::runtime_error, "failed to become primary owner of dbus name");
     }
 
+    // FIXME: should unref() these somewhere
     XboxdrvGDaemon* daemon = xboxdrv_g_daemon_new(this);
-    dbus_g_object_type_install_info(XBOXDRV_TYPE_G_DAEMON, &dbus_glib_xboxdrv_object_info);
+    dbus_g_object_type_install_info(XBOXDRV_TYPE_G_DAEMON, &dbus_glib_xboxdrv_daemon_object_info);
     dbus_g_connection_register_g_object(connection, "/org/seul/Xboxdrv/Daemon", G_OBJECT(daemon));
+
+    for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+    {
+      XboxdrvGController* controller = xboxdrv_g_controller_new(i->get());
+      dbus_g_object_type_install_info(XBOXDRV_TYPE_G_CONTROLLER, &dbus_glib_xboxdrv_controller_object_info);
+      dbus_g_connection_register_g_object(connection, 
+                                          (boost::format("/org/seul/Xboxdrv/ControllerSlots/%d") % (i - m_controller_slots.begin())).str().c_str(),
+                                          G_OBJECT(controller));
+    }
   }
 }
 

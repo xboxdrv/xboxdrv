@@ -26,11 +26,11 @@
 class XboxdrvDaemon;
 
 #define XBOXDRV_TYPE_G_DAEMON                  (xboxdrv_g_daemon_get_type ())
-#define XBOXDRV_G_DAEMON(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), XBOXDRV_TYPE_G_DAEMON, XboxdrvDaemon))
+#define XBOXDRV_G_DAEMON(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), XBOXDRV_TYPE_G_DAEMON, XboxdrvGDaemon))
 #define XBOXDRV_IS_G_DAEMON(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), XBOXDRV_TYPE_G_DAEMON))
-#define XBOXDRV_G_DAEMON_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), XBOXDRV_TYPE_G_DAEMON, XboxdrvDaemonClass))
+#define XBOXDRV_G_DAEMON_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), XBOXDRV_TYPE_G_DAEMON, XboxdrvGDaemonClass))
 #define XBOXDRV_IS_G_DAEMON_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), XBOXDRV_TYPE_G_DAEMON))
-#define XBOXDRV_G_DAEMON_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), XBOXDRV_TYPE_G_DAEMON, XboxdrvDaemonClass))
+#define XBOXDRV_G_DAEMON_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), XBOXDRV_TYPE_G_DAEMON, XboxdrvGDaemonClass))
 
 typedef struct _XboxdrvGDaemon        XboxdrvGDaemon;
 typedef struct _XboxdrvGDaemonClass   XboxdrvGDaemonClass;
@@ -39,15 +39,12 @@ struct _XboxdrvGDaemon
 {
   GObject parent_instance;
 
-  /* instance members */
   XboxdrvDaemon* daemon;
 };
 
 struct _XboxdrvGDaemonClass
 {
   GObjectClass parent_class;
-
-  /* class members */
 };
 
 GType xboxdrv_g_daemon_get_type();
