@@ -77,13 +77,13 @@ INIParser::run()
         {
           v = get_string();
           expect('"');
+          whitespace();
         }
         else
         {
           v = get_value();
         }
 
-        whitespace();
         if (accept(';') || accept('#'))
           eat_rest_of_line();
         newline();
@@ -161,13 +161,33 @@ INIParser::expect(char c)
 std::string
 INIParser::get_value()
 {
+  // a value is terminated either by a newline or a comment character,
+  // whitespace at the end of the value will be trimmed
   std::ostringstream str;
-  while(peek() != ' ' && peek() != '\t' && peek() != '\n')
+  std::string::size_type last_char = std::string::npos;
+  std::string::size_type cur = 0;
+  while(peek() != '\n' && 
+        peek() != ';' && peek() != '#')
   {
+    if (peek() != ' ' && peek() != '\t')
+    {
+      last_char = cur;
+    }
+
     str << static_cast<char>(peek());
+
     next();
+    cur += 1;
   }
-  return str.str();
+
+  if (last_char == std::string::npos)
+  {
+    return str.str();
+  }
+  else
+  {
+    return str.str().substr(0, last_char + 1);
+  }
 }
 
 std::string
