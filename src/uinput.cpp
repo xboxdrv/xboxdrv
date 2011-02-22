@@ -53,6 +53,7 @@ UInput::get_device_name(uint32_t device_id) const
       str << it->second;
       switch(type_id)
       {
+        case 0:
         case DEVICEID_JOYSTICK:
           break;
           
