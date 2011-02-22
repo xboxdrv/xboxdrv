@@ -1,0 +1,39 @@
+[xboxdrv]
+name="Xbox 360 Wireless Receiver"
+ui-clear = true
+extra-devices=false
+extra-events=false
+deadzone=4000
+
+[ui-buttonmap]
+A=BTN_A
+B=BTN_B
+X=BTN_X
+Y=BTN_Y
+
+DU=BTN_0
+DD=BTN_1
+DL=BTN_LEFT
+DR=BTN_RIGHT
+
+START=BTN_START
+GUIDE=BTN_MODE
+BACK=BTN_BACK
+
+LB=BTN_TL
+RB=BTN_TR
+
+TL=BTN_THUMBL
+TR=BTN_THUMBR
+
+[ui-axismap]
+X1=ABS_X
+Y1=ABS_Y
+
+X2=ABS_RX
+Y2=ABS_RY
+
+LT=ABS_Z
+RT=ABS_RZ
+
+# EOF #
