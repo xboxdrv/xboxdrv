@@ -795,10 +795,4 @@ Xboxdrv::main(int argc, char** argv)
   return 0;
 }
 
-int main(int argc, char** argv)
-{
-  Xboxdrv xboxdrv;
-  return xboxdrv.main(argc, argv);
-}
-
 /* EOF */

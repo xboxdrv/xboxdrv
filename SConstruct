@@ -102,10 +102,16 @@ env = conf.Finish()
 env.DBusGlue("src/xboxdrv_daemon_glue.hpp",     "src/xboxdrv_daemon.xml", DBUS_PREFIX="xboxdrv_daemon")
 env.DBusGlue("src/xboxdrv_controller_glue.hpp", "src/xboxdrv_controller.xml", DBUS_PREFIX="xboxdrv_controller")
 
-env.Program('xboxdrv',
-            Glob('src/*.cpp') +
-            Glob('src/axisfilter/*.cpp') +
-            Glob('src/buttonfilter/*.cpp') +
-            Glob('src/modifier/*.cpp'))
+libxboxdrv = env.StaticLibrary('xboxdrv',
+                               Glob('src/*.cpp') +
+                               Glob('src/axisfilter/*.cpp') +
+                               Glob('src/buttonfilter/*.cpp') +
+                               Glob('src/modifier/*.cpp'))
+env.Append(LIBS = libxboxdrv)
+
+env.Program('xboxdrv', Glob('src/main/main.cpp'))
+
+for file in Glob('test/*_test.cpp', strings=True):
+    env.Program(file[:-4], file)
 
 # EOF #
