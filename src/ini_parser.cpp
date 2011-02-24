@@ -59,36 +59,43 @@ INIParser::run()
     }
     else // assume name=value pair
     {
-      std::string n;
-      std::string v;
+      std::string name;
+      std::string value;
 
-      n = get_ident();
+      name = get_ident_or_string();
       whitespace();
-      expect('=');
-      whitespace();
+      
       if (accept(';') || accept('#'))
-      { // "foobar = ; comment here, value empty"
+      { // "name"
         eat_rest_of_line();
         newline();
       }
-      else
+      else if (accept('='))
       {
-        if (accept('"'))
-        {
-          v = get_string();
-          expect('"');
-          whitespace();
+        whitespace();
+        if (accept(';') || accept('#'))
+        { // "name = # comment"
+          eat_rest_of_line();
+          newline();
         }
         else
-        {
-          v = get_value();
+        { // "name = value"
+          value = get_value_or_string();     
+          whitespace();
+        
+          if (accept(';') || accept('#'))
+          { // "name = value # comment"
+            eat_rest_of_line();
+            newline();
+          }
+          else
+          {
+            newline();
+          }
         }
-
-        if (accept(';') || accept('#'))
-          eat_rest_of_line();
-        newline();
       }
-      m_builder.send_pair(n, v);
+      
+      m_builder.send_pair(name, value);
     }
   }
 }
@@ -159,22 +166,55 @@ INIParser::expect(char c)
 }
 
 std::string
+INIParser::get_value_or_string()
+{
+  if (accept('"'))
+  {
+   std::string str = get_string();
+   expect('"');
+   return str;
+  }
+  else
+  {
+    return get_value();
+  }
+}
+
+std::string
+INIParser::get_ident_or_string()
+{
+  if (accept('"'))
+  {
+    std::string str = get_string();
+    expect('"');
+    return str;
+  }
+  else
+  {
+    return get_ident();
+  }
+}
+
+std::string
 INIParser::get_value()
 {
-  // a value is terminated either by a newline or a comment character,
-  // whitespace at the end of the value will be trimmed
+  // an unquoted value is terminated either by a newline or a comment
+  // character, whitespace at the end of the value will be trimmed
   std::ostringstream str;
   std::string::size_type last_char = std::string::npos;
   std::string::size_type cur = 0;
-  while(peek() != '\n' && 
-        peek() != ';' && peek() != '#')
+  char last_c = -1;
+  while(peek() != '\n' &&
+        peek() != -1 &&
+        !((last_c == ' ' || last_c == '\t') && (peek() == ';' || peek() == '#')))
   {
     if (peek() != ' ' && peek() != '\t')
     {
       last_char = cur;
     }
 
-    str << static_cast<char>(peek());
+    last_c = static_cast<char>(peek());
+    str << last_c;
 
     next();
     cur += 1;
@@ -193,18 +233,43 @@ INIParser::get_value()
 std::string
 INIParser::get_ident()
 {
+  // an unquoted value is terminated either by a newline or a comment
+  // character, whitespace at the end of the value will be trimmed
   std::ostringstream str;
-  while(peek() != '=' && peek() != ' ' && peek() != '\t' && peek() != '\n')
+  std::string::size_type last_char = std::string::npos;
+  std::string::size_type cur = 0;
+  char last_c = -1;
+  while(peek() != '\n' &&
+        peek() != -1 &&
+        peek() != '=' &&
+        !((last_c == ' ' || last_c == '\t') && (peek() == ';' || peek() == '#')))
   {
-    str << static_cast<char>(peek());
+    if (peek() != ' ' && peek() != '\t')
+    {
+      last_char = cur;
+    }
+
+    last_c = static_cast<char>(peek());
+    str << last_c;
+
     next();
+    cur += 1;
   }
-  return str.str();
+
+  if (last_char == std::string::npos)
+  {
+    return str.str();
+  }
+  else
+  {
+    return str.str().substr(0, last_char + 1);
+  }
 }
 
 std::string
 INIParser::get_string()
 {
+  // reads a string, handles escaping, does not eat begin and end quotes
   std::ostringstream str;
   while(peek() != '"')
   {
@@ -235,7 +300,11 @@ INIParser::get_string()
 void
 INIParser::newline()
 {
-  if (peek() != '\n')
+  if (peek() == -1)
+  {
+    return;
+  }
+  else if (peek() != '\n')
   {
     error("expected newline");
   }
@@ -248,7 +317,7 @@ INIParser::newline()
 void
 INIParser::eat_rest_of_line()
 {
-  while(peek() != '\n')
+  while(peek() != '\n' && peek() != -1)
   {
     next();
   }

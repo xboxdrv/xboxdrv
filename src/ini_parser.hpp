@@ -47,6 +47,8 @@ private:
   std::string get_string();
   std::string get_value();
   std::string get_ident(); 
+  std::string get_value_or_string();
+  std::string get_ident_or_string(); 
   void newline();
   void eat_rest_of_line();
   std::string get_section();
