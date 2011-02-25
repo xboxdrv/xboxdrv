@@ -209,6 +209,29 @@ ControllerThread::start_thread(const Options& opts)
   assert(m_thread.get() == 0);
   m_thread.reset(new boost::thread(boost::bind(&ControllerThread::controller_loop, this, 
                                                boost::cref(opts))));
+
+  // try to set realtime priority when root, as user there doesn't
+  // seem to be a way to increase the priority
+  if (geteuid() == 0)
+  {
+    pthread_t tid = static_cast<pthread_t>(m_thread->native_handle());
+  
+    int ret;
+    int policy;
+    struct sched_param param;
+    memset(&param, 0, sizeof(struct sched_param));
+
+    policy = SCHED_RR;
+    param.sched_priority = sched_get_priority_max(policy);
+
+    // we don't try SCHED_OTHER for users as min and max priority is
+    // 0 for that, thus we can't change anything with that
+
+    if ((ret = pthread_setschedparam(tid, policy, &param)) != 0)
+    {
+      log_error("pthread_setschedparam() failed: " << ret);
+    }
+  }
 }
 
 void
