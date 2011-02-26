@@ -1046,8 +1046,8 @@ start=KEY_ESC
               Specify the number of miliseconds that xboxdrv will wait
               for events from the controller before moving on and
               processing things like auto-fire or relative-axis.
-              Default value is 25, smaller values will give you a
-              higher resoultion auto fire, but will waste some more
+              Default value is 10, smaller values will give you a
+              higher resoultion auto fire and relative event movement, but will waste some more
               CPU.
             </para>
           </listitem>
