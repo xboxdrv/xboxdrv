@@ -56,7 +56,8 @@ private:
   struct RelRepeat 
   {
     UIEvent code;
-    int value;
+    float value;
+    float rest;
     int time_count;
     int repeat_interval;
   };
@@ -92,7 +93,7 @@ public:
   void send(uint32_t device_id, int ev_type, int ev_code, int value);
   void send_abs(uint32_t device_id, int ev_code, int value);
   void send_key(uint32_t device_id, int ev_code, bool value);
-  void send_rel_repetitive(const UIEvent& code, int value, int repeat_interval);
+  void send_rel_repetitive(const UIEvent& code, float value, int repeat_interval);
 
   /** should be called to single that all events of the current frame
       have been send */

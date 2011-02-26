@@ -251,9 +251,17 @@ UInput::update(int msec_delta)
   {
     i->second.time_count += msec_delta;
 
+    // FIXME: shouldn't send out events multiple times, but accumulate
+    // them instead and send out only once
     while (i->second.time_count >= i->second.repeat_interval)
     {
-      get_uinput(i->second.code.get_device_id())->send(EV_REL, i->second.code.code, i->second.value);
+      // value can be float, but be can only send out int, so keep
+      // track of the rest we don't send
+      int i_value = static_cast<int>(i->second.value + truncf(i->second.rest));
+      i->second.rest -= truncf(i->second.rest);
+      i->second.rest += i->second.value - truncf(i->second.value);
+
+      get_uinput(i->second.code.get_device_id())->send(EV_REL, i->second.code.code, i_value);
       i->second.time_count -= i->second.repeat_interval;
     }
   }
@@ -274,7 +282,7 @@ UInput::sync()
 }
 
 void
-UInput::send_rel_repetitive(const UIEvent& code, int value, int repeat_interval)
+UInput::send_rel_repetitive(const UIEvent& code, float value, int repeat_interval)
 {
   if (repeat_interval < 0)
   { // remove rel_repeats from list
@@ -290,6 +298,7 @@ UInput::send_rel_repetitive(const UIEvent& code, int value, int repeat_interval)
       RelRepeat rel_rep;
       rel_rep.code  = code;
       rel_rep.value = value;
+      rel_rep.rest  = 0.0f;
       rel_rep.time_count = 0;
       rel_rep.repeat_interval = repeat_interval;
       m_rel_repeat_lst.insert(std::pair<UIEvent, RelRepeat>(code, rel_rep));

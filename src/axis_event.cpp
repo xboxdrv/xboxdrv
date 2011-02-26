@@ -246,7 +246,7 @@ RelAxisEventHandler::send(UInput& uinput, int value)
   else
     value_f = static_cast<float>(value) / static_cast<float>(m_max);
 
-  int v = static_cast<int>(m_value * value_f);
+  float v = m_value * value_f;
 
   if (v == 0)
     uinput.send_rel_repetitive(m_code, v, -1);
