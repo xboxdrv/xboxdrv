@@ -40,7 +40,7 @@ Options::Options() :
   instant_exit(false),
   no_uinput(false),
   detach_kernel_driver(),
-  timeout(25),
+  timeout(10),
   gamepad_type(GAMEPAD_UNKNOWN),
   busid(),
   devid(),
