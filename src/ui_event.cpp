@@ -160,11 +160,11 @@ int str2deviceid(const std::string& device)
   {
     return DEVICEID_MOUSE;
   }
-  else if (device == "keyboard")
+  else if (device == "keyboard" || device == "key")
   {
     return DEVICEID_KEYBOARD;
   }
-  else if (device == "joystick")
+  else if (device == "joystick" || device == "joy")
   {
     return DEVICEID_JOYSTICK;
   }
