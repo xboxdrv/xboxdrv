@@ -42,31 +42,138 @@ $ dput my-ppa ../xboxdrv_0.7.2-1~lucid1_source.changes
 Stuff to do before 0.7.2 release:
 =================================
 
-* daemon on regular xboxdrv have different controller orderings
+== Generic ==
 
-* swap controller slots via dbus
+* document new dependencies, i.e. glib and dbus
 
-* look at Joy2key for better mouse support (mouse acceleration)
+* mimic-xpad is broken, should handle wireless and wired controllers
+  different (different names) or maybe two different options
+  -> maybe get rid of them completely, have another way to handle
+     build-in configuration files
+
+* make real time priority changes optional, document them
+
+
+== Device Name ==
+
+* don't use "--name", let --device-name accept a simple string
+  -> doesn't really work, runs into in-band-signaling issues
+
+* ini parser can't handle: device-name=0="Xbox 360 Wireless Receiver",
+  fails at the first space, so the trouble isn't the second '=', but
+  just a space INIParser::get_value()
+
+* add --device-usbid TYPE.SLOT=VENDOR:PRODUCT:VERSION (to set uinput properties)
+
+
+== D-Bus ==
+
+* swap/assign controller slots via dbus
+
+
+== Other ==
+
+* give proper exit code when no controller is found
+
+* document the Dbus interface and extent it where needed
+
+* factory must create four wireless controllers for each wireless USB device
+
+* allow setting a --default-name from which all other controller names
+  are derived
+
+* sort options a bit more between global ones, slot local ones and
+  config local ones
+
+* BTN_A@joystick.1 doesn't work for a single joystick, why?
+
+* in INI files allow:
+
+  [xboxdrv]
+  ui-buttonmap = A=BTN_A,B=BTN_B,...
+
+  - in general cleanup config handling, turn almost everything into
+    proper functions and use the same functions for both cmdline and ini
+
+* improve output on which uinput devices are created (even with udev
+  there doesn't seem to be a bullet proof way to detect what gets
+  created)
+
+* add extra arguments to --on-connect and --on-disconnect (controller name, usb path, etc.)
+  * done -> document
+  * currently returns: "-1:-1" "-1:-1" "not implemented" 
+
+
+== Daemon ==
+
+* improve output in daemon mode, when --quiet is not given print the
+  number of allocated controller slots
+
+* how exactly does daemon interact with wireless pads?! 
+  -> it doesn't, only used the first gamepad or the one given by --wid
+  -> either use all, allow an option to say how many to use
+  -> launch listener threads on each port, but only 'activate' the
+     slot when the controller is connected
+
+* after every thread cleanup, to an enumeration over all USB devices,
+  find those not currently used by a Slot and recreate them, this
+  should fix resume issues, this would also fix the issue with
+  ignoring controllers when all slots are full
+
+* check how daemon reacts on suspend
+  - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
+    controller leads to LIBUSB_ERROR_OTHER
+  - errno is set to EBUSY
+  - the device handle can't be reused, device has to be reallocated
+  - integrate this with the "keep backlog of devices currently in use"
+
+* get rid of all std::cout stuff when using detached daemon, redirect
+  log output to a file, syslog or somewhere else: 
+
+  --silent:  stops event output
+  --quiet:   stops all stdout output (automatically used when --detach is given)
+  --verbose: print info level log output
+  --debug:   print debug level log output
+
+
+== Unsolved/WontFix ==
 
 * reenable USBThread, maybe add a way to cancel stuff to it if possible?
+  * or is that not needed at all and higher process priority would do the same thing?
+
+* allow multiple controllers in non-daemon mode
+  -> not a good idea, complicates stuff and duplicates code
+
+* remember controllers that couldn't be used when all slots where full
+  and use them when a slot got free -> discard, bad idea, as it
+  results in confusing behaviour
+
+
+* do modifier/filter dump when --verbose is given, make verbose
+  overall more useful
+
+* make more use of percentance values (in deadzone filter for example)
+
+* couldn't convert 'XK_Page_Up' to enum, not a member of X11Keysym
+  currenty code can't handle multple names for a single key
 
 * add a fun modifier that counts button presses and other useless stuff
 
   - count button presses (done)
   - count time a button is held down, both in min:sec and percent
   - count distance an axis travels
+  - allow access/reset via dbus
 
-* give proper exit code when no controller is found
+  * document them, ignore axis and button time for now
 
-* add FIFO/Socket or Dbus to send commands to xboxdrv (FIFO is
-  easiest, but least flexible, dbus is new and cool, but an extra
-  dependency)
+* daemon on regular xboxdrv have different controller orderings (hard
+  to avoid, as wireless controllers are only picked up when active,
+  which they always become later then the wired ones, which are active
+  by default)
 
- dbus-send --session --type=method_call \
-   --print-reply \
-   --dest=org.gnome.Rhythmbox \
-   /org/gnome/Rhythmbox/Player \
-   org.freedesktop.DBus.Introspectable.Introspect
+* look at Joy2key for better mouse support (mouse acceleration), see Dustin Moline mails
+  * timeout makes a huge difference, real MarbleMouse Trackball send around every 10msec
+  * need to deal with rounding errors to allow small movements
 
 * add --ui-buttonmap A=KEY_A:KEY_B:1000:1 
 
@@ -75,15 +182,14 @@ Stuff to do before 0.7.2 release:
    - 0: send on release
    - 1: always send when pressed
 
-  different games might require different behaviours, so it should be an user option
+  different games might require different behaviours for the
+  hold-button, so it should be an user option
 
 * add double shift buttons: L+R+start
 
 * add execv: that takes arguments in ARG0:ARG1,... style
 
 * add system: that takes arguments "ARG0 ARG1 ..." style
-
-* factory must create four wireless controllers for each wireless USB device
 
 * add match rule for wireless id
 
@@ -101,19 +207,9 @@ Stuff to do before 0.7.2 release:
    -> figure out potential matches early and save the valid slots?
       -> ugly but could work
 
-* turn ControllerSlot into ControllerSlotPtr (careful with loop in the refcount)
-
-* allow setting a --default-name from which all other controller names
-  are derived
-
 * add [controller0/config0] support for ControllerOptions
 
 * add [controller0] support for ControllerSlotOptions
-
-* sort options a bit more between global ones, slot local ones and
-  config local ones
-
-* BTN_A@joystick.1 doesn't work for a single joystick, why?
 
 * write relaxation modifier/filter
 
@@ -128,34 +224,8 @@ Stuff to do before 0.7.2 release:
 
   to create empty events on uinput
 
-Daemon
-======
-
-* improve output in daemon mode, when --quiet is not given print the
-  number of allocated controller slots
-
-* how exactly does daemon interact with wireless pads?! 
-  -> it doesn't, only used the first gamepad or the one given by --wid
-  -> either use all, allow an option to say how many to use
-  -> launch listener threads on each port, but only 'activate' the
-     slot when the controller is connected
-
-* after every thread cleanup, to an enumeration over all USB devices,
-  find those not currently used by a Slot and recreate them, this
-  should fix resume issues, this would also fix the issue with
-  ignoring controllers when all slots are full
-
-
 Other Stuff
 ===========
-
-* in INI files allow:
-
-  [xboxdrv]
-  ui-buttonmap = A=BTN_A,B=BTN_B,...
-
-  - in general cleanup config handling, turn almost everything into
-    proper functions and use the same functions for both cmdline and ini
 
 * --ui-axismap LT=KEY_A:KEY_B:1 
 
@@ -165,57 +235,16 @@ cause some trouble with automatic key repeat for some reason. Note
 that you must not combine this with --trigger-as-zaxis as that will
 disable LT and RT
 
-* check how daemon reacts on suspend
-  - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
-    controller leads to LIBUSB_ERROR_OTHER
-  - errno is set to EBUSY
-  - the device handle can't be reused, device has to be reallocated
-  - integrate this with the "keep backlog of devices currently in use"
-
-* remember controllers that couldn't be used when all slots where full
-  and use them when a slot got free
-
-* improve output on which uinput devices are created (even with udev
-  there doesn't seem to be a bullet proof way to detect what gets
-  created)
-
-* do modifier/filter dump when --verbose is given, make verbose
-  overall more useful
-
 * remove uinput.send_rel_repetitive() replace with just EventHandler::update()
-
-* add --device-usbid TYPE.SLOT=VENDOR:PRODUCT:VERSION
-
-* allow multiple controllers in non-daemon mode
-
-* make more use of percentance values (in deadzone filter for example)
-
-* add extra arguments to --on-connect and --on-disconnect (controller name, usb path, etc.)
+  -> might not be needed, send_rel_repetitive() is kind of convenient  
 
 * boost::lexical_cast<> error messages are useless, make some better ones
-
-* couldn't convert 'XK_Page_Up' to enum, not a member of X11Keysym
-  currenty code can't handle multple names for a single key
 
 * --match again sysname could make sense, seems somewhat constant:
   "5-2" Xbox1 controller results in "5-2.1", due to being really two
   devices, would help to now how exactly those are formed
 
-* --four-way-restrictor for the dpad?
-
-  - keep whatever direction is pressed first, don't allow walking over diagonals?
-  - always keep last main direction until another main direction got pressed?
-  - --disable-dpad-diagonals ur,dl,dl
-
-  * extend usbid match rule to bcd device
-
-* get rid of all std::cout stuff when using detached daemon, redirect
-  log output to a file somewhere else: 
-
-  --silent:  stops event output
-  --quiet:   stops all stdout output (automatically used when --detach is given)
-  --verbose: print info level log output
-  --debug:   print debug level log output
+* extend usbid match rule to bcd device
 
 
 Stuff to do before 0.7.3 release:

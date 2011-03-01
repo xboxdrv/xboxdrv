@@ -3,6 +3,12 @@ xboxdrv 0.7.2 - (??/Feb/2011)
 
 * added statistic modifier that counts how often buttons are pressed
 * added support for multiple wireless controller in daemon
+* added DBus support to the daemon
+* improved INIParser, can now handle KEY_#NUM style names without quotes
+* added lower default timeout to 10msec, for more responsive mouse emulation
+* added better handling of rounding errors when sending REL_
+* removed obsolete xboxdrv-daemon script
+* added dpad-restrictor for X, Y or fourway restriction on the dpad
 
 
 xboxdrv 0.7.1 - (30/Jan/2011)
