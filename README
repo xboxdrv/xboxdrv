@@ -39,7 +39,8 @@ Required libraries and tools:
  * uinput (userspace input kernel module)
  * git (only to download the development version)
  * X11
- * python-dbus (for xboxdrv-daemon.py)
+ * libdbus
+ * glib
 
 Once everything installed, you can compile by typing:
 
@@ -58,7 +59,7 @@ On Ubuntu 10.10 you can install all the required libraries via:
      libx11-dev \
      libudev-dev \
      x11proto-core-dev \
-     python-dbus
+     libdbus-glib-1-dev
 
 To load the uinput kernel module automatically on boot add it
 /etc/modules, to load it manually type:
