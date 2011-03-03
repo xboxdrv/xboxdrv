@@ -127,7 +127,7 @@ Xboxdrv::run_list_controller()
   }
 
   if (id == 0)
-    std::cout << "\nNo controller detected" << std::endl; 
+    std::cout << "\nno controller detected" << std::endl; 
 
   libusb_free_device_list(list, 1 /* unref_devices */);
 }
@@ -297,9 +297,7 @@ Xboxdrv::find_controller(libusb_device** dev,
     {
       if (!find_controller_by_path(opts.busid, opts.devid, dev))
       {
-        std::ostringstream out;
-        out << "couldn't find device " << opts.busid << ":" << opts.devid;
-        throw std::runtime_error(out.str());
+        raise_exception(std::runtime_error, "couldn't find device " << opts.busid << ":" << opts.devid);
       }
       else
       {
@@ -324,10 +322,8 @@ Xboxdrv::find_controller(libusb_device** dev,
     {
       if (!find_controller_by_id(opts.controller_id, opts.vendor_id, opts.product_id, dev))
       {
-        std::ostringstream out;
-        out << "Error: couldn't find device with " 
-            << (boost::format("%04x:%04x") % opts.vendor_id % opts.product_id);
-        throw std::runtime_error(out.str());
+        raise_exception(std::runtime_error, "couldn't find device with " 
+                        << (boost::format("%04x:%04x") % opts.vendor_id % opts.product_id));
       }
       else
       {
@@ -406,7 +402,7 @@ Xboxdrv::run_main(const Options& opts)
 
     if (!dev)
     {
-      throw std::runtime_error("No suitable USB device found, abort");
+      throw std::runtime_error("no suitable USB device found, abort");
     }
     else 
     {
@@ -617,9 +613,7 @@ Xboxdrv::run_daemon(const Options& opts)
 
     if (pid < 0) 
     { // fork error
-      std::ostringstream out;
-      out << "Xboxdrv::run_daemon(): failed to fork(): " << strerror(errno);
-      throw std::runtime_error(out.str());
+      raise_exception(std::runtime_error, "failed to fork(): " << strerror(errno));
     }
     else if (pid > 0) 
     { // parent, just exit
@@ -631,17 +625,13 @@ Xboxdrv::run_daemon(const Options& opts)
 
       if (sid == static_cast<pid_t>(-1))
       {
-        std::ostringstream out;
-        out << "Xboxdrv::run_daemon(): failed to setsid(): " << strerror(errno);
-        throw std::runtime_error(out.str());
+        raise_exception(std::runtime_error, "failed to setsid(): " << strerror(errno));
       }
       else
       {
         if (chdir("/") != 0)
         {
-          std::ostringstream out;
-          out << "Xboxdrv::run_daemon(): failed to chdir(\"/\"): " << strerror(errno);
-          throw std::runtime_error(out.str());
+          raise_exception(std::runtime_error, "failed to chdir(\"/\"): " << strerror(errno));
         }
         else
         {
