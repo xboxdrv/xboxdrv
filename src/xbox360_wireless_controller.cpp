@@ -118,8 +118,6 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, int timeout)
   }
   else
   {
-    //std::cout << raw2str(data, len) << std::endl;
-
     if (len == 0)
     {
       // ignore

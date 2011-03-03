@@ -124,7 +124,6 @@ Playstation3USBController::read(XboxGenericMsg& msg, int timeout)
       str << len << ": ";
       for(int i = 0; i < len; ++i)
       {
-        //std::cout << boost::format("%d:%02x ") % i % static_cast<int>(data[i]);
         str << boost::format("%02x ") % static_cast<int>(data[i]);
       }
       str << std::endl;

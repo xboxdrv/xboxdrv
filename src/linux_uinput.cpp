@@ -234,8 +234,6 @@ LinuxUinput::finish()
   if (ff_bit)
     user_dev.ff_effects_max = ff_handler->get_max_effects();
 
-  //std::cout << "Finalizing uinput: '" << user_dev.name << "'" << std::endl;
-
   {
     int write_ret = write(fd, &user_dev, sizeof(user_dev));
     if (write_ret < 0)
@@ -320,7 +318,6 @@ LinuxUinput::update(int msec_delta)
     }
     else if (ret == sizeof(ev))
     { // successful read
-      //std::cout << "type: " << ev.type << " code: " << ev.code << " value: " << ev.value << std::endl;
 
       switch(ev.type)
       {
