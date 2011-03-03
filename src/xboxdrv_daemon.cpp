@@ -142,11 +142,6 @@ XboxdrvDaemon::cleanup_threads()
 void
 XboxdrvDaemon::process_match(const Options& opts, struct udev_device* device)
 {
-  if (g_logger.get_log_level() >= Logger::kDebug)
-  {
-    print_info(device);
-  }
-
   uint16_t vendor;
   uint16_t product;
 
@@ -446,6 +441,11 @@ XboxdrvDaemon::on_udev_data(GIOChannel* channel, GIOCondition condition)
     else
     {
       const char* action = udev_device_get_action(device);
+
+      if (g_logger.get_log_level() >= Logger::kDebug)
+      {
+        print_info(device);
+      }
 
       if (action && strcmp(action, "add") == 0)
       {
