@@ -52,7 +52,7 @@ public:
 
   void run(const Options& opts);
 
-  void status();
+  std::string status();
 
 private:
   void create_pid_file(const Options& opts);

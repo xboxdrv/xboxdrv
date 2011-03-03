@@ -50,8 +50,9 @@ struct _XboxdrvGControllerClass
 GType xboxdrv_g_controller_get_type();
 XboxdrvGController* xboxdrv_g_controller_new(ControllerSlot* controller);
 
-void xboxdrv_g_controller_set_led(XboxdrvGController* self, int status);
-void xboxdrv_g_controller_set_rumble(XboxdrvGController* self, int strong, int weak);
+gboolean xboxdrv_g_controller_set_config(XboxdrvGController* self, int config_num, GError** error);
+gboolean xboxdrv_g_controller_set_led(XboxdrvGController* self, int status, GError** error);
+gboolean xboxdrv_g_controller_set_rumble(XboxdrvGController* self, int strong, int weak, GError** error);
 
 #endif
 

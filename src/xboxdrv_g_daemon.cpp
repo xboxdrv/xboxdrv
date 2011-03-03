@@ -54,10 +54,11 @@ xboxdrv_g_daemon_new(XboxdrvDaemon* daemon)
   return self;
 }
 
-void
-xboxdrv_g_daemon_status(XboxdrvGDaemon* self)
+gboolean
+xboxdrv_g_daemon_status(XboxdrvGDaemon* self, gchar** ret, GError** error)
 {
-  self->daemon->status();
+  *ret = g_strdup(self->daemon->status().c_str());
+  return TRUE;
 }
 
 /* EOF */

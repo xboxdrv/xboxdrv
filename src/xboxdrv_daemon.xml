@@ -4,6 +4,7 @@
   <interface name="org.seul.Xboxdrv.Daemon">
     <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="xboxdrv_g_daemon"/>
     <method name="Status">
+      <arg type="s" direction="out" />
     </method>
     <!--
     <method name="SetLed">
@@ -17,9 +18,6 @@
 
     reset_leds
     shutdown, quit, exit
-    set_config SLOT CFG
-    set_led SLOT STATUS
-    set_rumble SLOT STRONG WEAK 
     disconnect SLOT
     rumble_enable SLOT
     rumble_disable SLOT

@@ -46,6 +46,7 @@ public:
   void send(const XboxGenericMsg& msg, int msec_delta);
   void set_rumble(uint8_t lhs, uint8_t rhs);
   void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
+  void set_config(int num);
 
 private:
   UInputMessageProcessor(const UInputMessageProcessor&);

@@ -11,15 +11,9 @@
       <arg name="strong" type="i" direction="in" />
       <arg name="weak"   type="i" direction="in" />
     </method>
-    <!--
-    shutdown, quit, exit
-    set_config SLOT CFG
-    set_led SLOT STATUS
-    set_rumble SLOT STRONG WEAK 
-    disconnect SLOT
-    rumble_enable SLOT
-    rumble_disable SLOT
-    set_rumble_gain SLOT GAIN
-    -->
+
+    <method name="SetConfig">
+      <arg name="config" type="i" direction="in" />
+    </method>
   </interface>
 </node>

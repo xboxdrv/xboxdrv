@@ -80,6 +80,7 @@ public:
   void set_compatible_slots(const std::vector<ControllerSlotPtr>& slots);
 
   void set_message_proc(std::auto_ptr<MessageProcessor> processor);
+  MessageProcessor* get_message_proc() const { return m_processor.get(); }
 
   ControllerPtr get_controller() const { return m_controller; }
 

@@ -49,7 +49,8 @@ struct _XboxdrvGDaemonClass
 
 GType xboxdrv_g_daemon_get_type();
 XboxdrvGDaemon* xboxdrv_g_daemon_new(XboxdrvDaemon* daemon);
-void xboxdrv_g_daemon_status(XboxdrvGDaemon *self);
+
+gboolean xboxdrv_g_daemon_status(XboxdrvGDaemon* self, gchar** ret, GError** error);
 
 #endif
 

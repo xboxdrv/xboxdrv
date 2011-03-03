@@ -20,7 +20,6 @@
 
 #include <boost/format.hpp>
 #include <fstream>
-#include <iostream>
 #include <dbus/dbus-glib.h>
 #include <dbus/dbus-glib-lowlevel.h>
 #include <dbus/dbus.h>
@@ -871,33 +870,37 @@ XboxdrvDaemon::wakeup()
   log_info("idle_add called");
 }
 
-void
+std::string
 XboxdrvDaemon::status()
 {
-  std::cout << "slots: " << m_controller_slots.size() << std::endl;
-  std::cout << "inactive controller: " << m_inactive_threads.size() << std::endl;
-  std::cout << "slots: " << std::endl;
+  std::ostringstream out;
+
+  out << "slots: " << m_controller_slots.size() << std::endl;
+  out << "inactive controller: " << m_inactive_threads.size() << std::endl;
+  out << "slots: " << std::endl;
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
-    std::cout << "slot: ";
+    out << "slot: ";
 
     if ((*i)->is_connected())
     {
-      std::cout << (*i)->get_thread()->get_name() << std::endl;
+      out << (*i)->get_thread()->get_name() << std::endl;
     }
     else
     {
-      std::cout << "<inactive>" << std::endl;
+      out << "<inactive>" << std::endl;
     }
   }  
-  std::cout << std::endl;
+  out << std::endl;
 
-  std::cout << "inactive: " << std::endl;
+  out << "inactive: " << std::endl;
   for(Threads::iterator i = m_inactive_threads.begin(); i != m_inactive_threads.end(); ++i)
   {
-    std::cout << "controller: " << (*i)->get_name() << std::endl;
+    out << "controller: " << (*i)->get_name() << std::endl;
   }
-  std::cout << std::endl;
+  out << std::endl;
+
+  return out.str();
 }
 
 /* EOF */

@@ -103,6 +103,12 @@ UInputMessageProcessor::set_rumble(uint8_t lhs, uint8_t rhs)
 }
 
 void
+UInputMessageProcessor::set_config(int num)
+{
+  m_config->set_current_config(num);
+}
+
+void
 UInputMessageProcessor::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
 {
   m_config->set_ff_callback(callback);
