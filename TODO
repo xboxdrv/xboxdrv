@@ -39,12 +39,16 @@ $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv_
 $ dput my-ppa ../xboxdrv_0.7.2-1~lucid1_source.changes
 
 
-Stuff to do before 0.7.2 release:
+Stuff to do before 0.8.0 release:
 =================================
 
 == Generic ==
 
-* document new dependencies, i.e. glib and dbus
+* use -m for --modifier not for --mouse
+
+* document that Xbox360 wireless controller shuts down at 15min
+
+* added glib and dbus dependencies to .deb control file
 
 * mimic-xpad is broken, should handle wireless and wired controllers
   different (different names) or maybe two different options
@@ -53,11 +57,17 @@ Stuff to do before 0.7.2 release:
 
 * make real time priority changes optional, document them
 
+* reenable USBThread, maybe add a way to cancel stuff to it if possible?
+  -> or is that not needed at all and higher process priority would do the same thing?
+  -> document nice use somewhere, is it possible to do real time priority from command line?
 
 == Device Name ==
 
 * don't use "--name", let --device-name accept a simple string
   -> doesn't really work, runs into in-band-signaling issues
+  -> use:
+      --device-name STRING
+      --device-names "0=STRING,1=STRING2"
 
 * ini parser can't handle: device-name=0="Xbox 360 Wireless Receiver",
   fails at the first space, so the trouble isn't the second '=', but
@@ -65,29 +75,29 @@ Stuff to do before 0.7.2 release:
 
 * add --device-usbid TYPE.SLOT=VENDOR:PRODUCT:VERSION (to set uinput properties)
 
+* allow setting a --default-name from which all other controller names
+  are derived
+
 
 == D-Bus ==
 
 * swap/assign controller slots via dbus
+
+* document the Dbus interface and extent it where needed
 
 
 == Other ==
 
 * give proper exit code when no controller is found
 
-* document the Dbus interface and extent it where needed
-
-* factory must create four wireless controllers for each wireless USB device
-
-* allow setting a --default-name from which all other controller names
-  are derived
+* factory must create four wireless controllers for each wireless USB device (done -> verify)
 
 * sort options a bit more between global ones, slot local ones and
   config local ones
 
-* BTN_A@joystick.1 doesn't work for a single joystick, why?
+* BTN_A@joystick.1 doesn't work for a single joystick, why? (joystick isn't id=0, why?)
 
-* in INI files allow:
+* in INI files should allow:
 
   [xboxdrv]
   ui-buttonmap = A=BTN_A,B=BTN_B,...
@@ -98,6 +108,10 @@ Stuff to do before 0.7.2 release:
 * improve output on which uinput devices are created (even with udev
   there doesn't seem to be a bullet proof way to detect what gets
   created)
+
+  -> insert "guess code" before the uinput create call and just pretent thats bullet proof
+  -> figure out how exactly device names are choosen (first free or
+     are there other means? need to take special axes/buttons into account)
 
 * add extra arguments to --on-connect and --on-disconnect (controller name, usb path, etc.)
   * done -> document
@@ -115,10 +129,12 @@ Stuff to do before 0.7.2 release:
   -> launch listener threads on each port, but only 'activate' the
      slot when the controller is connected
 
-* after every thread cleanup, to an enumeration over all USB devices,
+* after every thread cleanup, do an enumeration over all USB devices,
   find those not currently used by a Slot and recreate them, this
   should fix resume issues, this would also fix the issue with
   ignoring controllers when all slots are full
+
+  -> bad idea, as it would let unused controllers slip into the free slots
 
 * check how daemon reacts on suspend
   - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
@@ -137,9 +153,6 @@ Stuff to do before 0.7.2 release:
 
 
 == Unsolved/WontFix ==
-
-* reenable USBThread, maybe add a way to cancel stuff to it if possible?
-  * or is that not needed at all and higher process priority would do the same thing?
 
 * allow multiple controllers in non-daemon mode
   -> not a good idea, complicates stuff and duplicates code
