@@ -142,6 +142,7 @@ public:
 
   void set_led(const std::string& value);
   void set_device_name(const std::string& name);
+  void set_device_usbid(const std::string& name);
   void set_mouse();
   void set_guitar();
   void set_trigger_as_button();

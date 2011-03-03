@@ -45,6 +45,7 @@ public:
 
 private:
   void set_device_name(const std::string& name, const std::string& value);
+  void set_device_usbid(const std::string& name, const std::string& value);
 
   void set_ui_buttonmap(const std::string& name, const std::string& value);
   void set_ui_axismap(const std::string& name, const std::string& value);

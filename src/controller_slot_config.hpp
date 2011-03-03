@@ -53,6 +53,7 @@ public:
   void next_config();
   void prev_config();
   int  config_count() const;
+  void set_current_config(int num);
   int get_current_config() const { return m_current_config; }
 
   ControllerConfigPtr get_config(int i) const;

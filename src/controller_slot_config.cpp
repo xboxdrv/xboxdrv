@@ -20,6 +20,7 @@
 
 #include <boost/bind.hpp>
 
+#include "raise_exception.hpp"
 #include "uinput.hpp"
 
 #include "modifier/dpad_rotation_modifier.hpp"
@@ -272,6 +273,19 @@ ControllerSlotConfig::get_config(int i) const
   assert(i < static_cast<int>(m_config.size()));
 
   return m_config[i];
+}
+
+void
+ControllerSlotConfig::set_current_config(int num)
+{
+  if (num < 0 || num >= static_cast<int>(m_config.size()))
+  {  
+    raise_exception(std::runtime_error, "argument out of range");
+  }
+  else
+  {
+    m_current_config = num;
+  }
 }
 
 ControllerConfigPtr

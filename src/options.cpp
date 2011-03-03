@@ -189,6 +189,12 @@ Options::set_device_name(const std::string& name)
 }
 
 void
+Options::set_device_usbid(const std::string& name)
+{
+  assert(!"not implemented");
+}
+
+void
 Options::set_mouse()
 {
   get_controller_options().uinput.mouse();

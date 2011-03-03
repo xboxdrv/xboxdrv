@@ -63,8 +63,10 @@ enum {
   OPTION_MODIFIER,
   OPTION_BUTTONMAP,
   OPTION_AXISMAP,
-  OPTION_NAME,
   OPTION_DEVICE_NAME,
+  OPTION_DEVICE_NAMES,
+  OPTION_DEVICE_USBID,
+  OPTION_DEVICE_USBIDS,
   OPTION_NEXT_CONFIG,
   OPTION_NEXT_CONTROLLER,
   OPTION_CONFIG_SLOT,
@@ -271,8 +273,10 @@ CommandLineParser::init_argp()
     .add_option(OPTION_NO_UINPUT,          0, "no-uinput",   "", "do not try to start uinput event dispatching")
     .add_option(OPTION_NO_EXTRA_DEVICES,   0, "no-extra-devices",  "", "Do not create separate virtual keyboard and mouse devices, just use a single virtual device")
     .add_option(OPTION_NO_EXTRA_EVENTS,    0, "no-extra-events",  "", "Do not create dummy events to facilitate device type detection")
-    .add_option(OPTION_NAME,               0, "name",            "NAME", "Changes the name prefix used for devices in the current slot")
-    .add_option(OPTION_DEVICE_NAME,        0, "device-name",     "DEVID=NAME", "Changes the descriptive name the given device")
+    .add_option(OPTION_DEVICE_NAME,        0, "device-name",     "NAME", "Changes the name prefix used for devices in the current slot")
+    .add_option(OPTION_DEVICE_NAMES,       0, "device-names",    "DEVID=NAME,...", "Changes the descriptive name the given devices")
+    .add_option(OPTION_DEVICE_USBID,       0, "device-usbid",     "VENDOR:PRODUCT:VERSION", "Changes the USB Id used for devices in the current slot")
+    .add_option(OPTION_DEVICE_USBIDS,      0, "device-usbids",    "DEVID=VENDOR:PRODUCT:VERSION,...", "Changes the USB Id for the given devices")
     .add_option(OPTION_UI_CLEAR,           0, "ui-clear",         "",     "Removes all existing uinput bindings")
     .add_option(OPTION_UI_BUTTONMAP,       0, "ui-buttonmap",     "MAP",  "Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)")
     .add_option(OPTION_UI_AXISMAP,         0, "ui-axismap",       "MAP",  "Changes the uinput events send when moving a axis (example: X1=ABS_X2)")
@@ -349,6 +353,7 @@ CommandLineParser::init_ini(Options* opts)
 
     // uinput stuff
     ("device-name",       boost::bind(&Options::set_device_name, boost::ref(opts), _1))
+    ("device-usbid",      boost::bind(&Options::set_device_usbid, boost::ref(opts), _1))
     ("mouse",             boost::bind(&Options::set_mouse, boost::ref(opts)),             boost::function<void ()>())
     ("guitar",            boost::bind(&Options::set_guitar, boost::ref(opts)),            boost::function<void ()>())
     ("trigger-as-button", boost::bind(&Options::set_trigger_as_button, boost::ref(opts)), boost::function<void ()>())
@@ -389,6 +394,8 @@ CommandLineParser::init_ini(Options* opts)
   m_ini.section("relative-axis",   boost::bind(&CommandLineParser::set_relative_axis, this, _1, _2));
   m_ini.section("calibration",   boost::bind(&CommandLineParser::set_calibration, this, _1, _2));
   m_ini.section("axis-sensitivity",   boost::bind(&CommandLineParser::set_axis_sensitivity, this, _1, _2));
+  m_ini.section("device-name", boost::bind(&CommandLineParser::set_device_name, this, _1, _2));
+  m_ini.section("device-usbid", boost::bind(&CommandLineParser::set_device_usbid, this, _1, _2));
 
   for(int controller = 0; controller <= 9; ++controller)
   {
@@ -644,13 +651,21 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
       case OPTION_AXISMAP:
         process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_axismap, this, _1, _2));
         break;
-                    
-      case OPTION_DEVICE_NAME:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_device_name, this, _1, _2));
+
+      case OPTION_DEVICE_USBID:
+        opts.set_device_usbid(opt.argument);
         break;
 
-      case OPTION_NAME:
+      case OPTION_DEVICE_USBIDS:
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_device_usbid, this, _1, _2));
+        break;
+                    
+      case OPTION_DEVICE_NAME:
         opts.set_device_name(opt.argument);
+        break;
+
+      case OPTION_DEVICE_NAMES:
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_device_name, this, _1, _2));
         break;
 
       case OPTION_NEXT_CONFIG:
@@ -965,6 +980,12 @@ void
 CommandLineParser::set_modifier(const std::string& name, const std::string& value)
 {
   m_options->get_controller_options().modifier.push_back(ModifierPtr(Modifier::from_string(name, value)));
+}
+
+void
+CommandLineParser::set_device_usbid(const std::string& name, const std::string& value)
+{
+  assert(!"not implemented");
 }
 
 void
