@@ -47,6 +47,7 @@ public:
   void set_rumble(uint8_t lhs, uint8_t rhs);
   void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
   void set_config(int num);
+  ControllerSlotConfigPtr get_config() const { return m_config; }
 
 private:
   UInputMessageProcessor(const UInputMessageProcessor&);

@@ -39,16 +39,14 @@ $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv_
 $ dput my-ppa ../xboxdrv_0.7.2-1~lucid1_source.changes
 
 
-Stuff to do before 0.8.0 release:
+Stuff to do before 0.7.2 release:
 =================================
 
 == Generic ==
 
-* use -m for --modifier not for --mouse
-
 * document that Xbox360 wireless controller shuts down at 15min
 
-* added glib and dbus dependencies to .deb control file
+* add glib and dbus dependencies to .deb control file
 
 * mimic-xpad is broken, should handle wireless and wired controllers
   different (different names) or maybe two different options
@@ -63,47 +61,17 @@ Stuff to do before 0.8.0 release:
 
 == Device Name ==
 
-* don't use "--name", let --device-name accept a simple string
-  -> doesn't really work, runs into in-band-signaling issues
-  -> use:
-      --device-name STRING
-      --device-names "0=STRING,1=STRING2"
-
-* ini parser can't handle: device-name=0="Xbox 360 Wireless Receiver",
-  fails at the first space, so the trouble isn't the second '=', but
-  just a space INIParser::get_value()
-
-* add --device-usbid TYPE.SLOT=VENDOR:PRODUCT:VERSION (to set uinput properties)
-
-* allow setting a --default-name from which all other controller names
-  are derived
-
-
-== D-Bus ==
-
-* swap/assign controller slots via dbus
-
-* document the Dbus interface and extent it where needed
+* implement Options::set_device_usbid() and CommandLineParser::set_device_usbid()
 
 
 == Other ==
 
 * give proper exit code when no controller is found
 
-* factory must create four wireless controllers for each wireless USB device (done -> verify)
-
 * sort options a bit more between global ones, slot local ones and
   config local ones
 
 * BTN_A@joystick.1 doesn't work for a single joystick, why? (joystick isn't id=0, why?)
-
-* in INI files should allow:
-
-  [xboxdrv]
-  ui-buttonmap = A=BTN_A,B=BTN_B,...
-
-  - in general cleanup config handling, turn almost everything into
-    proper functions and use the same functions for both cmdline and ini
 
 * improve output on which uinput devices are created (even with udev
   there doesn't seem to be a bullet proof way to detect what gets
@@ -123,19 +91,6 @@ Stuff to do before 0.8.0 release:
 * improve output in daemon mode, when --quiet is not given print the
   number of allocated controller slots
 
-* how exactly does daemon interact with wireless pads?! 
-  -> it doesn't, only used the first gamepad or the one given by --wid
-  -> either use all, allow an option to say how many to use
-  -> launch listener threads on each port, but only 'activate' the
-     slot when the controller is connected
-
-* after every thread cleanup, do an enumeration over all USB devices,
-  find those not currently used by a Slot and recreate them, this
-  should fix resume issues, this would also fix the issue with
-  ignoring controllers when all slots are full
-
-  -> bad idea, as it would let unused controllers slip into the free slots
-
 * check how daemon reacts on suspend
   - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
     controller leads to LIBUSB_ERROR_OTHER
@@ -154,6 +109,14 @@ Stuff to do before 0.8.0 release:
 
 == Unsolved/WontFix ==
 
+* after every thread cleanup, do an enumeration over all USB devices,
+  find those not currently used by a Slot and recreate them, this
+  should fix resume issues, this would also fix the issue with
+  ignoring controllers when all slots are full
+
+  -> bad idea, as it would let unused controllers slip into the free
+     slots, could lead to unexpected behaviour
+
 * allow multiple controllers in non-daemon mode
   -> not a good idea, complicates stuff and duplicates code
 
@@ -162,6 +125,28 @@ Stuff to do before 0.8.0 release:
   results in confusing behaviour
 
 
+== D-Bus ==
+
+* interface for next release:
+
+  Daemon/GetControllerSlotCount -> INT // do we need those or can
+  Daemon/GetControllerCount -> INT     // directories be browsed?
+
+* in INI files should allow:
+
+  [xboxdrv]
+  ui-buttonmap = A=BTN_A,B=BTN_B,...
+
+  - in general cleanup config handling, turn almost everything into
+    proper functions and use the same functions for both cmdline and ini
+
+* allow setting a --default-name from which all other controller names
+  are derived 
+   -> already there in the form of auto.auto? 
+     -> No, as those don't derive the name, but set a fixed one
+
+* allow swap/assign of controller to slots via dbus
+
 * do modifier/filter dump when --verbose is given, make verbose
   overall more useful
 

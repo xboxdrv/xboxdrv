@@ -2192,6 +2192,54 @@ $ modprobe joydev]]></programlisting>
   </refsect1>
 
   <refsect1>
+    <title>Xboxdrv Daemon Dbus Interface</title>
+    <para>
+      When Xboxdrv is run as daemon it will export some API functions
+      via D-Bus, thus allowing to make configuration changes at
+      runtime. The D-Bus interface can be accessed either by the
+      numerous language bindings provided or via the command line tool
+      <command>dbus-send</command>:
+    </para>
+    <para>
+      Introspection is provided via the usual means:
+    </para>
+    <programlisting><![CDATA[dbus-send --session --type=method_call --print-reply \
+  --dest=org.seul.Xboxdrv /org/seul/Xboxdrv org.freedesktop.DBus.Introspectable.Introspect
+
+dbus-send --session --type=method_call --print-reply \
+  --dest=org.seul.Xboxdrv /org/seul/Xboxdrv/ControllerSlots/0 org.freedesktop.DBus.Introspectable.Introspect
+
+dbus-send --session --type=method_call --print-reply \
+  --dest=org.seul.Xboxdrv /org/seul/Xboxdrv/Daemon org.freedesktop.DBus.Introspectable.Introspect]]></programlisting>
+    
+    <para>
+      Status information on available slots, configuration and active controllers can be obtained via:
+    </para>
+    <programlisting><![CDATA[dbus-send \
+  --session --type=method_call --print-reply \
+  --dest=org.seul.Xboxdrv /org/seul/Xboxdrv/Daemon  org.seul.Xboxdrv.Daemon.Status]]></programlisting>
+
+    <para>
+      Setting the LED on controller 0 can be done via:
+    </para>
+    <programlisting><![CDATA[dbus-send --session --type=method_call  --print-reply \
+  --dest=org.seul.Xboxdrv  /org/seul/Xboxdrv/ControllerSlots/0  org.seul.Xboxdrv.Controller.SetLed int32:4]]></programlisting>
+
+    <para>
+      Setting the rumble motors on controller 0 can be done via:
+    </para>
+    <programlisting><![CDATA[dbus-send --session --type=method_call  --print-reply \
+  --dest=org.seul.Xboxdrv  /org/seul/Xboxdrv/ControllerSlots/0  org.seul.Xboxdrv.Controller.SetRumble int32:255 int32:255]]></programlisting>
+
+    <para>
+      Setting a specific controller slot configuration, just
+      as <option>--toggle BTN</option> allows, can be done with:
+    </para>
+    <programlisting><![CDATA[dbus-send --session --type=method_call  --print-reply \
+  --dest=org.seul.Xboxdrv  /org/seul/Xboxdrv/ControllerSlots/0  org.seul.Xboxdrv.Controller.SetConfig int32:2]]></programlisting>
+  </refsect1>
+
+  <refsect1>
     <title>Testing</title>
     <para>
       Knowing how to test a xboxdrv configuration is absolutely crucial in
@@ -2302,6 +2350,12 @@ $ modprobe joydev]]></programlisting>
 
   <refsect1>
     <title>Examples</title>
+    <para>
+      The configurations below are just a few random examples, further
+      examples can be found in the <filename>examples/</filename>
+      directory of the xboxdrv source tree or
+      in <filename>/usr/share/doc/xboxdrv/examples/</filename>.
+    </para>
 
     <refsect2>
       <title>Turning triggers into buttons</title>

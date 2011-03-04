@@ -875,30 +875,43 @@ XboxdrvDaemon::status()
 {
   std::ostringstream out;
 
-  out << "slots: " << m_controller_slots.size() << std::endl;
-  out << "inactive controller: " << m_inactive_threads.size() << std::endl;
-  out << "slots: " << std::endl;
+  out << boost::format("SLOT  STATUS  CONFIG  USBID  USBPATH  NAME\n");
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
-    out << "slot: ";
-
-    if ((*i)->is_connected())
+    if ((*i)->get_thread())
     {
-      out << (*i)->get_thread()->get_name() << std::endl;
+      int config_count   = -1;
+      int current_config = -1;
+
+      if (UInputMessageProcessor* msg_proc
+          = dynamic_cast<UInputMessageProcessor*>((*i)->get_thread()->get_message_proc()))
+      {
+        current_config = msg_proc->get_config()->get_current_config();
+        config_count   = msg_proc->get_config()->config_count();
+      }
+
+      out << boost::format("%4d  %6s  %3d/%-2d  %5s  %7s  %s\n")
+        % (i - m_controller_slots.begin())
+        % "  ok  "
+        % (current_config+1) % config_count
+        % (*i)->get_thread()->get_usbid()
+        % (*i)->get_thread()->get_usbpath()
+        % (*i)->get_thread()->get_name();
     }
     else
     {
-      out << "<inactive>" << std::endl;
+      out << boost::format("%4d   empty\n")
+        % (i - m_controller_slots.begin());
     }
-  }  
-  out << std::endl;
+  }
 
-  out << "inactive: " << std::endl;
   for(Threads::iterator i = m_inactive_threads.begin(); i != m_inactive_threads.end(); ++i)
   {
-    out << "controller: " << (*i)->get_name() << std::endl;
+    out << boost::format("   -                  %5s  %7s  %s\n")
+      % (*i)->get_usbid()
+      % (*i)->get_usbpath()
+      % (*i)->get_name();
   }
-  out << std::endl;
 
   return out.str();
 }

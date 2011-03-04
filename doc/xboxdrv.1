@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 2010-05-05 0.7.1 "User Commands"
+.TH "xboxdrv " 1 2010-05-05 0.7.2 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -651,8 +651,8 @@ a full list of possible modifier.
 Specify the number of miliseconds that xboxdrv will wait
 for events from the controller before moving on and
 processing things like auto-fire or relative-axis.
-Default value is 25, smaller values will give you a
-higher resoultion auto fire, but will waste some more
+Default value is 10, smaller values will give you a
+higher resoultion auto fire and relative event movement, but will waste some more
 CPU.
 .TP 
 \*(T<\fB\-b, \-\-buttonmap BUTTON=BUTTON,...\fR\*(T>
@@ -754,7 +754,7 @@ their range is different.
 Just like with \*(T<\fB\-\-ui\-axismap\fR\*(T> you can add axis filter to each axis.
 .SS "MODIFIER PRESET CONFIGURATION OPTIONS"
 The options in this sections are sortcuts
-for \*(T<\fB\-\-modifier\fR\*(T>.
+for \*(T<\fB\-\-modifier\fR\*(T> options.
 Unlike \*(T<\fB\-\-modifier\fR\*(T> they are not order
 depended, but have a predefined order that is used no matter
 the order in which the options are given.
@@ -1352,6 +1352,16 @@ other, so order is important.
 \*(T<\fBdpad\-rotate\fR\*(T>=\fIDEGREE\fR
 See \*(T<\fB\-\-dpad\-rotation\fR\*(T>.
 .TP 
+\*(T<\fBdpad\-restrictor\fR\*(T>=\fIRESTRICTON\fR
+Restricts the dpad movement, values
+for \fIRESTRICTON\fR can be:
+
+x-axis: only allow movement in the X axis
+
+y-axis: only allow movement in the Y axis
+
+fourway: allow movement in X and Y axis, but filter out diagonals
+.TP 
 \*(T<\fB4wayrest\fR\*(T>, \*(T<\fBfour\-way\-restrictor\fR\*(T>=\fIXAXIS\fR:\fIYAXIS\fR
 See \*(T<\fB\-\-four\-way\-restrictor\fR\*(T>.
 .TP 
@@ -1503,6 +1513,55 @@ it you can write its pid via the \*(T<\fB\-\-pid\-file\fR\*(T>:
 .nf
 \*(T<$ sudo xboxdrv \-\-daemon \-\-detach \-\-pid\-file /var/run/xboxdrv.pid\*(T>
 .fi
+.SH "XBOXDRV DAEMON DBUS INTERFACE"
+When Xboxdrv is run as daemon it will export some API functions
+via D-Bus, thus allowing to make configuration changes at
+runtime. The D-Bus interface can be accessed either by the
+numerous language bindings provided or via the command line tool
+\fBdbus-send\fR:
+.PP
+Introspection is provided via the usual means:
+.PP
+.nf
+\*(T<dbus\-send \-\-session \-\-type=method_call \-\-print\-reply \e
+  \-\-dest=org.seul.Xboxdrv /org/seul/Xboxdrv org.freedesktop.DBus.Introspectable.Introspect
+
+dbus\-send \-\-session \-\-type=method_call \-\-print\-reply \e
+  \-\-dest=org.seul.Xboxdrv /org/seul/Xboxdrv/ControllerSlots/0 org.freedesktop.DBus.Introspectable.Introspect
+
+dbus\-send \-\-session \-\-type=method_call \-\-print\-reply \e
+  \-\-dest=org.seul.Xboxdrv /org/seul/Xboxdrv/Daemon org.freedesktop.DBus.Introspectable.Introspect\*(T>
+.fi
+.PP
+Status information on available slots, configuration and active controllers can be obtained via:
+.PP
+.nf
+\*(T<dbus\-send \e
+  \-\-session \-\-type=method_call \-\-print\-reply \e
+  \-\-dest=org.seul.Xboxdrv /org/seul/Xboxdrv/Daemon  org.seul.Xboxdrv.Daemon.Status\*(T>
+.fi
+.PP
+Setting the LED on controller 0 can be done via:
+.PP
+.nf
+\*(T<dbus\-send \-\-session \-\-type=method_call  \-\-print\-reply \e
+  \-\-dest=org.seul.Xboxdrv  /org/seul/Xboxdrv/ControllerSlots/0  org.seul.Xboxdrv.Controller.SetLed int32:4\*(T>
+.fi
+.PP
+Setting the rumble motors on controller 0 can be done via:
+.PP
+.nf
+\*(T<dbus\-send \-\-session \-\-type=method_call  \-\-print\-reply \e
+  \-\-dest=org.seul.Xboxdrv  /org/seul/Xboxdrv/ControllerSlots/0  org.seul.Xboxdrv.Controller.SetRumble int32:255 int32:255\*(T>
+.fi
+.PP
+Setting a specific controller slot configuration, just
+as \*(T<\fB\-\-toggle BTN\fR\*(T> allows, can be done with:
+.PP
+.nf
+\*(T<dbus\-send \-\-session \-\-type=method_call  \-\-print\-reply \e
+  \-\-dest=org.seul.Xboxdrv  /org/seul/Xboxdrv/ControllerSlots/0  org.seul.Xboxdrv.Controller.SetConfig int32:2\*(T>
+.fi
 .SH TESTING
 Knowing how to test a xboxdrv configuration is absolutely crucial in
 understanding what is wrong in a given setup. Testing the
@@ -1567,6 +1626,10 @@ If the tools provide no output at all, this might not be due to a
 wrong configuration, but due to Xorg grabbing your event device and
 locking it, see Xorg section for possible fixes.
 .SH EXAMPLES
+The configurations below are just a few random examples, further
+examples can be found in the \*(T<\fIexamples/\fR\*(T>
+directory of the xboxdrv source tree or
+in \*(T<\fI/usr/share/doc/xboxdrv/examples/\fR\*(T>.
 .SS "TURNING TRIGGERS INTO BUTTONS"
 By default xboxdrv will handle the trigger as analog axis, not
 buttons, while this is beneficial for racing games, it will
