@@ -51,6 +51,7 @@ GType xboxdrv_g_daemon_get_type();
 XboxdrvGDaemon* xboxdrv_g_daemon_new(XboxdrvDaemon* daemon);
 
 gboolean xboxdrv_g_daemon_status(XboxdrvGDaemon* self, gchar** ret, GError** error);
+gboolean xboxdrv_g_daemon_shutdown(XboxdrvGDaemon* self, GError** error);
 
 #endif
 

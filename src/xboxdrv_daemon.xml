@@ -6,22 +6,11 @@
     <method name="Status">
       <arg type="s" direction="out" />
     </method>
+
+    <method name="Shutdown" />
     <!--
-    <method name="SetLed">
-      <arg name="status" type="i" direction="in" />
-    </method>
-
-    <method name="SetRumble">
-      <arg name="strong" type="i" direction="in" />
-      <arg name="weak"   type="i" direction="in" />
-    </method>
-
     reset_leds
-    shutdown, quit, exit
     disconnect SLOT
-    rumble_enable SLOT
-    rumble_disable SLOT
-    set_rumble_gain SLOT GAIN
     -->
   </interface>
 </node>

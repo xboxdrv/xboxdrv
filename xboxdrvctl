@@ -1,11 +1,28 @@
 #!/usr/bin/env python
 
+##  Xbox360 USB Gamepad Userspace Driver
+##  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
+##
+##  This program is free software: you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  This program is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License
+##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import dbus
 import sys
 import re
 from optparse import OptionParser, OptionGroup
 
-parser = OptionParser("Usage: %prog [OPTIONS]")
+parser = OptionParser("Usage: %prog [OPTIONS]\n"
+                      "Remote control application for the xboxdrv daemon")
 
 group = OptionGroup(parser, "D-Bus Options")
 group.add_option("-b", "--bus", metavar="BUS",
@@ -38,6 +55,10 @@ group.add_option("-c", "--config", metavar="NUM", type="int",
                   dest="config", 
                   help="switches to controller configuration NUM")
 
+group.add_option("--shutdown", action="store_true",
+                  dest="shutdown", 
+                  help="shuts down the daemon")
+
 parser.add_option_group(group)
 
 (options, args) = parser.parse_args()
@@ -47,6 +68,9 @@ bus = dbus.SessionBus()
 if options.status:
     daemon = bus.get_object("org.seul.Xboxdrv", '/org/seul/Xboxdrv/Daemon')
     sys.stdout.write(daemon.Status())
+elif options.shutdown:
+    daemon = bus.get_object("org.seul.Xboxdrv", '/org/seul/Xboxdrv/Daemon')
+    daemon.Shutdown()
 else:
     if (options.led or options.rumble or options.config) and options.slot == None:
         print "Error: --slot argument required"

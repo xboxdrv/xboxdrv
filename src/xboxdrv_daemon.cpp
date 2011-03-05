@@ -39,6 +39,8 @@
 #include "xboxdrv_daemon_glue.hpp"
 #include "xboxdrv_controller_glue.hpp"
 
+XboxdrvDaemon* XboxdrvDaemon::s_current = 0;
+
 namespace {
 
 bool get_usb_id(udev_device* device, uint16_t* vendor_id, uint16_t* product_id)
@@ -100,12 +102,18 @@ XboxdrvDaemon::XboxdrvDaemon(const Options& opts) :
   m_monitor(0),
   m_controller_slots(),
   m_inactive_threads(),
-  m_uinput()
+  m_uinput(),
+  m_gmain()
 {
+  assert(!s_current);
+  s_current = this;
 }
 
 XboxdrvDaemon::~XboxdrvDaemon()
 {
+  assert(s_current);
+  s_current = 0;
+
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
     (*i)->disconnect();
@@ -377,17 +385,19 @@ XboxdrvDaemon::run(const Options& opts)
     // we don't use glib threads, but we still need to init the thread
     // system to make glib thread safe
     g_thread_init(NULL);
-
-    GMainLoop* gmain = g_main_loop_new(NULL, false);
+    
+    signal(SIGINT,  &XboxdrvDaemon::on_sigint);
+    signal(SIGTERM, &XboxdrvDaemon::on_sigint);
+    m_gmain = g_main_loop_new(NULL, false);
 
     init_g_udev();
     init_g_dbus();
     
     log_info("launching into glib main loop");
-    g_main_loop_run(gmain);
+    g_main_loop_run(m_gmain);
     log_info("glib main loop finished");
-
-    g_main_loop_unref(gmain);
+    signal(SIGINT, 0);
+    g_main_loop_unref(m_gmain);
   }
   catch(const std::exception& err)
   {
@@ -906,6 +916,19 @@ XboxdrvDaemon::status()
   }
 
   return out.str();
+}
+
+void
+XboxdrvDaemon::shutdown()
+{
+  assert(m_gmain);
+  g_main_loop_quit(m_gmain);
+}
+
+void
+XboxdrvDaemon::on_sigint(int)
+{
+  XboxdrvDaemon::current()->shutdown();
 }
 
 /* EOF */

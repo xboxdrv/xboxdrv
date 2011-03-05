@@ -34,6 +34,8 @@ struct XPadDevice;
 class XboxdrvDaemon
 {
 private:
+  static XboxdrvDaemon* s_current;
+
   const Options& m_opts;
   struct udev* m_udev;
   struct udev_monitor* m_monitor;
@@ -45,6 +47,11 @@ private:
   Threads m_inactive_threads;
 
   std::auto_ptr<UInput> m_uinput;
+  GMainLoop* m_gmain;
+
+private:
+  static void on_sigint(int);
+  static XboxdrvDaemon* current() { return s_current; }
 
 public:
   XboxdrvDaemon(const Options& opts);
@@ -53,6 +60,7 @@ public:
   void run(const Options& opts);
 
   std::string status();
+  void shutdown();
 
 private:
   void create_pid_file(const Options& opts);

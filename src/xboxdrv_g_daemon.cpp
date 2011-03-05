@@ -18,6 +18,7 @@
 
 #include "xboxdrv_g_daemon.hpp"
 
+#include "log.hpp"
 #include "xboxdrv_daemon.hpp"
 
 /* will create xboxdrv_g_daemon_get_type and set xboxdrv_g_daemon_parent_class */
@@ -57,7 +58,17 @@ xboxdrv_g_daemon_new(XboxdrvDaemon* daemon)
 gboolean
 xboxdrv_g_daemon_status(XboxdrvGDaemon* self, gchar** ret, GError** error)
 {
+  log_info("D-Bus: xboxdrv_g_daemon_status(" << self << ")");
+
   *ret = g_strdup(self->daemon->status().c_str());
+  return TRUE;
+}
+
+gboolean xboxdrv_g_daemon_shutdown(XboxdrvGDaemon* self, GError** error)
+{
+  log_info("D-Bus: xboxdrv_g_daemon_shutdown(" << self << ")");
+
+  self->daemon->shutdown();
   return TRUE;
 }
 
