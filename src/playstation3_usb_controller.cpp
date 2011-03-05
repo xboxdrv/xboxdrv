@@ -27,34 +27,16 @@
 #include "xboxmsg.hpp"
 
 Playstation3USBController::Playstation3USBController(libusb_device* dev, bool try_detach) :
-  m_handle(0),
+  USBController(dev),
   endpoint_in(1),
   endpoint_out(2)
 {
-  int ret = libusb_open(dev, &m_handle);
-  if (ret != LIBUSB_SUCCESS)
-  {
-    std::ostringstream out;
-    out << "Playstation3USBController: libusb_open() error: " << usb_strerror(ret);
-    throw std::runtime_error(out.str());
-  }
-  else
-  {
-    int err = usb_claim_n_detach_interface(m_handle, 0, try_detach);
-    if (err != 0)
-    {
-      std::ostringstream out;
-      out << " Error couldn't claim the USB interface: " << usb_strerror(err) << std::endl
-          << "Try to start xboxdrv with the option --detach-kernel-driver.";
-      throw std::runtime_error(out.str());
-    }
-  }
+  claim_interface(0, try_detach);
 }
 
 Playstation3USBController::~Playstation3USBController()
 {
-  libusb_release_interface(m_handle, 0);
-  libusb_close(m_handle);
+  release_interface(0);
 }
 
 void

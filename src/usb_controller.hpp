@@ -16,31 +16,36 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_PLAYSTATION3_USB_CONTROLLER_HPP
-#define HEADER_XBOXDRV_PLAYSTATION3_USB_CONTROLLER_HPP
+#ifndef HEADER_XBOXDRV_USB_CONTROLLER_HPP
+#define HEADER_XBOXDRV_USB_CONTROLLER_HPP
 
 #include <libusb.h>
+#include <string>
 
-#include "usb_controller.hpp"
+#include "controller.hpp"
 
-class Playstation3USBController : public USBController
+class USBController : public Controller
 {
-private:
-  int endpoint_in;
-  int endpoint_out;
+protected:
+  libusb_device_handle* m_handle;
+  std::string m_usbpath;
+  std::string m_usbid;
+  std::string m_name;
 
 public:
-  Playstation3USBController(libusb_device* dev, bool try_detach);
-  ~Playstation3USBController();
+  USBController(libusb_device* dev);
+  virtual ~USBController();
+  
+  virtual std::string get_usbpath() const;
+  virtual std::string get_usbid() const;
+  virtual std::string get_name() const;
 
-  void set_rumble(uint8_t left, uint8_t right);
-  void set_led(uint8_t status);
-
-  bool read(XboxGenericMsg& msg, int timeout);
+  void claim_interface(int ifnum, bool try_detach);
+  void release_interface(int ifnum);
 
 private:
-  Playstation3USBController(const Playstation3USBController&);
-  Playstation3USBController& operator=(const Playstation3USBController&);
+  USBController(const USBController&);
+  USBController& operator=(const USBController&);
 };
 
 #endif

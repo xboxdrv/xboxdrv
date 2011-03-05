@@ -43,6 +43,10 @@ public:
   virtual bool is_active() const { return true; }
   virtual void set_activation_cb(const boost::function<void ()> callback) {}
 
+  virtual std::string get_usbpath() const { return "-1:-1"; }
+  virtual std::string get_usbid() const   { return "-1:-1"; }
+  virtual std::string get_name() const    { return "<not implemented>"; }
+
 private:
   Controller (const Controller&);
   Controller& operator= (const Controller&);

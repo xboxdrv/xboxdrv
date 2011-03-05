@@ -26,39 +26,22 @@
 #include "raise_exception.hpp"
 #include "xboxmsg.hpp"
 
-XboxController::XboxController(libusb_device* dev_, bool try_detach) :
-  dev(dev_),
-  handle(),
+XboxController::XboxController(libusb_device* dev, bool try_detach) :
+  USBController(dev),
   endpoint_in(1),
   endpoint_out(2)
 {
-  find_endpoints();
-  int ret = libusb_open(dev, &handle);
-  if (ret != LIBUSB_SUCCESS)
-  {
-    raise_exception(std::runtime_error, "libusb_open() failed: " << usb_strerror(ret));
-  }
-  else
-  {
-    // FIXME: bInterfaceNumber shouldn't be hardcoded
-    int err = usb_claim_n_detach_interface(handle, 0, try_detach);
-    if (err != 0) 
-    {
-      raise_exception(std::runtime_error,
-                      "Error couldn't claim the USB interface: " << strerror(-err) << std::endl <<
-                      "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.");
-    }
-  }
+  find_endpoints(dev);
+  claim_interface(0, try_detach);
 }
 
 XboxController::~XboxController()
 {
-  libusb_release_interface(handle, 0); 
-  libusb_close(handle);
+  release_interface(0);
 }
 
 void
-XboxController::find_endpoints()
+XboxController::find_endpoints(libusb_device* dev)
 {
   libusb_config_descriptor* config;
   int ret = libusb_get_config_descriptor(dev, 0 /* config_index */, &config);
@@ -110,7 +93,7 @@ XboxController::set_rumble(uint8_t left, uint8_t right)
 {
   uint8_t rumblecmd[] = { 0x00, 0x06, 0x00, left, 0x00, right };
   int transferred = 0;
-  int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_OUT | endpoint_out, 
+  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_OUT | endpoint_out, 
                                       rumblecmd, sizeof(rumblecmd), &transferred, 0);
   if (ret != LIBUSB_SUCCESS)
   {
@@ -130,7 +113,7 @@ XboxController::read(XboxGenericMsg& msg, int timeout)
   // FIXME: Add tracking for duplicate data packages (send by logitech controller)
   uint8_t data[32];
   int len = 0;
-  int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | endpoint_in,
+  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | endpoint_in,
                                       data, sizeof(data), &len, timeout);
 
   if (ret == LIBUSB_ERROR_TIMEOUT)

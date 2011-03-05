@@ -55,34 +55,17 @@ struct SaitekP2500Msg
     
 } __attribute__((__packed__));
 
-SaitekP2500Controller::SaitekP2500Controller(libusb_device* dev_, bool try_detach) :
-  dev(dev_),
-  handle(),
+SaitekP2500Controller::SaitekP2500Controller(libusb_device* dev, bool try_detach) :
+  USBController(dev),
   left_rumble(-1),
   right_rumble(-1)
 {
-  int ret = libusb_open(dev, &handle);
-  if (ret != LIBUSB_SUCCESS)
-  {
-    throw std::runtime_error("Error opening SaitekP2500Controller");
-  }
-  else
-  {
-    int err = usb_claim_n_detach_interface(handle, 0, try_detach);
-    if (err != LIBUSB_SUCCESS) 
-    {
-      std::ostringstream out;
-      out << "Error couldn't claim the USB interface: " << strerror(-err) << std::endl
-          << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
-      throw std::runtime_error(out.str());
-    }
-  }
+  claim_interface(0, try_detach);
 }
 
 SaitekP2500Controller::~SaitekP2500Controller()
 {
-  libusb_release_interface(handle, 0); 
-  libusb_close(handle);
+  release_interface(0);
 }
 
 void
@@ -113,7 +96,7 @@ SaitekP2500Controller::read(XboxGenericMsg& msg, int timeout)
 {
   SaitekP2500Msg data;
   int len = 0;
-  int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | 1,
+  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 1,
                                       reinterpret_cast<uint8_t*>(&data), sizeof(data), 
                                       &len, timeout);
   if (ret == LIBUSB_ERROR_TIMEOUT)

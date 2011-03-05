@@ -25,87 +25,59 @@
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
 
-Xbox360Controller::Xbox360Controller(libusb_device* dev_, 
+Xbox360Controller::Xbox360Controller(libusb_device* dev,
                                      bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
                                      bool headset, 
                                      bool headset_debug, 
                                      const std::string& headset_dump,
                                      const std::string& headset_play,
                                      bool try_detach) :
-  dev(dev_),
+  USBController(dev),
   dev_type(),
-  handle(),
   endpoint_in(1),
   endpoint_out(2),
   m_chatpad(),
   m_headset()
 {
-  find_endpoints();
-  
+  // find endpoints
+  find_endpoints(dev);
   log_debug("EP(IN):  " << endpoint_in);
   log_debug("EP(OUT): " << endpoint_out);
-  
-  int ret = libusb_open(dev, &handle);
 
-  if (0) // not needed I guess
-  {
-    int err;
-    if ((err = libusb_set_configuration(handle, 0)) < 0)
-    {
-      raise_exception(std::runtime_error,
-                      "Error set USB configuration: " << usb_strerror(err) <<
-                      "\nTry to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.");
-    }
-  }
+  // claim interface
+  claim_interface(0, try_detach);
 
-  if (ret != LIBUSB_SUCCESS)
-  {
-    raise_exception(std::runtime_error, "libusb_open() failed: " << usb_strerror(ret));
-  }
-  else
-  {
-    // FIXME: bInterfaceNumber shouldn't be hardcoded
-    int err = usb_claim_n_detach_interface(handle, 0, try_detach);
-    if (err != 0) 
-    {
-      std::ostringstream out;
-      out << " Error couldn't claim the USB interface: " << usb_strerror(err) << std::endl
-          << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
-      throw std::runtime_error(out.str());
-    }
-  }
-
+  // create chatpad
   if (chatpad)
   {
     libusb_device_descriptor desc;
 
-    ret = libusb_get_device_descriptor(dev, &desc);
-    if (ret == LIBUSB_SUCCESS)
+    int ret = libusb_get_device_descriptor(dev, &desc);
+    if (ret != LIBUSB_SUCCESS)
     {
-      m_chatpad.reset(new Chatpad(handle, desc.bcdDevice, chatpad_no_init, chatpad_debug));
+      raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));    }
+    else
+    {
+      m_chatpad.reset(new Chatpad(m_handle, desc.bcdDevice, chatpad_no_init, chatpad_debug));
       m_chatpad->send_init();
       m_chatpad->start_threads();
     }
-    else
-    {
-      raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));
-    }
   }
 
+  // create headset
   if (headset)
   {
-    m_headset.reset(new Headset(handle, headset_debug, headset_dump, headset_play));
+    m_headset.reset(new Headset(m_handle, headset_debug, headset_dump, headset_play));
   }
 }
 
 Xbox360Controller::~Xbox360Controller()
 {
-  libusb_release_interface(handle, 0); 
-  libusb_close(handle);
+  release_interface(0);
 }
 
 void
-Xbox360Controller::find_endpoints()
+Xbox360Controller::find_endpoints(libusb_device* dev)
 {
   libusb_config_descriptor* config;
   int ret = libusb_get_config_descriptor(dev, 0 /* config_index */, &config);
@@ -158,7 +130,7 @@ Xbox360Controller::set_rumble(uint8_t left, uint8_t right)
   uint8_t rumblecmd[] = { 0x00, 0x08, 0x00, left, right, 0x00, 0x00, 0x00 };
   int transferred = 0;
   int ret = 0;
-  ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_OUT | endpoint_out, 
+  ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_OUT | endpoint_out, 
                                   rumblecmd, sizeof(rumblecmd), 
                                   &transferred, 0);
   if (ret != LIBUSB_SUCCESS)
@@ -173,7 +145,7 @@ Xbox360Controller::set_led(uint8_t status)
   uint8_t ledcmd[] = { 0x01, 0x03, status }; 
   int transferred = 0;
   int ret = 0;
-  ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_OUT | endpoint_out, 
+  ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_OUT | endpoint_out, 
                                   ledcmd, sizeof(ledcmd), 
                                   &transferred, 0);
   if (ret != LIBUSB_SUCCESS)
@@ -188,7 +160,7 @@ Xbox360Controller::read(XboxGenericMsg& msg, int timeout)
   uint8_t data[32];
   int len = 0;
 
-  int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | endpoint_in, 
+  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | endpoint_in, 
                                       data, sizeof(data), 
                                       &len, timeout);
 

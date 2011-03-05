@@ -22,23 +22,20 @@
 #include <libusb.h>
 #include <string>
 
-#include "controller.hpp"
+#include "usb_controller.hpp"
 
 struct XboxGenericMsg;
 struct XPadDevice;
 
-/** */
-class Xbox360WirelessController : public Controller
+class Xbox360WirelessController : public USBController
 {
 private:
   bool m_active;
-  libusb_device* dev;
-  libusb_device_handle* handle;
-  int endpoint;
-  int interface;
-  int battery_status;
-  std::string serial;
-  int led_status;
+  int  m_endpoint;
+  int  m_interface;
+  int  m_battery_status;
+  std::string m_serial;
+  int m_led_status;
 
   boost::function<void ()> m_activation_cb;
 

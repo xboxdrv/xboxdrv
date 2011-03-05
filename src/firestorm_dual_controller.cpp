@@ -81,36 +81,18 @@ struct FirestormMsg
   unsigned int y2 :8;
 } __attribute__((__packed__));
 
-FirestormDualController::FirestormDualController(libusb_device* dev_, bool is_vsb_, bool try_detach) :
+FirestormDualController::FirestormDualController(libusb_device* dev, bool is_vsb_, bool try_detach) :
+  USBController(dev),
   is_vsb(is_vsb_),
-  dev(dev_),
-  handle(),
   left_rumble(-1),
   right_rumble(-1)
 {
-  int ret = libusb_open(dev, &handle);
-
-  if (ret != LIBUSB_SUCCESS)
-  {
-    throw std::runtime_error("Error opening FirestormDualController");
-  }
-  else
-  {
-    int err = usb_claim_n_detach_interface(handle, 0, try_detach);
-    if (err != LIBUSB_SUCCESS) 
-    {
-      std::ostringstream out;
-      out << "Error couldn't claim the USB interface: " << usb_strerror(err) << std::endl
-          << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
-      throw std::runtime_error(out.str());
-    }
-  }
+  claim_interface(0, try_detach);
 }
 
 FirestormDualController::~FirestormDualController()
 {
-  libusb_release_interface(handle, 0); 
-  libusb_close(handle);
+  release_interface(0);
 }
 
 void
@@ -125,11 +107,11 @@ FirestormDualController::set_rumble(uint8_t left, uint8_t right)
     uint8_t cmd[] = { left, right, 0x00, 0x00 };
     if (is_vsb)
     {
-      libusb_control_transfer(handle, 0x21, 0x09, 0x0200, 0x00, cmd, sizeof(cmd), 0);
+      libusb_control_transfer(m_handle, 0x21, 0x09, 0x0200, 0x00, cmd, sizeof(cmd), 0);
     }
     else
     {
-      libusb_control_transfer(handle, 0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd), 0);
+      libusb_control_transfer(m_handle, 0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd), 0);
     }
   }
 }
@@ -154,7 +136,7 @@ FirestormDualController::read_vsb(XboxGenericMsg& msg, int timeout)
 {
   Firestorm_vsb_Msg data;
   int len = 0;
-  int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | 1,
+  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 1,
                                       reinterpret_cast<uint8_t*>(&data), sizeof(data), 
                                       &len, timeout);
   if (ret == LIBUSB_ERROR_TIMEOUT)
@@ -238,7 +220,7 @@ FirestormDualController::read_default(XboxGenericMsg& msg, int timeout)
 {
   FirestormMsg data;
   int len = 0;
-  int ret = libusb_interrupt_transfer(handle, LIBUSB_ENDPOINT_IN | 1,
+  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 1,
                                       reinterpret_cast<uint8_t*>(&data), sizeof(data), 
                                       &len, timeout);
 

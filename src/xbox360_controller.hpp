@@ -23,18 +23,16 @@
 #include <memory>
 #include <string>
 
-#include "controller.hpp"
+#include "usb_controller.hpp"
 
 class Chatpad;
 class Headset;
 struct XPadDevice;
 
-class Xbox360Controller : public Controller
+class Xbox360Controller : public USBController
 {
 private:
-  libusb_device* dev;
   XPadDevice*        dev_type;
-  libusb_device_handle* handle;
   
   int endpoint_in;
   int endpoint_out;
@@ -57,7 +55,7 @@ public:
   bool read(XboxGenericMsg& msg, int timeout);
 
 private:
-  void find_endpoints();
+  void find_endpoints(libusb_device* dev);
 
 private:
   Xbox360Controller (const Xbox360Controller&);

@@ -21,20 +21,17 @@
 
 #include <libusb.h>
 
-#include "controller.hpp"
+#include "usb_controller.hpp"
 
 struct XPadDevice;
 
-class XboxController : public Controller
+class XboxController : public USBController
 {
 private:
-  libusb_device* dev;
-  libusb_device_handle* handle;
-
   int endpoint_in;
   int endpoint_out;
   
-  void find_endpoints();
+  void find_endpoints(libusb_device* dev);
 
 public:
   XboxController(libusb_device* dev, bool try_detach);
