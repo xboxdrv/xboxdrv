@@ -11,3 +11,4 @@ doc/xboxdrv.ent
 custom.py
 cache/
 libxboxdrv.a
+test/ini_parser_test
