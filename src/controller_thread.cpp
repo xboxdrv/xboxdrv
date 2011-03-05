@@ -41,9 +41,6 @@ ControllerThread::ControllerThread(ControllerPtr controller,
   m_child_exec(opts.exec),
   m_pid(-1),
   m_timeout(opts.timeout),
-  m_usbpath("-1:-1"), // FIXME: set those proper somehow
-  m_usbid("-1:-1"),
-  m_name("not implemented"),
   m_compatible_slots()
 {
   memset(&m_oldrealmsg, 0, sizeof(m_oldrealmsg));
@@ -262,19 +259,19 @@ ControllerThread::try_join_thread()
 std::string
 ControllerThread::get_usbpath() const
 {
-  return m_usbpath;
+  return m_controller->get_usbpath();
 }
    
 std::string 
 ControllerThread::get_usbid() const
 {
-  return m_usbid;
+  return m_controller->get_usbid();
 }
 
 std::string
 ControllerThread::get_name() const
 {
-  return m_name;
+  return m_controller->get_name();
 }
 
 std::vector<ControllerSlotWeakPtr> 

@@ -49,10 +49,6 @@ private:
   pid_t m_pid;
 
   int m_timeout;
-  
-  std::string m_usbpath;
-  std::string m_usbid;
-  std::string m_name;
 
   std::vector<ControllerSlotWeakPtr> m_compatible_slots;
 
