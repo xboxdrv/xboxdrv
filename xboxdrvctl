@@ -55,7 +55,7 @@ else:
         if options.slot != None:
             slot = bus.get_object("org.seul.Xboxdrv", '/org/seul/Xboxdrv/ControllerSlots/%d' % options.slot)
     
-            if options.led:
+            if options.led != None:
                 slot.SetLed(options.led)
 
             if options.rumble:
@@ -68,7 +68,7 @@ else:
                     right = int(m.group(2))
                     slot.SetRumble(left, right)
 
-            if options.config:
+            if options.config != None:
                 slot.SetConfig(options.config)
         else:
             parser.print_help()
