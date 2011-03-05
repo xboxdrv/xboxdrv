@@ -50,19 +50,23 @@ USBController::USBController(libusb_device* dev) :
                  % static_cast<int>(desc.idProduct)).str();
   
       char buf[1024];
-      ret = libusb_get_string_descriptor_ascii(m_handle, desc.iManufacturer,
-                                               reinterpret_cast<unsigned char*>(buf), sizeof(buf));
-      if (ret == LIBUSB_SUCCESS)
-      {
-        m_name = buf;
+      int len;
+      if (false)
+      { // FIXME: do we need the manufacturer name?
+        len = libusb_get_string_descriptor_ascii(m_handle, desc.iManufacturer,
+                                                 reinterpret_cast<unsigned char*>(buf), sizeof(buf));
+        if (len > 0)
+        {
+          m_name.append(buf, len);
+          m_name.append(" ");
+        }
       }
 
-      ret = libusb_get_string_descriptor_ascii(m_handle, desc.iProduct, 
+      len = libusb_get_string_descriptor_ascii(m_handle, desc.iProduct, 
                                                reinterpret_cast<unsigned char*>(buf), sizeof(buf));
-      if (ret == LIBUSB_SUCCESS)
+      if (len > 0)
       {
-        m_name += " ";
-        m_name += buf;
+        m_name.append(buf, len);
       }
     }
   }

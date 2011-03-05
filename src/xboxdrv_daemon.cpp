@@ -875,39 +875,31 @@ XboxdrvDaemon::status()
 {
   std::ostringstream out;
 
-  out << boost::format("SLOT  STATUS  CONFIG  USBID  USBPATH  NAME\n");
+  out << boost::format("SLOT  CFG  NCFG    USBID    USBPATH  NAME\n");
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
     if ((*i)->get_thread())
     {
-      int config_count   = -1;
-      int current_config = -1;
-
-      if (UInputMessageProcessor* msg_proc
-          = dynamic_cast<UInputMessageProcessor*>((*i)->get_thread()->get_message_proc()))
-      {
-        current_config = msg_proc->get_config()->get_current_config();
-        config_count   = msg_proc->get_config()->config_count();
-      }
-
-      out << boost::format("%4d  %6s  %3d/%-2d  %5s  %7s  %s\n")
+      out << boost::format("%4d  %3d  %4d  %5s  %7s  %s\n")
         % (i - m_controller_slots.begin())
-        % "  ok  "
-        % (current_config+1) % config_count
+        % (*i)->get_config()->get_current_config()
+        % (*i)->get_config()->config_count()
         % (*i)->get_thread()->get_usbid()
         % (*i)->get_thread()->get_usbpath()
         % (*i)->get_thread()->get_name();
     }
     else
     {
-      out << boost::format("%4d   empty\n")
-        % (i - m_controller_slots.begin());
+      out << boost::format("%4d  %3d  %4d      -         -\n")
+        % (i - m_controller_slots.begin())
+        % (*i)->get_config()->get_current_config()
+        % (*i)->get_config()->config_count();
     }
   }
 
   for(Threads::iterator i = m_inactive_threads.begin(); i != m_inactive_threads.end(); ++i)
   {
-    out << boost::format("   -                  %5s  %7s  %s\n")
+    out << boost::format("   -             %5s  %7s  %s\n")
       % (*i)->get_usbid()
       % (*i)->get_usbpath()
       % (*i)->get_name();

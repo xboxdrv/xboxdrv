@@ -44,8 +44,6 @@ Stuff to do before 0.7.2 release:
 
 == Generic ==
 
-* document that Xbox360 wireless controller shuts down at 15min
-
 * add glib and dbus dependencies to .deb control file
 
 * mimic-xpad is broken, should handle wireless and wired controllers
@@ -63,13 +61,31 @@ Stuff to do before 0.7.2 release:
 
 * implement Options::set_device_usbid() and CommandLineParser::set_device_usbid()
 
+
+== Unsolved/WontFix ==
 
-== Other ==
+* after every thread cleanup, do an enumeration over all USB devices,
+  find those not currently used by a Slot and recreate them, this
+  should fix resume issues, this would also fix the issue with
+  ignoring controllers when all slots are full
 
-* give proper exit code when no controller is found
+  -> bad idea, as it would let unused controllers slip into the free
+     slots, could lead to unexpected behaviour
 
-* sort options a bit more between global ones, slot local ones and
-  config local ones
+  -> maybe as D-Bus interface?
+
+* allow multiple controllers in non-daemon mode
+  -> not a good idea, complicates stuff and duplicates code
+
+* remember controllers that couldn't be used when all slots where full
+  and use them when a slot got free -> discard, bad idea, as it
+  results in confusing behaviour
+
+
+
+* glib/D-Bus causes crash/exit when USBController::get_name() returns an invalid unicode string?!
+
+* move sigint/sigterm handling out of main.cpp and into xboxdrv_daemon.cpp (needs to use gmain_quit())
 
 * BTN_A@joystick.1 doesn't work for a single joystick, why? (joystick isn't id=0, why?)
 
@@ -81,9 +97,15 @@ Stuff to do before 0.7.2 release:
   -> figure out how exactly device names are choosen (first free or
      are there other means? need to take special axes/buttons into account)
 
-* add extra arguments to --on-connect and --on-disconnect (controller name, usb path, etc.)
-  * done -> document
-  * currently returns: "-1:-1" "-1:-1" "not implemented" 
+== Daemon ==
+
+* check how daemon reacts on suspend
+  - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
+    controller leads to LIBUSB_ERROR_OTHER
+    -> couldn't be replicated, both give LIBUSB_ERROR_OTHER
+  - errno is set to EBUSY
+  - the device handle can't be reused, device has to be reallocated
+  - integrate this with the "keep backlog of devices currently in use"
 
 
 == Daemon ==
@@ -91,46 +113,30 @@ Stuff to do before 0.7.2 release:
 * improve output in daemon mode, when --quiet is not given print the
   number of allocated controller slots
 
-* check how daemon reacts on suspend
-  - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
-    controller leads to LIBUSB_ERROR_OTHER
-  - errno is set to EBUSY
-  - the device handle can't be reused, device has to be reallocated
-  - integrate this with the "keep backlog of devices currently in use"
-
 * get rid of all std::cout stuff when using detached daemon, redirect
   log output to a file, syslog or somewhere else: 
 
   --silent:  stops event output
-  --quiet:   stops all stdout output (automatically used when --detach is given)
+  --quiet:   stops all stdout output (automatically used when --detach is given, except for errors)
   --verbose: print info level log output
   --debug:   print debug level log output
 
 
-== Unsolved/WontFix ==
-
-* after every thread cleanup, do an enumeration over all USB devices,
-  find those not currently used by a Slot and recreate them, this
-  should fix resume issues, this would also fix the issue with
-  ignoring controllers when all slots are full
-
-  -> bad idea, as it would let unused controllers slip into the free
-     slots, could lead to unexpected behaviour
-
-* allow multiple controllers in non-daemon mode
-  -> not a good idea, complicates stuff and duplicates code
-
-* remember controllers that couldn't be used when all slots where full
-  and use them when a slot got free -> discard, bad idea, as it
-  results in confusing behaviour
-
-
 == D-Bus ==
 
 * interface for next release:
 
   Daemon/GetControllerSlotCount -> INT // do we need those or can
   Daemon/GetControllerCount -> INT     // directories be browsed?
+
+== Other ==
+
+* document that Xbox360 wireless controller shuts down at 15min
+
+* give proper exit code when no controller is found
+
+* sort options a bit more between global ones, slot local ones and
+  config local ones
 
 * in INI files should allow:
 
