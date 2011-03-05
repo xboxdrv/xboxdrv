@@ -278,13 +278,13 @@ ControllerSlotConfig::get_config(int i) const
 void
 ControllerSlotConfig::set_current_config(int num)
 {
-  if (num < 0 || num >= static_cast<int>(m_config.size()))
+  if (num >= 0 && num < static_cast<int>(m_config.size()))
   {  
-    raise_exception(std::runtime_error, "argument out of range");
+    m_current_config = num;
   }
   else
   {
-    m_current_config = num;
+    raise_exception(std::runtime_error, "argument out of range");
   }
 }
 
