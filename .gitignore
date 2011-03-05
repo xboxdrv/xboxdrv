@@ -12,3 +12,6 @@ custom.py
 cache/
 libxboxdrv.a
 test/ini_parser_test
+src/xboxdrv_controller_glue.hpp
+src/xboxdrv_daemon_glue.hpp
+src/xboxdrv_dbus_glue.hpp
