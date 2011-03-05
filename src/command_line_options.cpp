@@ -52,6 +52,7 @@ enum {
   OPTION_WRITE_CONFIG,
   OPTION_TEST_RUMBLE,
   OPTION_RUMBLE,
+  OPTION_PRIORITY,
   OPTION_QUIT,
   OPTION_NO_UINPUT,
   OPTION_MIMIC_XPAD,
@@ -152,6 +153,7 @@ CommandLineParser::init_argp()
     .add_option(OPTION_SILENT,       's', "silent",  "",  "do not display events on console")
     .add_option(OPTION_QUIET,         0,  "quiet",   "",  "do not display startup text")
     .add_option(OPTION_USB_DEBUG,     0,  "usb-debug", "",  "enable log messages from libusb")
+    .add_option(OPTION_PRIORITY,      0,  "priority", "PRI", "increases process priority (default: normal)")
     .add_newline()
 
     .add_text("List Options: ")
@@ -340,6 +342,7 @@ CommandLineParser::init_ini(Options* opts)
     ("config", boost::bind(&CommandLineParser::read_config_file, this, opts, _1))
     ("alt-config", boost::bind(&CommandLineParser::read_alt_config_file, this, opts, _1))
     ("timeout", &opts->timeout)
+    ("priority", boost::bind(&Options::set_priority, boost::ref(opts), _1))
     ("next", boost::bind(&Options::next_config, boost::ref(opts)), boost::function<void ()>())
     ("next-controller", boost::bind(&Options::next_controller, boost::ref(opts)), boost::function<void ()>())
     ("extra-devices", &opts->extra_devices)
@@ -469,6 +472,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_USB_DEBUG:
         opts.set_usb_debug();
+        break;
+
+      case OPTION_PRIORITY:
+        opts.set_priority(opt.argument);
         break;
 
       case OPTION_DAEMON:

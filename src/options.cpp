@@ -41,6 +41,7 @@ Options::Options() :
   no_uinput(false),
   detach_kernel_driver(),
   timeout(10),
+  priority(kPriorityNormal),
   gamepad_type(GAMEPAD_UNKNOWN),
   busid(),
   devid(),
@@ -122,6 +123,23 @@ Options::get_controller_options() const
     {
       return cfg->second;
     }
+  }
+}
+
+void
+Options::set_priority(const std::string& value)
+{
+  if (value == "realtime")
+  {
+    priority = kPriorityRealtime;
+  }
+  else if (value == "normal")
+  {
+    priority = kPriorityNormal;
+  }
+  else
+  {
+    raise_exception(std::runtime_error, "unknown priority value: '" << value << "'");
   }
 }
 

@@ -51,11 +51,7 @@ Stuff to do before 0.7.2 release:
   -> maybe get rid of them completely, have another way to handle
      build-in configuration files
 
-* make real time priority changes optional, document them
-
-* reenable USBThread, maybe add a way to cancel stuff to it if possible?
-  -> or is that not needed at all and higher process priority would do the same thing?
-  -> document nice use somewhere, is it possible to do real time priority from command line?
+* add SetConfig command to D-Bus interface and xboxdrvctl
 
 == Device Name ==
 

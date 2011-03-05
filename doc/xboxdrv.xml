@@ -132,6 +132,25 @@
             </para>
           </listitem>
         </varlistentry>
+
+        <varlistentry>
+          <term><option>--priority</option> <replaceable>PRIORITY</replaceable></term>
+          <listitem>
+            <para>
+              Possible values for <replaceable>PRIORITY</replaceable>
+              are "normal" and "realtime". Realtime scheduling gives
+              the xboxdrv process heigher priority and thus allows it
+              to function properly even when the machine is under
+              load.
+            </para>
+            <para>
+              Note that realtime priority requires running xboxdrv as
+              root, when running xboxdrv as user there is no way to
+              increase the priority.
+            </para>
+          </listitem>
+        </varlistentry>
+
       </variablelist>
     </refsect2>
 
@@ -2197,8 +2216,10 @@ $ modprobe joydev]]></programlisting>
       When Xboxdrv is run as daemon it will export some API functions
       via D-Bus, thus allowing to make configuration changes at
       runtime. The D-Bus interface can be accessed either by the
-      numerous language bindings provided or via the command line tool
-      <command>dbus-send</command>:
+      numerous language bindings provided or via the generic command line tool
+      <command>dbus-send</command> or by the more
+      userfriendly <command>xboxdrvctl</command> tool. Examples below are
+      given for the raw <command>dbus-send</command>.
     </para>
     <para>
       Introspection is provided via the usual means:
@@ -2941,6 +2962,10 @@ EndSection]]></programlisting>
   <refsect1>
     <title>See also</title>
     <para>
+      <citerefentry>
+        <refentrytitle>xboxdrvctl</refentrytitle>
+        <manvolnum>1</manvolnum>
+      </citerefentry>, 
       <citerefentry>
         <refentrytitle>evtest</refentrytitle>
         <manvolnum>1</manvolnum>

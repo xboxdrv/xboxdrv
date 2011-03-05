@@ -72,6 +72,17 @@ data to the terminal can eat up quite a bit of CPU.
 .TP 
 \*(T<\fB\-\-quiet\fR\*(T>
 Do not display startup text and suppress most other output.
+.TP 
+\*(T<\fB\-\-priority\fR\*(T> \fIPRIORITY\fR
+Possible values for \fIPRIORITY\fR
+are "normal" and "realtime". Realtime scheduling gives
+the xboxdrv process heigher priority and thus allows it
+to function properly even when the machine is under
+load.
+
+Note that realtime priority requires running xboxdrv as
+root, when running xboxdrv as user there is no way to
+increase the priority.
 .SS "LIST OPTIONS"
 .TP 
 \*(T<\fB\-\-help\-led\fR\*(T>
@@ -1517,8 +1528,10 @@ it you can write its pid via the \*(T<\fB\-\-pid\-file\fR\*(T>:
 When Xboxdrv is run as daemon it will export some API functions
 via D-Bus, thus allowing to make configuration changes at
 runtime. The D-Bus interface can be accessed either by the
-numerous language bindings provided or via the command line tool
-\fBdbus-send\fR:
+numerous language bindings provided or via the generic command line tool
+\fBdbus-send\fR or by the more
+userfriendly \fBxboxdrvctl\fR tool. Examples below are
+given for the raw \fBdbus-send\fR.
 .PP
 Introspection is provided via the usual means:
 .PP
@@ -2066,6 +2079,7 @@ License GPLv3+: GNU GPL version 3 or later
 are free to change and redistribute it. There is NO WARRANTY,
 to the extent permitted by law.
 .SH "SEE ALSO"
+\fBxboxdrvctl\fR(1), 
 \fBevtest\fR(1), 
 \fBjstest\fR(1), 
 \fBjstest-gtk\fR(1), 

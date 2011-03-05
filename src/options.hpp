@@ -54,6 +54,11 @@ public:
     LIST_BUTTON    = (1<<5)
   };
 
+  enum Priority {
+    kPriorityNormal,
+    kPriorityRealtime
+  };
+
   // General program options
   bool silent;
   bool quiet;
@@ -67,6 +72,7 @@ public:
   bool no_uinput;
   bool detach_kernel_driver;
   int  timeout;
+  Priority priority;
 
   GamepadType gamepad_type;
   
@@ -129,6 +135,8 @@ public:
   /** Returns the currently active configuration */
   ControllerOptions& get_controller_options();
   const ControllerOptions& get_controller_options() const;
+
+  void set_priority(const std::string& value);
 
   void set_ui_clear();
 

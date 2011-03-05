@@ -1,14 +1,20 @@
-xboxdrv 0.7.2 - (??/Feb/2011)
+xboxdrv 0.7.2 - (??/Mar/2011)
 =============================
 
+* added --device-usbid and --device-usbids
+* added D-Bus support to the daemon
+* added better handling of rounding errors when sending REL_
+* added dpad-restrictor for X, Y or fourway restriction on the dpad
 * added statistic modifier that counts how often buttons are pressed
 * added support for multiple wireless controller in daemon
-* added DBus support to the daemon
+* added --priority to enable realtime scheduling priority
+* changed default timeout to 10msec, for more responsive mouse emulation
+* changed meaning of -m, its now a shortcut for --modifier, not --mouse
 * improved INIParser, can now handle KEY_#NUM style names without quotes
-* added lower default timeout to 10msec, for more responsive mouse emulation
-* added better handling of rounding errors when sending REL_
+* improved mouse emulation
 * removed obsolete xboxdrv-daemon script
-* added dpad-restrictor for X, Y or fourway restriction on the dpad
+* renamed --device-name to --device-names
+* renamed --name to --device-name
 
 
 xboxdrv 0.7.1 - (30/Jan/2011)
