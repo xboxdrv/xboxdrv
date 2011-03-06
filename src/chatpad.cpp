@@ -105,7 +105,14 @@ Chatpad::~Chatpad()
 void
 Chatpad::init_uinput()
 {
-  m_uinput.reset(new LinuxUinput(LinuxUinput::kGenericDevice, "Xbox360 Chatpad", 0x00, 0x00));
+  struct input_id usbid;
+
+  usbid.bustype = 0;
+  usbid.vendor  = 0;
+  usbid.product = 0;
+  usbid.version = 0;
+
+  m_uinput.reset(new LinuxUinput(LinuxUinput::kGenericDevice, "Xbox360 Chatpad", usbid));
 
   for(int i = 0; i < 256; ++i)
   {

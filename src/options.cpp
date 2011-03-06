@@ -73,6 +73,7 @@ Options::Options() :
   extra_devices(true),
   extra_events(true),
   uinput_device_names(),
+  uinput_device_usbids(),
   usb_debug(false)
 {
   // create the entry if not already available
@@ -202,24 +203,25 @@ Options::set_device_name(const std::string& name)
 }
 
 void
-Options::set_toggle_button(const std::string& toggle)
+Options::set_device_usbid(const std::string& name)
 {
-  if (opt.argument == "void")
-  {
-    opts.config_toggle_button = XBOX_BTN_UNKNOWN;
-    opts.config_toggle_button_is_set = true;
-  }
-  else
-  {
-    opts.config_toggle_button = string2btn(opt.argument);
-    opts.config_toggle_button_is_set = true;
-  }
+  uint32_t device_id = UInput::create_device_id(controller_slot, DEVICEID_AUTO);
+  uinput_device_usbids[device_id] = UInput::parse_input_id(name);
 }
 
 void
-Options::set_device_usbid(const std::string& name)
+Options::set_toggle_button(const std::string& str)
 {
-  assert(!"not implemented");
+  if (str == "void")
+  {
+    config_toggle_button = XBOX_BTN_UNKNOWN;
+    config_toggle_button_is_set = true;
+  }
+  else
+  {
+    config_toggle_button = string2btn(str);
+    config_toggle_button_is_set = true;
+  }
 }
 
 void
@@ -328,10 +330,10 @@ Options::finish()
 {
   // if we have multiple configurations and the toggle button isn't
   // set, set it to the guide button
-  if (!opts.config_toggle_button_is_set && 
-      controller_slots[controller_slot].size() > 1)
+  if (!config_toggle_button_is_set && 
+      controller_slots[controller_slot].get_options().size() > 1)
   {
-    opts.config_toggle_button = XBOX_BTN_GUIDE;
+    config_toggle_button = XBOX_BTN_GUIDE;
   }
 }
 

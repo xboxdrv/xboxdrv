@@ -977,7 +977,7 @@ CommandLineParser::print_version() const
 {
   std::cout
     << "xboxdrv " PACKAGE_VERSION " - http://pingus.seul.org/~grumbel/xboxdrv/\n"
-    << "Copyright © 2008-2010 Ingo Ruhnke <grumbel@gmx.de>\n"
+    << "Copyright © 2008-2011 Ingo Ruhnke <grumbel@gmx.de>\n"
     << "Licensed under GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
     << "This program comes with ABSOLUTELY NO WARRANTY.\n"
     << "This is free software, and you are welcome to redistribute it under certain\n"
@@ -993,36 +993,14 @@ CommandLineParser::set_modifier(const std::string& name, const std::string& valu
 void
 CommandLineParser::set_device_usbid(const std::string& name, const std::string& value)
 {
-  assert(!"not implemented");
+  uint32_t devid = UInput::parse_device_id(name);
+  m_options->uinput_device_usbids[devid] = UInput::parse_input_id(value);
 }
 
 void
 CommandLineParser::set_device_name(const std::string& name, const std::string& value)
 {
-  // FIXME: insert magic to resolve symbolic names
-  std::string::size_type p = name.find('.');
-
-  uint16_t device_id;
-  uint16_t slot_id;
-
-  if (p == std::string::npos)
-  {
-    device_id = str2deviceid(name.substr());
-    slot_id   = SLOTID_AUTO;
-  }
-  else if (p == 0)
-  {
-    device_id = DEVICEID_AUTO;
-    slot_id   = str2slotid(name.substr(p+1));
-  }
-  else
-  {
-    device_id = str2deviceid(name.substr(0, p));
-    slot_id   = str2slotid(name.substr(p+1));
-  }
-
-  uint32_t devid = UInput::create_device_id(slot_id, device_id);
-      
+  uint32_t devid = UInput::parse_device_id(name);
   m_options->uinput_device_names[devid] = value;
 }
 

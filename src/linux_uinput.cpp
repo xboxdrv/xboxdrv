@@ -26,11 +26,11 @@
 #include "force_feedback_handler.hpp"
 #include "raise_exception.hpp"
 
-LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, uint16_t vendor_, uint16_t product_) :
+LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, 
+                         const struct input_id& usbid_) :
   m_device_type(device_type),
   name(name_),
-  vendor(vendor_),
-  product(product_),
+  usbid(usbid_),
   m_finished(false),
   fd(-1),
   user_dev(),
@@ -43,7 +43,7 @@ LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, uint1
   ff_callback(),
   needs_sync(true)
 {
-  log_debug(name << " " << vendor << ":" << product);
+  log_debug(name << " " << usbid.vendor << ":" << usbid.product);
 
   std::fill_n(abs_lst, ABS_CNT, false);
   std::fill_n(rel_lst, REL_CNT, false);
@@ -224,10 +224,10 @@ LinuxUinput::finish()
   }
 
   strncpy(user_dev.name, name.c_str(), UINPUT_MAX_NAME_SIZE);
-  user_dev.id.version = 0x114; // FIXME: whats this for?
-  user_dev.id.bustype = BUS_USB;
-  user_dev.id.vendor  = vendor;
-  user_dev.id.product = product;
+  user_dev.id.version = usbid.version;
+  user_dev.id.bustype = usbid.bustype;
+  user_dev.id.vendor  = usbid.vendor;
+  user_dev.id.product = usbid.product;
 
   log_debug("'" << user_dev.name << "' " << user_dev.id.vendor << ":" << user_dev.id.product);
 

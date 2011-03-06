@@ -22,6 +22,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <linux/input.h>
 
 #include "controller_options.hpp"
 #include "controller_slot_options.hpp"
@@ -124,6 +125,7 @@ public:
   bool extra_events;
 
   std::map<uint32_t, std::string> uinput_device_names;
+  std::map<uint32_t, struct input_id> uinput_device_usbids;
 
   bool usb_debug;
 

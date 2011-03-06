@@ -31,6 +31,9 @@ struct Xbox360GuitarMsg;
 class UInput
 {
 public:
+  static struct input_id parse_input_id(const std::string& str);
+  static uint32_t parse_device_id(const std::string& str);
+
   static inline uint32_t create_device_id(uint16_t slot_id, uint16_t type_id)
   {
     return (slot_id << 16) | type_id;
@@ -53,6 +56,9 @@ private:
   typedef std::map<uint32_t, std::string> DeviceNames;
   DeviceNames m_device_names;
 
+  typedef std::map<uint32_t, struct input_id> DeviceUSBId;
+  DeviceUSBId m_device_usbids;
+
   struct RelRepeat 
   {
     UIEvent code;
@@ -74,6 +80,7 @@ public:
   void update(int msec_delta);
 
   void set_device_names(const std::map<uint32_t, std::string>& device_names);
+  void set_device_usbids(const std::map<uint32_t, struct input_id>& device_usbids);
   void set_ff_callback(int device_id, const boost::function<void (uint8_t, uint8_t)>& callback);
 
   /** Device construction functions
@@ -111,6 +118,7 @@ private:
   LinuxUinput* get_uinput(uint32_t device_id) const;
 
   std::string get_device_name(uint32_t device_id) const;
+  struct input_id get_device_usbid(uint32_t device_id) const;
 };
 
 #endif

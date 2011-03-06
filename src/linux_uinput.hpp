@@ -33,8 +33,7 @@ public:
 private:
   DeviceType  m_device_type;
   std::string name;
-  uint16_t    vendor;
-  uint16_t    product;
+  struct input_id usbid;
 
   bool m_finished;
 
@@ -57,7 +56,8 @@ private:
   bool needs_sync;
 
 public:
-  LinuxUinput(DeviceType device_type, const std::string& name, uint16_t vendor, uint16_t product);
+  LinuxUinput(DeviceType device_type, const std::string& name, 
+              const struct input_id& usbid_);
   ~LinuxUinput();
 
   /*@{*/
