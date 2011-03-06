@@ -93,9 +93,6 @@ AxisEvent::from_string(const std::string& str)
     }
   }
 
-  log_debug("in:  " << str);
-  log_debug("out: " << ev->str());
-
   return ev;
 }
 
