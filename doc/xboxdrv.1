@@ -650,7 +650,10 @@ not be switched at runtime.
 .TP 
 \*(T<\fB\-\-toggle\fR\*(T> \fIXBOXBTN\fR
 Sets the button that will be used to toggle between
-different different configurations.
+different different configurations. A value of 'void'
+will disable the toggle button. If no toggle button is
+specified, the guide button will be used to toggle
+between configurations.
 .SS "CONFIGURATION OPTIONS"
 .TP 
 \*(T<\fB\-\-modifier \fR\*(T>\fIMOD\fR
@@ -1006,13 +1009,28 @@ those, thus xboxdrv will add them automatically.
 The \*(T<\fB\-\-no\-extra\-events\fR\*(T> option will
 switch this behaviour off.
 .TP 
-\*(T<\fB\-\-name NAME\fR\*(T>
+\*(T<\fB\-\-device\-name NAME\fR\*(T>
 Changes the descriptive name the device will have. This
 options acts the same as
---device-name \fICURRENTSLOT\fR.auto=\fINAME\fR
+--device-names \fICURRENTSLOT\fR.auto=\fINAME\fR
 .TP 
-\*(T<\fB\-\-device\-name TYPE.SLOT=NAME\fR\*(T>
+\*(T<\fB\-\-device\-names TYPE.SLOT=NAME,...\fR\*(T>
 Changes the descriptive name the device will
+have. \fITYPE\fR is one of mouse,
+keyboard, joystick, auto
+or a number. \fISLOT\fR is a slot
+number or auto.
+The auto name acts as wild card and
+matches everything.
+.TP 
+\*(T<\fB\-\-device\-usbid VENDOR:PRODUCT:VERSION:BUS\fR\*(T>
+Changes the vendor, product, version and bus id that the
+device will have. The last two arguments are optional.
+This options acts the same as
+--device-usbids \fICURRENTSLOT\fR.auto=\fIVENDOR:PRODUCT:VERSION:BUS\fR
+.TP 
+\*(T<\fB\-\-device\-usbids TYPE.SLOT=VENDOR:PRODUCT:VERSION:BUS,...\fR\*(T>
+Changes the vendor, product, version and bus id the device will
 have. \fITYPE\fR is one of mouse,
 keyboard, joystick, auto
 or a number. \fISLOT\fR is a slot

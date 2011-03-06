@@ -1538,21 +1538,48 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
         </varlistentry>
 
         <varlistentry>
-          <term><option>--name NAME</option></term>
+          <term><option>--device-name NAME</option></term>
           <listitem>
             <para>
               Changes the descriptive name the device will have. This
               options acts the same as
-              --device-name <replaceable>CURRENTSLOT</replaceable>.auto=<replaceable>NAME</replaceable>
+              --device-names <replaceable>CURRENTSLOT</replaceable>.auto=<replaceable>NAME</replaceable>
             </para>
           </listitem>
         </varlistentry>
 
         <varlistentry>
-          <term><option>--device-name TYPE.SLOT=NAME</option></term>
+          <term><option>--device-names TYPE.SLOT=NAME,...</option></term>
           <listitem>
             <para>
               Changes the descriptive name the device will
+              have. <replaceable>TYPE</replaceable> is one of <constant>mouse</constant>,
+              <constant>keyboard</constant>, <constant>joystick</constant>, <constant>auto</constant>
+              or a number. <replaceable>SLOT</replaceable> is a slot
+              number or <constant>auto</constant>.
+              The <constant>auto</constant> name acts as wild card and
+              matches everything.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--device-usbid VENDOR:PRODUCT:VERSION:BUS</option></term>
+          <listitem>
+            <para>
+              Changes the vendor, product, version and bus id that the
+              device will have. The last two arguments are optional.
+              This options acts the same as
+              --device-usbids <replaceable>CURRENTSLOT</replaceable>.auto=<replaceable>VENDOR:PRODUCT:VERSION:BUS</replaceable>
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--device-usbids TYPE.SLOT=VENDOR:PRODUCT:VERSION:BUS,...</option></term>
+          <listitem>
+            <para>
+              Changes the vendor, product, version and bus id the device will
               have. <replaceable>TYPE</replaceable> is one of <constant>mouse</constant>,
               <constant>keyboard</constant>, <constant>joystick</constant>, <constant>auto</constant>
               or a number. <replaceable>SLOT</replaceable> is a slot
