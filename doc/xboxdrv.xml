@@ -1470,7 +1470,18 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
           <term><option>--mimic-xpad</option></term>
           <listitem>
             <para>
-              Causes xboxdrv to use the same axis and button names as the xpad kernel driver.
+              Causes xboxdrv to use the same axis and button names as
+              the xpad kernel driver for wired Xbox360 controller
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--mimic-xpad-wireless</option></term>
+          <listitem>
+            <para>
+              Causes xboxdrv to use the same axis and button names as
+              the xpad kernel driver for wired Xbox360 controller
             </para>
           </listitem>
         </varlistentry>

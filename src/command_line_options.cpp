@@ -56,6 +56,7 @@ enum {
   OPTION_QUIT,
   OPTION_NO_UINPUT,
   OPTION_MIMIC_XPAD,
+  OPTION_MIMIC_XPAD_WIRELESS,
   OPTION_NO_EXTRA_DEVICES,
   OPTION_NO_EXTRA_EVENTS,
   OPTION_TYPE,
@@ -268,7 +269,8 @@ CommandLineParser::init_argp()
     .add_option(OPTION_DPAD_ONLY,          0, "dpad-only",        "",     "Both sticks are ignored, only DPad sends out axis events")
     .add_option(OPTION_GUITAR,             0, "guitar",            "",     "Enables guitar button and axis mapping")
     .add_option(OPTION_MOUSE,              0, "mouse",            "",     "Enable mouse emulation")
-    .add_option(OPTION_MIMIC_XPAD,         0,  "mimic-xpad",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver")
+    .add_option(OPTION_MIMIC_XPAD,         0,  "mimic-xpad",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver for wired gamepads")
+    .add_option(OPTION_MIMIC_XPAD_WIRELESS, 0,  "mimic-xpad-wireless",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver for wireless gamepads")
     .add_newline()
 
     .add_text("Uinput Configuration Options: ")
@@ -559,6 +561,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_MIMIC_XPAD:
         opts.set_mimic_xpad();
+        break;
+
+      case OPTION_MIMIC_XPAD_WIRELESS:
+        opts.set_mimic_xpad_wireless();
         break;
 
       case OPTION_TYPE:

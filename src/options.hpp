@@ -163,6 +163,7 @@ public:
   void set_dpad_only();
   void set_force_feedback(const std::string& value);
   void set_mimic_xpad();
+  void set_mimic_xpad_wireless();
 
   void set_daemon();
   void set_daemon_detach(bool value);

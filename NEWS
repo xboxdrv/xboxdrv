@@ -1,6 +1,7 @@
-xboxdrv 0.7.2 - (??/Mar/2011)
+xboxdrv 0.7.2 - (06/Mar/2011)
 =============================
 
+* added --mimic-xpad-wireless
 * added --device-usbid and --device-usbids
 * added D-Bus support to the daemon
 * added better handling of rounding errors when sending REL_
@@ -8,6 +9,7 @@ xboxdrv 0.7.2 - (??/Mar/2011)
 * added statistic modifier that counts how often buttons are pressed
 * added support for multiple wireless controller in daemon
 * added --priority to enable realtime scheduling priority
+* added custom configuration for XBMC, see examples/xbmc.xboxdrv
 * changed default timeout to 10msec, for more responsive mouse emulation
 * changed meaning of -m, its now a shortcut for --modifier, not --mouse
 * improved INIParser, can now handle KEY_#NUM style names without quotes

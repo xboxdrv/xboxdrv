@@ -46,15 +46,6 @@ Stuff to do before 0.7.2 release:
 
 * add glib and dbus dependencies to .deb control file
 
-* mimic-xpad is broken, should handle wireless and wired controllers
-  different (different names) or maybe two different options
-  -> maybe get rid of them completely, have another way to handle
-     build-in configuration files
-
-== Device Name ==
-
-* implement Options::set_device_usbid() and CommandLineParser::set_device_usbid()
-
 
 == Unsolved/WontFix ==
 
