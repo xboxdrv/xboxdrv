@@ -347,6 +347,7 @@ CommandLineParser::init_ini(Options* opts)
     ("next-controller", boost::bind(&Options::next_controller, boost::ref(opts)), boost::function<void ()>())
     ("extra-devices", &opts->extra_devices)
     ("extra-events", &opts->extra_events)
+    ("toggle", boost::bind(&Options::set_toggle_button, boost::ref(opts), _1))
 
     ("deadzone", boost::bind(&CommandLineParser::set_deadzone, this, _1))
     ("deadzone-trigger", boost::bind(&CommandLineParser::set_deadzone_trigger, this, _1))
@@ -692,7 +693,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_TOGGLE:
-        opts.config_toggle_button = string2btn(opt.argument);
+        opts.set_toggle_button(opt.argument);
         break;
 
       case OPTION_UI_CLEAR:

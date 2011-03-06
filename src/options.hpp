@@ -115,6 +115,7 @@ public:
   uint32_t list_enums;
 
   XboxButton config_toggle_button;
+  bool config_toggle_button_is_set;
 
   int controller_slot;
   int config_slot;
@@ -151,6 +152,7 @@ public:
   void set_led(const std::string& value);
   void set_device_name(const std::string& name);
   void set_device_usbid(const std::string& name);
+  void set_toggle_button(const std::string& toggle);
   void set_mouse();
   void set_guitar();
   void set_trigger_as_button();

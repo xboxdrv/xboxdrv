@@ -1035,7 +1035,10 @@ start=KEY_ESC
           <listitem>
             <para>
               Sets the button that will be used to toggle between
-              different different configurations.
+              different different configurations. A value of 'void'
+              will disable the toggle button. If no toggle button is
+              specified, the guide button will be used to toggle
+              between configurations.
             </para>
           </listitem>
         </varlistentry>
