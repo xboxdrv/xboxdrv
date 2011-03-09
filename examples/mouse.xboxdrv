@@ -9,7 +9,6 @@
 # button.
 
 [xboxdrv]
-deadzone=4000 # to avoid cursor jitter we use a deadzone
 trigger-as-zaxis=true # both triggers acts as single axis
 dpad-as-button=true # easier to map the dpad as buttons
 
@@ -19,10 +18,10 @@ dpad-as-button=true # easier to map the dpad as buttons
 -trigger=trigger
 
 [ui-axismap]
-x1=REL_X:15:20
-y1=REL_Y:15:20
-y2=REL_WHEEL:5:100
-x2=REL_HWHEEL:5:100
+x1^dead:4000 = REL_X:750:-1
+y1^dead:4000 = REL_Y:750:-1
+y2^dead:8000 = REL_WHEEL:5:100
+x2^dead:8000 = REL_HWHEEL:5:100
 trigger=REL_WHEEL:5:100
 
 [ui-buttonmap]

@@ -193,7 +193,7 @@ RelAxisEventHandler::from_string(const std::string& str)
         break;
 
       case 1:
-        ev->m_value = boost::lexical_cast<int>(*i); 
+        ev->m_value = boost::lexical_cast<float>(*i); 
         break;
 
       case 2:
@@ -216,14 +216,18 @@ RelAxisEventHandler::from_string(const std::string& str)
 RelAxisEventHandler::RelAxisEventHandler() :
   m_code(UIEvent::invalid()),
   m_value(5),
-  m_repeat(10)
+  m_repeat(10),
+  m_stick_value(0.0f),
+  m_rest_value(0.0f)
 {
 }
 
 RelAxisEventHandler::RelAxisEventHandler(int device_id, int code, int repeat, float value) :
   m_code(UIEvent::create(device_id, EV_REL, code)),
   m_value(value),
-  m_repeat(repeat)
+  m_repeat(repeat),
+  m_stick_value(0.0f),
+  m_rest_value(0.0f)
 {
 }
 
@@ -237,23 +241,38 @@ RelAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 void
 RelAxisEventHandler::send(UInput& uinput, int value)
 {
-  float value_f;
   if (value < 0)
-    value_f = static_cast<float>(value) / static_cast<float>(-m_min);
+    m_stick_value = value / static_cast<float>(-m_min);
   else
-    value_f = static_cast<float>(value) / static_cast<float>(m_max);
+    m_stick_value = value / static_cast<float>(m_max);
 
-  float v = m_value * value_f;
+  if (m_repeat != -1)
+  { 
+    // regular old style sending of REL events
+    float v = m_value * m_stick_value;
 
-  if (v == 0)
-    uinput.send_rel_repetitive(m_code, v, -1);
-  else
-    uinput.send_rel_repetitive(m_code, v, m_repeat);
+    if (v == 0)
+      uinput.send_rel_repetitive(m_code, v, -1);
+    else
+      uinput.send_rel_repetitive(m_code, v, m_repeat);
+  }
 }
 
 void
 RelAxisEventHandler::update(UInput& uinput, int msec_delta)
 {
+  if (m_repeat == -1 && m_stick_value != 0.0f)
+  {
+    // new and improved REL style event sending
+
+    float rel_value = m_stick_value * m_value * static_cast<float>(msec_delta) / 1000.0f;
+
+    // keep track of the rest that we lose when converting to integer
+    rel_value += m_rest_value;
+    m_rest_value = rel_value - truncf(rel_value);
+
+    uinput.send_rel(m_code.get_device_id(), m_code.code, static_cast<int>(rel_value));
+  }
 }
 
 std::string

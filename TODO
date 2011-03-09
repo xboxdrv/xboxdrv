@@ -42,7 +42,36 @@ $ dput my-ppa ../xboxdrv_0.7.3-1~lucid1_source.changes
 Stuff to do before 0.7.3 release:
 =================================
 
+== Daemon ==
 
+* check how daemon reacts on suspend
+  - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
+    controller leads to LIBUSB_ERROR_OTHER
+    -> couldn't be replicated, both give LIBUSB_ERROR_OTHER
+  - errno is set to EBUSY
+  - the device handle can't be reused, device has to be reallocated
+  - integrate this with the "keep backlog of devices currently in use"
+
+* do something with stdout/stderr when its run in --detach mode
+
+== Other ==
+
+* mouse emulation is very jaggy (try painting in Gimp), caused by
+  REL_X and REL_Y being send independently, while they should be
+  synced up, this is a side-effect of the deadzone, without deadzone,
+  no jaggies
+
+  -> UInput::send_rel_repetitive() needs to syncronize all REL events
+     with the same repeat interval whenever a new event comes in
+
+     send_val = value * time_count / repeat;
+     time_count = 0;
+
+  -> add a repeat timeout 0  that sends on each update
+     
+* multiple ControllerThread lead to UInput::update() being called
+  multiple times, as UInputMessageProcessor does call the update()
+  which is wrong
 
 == Unsolved/WontFix ==
 
@@ -64,7 +93,6 @@ Stuff to do before 0.7.3 release:
   results in confusing behaviour
 
 
-
 * glib/D-Bus causes crash/exit when USBController::get_name() returns an invalid unicode string?!
 
 * move sigint/sigterm handling out of main.cpp and into xboxdrv_daemon.cpp (needs to use gmain_quit())
@@ -78,16 +106,6 @@ Stuff to do before 0.7.3 release:
   -> insert "guess code" before the uinput create call and just pretent thats bullet proof
   -> figure out how exactly device names are choosen (first free or
      are there other means? need to take special axes/buttons into account)
-
-== Daemon ==
-
-* check how daemon reacts on suspend
-  - suspending the computer leads to LIBUSB_ERROR_IO, unplugging the
-    controller leads to LIBUSB_ERROR_OTHER
-    -> couldn't be replicated, both give LIBUSB_ERROR_OTHER
-  - errno is set to EBUSY
-  - the device handle can't be reused, device has to be reallocated
-  - integrate this with the "keep backlog of devices currently in use"
 
 
 == Daemon ==

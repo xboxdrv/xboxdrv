@@ -100,8 +100,11 @@ public:
 
 private:
   UIEvent m_code;
-  float m_value; // FIXME: Why is this float?
-  int   m_repeat;
+  float   m_value;
+  int     m_repeat;
+
+  float   m_stick_value;
+  float   m_rest_value;
 };
 
 class AbsAxisEventHandler : public AxisEventHandler
