@@ -355,8 +355,14 @@ void
 UInput::send_key(uint32_t device_id, int ev_code, bool value)
 {
   assert(ev_code != -1);
-
   get_uinput(device_id)->send(EV_KEY, ev_code, value);
+}
+
+void
+Uinput::send_rel(uint32_t device_id, int ev_code, bool value)
+{
+  assert(ev_code != -1);
+  get_uinput(device_id)->send(EV_REL, ev_code, value);
 }
 
 void
@@ -401,6 +407,7 @@ UInput::send_rel_repetitive(const UIEvent& code, float value, int repeat_interva
 {
   if (repeat_interval < 0)
   { // remove rel_repeats from list
+    // FIXME: should send the last value still in the repeater
     m_rel_repeat_lst.erase(code);
     // no need to send a event for rel, as it defaults to 0 anyway
   }
@@ -423,6 +430,8 @@ UInput::send_rel_repetitive(const UIEvent& code, float value, int repeat_interva
     }
     else
     {
+      // FIXME: send old value, store new value for rest
+      
       it->second.code  = code;
       it->second.value = value;
       // it->second.time_count = do not touch this

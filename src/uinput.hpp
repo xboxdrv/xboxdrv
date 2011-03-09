@@ -100,6 +100,7 @@ public:
   void send(uint32_t device_id, int ev_type, int ev_code, int value);
   void send_abs(uint32_t device_id, int ev_code, int value);
   void send_key(uint32_t device_id, int ev_code, bool value);
+  void send_rel(uint32_t device_id, int ev_code, bool value);
   void send_rel_repetitive(const UIEvent& code, float value, int repeat_interval);
 
   /** should be called to single that all events of the current frame
