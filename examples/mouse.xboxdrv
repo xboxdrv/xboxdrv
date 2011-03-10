@@ -14,8 +14,13 @@ ui-clear=true
 [ui-axismap]
 x1^dead:4000 = REL_X:750:-1
 y1^dead:4000 = REL_Y:750:-1
-y2^dead:6000^invert = REL_WHEEL:5:100
-x2^dead:6000 = REL_HWHEEL:5:100
+
+# y2^dead:6000^invert = REL_WHEEL:5:100
+# x2^dead:6000 = REL_HWHEEL:5:100
+
+y2^dead:6000^invert = rel-repeat:REL_WHEEL:1:50
+x2^dead:6000 = rel-repeat:REL_HWHEEL:1:50
+
 trigger^invert=REL_WHEEL:5:100
 
 [ui-buttonmap]
