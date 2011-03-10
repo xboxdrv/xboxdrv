@@ -36,7 +36,6 @@ public:
   /** Sets a button/axis mapping that is equal to the xpad kernel driver */
   void mimic_xpad();
   void mimic_xpad_wireless();
-  void mouse();
   void guitar();
   void set_defaults();
 

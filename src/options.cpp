@@ -225,12 +225,6 @@ Options::set_toggle_button(const std::string& str)
 }
 
 void
-Options::set_mouse()
-{
-  get_controller_options().uinput.mouse();
-}
-
-void
 Options::set_guitar()
 {
   get_controller_options().uinput.guitar();

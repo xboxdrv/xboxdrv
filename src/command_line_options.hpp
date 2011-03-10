@@ -82,8 +82,12 @@ private:
   void set_evdev_absmap(const std::string& name, const std::string& value);
   void set_evdev_keymap(const std::string& name, const std::string& value);
 
+  void read_buildin_config_file(Options* opts, const std::string& filename, 
+                                const char* data, unsigned int data_len);
   void read_config_file(Options* opts, const std::string& filename);
   void read_alt_config_file(Options* opts, const std::string& filename);
+
+  void mouse();
 
 private:
   void init_argp();

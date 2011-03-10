@@ -9,38 +9,33 @@
 # button.
 
 [xboxdrv]
-trigger-as-zaxis=true # both triggers acts as single axis
-dpad-as-button=true # easier to map the dpad as buttons
-
-[axismap]
-# if we don't invert some axis things would be upside down
--y2=y2
--trigger=trigger
+ui-clear=true
 
 [ui-axismap]
 x1^dead:4000 = REL_X:750:-1
 y1^dead:4000 = REL_Y:750:-1
-y2^dead:8000 = REL_WHEEL:5:100
-x2^dead:8000 = REL_HWHEEL:5:100
-trigger=REL_WHEEL:5:100
+y2^dead:6000^invert = REL_WHEEL:5:100
+x2^dead:6000 = REL_HWHEEL:5:100
+trigger^invert=REL_WHEEL:5:100
 
 [ui-buttonmap]
-a=BTN_LEFT
-b=BTN_RIGHT
-x=BTN_MIDDLE
-y=KEY_ENTER
-rb=KEY_PAGEDOWN
-lb=KEY_PAGEUP
+a = BTN_LEFT
+b = BTN_RIGHT
+x = BTN_MIDDLE
+y = KEY_ENTER
+
+rb = KEY_PAGEDOWN
+lb = KEY_PAGEUP
 
 [ui-buttonmap]
-dl=KEY_LEFT
-dr=KEY_RIGHT
-du=KEY_UP
-dd=KEY_DOWN
+dl = KEY_LEFT
+dr = KEY_RIGHT
+du = KEY_UP
+dd = KEY_DOWN
 
 [ui-buttonmap]
-start=KEY_FORWARD
-back=KEY_BACK
-guide=KEY_ESC
+start = KEY_FORWARD
+back  = KEY_BACK
+guide = KEY_ESC
 
 # EOF #
