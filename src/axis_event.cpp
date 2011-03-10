@@ -22,6 +22,7 @@
 
 #include "evdev_helper.hpp"
 #include "log.hpp"
+#include "helper.hpp"
 #include "raise_exception.hpp"
 #include "uinput.hpp"
 
@@ -458,7 +459,7 @@ KeyAxisEventHandler::from_string(const std::string& str)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-
+  
   std::auto_ptr<KeyAxisEventHandler> ev(new KeyAxisEventHandler);
 
   int j = 0;
@@ -473,21 +474,35 @@ KeyAxisEventHandler::from_string(const std::string& str)
           for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
           {
             ev->m_up_codes[k] = str2key_event(*m);
-          }         
+          }
         }
         break;
 
       case 1:
         {
-          tokenizer ev_tokens(*i, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
-          int k = 0;
-          for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
+          if (is_number(*i))
           {
-            ev->m_down_codes[k] = str2key_event(*m);
+            // bit of hackery to handle simplified syntax for trigger button that don't need up/down events
+            ev->m_threshold = boost::lexical_cast<int>(*i);
+
+            for(int k = 0; ev->m_up_codes[k].is_valid(); ++k)
+            {
+              ev->m_down_codes[k] = ev->m_up_codes[k];
+              ev->m_up_codes[k] = UIEvent::invalid();
+            }
+          }
+          else
+          {
+            tokenizer ev_tokens(*i, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
+            int k = 0;
+            for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, ++k)
+            {
+              ev->m_down_codes[k] = str2key_event(*m);
+            }
           }
         }
         break;
-
+        
       case 2:
         ev->m_threshold = boost::lexical_cast<int>(*i);
         break;
@@ -539,7 +554,7 @@ KeyAxisEventHandler::send(UInput& uinput, int value)
   { // entering bigger then threshold zone
     if (value < 0)
     {
-      for(int i = 0; m_up_codes[i].is_valid(); ++i)
+      for(int i = 0; m_down_codes[i].is_valid(); ++i)
         uinput.send_key(m_down_codes[i].get_device_id(), m_down_codes[i].code, false);
 
       for(int i = 0; m_up_codes[i].is_valid(); ++i)
@@ -547,7 +562,7 @@ KeyAxisEventHandler::send(UInput& uinput, int value)
     }
     else // (value > 0)
     { 
-      for(int i = 0; m_up_codes[i].is_valid(); ++i)
+      for(int i = 0; m_down_codes[i].is_valid(); ++i)
         uinput.send_key(m_down_codes[i].get_device_id(), m_down_codes[i].code, true);
 
       for(int i = 0; m_up_codes[i].is_valid(); ++i)
@@ -557,7 +572,7 @@ KeyAxisEventHandler::send(UInput& uinput, int value)
   else if (::abs(m_old_value) >= m_threshold &&
            ::abs(value)       <  m_threshold)
   { // entering zero zone
-    for(int i = 0; m_up_codes[i].is_valid(); ++i)
+    for(int i = 0; m_down_codes[i].is_valid(); ++i)
       uinput.send_key(m_down_codes[i].get_device_id(), m_down_codes[i].code, false);
 
     for(int i = 0; m_up_codes[i].is_valid(); ++i)
