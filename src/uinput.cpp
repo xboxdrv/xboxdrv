@@ -362,7 +362,10 @@ void
 UInput::send_rel(uint32_t device_id, int ev_code, int value)
 {
   assert(ev_code != -1);
-  get_uinput(device_id)->send(EV_REL, ev_code, value);
+  if (value != 0)
+  {
+    get_uinput(device_id)->send(EV_REL, ev_code, value);
+  }
 }
 
 void

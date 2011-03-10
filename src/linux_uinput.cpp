@@ -232,7 +232,9 @@ LinuxUinput::finish()
   log_debug("'" << user_dev.name << "' " << user_dev.id.vendor << ":" << user_dev.id.product);
 
   if (ff_bit)
+  {
     user_dev.ff_effects_max = ff_handler->get_max_effects();
+  }
 
   {
     int write_ret = write(fd, &user_dev, sizeof(user_dev));
