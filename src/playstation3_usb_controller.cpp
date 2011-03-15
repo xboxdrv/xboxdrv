@@ -31,12 +31,12 @@ Playstation3USBController::Playstation3USBController(libusb_device* dev, bool tr
   endpoint_in(1),
   endpoint_out(2)
 {
-  claim_interface(0, try_detach);
+  usb_claim_interface(0, try_detach);
 }
 
 Playstation3USBController::~Playstation3USBController()
 {
-  release_interface(0);
+  usb_release_interface(0);
 }
 
 void

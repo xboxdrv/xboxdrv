@@ -28,11 +28,9 @@ struct XPadDevice;
 class XboxController : public USBController
 {
 private:
-  int endpoint_in;
-  int endpoint_out;
+  int m_endpoint_in;
+  int m_endpoint_out;
   
-  void find_endpoints(libusb_device* dev);
-
 public:
   XboxController(libusb_device* dev, bool try_detach);
   virtual ~XboxController();

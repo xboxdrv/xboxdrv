@@ -43,12 +43,12 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   m_endpoint  = controller_id*2 + 1;
   m_interface = controller_id*2;
 
-  claim_interface(m_interface, try_detach);
+  usb_claim_interface(m_interface, try_detach);
 }
 
 Xbox360WirelessController::~Xbox360WirelessController()
 {
-  release_interface(m_interface);
+  usb_release_interface(m_interface);
 }
 
 void
@@ -57,13 +57,7 @@ Xbox360WirelessController::set_rumble(uint8_t left, uint8_t right)
   //                                       +-- typo? might be 0x0c, i.e. length
   //                                       v
   uint8_t rumblecmd[] = { 0x00, 0x01, 0x0f, 0xc0, 0x00, left, right, 0x00, 0x00, 0x00, 0x00, 0x00 };
-  int transferred = 0;
-  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_OUT | m_endpoint,
-                                      rumblecmd, sizeof(rumblecmd), &transferred, 0);
-  if (ret != LIBUSB_SUCCESS)
-  {
-    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
-  }
+  usb_write(m_endpoint, rumblecmd, sizeof(rumblecmd));
 }
 
 void
@@ -73,40 +67,22 @@ Xbox360WirelessController::set_led(uint8_t status)
   //                                +--- Why not just status?
   //                                v
   uint8_t ledcmd[] = { 0x00, 0x00, 0x08, 0x40 + (status % 0x0e), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-  int transferred = 0;
-  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_OUT | m_endpoint, 
-                                ledcmd, sizeof(ledcmd), &transferred, 0);
-  if (ret != LIBUSB_SUCCESS)
-  {
-    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
-  }
+  usb_write(m_endpoint, ledcmd, sizeof(ledcmd));
 }
 
 bool
 Xbox360WirelessController::read(XboxGenericMsg& msg, int timeout)
 {
   uint8_t data[32];
-  int len = 0;
- 
-  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | m_endpoint, 
-                                      data, sizeof(data), 
-                                      &len, timeout);
+  int len = usb_read(m_endpoint, data, sizeof(data), timeout);
 
-  if (ret == LIBUSB_ERROR_TIMEOUT)
+  if (len == 0)
   {
     return false;
   }
-  else  if (ret != LIBUSB_SUCCESS)
-  { // Error
-    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
-  }
   else
   {
-    if (len == 0)
-    {
-      // ignore
-    }
-    else if (len == 2 && data[0] == 0x08) 
+    if (len == 2 && data[0] == 0x08)
     { // Connection Status Message
       if (data[1] == 0x00) 
       {

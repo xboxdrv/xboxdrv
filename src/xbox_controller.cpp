@@ -28,64 +28,19 @@
 
 XboxController::XboxController(libusb_device* dev, bool try_detach) :
   USBController(dev),
-  endpoint_in(1),
-  endpoint_out(2)
+  m_endpoint_in(1),
+  m_endpoint_out(2)
 {
-  find_endpoints(dev);
-  claim_interface(0, try_detach);
+  // find endpoints
+  m_endpoint_in  = usb_find_ep(LIBUSB_ENDPOINT_IN,  88, 66, 0);
+  m_endpoint_out = usb_find_ep(LIBUSB_ENDPOINT_OUT, 88, 66, 0);
+  
+  usb_claim_interface(0, try_detach);
 }
 
 XboxController::~XboxController()
 {
-  release_interface(0);
-}
-
-void
-XboxController::find_endpoints(libusb_device* dev)
-{
-  libusb_config_descriptor* config;
-  int ret = libusb_get_config_descriptor(dev, 0 /* config_index */, &config);
-  if (ret != LIBUSB_SUCCESS)
-  {
-    raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));
-  }
-
-  // FIXME: no need to search all interfaces, could just check the one we acutally use
-  for(const libusb_interface* interface = config->interface;
-      interface != config->interface + config->bNumInterfaces;
-      ++interface)
-  {
-    for(const libusb_interface_descriptor* altsetting = interface->altsetting;
-        altsetting != interface->altsetting + interface->num_altsetting;
-        ++altsetting)
-    {
-      log_debug("  Interface: " << static_cast<int>(altsetting->bInterfaceNumber));
-          
-      for(const libusb_endpoint_descriptor* endpoint = altsetting->endpoint; 
-          endpoint != altsetting->endpoint + altsetting->bNumEndpoints; 
-          ++endpoint)
-      {
-        log_debug("    Endpoint: " << int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK) <<
-                  "(" << ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? "IN" : "OUT") << ")");
-                  
-        if (altsetting->bInterfaceClass    == 88 &&
-            altsetting->bInterfaceSubClass == 66 &&
-            altsetting->bInterfaceProtocol == 0)
-        {
-          if (endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK)
-          {
-            endpoint_in = int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK);
-          }
-          else
-          {
-            endpoint_out = int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK);
-          }
-        }
-      }
-    }
-  }
-
-  libusb_free_config_descriptor(config);
+  usb_release_interface(0);
 }
 
 void
@@ -93,7 +48,7 @@ XboxController::set_rumble(uint8_t left, uint8_t right)
 {
   uint8_t rumblecmd[] = { 0x00, 0x06, 0x00, left, 0x00, right };
   int transferred = 0;
-  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_OUT | endpoint_out, 
+  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_OUT | m_endpoint_out, 
                                       rumblecmd, sizeof(rumblecmd), &transferred, 0);
   if (ret != LIBUSB_SUCCESS)
   {
@@ -113,7 +68,7 @@ XboxController::read(XboxGenericMsg& msg, int timeout)
   // FIXME: Add tracking for duplicate data packages (send by logitech controller)
   uint8_t data[32];
   int len = 0;
-  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | endpoint_in,
+  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | m_endpoint_in,
                                       data, sizeof(data), &len, timeout);
 
   if (ret == LIBUSB_ERROR_TIMEOUT)

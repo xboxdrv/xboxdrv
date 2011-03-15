@@ -60,12 +60,12 @@ SaitekP2500Controller::SaitekP2500Controller(libusb_device* dev, bool try_detach
   left_rumble(-1),
   right_rumble(-1)
 {
-  claim_interface(0, try_detach);
+  usb_claim_interface(0, try_detach);
 }
 
 SaitekP2500Controller::~SaitekP2500Controller()
 {
-  release_interface(0);
+  usb_release_interface(0);
 }
 
 void

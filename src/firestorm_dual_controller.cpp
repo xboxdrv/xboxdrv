@@ -87,12 +87,12 @@ FirestormDualController::FirestormDualController(libusb_device* dev, bool is_vsb
   left_rumble(-1),
   right_rumble(-1)
 {
-  claim_interface(0, try_detach);
+  usb_claim_interface(0, try_detach);
 }
 
 FirestormDualController::~FirestormDualController()
 {
-  release_interface(0);
+  usb_release_interface(0);
 }
 
 void

@@ -55,9 +55,6 @@ public:
   bool read(XboxGenericMsg& msg, int timeout);
 
 private:
-  void find_endpoints(libusb_device* dev);
-
-private:
   Xbox360Controller (const Xbox360Controller&);
   Xbox360Controller& operator= (const Xbox360Controller&);
 };
