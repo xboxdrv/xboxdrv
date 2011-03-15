@@ -21,7 +21,6 @@
 
 #include <libudev.h>
 #include <glib.h>
-#include <dbus/dbus-glib.h>
 
 #include "controller_slot_config.hpp"
 #include "controller_slot.hpp"
