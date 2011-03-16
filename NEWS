@@ -8,6 +8,7 @@ xboxdrv 0.7.3 - (16/Mar/2011)
 * reenabled USBReadThread to work around ignored input events
 * '--daemon' is broken in this release
 * added xbmc.xboxdrv, a config fine tuned for XBMC
+* added zsnes.xboxdrv, a config file for ZSNES
 
 
 xboxdrv 0.7.2 - (06/Mar/2011)
