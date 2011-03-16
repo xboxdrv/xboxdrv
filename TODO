@@ -51,15 +51,6 @@ $ git-buildpackage --git-no-create-orig --git-debian-branch=stable-lts --git-tag
 $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-stable_0.6.6-1~lucid1.dsc
 
 
-Must have features
-==================
-
-* add --dbus option to make it optional
-
-* add back USB read thread
-
-* add libusb-0.1 support back (maybe only in 0.7.4)
-
 
 Stuff to do before 0.7.4 release:
 =================================
@@ -68,12 +59,7 @@ Stuff to do before 0.7.4 release:
 
 Autolaunch error: X11 initialization failed." failed to open connection to bus: /bin/dbus-launch terminated abnormally with the following error: Autolaunch error: X11 initialization failed.
 
-* missed events are a huge problem in ZSNES
-
-* ZSNES has issue with diagonals when it comes to HAT, might be bug in ZSNES
-https://bugs.launchpad.net/ubuntu/+source/zsnes/+bug/519845
-
-* have named output variables to chain filters and modifiers?!
+* add named output variables to chain filters and modifiers?!
 
 == Daemon ==
 
@@ -179,6 +165,8 @@ disable LT and RT
      active, which they always become later then the wired ones, which
      are active by default)
 
+* add libusb-0.1 support back (maybe only in 0.7.4)
+  -> no, need a full switch
 
 * move sigint/sigterm handling out of main.cpp and into xboxdrv_daemon.cpp (needs to use gmain_quit())
 

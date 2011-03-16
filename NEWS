@@ -5,10 +5,10 @@ xboxdrv 0.7.3 - (16/Mar/2011)
 * added special REL repeat value '-1' to avoid jaggy mouse emulation movement
 * added "rel-repeat:" axis-event for better scroll wheel emulation
 * added --no-dbus, to disable D-Bus support
-* reenabled USBReadThread to work around ignored input events
-* '--daemon' is broken in this release
 * added xbmc.xboxdrv, a config fine tuned for XBMC
 * added zsnes.xboxdrv, a config file for ZSNES
+* reenabled USBReadThread to work around ignored input events
+* '--daemon' is broken in this release
 
 
 xboxdrv 0.7.2 - (06/Mar/2011)
