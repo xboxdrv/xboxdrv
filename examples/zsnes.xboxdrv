@@ -1,0 +1,39 @@
+# ZSNES Configuration
+# ===================
+#
+# The dpad and analog stick are mapped to the same buttons buttons
+# LB/RB and LT/RT are mapped to the same buttons
+# 
+# Things are mapped to buttons instead of axis as ZSNES has a bug that
+# make hat not work:
+#
+# * https://bugs.launchpad.net/ubuntu/+source/zsnes/+bug/519845
+
+[xboxdrv]
+ui-clear=true
+
+[ui-buttonmap]
+DU=JS_0
+DD=JS_1
+DL=JS_2
+DR=JS_3
+
+A=JS_4
+B=JS_5
+X=JS_6
+Y=JS_7
+
+LB=JS_8
+RB=JS_9
+
+START=JS_10
+SELECT=JS_11
+
+[ui-axismap]
+X1=JS_2:JS_3:16000
+Y1=JS_0:JS_1:16000
+
+LT=JS_8:64
+RT=JS_9:64
+
+# EOF #
