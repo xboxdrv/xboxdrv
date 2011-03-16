@@ -1,0 +1,23 @@
+# Microsoft Ergonomic 4000
+# ========================
+#
+# Simple configuration that maps the zoom slider on the Microsoft
+# Ergonomic 4000 keyboard to scroll wheel events.
+
+[xboxdrv]
+evdev = "/dev/input/by-id/usb-Microsoft_Natural®_Ergonomic_Keyboard_4000-event-kbd"
+evdev-grab = false
+ui-clear = true
+
+[evdev-keymap]
+# translate zoom events to dpad up/down
+"KEY_#418" = DU
+"KEY_#419" = DD
+
+[ui-buttonmap]
+# as we lose the auto-repeat in the translation to dpad events, we add
+# some autofire back
+DU^auto:75:125 = REL_WHEEL:2:-1
+DD^auto:75:125 = REL_WHEEL:-2:-1
+
+# EOF #
