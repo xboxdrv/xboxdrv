@@ -391,7 +391,18 @@ XboxdrvDaemon::run(const Options& opts)
     m_gmain = g_main_loop_new(NULL, false);
 
     init_g_udev();
-    init_g_dbus();
+
+    if (opts.dbus)
+    {
+      try
+      {
+        init_g_dbus();
+      }
+      catch (const std::exception& err)
+      {
+        log_error("D-Bus initialisation failed: " << err.what());
+      }
+    }
     
     log_info("launching into glib main loop");
     g_main_loop_run(m_gmain);

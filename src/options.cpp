@@ -61,6 +61,7 @@ Options::Options() :
   headset_dump(),
   headset_play(),
   detach(false),
+  dbus(true),
   pid_file(),
   on_connect(),
   on_disconnect(),

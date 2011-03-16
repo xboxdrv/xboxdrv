@@ -107,6 +107,7 @@ public:
 
   // daemon options
   bool detach; 
+  bool dbus;
   std::string pid_file;
   std::string on_connect;
   std::string on_disconnect;

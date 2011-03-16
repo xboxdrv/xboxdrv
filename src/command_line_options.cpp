@@ -120,6 +120,7 @@ enum {
   OPTION_DAEMON_PID_FILE,
   OPTION_DAEMON_MATCH,
   OPTION_DAEMON_MATCH_GROUP,
+  OPTION_DAEMON_NO_DBUS,
   OPTION_HELP_DEVICES,
   OPTION_LIST_ALL,
   OPTION_LIST_ABS,
@@ -184,6 +185,7 @@ CommandLineParser::init_argp()
     .add_option(OPTION_DAEMON,        'D', "daemon",    "", "Run as daemon")
     .add_option(OPTION_DAEMON_DETACH,   0, "detach",      "", "Detach the daemon from the current shell")
     .add_option(OPTION_DAEMON_PID_FILE, 0, "pid-file",    "FILE", "Write daemon pid to FILE")
+    .add_option(OPTION_DAEMON_NO_DBUS,  0, "no-dbus",    "", "Disables D-Bus support in the daemon")
     .add_option(OPTION_DAEMON_ON_CONNECT,    0, "on-connect", "FILE", "Launch EXE when a new controller is connected")
     .add_option(OPTION_DAEMON_ON_DISCONNECT, 0, "on-disconnect", "FILE", "Launch EXE when a controller is disconnected")
     .add_newline()
@@ -386,6 +388,7 @@ CommandLineParser::init_ini(Options* opts)
     ("detach",        
      boost::bind(&Options::set_daemon_detach, boost::ref(opts), true),
      boost::bind(&Options::set_daemon_detach, boost::ref(opts), false))
+    ("dbus", &opts->dbus)
     ("pid-file",      &opts->pid_file)
     ("on-connect",    &opts->on_connect)
     ("on-disconnect", &opts->on_disconnect)
@@ -851,6 +854,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_DAEMON_ON_DISCONNECT:
         opts.on_disconnect = opt.argument;
+        break;
+
+      case OPTION_DAEMON_NO_DBUS:
+        opts.dbus = false;
         break;
 
       case OPTION_DEVICE_BY_ID:
