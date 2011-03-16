@@ -1,9 +1,9 @@
 [xboxdrv]
-name="Xbox 360 Wireless Receiver"
 ui-clear = true
 extra-devices=false
 extra-events=false
 deadzone=4000
+device-name = "Xbox 360 Wireless Receiver"
 
 [ui-buttonmap]
 A=BTN_A

@@ -1,0 +1,54 @@
+# XBMC Configuration
+# ==================
+#
+# This configuration file that with XBMC by emulating a wireless
+# Xbox360 controller connected to the xpad kernel driver. It uses the
+# configuration files that come with XBMC, so it should work out of
+# the box without any further configuration of XBMC.
+#
+# This file is identical to 'xpad-wireless.xboxdrv', except the
+# workaround for the trigger issue in XBMC.
+
+[xboxdrv]
+ui-clear = true
+extra-devices=false
+extra-events=false
+deadzone=4000
+device-name = "Xbox 360 Wireless Receiver"
+
+[ui-buttonmap]
+A=BTN_A
+B=BTN_B
+X=BTN_X
+Y=BTN_Y
+
+DU=BTN_0
+DD=BTN_1
+DL=BTN_LEFT
+DR=BTN_RIGHT
+
+START=BTN_START
+GUIDE=BTN_MODE
+BACK=BTN_BACK
+
+LB=BTN_TL
+RB=BTN_TR
+
+TL=BTN_THUMBL
+TR=BTN_THUMBR
+
+[ui-axismap]
+X1=ABS_X
+Y1=ABS_Y
+
+X2=ABS_RX
+Y2=ABS_RY
+
+# The resp filter moves the neutral position to zero to work around a
+# bug in XBMC, that causes bogus events when neutral position is
+# elsewhere. It loses a bit of precision in the trigger as result, but
+# that isn't noticable.
+LT^resp:127:255=ABS_Z
+RT^resp:127:255=ABS_RZ
+
+# EOF #
