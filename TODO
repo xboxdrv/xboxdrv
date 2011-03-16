@@ -38,9 +38,41 @@ $ git-buildpackage --git-no-create-orig --git-debian-branch=master-lts --git-tag
 $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv_0.7.3-1~lucid1.dsc
 $ dput my-ppa ../xboxdrv_0.7.3-1~lucid1_source.changes
 
+# Ubuntu 10.10 - xboxdrv-stable
+
+$ git checkout stable
+$ git-buildpackage --git-no-create-orig --git-debian-branch=stable --git-tag --git-builder="debuild -S" --git-debian-tag="stable/0.6.6-1"
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-maverick.tgz ../xboxdrv-stable_0.6.6-1.dsc
+
+# Ubuntu 10.04 - xboxdrv-stable
+
+$ git checkout stable-lts
+$ git-buildpackage --git-no-create-orig --git-debian-branch=stable-lts --git-tag --git-builder="debuild -S" --git-debian-tag="stable/0.6.6-1_lucid1"
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-stable_0.6.6-1~lucid1.dsc
+
 
+Must have features
+==================
+
+* add --dbus option to make it optional
+
+* add back USB read thread
+
+* add libusb-0.1 support back (maybe only in 0.7.4)
+
+
 Stuff to do before 0.7.3 release:
 =================================
+
+* d-bus requires X11?!
+
+Autolaunch error: X11 initialization failed." failed to open connection to bus: /bin/dbus-launch terminated abnormally with the following error: Autolaunch error: X11 initialization failed.
+
+* missed events are a huge problem in ZSNES
+
+* ZSNES has issue with diagonals when it comes to HAT, might be bug in ZSNES
+https://bugs.launchpad.net/ubuntu/+source/zsnes/+bug/519845
+* have named output variables to chain filters and modifiers?!
 
 == Daemon ==
 
@@ -56,6 +88,15 @@ Stuff to do before 0.7.3 release:
 
 == Other ==
 
+* button presses are lost even with "--priority realtime" for the wireless controller
+
+  -> xboxdrv isn't running under realtime priority, only its subthreads, fix that
+  -> figure out how USBReadThread reacts to the device being closed
+
+* use static X11 keysym map to do the string translation?
+
+* split src/axis_event.hpp and src/button_event.hpp
+
 * mouse emulation is very jaggy (try painting in Gimp), caused by
   REL_X and REL_Y being send independently, while they should be
   synced up, this is a side-effect of the deadzone, without deadzone,
@@ -68,10 +109,48 @@ Stuff to do before 0.7.3 release:
      time_count = 0;
 
   -> add a repeat timeout 0  that sends on each update
+
+  -> should be use special value '-1' or repurpose '0'?
+
+  -> do we need more rel types? rel-once? or can repeat values be
+     abused?
+     
+     repeat: 0 - always repeat, -1, never repeat, NUM - repeat every NUM msec
+
+  -> add rel-repeat:{repeat} type that repeats more often the more the
+     stick is pressed, to give better scroll wheel emulation
+
+* add "key-once" or something like that, that only clicks a key
+  without keeping it pressed
+
+* documentation needs to be improved
+
+* --ui-axismap LT=KEY_A:KEY_B:1 
+
+Here KEY_B is the key you want to send and KEY_A is a random other key
+that you don't need. It's a hack as mapping both to KEY_B seems to
+cause some trouble with automatic key repeat for some reason. Note
+that you must not combine this with --trigger-as-zaxis as that will
+disable LT and RT
+
+* add a "click" filter or something like that, that causes a button to only be clicked, not hold
+
+== Documentation ==
+
+* X11 will convert a REL_WHEEL value of 1 into a single click (press
+  and release) of button 4, values of 3 would result in three clicks,
+  etc. REL_HWEEL will be button 6 and 7, add that to documentation somewhere
+
+== Bugs ==
      
 * multiple ControllerThread lead to UInput::update() being called
   multiple times, as UInputMessageProcessor does call the update()
   which is wrong
+
+* glib/D-Bus causes crash/exit when USBController::get_name() returns an invalid unicode string?!
+
+* LED isn't set proper when wireless controllers wake up from power-down
+
 
 == Unsolved/WontFix ==
 
@@ -92,9 +171,13 @@ Stuff to do before 0.7.3 release:
   and use them when a slot got free -> discard, bad idea, as it
   results in confusing behaviour
 
-
-* glib/D-Bus causes crash/exit when USBController::get_name() returns an invalid unicode string?!
+* daemon on regular xboxdrv have different controller orderings 
 
+  -> hard to avoid, as wireless controllers are only picked up when
+     active, which they always become later then the wired ones, which
+     are active by default)
+
+
 * move sigint/sigterm handling out of main.cpp and into xboxdrv_daemon.cpp (needs to use gmain_quit())
 
 * BTN_A@joystick.1 doesn't work for a single joystick, why? (joystick isn't id=0, why?)
@@ -170,11 +253,6 @@ Stuff to do before 0.7.3 release:
 
   * document them, ignore axis and button time for now
 
-* daemon on regular xboxdrv have different controller orderings (hard
-  to avoid, as wireless controllers are only picked up when active,
-  which they always become later then the wired ones, which are active
-  by default)
-
 * look at Joy2key for better mouse support (mouse acceleration), see Dustin Moline mails
   * timeout makes a huge difference, real MarbleMouse Trackball send around every 10msec
   * need to deal with rounding errors to allow small movements
@@ -194,22 +272,6 @@ Stuff to do before 0.7.3 release:
 * add execv: that takes arguments in ARG0:ARG1,... style
 
 * add system: that takes arguments "ARG0 ARG1 ..." style
-
-* add match rule for wireless id
-
-* add --exclued, --exclude-group as ControllerMatchRules
-
-* XboxdrvThread or XboxGenericController must hold information on
-  their: bus:dev, vendor:product and other potentially useful
-  information, match rule must match against controller, not
-  udev_device
-   -> doesn't work, as we don't have a controller at that point
-   -> match against abstract ControllerInfo object?
-   -> get_busnum()
-   -> get_devnum()
-
-   -> figure out potential matches early and save the valid slots?
-      -> ugly but could work
 
 * add [controller0/config0] support for ControllerOptions
 
@@ -231,18 +293,33 @@ Stuff to do before 0.7.3 release:
 Other Stuff
 ===========
 
-* --ui-axismap LT=KEY_A:KEY_B:1 
-
-Here KEY_B is the key you want to send and KEY_A is a random other key
-that you don't need. It's a hack as mapping both to KEY_B seems to
-cause some trouble with automatic key repeat for some reason. Note
-that you must not combine this with --trigger-as-zaxis as that will
-disable LT and RT
-
 * remove uinput.send_rel_repetitive() replace with just EventHandler::update()
+
   -> might not be needed, send_rel_repetitive() is kind of convenient  
 
+  -> send_rel_repetitive() doesn't work with multi-axis REL events (mouse emulation)
+
 * boost::lexical_cast<> error messages are useless, make some better ones
+
+Daemon Match Rules
+==================
+
+* add match rule for wireless id -> not really useful as that id is
+  more or less random
+
+* add --exclude, --exclude-group as ControllerMatchRules
+
+* XboxdrvThread or XboxGenericController must hold information on
+  their: bus:dev, vendor:product and other potentially useful
+  information, match rule must match against controller, not
+  udev_device
+   -> doesn't work, as we don't have a controller at that point
+   -> match against abstract ControllerInfo object?
+   -> get_busnum()
+   -> get_devnum()
+
+   -> figure out potential matches early and save the valid slots?
+      -> ugly but could work
 
 * --match again sysname could make sense, seems somewhat constant:
   "5-2" Xbox1 controller results in "5-2.1", due to being really two
@@ -370,7 +447,8 @@ http://www.mp3car.com/vbulletin/input-devices/108554-xbox360-chatpad-awsome-back
 Stuff to do before 0.7.x release:
 =================================
 
-* add extra checks to make sure the evdev buttons and axis given exist on the current device
+* add extra checks to make sure the evdev buttons and axis given exist
+  on the current device when using --evdev
 
 * invert y axis on --evdev
 

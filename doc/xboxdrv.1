@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 2010-05-05 0.7.2 "User Commands"
+.TH "xboxdrv " 1 2010-05-05 0.7.3 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -971,7 +971,12 @@ adjust the above to match your mouse configuration or the
 button events will come out wrong.
 .TP 
 \*(T<\fB\-\-mimic\-xpad\fR\*(T>
-Causes xboxdrv to use the same axis and button names as the xpad kernel driver.
+Causes xboxdrv to use the same axis and button names as
+the xpad kernel driver for wired Xbox360 controller
+.TP 
+\*(T<\fB\-\-mimic\-xpad\-wireless\fR\*(T>
+Causes xboxdrv to use the same axis and button names as
+the xpad kernel driver for wired Xbox360 controller
 .SS "UINPUT CONFIGURATION OPTIONS"
 .TP 
 \*(T<\fB\-\-no\-uinput\fR\*(T>
@@ -1231,10 +1236,11 @@ see [Button Filter].
 .TP 
 \*(T<\fB\-\-ui\-axismap\fR\*(T> \fIUIAXISSPEC,...\fR
 .nf
-\*(T<UIAXISSPEC = [ XBOXBTN "+" ] XBOXAXIS { "^" FILTER }  "=" ( RELSPEC | BTNSPEC | ABSSPEC ) ;
-BTNSPEC    = "KEY_" NAME ":" "KEY_" NAME ":" THRESHOLD ;
-RELSPEC    = "REL_" NAME ":" VALUE ":" REPEAT ;
-ABSSPEC    = "ABS_" NAME ;
+\*(T<UIAXISSPEC = [ XBOXBTN "+" ] XBOXAXIS { "^" FILTER }  "=" ( RELSPEC | RELREP | KEYSPEC | ABSSPEC ) ;
+KEYSPEC    = [ "key:" ] "KEY_" NAME ":" "KEY_" NAME ":" THRESHOLD ;
+RELSPEC    = [ "rel:" ] "REL_" NAME ":" VALUE ":" REPEAT ;
+RELREP     = "rel\-repeat:" "REL_" NAME ":" VALUE ":" REPEAT ;
+ABSSPEC    = [ "abs:" ] "ABS_" NAME ;
 FILTER     = ( "calibration" | "cal" ) ":" MIN ":" CENTER ":" MAX |
              ( "sensitifity" | "sen" ) ":" SENSITIFITY |
              ( "deadzone" | "dead" ) ":" MIN ":" MAX ":" SMOOTH |
@@ -1257,11 +1263,22 @@ same as for \*(T<\fB\-\-ui\-buttonmap\fR\*(T>.
 \*(T<$ xboxdrv \-\-ui\-axismap X1=REL_???:VALUE:REPEAT\*(T>
 .fi
 
-\fIVALUE\fR gives the maximum value of the event (default: 10)
+\fIVALUE\fR gives
+the maximum value of the event, the actual value that gets send
+is \fIVALUE\fR * axis_state.
+(default: 10)
 
 \fIREPEAT\fR
 gives the number of milisecond to pass before the event
-is fired again (default: 5)
+is fired again (default: 5).
+
+The value of -1 has a special meaning, it will result in
+the REL event being fired as soon as possible (i.e.
+every \fItimeout\fR miliseconds).
+This is the recomment way for handling mouse emulation,
+as it will keep REL events syncronized and thus avoid
+jaggies in the movement, that will result from manually
+specifying a timeout.
 
 .nf
 \*(T<$ xboxdrv \-\-ui\-axismap X1=KEY_UP:KEY_DOWN:THRESHOLD\*(T>

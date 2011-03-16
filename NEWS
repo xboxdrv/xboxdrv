@@ -1,7 +1,12 @@
-xboxdrv 0.7.3 - (??/Mar/2011)
+xboxdrv 0.7.3 - (16/Mar/2011)
 =============================
 
-* added xboxdrvctl to control the daemon
+* fixed installation of xboxdrvctl
+* added special REL repeat value '-1' to avoid jaggy mouse emulation movement
+* added "rel-repeat:" axis-event for better scroll wheel emulation
+* added --no-dbus, to disable D-Bus support
+* reenabled USBReadThread to work around ignored input events
+* '--daemon' is broken in this release
 
 
 xboxdrv 0.7.2 - (06/Mar/2011)
@@ -10,6 +15,7 @@ xboxdrv 0.7.2 - (06/Mar/2011)
 * added --mimic-xpad-wireless
 * added --device-usbid and --device-usbids
 * added D-Bus support to the daemon
+* added xboxdrvctl to control the daemon
 * added better handling of rounding errors when sending REL_
 * added dpad-restrictor for X, Y or fourway restriction on the dpad
 * added statistic modifier that counts how often buttons are pressed

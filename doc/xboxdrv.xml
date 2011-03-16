@@ -1800,10 +1800,11 @@ send KEY_LEFTSHIFT 0]]></programlisting>
         <varlistentry>
           <term><option>--ui-axismap</option> <replaceable class="parameter">UIAXISSPEC,...</replaceable></term>
           <listitem>
-            <programlisting><![CDATA[UIAXISSPEC = [ XBOXBTN "+" ] XBOXAXIS { "^" FILTER }  "=" ( RELSPEC | BTNSPEC | ABSSPEC ) ;
-BTNSPEC    = "KEY_" NAME ":" "KEY_" NAME ":" THRESHOLD ;
-RELSPEC    = "REL_" NAME ":" VALUE ":" REPEAT ;
-ABSSPEC    = "ABS_" NAME ;
+            <programlisting><![CDATA[UIAXISSPEC = [ XBOXBTN "+" ] XBOXAXIS { "^" FILTER }  "=" ( RELSPEC | RELREP | KEYSPEC | ABSSPEC ) ;
+KEYSPEC    = [ "key:" ] "KEY_" NAME ":" "KEY_" NAME ":" THRESHOLD ;
+RELSPEC    = [ "rel:" ] "REL_" NAME ":" VALUE ":" REPEAT ;
+RELREP     = "rel-repeat:" "REL_" NAME ":" VALUE ":" REPEAT ;
+ABSSPEC    = [ "abs:" ] "ABS_" NAME ;
 FILTER     = ( "calibration" | "cal" ) ":" MIN ":" CENTER ":" MAX |
              ( "sensitifity" | "sen" ) ":" SENSITIFITY |
              ( "deadzone" | "dead" ) ":" MIN ":" MAX ":" SMOOTH |
@@ -1823,12 +1824,24 @@ NAME       = STRING ;]]></programlisting>
             </para>
             <programlisting>$ xboxdrv --ui-axismap X1=REL_???:VALUE:REPEAT</programlisting>
             <para>
-              <replaceable class="parameter">VALUE</replaceable> gives the maximum value of the event (default: 10)
+              <replaceable class="parameter">VALUE</replaceable> gives
+              the maximum value of the event, the actual value that gets send
+              is <replaceable>VALUE</replaceable> * axis_state.
+              (default: 10)
             </para>
             <para>
               <replaceable class="parameter">REPEAT</replaceable>
               gives the number of milisecond to pass before the event
-              is fired again (default: 5)
+              is fired again (default: 5).
+            </para>
+            <para>
+              The value of -1 has a special meaning, it will result in
+              the REL event being fired as soon as possible (i.e.
+              every <replaceable>timeout</replaceable> miliseconds).
+              This is the recomment way for handling mouse emulation,
+              as it will keep REL events syncronized and thus avoid
+              jaggies in the movement, that will result from manually
+              specifying a timeout.
             </para>
             
             <programlisting>$ xboxdrv --ui-axismap X1=KEY_UP:KEY_DOWN:THRESHOLD</programlisting>
