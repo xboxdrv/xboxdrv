@@ -61,7 +61,7 @@ Must have features
 * add libusb-0.1 support back (maybe only in 0.7.4)
 
 
-Stuff to do before 0.7.3 release:
+Stuff to do before 0.7.4 release:
 =================================
 
 * d-bus requires X11?!
@@ -72,6 +72,7 @@ Autolaunch error: X11 initialization failed." failed to open connection to bus: 
 
 * ZSNES has issue with diagonals when it comes to HAT, might be bug in ZSNES
 https://bugs.launchpad.net/ubuntu/+source/zsnes/+bug/519845
+
 * have named output variables to chain filters and modifiers?!
 
 == Daemon ==
@@ -92,6 +93,7 @@ https://bugs.launchpad.net/ubuntu/+source/zsnes/+bug/519845
 
   -> xboxdrv isn't running under realtime priority, only its subthreads, fix that
   -> figure out how USBReadThread reacts to the device being closed
+     -> USBReadThread doesn't react at all, it becomes stuck in the last call
 
 * use static X11 keysym map to do the string translation?
 
