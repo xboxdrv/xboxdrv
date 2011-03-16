@@ -21,7 +21,9 @@
 
 #include <libusb.h>
 #include <string>
+#include <memory>
 
+#include "usb_read_thread.hpp"
 #include "controller.hpp"
 
 class USBController : public Controller
@@ -33,6 +35,8 @@ protected:
   std::string m_usbpath;
   std::string m_usbid;
   std::string m_name;
+
+  std::auto_ptr<USBReadThread> m_read_thread;
 
 public:
   USBController(libusb_device* dev);

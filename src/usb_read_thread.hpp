@@ -25,9 +25,6 @@
 #include <queue>
 #include <libusb.h>
 
-// FIXME: USBReadThread was created for libusb-0.1, as we where losing
-// events otherwise for some reason, might no longer be needed with
-// libusb-1.0
 class USBReadThread
 {
 private:

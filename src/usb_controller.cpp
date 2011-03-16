@@ -28,7 +28,8 @@ USBController::USBController(libusb_device* dev) :
   m_handle(0),
   m_usbpath(),
   m_usbid(),
-  m_name()
+  m_name(),
+  m_read_thread()
 {
   int ret = libusb_open(dev, &m_handle);
   if (ret != LIBUSB_SUCCESS)
@@ -120,21 +121,49 @@ USBController::usb_release_interface(int ifnum)
 int
 USBController::usb_read(int endpoint, uint8_t* data, int len, int timeout)
 {
-  int transferred = 0;
-  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | endpoint,
-                                      data, len, &transferred, timeout);
+  if (true) // use USBReadThread
+  {
+    if (!m_read_thread.get())
+    {
+      // launch the USBReadThread
+      m_read_thread.reset(new USBReadThread(m_handle, endpoint, len));
+      m_read_thread->start_thread();
+      return 0;
+    }
+    else
+    {
+      // read from the USBReadThread
+      int transferred = 0;
+      int ret = m_read_thread->read(data, len, &transferred, timeout);
 
-  if (ret == LIBUSB_ERROR_TIMEOUT)
-  {
-    return 0;
+      if (ret == LIBUSB_SUCCESS)
+      {
+        return transferred;
+      }
+      else
+      {
+        return 0;
+      }
+    }
   }
-  else if (ret == LIBUSB_SUCCESS)
+  else
   {
-    return transferred;
-  }
-  else 
-  {
-    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
+    int transferred = 0;
+    int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | endpoint,
+                                        data, len, &transferred, timeout);
+
+    if (ret == LIBUSB_ERROR_TIMEOUT)
+    {
+      return 0;
+    }
+    else if (ret == LIBUSB_SUCCESS)
+    {
+      return transferred;
+    }
+    else 
+    {
+      raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
+    }
   }
 }
 
