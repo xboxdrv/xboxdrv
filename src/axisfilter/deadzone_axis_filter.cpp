@@ -36,11 +36,12 @@ DeadzoneAxisFilter::from_string(const std::string& str)
     switch(idx)
     {
       case 0:
-        min_deadzone = -boost::lexical_cast<int>(*t);
-        max_deadzone = -min_deadzone;
+        max_deadzone = boost::lexical_cast<int>(*t);
+        min_deadzone = -max_deadzone;
         break;
         
       case 1:
+        min_deadzone = -min_deadzone;
         max_deadzone = boost::lexical_cast<int>(*t); 
         break;
 
