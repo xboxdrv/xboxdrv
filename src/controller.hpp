@@ -27,9 +27,15 @@ struct XboxGenericMsg;
 
 class Controller
 {
+private:
+  boost::function<void(const XboxGenericMsg& msg)> m_callback;
+
 public:
-  Controller() {}
+  Controller() : m_callback() {}
   virtual ~Controller() {}
+
+  virtual void start() {}
+  virtual void stop()  {}
 
   virtual void set_rumble(uint8_t left, uint8_t right) =0;
   virtual void set_led(uint8_t status)   =0;
@@ -46,6 +52,9 @@ public:
   virtual std::string get_usbpath() const { return "-1:-1"; }
   virtual std::string get_usbid() const   { return "-1:-1"; }
   virtual std::string get_name() const    { return "<not implemented>"; }
+
+  void set_msg_callback(const boost::function<void(const XboxGenericMsg&)>& callback);
+  void submit_msg(const XboxGenericMsg& msg);
 
 private:
   Controller (const Controller&);

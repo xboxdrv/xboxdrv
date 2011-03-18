@@ -21,6 +21,7 @@
 
 #include <linux/input.h>
 #include <string>
+#include <glib.h>
 #include <queue>
 
 #include "evdev_absmap.hpp"
@@ -54,6 +55,9 @@ public:
                   bool grab,
                   bool debug);
 
+  void start();
+  void stop();
+
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
 
@@ -63,6 +67,16 @@ public:
 private:
   bool apply(XboxGenericMsg& msg, const struct input_event& ev);
   void read_data_to_buffer();
+
+  gboolean on_read_data(GIOChannel* source,
+                        GIOCondition condition);
+
+  static gboolean on_read_data_wrap(GIOChannel* source,
+                                    GIOCondition condition,
+                                    gpointer userdata) 
+  {
+    return static_cast<EvdevController*>(userdata)->on_read_data(source, condition);
+  }
 
 private:
   EvdevController(const EvdevController&);

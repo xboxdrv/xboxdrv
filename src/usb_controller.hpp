@@ -54,6 +54,15 @@ public:
   void usb_write(int endpoint, uint8_t* data, int len);
   int  usb_find_ep(int direction, uint8_t if_class, uint8_t if_subclass, uint8_t if_protocol);
 
+  void usb_submit_read(int endpoint, int len);
+  void usb_cancel_read();
+
+  void on_read_data(libusb_transfer *transfer);
+  static void on_read_data_wrap(libusb_transfer *transfer)
+  {
+    static_cast<USBController*>(transfer->user_data)->on_read_data(transfer);
+  }
+
 private:
   USBController(const USBController&);
   USBController& operator=(const USBController&);

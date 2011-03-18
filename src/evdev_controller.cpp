@@ -130,6 +130,30 @@ EvdevController::EvdevController(const std::string& filename,
 }
 
 void
+EvdevController::start()
+{
+  GIOChannel* channel = g_io_channel_unix_new(m_fd);
+
+  // set encoding to binary
+  GError* error;
+  if (g_io_channel_set_encoding(channel, NULL, &error) != G_IO_STATUS_NORMAL)
+  {
+    log_error(error->message);
+    g_error_free(error);
+  }
+
+  guint source_id;
+  source_id = g_io_add_watch(channel, static_cast<GIOCondition>(G_IO_IN | G_IO_ERR),
+                             &EvdevController::on_read_data_wrap, this);
+}
+
+void
+EvdevController::stop()
+{
+  
+}
+
+void
 EvdevController::set_rumble(uint8_t left, uint8_t right)
 {
   // not implemented
@@ -245,6 +269,15 @@ EvdevController::read(XboxGenericMsg& msg, int timeout)
   usleep(timeout * 1000);
 
   return false;
+}
+
+gboolean
+EvdevController::on_read_data(GIOChannel* source, GIOCondition condition)
+{
+  //int fd = g_io_channel_unix_get_fd(source);
+  
+  // process data
+  return TRUE;
 }
 
 /* EOF */

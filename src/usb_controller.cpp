@@ -20,8 +20,10 @@
 
 #include <boost/format.hpp>
 
-#include "usb_helper.hpp"
+#include "log.hpp"
 #include "raise_exception.hpp"
+#include "usb_helper.hpp"
+#include "xboxmsg.hpp"
 
 USBController::USBController(libusb_device* dev) :
   m_dev(dev),
@@ -96,6 +98,57 @@ std::string
 USBController::get_name() const
 {
   return m_name;
+}
+
+void
+USBController::usb_submit_read(int endpoint, int len)
+{
+  log_debug("ep: " << endpoint << " len: " << len);
+
+  libusb_transfer* transfer = libusb_alloc_transfer(0);
+
+  uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
+  //FIXME: transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
+  libusb_fill_interrupt_transfer(transfer, m_handle,
+                                 endpoint | LIBUSB_ENDPOINT_IN,
+                                 data, len,
+                                 &USBController::on_read_data_wrap, this,
+                                 0); // timeout
+  int ret;
+  ret = libusb_submit_transfer(transfer);
+  log_debug("libusb_submit_transfer: " << usb_strerror(ret));
+}
+
+void
+USBController::usb_cancel_read()
+{
+  assert(!"implement me");
+}
+
+void
+USBController::on_read_data(libusb_transfer *transfer)
+{
+  log_trace();
+
+  assert(transfer);
+
+  // process data
+  XboxGenericMsg msg;
+  if (parse(transfer->buffer, transfer->actual_length, &msg))
+  {
+    submit_msg(msg);
+  }
+
+  if (false) // cleanup
+  {
+    libusb_free_transfer(transfer);
+  }
+  else // resubmit
+  {   
+    int ret;
+    ret = libusb_submit_transfer(transfer);
+    assert(ret == LIBUSB_SUCCESS); // FIXME
+  }
 }
 
 void

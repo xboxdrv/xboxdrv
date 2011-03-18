@@ -79,6 +79,20 @@ Xbox360Controller::~Xbox360Controller()
 }
 
 void
+Xbox360Controller::start()
+{
+  log_trace();
+  usb_submit_read(endpoint_in, 32);
+}
+
+void
+Xbox360Controller::stop()
+{
+  log_trace();
+  usb_cancel_read();
+}
+
+void
 Xbox360Controller::set_rumble(uint8_t left, uint8_t right)
 {
   uint8_t rumblecmd[] = { 0x00, 0x08, 0x00, left, right, 0x00, 0x00, 0x00 };
@@ -103,6 +117,8 @@ Xbox360Controller::read(XboxGenericMsg& msg, int timeout)
 bool
 Xbox360Controller::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
 {
+  log_trace();
+
   if (len == 0)
   {
     // happens with the Xbox360 controller every now and then, just

@@ -1,0 +1,68 @@
+/*
+**  Xbox360 USB Gamepad Userspace Driver
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
+**
+**  This program is free software: you can redistribute it and/or modify
+**  it under the terms of the GNU General Public License as published by
+**  the Free Software Foundation, either version 3 of the License, or
+**  (at your option) any later version.
+**
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**  GNU General Public License for more details.
+**
+**  You should have received a copy of the GNU General Public License
+**  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#ifndef HEADER_XBOXDRV_USB_SYSTEM_HPP
+#define HEADER_XBOXDRV_USB_SYSTEM_HPP
+
+#include <glib.h>
+
+class USBSystem
+{
+private:
+  GSourceFuncs m_source_funcs;
+  GSource* m_source;
+  gint m_source_id;
+
+public:
+  USBSystem();
+  ~USBSystem();
+
+  void attach(GMainContext* context);
+
+private:
+  gboolean on_source();
+
+  // libusb callbacks
+  void on_usb_pollfd_added(int fd, short events);
+  void on_usb_pollfd_removed(int fd);
+
+  static gboolean on_source_wrap(void* userdata) {
+    return static_cast<USBSystem*>(userdata)->on_source();
+  }
+
+  static void on_usb_pollfd_added_wrap(int fd, short events, void* userdata) {
+    static_cast<USBSystem*>(userdata)->on_usb_pollfd_added(fd, events);
+  }
+
+  static void on_usb_pollfd_removed_wrap(int fd,  void* userdata) {
+    static_cast<USBSystem*>(userdata)->on_usb_pollfd_removed(fd);
+  }
+
+  // glib callbacks
+  static gboolean on_source_prepare(GSource* source, gint* timeout_);
+  static gboolean on_source_check(GSource* source);
+  static gboolean on_source_dispatch(GSource* source, GSourceFunc callback, gpointer userdata);
+
+private:
+  USBSystem(const USBSystem&);
+  USBSystem& operator=(const USBSystem&);
+};
+
+#endif
+
+/* EOF */

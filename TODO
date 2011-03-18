@@ -55,11 +55,13 @@ $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-
 Stuff to do before 0.7.4 release:
 =================================
 
-* deadzone:MIN:MAX:SMOOTH is broken
+* export build-in config files, both as text and as directory, so that users can browse them
+
+* deadzone:MIN:MAX:SMOOTH is broken (fixed)
 
 * deadzone filter documentation is wrong
 
-* d-bus requires X11?!
+* d-bus requires X11?! -> try system bus when running as root
 
 Autolaunch error: X11 initialization failed." failed to open connection to bus: /bin/dbus-launch terminated abnormally with the following error: Autolaunch error: X11 initialization failed.
 

@@ -94,6 +94,17 @@ public:
   } \
 } while(false)
 
+/** Write an empty debug level message, thus class and function name
+    are visible */
+#define log_trace() do { \
+  if (g_logger.get_log_level() >= Logger::kDebug) \
+  { \
+    std::ostringstream x6ac1c382;             \
+    x6ac1c382 << log_pretty_print(__PRETTY_FUNCTION__); \
+    g_logger.append_unchecked(Logger::kDebug, x6ac1c382.str()); \
+  } \
+} while(false)
+
 extern Logger g_logger;
 
 #endif
