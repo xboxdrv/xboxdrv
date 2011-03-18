@@ -3,6 +3,8 @@ Pre Release Testing:
 
 * check the version number
 
+* make sure that all changes are in git
+
 VERSION="$(cat VERSION)"
 TAG="v${VERSION}"
 git tag -s  "${TAG}" -m "xboxdrv ${TAG}" 
@@ -15,8 +17,6 @@ git push --tags
 
 Ubuntu Package:
 ===============
-
-add libudev, libusb-1.0 to builddependencies
 
 # Ubuntu 10.10
 
@@ -54,6 +54,10 @@ $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-
 
 Stuff to do before 0.7.4 release:
 =================================
+
+* deadzone:MIN:MAX:SMOOTH is broken
+
+* deadzone filter documentation is wrong
 
 * d-bus requires X11?!
 
