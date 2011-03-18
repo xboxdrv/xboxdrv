@@ -46,6 +46,8 @@ public:
   virtual std::string get_usbid() const;
   virtual std::string get_name() const;
 
+  virtual bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out) =0;
+
   void usb_claim_interface(int ifnum, bool try_detach);
   void usb_release_interface(int ifnum);
   int  usb_read(int endpoint, uint8_t* data, int len, int timeout);

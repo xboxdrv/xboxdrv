@@ -79,10 +79,19 @@ XboxController::read(XboxGenericMsg& msg, int timeout)
   {
     raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
   }
-  else if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
+  else
   {
-    msg.type = XBOX_MSG_XBOX;
-    memcpy(&msg.xbox, data, sizeof(XboxMsg));
+    return parse(data, len, &msg);
+  }
+}
+
+bool
+XboxController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+{
+  if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
+  {
+    msg_out->type = XBOX_MSG_XBOX;
+    memcpy(&msg_out->xbox, data, sizeof(XboxMsg));
     return true;
   }
   else

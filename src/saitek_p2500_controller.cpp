@@ -94,7 +94,7 @@ SaitekP2500Controller::set_led(uint8_t status)
 bool
 SaitekP2500Controller::read(XboxGenericMsg& msg, int timeout)
 {
-  SaitekP2500Msg data;
+  uint8_t data[sizeof(SaitekP2500Msg)];
   int len = 0;
   int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 1,
                                       reinterpret_cast<uint8_t*>(&data), sizeof(data), 
@@ -109,90 +109,102 @@ SaitekP2500Controller::read(XboxGenericMsg& msg, int timeout)
     str << "USBError: " << ret << "\n" << usb_strerror(ret);
     throw std::runtime_error(str.str());
   }
-  else if (len == sizeof(data))
+  else
   {
-    memset(&msg, 0, sizeof(msg));
-    msg.type    = XBOX_MSG_XBOX360;
+    return parse(data, len, &msg);
+  }
+}
 
-    msg.xbox360.a = data.a;
-    msg.xbox360.b = data.b;
-    msg.xbox360.x = data.x;
-    msg.xbox360.y = data.y;
+bool
+SaitekP2500Controller::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+{
+  if (len == sizeof(SaitekP2500Msg))
+  {
+    SaitekP2500Msg msg_in;
+    memcpy(&msg_in, data, sizeof(SaitekP2500Msg));
 
-    msg.xbox360.lb = data.lb;
-    msg.xbox360.rb = data.rb;
+    memset(msg_out, 0, sizeof(*msg_out));
+    msg_out->type = XBOX_MSG_XBOX360;
 
-    msg.xbox360.lt = data.lt * 255;
-    msg.xbox360.rt = data.rt * 255;
+    msg_out->xbox360.a = msg_in.a;
+    msg_out->xbox360.b = msg_in.b;
+    msg_out->xbox360.x = msg_in.x;
+    msg_out->xbox360.y = msg_in.y;
 
-    msg.xbox360.start = data.start;
-    msg.xbox360.back  = data.back;
+    msg_out->xbox360.lb = msg_in.lb;
+    msg_out->xbox360.rb = msg_in.rb;
 
-    msg.xbox360.thumb_l = data.thumb_l;
-    msg.xbox360.thumb_r = data.thumb_r;
+    msg_out->xbox360.lt = msg_in.lt * 255;
+    msg_out->xbox360.rt = msg_in.rt * 255;
+
+    msg_out->xbox360.start = msg_in.start;
+    msg_out->xbox360.back  = msg_in.back;
+
+    msg_out->xbox360.thumb_l = msg_in.thumb_l;
+    msg_out->xbox360.thumb_r = msg_in.thumb_r;
       
-    msg.xbox360.x1 = scale_8to16(data.x1);
-    msg.xbox360.y1 = scale_8to16(data.y1);
+    msg_out->xbox360.x1 = scale_8to16(msg_in.x1);
+    msg_out->xbox360.y1 = scale_8to16(msg_in.y1);
 
-    msg.xbox360.x2 = scale_8to16(data.x2);
-    msg.xbox360.y2 = scale_8to16(data.y2);
+    msg_out->xbox360.x2 = scale_8to16(msg_in.x2);
+    msg_out->xbox360.y2 = scale_8to16(msg_in.y2);
 
-    switch(data.dpad)
+    switch(msg_in.dpad)
     {
       case 0:
-        msg.xbox360.dpad_up    = 1;
-        msg.xbox360.dpad_down  = 0;
-        msg.xbox360.dpad_left  = 0;
-        msg.xbox360.dpad_right = 0;
+        msg_out->xbox360.dpad_up    = 1;
+        msg_out->xbox360.dpad_down  = 0;
+        msg_out->xbox360.dpad_left  = 0;
+        msg_out->xbox360.dpad_right = 0;
         break;
 
       case 1:
-        msg.xbox360.dpad_up    = 1;
-        msg.xbox360.dpad_down  = 0;
-        msg.xbox360.dpad_left  = 0;
-        msg.xbox360.dpad_right = 1;
+        msg_out->xbox360.dpad_up    = 1;
+        msg_out->xbox360.dpad_down  = 0;
+        msg_out->xbox360.dpad_left  = 0;
+        msg_out->xbox360.dpad_right = 1;
         break;
 
       case 2:
-        msg.xbox360.dpad_up    = 0;
-        msg.xbox360.dpad_down  = 0;
-        msg.xbox360.dpad_left  = 0;
-        msg.xbox360.dpad_right = 1;
+        msg_out->xbox360.dpad_up    = 0;
+        msg_out->xbox360.dpad_down  = 0;
+        msg_out->xbox360.dpad_left  = 0;
+        msg_out->xbox360.dpad_right = 1;
         break;
 
       case 3:
-        msg.xbox360.dpad_up    = 0;
-        msg.xbox360.dpad_down  = 1;
-        msg.xbox360.dpad_left  = 0;
-        msg.xbox360.dpad_right = 1;
+        msg_out->xbox360.dpad_up    = 0;
+        msg_out->xbox360.dpad_down  = 1;
+        msg_out->xbox360.dpad_left  = 0;
+        msg_out->xbox360.dpad_right = 1;
         break;
 
       case 4:
-        msg.xbox360.dpad_up    = 0;
-        msg.xbox360.dpad_down  = 1;
-        msg.xbox360.dpad_left  = 0;
-        msg.xbox360.dpad_right = 0;
+        msg_out->xbox360.dpad_up    = 0;
+        msg_out->xbox360.dpad_down  = 1;
+        msg_out->xbox360.dpad_left  = 0;
+        msg_out->xbox360.dpad_right = 0;
         break;
 
       case 5:
-        msg.xbox360.dpad_up    = 0;
-        msg.xbox360.dpad_down  = 1;
-        msg.xbox360.dpad_left  = 1;
-        msg.xbox360.dpad_right = 0;
+        msg_out->xbox360.dpad_up    = 0;
+        msg_out->xbox360.dpad_down  = 1;
+        msg_out->xbox360.dpad_left  = 1;
+        msg_out->xbox360.dpad_right = 0;
         break;
 
       case 6:
-        msg.xbox360.dpad_up    = 0;
-        msg.xbox360.dpad_down  = 0;
-        msg.xbox360.dpad_left  = 1;
-        msg.xbox360.dpad_right = 0;
+        msg_out->xbox360.dpad_up    = 0;
+        msg_out->xbox360.dpad_down  = 0;
+        msg_out->xbox360.dpad_left  = 1;
+        msg_out->xbox360.dpad_right = 0;
         break;
 
       case 7:
-        msg.xbox360.dpad_up    = 1;
-        msg.xbox360.dpad_down  = 0;
-        msg.xbox360.dpad_left  = 1;
-        msg.xbox360.dpad_right = 0;
+        msg_out->xbox360.dpad_up    = 1;
+        msg_out->xbox360.dpad_down  = 0;
+        msg_out->xbox360.dpad_left  = 1;
+        msg_out->xbox360.dpad_right = 0;
         break;
     }
 

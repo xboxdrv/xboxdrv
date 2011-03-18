@@ -97,12 +97,17 @@ Xbox360Controller::read(XboxGenericMsg& msg, int timeout)
 {
   uint8_t data[32];
   int len = usb_read(endpoint_in, data, sizeof(data), timeout);
+  return parse(data, len, &msg);
+}
 
+bool
+Xbox360Controller::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+{
   if (len == 0)
   {
     // happens with the Xbox360 controller every now and then, just
     // ignore, seems harmless, so just ignore
-    log_debug("zero length read");
+    //log_debug("zero length read");
   }
   else if (len == 3 && data[0] == 0x01 && data[1] == 0x03)
   { 
@@ -143,8 +148,8 @@ Xbox360Controller::read(XboxGenericMsg& msg, int timeout)
   }
   else if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
   {
-    msg.type    = XBOX_MSG_XBOX360;
-    memcpy(&msg.xbox360, data, sizeof(Xbox360Msg));
+    msg_out->type    = XBOX_MSG_XBOX360;
+    memcpy(&msg_out->xbox360, data, sizeof(Xbox360Msg));
     return true;
   }
   else

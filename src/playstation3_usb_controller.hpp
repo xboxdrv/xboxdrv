@@ -37,6 +37,7 @@ public:
   void set_led(uint8_t status);
 
   bool read(XboxGenericMsg& msg, int timeout);
+  bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out);
 
 private:
   Playstation3USBController(const Playstation3USBController&);

@@ -71,11 +71,8 @@ Xbox360WirelessController::set_led(uint8_t status)
 }
 
 bool
-Xbox360WirelessController::read(XboxGenericMsg& msg, int timeout)
+Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
 {
-  uint8_t data[32];
-  int len = usb_read(m_endpoint, data, sizeof(data), timeout);
-
   if (len == 0)
   {
     return false;
@@ -129,8 +126,8 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, int timeout)
       }
       else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
       { // Event message
-        msg.type    = XBOX_MSG_XBOX360;
-        memcpy(&msg.xbox360, data+4, sizeof(Xbox360Msg));
+        msg_out->type = XBOX_MSG_XBOX360;
+        memcpy(&msg_out->xbox360, data+4, sizeof(Xbox360Msg));
         return true;
       }
       else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
@@ -154,7 +151,15 @@ Xbox360WirelessController::read(XboxGenericMsg& msg, int timeout)
     }
   }
 
-  return false;
+  return false; 
+}
+
+bool
+Xbox360WirelessController::read(XboxGenericMsg& msg, int timeout)
+{
+  uint8_t data[32];
+  int len = usb_read(m_endpoint, data, sizeof(data), timeout);
+  return parse(data, len, &msg);
 }
 
 void

@@ -288,5 +288,12 @@ FirestormDualController::read_default(XboxGenericMsg& msg, int timeout)
     return false;
   }
 }
+
+bool
+FirestormDualController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+{
+  assert(!"implement me");
+  return false;
+}
 
 /* EOF */

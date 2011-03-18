@@ -39,6 +39,7 @@ public:
 
   /** @param timeout   timeout in msec, 0 means forever */
   bool read(XboxGenericMsg& msg, int timeout);
+  bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out);
 
 private:
   bool read_default(XboxGenericMsg& msg, int timeout);

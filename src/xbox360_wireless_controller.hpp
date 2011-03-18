@@ -43,9 +43,11 @@ public:
   Xbox360WirelessController(libusb_device* dev, int controller_id, bool try_detach);
   virtual ~Xbox360WirelessController();
 
+  bool read(XboxGenericMsg& msg, int timeout);
+  bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out);
+
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
-  bool read(XboxGenericMsg& msg, int timeout);
   uint8_t get_battery_status() const;
   bool is_active() const { return m_active; }
   void set_activation_cb(const boost::function<void ()> callback);

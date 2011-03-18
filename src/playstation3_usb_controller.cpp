@@ -73,31 +73,40 @@ Playstation3USBController::read(XboxGenericMsg& msg, int timeout)
   }
   else
   {
-    msg.type = XBOX_MSG_PS3USB;
-    memcpy(&msg.ps3usb, data, sizeof(msg.ps3usb));
+    return parse(data, len, &msg);
+  }
+}
 
-    bitswap(msg.ps3usb.accl_x);
-    bitswap(msg.ps3usb.accl_y);
-    bitswap(msg.ps3usb.accl_z);
-    bitswap(msg.ps3usb.rot_z);
+bool
+Playstation3USBController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+{
+  if (static_cast<size_t>(len) >= sizeof(msg_out->ps3usb))
+  {
+    msg_out->type = XBOX_MSG_PS3USB;
+    memcpy(&msg_out->ps3usb, data, sizeof(msg_out->ps3usb));
+
+    bitswap(msg_out->ps3usb.accl_x);
+    bitswap(msg_out->ps3usb.accl_y);
+    bitswap(msg_out->ps3usb.accl_z);
+    bitswap(msg_out->ps3usb.rot_z);
 
     if (false)
     {
       log_debug(boost::format("X:%5d Y:%5d Z:%5d RZ:%5d\n") 
-                % (static_cast<int>(msg.ps3usb.accl_x) - 512) 
-                % (static_cast<int>(msg.ps3usb.accl_y) - 512)
-                % (static_cast<int>(msg.ps3usb.accl_z) - 512)
-                % (static_cast<int>(msg.ps3usb.rot_z)));
+                % (static_cast<int>(msg_out->ps3usb.accl_x) - 512) 
+                % (static_cast<int>(msg_out->ps3usb.accl_y) - 512)
+                % (static_cast<int>(msg_out->ps3usb.accl_z) - 512)
+                % (static_cast<int>(msg_out->ps3usb.rot_z)));
     }
       
     if (false)
     {
       // values are normalized to 1g (-116 is force by gravity)
       log_debug(boost::format("X:%6.3f Y:%6.3f Z:%6.3f RZ:%6.3f\n") 
-                % ((static_cast<int>(msg.ps3usb.accl_x) - 512) / 116.0f)
-                % ((static_cast<int>(msg.ps3usb.accl_y) - 512) / 116.0f)
-                % ((static_cast<int>(msg.ps3usb.accl_z) - 512) / 116.0f)
-                % ((static_cast<int>(msg.ps3usb.rot_z) - 5)));
+                % ((static_cast<int>(msg_out->ps3usb.accl_x) - 512) / 116.0f)
+                % ((static_cast<int>(msg_out->ps3usb.accl_y) - 512) / 116.0f)
+                % ((static_cast<int>(msg_out->ps3usb.accl_z) - 512) / 116.0f)
+                % ((static_cast<int>(msg_out->ps3usb.rot_z) - 5)));
     }
     
     if (false)
@@ -114,6 +123,10 @@ Playstation3USBController::read(XboxGenericMsg& msg, int timeout)
 
     return true;   
   }
+  else
+  {
+    return false;
+  }
 }
 
-  /* EOF */
+/* EOF */
