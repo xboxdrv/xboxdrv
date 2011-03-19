@@ -107,14 +107,6 @@ Xbox360Controller::set_led(uint8_t status)
 }
 
 bool
-Xbox360Controller::read(XboxGenericMsg& msg, int timeout)
-{
-  uint8_t data[32];
-  int len = usb_read(endpoint_in, data, sizeof(data), timeout);
-  return parse(data, len, &msg);
-}
-
-bool
 Xbox360Controller::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
 {
   log_trace();

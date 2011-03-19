@@ -20,13 +20,23 @@
 #define HEADER_XBOXDRV_USB_GSOURCE_HPP
 
 #include <glib.h>
+#include <list>
+
+class USBGSource;
+
+struct GUSBSource
+{
+  GSource source;
+  USBGSource* usb_source;
+};
 
 class USBGSource
 {
 private:
   GSourceFuncs m_source_funcs;
-  GSource* m_source;
+  GUSBSource* m_source;
   gint m_source_id;
+  std::list<GPollFD*> m_pollfds;
 
 public:
   USBGSource();

@@ -44,6 +44,20 @@ XboxController::~XboxController()
 }
 
 void
+XboxController::start()
+{
+  log_trace();
+  usb_submit_read(m_endpoint_in, 32);
+}
+
+void
+XboxController::stop()
+{
+  log_trace();
+  usb_cancel_read();
+}
+
+void
 XboxController::set_rumble(uint8_t left, uint8_t right)
 {
   uint8_t rumblecmd[] = { 0x00, 0x06, 0x00, left, 0x00, right };
@@ -60,29 +74,6 @@ void
 XboxController::set_led(uint8_t status)
 {
   // Controller doesn't have a LED
-}
-
-bool
-XboxController::read(XboxGenericMsg& msg, int timeout)
-{
-  // FIXME: Add tracking for duplicate data packages (send by logitech controller)
-  uint8_t data[32];
-  int len = 0;
-  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | m_endpoint_in,
-                                      data, sizeof(data), &len, timeout);
-
-  if (ret == LIBUSB_ERROR_TIMEOUT)
-  {
-    return false;
-  }
-  else if (ret != LIBUSB_SUCCESS)
-  {
-    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
-  }
-  else
-  {
-    return parse(data, len, &msg);
-  }
 }
 
 bool

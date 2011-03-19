@@ -223,6 +223,8 @@ USBController::usb_read(int endpoint, uint8_t* data, int len, int timeout)
 void
 USBController::usb_write(int endpoint, uint8_t* data, int len)
 {
+  log_error("not implemented");
+#ifdef FIXME
   int transferred = 0;
   int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_OUT | endpoint,
                                       data, len, &transferred, 0);
@@ -236,6 +238,7 @@ USBController::usb_write(int endpoint, uint8_t* data, int len)
     raise_exception(std::runtime_error, "libusb_interrupt_transfer() short write: "
                     << len << " - " << transferred);
   }
+#endif
 }
 
 int

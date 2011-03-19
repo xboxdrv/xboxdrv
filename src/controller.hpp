@@ -44,12 +44,6 @@ public:
   virtual void set_rumble(uint8_t left, uint8_t right) =0;
   virtual void set_led(uint8_t status)   =0;
 
-  /**
-     @param timeout   timeout in msec, 0 means forever 
-     @return true if something was read, false otherwise
-   */  
-  virtual bool read(XboxGenericMsg& msg, int timeout) =0;
-
   virtual bool is_active() const { return true; }
   virtual void set_activation_cb(const boost::function<void ()> callback) {}
 

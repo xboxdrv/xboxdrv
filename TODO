@@ -55,6 +55,8 @@ $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-
 Stuff to do before 0.7.4 release:
 =================================
 
+* add --controller 4 or --controller-count 4 or something like that
+
 * add special LED status set switches the LED with the given config
 
   if (opts.priority == Options::kPriorityRealtime)

@@ -43,7 +43,9 @@ public:
   Xbox360WirelessController(libusb_device* dev, int controller_id, bool try_detach);
   virtual ~Xbox360WirelessController();
 
-  bool read(XboxGenericMsg& msg, int timeout);
+  void start();
+  void stop();
+
   bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out);
 
   void set_rumble(uint8_t left, uint8_t right);

@@ -52,6 +52,20 @@ Xbox360WirelessController::~Xbox360WirelessController()
 }
 
 void
+Xbox360WirelessController::start()
+{
+  log_trace();
+  usb_submit_read(m_endpoint, 32);
+}
+
+void
+Xbox360WirelessController::stop()
+{
+  log_trace();
+  usb_cancel_read();
+}
+
+void
 Xbox360WirelessController::set_rumble(uint8_t left, uint8_t right)
 {
   //                                       +-- typo? might be 0x0c, i.e. length
@@ -154,19 +168,12 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
   return false; 
 }
 
-bool
-Xbox360WirelessController::read(XboxGenericMsg& msg, int timeout)
-{
-  uint8_t data[32];
-  int len = usb_read(m_endpoint, data, sizeof(data), timeout);
-  return parse(data, len, &msg);
-}
-
 void
 Xbox360WirelessController::set_active(bool v)
 {
   if (m_active != v)
   {
+    log_debug("activation status: " << v);
     m_active = v;
     if (m_activation_cb)
     {
