@@ -16,12 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_USB_SYSTEM_HPP
-#define HEADER_XBOXDRV_USB_SYSTEM_HPP
+#ifndef HEADER_XBOXDRV_USB_GSOURCE_HPP
+#define HEADER_XBOXDRV_USB_GSOURCE_HPP
 
 #include <glib.h>
 
-class USBSystem
+class USBGSource
 {
 private:
   GSourceFuncs m_source_funcs;
@@ -29,8 +29,8 @@ private:
   gint m_source_id;
 
 public:
-  USBSystem();
-  ~USBSystem();
+  USBGSource();
+  ~USBGSource();
 
   void attach(GMainContext* context);
 
@@ -42,15 +42,15 @@ private:
   void on_usb_pollfd_removed(int fd);
 
   static gboolean on_source_wrap(void* userdata) {
-    return static_cast<USBSystem*>(userdata)->on_source();
+    return static_cast<USBGSource*>(userdata)->on_source();
   }
 
   static void on_usb_pollfd_added_wrap(int fd, short events, void* userdata) {
-    static_cast<USBSystem*>(userdata)->on_usb_pollfd_added(fd, events);
+    static_cast<USBGSource*>(userdata)->on_usb_pollfd_added(fd, events);
   }
 
   static void on_usb_pollfd_removed_wrap(int fd,  void* userdata) {
-    static_cast<USBSystem*>(userdata)->on_usb_pollfd_removed(fd);
+    static_cast<USBGSource*>(userdata)->on_usb_pollfd_removed(fd);
   }
 
   // glib callbacks
@@ -59,8 +59,8 @@ private:
   static gboolean on_source_dispatch(GSource* source, GSourceFunc callback, gpointer userdata);
 
 private:
-  USBSystem(const USBSystem&);
-  USBSystem& operator=(const USBSystem&);
+  USBGSource(const USBGSource&);
+  USBGSource& operator=(const USBGSource&);
 };
 
 #endif

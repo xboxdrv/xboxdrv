@@ -22,17 +22,21 @@
 #include <stdint.h>
 
 #include <boost/function.hpp>
+#include <memory>
+#include <libudev.h>
 
+class MessageProcessor;
 struct XboxGenericMsg;
 
 class Controller
 {
 private:
-  boost::function<void(const XboxGenericMsg& msg)> m_callback;
+  std::auto_ptr<MessageProcessor> m_processor;
+  udev_device* m_udev_device;
 
 public:
-  Controller() : m_callback() {}
-  virtual ~Controller() {}
+  Controller();
+  virtual ~Controller();
 
   virtual void start() {}
   virtual void stop()  {}
@@ -53,7 +57,12 @@ public:
   virtual std::string get_usbid() const   { return "-1:-1"; }
   virtual std::string get_name() const    { return "<not implemented>"; }
 
-  void set_msg_callback(const boost::function<void(const XboxGenericMsg&)>& callback);
+  void set_message_proc(std::auto_ptr<MessageProcessor> processor);
+  MessageProcessor* get_message_proc() const { return m_processor.get(); }
+
+  void set_udev_device(udev_device* udev_dev);
+  udev_device* get_udev_device() const;
+
   void submit_msg(const XboxGenericMsg& msg);
 
 private:

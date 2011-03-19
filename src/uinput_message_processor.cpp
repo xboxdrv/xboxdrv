@@ -39,7 +39,7 @@ UInputMessageProcessor::~UInputMessageProcessor()
 }
 
 void
-UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
+UInputMessageProcessor::send(const XboxGenericMsg& msg_in)
 {
   if (!m_config->empty())
   {
@@ -66,15 +66,18 @@ UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
     }
 
     // run the controller message through all modifier
-    for(std::vector<ModifierPtr>::iterator i = m_config->get_config()->get_modifier().begin();
-        i != m_config->get_config()->get_modifier().end(); 
-        ++i)
-    {
+    // FIXME: don't have msec
+    /*
+      for(std::vector<ModifierPtr>::iterator i = m_config->get_config()->get_modifier().begin();
+      i != m_config->get_config()->get_modifier().end(); 
+      ++i)
+      {
       (*i)->update(msec_delta, msg);
-    }
+      }
 
-    m_uinput.update(msec_delta);
-    m_config->get_config()->get_uinput().update(msec_delta);
+      m_uinput.update(msec_delta);
+      m_config->get_config()->get_uinput().update(msec_delta);
+    */
 
     // send current Xbox state to uinput
     if (memcmp(&msg, &m_oldmsg, sizeof(XboxGenericMsg)) != 0)

@@ -18,19 +18,53 @@
 
 #include "controller.hpp"
 
-void
-Controller::set_msg_callback(const boost::function<void(const XboxGenericMsg&)>& callback)
+#include <boost/bind.hpp>
+
+#include "message_processor.hpp"
+
+Controller::Controller() :
+  m_processor(),
+  m_udev_device()
 {
-  m_callback = callback;
+}
+
+Controller::~Controller()
+{
+  udev_device_unref(m_udev_device);
 }
 
 void
 Controller::submit_msg(const XboxGenericMsg& msg)
 {
-  if (m_callback)
+  if (m_processor.get())
   {
-    m_callback(msg);
+    m_processor->send(msg);
   }
+}
+
+void
+Controller::set_message_proc(std::auto_ptr<MessageProcessor> processor)
+{
+  m_processor = processor;
+
+  // connect the processor to the controller to allow rumble
+  if (m_processor.get())
+  {
+    m_processor->set_ff_callback(boost::bind(&Controller::set_rumble, this, _1, _2));
+  }
+}
+
+void
+Controller::set_udev_device(udev_device* udev_dev)
+{
+  m_udev_device = udev_dev;
+  udev_device_ref(m_udev_device);
+}
+
+udev_device*
+Controller::get_udev_device() const
+{
+  return m_udev_device;
 }
 
 /* EOF */

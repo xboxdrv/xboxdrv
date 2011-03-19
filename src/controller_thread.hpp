@@ -1,3 +1,4 @@
+#if 0
 /*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
@@ -19,7 +20,6 @@
 #ifndef HEADER_XBOXDRV_XBOXDRV_THREAD_HPP
 #define HEADER_XBOXDRV_XBOXDRV_THREAD_HPP
 
-#include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include "controller_slot_config.hpp"
@@ -38,7 +38,6 @@ typedef boost::shared_ptr<ControllerThread> ControllerThreadPtr;
 class ControllerThread // FIXME: find a better name, XboxdrvControllerLoop?!
 {
 private:
-  std::auto_ptr<boost::thread> m_thread;
   std::auto_ptr<MessageProcessor> m_processor;
   ControllerPtr m_controller;
   bool m_loop;
@@ -57,15 +56,6 @@ public:
                    const Options& opts);
   ~ControllerThread();
 
-  // main loop, can be started in a separate thread with
-  // start_thread() or used in its own in the main thread
-  void controller_loop(const Options& opts);
-
-  // thread control functions
-  void start_thread(const Options& opts);
-  void stop_thread();
-  bool try_join_thread();
-
   bool is_active() const;
 
   std::string get_usbpath() const;
@@ -81,10 +71,6 @@ public:
   ControllerPtr get_controller() const { return m_controller; }
 
 private:
-  void launch_child_process();
-  void watch_chid_process();
-
-private:
   ControllerThread(const ControllerThread&);
   ControllerThread& operator=(const ControllerThread&);
 };
@@ -92,3 +78,4 @@ private:
 #endif
 
 /* EOF */
+#endif

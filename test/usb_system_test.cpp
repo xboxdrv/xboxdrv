@@ -23,7 +23,8 @@
 #include "log.hpp"
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
-#include "usb_system.hpp"
+#include "usb_gsource.hpp"
+#include "dummy_message_processor.hpp"
 #include "xbox360_controller.hpp"
 #include "xboxmsg.hpp"
 
@@ -77,8 +78,8 @@ int main()
 
   GMainLoop* m_gmain = g_main_loop_new(NULL, FALSE);
 
-  USBSystem usb_system;
-  usb_system.attach(NULL);
+  USBGSource usb_gsource;
+  usb_gsource.attach(NULL);
 
   libusb_device* dev = get_controller_dev();
   assert(dev);
@@ -89,8 +90,9 @@ int main()
                                                         "",
                                                         "",
                                                         false);
-  controller->set_msg_callback(boost::bind(&process_msg, _1));
+  controller->set_message_proc(std::auto_ptr<MessageProcessor>(new DummyMessageProcessor()));
   controller->start();
+  controller->set_led(2);
   g_main_loop_run(m_gmain);
   
   return 0;

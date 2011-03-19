@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "usb_system.hpp"
+#include "usb_gsource.hpp"
 
 #include <assert.h>
 #include <poll.h>
@@ -28,15 +28,15 @@
 // GUSBSource
 
 // documentation at: http://library.gnome.org/devel/glib/2.28/
-USBSystem::USBSystem() :
+USBGSource::USBGSource() :
   m_source_funcs(),
   m_source(),
   m_source_id()
 {
   // create the source functions
-  m_source_funcs.prepare  = &USBSystem::on_source_prepare;
-  m_source_funcs.check    = &USBSystem::on_source_check;
-  m_source_funcs.dispatch = &USBSystem::on_source_dispatch;
+  m_source_funcs.prepare  = &USBGSource::on_source_prepare;
+  m_source_funcs.check    = &USBGSource::on_source_check;
+  m_source_funcs.dispatch = &USBGSource::on_source_dispatch;
   m_source_funcs.finalize = NULL;
 
   m_source_funcs.closure_callback = NULL;
@@ -45,7 +45,7 @@ USBSystem::USBSystem() :
   // create the source itself
   m_source = g_source_new(&m_source_funcs, sizeof(GSource));
   g_source_set_callback(m_source,
-                        &USBSystem::on_source_wrap, this,
+                        &USBGSource::on_source_wrap, this,
                         NULL);
 
   // add pollfds to source
@@ -65,24 +65,24 @@ USBSystem::USBSystem() :
 
   // register pollfd callbacks
   libusb_set_pollfd_notifiers(NULL, 
-                              &USBSystem::on_usb_pollfd_added_wrap,
-                              &USBSystem::on_usb_pollfd_removed_wrap,
+                              &USBGSource::on_usb_pollfd_added_wrap,
+                              &USBGSource::on_usb_pollfd_removed_wrap,
                               this);
 }
 
-USBSystem::~USBSystem()
+USBGSource::~USBGSource()
 {
 }
 
 void
-USBSystem::attach(GMainContext* context)
+USBGSource::attach(GMainContext* context)
 {
   // attach source
   m_source_id = g_source_attach(m_source, context);
 }
 
 void
-USBSystem::on_usb_pollfd_added(int fd, short events)
+USBGSource::on_usb_pollfd_added(int fd, short events)
 {
   assert(POLLIN  == G_IO_IN);
   assert(POLLOUT == G_IO_OUT);
@@ -100,7 +100,7 @@ USBSystem::on_usb_pollfd_added(int fd, short events)
 }
 
 void
-USBSystem::on_usb_pollfd_removed(int fd)
+USBGSource::on_usb_pollfd_removed(int fd)
 {
   log_trace();
   //  FIXME: how to get the GPollFD
@@ -108,7 +108,7 @@ USBSystem::on_usb_pollfd_removed(int fd)
 }
 
 gboolean
-USBSystem::on_source_prepare(GSource* source, gint* timeout)
+USBGSource::on_source_prepare(GSource* source, gint* timeout)
 {
   log_trace();
 
@@ -131,21 +131,21 @@ USBSystem::on_source_prepare(GSource* source, gint* timeout)
 }
 
 gboolean
-USBSystem::on_source_check(GSource* source)
+USBGSource::on_source_check(GSource* source)
 {
   log_trace();
   return TRUE;
 }
 
 gboolean
-USBSystem::on_source_dispatch(GSource* source, GSourceFunc callback, gpointer userdata)
+USBGSource::on_source_dispatch(GSource* source, GSourceFunc callback, gpointer userdata)
 {
   log_trace();
   return callback(userdata);
 }
 
 gboolean
-USBSystem::on_source()
+USBGSource::on_source()
 {
   log_trace();
   libusb_handle_events(NULL);

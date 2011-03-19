@@ -25,55 +25,40 @@ ControllerSlot::ControllerSlot() :
   m_config(),
   m_rules(),
   m_led_status(-1),
-  m_thread()  
+  m_controller()
 {}
 
 ControllerSlot::ControllerSlot(int id_,
                                ControllerSlotConfigPtr config_,
                                std::vector<ControllerMatchRulePtr> rules_,
                                int led_status_,
-                               ControllerThreadPtr thread_) :
+                               ControllerPtr controller_) :
   m_id(id_),
   m_config(config_),
   m_rules(rules_),
   m_led_status(led_status_),
-  m_thread(thread_)
+  m_controller(controller_)
 {}
 
 void
-ControllerSlot::connect(ControllerThreadPtr thread)
+ControllerSlot::connect(ControllerPtr controller)
 {
-  assert(!m_thread);
-  m_thread = thread;
+  assert(!m_controller);
+  m_controller = controller;
 }
 
-ControllerThreadPtr
+ControllerPtr
 ControllerSlot::disconnect()
 {
-  ControllerThreadPtr thread = m_thread;
-  m_thread.reset();
-  return thread;
-}
-
-bool
-ControllerSlot::can_disconnect()
-{
-  assert(m_thread);
-
-  if (m_thread->try_join_thread())
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  ControllerPtr controller = m_controller;
+  m_controller.reset();
+  return controller;
 }
 
 bool
 ControllerSlot::is_connected() const
 {
-  return m_thread;
+  return m_controller;
 }
 
 /* EOF */
