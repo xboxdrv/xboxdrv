@@ -23,12 +23,7 @@ DummyMessageProcessor::DummyMessageProcessor()
 }
 
 void
-DummyMessageProcessor::update(int msec_delta)
-{
-}
-
-void
-DummyMessageProcessor::send(const XboxGenericMsg& msg)
+DummyMessageProcessor::send(const XboxGenericMsg& msg, int msec_delta)
 {
   // do nothing as the XboxdrvThread is already doing the printing
 }

@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <boost/bind.hpp>
+#include <glib.h>
 
 #include "helper.hpp"
 #include "log.hpp"
@@ -35,20 +36,27 @@ ControllerThread::ControllerThread(ControllerPtr controller, const Options& opts
   m_child_exec(opts.exec),
   m_pid(-1),
   m_timeout(opts.timeout),
-  m_timeout_id()
+  m_timeout_id(),
+  m_timer(g_timer_new())
 {
   memset(&m_oldrealmsg, 0, sizeof(m_oldrealmsg));
 }
 
 ControllerThread::~ControllerThread()
 {
+  g_timer_destroy(m_timer);
 }
 
 bool
 ControllerThread::on_timeout()
 {
-  //log_debug("timeout time: ");
-  // calculate msec delta
+  if (m_processor.get())
+  {
+    int msec_delta = static_cast<int>(g_timer_elapsed(m_timer, NULL) * 1000.0f);
+    g_timer_reset(m_timer);
+
+    m_processor->send(m_oldrealmsg, msec_delta);
+  }
 
   return true; // do not remove the callback
 }
@@ -56,11 +64,16 @@ ControllerThread::on_timeout()
 void
 ControllerThread::on_message(const XboxGenericMsg& msg)
 {
+  m_oldrealmsg = msg;
+
   log_trace();
-  // calculate msec delta here
+  
+  int msec_delta = static_cast<int>(g_timer_elapsed(m_timer, NULL) * 1000.0f);
+  g_timer_reset(m_timer);
+    
   if (m_processor.get())
   {
-    m_processor->send(msg);
+    m_processor->send(msg, msec_delta);
   }
 }
 

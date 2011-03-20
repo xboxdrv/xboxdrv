@@ -47,6 +47,7 @@ private:
 
   int m_timeout;
   guint m_timeout_id;
+  GTimer* m_timer;
 
 public:
   ControllerThread(ControllerPtr controller, const Options& opts);

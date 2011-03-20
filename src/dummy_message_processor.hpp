@@ -27,8 +27,7 @@ private:
 public:
   DummyMessageProcessor();
 
-  void update(int msec_delta);
-  void send(const XboxGenericMsg& msg);
+  void send(const XboxGenericMsg& msg, int msec_delta);
   void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
 
 private:

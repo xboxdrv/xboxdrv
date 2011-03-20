@@ -39,26 +39,7 @@ UInputMessageProcessor::~UInputMessageProcessor()
 }
 
 void
-UInputMessageProcessor::update(int msec_delta)
-{
-#ifdef FIXME
-  // run the controller message through all modifier
-  for(std::vector<ModifierPtr>::iterator i = m_config->get_config()->get_modifier().begin();
-      i != m_config->get_config()->get_modifier().end(); 
-      ++i)
-  {
-    (*i)->update(msec_delta, msg);
-  }
-#endif
-
-  // FIXME: wrong place to mess around with UInput::update()
-  m_uinput.update(msec_delta);
-
-  m_config->get_config()->get_uinput().update(msec_delta);
-}
-
-void
-UInputMessageProcessor::send(const XboxGenericMsg& msg_in)
+UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
 {
   if (!m_config->empty())
   {
@@ -83,6 +64,17 @@ UInputMessageProcessor::send(const XboxGenericMsg& msg_in)
         log_info("switched to config: " << m_config->get_current_config());
       }
     }
+
+    // run the controller message through all modifier
+    for(std::vector<ModifierPtr>::iterator i = m_config->get_config()->get_modifier().begin();
+        i != m_config->get_config()->get_modifier().end(); 
+        ++i)
+    {
+      (*i)->update(msec_delta, msg);
+    }
+
+    m_uinput.update(msec_delta);
+    m_config->get_config()->get_uinput().update(msec_delta);
 
     // send current Xbox state to uinput
     if (memcmp(&msg, &m_oldmsg, sizeof(XboxGenericMsg)) != 0)
