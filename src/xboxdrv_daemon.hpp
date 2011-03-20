@@ -96,12 +96,18 @@ private:
 
   void wakeup();
 
+private:
   bool on_wakeup();
   bool on_udev_data(GIOChannel* channel, GIOCondition condition);
 
 private:
-  static gboolean on_udev_data_wrap(GIOChannel* channel, GIOCondition condition, gpointer data);
-  static gboolean on_wakeup_wrap(gpointer data);
+  static gboolean on_wakeup_wrap(gpointer data) {
+    return static_cast<XboxdrvDaemon*>(data)->on_wakeup();    
+  }
+
+  static gboolean on_udev_data_wrap(GIOChannel* channel, GIOCondition condition, gpointer data) {
+    return static_cast<XboxdrvDaemon*>(data)->on_udev_data(channel, condition);
+  }
 
 private:
   XboxdrvDaemon(const XboxdrvDaemon&);

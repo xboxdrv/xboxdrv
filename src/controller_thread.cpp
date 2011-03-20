@@ -33,8 +33,6 @@ ControllerThread::ControllerThread(ControllerPtr controller, const Options& opts
   m_processor(),
   m_controller(controller),
   m_oldrealmsg(),
-  m_child_exec(opts.exec),
-  m_pid(-1),
   m_timeout(opts.timeout),
   m_timeout_id(),
   m_timer(g_timer_new())
@@ -66,8 +64,6 @@ ControllerThread::on_message(const XboxGenericMsg& msg)
 {
   m_oldrealmsg = msg;
 
-  log_trace();
-  
   int msec_delta = static_cast<int>(g_timer_elapsed(m_timer, NULL) * 1000.0f);
   g_timer_reset(m_timer);
     

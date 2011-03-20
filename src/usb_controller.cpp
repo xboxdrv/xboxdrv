@@ -28,6 +28,7 @@
 USBController::USBController(libusb_device* dev) :
   m_dev(dev),
   m_handle(0),
+  m_read_transfer(),
   m_usbpath(),
   m_usbid(),
   m_name()  
@@ -77,6 +78,12 @@ USBController::USBController(libusb_device* dev) :
 
 USBController::~USBController()
 {
+  usb_cancel_read();
+  if (m_read_transfer)
+  {
+    libusb_free_transfer(m_read_transfer);
+  }
+
   //libusb_release_interface(m_handle, 0); 
   libusb_close(m_handle);
 }
@@ -102,33 +109,38 @@ USBController::get_name() const
 void
 USBController::usb_submit_read(int endpoint, int len)
 {
-  log_debug("ep: " << endpoint << " len: " << len);
+  assert(!m_read_transfer);
 
-  libusb_transfer* transfer = libusb_alloc_transfer(0);
+  //log_debug("ep: " << endpoint << " len: " << len);
+
+  m_read_transfer = libusb_alloc_transfer(0);
 
   uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
-  //FIXME: transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
-  libusb_fill_interrupt_transfer(transfer, m_handle,
+  m_read_transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
+  libusb_fill_interrupt_transfer(m_read_transfer, m_handle,
                                  endpoint | LIBUSB_ENDPOINT_IN,
                                  data, len,
                                  &USBController::on_read_data_wrap, this,
                                  0); // timeout
   int ret;
-  ret = libusb_submit_transfer(transfer);
-  log_debug("libusb_submit_transfer: " << usb_strerror(ret));
+  ret = libusb_submit_transfer(m_read_transfer);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+  }
 }
 
 void
 USBController::usb_cancel_read()
 {
-  assert(!"implement me");
+  assert(m_read_transfer);
+  libusb_cancel_transfer(m_read_transfer);
+  m_read_transfer = 0;
 }
 
 void
 USBController::on_read_data(libusb_transfer *transfer)
 {
-  log_trace();
-
   assert(transfer);
 
   // process data

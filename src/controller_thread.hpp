@@ -42,9 +42,6 @@ private:
 
   XboxGenericMsg m_oldrealmsg; /// last data read from the device
 
-  std::vector<std::string> m_child_exec;
-  pid_t m_pid;
-
   int m_timeout;
   guint m_timeout_id;
   GTimer* m_timer;

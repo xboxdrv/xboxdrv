@@ -31,6 +31,8 @@ protected:
   libusb_device* m_dev;
   libusb_device_handle* m_handle;
 
+  libusb_transfer* m_read_transfer;
+
   std::string m_usbpath;
   std::string m_usbid;
   std::string m_name;

@@ -73,6 +73,10 @@ Checklist
 
 * check that uinput gets its timeout/update calls (send_rel_event)
 
+* cleanup a lot of the log_trace() and other temporary debug output
+
+* check that repeated wireless controller connects and disconnects work
+
 
 Stuff to do before 0.7.4 release:
 =================================

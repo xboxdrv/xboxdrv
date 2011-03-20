@@ -115,9 +115,14 @@ XboxdrvDaemon::~XboxdrvDaemon()
   assert(s_current);
   s_current = 0;
 
+  m_inactive_controllers.clear();
+
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
-    (*i)->disconnect();
+    if ((*i)->is_connected())
+    {
+      (*i)->disconnect();
+    }
   }
 
   udev_monitor_unref(m_monitor);
@@ -134,9 +139,10 @@ XboxdrvDaemon::cleanup_threads()
     if ((*i)->is_connected())
     {
       count += 1;
-      // FIXME: we kill the thread in try_disconnect() but on_disconnect() needs it
       on_disconnect(*i);
-      (*i)->disconnect();
+
+      // disconnect slot and put the controller back into the inactive group
+      m_inactive_controllers.push_back((*i)->disconnect());
     }
   }
 
@@ -490,12 +496,6 @@ XboxdrvDaemon::on_udev_data(GIOChannel* channel, GIOCondition condition)
   return true;
 }
 
-gboolean
-XboxdrvDaemon::on_udev_data_wrap(GIOChannel* channel, GIOCondition condition, gpointer data)
-{
-  return static_cast<XboxdrvDaemon*>(data)->on_udev_data(channel, condition);
-}
-
 void
 XboxdrvDaemon::check_thread_status()
 {
@@ -811,20 +811,10 @@ XboxdrvDaemon::on_disconnect(ControllerSlotPtr slot)
   }
 }
 
-gboolean
-XboxdrvDaemon::on_wakeup_wrap(gpointer data)
-{
-  log_info("wrapper called");
-  return static_cast<XboxdrvDaemon*>(data)->on_wakeup();
-}
-
 void
 XboxdrvDaemon::wakeup()
 {
-  log_info("received wakeup call");
   g_idle_add(&XboxdrvDaemon::on_wakeup_wrap, this);
-  g_main_context_wakeup(NULL);
-  log_info("idle_add called");
 }
 
 std::string

@@ -37,7 +37,6 @@ Controller::~Controller()
 void
 Controller::submit_msg(const XboxGenericMsg& msg)
 {
-  log_trace();
   if (m_msg_cb)
   {
     m_msg_cb(msg);
