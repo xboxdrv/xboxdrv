@@ -29,7 +29,6 @@
 
 class Options;
 class UInput;
-class ControllerThread;
 class USBGSource;
 struct XPadDevice;
 
@@ -39,6 +38,7 @@ private:
   static XboxdrvDaemon* s_current;
 
   const Options& m_opts;
+  
   struct udev* m_udev;
   struct udev_monitor* m_monitor;
 

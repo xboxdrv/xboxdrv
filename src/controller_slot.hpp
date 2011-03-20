@@ -23,7 +23,6 @@
 
 #include "controller_slot_config.hpp"
 #include "controller_thread.hpp"
-#include "controller_ptr.hpp"
 
 class ControllerSlot
 {
@@ -32,15 +31,18 @@ private:
   ControllerSlotConfigPtr m_config;
   std::vector<ControllerMatchRulePtr> m_rules;
   int m_led_status;
-  ControllerPtr m_controller;
+  ControllerThreadPtr m_thread;
   
+  const Options& m_opts;
+  UInput* m_uinput;
+
 public:
-  ControllerSlot();
   ControllerSlot(int id_,
                  ControllerSlotConfigPtr config_,
                  std::vector<ControllerMatchRulePtr> rules_,
                  int led_status_,
-                 ControllerPtr controller = ControllerPtr());
+                 const Options& opts,
+                 UInput* uinput);
 
   bool is_connected() const;
   void connect(ControllerPtr controller);
@@ -51,8 +53,12 @@ public:
   int get_id() const { return m_id; }
   ControllerSlotConfigPtr get_config() const { return m_config; }
  
-  ControllerPtr get_controller() const { return m_controller; }
-  ControllerThreadPtr get_thread() const { return ControllerThreadPtr(); }
+  ControllerThreadPtr get_thread() const { return m_thread; }
+  ControllerPtr get_controller() const { return m_thread ? m_thread->get_controller() : ControllerPtr(); }
+
+private:
+  ControllerSlot(const ControllerSlot&);
+  ControllerSlot& operator=(const ControllerSlot&);
 };
 
 #endif

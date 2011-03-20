@@ -72,10 +72,9 @@ xboxdrv_g_controller_set_led(XboxdrvGController* self, int status, GError** erro
   log_info("D-Bus: xboxdrv_g_controller_set_led(" << self << ", " << status << ")");
 
   if (self->controller &&
-      self->controller->get_thread() &&
-      self->controller->get_thread()->get_controller())
+      self->controller->get_controller())
   {
-    self->controller->get_thread()->get_controller()->set_led(status);
+    self->controller->get_controller()->set_led(status);
     return TRUE;
   }
   else
@@ -92,10 +91,9 @@ xboxdrv_g_controller_set_rumble(XboxdrvGController* self, int strong, int weak, 
   log_info("D-Bus: xboxdrv_g_controller_set_rumble(" << self << ", " << strong << ", " << weak << ")");
 
   if (self->controller &&
-      self->controller->get_thread() &&
-      self->controller->get_thread()->get_controller())
+      self->controller->get_controller())
   {
-    self->controller->get_thread()->get_controller()->set_rumble(strong, weak);
+    self->controller->get_controller()->set_rumble(strong, weak);
     return TRUE;
   }
   else

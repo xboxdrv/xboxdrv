@@ -54,8 +54,24 @@ $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-
 Stuff to do before 0.8.0 release:
 =================================
 
-* Modifier::update() needs to be changed, as message updates and time
-  updates are now separate
+Checklist
+=========
+
+* check output when --silent not given
+
+* check clean shutdown
+
+* check valgrind
+
+* check daemon
+
+* check autofire and other modifier that depend on time
+
+* test all controller
+
+* check that the child process works
+
+* check that uinput gets its timeout/update calls (send_rel_event)
 
 
 Stuff to do before 0.7.4 release:
@@ -154,6 +170,8 @@ Autolaunch error: X11 initialization failed." failed to open connection to bus: 
 
   -> add rel-repeat:{repeat} type that repeats more often the more the
      stick is pressed, to give better scroll wheel emulation
+
+* add "key-repeat", similar to rel-repeat
 
 * add "key-once" or something like that, that only clicks a key
   without keeping it pressed

@@ -25,8 +25,6 @@
 #include <dbus/dbus-glib-lowlevel.h>
 #include <dbus/dbus.h>
 
-#include "uinput_message_processor.hpp"
-#include "dummy_message_processor.hpp"
 #include "helper.hpp"
 #include "raise_exception.hpp"
 #include "select.hpp"
@@ -221,7 +219,9 @@ XboxdrvDaemon::init_uinput()
                                                                           m_opts.extra_devices,
                                                                           controller->second),
                                              controller->second.get_match_rules(),
-                                             controller->second.get_led_status())));
+                                             controller->second.get_led_status(),
+                                             m_opts,
+                                             m_uinput.get())));
       slot_count += 1;
     }
 
@@ -746,22 +746,6 @@ XboxdrvDaemon::connect(ControllerSlotPtr slot, ControllerPtr controller)
   catch(const std::exception& err)
   {
     log_error("failed to set led: " << err.what());
-  }
-  
-  {
-    // connect controller with the current slots message proc
-    // FIXME: Could get rid of MessageProcessor and just use
-    // ControllerSlot?! Or a callback to ControllerSlot.
-    std::auto_ptr<MessageProcessor> message_proc;
-    if (m_uinput.get())
-    {
-      message_proc.reset(new UInputMessageProcessor(*m_uinput, slot->get_config(), m_opts));
-    }
-    else
-    {
-      message_proc.reset(new DummyMessageProcessor());
-    }
-    //FIXME: controller->set_message_proc(message_proc);
   }
   
   slot->connect(controller);

@@ -386,6 +386,7 @@ Xboxdrv::run_main(const Options& opts)
         print_info(dev, dev_type, opts);
 
       controller = ControllerFactory::create(dev_type, dev, opts);
+      controller->start();
     }
   }
 

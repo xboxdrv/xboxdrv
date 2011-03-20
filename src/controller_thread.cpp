@@ -80,14 +80,12 @@ ControllerThread::on_message(const XboxGenericMsg& msg)
 void
 ControllerThread::start()
 {
-  m_controller->start();
   m_timeout_id = g_timeout_add(m_timeout, &ControllerThread::on_timeout_wrap, this);
 }
 
 void
 ControllerThread::stop()
 {
-  m_controller->stop();
   g_source_remove(m_timeout_id);
 }
 
