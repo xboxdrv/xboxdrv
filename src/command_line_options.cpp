@@ -324,12 +324,12 @@ CommandLineParser::init_ini(Options* opts)
   m_ini.clear();
 
   m_ini.section("xboxdrv")
-    ("verbose", boost::bind(&Options::set_verbose, boost::ref(opts)), boost::function<void ()>())
+    ("verbose", boost::bind(&Options::set_verbose, opts), boost::function<void ()>())
     ("silent", &opts->silent)
     ("quiet",  &opts->quiet)
     ("usb-debug",  &opts->usb_debug)
     ("rumble", &opts->rumble)
-    ("led", boost::bind(&Options::set_led, boost::ref(opts), _1))
+    ("led", boost::bind(&Options::set_led, opts, _1))
     ("rumble-l", &opts->rumble_l)
     ("rumble-r", &opts->rumble_r)
     ("rumble-gain", &opts->rumble_gain)
@@ -345,15 +345,15 @@ CommandLineParser::init_ini(Options* opts)
     ("evdev", &opts->evdev_device)
     ("evdev-grab", &opts->evdev_grab)
     ("evdev-debug", &opts->evdev_debug)
-    ("config", boost::bind(&CommandLineParser::read_config_file, this, opts, _1))
-    ("alt-config", boost::bind(&CommandLineParser::read_alt_config_file, this, opts, _1))
+    ("config", boost::bind(&CommandLineParser::read_config_file, this, _1))
+    ("alt-config", boost::bind(&CommandLineParser::read_alt_config_file, this, _1))
     ("timeout", &opts->timeout)
-    ("priority", boost::bind(&Options::set_priority, boost::ref(opts), _1))
-    ("next", boost::bind(&Options::next_config, boost::ref(opts)), boost::function<void ()>())
-    ("next-controller", boost::bind(&Options::next_controller, boost::ref(opts)), boost::function<void ()>())
+    ("priority", boost::bind(&Options::set_priority, opts, _1))
+    ("next", boost::bind(&Options::next_config, opts), boost::function<void ()>())
+    ("next-controller", boost::bind(&Options::next_controller, opts), boost::function<void ()>())
     ("extra-devices", &opts->extra_devices)
     ("extra-events", &opts->extra_events)
-    ("toggle", boost::bind(&Options::set_toggle_button, boost::ref(opts), _1))
+    ("toggle", boost::bind(&Options::set_toggle_button, opts, _1))
 
     ("deadzone", boost::bind(&CommandLineParser::set_deadzone, this, _1))
     ("deadzone-trigger", boost::bind(&CommandLineParser::set_deadzone_trigger, this, _1))
@@ -362,16 +362,16 @@ CommandLineParser::init_ini(Options* opts)
     ("dpad-rotation", boost::bind(&CommandLineParser::set_dpad_rotation, this, _1))
 
     // uinput stuff
-    ("device-name",       boost::bind(&Options::set_device_name, boost::ref(opts), _1))
-    ("device-usbid",      boost::bind(&Options::set_device_usbid, boost::ref(opts), _1))
+    ("device-name",       boost::bind(&Options::set_device_name, opts, _1))
+    ("device-usbid",      boost::bind(&Options::set_device_usbid, opts, _1))
     ("mouse",             boost::bind(&CommandLineParser::mouse, this), boost::function<void ()>())
-    ("guitar",            boost::bind(&Options::set_guitar, boost::ref(opts)),            boost::function<void ()>())
-    ("trigger-as-button", boost::bind(&Options::set_trigger_as_button, boost::ref(opts)), boost::function<void ()>())
-    ("trigger-as-zaxis",  boost::bind(&Options::set_trigger_as_zaxis, boost::ref(opts)),  boost::function<void ()>())
-    ("dpad-as-button",    boost::bind(&Options::set_dpad_as_button, boost::ref(opts)),    boost::function<void ()>())
-    ("dpad-only",         boost::bind(&Options::set_dpad_only, boost::ref(opts)),         boost::function<void ()>())
-    ("force-feedback",    boost::bind(&Options::set_force_feedback, boost::ref(opts), _1))
-    ("mimic-xpad",        boost::bind(&Options::set_mimic_xpad, boost::ref(opts)),        boost::function<void ()>())
+    ("guitar",            boost::bind(&Options::set_guitar, opts),            boost::function<void ()>())
+    ("trigger-as-button", boost::bind(&Options::set_trigger_as_button, opts), boost::function<void ()>())
+    ("trigger-as-zaxis",  boost::bind(&Options::set_trigger_as_zaxis, opts),  boost::function<void ()>())
+    ("dpad-as-button",    boost::bind(&Options::set_dpad_as_button, opts),    boost::function<void ()>())
+    ("dpad-only",         boost::bind(&Options::set_dpad_only, opts),         boost::function<void ()>())
+    ("force-feedback",    boost::bind(&Options::set_force_feedback, opts, _1))
+    ("mimic-xpad",        boost::bind(&Options::set_mimic_xpad, opts),        boost::function<void ()>())
 
     ("chatpad",         &opts->chatpad)
     ("chatpad-no-init", &opts->chatpad_no_init)
@@ -381,13 +381,13 @@ CommandLineParser::init_ini(Options* opts)
     ("headset-debug",   &opts->headset_debug)
     ("headset-dump",    &opts->headset_dump)
     ("headset-play",    &opts->headset_play)
-    ("ui-clear",        boost::bind(&Options::set_ui_clear, boost::ref(opts)), boost::function<void ()>())
+    ("ui-clear",        boost::bind(&Options::set_ui_clear, opts), boost::function<void ()>())
     ;
 
   m_ini.section("xboxdrv-daemon")
     ("detach",        
-     boost::bind(&Options::set_daemon_detach, boost::ref(opts), true),
-     boost::bind(&Options::set_daemon_detach, boost::ref(opts), false))
+     boost::bind(&Options::set_daemon_detach, opts, true),
+     boost::bind(&Options::set_daemon_detach, opts, false))
     ("dbus", &opts->dbus)
     ("pid-file",      &opts->pid_file)
     ("on-connect",    &opts->on_connect)
@@ -529,11 +529,11 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_CONFIG:
-        read_config_file(&opts, opt.argument);
+        read_config_file(opt.argument);
         break;
 
       case OPTION_ALT_CONFIG:
-        read_alt_config_file(&opts, opt.argument);
+        read_alt_config_file(opt.argument);
         break;
 
       case OPTION_TEST_RUMBLE:
@@ -1146,7 +1146,7 @@ CommandLineParser::set_dpad_rotation(const std::string& value)
 }
 
 void
-CommandLineParser::read_buildin_config_file(Options* opts, const std::string& filename, 
+CommandLineParser::read_buildin_config_file(const std::string& filename, 
                                             const char* data, unsigned int data_len)
 {
   log_info("reading 'buildin://" << filename << "'");
@@ -1166,7 +1166,7 @@ CommandLineParser::read_buildin_config_file(Options* opts, const std::string& fi
 }
 
 void
-CommandLineParser::read_config_file(Options* opts, const std::string& filename)
+CommandLineParser::read_config_file(const std::string& filename)
 {
   log_info("reading '" << filename << "'");
 
@@ -1184,10 +1184,10 @@ CommandLineParser::read_config_file(Options* opts, const std::string& filename)
 }
 
 void
-CommandLineParser::read_alt_config_file(Options* opts, const std::string& filename)
+CommandLineParser::read_alt_config_file(const std::string& filename)
 {
-  opts->next_config();
-  read_config_file(opts, filename);
+  m_options->next_config();
+  read_config_file(filename);
 }
 
 void
@@ -1256,8 +1256,7 @@ CommandLineParser::set_axis_sensitivity_n(int controller, int config, const std:
 void
 CommandLineParser::mouse()
 {
-  read_buildin_config_file(m_options, 
-                           "examples/mouse.xboxdrv",
+  read_buildin_config_file("examples/mouse.xboxdrv",
                            xboxdrv_vfs::examples_mouse_xboxdrv,
                            sizeof(xboxdrv_vfs::examples_mouse_xboxdrv));
 }

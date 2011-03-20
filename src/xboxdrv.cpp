@@ -42,31 +42,6 @@
 // Some ugly global variables, needed for sigint catching
 bool global_exit_xboxdrv = false;
 
-void on_sigint(int)
-{
-  if (global_exit_xboxdrv)
-  {
-    if (!g_options->quiet)
-      std::cout << "Ctrl-c pressed twice, exiting hard" << std::endl;
-    exit(EXIT_SUCCESS);
-  }
-  else
-  {
-    if (!g_options->quiet)
-      std::cout << "Shutdown initiated, press Ctrl-c again if nothing is happening" << std::endl;
-
-    global_exit_xboxdrv = true; 
-  }
-}
-
-void on_sigterm(int)
-{
-  if (!g_options->quiet)
-    std::cout << "Shutdown initiated by SIGTERM" << std::endl;
-
-  exit(EXIT_SUCCESS);
-}
-
 void
 Xboxdrv::run_list_controller()
 {
@@ -739,11 +714,7 @@ Xboxdrv::main(int argc, char** argv)
 {
   try 
   {
-    signal(SIGINT,  on_sigint);
-    signal(SIGTERM, on_sigterm);
-
     Options opts;
-    g_options = &opts;
 
     CommandLineParser cmd_parser;
     cmd_parser.parse_args(argc, argv, &opts);
