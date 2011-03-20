@@ -90,7 +90,7 @@ int main()
                                                         "",
                                                         "",
                                                         false);
-  controller->set_message_proc(std::auto_ptr<MessageProcessor>(new DummyMessageProcessor()));
+  //controller->set_message_proc(std::auto_ptr<MessageProcessor>(new DummyMessageProcessor()));
   controller->start();
   controller->set_led(2);
   g_main_loop_run(m_gmain);

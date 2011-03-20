@@ -51,6 +51,12 @@ $ git-buildpackage --git-no-create-orig --git-debian-branch=stable-lts --git-tag
 $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-stable_0.6.6-1~lucid1.dsc
 
 
+Stuff to do before 0.8.0 release:
+=================================
+
+* Modifier::update() needs to be changed, as message updates and time
+  updates are now separate
+
 
 Stuff to do before 0.7.4 release:
 =================================

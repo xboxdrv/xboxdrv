@@ -25,6 +25,7 @@
 #include <signal.h>
 #include <stdio.h>
 
+#include "controller_thread.hpp"
 #include "command_line_options.hpp"
 #include "dummy_message_processor.hpp"
 #include "evdev_controller.hpp"
@@ -33,6 +34,7 @@
 #include "raise_exception.hpp"
 #include "uinput_message_processor.hpp"
 #include "usb_helper.hpp"
+#include "usb_gsource.hpp"
 #include "word_wrap.hpp"
 #include "controller_factory.hpp"
 #include "xboxdrv_daemon.hpp"
@@ -485,11 +487,23 @@ Xboxdrv::run_main(const Options& opts)
       message_proc.reset(new DummyMessageProcessor);
     }
 
-    /* FIXME
-    ControllerThread thread(controller, opts);
-    thread.set_message_proc(message_proc);
-    thread.controller_loop(opts);
-    */
+    // start the main loop
+    GMainLoop* m_gmain = g_main_loop_new(NULL, false);
+    {
+      boost::scoped_ptr<USBGSource> usb_gsource(new USBGSource);
+      usb_gsource->attach(NULL);
+
+      ControllerThread thread(controller, opts);
+      thread.set_message_proc(message_proc);
+      log_debug("launching thread");
+      thread.start(); 
+      
+      log_debug("launching main loop");
+      g_main_loop_run(m_gmain);
+      thread.stop();
+    }
+    g_main_loop_unref(m_gmain);
+ 
     if (!opts.quiet) 
       std::cout << "Shutdown complete" << std::endl;
   }

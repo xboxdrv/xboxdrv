@@ -52,6 +52,7 @@ public:
   ControllerSlotConfigPtr get_config() const { return m_config; }
  
   ControllerPtr get_controller() const { return m_controller; }
+  ControllerThreadPtr get_thread() const { return ControllerThreadPtr(); }
 };
 
 #endif

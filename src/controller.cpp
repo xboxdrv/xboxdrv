@@ -20,10 +20,11 @@
 
 #include <boost/bind.hpp>
 
+#include "log.hpp"
 #include "message_processor.hpp"
 
 Controller::Controller() :
-  m_processor(),
+  m_msg_cb(),
   m_udev_device()
 {
 }
@@ -36,21 +37,10 @@ Controller::~Controller()
 void
 Controller::submit_msg(const XboxGenericMsg& msg)
 {
-  if (m_processor.get())
+  log_trace();
+  if (m_msg_cb)
   {
-    m_processor->send(msg);
-  }
-}
-
-void
-Controller::set_message_proc(std::auto_ptr<MessageProcessor> processor)
-{
-  m_processor = processor;
-
-  // connect the processor to the controller to allow rumble
-  if (m_processor.get())
-  {
-    m_processor->set_ff_callback(boost::bind(&Controller::set_rumble, this, _1, _2));
+    m_msg_cb(msg);
   }
 }
 
@@ -59,6 +49,12 @@ Controller::set_udev_device(udev_device* udev_dev)
 {
   m_udev_device = udev_dev;
   udev_device_ref(m_udev_device);
+}
+
+void
+Controller::set_message_cb(boost::function<void(const XboxGenericMsg&)> msg_cb)
+{
+  m_msg_cb = msg_cb;
 }
 
 udev_device*

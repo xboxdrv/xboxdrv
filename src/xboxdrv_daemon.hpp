@@ -52,7 +52,7 @@ private:
 
   std::auto_ptr<UInput> m_uinput;
   GMainLoop* m_gmain;
-
+  
 private:
   static void on_sigint(int);
   static XboxdrvDaemon* current() { return s_current; }

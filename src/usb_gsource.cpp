@@ -110,6 +110,7 @@ USBGSource::on_usb_pollfd_removed(int fd)
   
   assert(it != m_pollfds.end());
 
+  // FIXME: here is a bug
   g_source_remove_poll(&m_source->source, *it);
   delete *it;
   m_pollfds.erase(it);

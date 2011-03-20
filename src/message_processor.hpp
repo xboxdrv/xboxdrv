@@ -30,9 +30,10 @@ public:
   MessageProcessor() {}
   virtual ~MessageProcessor() {}
 
-  virtual void send(const XboxGenericMsg& msg) =0;
+  virtual void update(int msec_delta) = 0;
+  virtual void send(const XboxGenericMsg& msg) = 0;
   virtual void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback
-                               = boost::function<void (uint8_t, uint8_t)>()) =0;
+                               = boost::function<void (uint8_t, uint8_t)>()) = 0;
 
 private:
   MessageProcessor(const MessageProcessor&);

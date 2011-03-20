@@ -31,7 +31,7 @@ struct XboxGenericMsg;
 class Controller
 {
 private:
-  std::auto_ptr<MessageProcessor> m_processor;
+  boost::function<void (const XboxGenericMsg&)> m_msg_cb;
   udev_device* m_udev_device;
 
 public:
@@ -51,8 +51,7 @@ public:
   virtual std::string get_usbid() const   { return "-1:-1"; }
   virtual std::string get_name() const    { return "<not implemented>"; }
 
-  void set_message_proc(std::auto_ptr<MessageProcessor> processor);
-  MessageProcessor* get_message_proc() const { return m_processor.get(); }
+  void set_message_cb(boost::function<void(const XboxGenericMsg&)> msg_cb);
 
   void set_udev_device(udev_device* udev_dev);
   udev_device* get_udev_device() const;

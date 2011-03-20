@@ -1,4 +1,3 @@
-#if 0
 /*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
@@ -21,6 +20,7 @@
 #define HEADER_XBOXDRV_XBOXDRV_THREAD_HPP
 
 #include <boost/shared_ptr.hpp>
+#include <glib.h>
 
 #include "controller_slot_config.hpp"
 #include "controller_slot_ptr.hpp"
@@ -32,15 +32,13 @@ class ControllerThread;
 
 typedef boost::shared_ptr<ControllerThread> ControllerThreadPtr;
 
-/** ControllerThread handles a single Controller (optionally in a
-    separate thread), reads it messages and passes it to the
-    MessageProcessor */
-class ControllerThread // FIXME: find a better name, XboxdrvControllerLoop?!
+/** ControllerThread handles a single Controller, reads it messages
+    and passes it to the MessageProcessor */
+class ControllerThread // FIXME: find a better name,ControllerLoop?!
 {
 private:
   std::auto_ptr<MessageProcessor> m_processor;
   ControllerPtr m_controller;
-  bool m_loop;
 
   XboxGenericMsg m_oldrealmsg; /// last data read from the device
 
@@ -48,27 +46,27 @@ private:
   pid_t m_pid;
 
   int m_timeout;
-
-  std::vector<ControllerSlotWeakPtr> m_compatible_slots;
+  guint m_timeout_id;
 
 public:
-  ControllerThread(ControllerPtr controller,
-                   const Options& opts);
+  ControllerThread(ControllerPtr controller, const Options& opts);
   ~ControllerThread();
 
-  bool is_active() const;
-
-  std::string get_usbpath() const;
-  std::string get_usbid() const;
-  std::string get_name() const;
-
-  std::vector<ControllerSlotWeakPtr> get_compatible_slots() const;
-  void set_compatible_slots(const std::vector<ControllerSlotPtr>& slots);
+  void start();
+  void stop();
 
   void set_message_proc(std::auto_ptr<MessageProcessor> processor);
   MessageProcessor* get_message_proc() const { return m_processor.get(); }
 
   ControllerPtr get_controller() const { return m_controller; }
+
+private:
+  bool on_timeout();
+  void on_message(const XboxGenericMsg& msg);
+
+  static gboolean on_timeout_wrap(gpointer data) {
+    return static_cast<ControllerThread*>(data)->on_timeout();
+  }
 
 private:
   ControllerThread(const ControllerThread&);
@@ -78,4 +76,4 @@ private:
 #endif
 
 /* EOF */
-#endif
+

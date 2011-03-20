@@ -761,7 +761,7 @@ XboxdrvDaemon::connect(ControllerSlotPtr slot, ControllerPtr controller)
     {
       message_proc.reset(new DummyMessageProcessor());
     }
-    controller->set_message_proc(message_proc);
+    //FIXME: controller->set_message_proc(message_proc);
   }
   
   slot->connect(controller);

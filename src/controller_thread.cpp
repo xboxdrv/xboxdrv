@@ -1,4 +1,3 @@
-#if 0
 /*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
@@ -20,7 +19,7 @@
 #include "controller_thread.hpp"
 
 #include <iostream>
-#include <sys/wait.h>
+#include <boost/bind.hpp>
 
 #include "helper.hpp"
 #include "log.hpp"
@@ -28,20 +27,15 @@
 #include "message_processor.hpp"
 
 extern bool global_exit_xboxdrv;
-
-// FIXME: isolate problametic code to a separate file, instead of pragma
-#pragma GCC diagnostic ignored "-Wold-style-cast"
 
-ControllerThread::ControllerThread(ControllerPtr controller,
-                                   const Options& opts) :
+ControllerThread::ControllerThread(ControllerPtr controller, const Options& opts) :
   m_processor(),
   m_controller(controller),
-  m_loop(true),
   m_oldrealmsg(),
   m_child_exec(opts.exec),
   m_pid(-1),
   m_timeout(opts.timeout),
-  m_compatible_slots()
+  m_timeout_id()
 {
   memset(&m_oldrealmsg, 0, sizeof(m_oldrealmsg));
 }
@@ -50,10 +44,45 @@ ControllerThread::~ControllerThread()
 {
 }
 
+bool
+ControllerThread::on_timeout()
+{
+  //log_debug("timeout time: ");
+  // calculate msec delta
+
+  return true; // do not remove the callback
+}
+
+void
+ControllerThread::on_message(const XboxGenericMsg& msg)
+{
+  log_trace();
+  // calculate msec delta here
+  if (m_processor.get())
+  {
+    m_processor->send(msg);
+  }
+}
+
+void
+ControllerThread::start()
+{
+  m_controller->start();
+  m_timeout_id = g_timeout_add(m_timeout, &ControllerThread::on_timeout_wrap, this);
+}
+
+void
+ControllerThread::stop()
+{
+  m_controller->stop();
+  g_source_remove(m_timeout_id);
+}
+
 void
 ControllerThread::set_message_proc(std::auto_ptr<MessageProcessor> processor)
 {
   m_processor = processor;
+  m_controller->set_message_cb(boost::bind(&ControllerThread::on_message, this, _1));
 
   // connect the processor to the controller to allow rumble
   if (m_processor.get())
@@ -61,46 +90,5 @@ ControllerThread::set_message_proc(std::auto_ptr<MessageProcessor> processor)
     m_processor->set_ff_callback(boost::bind(&Controller::set_rumble, m_controller.get(), _1, _2));
   }
 }
-
-bool
-ControllerThread::is_active() const
-{
-  return m_controller->is_active();
-}
-
-std::string
-ControllerThread::get_usbpath() const
-{
-  return m_controller->get_usbpath();
-}
-   
-std::string 
-ControllerThread::get_usbid() const
-{
-  return m_controller->get_usbid();
-}
-
-std::string
-ControllerThread::get_name() const
-{
-  return m_controller->get_name();
-}
-
-std::vector<ControllerSlotWeakPtr> 
-ControllerThread::get_compatible_slots() const
-{
-  return m_compatible_slots;
-}
-
-void
-ControllerThread::set_compatible_slots(const std::vector<ControllerSlotPtr>& slots)
-{
-  m_compatible_slots.clear();
-  for(std::vector<ControllerSlotPtr>::const_iterator i = slots.begin(); i != slots.end(); ++i)
-  {
-    m_compatible_slots.push_back(*i);
-  }
-}
 
 /* EOF */
-#endif
