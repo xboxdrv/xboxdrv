@@ -1,6 +1,6 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,37 +16,32 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_XBOXDRV_HPP
-#define HEADER_XBOXDRV_XBOXDRV_HPP
+#ifndef HEADER_XBOXDRV_USB_SUBSYSTEM_HPP
+#define HEADER_XBOXDRV_USB_SUBSYSTEM_HPP
 
 #include <libusb.h>
 
-#include "xboxmsg.hpp"
+#include "xpad_device.hpp"
 
-struct XPadDevice;
 class Options;
-class Controller;
-
-class Xboxdrv
+
+class USBSubsystem
 {
 private:
-  void run_main(const Options& opts);
-  void run_daemon(const Options& opts);
-  void run_list_supported_devices();
-  void run_list_supported_devices_xpad();
-  void run_list_enums(uint32_t enums);
-  void run_help_devices();
-  void run_list_controller();
-
-  void print_copyright() const;
-
 public:
-  Xboxdrv();
-  ~Xboxdrv();
+  USBSubsystem();
+  
+  static void find_controller(libusb_device** dev, XPadDevice& dev_type, const Options& opts);
+  static bool find_controller_by_path(const std::string& busid, const std::string& devid,
+                                      libusb_device** xbox_device);
+  static bool find_controller_by_id(int id, int vendor_id, int product_id, libusb_device** xbox_device);
+  static bool find_xbox360_controller(int id, libusb_device** xbox_device, XPadDevice* type);
 
-  int main(int argc, char** argv);
+private:
+  USBSubsystem(const USBSubsystem&);
+  USBSubsystem& operator=(const USBSubsystem&);
 };
-
+
 #endif
 
 /* EOF */

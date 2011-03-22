@@ -75,11 +75,15 @@ Checklist
 
 * cleanup a lot of the log_trace() and other temporary debug output
 
-* check that repeated wireless controller connects and disconnects work
+* check that repeated wireless controller connects and disconnects work [done]
+
+* check that --quit works, currently broken
 
 
 Stuff to do before 0.7.4 release:
 =================================
+
+* add double-click button, in the same wayne as hold-button
 
 * add --controller 4 or --controller-count 4 or something like that
 

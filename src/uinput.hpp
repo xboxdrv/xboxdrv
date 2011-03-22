@@ -77,6 +77,12 @@ public:
   UInput(bool extra_events);
   ~UInput();
 
+  /** guess the number of the next unused /dev/input/jsX device */
+  static int  find_jsdev_number();
+
+  /** guess the number of the next unused /dev/input/eventX device */
+  static int  find_evdev_number();
+
   void update(int msec_delta);
 
   void set_device_names(const std::map<uint32_t, std::string>& device_names);

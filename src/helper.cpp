@@ -179,17 +179,17 @@ int get_terminal_width()
   }
 }
 
-void spawn_exe(const std::string& arg0)
+pid_t spawn_exe(const std::string& arg0)
 {
   std::vector<std::string> args;
   args.push_back(arg0);
-  spawn_exe(args);
+  return spawn_exe(args);
 }
 
-void spawn_exe(const std::vector<std::string>& args)
+pid_t spawn_exe(const std::vector<std::string>& args)
 {
   assert(!args.empty());
-
+  
   pid_t pid = fork();
   if (pid == 0)
   {
@@ -206,6 +206,8 @@ void spawn_exe(const std::vector<std::string>& args)
       _exit(EXIT_FAILURE);
     }
   }
+
+  return pid;
 }
 
 /* EOF */

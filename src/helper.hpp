@@ -74,8 +74,8 @@ float to_float_no_range_check(int value, int min, int max);
 int from_float(float value, int min, int max);
 
 int get_terminal_width();
-void spawn_exe(const std::vector<std::string>& args);
-void spawn_exe(const std::string& arg0);
+pid_t spawn_exe(const std::vector<std::string>& args);
+pid_t spawn_exe(const std::string& arg0);
 
 #endif
 
