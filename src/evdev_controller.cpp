@@ -127,22 +127,25 @@ EvdevController::EvdevController(const std::string& filename,
     m_io_channel = g_io_channel_unix_new(m_fd);
 
     // set encoding to binary
-    GError* error;
+    GError* error = NULL;
     if (g_io_channel_set_encoding(m_io_channel, NULL, &error) != G_IO_STATUS_NORMAL)
     {
       log_error(error->message);
       g_error_free(error);
     }
 
+    g_io_channel_set_buffered(m_io_channel, false);
+
     guint source_id;
-    source_id = g_io_add_watch(m_io_channel, static_cast<GIOCondition>(G_IO_IN | G_IO_ERR),
+    source_id = g_io_add_watch(m_io_channel, 
+                               static_cast<GIOCondition>(G_IO_IN | G_IO_ERR | G_IO_HUP),
                                &EvdevController::on_read_data_wrap, this);
   }
 }
 
 EvdevController::~EvdevController()
 {
-  g_io_channel_close(m_io_channel);
+  g_io_channel_unref(m_io_channel);
 }
 
 void
@@ -158,7 +161,7 @@ EvdevController::set_led(uint8_t status)
 }
 
 bool
-EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
+EvdevController::parse(const struct input_event& ev, XboxGenericMsg& msg_inout) const
 {
   if (m_debug)
   {
@@ -195,10 +198,10 @@ EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
   {
     case EV_KEY:
       {
-        KeyMap::iterator it = m_keymap.find(ev.code);
+        KeyMap::const_iterator it = m_keymap.find(ev.code);
         if (it != m_keymap.end())
         {
-          set_button(msg, it->second, ev.value);
+          set_button(msg_inout, it->second, ev.value);
           return true;
         }
         else
@@ -211,7 +214,7 @@ EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
     case EV_ABS:
       {
         const struct input_absinfo& absinfo = m_absinfo[ev.code];
-        m_absmap.process(msg, ev.code, ev.value, absinfo.minimum, absinfo.maximum);
+        m_absmap.process(msg_inout, ev.code, ev.value, absinfo.minimum, absinfo.maximum);
         return true; // FIXME: wrong
         break;
       }
@@ -223,52 +226,27 @@ EvdevController::apply(XboxGenericMsg& msg, const struct input_event& ev)
   }
 }
 
-void
-EvdevController::read_data_to_buffer()
+gboolean
+EvdevController::on_read_data(GIOChannel* source, GIOCondition condition)
 {
+  // read data
   struct input_event ev[128];
   int rd = 0;
   while((rd = ::read(m_fd, ev, sizeof(struct input_event) * 128)) > 0)
   {
     for (size_t i = 0; i < rd / sizeof(struct input_event); ++i)
     {
-      m_event_buffer.push(ev[i]);
+      if (ev[i].type == EV_SYN)
+      {
+        submit_msg(m_msg);
+      }
+      else
+      {
+        parse(ev[i], m_msg);
+      }
     }
   }
-}
-
-bool
-EvdevController::read(XboxGenericMsg& msg, int timeout)
-{
-  read_data_to_buffer();
-
-  while(!m_event_buffer.empty())
-  {
-    struct input_event ev = m_event_buffer.front();
-    m_event_buffer.pop();
-
-    if (ev.type == EV_SYN)
-    {
-      msg = m_msg;
-      return true;
-    }
-    else
-    {
-      apply(m_msg, ev);
-    }
-  }
-
-  usleep(timeout * 1000);
-
-  return false;
-}
-
-gboolean
-EvdevController::on_read_data(GIOChannel* source, GIOCondition condition)
-{
-  //int fd = g_io_channel_unix_get_fd(source);
   
-  // process data
   return TRUE;
 }
 

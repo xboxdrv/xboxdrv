@@ -65,12 +65,11 @@ public:
   bool read(XboxGenericMsg& msg, int timeout);
 
 private:
-  bool apply(XboxGenericMsg& msg, const struct input_event& ev);
+  bool parse(const struct input_event& ev, XboxGenericMsg& msg_inout) const;
   void read_data_to_buffer();
 
   gboolean on_read_data(GIOChannel* source,
                         GIOCondition condition);
-
   static gboolean on_read_data_wrap(GIOChannel* source,
                                     GIOCondition condition,
                                     gpointer userdata) 
