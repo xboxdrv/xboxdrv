@@ -38,9 +38,6 @@ public:
   Controller();
   virtual ~Controller();
 
-  virtual void start() {}
-  virtual void stop()  {}
-
   virtual void set_rumble(uint8_t left, uint8_t right) =0;
   virtual void set_led(uint8_t status)   =0;
 

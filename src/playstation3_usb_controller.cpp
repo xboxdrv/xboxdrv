@@ -32,6 +32,7 @@ Playstation3USBController::Playstation3USBController(libusb_device* dev, bool tr
   endpoint_out(2)
 {
   usb_claim_interface(0, try_detach);
+  assert(!"not implemented");
 }
 
 Playstation3USBController::~Playstation3USBController()

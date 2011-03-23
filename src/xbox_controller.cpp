@@ -36,25 +36,13 @@ XboxController::XboxController(libusb_device* dev, bool try_detach) :
   m_endpoint_out = usb_find_ep(LIBUSB_ENDPOINT_OUT, 88, 66, 0);
   
   usb_claim_interface(0, try_detach);
+  usb_submit_read(m_endpoint_in, 32);
 }
 
 XboxController::~XboxController()
 {
-  usb_release_interface(0);
-}
-
-void
-XboxController::start()
-{
-  log_trace();
-  usb_submit_read(m_endpoint_in, 32);
-}
-
-void
-XboxController::stop()
-{
-  log_trace();
   usb_cancel_read();
+  usb_release_interface(0);
 }
 
 void

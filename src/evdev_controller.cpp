@@ -40,6 +40,7 @@ EvdevController::EvdevController(const std::string& filename,
                                  bool grab,
                                  bool debug) :
   m_fd(-1),
+  m_io_channel(),
   m_name(),
   m_grab(grab),
   m_debug(debug),
@@ -102,8 +103,6 @@ EvdevController::EvdevController(const std::string& filename,
         
         log_debug(boost::format("abs: %-20s min: %6d max: %6d") % abs2str(i) % absinfo.minimum % absinfo.maximum);
         m_absinfo[i] = absinfo;
-        //abs2idx[i] = abs_port_out.size();
-        //abs_port_out.push_back(new AbsPortOut("EvdevDriver:abs", absinfo.minimum, absinfo.maximum));
       }
     }
 
@@ -112,8 +111,6 @@ EvdevController::EvdevController(const std::string& filename,
       if (test_bit(i, rel_bit))
       {
         log_debug("rel: " << rel2str(i));
-        //rel2idx[i] = rel_port_out.size();
-        //rel_port_out.push_back(new RelPortOut("EvdevDriver:rel"));
       }
     }
 
@@ -122,35 +119,30 @@ EvdevController::EvdevController(const std::string& filename,
       if (test_bit(i, key_bit))
       {
         log_debug("key: " << key2str(i));
-        //key2idx[i] = btn_port_out.size();
-        //btn_port_out.push_back(new BtnPortOut("EvdevDriver:btn"));
       }
     }
   }
-}
 
-void
-EvdevController::start()
-{
-  GIOChannel* channel = g_io_channel_unix_new(m_fd);
+  { // start g_io_channel
+    m_io_channel = g_io_channel_unix_new(m_fd);
 
-  // set encoding to binary
-  GError* error;
-  if (g_io_channel_set_encoding(channel, NULL, &error) != G_IO_STATUS_NORMAL)
-  {
-    log_error(error->message);
-    g_error_free(error);
+    // set encoding to binary
+    GError* error;
+    if (g_io_channel_set_encoding(m_io_channel, NULL, &error) != G_IO_STATUS_NORMAL)
+    {
+      log_error(error->message);
+      g_error_free(error);
+    }
+
+    guint source_id;
+    source_id = g_io_add_watch(m_io_channel, static_cast<GIOCondition>(G_IO_IN | G_IO_ERR),
+                               &EvdevController::on_read_data_wrap, this);
   }
-
-  guint source_id;
-  source_id = g_io_add_watch(channel, static_cast<GIOCondition>(G_IO_IN | G_IO_ERR),
-                             &EvdevController::on_read_data_wrap, this);
 }
 
-void
-EvdevController::stop()
+EvdevController::~EvdevController()
 {
-  
+  g_io_channel_close(m_io_channel);
 }
 
 void

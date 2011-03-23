@@ -46,8 +46,8 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
   log_debug("EP(IN):  " << endpoint_in);
   log_debug("EP(OUT): " << endpoint_out);
 
-  // claim interface
   usb_claim_interface(0, try_detach);
+  usb_submit_read(endpoint_in, 32);
 
   // create chatpad
   if (chatpad)
@@ -75,21 +75,8 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
 
 Xbox360Controller::~Xbox360Controller()
 {
-  usb_release_interface(0);
-}
-
-void
-Xbox360Controller::start()
-{
-  log_trace();
-  usb_submit_read(endpoint_in, 32);
-}
-
-void
-Xbox360Controller::stop()
-{
-  log_trace();
   usb_cancel_read();
+  usb_release_interface(0);
 }
 
 void

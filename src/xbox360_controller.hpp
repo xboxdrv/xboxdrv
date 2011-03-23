@@ -50,9 +50,6 @@ public:
                     bool try_detach);
   ~Xbox360Controller();
 
-  void start();
-  void stop();
-
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
   bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out);

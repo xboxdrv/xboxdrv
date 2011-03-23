@@ -679,9 +679,6 @@ XboxdrvDaemon::launch_controller_thread(udev_device* udev_dev,
       // FIXME: Little dirty hack
       controller->set_udev_device(udev_dev);
 
-      // FIXME: where is the best place to start()?
-      controller->start();
-
       if (controller->is_active())
       {
         // controller is active, so launch a thread if we have a free slot

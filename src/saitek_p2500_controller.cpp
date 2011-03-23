@@ -61,10 +61,12 @@ SaitekP2500Controller::SaitekP2500Controller(libusb_device* dev, bool try_detach
   right_rumble(-1)
 {
   usb_claim_interface(0, try_detach);
+  usb_submit_read(1, sizeof(SaitekP2500Msg));
 }
 
 SaitekP2500Controller::~SaitekP2500Controller()
 {
+  usb_cancel_read();
   usb_release_interface(0);
 }
 
@@ -89,30 +91,6 @@ void
 SaitekP2500Controller::set_led(uint8_t status)
 {
   // not supported
-}
-
-bool
-SaitekP2500Controller::read(XboxGenericMsg& msg, int timeout)
-{
-  uint8_t data[sizeof(SaitekP2500Msg)];
-  int len = 0;
-  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 1,
-                                      reinterpret_cast<uint8_t*>(&data), sizeof(data), 
-                                      &len, timeout);
-  if (ret == LIBUSB_ERROR_TIMEOUT)
-  {
-    return false;
-  }
-  else if (ret != LIBUSB_SUCCESS)
-  { // Error
-    std::ostringstream str;
-    str << "USBError: " << ret << "\n" << usb_strerror(ret);
-    throw std::runtime_error(str.str());
-  }
-  else
-  {
-    return parse(data, len, &msg);
-  }
 }
 
 bool

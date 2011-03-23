@@ -44,25 +44,13 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   m_interface = controller_id*2;
 
   usb_claim_interface(m_interface, try_detach);
+  usb_submit_read(m_endpoint, 32);
 }
 
 Xbox360WirelessController::~Xbox360WirelessController()
 {
-  usb_release_interface(m_interface);
-}
-
-void
-Xbox360WirelessController::start()
-{
-  log_trace();
-  usb_submit_read(m_endpoint, 32);
-}
-
-void
-Xbox360WirelessController::stop()
-{
-  log_trace();
   usb_cancel_read();
+  usb_release_interface(m_interface);
 }
 
 void

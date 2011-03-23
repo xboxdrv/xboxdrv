@@ -127,7 +127,6 @@ XboxdrvMain::run()
 {
   ControllerPtr controller = create_controller();
   init_controller(controller);
-  controller->start();
 
   if (!m_opts.quiet)
     std::cout << std::endl;
@@ -138,7 +137,12 @@ XboxdrvMain::run()
   }
   else
   {          
-    if (!m_opts.no_uinput)
+    if (m_opts.no_uinput)
+    {
+      if (!m_opts.quiet)
+        std::cout << "Starting without uinput" << std::endl;
+    }
+    else
     {
       if (!m_opts.quiet)
         std::cout << "Starting with uinput" << std::endl;
@@ -146,11 +150,6 @@ XboxdrvMain::run()
       m_uinput.reset(new UInput(m_opts.extra_events));
       m_uinput->set_device_names(m_opts.uinput_device_names);
       m_uinput->set_device_usbids(m_opts.uinput_device_usbids);
-    }
-    else
-    {
-      if (!m_opts.quiet)
-        std::cout << "Starting without uinput" << std::endl;
     }
 
     if (!m_opts.quiet)
@@ -207,25 +206,25 @@ XboxdrvMain::main_loop(const ControllerPtr& controller)
 {
   // start the main loop
   GMainLoop* m_gmain = g_main_loop_new(NULL, false);
-  {
-    boost::scoped_ptr<USBGSource> usb_gsource(new USBGSource);
-    usb_gsource->attach(NULL);
+  
+  boost::scoped_ptr<USBGSource> usb_gsource(new USBGSource);
+  usb_gsource->attach(NULL);
 
-    ControllerThread thread(controller, m_opts);
-    thread.set_message_proc(create_message_proc());
-    log_debug("launching thread");
-    thread.start(); 
+  ControllerThread thread(controller, m_opts);
+  thread.set_message_proc(create_message_proc());
+  log_debug("launching thread");
+  thread.start(); 
       
-    pid_t pid = 0;
-    if (!m_opts.exec.empty())
-    {
-      pid = spawn_exe(m_opts.exec);
-    }
-
-    log_debug("launching main loop");
-    g_main_loop_run(m_gmain);
-    thread.stop();
+  pid_t pid = 0;
+  if (!m_opts.exec.empty())
+  {
+    pid = spawn_exe(m_opts.exec);
   }
+
+  log_debug("launching main loop");
+  g_main_loop_run(m_gmain);
+  thread.stop();
+  
   g_main_loop_unref(m_gmain);
  
   if (!m_opts.quiet) 

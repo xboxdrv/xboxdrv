@@ -33,6 +33,8 @@ class EvdevController : public Controller
 {
 private:
   int m_fd;
+  GIOChannel* m_io_channel;
+
   std::string m_name;
   bool m_grab;
   bool m_debug;
@@ -54,9 +56,7 @@ public:
                   const std::map<int, XboxButton>& keyMap,
                   bool grab,
                   bool debug);
-
-  void start();
-  void stop();
+  ~EvdevController();
 
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
