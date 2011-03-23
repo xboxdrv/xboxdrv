@@ -146,6 +146,7 @@ EvdevController::EvdevController(const std::string& filename,
 EvdevController::~EvdevController()
 {
   g_io_channel_unref(m_io_channel);
+  close(m_fd);
 }
 
 void
