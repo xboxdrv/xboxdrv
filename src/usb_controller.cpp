@@ -78,13 +78,6 @@ USBController::USBController(libusb_device* dev) :
 
 USBController::~USBController()
 {
-  usb_cancel_read();
-  if (m_read_transfer)
-  {
-    libusb_free_transfer(m_read_transfer);
-  }
-
-  //libusb_release_interface(m_handle, 0); 
   libusb_close(m_handle);
 }
 
@@ -154,6 +147,37 @@ USBController::usb_write(int endpoint, uint8_t* data_in, int len)
 }
 
 void
+USBController::usb_control(uint8_t  bmRequestType, uint8_t  bRequest,
+                           uint16_t wValue, uint16_t wIndex,
+                           uint8_t* data_in, uint16_t wLength)
+{
+  libusb_transfer* transfer = libusb_alloc_transfer(0);
+  transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
+  transfer->flags |= LIBUSB_TRANSFER_FREE_TRANSFER;
+
+  // create and fill control buffer
+  uint8_t* data = static_cast<uint8_t*>(malloc(wLength + 8));
+  libusb_fill_control_setup(data, bmRequestType, bRequest, wValue, wIndex, wLength);
+  memcpy(data + 8, data_in, wLength);
+  libusb_fill_control_transfer(transfer, m_handle, data,
+                               &USBController::on_control_wrap, this, 
+                               0);
+
+  int ret;
+  ret = libusb_submit_transfer(transfer);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+  }
+}
+
+void
+USBController::on_control(libusb_transfer* transfer)
+{
+  log_debug("control transfer");
+}
+
+void
 USBController::on_write_data(libusb_transfer* transfer)
 {
   if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
@@ -167,6 +191,7 @@ USBController::usb_cancel_read()
 {
   assert(m_read_transfer);
   libusb_cancel_transfer(m_read_transfer);
+  libusb_free_transfer(m_read_transfer);
   m_read_transfer = 0;
 }
 

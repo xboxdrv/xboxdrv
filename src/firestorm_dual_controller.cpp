@@ -88,7 +88,15 @@ FirestormDualController::FirestormDualController(libusb_device* dev, bool is_vsb
   right_rumble(-1)
 {
   usb_claim_interface(0, try_detach);
-  usb_submit_read(1, 32); // FIXME: do we need the correct size?!
+
+  if (is_vsb)
+  {
+    usb_submit_read(1, sizeof(Firestorm_vsb_Msg));
+  }
+  else
+  {
+    usb_submit_read(1, sizeof(FirestormMsg));
+  }
 }
 
 FirestormDualController::~FirestormDualController()
@@ -109,11 +117,11 @@ FirestormDualController::set_rumble(uint8_t left, uint8_t right)
     uint8_t cmd[] = { left, right, 0x00, 0x00 };
     if (is_vsb)
     {
-      libusb_control_transfer(m_handle, 0x21, 0x09, 0x0200, 0x00, cmd, sizeof(cmd), 0);
+      usb_control(0x21, 0x09, 0x0200, 0x00, cmd, sizeof(cmd));
     }
     else
     {
-      libusb_control_transfer(m_handle, 0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd), 0);
+      usb_control(0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd));
     }
   }
 }

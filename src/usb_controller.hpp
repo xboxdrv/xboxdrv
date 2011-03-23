@@ -56,6 +56,9 @@ public:
   void usb_cancel_read();
 
   void usb_write(int endpoint, uint8_t* data, int len);
+  void usb_control(uint8_t bmRequestType, uint8_t  bRequest,
+                   uint16_t wValue, uint16_t wIndex,
+                   uint8_t* data, uint16_t len);
 
 private:
   void on_read_data(libusb_transfer *transfer);
@@ -68,6 +71,12 @@ private:
   static void on_write_data_wrap(libusb_transfer *transfer)
   {
     static_cast<USBController*>(transfer->user_data)->on_write_data(transfer);
+  }
+
+  void on_control(libusb_transfer* transfer);
+  static void on_control_wrap(libusb_transfer* transfer)
+  {
+    static_cast<USBController*>(transfer->user_data)->on_control(transfer);
   }
 
 private:
