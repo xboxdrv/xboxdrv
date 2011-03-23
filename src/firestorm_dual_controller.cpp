@@ -88,8 +88,7 @@ FirestormDualController::FirestormDualController(libusb_device* dev, bool is_vsb
   right_rumble(-1)
 {
   usb_claim_interface(0, try_detach);
-  //usb_submit_read();
-  assert(!"not implemented");
+  usb_submit_read(1, 32); // FIXME: do we need the correct size?!
 }
 
 FirestormDualController::~FirestormDualController()
@@ -126,45 +125,15 @@ FirestormDualController::set_led(uint8_t status)
 }
 
 bool
-FirestormDualController::read(XboxGenericMsg& msg, int timeout)
-{
-  if (is_vsb)
-    return read_vsb(msg, timeout);
-  else
-    return read_default(msg, timeout);
-}
-
-bool
-FirestormDualController::read_vsb(XboxGenericMsg& msg, int timeout)
+FirestormDualController::parse_vsb(uint8_t* data_in, int len, XboxGenericMsg* msg_out)
 {
   Firestorm_vsb_Msg data;
-  int len = 0;
-  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 1,
-                                      reinterpret_cast<uint8_t*>(&data), sizeof(data), 
-                                      &len, timeout);
-  if (ret == LIBUSB_ERROR_TIMEOUT)
-  {
-    return false;
-  }
-  else if (ret != LIBUSB_SUCCESS)
-  { // Error
-    std::ostringstream str;
-    str << "USBError: " << ret << "\n" << usb_strerror(ret);
-    throw std::runtime_error(str.str());
-  }
-  else if (len == sizeof(data))
-  {
-    if (0)
-    { // debug output
-      std::ostringstream str;
-      for(size_t i = 0; i < sizeof(data); ++i)
-      {
-        uint8_t v = reinterpret_cast<char*>(&data)[i];
-        str << boost::format("0x%02x ") % static_cast<int>(v);
-      }
-      log_debug(str.str());
-    }
 
+  if (len == sizeof(data))
+  {
+    XboxGenericMsg& msg = *msg_out;
+
+    memcpy(&data, data_in, sizeof(data));
     memset(&msg, 0, sizeof(msg));
     msg.type    = XBOX_MSG_XBOX360;
 
@@ -219,26 +188,15 @@ FirestormDualController::read_vsb(XboxGenericMsg& msg, int timeout)
 }
 
 bool
-FirestormDualController::read_default(XboxGenericMsg& msg, int timeout)
+FirestormDualController::parse_default(uint8_t* data_in, int len, XboxGenericMsg* msg_out)
 {
   FirestormMsg data;
-  int len = 0;
-  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 1,
-                                      reinterpret_cast<uint8_t*>(&data), sizeof(data), 
-                                      &len, timeout);
 
-  if (ret == LIBUSB_ERROR_TIMEOUT)
+  if (len == sizeof(data))
   {
-    return false;
-  }
-  else if (ret != LIBUSB_SUCCESS)
-  { // Error
-    std::ostringstream str;
-    str << "USBError: " << ret << "\n" << usb_strerror(ret);
-    throw std::runtime_error(str.str());
-  }
-  else if (len == sizeof(data))
-  {
+    XboxGenericMsg& msg = *msg_out;
+
+    memcpy(&data, data_in, sizeof(data));
     memset(&msg, 0, sizeof(msg));
     msg.type    = XBOX_MSG_XBOX360;
 
@@ -295,8 +253,14 @@ FirestormDualController::read_default(XboxGenericMsg& msg, int timeout)
 bool
 FirestormDualController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
 {
-  assert(!"implement me");
-  return false;
+  if (is_vsb)
+  {
+    return parse_vsb(data, len, msg_out);
+  }
+  else
+  {
+    return parse_default(data, len, msg_out);
+  }
 }
 
 /* EOF */
