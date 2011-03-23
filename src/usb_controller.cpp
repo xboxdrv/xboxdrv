@@ -215,7 +215,12 @@ USBController::on_read_data(libusb_transfer *transfer)
   {   
     int ret;
     ret = libusb_submit_transfer(transfer);
-    assert(ret == LIBUSB_SUCCESS); // FIXME
+    if (ret != LIBUSB_SUCCESS)
+    {
+      log_error("failed to resubmit USB transfer: " << usb_strerror(ret));
+      libusb_free_transfer(transfer);
+      // FIXME: must signal somebody that the controller is no longer usable
+    }
   }
 }
 
