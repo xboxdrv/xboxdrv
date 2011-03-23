@@ -111,8 +111,6 @@ USBController::usb_submit_read(int endpoint, int len)
 {
   assert(!m_read_transfer);
 
-  //log_debug("ep: " << endpoint << " len: " << len);
-
   m_read_transfer = libusb_alloc_transfer(0);
 
   uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
@@ -127,6 +125,40 @@ USBController::usb_submit_read(int endpoint, int len)
   if (ret != LIBUSB_SUCCESS)
   {
     raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+  }
+}
+
+void
+USBController::usb_write(int endpoint, uint8_t* data_in, int len)
+{
+  libusb_transfer* transfer = libusb_alloc_transfer(0);
+  transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
+  transfer->flags |= LIBUSB_TRANSFER_FREE_TRANSFER;
+
+  // copy data into a newly allocated buffer
+  uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
+  memcpy(data, data_in, len);
+
+  libusb_fill_interrupt_transfer(transfer, m_handle,
+                                 endpoint | LIBUSB_ENDPOINT_OUT,
+                                 data, len,
+                                 &USBController::on_write_data_wrap, this,
+                                 0); // timeout
+
+  int ret;
+  ret = libusb_submit_transfer(transfer);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+  }
+}
+
+void
+USBController::on_write_data(libusb_transfer* transfer)
+{
+  if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
+  {
+    log_error("USB write failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
   }
 }
 
@@ -180,27 +212,6 @@ USBController::usb_release_interface(int ifnum)
 {
   // should be called before closing the device handle
   libusb_release_interface(m_handle, ifnum); 
-}
-
-void
-USBController::usb_write(int endpoint, uint8_t* data, int len)
-{
-  log_error("not implemented");
-#ifdef FIXME
-  int transferred = 0;
-  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_OUT | endpoint,
-                                      data, len, &transferred, 0);
-  if (ret != LIBUSB_SUCCESS)
-  {
-    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
-  }
-
-  if (transferred != len)
-  {
-    raise_exception(std::runtime_error, "libusb_interrupt_transfer() short write: "
-                    << len << " - " << transferred);
-  }
-#endif
 }
 
 int

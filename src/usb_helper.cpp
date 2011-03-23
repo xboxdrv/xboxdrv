@@ -71,6 +71,21 @@ const char* usb_strerror(int err)
   }
 }
 
+const char* usb_transfer_strerror(libusb_transfer_status err)
+{
+  switch(err)
+  {
+    case LIBUSB_TRANSFER_COMPLETED: return "LIBUSB_TRANSFER_COMPLETED";
+    case LIBUSB_TRANSFER_ERROR: return "LIBUSB_TRANSFER_ERROR";
+    case LIBUSB_TRANSFER_TIMED_OUT: return "LIBUSB_TRANSFER_TIMED_OUT";
+    case LIBUSB_TRANSFER_CANCELLED: return "LIBUSB_TRANSFER_CANCELLED";
+    case LIBUSB_TRANSFER_STALL: return "LIBUSB_TRANSFER_STALL";	
+    case LIBUSB_TRANSFER_NO_DEVICE: return "LIBUSB_TRANSFER_NO_DEVICE";
+    case LIBUSB_TRANSFER_OVERFLOW: return "LIBUSB_TRANSFER_OVERFLOW";
+    default: return "<unknown libusb transfer error code>";
+  }
+}
+
 libusb_device* usb_find_device_by_path(uint8_t busnum, uint8_t devnum)
 {
   libusb_device* ret_device = 0;

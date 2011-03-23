@@ -79,6 +79,8 @@ Checklist
 
 * check that --quit works, currently broken
 
+* search for "#ifdef FIXME"
+
 
 Stuff to do before 0.7.4 release:
 =================================

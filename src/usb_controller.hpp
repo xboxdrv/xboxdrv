@@ -47,18 +47,27 @@ public:
 
   virtual bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out) =0;
 
+  int  usb_find_ep(int direction, uint8_t if_class, uint8_t if_subclass, uint8_t if_protocol);
+
   void usb_claim_interface(int ifnum, bool try_detach);
   void usb_release_interface(int ifnum);
-  void usb_write(int endpoint, uint8_t* data, int len);
-  int  usb_find_ep(int direction, uint8_t if_class, uint8_t if_subclass, uint8_t if_protocol);
 
   void usb_submit_read(int endpoint, int len);
   void usb_cancel_read();
 
+  void usb_write(int endpoint, uint8_t* data, int len);
+
+private:
   void on_read_data(libusb_transfer *transfer);
   static void on_read_data_wrap(libusb_transfer *transfer)
   {
     static_cast<USBController*>(transfer->user_data)->on_read_data(transfer);
+  }
+
+  void on_write_data(libusb_transfer *transfer);
+  static void on_write_data_wrap(libusb_transfer *transfer)
+  {
+    static_cast<USBController*>(transfer->user_data)->on_write_data(transfer);
   }
 
 private:
