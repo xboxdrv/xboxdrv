@@ -207,8 +207,12 @@ XboxdrvMain::main_loop(const ControllerPtr& controller)
   // start the main loop
   GMainLoop* m_gmain = g_main_loop_new(NULL, false);
   
-  boost::scoped_ptr<USBGSource> usb_gsource(new USBGSource);
-  usb_gsource->attach(NULL);
+  boost::scoped_ptr<USBGSource> usb_gsource;
+  if (m_use_libusb)
+  {
+    usb_gsource.reset(new USBGSource);
+    usb_gsource->attach(NULL);
+  }
 
   ControllerThread thread(controller, m_opts);
   thread.set_message_proc(create_message_proc());
