@@ -126,6 +126,7 @@ void
 XboxdrvMain::run()
 {
   ControllerPtr controller = create_controller();
+  std::auto_ptr<MessageProcessor> message_proc;
   init_controller(controller);
 
   if (!m_opts.quiet)
@@ -141,6 +142,8 @@ XboxdrvMain::run()
     {
       if (!m_opts.quiet)
         std::cout << "Starting without uinput" << std::endl;
+
+      message_proc.reset(new DummyMessageProcessor);
     }
     else
     {
@@ -150,6 +153,16 @@ XboxdrvMain::run()
       m_uinput.reset(new UInput(m_opts.extra_events));
       m_uinput->set_device_names(m_opts.uinput_device_names);
       m_uinput->set_device_usbids(m_opts.uinput_device_usbids);
+
+      ControllerSlotConfigPtr config_set = ControllerSlotConfig::create(*m_uinput, 
+                                                                        0, m_opts.extra_devices,
+                                                                        m_opts.get_controller_slot());
+      
+      // After all the ControllerConfig registered their events, finish up
+      // the device creation
+      m_uinput->finish();
+      
+      message_proc.reset(new UInputMessageProcessor(*m_uinput, config_set, m_opts));
     }
 
     if (!m_opts.quiet)
@@ -159,7 +172,7 @@ XboxdrvMain::run()
                 << "  /dev/input/event" << m_evdev_number << std::endl;
 
       if (m_opts.silent)
-      {          
+      {
         std::cout << "\nPress Ctrl-c to quit\n" << std::endl;
       }
       else
@@ -168,70 +181,39 @@ XboxdrvMain::run()
       }
     }
 
-    main_loop(controller);
+    GMainLoop* m_gmain = g_main_loop_new(NULL, false);
+    {
+      boost::scoped_ptr<USBGSource> usb_gsource;
+      if (m_use_libusb)
+      {
+        usb_gsource.reset(new USBGSource);
+        usb_gsource->attach(NULL);
+      }
+
+      ControllerThread thread(controller, message_proc, m_opts);
+      log_debug("launching thread");
+      
+      pid_t pid = 0;
+      if (!m_opts.exec.empty())
+      {
+        pid = spawn_exe(m_opts.exec);
+      }
+
+      log_debug("launching main loop");
+      g_main_loop_run(m_gmain);
+    }
+    g_main_loop_unref(m_gmain);
 
     if (m_use_libusb)
     {
       libusb_exit(NULL);
     }
-  }
-}
 
-std::auto_ptr<MessageProcessor>
-XboxdrvMain::create_message_proc()
-{
-  std::auto_ptr<MessageProcessor> message_proc;
-  if (m_uinput.get())
-  {
-    ControllerSlotConfigPtr config_set = ControllerSlotConfig::create(*m_uinput, 
-                                                                      0, m_opts.extra_devices,
-                                                                      m_opts.get_controller_slot());
-
-    // After all the ControllerConfig registered their events, finish up
-    // the device creation
-    m_uinput->finish();
-
-    message_proc.reset(new UInputMessageProcessor(*m_uinput, config_set, m_opts));
-  }
-  else
-  {
-    message_proc.reset(new DummyMessageProcessor);
-  }
-
-  return message_proc;
-}
-
-void
-XboxdrvMain::main_loop(const ControllerPtr& controller)
-{
-  // start the main loop
-  GMainLoop* m_gmain = g_main_loop_new(NULL, false);
-  
-  boost::scoped_ptr<USBGSource> usb_gsource;
-  if (m_use_libusb)
-  {
-    usb_gsource.reset(new USBGSource);
-    usb_gsource->attach(NULL);
-  }
-
-  {
-    ControllerThread thread(controller, create_message_proc(), m_opts);
-    log_debug("launching thread");
-      
-    pid_t pid = 0;
-    if (!m_opts.exec.empty())
+    if (!m_opts.quiet)
     {
-      pid = spawn_exe(m_opts.exec);
+      std::cout << "Shutdown complete" << std::endl;
     }
-
-    log_debug("launching main loop");
-    g_main_loop_run(m_gmain);
   }
-
-  g_main_loop_unref(m_gmain);
- 
-  if (!m_opts.quiet) 
-    std::cout << "Shutdown complete" << std::endl;
 }
 
 void

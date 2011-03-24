@@ -47,10 +47,8 @@ public:
 
 private:
   ControllerPtr create_controller();
-  std::auto_ptr<MessageProcessor> create_message_proc();
   
   void init_controller(const ControllerPtr& controller);
-  void main_loop(const ControllerPtr& controller);
 
   void print_info(libusb_device* dev,
                   const XPadDevice& dev_type,

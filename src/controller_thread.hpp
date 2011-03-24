@@ -42,7 +42,8 @@ private:
 
   XboxGenericMsg m_oldrealmsg; /// last data read from the device
 
-  int m_timeout;
+  int  m_timeout;
+  bool m_print_messages;
   guint m_timeout_id;
   GTimer* m_timer;
 

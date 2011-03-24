@@ -36,6 +36,7 @@ ControllerThread::ControllerThread(ControllerPtr controller,
   m_processor(processor),
   m_oldrealmsg(),
   m_timeout(opts.timeout),
+  m_print_messages(!opts.silent),
   m_timeout_id(),
   m_timer(g_timer_new())
 {
@@ -68,6 +69,11 @@ ControllerThread::on_timeout()
 void
 ControllerThread::on_message(const XboxGenericMsg& msg)
 {
+  if (m_print_messages)
+  {
+    std::cout << msg << std::endl;
+  }
+
   m_oldrealmsg = msg;
 
   int msec_delta = static_cast<int>(g_timer_elapsed(m_timer, NULL) * 1000.0f);
