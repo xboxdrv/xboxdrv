@@ -29,19 +29,25 @@
 
 extern bool global_exit_xboxdrv;
 
-ControllerThread::ControllerThread(ControllerPtr controller, const Options& opts) :
-  m_processor(),
+ControllerThread::ControllerThread(ControllerPtr controller, 
+                                   std::auto_ptr<MessageProcessor> processor,
+                                   const Options& opts) :
   m_controller(controller),
+  m_processor(processor),
   m_oldrealmsg(),
   m_timeout(opts.timeout),
   m_timeout_id(),
   m_timer(g_timer_new())
 {
   memset(&m_oldrealmsg, 0, sizeof(m_oldrealmsg));
+  m_timeout_id = g_timeout_add(m_timeout, &ControllerThread::on_timeout_wrap, this);
+  m_controller->set_message_cb(boost::bind(&ControllerThread::on_message, this, _1));
+  m_processor->set_ff_callback(boost::bind(&Controller::set_rumble, m_controller.get(), _1, _2));
 }
 
 ControllerThread::~ControllerThread()
 {
+  g_source_remove(m_timeout_id);
   g_timer_destroy(m_timer);
 }
 
@@ -70,31 +76,6 @@ ControllerThread::on_message(const XboxGenericMsg& msg)
   if (m_processor.get())
   {
     m_processor->send(msg, msec_delta);
-  }
-}
-
-void
-ControllerThread::start()
-{
-  m_timeout_id = g_timeout_add(m_timeout, &ControllerThread::on_timeout_wrap, this);
-}
-
-void
-ControllerThread::stop()
-{
-  g_source_remove(m_timeout_id);
-}
-
-void
-ControllerThread::set_message_proc(std::auto_ptr<MessageProcessor> processor)
-{
-  m_processor = processor;
-  m_controller->set_message_cb(boost::bind(&ControllerThread::on_message, this, _1));
-
-  // connect the processor to the controller to allow rumble
-  if (m_processor.get())
-  {
-    m_processor->set_ff_callback(boost::bind(&Controller::set_rumble, m_controller.get(), _1, _2));
   }
 }
 

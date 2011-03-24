@@ -214,21 +214,20 @@ XboxdrvMain::main_loop(const ControllerPtr& controller)
     usb_gsource->attach(NULL);
   }
 
-  ControllerThread thread(controller, m_opts);
-  thread.set_message_proc(create_message_proc());
-  log_debug("launching thread");
-  thread.start(); 
-      
-  pid_t pid = 0;
-  if (!m_opts.exec.empty())
   {
-    pid = spawn_exe(m_opts.exec);
+    ControllerThread thread(controller, create_message_proc(), m_opts);
+    log_debug("launching thread");
+      
+    pid_t pid = 0;
+    if (!m_opts.exec.empty())
+    {
+      pid = spawn_exe(m_opts.exec);
+    }
+
+    log_debug("launching main loop");
+    g_main_loop_run(m_gmain);
   }
 
-  log_debug("launching main loop");
-  g_main_loop_run(m_gmain);
-  thread.stop();
-  
   g_main_loop_unref(m_gmain);
  
   if (!m_opts.quiet) 

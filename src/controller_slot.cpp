@@ -43,18 +43,16 @@ ControllerSlot::connect(ControllerPtr controller)
 {
   assert(!m_thread);
 
-  m_thread.reset(new ControllerThread(controller, m_opts));
-
+  std::auto_ptr<MessageProcessor> message_proc;
   if (m_uinput)
   {
-    m_thread->set_message_proc(std::auto_ptr<MessageProcessor>(new UInputMessageProcessor(*m_uinput, m_config, m_opts)));
+    message_proc.reset(new UInputMessageProcessor(*m_uinput, m_config, m_opts));
   }
   else
   {
-    m_thread->set_message_proc(std::auto_ptr<MessageProcessor>(new DummyMessageProcessor()));
+    message_proc.reset(new DummyMessageProcessor());
   }
-
-  m_thread->start();
+  m_thread.reset(new ControllerThread(controller, message_proc, m_opts));
 }
 
 ControllerPtr
@@ -63,7 +61,6 @@ ControllerSlot::disconnect()
   assert(m_thread);
 
   ControllerPtr controller = m_thread->get_controller();
-  m_thread->stop();
   m_thread.reset();
 
   return controller;
