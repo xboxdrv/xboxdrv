@@ -41,12 +41,20 @@
 
 XboxdrvMain::XboxdrvMain(const Options& opts) :
   m_opts(opts),
+  m_gmain(),
+  m_usb_gsource(),
   m_uinput(),
   m_jsdev_number(),
   m_evdev_number(),
   m_use_libusb(false),
   m_dev_type()
 {
+  m_gmain = g_main_loop_new(NULL, false);
+}
+
+XboxdrvMain::~XboxdrvMain()
+{
+  g_main_loop_unref(m_gmain);
 }
 
 ControllerPtr
@@ -68,17 +76,6 @@ XboxdrvMain::create_controller()
   }
   else
   { // regular USB Xbox360 controller    
-    m_use_libusb = true;
-    int ret = libusb_init(NULL);
-    if (ret != LIBUSB_SUCCESS)
-    {
-      raise_exception(std::runtime_error, "libusb_init() failed: " << usb_strerror(ret));
-    }
-    
-    if (m_opts.usb_debug)
-    {
-      libusb_set_debug(NULL, 3);
-    }
 
     // FIXME: this must be libusb_unref_device()'ed, child code must not keep a copy around
     libusb_device* dev = 0;
@@ -125,6 +122,8 @@ XboxdrvMain::init_controller(const ControllerPtr& controller)
 void
 XboxdrvMain::run()
 {
+  USBSubsystem usb_subsystem;
+
   ControllerPtr controller = create_controller();
   std::auto_ptr<MessageProcessor> message_proc;
   init_controller(controller);
@@ -141,25 +140,27 @@ XboxdrvMain::run()
     if (m_opts.no_uinput)
     {
       if (!m_opts.quiet)
+      {
         std::cout << "Starting without uinput" << std::endl;
+      }
 
       message_proc.reset(new DummyMessageProcessor);
     }
     else
     {
-      if (!m_opts.quiet)
-        std::cout << "Starting with uinput" << std::endl;
-
+      log_debug("creating UInput");
       m_uinput.reset(new UInput(m_opts.extra_events));
       m_uinput->set_device_names(m_opts.uinput_device_names);
       m_uinput->set_device_usbids(m_opts.uinput_device_usbids);
 
+      log_debug("creating ControllerSlotConfig");
       ControllerSlotConfigPtr config_set = ControllerSlotConfig::create(*m_uinput, 
                                                                         0, m_opts.extra_devices,
                                                                         m_opts.get_controller_slot());
       
       // After all the ControllerConfig registered their events, finish up
       // the device creation
+      log_debug("finish UInput creation");
       m_uinput->finish();
       
       message_proc.reset(new UInputMessageProcessor(*m_uinput, config_set, m_opts));
@@ -181,15 +182,7 @@ XboxdrvMain::run()
       }
     }
 
-    GMainLoop* m_gmain = g_main_loop_new(NULL, false);
     {
-      boost::scoped_ptr<USBGSource> usb_gsource;
-      if (m_use_libusb)
-      {
-        usb_gsource.reset(new USBGSource);
-        usb_gsource->attach(NULL);
-      }
-
       ControllerThread thread(controller, message_proc, m_opts);
       log_debug("launching thread");
       
@@ -201,12 +194,6 @@ XboxdrvMain::run()
 
       log_debug("launching main loop");
       g_main_loop_run(m_gmain);
-    }
-    g_main_loop_unref(m_gmain);
-
-    if (m_use_libusb)
-    {
-      libusb_exit(NULL);
     }
 
     if (!m_opts.quiet)
@@ -226,16 +213,14 @@ XboxdrvMain::print_info(libusb_device* dev, const XPadDevice& dev_type, const Op
     raise_exception(std::runtime_error, "libusb_get_device_descriptor() failed: " << usb_strerror(ret));
   }
 
-  std::cout << "USB Device:        " << boost::format("%03d:%03d")
-    % static_cast<int>(libusb_get_bus_number(dev))
-    % static_cast<int>(libusb_get_device_address(dev)) << std::endl;
   std::cout << "Controller:        " << dev_type.name << std::endl;
   std::cout << "Vendor/Product:    " << boost::format("%04x:%04x")
     % uint16_t(desc.idVendor) % uint16_t(desc.idProduct) << std::endl;
+  std::cout << "USB Path:          " << boost::format("%03d:%03d")
+    % static_cast<int>(libusb_get_bus_number(dev))
+    % static_cast<int>(libusb_get_device_address(dev)) << std::endl;
   if (dev_type.type == GAMEPAD_XBOX360_WIRELESS)
     std::cout << "Wireless Port:     " << opts.wireless_id << std::endl;
-  else
-    std::cout << "Wireless Port:     -" << std::endl;
   std::cout << "Controller Type:   " << dev_type.type << std::endl;
 
   //std::cout << "ForceFeedback:     " << ((opts.controller.back().uinput.force_feedback) ? "enabled" : "disabled") << std::endl;

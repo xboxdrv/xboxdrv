@@ -34,10 +34,9 @@
 #include "controller_factory.hpp"
 #include "controller_slot.hpp"
 #include "controller.hpp"
-#include "xboxdrv_g_daemon.hpp"
-#include "xboxdrv_g_controller.hpp"
-#include "xboxdrv_daemon_glue.hpp"
-#include "xboxdrv_controller_glue.hpp"
+#include "udev_subsystem.hpp"
+#include "dbus_subsystem.hpp"
+#include "usb_subsystem.hpp"
 
 XboxdrvDaemon* XboxdrvDaemon::s_current = 0;
 
@@ -98,16 +97,19 @@ bool get_usb_path(udev_device* device, int* bus, int* dev)
 
 XboxdrvDaemon::XboxdrvDaemon(const Options& opts) :
   m_opts(opts),
-  m_udev(0),
-  m_monitor(0),
-  m_usb_gsource(),
+  m_gmain(),
   m_controller_slots(),
   m_inactive_controllers(),
-  m_uinput(),
-  m_gmain()
+  m_uinput()
 {
   assert(!s_current);
   s_current = this;
+
+  g_type_init();
+  m_gmain = g_main_loop_new(NULL, false);
+
+  signal(SIGINT,  &XboxdrvDaemon::on_sigint);
+  signal(SIGTERM, &XboxdrvDaemon::on_sigint);
 }
 
 XboxdrvDaemon::~XboxdrvDaemon()
@@ -125,8 +127,34 @@ XboxdrvDaemon::~XboxdrvDaemon()
     }
   }
 
-  udev_monitor_unref(m_monitor);
-  udev_unref(m_udev);
+  g_main_loop_unref(m_gmain);
+}
+
+void
+XboxdrvDaemon::run()
+{
+  try 
+  {
+    create_pid_file();
+
+    init_uinput();
+
+    USBSubsystem usb_subsystem;
+
+    UdevSubsystem udev_subsystem;
+    udev_subsystem.set_device_callback(boost::bind(&XboxdrvDaemon::process_match, this, _1));
+
+    DBusSubsystem dbus_subsystem("org.seul.Xboxdrv");
+    dbus_subsystem.register_xboxdrv_daemon(this);
+    dbus_subsystem.register_controller_slots(m_controller_slots);
+    
+    log_debug("launching into main loop");
+    g_main_loop_run(m_gmain);
+  }
+  catch(const std::exception& err)
+  {
+    log_error("fatal exception: " << err.what());
+  }
 }
 
 void
@@ -156,6 +184,9 @@ XboxdrvDaemon::cleanup_threads()
 void
 XboxdrvDaemon::process_match(struct udev_device* device)
 {
+  // FIXME: bad place?!
+  // FIXME: cleanup_threads();
+
   uint16_t vendor;
   uint16_t product;
 
@@ -240,65 +271,6 @@ XboxdrvDaemon::init_uinput()
 }
 
 void
-XboxdrvDaemon::init_udev()
-{
-  assert(!m_udev);
-
-  m_udev = udev_new();
-   
-  if (!m_udev)
-  {
-    raise_exception(std::runtime_error, "udev init failure");
-  }
-}
-
-void
-XboxdrvDaemon::init_udev_monitor()
-{
-  // Setup udev monitor and enumerate
-  m_monitor = udev_monitor_new_from_netlink(m_udev, "udev");
-  udev_monitor_filter_add_match_subsystem_devtype(m_monitor, "usb", "usb_device");
-  udev_monitor_enable_receiving(m_monitor);
-
-  // FIXME: won't we get devices twice that have been plugged in at
-  // this point? once from the enumeration, once from the monitor
-  enumerate_udev_devices();
-}
-
-void
-XboxdrvDaemon::enumerate_udev_devices()
-{
-  // Enumerate over all devices already connected to the computer
-  struct udev_enumerate* enumerate = udev_enumerate_new(m_udev);
-  assert(enumerate);
-
-  udev_enumerate_add_match_subsystem(enumerate, "usb");
-  // not available yet: udev_enumerate_add_match_is_initialized(enumerate);
-  udev_enumerate_scan_devices(enumerate);
-
-  struct udev_list_entry* devices;
-  struct udev_list_entry* dev_list_entry;
-    
-  devices = udev_enumerate_get_list_entry(enumerate);
-  udev_list_entry_foreach(dev_list_entry, devices) 
-  {
-    // name is path, value is NULL
-    const char* path = udev_list_entry_get_name(dev_list_entry);
-
-    struct udev_device* device = udev_device_new_from_syspath(m_udev, path);
-
-    // manually filter for devtype, as udev enumerate can't do it by itself
-    const char* devtype = udev_device_get_devtype(device);
-    if (devtype && strcmp(devtype, "usb_device") == 0)
-    {
-      process_match(device);
-    }
-    udev_device_unref(device);
-  }
-  udev_enumerate_unref(enumerate);
-}
-
-void
 XboxdrvDaemon::create_pid_file()
 {
   if (!m_opts.pid_file.empty())
@@ -316,123 +288,6 @@ XboxdrvDaemon::create_pid_file()
   }
 }
 
-void
-XboxdrvDaemon::init_g_usb()
-{
-  assert(!m_usb_gsource);
-
-  m_usb_gsource.reset(new USBGSource);
-  m_usb_gsource->attach(NULL);
-}
-
-void
-XboxdrvDaemon::init_g_udev()
-{
-  GIOChannel* udev_channel = g_io_channel_unix_new(udev_monitor_get_fd(m_monitor));
-  g_io_add_watch(udev_channel, 
-                 static_cast<GIOCondition>(G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP),
-                 &XboxdrvDaemon::on_udev_data_wrap, this);
-  g_io_channel_unref(udev_channel);
-}
-
-void
-XboxdrvDaemon::init_g_dbus()
-{
-  if (m_opts.dbus)
-  {
-    try
-    {
-      GError* gerror = NULL;
-      // this calls automatically sets up connection to the main loop
-      DBusGConnection* connection = dbus_g_bus_get(DBUS_BUS_SESSION, &gerror);
-      if (!connection)
-      {
-        std::ostringstream out;
-        out << "failed to open connection to bus: " << gerror->message;
-        g_error_free(gerror);
-        throw std::runtime_error(out.str());
-      }
-      else
-      {
-        DBusError error;
-        dbus_error_init(&error);
-        int ret = dbus_bus_request_name(dbus_g_connection_get_connection(connection),
-                                        "org.seul.Xboxdrv",
-                                        DBUS_NAME_FLAG_REPLACE_EXISTING,
-                                        &error);
-  
-        if (dbus_error_is_set(&error))
-        { 
-          std::ostringstream out;
-          out << "failed to get unique dbus name: " <<  error.message;
-          dbus_error_free(&error);
-          throw std::runtime_error(out.str());
-        }
-
-        if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) 
-        { 
-          raise_exception(std::runtime_error, "failed to become primary owner of dbus name");
-        }
-
-        // FIXME: should unref() these somewhere
-        XboxdrvGDaemon* daemon = xboxdrv_g_daemon_new(this);
-        dbus_g_object_type_install_info(XBOXDRV_TYPE_G_DAEMON, &dbus_glib_xboxdrv_daemon_object_info);
-        dbus_g_connection_register_g_object(connection, "/org/seul/Xboxdrv/Daemon", G_OBJECT(daemon));
-
-        for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
-        {
-          XboxdrvGController* controller = xboxdrv_g_controller_new(i->get());
-          dbus_g_object_type_install_info(XBOXDRV_TYPE_G_CONTROLLER, &dbus_glib_xboxdrv_controller_object_info);
-          dbus_g_connection_register_g_object(connection, 
-                                              (boost::format("/org/seul/Xboxdrv/ControllerSlots/%d") % (i - m_controller_slots.begin())).str().c_str(),
-                                              G_OBJECT(controller));
-        }
-      }
-    }
-    catch (const std::exception& err)
-    {
-      log_error("D-Bus initialisation failed: " << err.what());
-    }
-  }
-}
-
-void
-XboxdrvDaemon::run()
-{
-  try 
-  {
-    create_pid_file();
-
-    init_uinput();
-    init_udev();
-    init_udev_monitor();
-
-    g_type_init();
-
-    // we don't use glib threads, but we still need to init the thread
-    // system to make glib thread safe
-    g_thread_init(NULL);
-    
-    signal(SIGINT,  &XboxdrvDaemon::on_sigint);
-    signal(SIGTERM, &XboxdrvDaemon::on_sigint);
-    m_gmain = g_main_loop_new(NULL, false);
-
-    init_g_usb();
-    init_g_udev();
-    init_g_dbus();
-    
-    log_info("launching into glib main loop");
-    g_main_loop_run(m_gmain);
-    log_info("glib main loop finished");
-    signal(SIGINT, 0);
-    g_main_loop_unref(m_gmain);
-  }
-  catch(const std::exception& err)
-  {
-    log_error("fatal exception: " << err.what());
-  }
-}
-
 bool
 XboxdrvDaemon::on_wakeup()
 {
@@ -440,60 +295,6 @@ XboxdrvDaemon::on_wakeup()
   cleanup_threads();
   check_thread_status();
   return false; // remove the registered idle callback
-}
-
-bool
-XboxdrvDaemon::on_udev_data(GIOChannel* channel, GIOCondition condition)
-{
-  if (condition == G_IO_OUT)
-  {
-    log_error("data can be written");
-  }
-  else if (condition == G_IO_PRI)
-  {
-    log_error("data can be read");
-  }
-  else if (condition == G_IO_ERR)
-  {
-    log_error("data error");
-  }
-  else if (condition != G_IO_IN)
-  {
-    log_error("unknown condition: " << condition);
-  }
-  else
-  {  
-    log_info("trying to read data from udev");
-    cleanup_threads();
-  
-    log_info("trying to read data from udev monitor");
-    struct udev_device* device = udev_monitor_receive_device(m_monitor);
-    log_info("got data from udev monitor");
-
-    if (!device)
-    {
-      // seem to be normal, do we get this when the given device is filtered out?
-      log_debug("udev device couldn't be read: " << device);
-    }
-    else
-    {
-      const char* action = udev_device_get_action(device);
-
-      if (g_logger.get_log_level() >= Logger::kDebug)
-      {
-        print_info(device);
-      }
-
-      if (action && strcmp(action, "add") == 0)
-      {
-        process_match(device);
-      }
-
-      udev_device_unref(device);
-    }
-  }
- 
-  return true;
 }
 
 void
@@ -541,85 +342,6 @@ XboxdrvDaemon::check_thread_status()
   // cleanup inactive controller
   m_inactive_controllers.erase(std::remove(m_inactive_controllers.begin(), m_inactive_controllers.end(), ControllerPtr()),
                                m_inactive_controllers.end());
-}
-
-void
-XboxdrvDaemon::print_info(udev_device* device)
-{
-  log_debug("/---------------------------------------------");
-  log_debug("devpath: " << udev_device_get_devpath(device));
-  
-  if (udev_device_get_action(device))
-    log_debug("action: " << udev_device_get_action(device));
-  //log_debug("init: " << udev_device_get_is_initialized(device));
-
-  if (udev_device_get_subsystem(device))
-    log_debug("subsystem: " << udev_device_get_subsystem(device));
-
-  if (udev_device_get_devtype(device))
-    log_debug("devtype:   " << udev_device_get_devtype(device));
-
-  if (udev_device_get_syspath(device))
-    log_debug("syspath:   " << udev_device_get_syspath(device));
-
-  if (udev_device_get_sysname(device))
-    log_debug("sysname:   " << udev_device_get_sysname(device));
-
-  if (udev_device_get_sysnum(device))
-    log_debug("sysnum:    " << udev_device_get_sysnum(device));
-
-  if (udev_device_get_devnode(device))
-    log_debug("devnode:   " << udev_device_get_devnode(device));
-
-  if (udev_device_get_driver(device))
-    log_debug("driver:    " << udev_device_get_driver(device));
-
-  if (udev_device_get_action(device))
-    log_debug("action:    " << udev_device_get_action(device));
-          
-  //udev_device_get_sysattr_value(device, "busnum");
-  //udev_device_get_sysattr_value(device, "devnum");
-
-#if 0
-  // FIXME: only works with newer versions of libudev
-  {
-    log_debug("list: ");
-    struct udev_list_entry* it = udev_device_get_tags_list_entry(device);
-    while((it = udev_list_entry_get_next(it)) != 0)
-    {         
-      log_debug("  " 
-                << udev_list_entry_get_name(it) << " = "
-                << udev_list_entry_get_value(it)
-        );
-    }
-  }
-          
-  {
-    log_debug("properties: ");
-    struct udev_list_entry* it = udev_device_get_properties_list_entry(device);
-    while((it = udev_list_entry_get_next(it)) != 0)
-    {         
-      log_debug("  " 
-                << udev_list_entry_get_name(it) << " = "
-                << udev_list_entry_get_value(it)
-        );
-    }
-  }
-          
-  {
-    log_debug("devlist: ");
-    struct udev_list_entry* it = udev_device_get_tags_list_entry(device);
-    while((it = udev_list_entry_get_next(it)) != 0)
-    {         
-      log_debug("  " 
-                << udev_list_entry_get_name(it) << " = "
-                << udev_list_entry_get_value(it)
-        );
-    }
-  }
-#endif
-
-  log_debug("\\----------------------------------------------");
 }
 
 ControllerSlotPtr

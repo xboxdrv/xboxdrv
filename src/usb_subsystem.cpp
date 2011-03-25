@@ -21,10 +21,30 @@
 #include <stdexcept>
 #include <boost/format.hpp>
 
-#include "usb_helper.hpp"
 #include "options.hpp"
 #include "raise_exception.hpp"
+#include "usb_gsource.hpp"
+#include "usb_helper.hpp"
 
+USBSubsystem::USBSubsystem() :
+  m_usb_gsource()
+{
+  int ret = libusb_init(NULL);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    raise_exception(std::runtime_error, "libusb_init() failed: " << usb_strerror(ret));
+  }
+
+  m_usb_gsource.reset(new USBGSource);
+  m_usb_gsource->attach(NULL);
+}
+
+USBSubsystem::~USBSubsystem()
+{
+  m_usb_gsource.reset();
+  libusb_exit(NULL);
+}
+
 void
 USBSubsystem::find_controller(libusb_device** dev, XPadDevice& dev_type, const Options& opts)
 {

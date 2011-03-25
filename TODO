@@ -57,6 +57,10 @@ Stuff to do before 0.8.0 release:
 Checklist
 =========
 
+* make dbus optional
+
+* check force feedback
+
 * check output when --silent not given
 
 * check clean shutdown
@@ -86,20 +90,21 @@ Checklist
 xboxdrv: src/usb_controller.cpp:218: void USBController::on_read_data(libusb_transfer*): Assertion `ret == LIBUSB_SUCCESS' failed.
 Aborted
 
-* exceptions in glib main loop might be dangerous
+* exceptions in glib main loop might be dangerous and not really do what is intended
 
-* invert y axis on --evdev
+* move sigint/sigterm handling out of main.cpp and into xboxdrv_daemon.cpp (needs to use gmain_quit())
 
+* LED do currently not get down on controller quit
+
+* move LED setting into ControllerThread or somewhere else, not at controller creation time
+
+* check that threads are cleaned up in daemon
 
 
 Stuff to do before 0.7.4 release:
 =================================
 
-* add double-click button, in the same wayne as hold-button
-
-* add --controller 4 or --controller-count 4 or something like that
-
-* add special LED status set switches the LED with the given config
+* invert y axis on --evdev
 
   if (opts.priority == Options::kPriorityRealtime)
   {
@@ -131,6 +136,12 @@ Stuff to do before 0.7.4 release:
       }
     }
   }
+
+* add double-click button, in the same wayne as hold-button
+
+* add --controller 4 or --controller-count 4 or something like that
+
+* add special LED status set switches the LED with the given config
 
 * export build-in config files, both as text and as directory, so that users can browse them
 
@@ -204,7 +215,7 @@ Here KEY_B is the key you want to send and KEY_A is a random other key
 that you don't need. It's a hack as mapping both to KEY_B seems to
 cause some trouble with automatic key repeat for some reason. Note
 that you must not combine this with --trigger-as-zaxis as that will
-disable LT and RT
+disable LT and RT -> already fixed, check it
 
 * add a "click" filter or something like that, that causes a button to only be clicked, not hold
 
@@ -249,12 +260,7 @@ disable LT and RT
   -> hard to avoid, as wireless controllers are only picked up when
      active, which they always become later then the wired ones, which
      are active by default)
-
-* add libusb-0.1 support back (maybe only in 0.7.4)
-  -> no, need a full switch
 
-* move sigint/sigterm handling out of main.cpp and into xboxdrv_daemon.cpp (needs to use gmain_quit())
-
 * BTN_A@joystick.1 doesn't work for a single joystick, why? (joystick isn't id=0, why?)
 
 * improve output on which uinput devices are created (even with udev

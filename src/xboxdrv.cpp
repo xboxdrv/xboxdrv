@@ -204,12 +204,6 @@ Xboxdrv::run_daemon(const Options& opts)
     print_copyright();
   }
 
-  int ret = libusb_init(NULL);
-  if (ret != LIBUSB_SUCCESS)
-  {
-    raise_exception(std::runtime_error, "libusb_init() failed: " << usb_strerror(ret));
-  }
-
   if (opts.usb_debug)
   {
     libusb_set_debug(NULL, 3);
@@ -254,8 +248,6 @@ Xboxdrv::run_daemon(const Options& opts)
       }
     }
   }
-
-  libusb_exit(NULL);
 }
 
 void

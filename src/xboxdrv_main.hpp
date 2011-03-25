@@ -21,18 +21,24 @@
 
 #include <memory>
 #include <libusb.h>
+#include <glib.h>
+#include <boost/scoped_ptr.hpp>
 
 #include "xpad_device.hpp"
 #include "controller_ptr.hpp"
 
-class UInput;
-class Options;
 class MessageProcessor;
+class Options;
+class UInput;
+class USBGSource;
 
 class XboxdrvMain
 {
 private:
   const Options& m_opts;
+  GMainLoop* m_gmain;
+  boost::scoped_ptr<USBGSource> m_usb_gsource;
+
   std::auto_ptr<UInput> m_uinput;
 
   int m_jsdev_number;
@@ -43,6 +49,7 @@ private:
 
 public:
   XboxdrvMain(const Options& opts);
+  ~XboxdrvMain();
   void run();
 
 private:

@@ -96,8 +96,6 @@ Xbox360Controller::set_led(uint8_t status)
 bool
 Xbox360Controller::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
 {
-  log_trace();
-
   if (len == 0)
   {
     // happens with the Xbox360 controller every now and then, just

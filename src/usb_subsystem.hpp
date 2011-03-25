@@ -20,17 +20,23 @@
 #define HEADER_XBOXDRV_USB_SUBSYSTEM_HPP
 
 #include <libusb.h>
+#include <boost/scoped_ptr.hpp>
 
 #include "xpad_device.hpp"
 
+class USBGSource;
 class Options;
 
 class USBSubsystem
 {
 private:
+  boost::scoped_ptr<USBGSource> m_usb_gsource;
+
 public:
   USBSubsystem();
-  
+  ~USBSubsystem();
+
+public:
   static void find_controller(libusb_device** dev, XPadDevice& dev_type, const Options& opts);
   static bool find_controller_by_path(const std::string& busid, const std::string& devid,
                                       libusb_device** xbox_device);

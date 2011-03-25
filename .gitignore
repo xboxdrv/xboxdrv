@@ -18,3 +18,4 @@ test/ini_parser_test
 test/usb_read_thread_test
 test/usb_system_test
 xboxdrv
+incoming/

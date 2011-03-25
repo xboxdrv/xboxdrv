@@ -37,13 +37,10 @@ class XboxdrvDaemon
 private:
   static XboxdrvDaemon* s_current;
 
+private:
   const Options& m_opts;
-  
-  struct udev* m_udev;
-  struct udev_monitor* m_monitor;
+  GMainLoop* m_gmain;
 
-  boost::scoped_ptr<USBGSource> m_usb_gsource;
- 
   typedef std::vector<ControllerSlotPtr> ControllerSlots;
   ControllerSlots m_controller_slots;
   
@@ -51,7 +48,6 @@ private:
   Controllers m_inactive_controllers;
 
   std::auto_ptr<UInput> m_uinput;
-  GMainLoop* m_gmain;
   
 private:
   static void on_sigint(int);
@@ -69,16 +65,9 @@ public:
 private:
   void create_pid_file();
   void init_uinput();
-  void init_udev();
-  void init_udev_monitor();
-
-  void init_g_usb();
-  void init_g_udev();
-  void init_g_dbus();
 
   ControllerSlotPtr find_free_slot(udev_device* dev);
 
-  void enumerate_udev_devices();
   void cleanup_threads();
   void process_match(struct udev_device* device);
   void print_info(struct udev_device* device);
@@ -98,15 +87,8 @@ private:
 
 private:
   bool on_wakeup();
-  bool on_udev_data(GIOChannel* channel, GIOCondition condition);
-
-private:
   static gboolean on_wakeup_wrap(gpointer data) {
     return static_cast<XboxdrvDaemon*>(data)->on_wakeup();    
-  }
-
-  static gboolean on_udev_data_wrap(GIOChannel* channel, GIOCondition condition, gpointer data) {
-    return static_cast<XboxdrvDaemon*>(data)->on_udev_data(channel, condition);
   }
 
 private:
