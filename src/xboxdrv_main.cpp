@@ -140,10 +140,7 @@ XboxdrvMain::run()
   ControllerPtr controller = create_controller();
   std::auto_ptr<MessageProcessor> message_proc;
   init_controller(controller);
-
-  if (!m_opts.quiet)
-    std::cout << std::endl;
-      
+     
   if (m_opts.instant_exit)
   {
     usleep(1000);
@@ -187,11 +184,11 @@ XboxdrvMain::run()
 
       if (m_opts.silent)
       {
-        std::cout << "\nPress Ctrl-c to quit\n" << std::endl;
+        std::cout << "\nPress Ctrl-c to quit" << std::endl;
       }
       else
       {
-        std::cout << "\nPress Ctrl-c to quit, use '--silent' to suppress the event output\n" << std::endl;
+        std::cout << "\nPress Ctrl-c to quit, use '--silent' to suppress the event output" << std::endl;
       }
     }
 

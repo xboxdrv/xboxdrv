@@ -180,7 +180,7 @@ Xboxdrv::print_copyright() const
   wrap.para("Licensed under GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>");
   wrap.para("This program comes with ABSOLUTELY NO WARRANTY.");
   wrap.para("This is free software, and you are welcome to redistribute it under certain "
-               "conditions; see the file COPYING for details.");
+            "conditions; see the file COPYING for details.");
   wrap.newline();
 }
 
