@@ -51,6 +51,7 @@ DBusSubsystem::DBusSubsystem(const std::string& name) :
 
 DBusSubsystem::~DBusSubsystem()
 {
+  dbus_g_connection_unref(m_connection);
 }
 
 void

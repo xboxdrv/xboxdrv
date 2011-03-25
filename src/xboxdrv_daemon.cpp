@@ -114,18 +114,11 @@ XboxdrvDaemon::XboxdrvDaemon(const Options& opts) :
 
 XboxdrvDaemon::~XboxdrvDaemon()
 {
+  signal(SIGINT,  NULL);
+  signal(SIGTERM, NULL);
+
   assert(s_current);
   s_current = 0;
-
-  m_inactive_controllers.clear();
-
-  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
-  {
-    if ((*i)->is_connected())
-    {
-      (*i)->disconnect();
-    }
-  }
 
   g_main_loop_unref(m_gmain);
 }
@@ -150,6 +143,11 @@ XboxdrvDaemon::run()
     
     log_debug("launching into main loop");
     g_main_loop_run(m_gmain);
+    log_debug("main loop exited");
+
+    // get rid of active ControllerThreads before the subsystems shutdown
+    m_inactive_controllers.clear();
+    m_controller_slots.clear();
   }
   catch(const std::exception& err)
   {
