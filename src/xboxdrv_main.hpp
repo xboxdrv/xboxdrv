@@ -35,6 +35,12 @@ class USBGSource;
 class XboxdrvMain
 {
 private:
+  static XboxdrvMain* s_current;
+
+public:
+  static XboxdrvMain* current() { return s_current; }
+  
+private:
   const Options& m_opts;
   GMainLoop* m_gmain;
   boost::scoped_ptr<USBGSource> m_usb_gsource;
@@ -50,7 +56,9 @@ private:
 public:
   XboxdrvMain(const Options& opts);
   ~XboxdrvMain();
+
   void run();
+  void shutdown();
 
 private:
   ControllerPtr create_controller();
@@ -60,6 +68,8 @@ private:
   void print_info(libusb_device* dev,
                   const XPadDevice& dev_type,
                   const Options& opts) const;
+
+  static void on_sigint(int);
 
 private:
   XboxdrvMain(const XboxdrvMain&);

@@ -39,6 +39,8 @@
 #include "controller_thread.hpp"
 #include "helper.hpp"
 
+XboxdrvMain* XboxdrvMain::s_current = 0;
+
 XboxdrvMain::XboxdrvMain(const Options& opts) :
   m_opts(opts),
   m_gmain(),
@@ -49,11 +51,22 @@ XboxdrvMain::XboxdrvMain(const Options& opts) :
   m_use_libusb(false),
   m_dev_type()
 {
+  assert(!s_current);
+  s_current = this;
+
   m_gmain = g_main_loop_new(NULL, false);
+
+  signal(SIGINT,  &XboxdrvMain::on_sigint);
+  signal(SIGTERM, &XboxdrvMain::on_sigint);
 }
 
 XboxdrvMain::~XboxdrvMain()
 {
+  signal(SIGINT,  NULL);
+  signal(SIGTERM, NULL);
+
+  s_current = 0;
+
   g_main_loop_unref(m_gmain);
 }
 
@@ -224,6 +237,19 @@ XboxdrvMain::print_info(libusb_device* dev, const XPadDevice& dev_type, const Op
   std::cout << "Controller Type:   " << dev_type.type << std::endl;
 
   //std::cout << "ForceFeedback:     " << ((opts.controller.back().uinput.force_feedback) ? "enabled" : "disabled") << std::endl;
+}
+
+void
+XboxdrvMain::shutdown()
+{
+  log_info("shutdown requested");
+  g_main_loop_quit(m_gmain);
+}
+
+void
+XboxdrvMain::on_sigint(int)
+{
+  XboxdrvMain::current()->shutdown();
 }
 
 /* EOF */
