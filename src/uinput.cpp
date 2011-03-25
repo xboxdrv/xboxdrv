@@ -123,7 +123,6 @@ bool
 UInput::on_timeout()
 {
   int msec_delta = static_cast<int>(g_timer_elapsed(m_timer, NULL) * 1000.0f);
-  log_error("timeout: " << msec_delta);
   update(msec_delta);
   return true;  // do not remove the callback
 }
