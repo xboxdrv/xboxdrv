@@ -466,13 +466,23 @@ RelButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 void
 RelButtonEventHandler::send(UInput& uinput, bool value)
 {
-  if (value)
+  if (m_repeat == -1)
   {
-    uinput.send_rel_repetitive(m_code, m_value, m_repeat);
+    if (value)
+    {
+      uinput.send_rel(m_code.get_device_id(), m_code.code, m_value);
+    }
   }
   else
   {
-    uinput.send_rel_repetitive(m_code, m_value, -1);
+    if (value)
+    {
+      uinput.send_rel_repetitive(m_code, m_value, m_repeat);
+    }
+    else
+    {
+      uinput.send_rel_repetitive(m_code, m_value, -1);
+    }
   } 
 }
 
