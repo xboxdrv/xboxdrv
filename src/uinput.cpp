@@ -104,8 +104,28 @@ UInput::UInput(bool extra_events) :
   m_device_usbids(),
   m_rel_repeat_lst(),
   m_mutex(),
-  m_extra_events(extra_events)
+  m_extra_events(extra_events),
+  m_timeout_id(),
+  m_timer(g_timer_new())
 {
+  // FIXME: hardcoded timeout is kind of evil
+  // FIXME: would be nicer if UInput didn't depend on glib
+  m_timeout_id = g_timeout_add(10, &UInput::on_timeout_wrap, this);
+}
+
+UInput::~UInput()
+{
+  g_source_remove(m_timeout_id);
+  g_timer_destroy(m_timer);
+}
+
+bool
+UInput::on_timeout()
+{
+  int msec_delta = static_cast<int>(g_timer_elapsed(m_timer, NULL) * 1000.0f);
+  log_error("timeout: " << msec_delta);
+  update(msec_delta);
+  return true;  // do not remove the callback
 }
 
 struct input_id
@@ -296,10 +316,6 @@ UInput::create_uinput_device(uint32_t device_id)
 
     return dev.get();
   }
-}
-
-UInput::~UInput()
-{
 }
 
 void

@@ -20,6 +20,7 @@
 #define HEADER_UINPUT_HPP
 
 #include <boost/thread/mutex.hpp>
+#include <glib.h>
 
 #include "axis_event.hpp"
 #include "linux_uinput.hpp"
@@ -72,6 +73,9 @@ private:
 
   boost::mutex m_mutex;
   bool m_extra_events;
+
+  guint m_timeout_id;
+  GTimer* m_timer;
 
 public:
   UInput(bool extra_events);
@@ -126,6 +130,15 @@ private:
 
   std::string get_device_name(uint32_t device_id) const;
   struct input_id get_device_usbid(uint32_t device_id) const;
+
+  bool on_timeout();
+  static gboolean on_timeout_wrap(gpointer data) {
+    return static_cast<UInput*>(data)->on_timeout();
+  }
+
+private:
+  UInput(const UInput&);
+  UInput& operator=(const UInput&);
 };
 
 #endif

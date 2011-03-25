@@ -56,9 +56,9 @@ public:
   ControllerPtr get_controller() const { return m_controller; }
 
 private:
-  bool on_timeout();
   void on_message(const XboxGenericMsg& msg);
 
+  bool on_timeout();
   static gboolean on_timeout_wrap(gpointer data) {
     return static_cast<ControllerThread*>(data)->on_timeout();
   }
