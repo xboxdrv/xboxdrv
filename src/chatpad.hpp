@@ -19,8 +19,8 @@
 #ifndef HEADER_XBOXDRV_CHATPAD_HPP
 #define HEADER_XBOXDRV_CHATPAD_HPP
 
-#include <boost/thread.hpp>
 #include <libusb.h>
+#include <memory>
 
 class LinuxUinput;
 
@@ -132,8 +132,8 @@ private:
 
 
   bool m_quit_thread;
-  std::auto_ptr<boost::thread> m_read_thread;
-  std::auto_ptr<boost::thread> m_keep_alive_thread;
+  //std::auto_ptr<boost::thread> m_read_thread;
+  //std::auto_ptr<boost::thread> m_keep_alive_thread;
   std::auto_ptr<LinuxUinput> m_uinput;
   int m_keymap[256];
   bool m_state[256];

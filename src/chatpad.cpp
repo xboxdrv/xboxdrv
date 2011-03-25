@@ -30,8 +30,8 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_no_init(no_init),
   m_debug(debug),
   m_quit_thread(false),
-  m_read_thread(),
-  m_keep_alive_thread(),
+  //m_read_thread(),
+  //m_keep_alive_thread(),
   m_uinput(),
   m_led_state(0)
 {
@@ -98,8 +98,8 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
 Chatpad::~Chatpad()
 {
   m_quit_thread = true;
-  m_read_thread->join();
-  m_keep_alive_thread->join();
+  //m_read_thread->join();
+  //m_keep_alive_thread->join();
 }
 
 void
@@ -196,8 +196,8 @@ Chatpad::set_led(unsigned int led, bool state)
 void
 Chatpad::start_threads()
 {
-  m_read_thread.reset(new boost::thread(boost::bind(&Chatpad::read_thread, this)));
-  m_keep_alive_thread.reset(new boost::thread(boost::bind(&Chatpad::keep_alive_thread, this)));
+  //m_read_thread.reset(new boost::thread(boost::bind(&Chatpad::read_thread, this)));
+  //m_keep_alive_thread.reset(new boost::thread(boost::bind(&Chatpad::keep_alive_thread, this)));
 }
 
 void

@@ -100,11 +100,12 @@ Aborted
 
 * check that threads are cleaned up in daemon
 
+* headset and chatpad still use thread
 
-Stuff to do before 0.7.4 release:
-=================================
+* go through checklist, disable headset and chatpad support for now
 
-* invert y axis on --evdev
+Stuff
+=====
 
   if (opts.priority == Options::kPriorityRealtime)
   {
@@ -136,6 +137,12 @@ Stuff to do before 0.7.4 release:
       }
     }
   }
+
+
+Stuff to do before 0.7.4 release:
+=================================
+
+* invert y axis on --evdev
 
 * add double-click button, in the same wayne as hold-button
 

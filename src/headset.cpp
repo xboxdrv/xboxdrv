@@ -19,6 +19,7 @@
 #include "headset.hpp"
 
 #include <fstream>
+#include <errno.h>
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
@@ -29,8 +30,8 @@ Headset::Headset(libusb_device_handle* handle,
                  const std::string& dump_filename,
                  const std::string& play_filename) :
   m_handle(handle),
-  m_read_thread(),
-  m_write_thread(),
+  //m_read_thread(),
+  //m_write_thread(),
   m_quit_read_thread(false),
   m_quit_write_thread(false)
 {
@@ -43,16 +44,19 @@ Headset::Headset(libusb_device_handle* handle,
     throw std::runtime_error(out.str());
   }
 
+#ifdef FIXME
   m_read_thread.reset(new boost::thread(boost::bind(&Headset::read_thread, this, dump_filename, debug)));
 
   if (!play_filename.empty())
   {
     m_write_thread.reset(new boost::thread(boost::bind(&Headset::write_thread, this, play_filename)));
   }
+#endif
 }
 
 Headset::~Headset()
 {
+#ifdef FIXME
   if (m_read_thread.get())
     m_read_thread->join();
 
@@ -61,6 +65,7 @@ Headset::~Headset()
 
   m_read_thread.release();
   m_write_thread.release();
+#endif 
 
   int ret = libusb_release_interface(m_handle, 1);
 

@@ -20,14 +20,14 @@
 #define HEADER_XBOXDRV_HEADSET_HPP
 
 #include <libusb.h>
-#include <boost/thread.hpp>
+#include <string>
 
 class Headset
 {
 private:
   libusb_device_handle* m_handle;
-  std::auto_ptr<boost::thread> m_read_thread;
-  std::auto_ptr<boost::thread> m_write_thread;
+  //std::auto_ptr<boost::thread> m_read_thread;
+  //std::auto_ptr<boost::thread> m_write_thread;
 
   bool m_quit_read_thread;
   bool m_quit_write_thread;

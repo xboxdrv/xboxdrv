@@ -49,6 +49,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
   usb_claim_interface(0, try_detach);
   usb_submit_read(endpoint_in, 32);
 
+#ifdef FIXME
   // create chatpad
   if (chatpad)
   {
@@ -71,6 +72,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
   {
     m_headset.reset(new Headset(m_handle, headset_debug, headset_dump, headset_play));
   }
+#endif
 }
 
 Xbox360Controller::~Xbox360Controller()
