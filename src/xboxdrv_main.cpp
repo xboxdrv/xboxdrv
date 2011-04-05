@@ -200,6 +200,7 @@ XboxdrvMain::run()
       if (!m_opts.exec.empty())
       {
         pid = spawn_exe(m_opts.exec);
+        g_child_watch_add(pid, &XboxdrvMain::on_child_watch_wrap, this);
       }
 
       log_debug("launching main loop");
@@ -211,6 +212,13 @@ XboxdrvMain::run()
       std::cout << "Shutdown complete" << std::endl;
     }
   }
+}
+
+void
+XboxdrvMain::on_child_watch(GPid pid, gint status)
+{
+  log_info("child processes exited with status: " << status);
+  shutdown();
 }
 
 void
