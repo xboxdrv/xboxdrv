@@ -32,15 +32,17 @@ LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_,
   name(name_),
   usbid(usbid_),
   m_finished(false),
-  fd(-1),
+  m_fd(-1),
+  m_io_channel(),
+  m_source_id(),
   user_dev(),
   key_bit(false),
   rel_bit(false),
   abs_bit(false),
   led_bit(false),
   ff_bit(false),
-  ff_handler(0),
-  ff_callback(),
+  m_ff_handler(0),
+  m_ff_callback(),
   needs_sync(true)
 {
   log_debug(name << " " << usbid.vendor << ":" << usbid.product);
@@ -59,7 +61,7 @@ LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_,
   std::ostringstream str;
   for (int i = 0; i < uinput_filename_count; ++i)
   {
-    if ((fd = open(uinput_filename[i], O_RDWR | O_NDELAY)) >= 0)
+    if ((m_fd = open(uinput_filename[i], O_RDWR | O_NDELAY)) >= 0)
     {
       break;
     }
@@ -69,7 +71,7 @@ LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_,
     }
   }
 
-  if (fd < 0)
+  if (m_fd < 0)
   {
     std::ostringstream out;
     out << "\nError: No stuitable uinput device found, tried:" << std::endl;
@@ -89,8 +91,10 @@ LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_,
 
 LinuxUinput::~LinuxUinput()
 {
-  ioctl(fd, UI_DEV_DESTROY);
-  close(fd);
+  g_source_remove(m_source_id);
+
+  ioctl(m_fd, UI_DEV_DESTROY);
+  close(m_fd);
 }
 
 void
@@ -104,11 +108,11 @@ LinuxUinput::add_abs(uint16_t code, int min, int max, int fuzz, int flat)
 
     if (!abs_bit)
     {
-      ioctl(fd, UI_SET_EVBIT, EV_ABS);
+      ioctl(m_fd, UI_SET_EVBIT, EV_ABS);
       abs_bit = true;
     }
 
-    ioctl(fd, UI_SET_ABSBIT, code);
+    ioctl(m_fd, UI_SET_ABSBIT, code);
 
     user_dev.absmin[code] = min;
     user_dev.absmax[code] = max; 
@@ -128,11 +132,11 @@ LinuxUinput::add_rel(uint16_t code)
 
     if (!rel_bit)
     {
-      ioctl(fd, UI_SET_EVBIT, EV_REL);
+      ioctl(m_fd, UI_SET_EVBIT, EV_REL);
       rel_bit = true;
     }
 
-    ioctl(fd, UI_SET_RELBIT, code);
+    ioctl(m_fd, UI_SET_RELBIT, code);
   }
 }
 
@@ -147,11 +151,11 @@ LinuxUinput::add_key(uint16_t code)
 
     if (!key_bit)
     {
-      ioctl(fd, UI_SET_EVBIT, EV_KEY);
+      ioctl(m_fd, UI_SET_EVBIT, EV_KEY);
       key_bit = true;
     }
 
-    ioctl(fd, UI_SET_KEYBIT, code);
+    ioctl(m_fd, UI_SET_KEYBIT, code);
   }
 }
 
@@ -164,20 +168,20 @@ LinuxUinput::add_ff(uint16_t code)
 
     if (!ff_bit)
     {
-      ioctl(fd, UI_SET_EVBIT, EV_FF);
+      ioctl(m_fd, UI_SET_EVBIT, EV_FF);
       ff_bit = true;
-      assert(ff_handler == 0);
-      ff_handler = new ForceFeedbackHandler();
+      assert(m_ff_handler == 0);
+      m_ff_handler = new ForceFeedbackHandler();
     }
 
-    ioctl(fd, UI_SET_FFBIT, code);
+    ioctl(m_fd, UI_SET_FFBIT, code);
   }  
 }
 
 void
 LinuxUinput::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
 {
-  ff_callback = callback;
+  m_ff_callback = callback;
 }
 
 void
@@ -233,11 +237,11 @@ LinuxUinput::finish()
 
   if (ff_bit)
   {
-    user_dev.ff_effects_max = ff_handler->get_max_effects();
+    user_dev.ff_effects_max = m_ff_handler->get_max_effects();
   }
 
   {
-    int write_ret = write(fd, &user_dev, sizeof(user_dev));
+    int write_ret = write(m_fd, &user_dev, sizeof(user_dev));
     if (write_ret < 0)
     {
       throw std::runtime_error("uinput:finish: " + name + ": " + strerror(errno));
@@ -252,12 +256,31 @@ LinuxUinput::finish()
   // meaningful message when it is
 
   log_debug("finish");
-  if (ioctl(fd, UI_DEV_CREATE))
+  if (ioctl(m_fd, UI_DEV_CREATE))
   {
     raise_exception(std::runtime_error, "unable to create uinput device: '" << name << "': " << strerror(errno));
   }
 
   m_finished = true;
+
+  {
+    // start g_io_channel
+    m_io_channel = g_io_channel_unix_new(m_fd);
+
+    // set encoding to binary
+    GError* error = NULL;
+    if (g_io_channel_set_encoding(m_io_channel, NULL, &error) != G_IO_STATUS_NORMAL)
+    {
+      log_error(error->message);
+      g_error_free(error);
+    }
+
+    g_io_channel_set_buffered(m_io_channel, false);
+
+    m_source_id = g_io_add_watch(m_io_channel, 
+                                 static_cast<GIOCondition>(G_IO_IN | G_IO_ERR | G_IO_HUP),
+                                 &LinuxUinput::on_read_data_wrap, this);
+  }
 }
 
 void
@@ -276,7 +299,7 @@ LinuxUinput::send(uint16_t type, uint16_t code, int32_t value)
   else
     ev.value = value;
 
-  if (write(fd, &ev, sizeof(ev)) < 0)
+  if (write(m_fd, &ev, sizeof(ev)) < 0)
     throw std::runtime_error(std::string("uinput:send_button: ") + strerror(errno)); 
 }
 
@@ -295,61 +318,59 @@ LinuxUinput::update(int msec_delta)
 {
   if (ff_bit)
   {
-    assert(ff_handler);
+    assert(m_ff_handler);
 
-    ff_handler->update(msec_delta);
+    m_ff_handler->update(msec_delta);
 
-    log_info(boost::format("%5d %5d") % ff_handler->get_strong_magnitude() % ff_handler->get_weak_magnitude());
+    log_info(boost::format("%5d %5d") % m_ff_handler->get_strong_magnitude() % m_ff_handler->get_weak_magnitude());
 
-    if (ff_callback)
+    if (m_ff_callback)
     {
-      ff_callback(static_cast<unsigned char>(ff_handler->get_strong_magnitude() / 128),
-                  static_cast<unsigned char>(ff_handler->get_weak_magnitude()   / 128));
-                      
+      m_ff_callback(static_cast<unsigned char>(m_ff_handler->get_strong_magnitude() / 128),
+                    static_cast<unsigned char>(m_ff_handler->get_weak_magnitude()   / 128));
     }
-      
-    struct input_event ev;
+  }
+}
 
-    int ret = read(fd, &ev, sizeof(ev));
-    if (ret < 0)
+gboolean
+LinuxUinput::on_read_data(GIOChannel* source, GIOCondition condition)
+{
+  log_error("data available");
+
+  struct input_event ev;
+  int ret;
+
+  while((ret = read(m_fd, &ev, sizeof(ev))) == sizeof(ev))
+  {
+    switch(ev.type)
     {
-      if (errno != EAGAIN)
-      {
-        log_error("failed to read from file description: " << ret << ": " << strerror(errno));
-      }
-    }
-    else if (ret == sizeof(ev))
-    { // successful read
+      case EV_LED:
+        if (ev.code == LED_MISC)
+        {
+          // FIXME: implement this
+          log_info("unimplemented: set LED status: " << ev.value);
+        }
+        break;
 
-      switch(ev.type)
-      {
-        case EV_LED:
-          if (ev.code == LED_MISC)
-          {
-            // FIXME: implement this
-            log_info("unimplemented: set LED status: " << ev.value);
-          }
-          break;
+      case EV_FF:
+        switch(ev.code)
+        {
+          case FF_GAIN:
+            m_ff_handler->set_gain(ev.value);
+            break;
 
-        case EV_FF:
-          switch(ev.code)
-          {
-            case FF_GAIN:
-              ff_handler->set_gain(ev.value);
-              break;
+          default:
+            if (ev.value)
+              m_ff_handler->play(ev.code);
+            else
+              m_ff_handler->stop(ev.code);
+        }
+        break;
 
-            default:
-              if (ev.value)
-                ff_handler->play(ev.code);
-              else
-                ff_handler->stop(ev.code);
-          }
-          break;
-
-        case EV_UINPUT:
-          switch (ev.code)
-          {
-            case UI_FF_UPLOAD:
+      case EV_UINPUT:
+        switch (ev.code)
+        {
+          case UI_FF_UPLOAD:
             {
               struct uinput_ff_upload upload;
               memset(&upload, 0, sizeof(upload));
@@ -359,15 +380,15 @@ LinuxUinput::update(int msec_delta)
               // hanging process
               upload.request_id = ev.value;
 
-              ioctl(fd, UI_BEGIN_FF_UPLOAD, &upload);
-              ff_handler->upload(upload.effect);
+              ioctl(m_fd, UI_BEGIN_FF_UPLOAD, &upload);
+              m_ff_handler->upload(upload.effect);
               upload.retval = 0;
                             
-              ioctl(fd, UI_END_FF_UPLOAD, &upload);
+              ioctl(m_fd, UI_END_FF_UPLOAD, &upload);
             }
             break;
 
-            case UI_FF_ERASE:
+          case UI_FF_ERASE:
             {
               struct uinput_ff_erase erase;
               memset(&erase, 0, sizeof(erase));
@@ -377,30 +398,43 @@ LinuxUinput::update(int msec_delta)
               // hanging process
               erase.request_id = ev.value;
 
-              ioctl(fd, UI_BEGIN_FF_ERASE, &erase);
-              ff_handler->erase(erase.effect_id);
+              ioctl(m_fd, UI_BEGIN_FF_ERASE, &erase);
+              m_ff_handler->erase(erase.effect_id);
               erase.retval = 0;
                             
-              ioctl(fd, UI_END_FF_ERASE, &erase);
+              ioctl(m_fd, UI_END_FF_ERASE, &erase);
             }
             break;
 
-            default: 
-              log_warn("unhandled event code read");
-              break;
-          }
-          break;
+          default: 
+            log_warn("unhandled event code read");
+            break;
+        }
+        break;
 
-        default:
-          log_warn("unhandled event type read: " << ev.type);
-          break;
-      }
-    }
-    else
-    {
-      log_warn("short read: " << ret);
+      default:
+        log_warn("unhandled event type read: " << ev.type);
+        break;
     }
   }
+
+  if (ret == 0)
+  {
+    // ok, no more data
+  }
+  else if (ret < 0)
+  {
+    if (errno != EAGAIN)
+    {
+      log_error("failed to read from file description: " << ret << ": " << strerror(errno));
+    }
+  }
+  else
+  {
+    log_error("short read: " << ret);
+  }
+  
+  return TRUE;
 }
 
 
