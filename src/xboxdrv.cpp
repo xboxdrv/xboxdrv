@@ -21,6 +21,7 @@
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/scoped_array.hpp>
+#include <errno.h>
 #include <iostream>
 #include <signal.h>
 #include <stdio.h>

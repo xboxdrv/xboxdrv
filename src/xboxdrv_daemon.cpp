@@ -24,6 +24,7 @@
 #include <dbus/dbus-glib.h>
 #include <dbus/dbus-glib-lowlevel.h>
 #include <dbus/dbus.h>
+#include <errno.h>
 
 #include "helper.hpp"
 #include "raise_exception.hpp"

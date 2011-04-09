@@ -19,8 +19,8 @@
 #ifndef HEADER_UINPUT_HPP
 #define HEADER_UINPUT_HPP
 
-#include <boost/thread/mutex.hpp>
 #include <glib.h>
+#include <map>
 
 #include "axis_event.hpp"
 #include "linux_uinput.hpp"
@@ -71,7 +71,6 @@ private:
 
   std::map<UIEvent, RelRepeat> m_rel_repeat_lst;
 
-  boost::mutex m_mutex;
   bool m_extra_events;
 
   guint m_timeout_id;
@@ -115,8 +114,6 @@ public:
       have been send */
   void sync();
   /** @} */
-
-  boost::mutex& get_mutex() { return m_mutex; }
 
 private:
   void update(int msec_delta);

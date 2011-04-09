@@ -19,6 +19,7 @@
 #include "axis_event.hpp"
 
 #include <boost/tokenizer.hpp>
+#include <math.h>
 
 #include "evdev_helper.hpp"
 #include "log.hpp"

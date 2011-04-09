@@ -19,6 +19,7 @@
 #include "button_event.hpp"
 
 #include <boost/tokenizer.hpp>
+#include <errno.h>
 #include <fstream>
 
 #include "evdev_helper.hpp"

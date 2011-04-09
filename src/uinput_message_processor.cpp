@@ -43,8 +43,6 @@ UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
 {
   if (!m_config->empty())
   {
-    boost::mutex::scoped_lock lock(m_uinput.get_mutex());
-
     XboxGenericMsg msg = msg_in; 
 
     // handling switching of configurations
@@ -73,7 +71,6 @@ UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
       (*i)->update(msec_delta, msg);
     }
 
-    m_uinput.update(msec_delta);
     m_config->get_config()->get_uinput().update(msec_delta);
 
     // send current Xbox state to uinput

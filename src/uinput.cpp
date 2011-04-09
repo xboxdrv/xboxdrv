@@ -18,10 +18,11 @@
 
 #include "uinput.hpp"
 
+#include <boost/tokenizer.hpp>
 #include <iostream>
+#include <math.h>
 #include <stdexcept>
 #include <stdio.h>
-#include <boost/tokenizer.hpp>
 
 #include "helper.hpp"
 #include "log.hpp"
@@ -103,7 +104,6 @@ UInput::UInput(bool extra_events) :
   m_device_names(),
   m_device_usbids(),
   m_rel_repeat_lst(),
-  m_mutex(),
   m_extra_events(extra_events),
   m_timeout_id(),
   m_timer(g_timer_new())
