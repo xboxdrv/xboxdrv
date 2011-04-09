@@ -87,8 +87,6 @@ public:
   /** guess the number of the next unused /dev/input/eventX device */
   static int  find_evdev_number();
 
-  void update(int msec_delta);
-
   void set_device_names(const std::map<uint32_t, std::string>& device_names);
   void set_device_usbids(const std::map<uint32_t, struct input_id>& device_usbids);
   void set_ff_callback(int device_id, const boost::function<void (uint8_t, uint8_t)>& callback);
@@ -121,6 +119,8 @@ public:
   boost::mutex& get_mutex() { return m_mutex; }
 
 private:
+  void update(int msec_delta);
+
   /** create a LinuxUinput with the given device_id, if some already
       exist return a pointer to it */
   LinuxUinput* create_uinput_device(uint32_t device_id);
