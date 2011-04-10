@@ -86,8 +86,13 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       if (data[1] == 0x00) 
       {
         log_info("connection status: nothing");
+
+        // reset the controller into neutral position on disconnect
+        memset(msg_out, 0, sizeof(*msg_out));
         set_active(false);
-      } 
+
+        return true;
+      }
       else if (data[1] == 0x80) 
       {
         log_info("connection status: controller connected");
