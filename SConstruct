@@ -149,6 +149,7 @@ libxboxdrv = env.StaticLibrary('xboxdrv',
                                Glob('src/*.cpp') +
                                Glob('src/axisfilter/*.cpp') +
                                Glob('src/buttonfilter/*.cpp') +
+                               Glob('src/buttonevent/*.cpp') +                               
                                Glob('src/modifier/*.cpp'))
 env.Append(LIBS = libxboxdrv)
 
