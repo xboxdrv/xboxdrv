@@ -24,24 +24,33 @@
 #include <vector>
 
 #include "evdev_helper.hpp"
+#include "log.hpp"
+#include "raise_exception.hpp"
 #include "uinput.hpp"
 
 MacroButtonEventHandler*
-MacroButtonEventHandler::from_string(const std::string& str)
+MacroButtonEventHandler::from_string(const std::string& filename)
 {
   std::vector<MacroEvent> events;
 
-  std::ifstream in(str.c_str());
-  std::string line;
-  while(std::getline(in, line))
+  std::ifstream in(filename.c_str());
+  if (!in)
   {
-    MacroEvent ev = macro_event_from_string(line);
-    if (ev.type != MacroEvent::kNull)
-    {
-      events.push_back(ev);
-    }
+    raise_exception(std::runtime_error, "couldn't open: " << filename);
   }
-  return new MacroButtonEventHandler(events);
+  else
+  {
+    std::string line;
+    while(std::getline(in, line))
+    {
+      MacroEvent ev = macro_event_from_string(line);
+      if (ev.type != MacroEvent::kNull)
+      {
+        events.push_back(ev);
+      }
+    }
+    return new MacroButtonEventHandler(events);
+  }
 }
 
 MacroButtonEventHandler::MacroEvent
@@ -50,6 +59,8 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
   MacroEvent event;
   event.type = MacroEvent::kNull;
 
+  // FIXME: convert tokens to error, to make parsing easier and allow
+  // better error messages
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(" "));
   int idx = 0;
@@ -58,7 +69,13 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
     switch(idx)
     {
       case 0: 
-        if (*t == "send")
+        if (*t == "init")
+        {
+          event.type  = MacroEvent::kInitOp;
+          event.send.event = UIEvent::invalid();
+          event.send.value = 0;          
+        }
+        else if (*t == "send")
         {
           event.type  = MacroEvent::kSendOp;
           event.send.event = UIEvent::invalid();
@@ -73,7 +90,10 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
         
       case 1:
         {
-          if (event.type == MacroEvent::kSendOp)
+          if (event.type == MacroEvent::kInitOp)
+          {
+          }
+          else if (event.type == MacroEvent::kSendOp)
           {
             switch(get_event_type(*t))
             {
@@ -123,6 +143,29 @@ MacroButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
   {
     switch(i->type)
     {
+      case MacroEvent::kInitOp:
+        switch(i->init.event.type)
+        {
+          case EV_REL:
+            assert(!"not implemented");
+            break;
+
+          case EV_KEY:
+            assert(!"not implemented");
+            break;
+
+          case EV_ABS:
+            i->init.event.resolve_device_id(slot, extra_devices);
+            uinput.add_abs(i->init.event.get_device_id(), i->init.event.code,
+                           i->init.minimum, i->init.maximum, 
+                           i->init.fuzz, i->init.flat);
+            break;
+
+          default:
+            assert(!"not implemented");
+        }
+        break;
+
       case MacroEvent::kSendOp:
         switch(i->send.event.type)
         {
@@ -137,8 +180,9 @@ MacroButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
             break;
 
           case EV_ABS:
-            //i->send.event.resolve_device_id(slot, extra_devices);
-            // uinput.add_abs(i->send.event.get_device_id(), i->send.event.code);
+            i->send.event.resolve_device_id(slot, extra_devices);
+            // not doing a add_abs() here, its the users job to use a
+            // init command for that
             break;
 
           default:
@@ -177,6 +221,9 @@ MacroButtonEventHandler::update(UInput& uinput, int msec_delta)
       {
         switch(m_events[m_event_counter].type)
         {
+          case MacroEvent::kInitOp:
+            break;
+
           case MacroEvent::kSendOp:
             uinput.send(m_events[m_event_counter].send.event.get_device_id(),
                         m_events[m_event_counter].send.event.type,
@@ -189,6 +236,13 @@ MacroButtonEventHandler::update(UInput& uinput, int msec_delta)
             if (m_countdown > 0)
             {
               m_event_counter += 1;
+              if (m_event_counter >= m_events.size())
+              {
+                m_send_in_progress = false;
+                m_event_counter = 0;
+                m_countdown = 0;
+                return;
+              }
               return;
             }
             break;
@@ -200,7 +254,7 @@ MacroButtonEventHandler::update(UInput& uinput, int msec_delta)
 
         m_event_counter += 1;
 
-        if (m_event_counter == m_events.size())
+        if (m_event_counter >= m_events.size())
         {
           m_send_in_progress = false;
           m_event_counter = 0;

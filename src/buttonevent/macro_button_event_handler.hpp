@@ -26,9 +26,17 @@ class MacroButtonEventHandler : public ButtonEventHandler
 public:
 private:
   struct MacroEvent {
-    enum { kSendOp, kWaitOp, kNull } type; 
+    enum { kInitOp, kSendOp, kWaitOp, kNull } type; 
     
     union {
+      struct {
+        UIEvent event;
+	int minimum;
+	int maximum;
+	int fuzz;
+	int flat;
+      } init;
+
       struct {
         UIEvent event;
         int     value;
@@ -41,7 +49,7 @@ private:
   };
 
 public:
-  static MacroButtonEventHandler* from_string(const std::string& str);
+  static MacroButtonEventHandler* from_string(const std::string& filename);
 
 public:
   MacroButtonEventHandler(const std::vector<MacroEvent>& events);
