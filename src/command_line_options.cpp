@@ -712,13 +712,11 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
 
       case OPTION_UI_AXISMAP:
-        process_name_value_string(opt.argument, boost::bind(&UInputOptions::set_ui_axismap, 
-                                                            boost::ref(opts.get_controller_options().uinput), _1, _2));
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_axismap, this, _1, _2));
         break;
 
       case OPTION_UI_BUTTONMAP:
-        process_name_value_string(opt.argument, boost::bind(&UInputOptions::set_ui_buttonmap, 
-                                                            boost::ref(opts.get_controller_options().uinput), _1, _2));
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
         break;
 
       case OPTION_MOUSE:
@@ -1022,13 +1020,135 @@ CommandLineParser::set_device_name(const std::string& name, const std::string& v
 void
 CommandLineParser::set_ui_buttonmap(const std::string& name, const std::string& value)
 {
-  m_options->get_controller_options().uinput.set_ui_buttonmap(name, value);
+  set_ui_buttonmap(m_options->get_controller_options().uinput.get_btn_map(),
+                   name, value);
+}
+
+void
+CommandLineParser::set_ui_buttonmap(ButtonMap& btn_map, const std::string& name, const std::string& value)
+{
+  ButtonEventPtr event;
+
+  XboxButton shift = XBOX_BTN_UNKNOWN;
+  XboxButton btn   = XBOX_BTN_UNKNOWN;
+  std::vector<ButtonFilterPtr> filters;
+
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  int idx = 0;
+  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  {
+    switch(idx)
+    { 
+      case 0: // shift+key portion
+        {
+          std::string::size_type j = t->find('+');
+          if (j == std::string::npos)
+          {
+            shift = XBOX_BTN_UNKNOWN;
+            btn   = string2btn(*t);
+          }
+          else
+          {
+            shift = string2btn(t->substr(0, j));
+            btn   = string2btn(t->substr(j+1));
+          }
+          
+          if (value.empty())
+          { // if no rhs value is given, add filters to the current binding
+            event = btn_map.lookup(shift, btn);
+          }
+          else
+          {
+            event = ButtonEvent::from_string(value);
+            if (event)
+            {
+              btn_map.bind(shift, btn, event);
+            }
+          }
+        }
+        break;
+
+      default:
+        { // filter
+          if (event)
+          {
+            event->add_filter(ButtonFilter::from_string(*t));
+          }
+        }
+        break;
+    }
+  }
 }
 
 void
 CommandLineParser::set_ui_axismap(const std::string& name, const std::string& value)
 {
-  m_options->get_controller_options().uinput.set_ui_axismap(name, value);
+  set_ui_axismap(m_options->get_controller_options().uinput.get_axis_map(),
+                 name, value);
+}
+
+void
+CommandLineParser::set_ui_axismap(AxisMap& axis_map, const std::string& name, const std::string& value)
+{
+  AxisEventPtr event;
+
+  XboxButton shift = XBOX_BTN_UNKNOWN;
+  XboxAxis   axis  = XBOX_AXIS_UNKNOWN;
+  std::vector<AxisFilterPtr> filters;
+
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  int idx = 0;
+  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  {
+    switch(idx)
+    { 
+      case 0: // shift+key portion
+        {
+          std::string::size_type j = t->find('+');
+          if (j == std::string::npos)
+          {
+            shift = XBOX_BTN_UNKNOWN;
+            axis  = string2axis(*t);
+          }
+          else
+          {
+            shift = string2btn(t->substr(0, j));
+            axis  = string2axis(t->substr(j+1));
+          }
+          
+          if (value.empty())
+          { // if no rhs value is given, add filters to the current binding
+            event = axis_map.lookup(shift, axis);
+          }
+          else
+          {
+            event = AxisEvent::from_string(value);
+            if (event)
+            {
+              if (axis != XBOX_AXIS_UNKNOWN)
+              {
+                event->set_axis_range(get_axis_min(axis),
+                                      get_axis_max(axis));
+              }
+
+              axis_map.bind(shift, axis, event);
+            }
+          }
+        }
+        break;
+
+      default:
+        { // filter
+          if (event)
+          {
+            event->add_filter(AxisFilter::from_string(*t));
+          }
+        }
+        break;
+    }
+  }
 }
 
 void
@@ -1193,15 +1313,15 @@ CommandLineParser::read_alt_config_file(const std::string& filename)
 void
 CommandLineParser::set_ui_buttonmap_n(int controller, int config, const std::string& name, const std::string& value)
 {
-  m_options->controller_slots[controller].get_options(config)
-    .uinput.set_ui_buttonmap(name, value);
+  set_ui_buttonmap(m_options->controller_slots[controller].get_options(config).uinput.get_btn_map(),
+                   name, value);
 }
 
 void
 CommandLineParser::set_ui_axismap_n(int controller, int config, const std::string& name, const std::string& value)
 {
-  m_options->controller_slots[controller].get_options(config)
-    .uinput.set_ui_axismap(name, value);
+  set_ui_axismap(m_options->controller_slots[controller].get_options(config).uinput.get_axis_map(),
+                 name, value);
 }
 
 void

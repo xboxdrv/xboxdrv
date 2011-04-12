@@ -44,9 +44,6 @@ public:
 
   void dpad_as_button();
   void dpad_only();
-
-  void set_ui_buttonmap(const std::string& name, const std::string& value);
-  void set_ui_axismap(const std::string& name, const std::string& value);
   /** @}*/
 
   /** \addtogroup access Access Functions
