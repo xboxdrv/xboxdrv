@@ -27,7 +27,7 @@
 #include "log.hpp"
 #include "raise_exception.hpp"
 #include "uinput.hpp"
-
+
 MacroButtonEventHandler*
 MacroButtonEventHandler::from_string(const std::string& filename)
 {
@@ -56,78 +56,83 @@ MacroButtonEventHandler::from_string(const std::string& filename)
 MacroButtonEventHandler::MacroEvent
 MacroButtonEventHandler::macro_event_from_string(const std::string& str)
 {
-  MacroEvent event;
-  event.type = MacroEvent::kNull;
+  boost::tokenizer<boost::char_separator<char> > tokens(str, boost::char_separator<char>(" "));
+  std::vector<std::string> args(tokens.begin(), tokens.end());
 
-  // FIXME: convert tokens to error, to make parsing easier and allow
-  // better error messages
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(" "));
-  int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  if (args.size() >= 1)
   {
-    switch(idx)
+    if (!args[0].empty() && args[0][0] == '#')
     {
-      case 0: 
-        if (*t == "init")
-        {
-          event.type  = MacroEvent::kInitOp;
-          event.send.event = UIEvent::invalid();
-          event.send.value = 0;          
-        }
-        else if (*t == "send")
-        {
-          event.type  = MacroEvent::kSendOp;
-          event.send.event = UIEvent::invalid();
-          event.send.value = 0;
-        }
-        else if (*t == "wait")
-        {
-          event.type = MacroEvent::kWaitOp;
-          event.wait.msec = 0;
-        }
-        break;
-        
-      case 1:
-        {
-          if (event.type == MacroEvent::kInitOp)
-          {
-          }
-          else if (event.type == MacroEvent::kSendOp)
-          {
-            switch(get_event_type(*t))
-            {
-              case EV_REL: event.send.event = str2rel_event(*t); break;
-              case EV_ABS: event.send.event = str2abs_event(*t); break;
-              case EV_KEY: event.send.event = str2key_event(*t); break;
-              default: throw std::runtime_error("unknown event type");
-            }
-          }
-          else if (event.type == MacroEvent::kWaitOp)
-          {
-            event.wait.msec = boost::lexical_cast<int>(*t);
-          }
-        }
-        break;
+      // ignore '#' comments      
+      MacroEvent event;
+      event.type = MacroEvent::kNull;
+      return event;
+    }
+    else if (args[0] == "init")
+    {
+      // FIXME: generalize this for EV_KEY and EV_REL
+      if (args.size() < 4)
+      {
+        raise_exception(std::runtime_error, "'init' requires at least three arguments: " << str);
+      }
+      else
+      {
+        MacroEvent event;
+        event.type = MacroEvent::kInitOp;
+        event.init.event = UIEvent::from_string(args[1]);
+        event.init.minimum = boost::lexical_cast<int>(args[2]);
+        event.init.maximum = boost::lexical_cast<int>(args[3]);
+        event.init.fuzz = 0;
+        event.init.flat = 0;
+        if (args.size() > 4) event.init.fuzz = boost::lexical_cast<int>(args[4]);
+        if (args.size() > 5) event.init.flat = boost::lexical_cast<int>(args[5]);
 
-      case 2:
-        {
-          if (event.type == MacroEvent::kSendOp)
-          {
-            event.send.value = boost::lexical_cast<int>(*t);
-          }
-          else
-          {
-            throw std::runtime_error("to many arguments for 'wait'");
-          }
-        }
-        break;
+        return event;
+      }
+    }
+    else if (args[0] == "send")
+    {
+      if (args.size() != 3)
+      {
+        raise_exception(std::runtime_error, "'send' requires two arguments: " << str);
+      }
+      else
+      {
+        MacroEvent event;
+        event.type  = MacroEvent::kSendOp;
+        event.send.event = UIEvent::from_string(args[1]);
+        event.send.value = boost::lexical_cast<int>(args[2]);
+        return event;
+      }
+    }
+    else if (args[0] == "wait")
+    {
+      if (args.size() != 2)
+      {
+        raise_exception(std::runtime_error, "'wait' requires one arguments: " << str);
+      }
+      else
+      {
+        MacroEvent event;
+        event.type = MacroEvent::kWaitOp;
+        event.wait.msec = boost::lexical_cast<int>(args[1]);
+        return event;
+      }
+    }
+    else
+    {
+      raise_exception(std::runtime_error, "unknown macro command: " << str);
     }
   }
-
-  return event;
+  else
+  {
+    // no args, aka an empty line, just ignore it
+    MacroEvent event;
+    event.type = MacroEvent::kNull;
+    return event;
+  }
 }
-
+
 MacroButtonEventHandler::MacroButtonEventHandler(const std::vector<MacroEvent>& events) :
   m_events(events),
   m_send_in_progress(false),
@@ -271,5 +276,5 @@ MacroButtonEventHandler::str() const
 {
   return "macro";
 }
-
+
 /* EOF */
