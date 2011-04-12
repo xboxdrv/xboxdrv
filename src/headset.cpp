@@ -20,147 +20,86 @@
 
 #include <fstream>
 #include <errno.h>
+#include <boost/bind.hpp>
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
 
 Headset::Headset(libusb_device_handle* handle, 
-                 bool debug,
-                 const std::string& dump_filename,
-                 const std::string& play_filename) :
+                 bool debug) :
   m_handle(handle),
-  //m_read_thread(),
-  //m_write_thread(),
-  m_quit_read_thread(false),
-  m_quit_write_thread(false)
+  m_interface(new USBInterface(m_handle, 1)),
+  m_fout(),
+  m_fin()
 {
-  int ret = libusb_claim_interface(m_handle, 1);
-
-  if (ret != LIBUSB_SUCCESS)
-  {
-    std::ostringstream out;
-    out << "[headset] " << usb_strerror(ret);
-    throw std::runtime_error(out.str());
-  }
-
-#ifdef FIXME
-  m_read_thread.reset(new boost::thread(boost::bind(&Headset::read_thread, this, dump_filename, debug)));
-
-  if (!play_filename.empty())
-  {
-    m_write_thread.reset(new boost::thread(boost::bind(&Headset::write_thread, this, play_filename)));
-  }
-#endif
 }
 
 Headset::~Headset()
 {
-#ifdef FIXME
-  if (m_read_thread.get())
-    m_read_thread->join();
-
-  if (m_write_thread.get())
-    m_write_thread->join();
-
-  m_read_thread.release();
-  m_write_thread.release();
-#endif 
-
-  int ret = libusb_release_interface(m_handle, 1);
-
-  if (ret != LIBUSB_SUCCESS)
-  {
-    std::ostringstream out;
-    out << "[headset] " << usb_strerror(ret);
-    throw std::runtime_error(out.str());
-  }
+  m_interface.reset();
 }
 
 void
-Headset::write_thread(const std::string& filename)
+Headset::play_file(const std::string& filename)
 {
-  std::ifstream in(filename.c_str(), std::ios::binary);
+  m_fin.reset(new std::ifstream(filename.c_str(), std::ios::binary));
 
-  if (!in)
+  if (!*m_fin)
   {
     std::ostringstream out;
     out << "[headset] " << filename << ": " << strerror(errno);
     throw std::runtime_error(out.str());    
   }
-
-  log_info("starting playback: " << filename);
-
-  uint8_t data[32];
-  while(in)
+  else
   {
-    int len = in.read(reinterpret_cast<char*>(data), sizeof(data)).gcount();
-
-    if (len != 32)
-    {
-      // ignore short reads
-    }
-    else
-    {
-      int transferred = 0;
-      const int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_OUT | 4,
-                                                data, sizeof(data),
-                                                &transferred, 0);
-      if (ret != LIBUSB_SUCCESS)
-      {
-        raise_exception(std::runtime_error, "libusb_interrupt_transfer failed: " << usb_strerror(ret));
-      }
-    }
+    send_data();
   }
-
-  log_info("finished playback: " << filename);
 }
 
 void
-Headset::read_thread(const std::string& filename, bool debug)
+Headset::record_file(const std::string& filename)
 {
-  std::auto_ptr<std::ofstream> out;
+  m_fout.reset(new std::ofstream(filename.c_str(), std::ios::binary));
   
-  if (!filename.empty())
+  if (!*m_fout)
   {
-    out.reset(new std::ofstream(filename.c_str(), std::ios::binary));
+    raise_exception(std::runtime_error, filename << ": " << strerror(errno));
+  }
+  else
+  {
+    //FIXME:m_interface->submit_read(3, 32);
+  }
+}
+
+void
+Headset::send_data()
+{
+  uint8_t data[32];
+  int len = m_fin->read(reinterpret_cast<char*>(data), sizeof(data)).gcount();
   
-    if (!*out)
-    {
-      raise_exception(std::runtime_error, filename << ": " << strerror(errno));
-    }
-  }
-
-  while(!m_quit_read_thread)
+  if (len != 32)
   {
-    uint8_t data[32];
-    int len = 0;
-    const int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 3, 
-                                              reinterpret_cast<uint8_t*>(data), sizeof(data), 
-                                              &len, 0);
-    if (ret != LIBUSB_SUCCESS)
-    {
-      std::ostringstream outstr;
-      outstr << "[headset] " << usb_strerror(ret);
-      throw std::runtime_error(outstr.str());
-    }
-    else
-    {
-      if (len == 0)
-      {
-        log_debug("-- empty read --");
-      }
-      else
-      {
-        if (out.get())
-        {
-          out->write(reinterpret_cast<char*>(data), sizeof(data));
-        }
-
-        log_debug(raw2str(data, len));
-      }
-    }
+    log_error("short read");
   }
+  else
+  {
+    //FIXME: m_interface->submit_write(data, 32,
+    //                          boost::bind(&Headset::send_data, this));
+  }
+}
+
+void
+Headset::read_data(uint8_t* data, int len)
+{
+  if (m_fout.get())
+  {
+    m_fout->write(reinterpret_cast<char*>(data), len);
+  }
+  log_debug(raw2str(data, len));
+
+  //FIXME: m_interface->submit_read(3, 32,
+  //                           boost::bind(&Headset::send_data, this, _1, _2));
 }
 
 /* EOF */

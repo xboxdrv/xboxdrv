@@ -22,26 +22,27 @@
 #include <libusb.h>
 #include <string>
 
+#include "usb_interface.hpp"
+
 class Headset
 {
 private:
   libusb_device_handle* m_handle;
-  //std::auto_ptr<boost::thread> m_read_thread;
-  //std::auto_ptr<boost::thread> m_write_thread;
+  std::auto_ptr<USBInterface> m_interface;
 
-  bool m_quit_read_thread;
-  bool m_quit_write_thread;
+  std::auto_ptr<std::ofstream> m_fout;
+  std::auto_ptr<std::ifstream> m_fin;
 
 public:
-  Headset(libusb_device_handle* handle, 
-          bool debug,
-          const std::string& dump_filename,
-          const std::string& play_filename);
+  Headset(libusb_device_handle* handle, bool debug);
   ~Headset();
 
+  void play_file(const std::string& play_filename);
+  void record_file(const std::string& dump_filename);  
+
 private:
-  void write_thread(const std::string& filename);
-  void read_thread(const std::string& filename, bool debug);
+  void send_data();
+  void read_data(uint8_t* data, int len);
 
 private:
   Headset(const Headset&);
