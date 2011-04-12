@@ -39,6 +39,7 @@ class UIEvent
 {
 public:
   static UIEvent create(int device_id, int type, int code);
+  static UIEvent from_string(const std::string& str);
   static UIEvent invalid();
 
 public:

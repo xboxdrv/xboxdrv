@@ -83,99 +83,6 @@ public:
   virtual std::string str() const =0;
 };
 
-class RelAxisEventHandler : public AxisEventHandler
-{
-public:
-  static RelAxisEventHandler* from_string(const std::string& str);
-
-public:
-  RelAxisEventHandler();
-  RelAxisEventHandler(int device_id, int code, int repeat = 10, float value = 5);
-
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, int value);
-  void update(UInput& uinput, int msec_delta);
-
-  std::string str() const;
-
-private:
-  UIEvent m_code;
-  float   m_value;
-  int     m_repeat;
-
-  float   m_stick_value;
-  float   m_rest_value;
-};
-
-class RelRepeatAxisEventHandler : public AxisEventHandler
-{
-public:
-  static RelRepeatAxisEventHandler* from_string(const std::string& str);
-
-public:
-  RelRepeatAxisEventHandler(const UIEvent& code, int value, int repeat);
-
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, int value);
-  void update(UInput& uinput, int msec_delta);
-
-  std::string str() const;
-
-private:
-  UIEvent m_code;
-  int     m_value;
-  float   m_repeat;
-
-  float   m_stick_value;
-  int     m_timer;
-};
-
-class AbsAxisEventHandler : public AxisEventHandler
-{
-public:
-  static AbsAxisEventHandler* from_string(const std::string& str);
-
-public:
-  AbsAxisEventHandler();
-  AbsAxisEventHandler(const UIEvent& code, int min, int max, int fuzz, int flat);
-
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, int value);
-  void update(UInput& uinput, int msec_delta);
-
-  std::string str() const;
-
-private:
-  UIEvent m_code;
-  int m_fuzz;
-  int m_flat;
-};
-
-class KeyAxisEventHandler : public AxisEventHandler
-{
-public:
-  static KeyAxisEventHandler* from_string(const std::string& str);
-  
-public:
-  KeyAxisEventHandler();
-
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, int value);
-  void update(UInput& uinput, int msec_delta);
-
-  std::string str() const;
-
-private:
-  static const int MAX_MODIFIER = 4;
-
-  int m_old_value;
-
-  // Array is terminated by -1
-  UIEvent m_up_codes[MAX_MODIFIER+1];
-  UIEvent m_down_codes[MAX_MODIFIER+1];
-  int m_threshold;
-};
-
 #endif
 
 /* EOF */

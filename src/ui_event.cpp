@@ -18,6 +18,7 @@
 
 #include "ui_event.hpp"
 
+#include "evdev_helper.hpp"
 #include "uinput.hpp"
 
 bool
@@ -42,6 +43,18 @@ UIEvent::create(int device_id, int type, int code)
   ev.type      = type;
   ev.code      = code;
   return ev;
+}
+
+UIEvent
+UIEvent::from_string(const std::string& str)
+{
+  switch(get_event_type(str))
+  {
+    case EV_REL: return str2rel_event(str); break;
+    case EV_ABS: return str2abs_event(str); break;
+    case EV_KEY: return str2key_event(str); break;
+    default: throw std::runtime_error("unknown event type");
+  }
 }
 
 UIEvent
