@@ -19,6 +19,8 @@
 #ifndef HEADER_COMMAND_LINE_OPTIONS_HPP
 #define HEADER_COMMAND_LINE_OPTIONS_HPP
 
+#include <vector>
+
 #include "arg_parser.hpp"
 #include "ini_schema.hpp"
 #include "uinput.hpp"
@@ -34,6 +36,7 @@ public:
   ArgParser m_argp;
   INISchema m_ini;
   Options*  m_options;
+  std::vector<std::string> m_directory_context;
   
 public:
   CommandLineParser();
@@ -96,6 +99,7 @@ private:
 private:
   void init_argp();
   void init_ini(Options* opts);
+  std::string get_directory_context() const;
 
 private:
   CommandLineParser(const CommandLineParser&);

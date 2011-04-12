@@ -136,7 +136,8 @@ enum {
 CommandLineParser::CommandLineParser() :
   m_argp(),
   m_ini(),
-  m_options()
+  m_options(),
+  m_directory_context()
 {
   init_argp();
 }
@@ -1060,7 +1061,7 @@ CommandLineParser::set_ui_buttonmap(ButtonMap& btn_map, const std::string& name,
           }
           else
           {
-            event = ButtonEvent::from_string(value);
+            event = ButtonEvent::from_string(value, get_directory_context());
             if (event)
             {
               btn_map.bind(shift, btn, event);
@@ -1297,9 +1298,13 @@ CommandLineParser::read_config_file(const std::string& filename)
   }
   else
   {
+    m_directory_context.push_back(dirname(filename));
+
     INISchemaBuilder builder(m_ini);
     INIParser parser(in, builder, filename);
     parser.run();
+
+    m_directory_context.pop_back();
   }
 }
 
@@ -1379,6 +1384,19 @@ CommandLineParser::mouse()
   read_buildin_config_file("examples/mouse.xboxdrv",
                            xboxdrv_vfs::examples_mouse_xboxdrv,
                            sizeof(xboxdrv_vfs::examples_mouse_xboxdrv));
+}
+
+std::string
+CommandLineParser::get_directory_context() const
+{
+  if (m_directory_context.empty())
+  {
+    return std::string();
+  }
+  else
+  {
+    return m_directory_context.back();
+  }
 }
 
 /* EOF */

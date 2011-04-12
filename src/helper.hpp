@@ -39,6 +39,11 @@ void split_string_at(const std::string& str, char c, std::string* lhs, std::stri
     which case it is handled as (range * int(str)) */
 int to_number(int range, const std::string& str);
 uint32_t get_time();
+
+/** Returns the directory component of a filename, trailing '/' is included */
+std::string dirname(const std::string& filename);
+
+std::string path_join(const std::string& lhs, const std::string& rhs);
 
 namespace Math {
 template<class T>

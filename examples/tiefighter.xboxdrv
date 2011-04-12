@@ -11,16 +11,16 @@
 # joysticktype = 2axis
 
 [xboxdrv]
-ui-clear=true
-extra-events=false
+ui-clear=true # start with a completely clear config
+extra-events=false 
 
 [modifier]
-square-axis=X1:Y1
+square-axis=X1:Y1 # flightsims like full [-1,1] range
 dpad-restrictor=fourway # dpad is used as buttons, so we don't need diagonals
 
 [ui-axismap]
-X1^dead:5000 = ABS_X  # regular steering
-Y1^dead:5000 = ABS_Y
+X1^dead:5000 = ABS_X # regular steering left/right
+Y1^dead:5000 = ABS_Y # regular steering up/down
 
 X2 = KEY_BACKSLASH:KEY_ENTER:24000 # full throttle/match throttle
 Y2 = KEY_EQUAL:KEY_MINUS:10000 # throttle plus/minus
@@ -42,10 +42,12 @@ RT = JS_0 # wire weapons
 
 START = KEY_LEFTSHIFT+KEY_F9  # shield to laser
 BACK  = KEY_LEFTSHIFT+KEY_F10 # laser to shield
-GUIDE = KEY_P:KEY_ESC:500
+GUIDE = KEY_P:KEY_ESC:500 # a click for pause, hold getting the menu
 
 LB+GUIDE = KEY_H             # hyperspace
 RB+GUIDE = KEY_LEFTALT+KEY_E # eject
+
+RB+BACK = KEY_LEFTALT+KEY_T # toggle time wrap
 
 # Energy Management
 DU = KEY_F8  # energy to ray
@@ -68,6 +70,7 @@ RB+DR = KEY_LEFTSHIFT+KEY_COMMA # prev component
 TR = KEY_BACKSPACE # full throttle
 TL = KEY_DOT # cockpit on/off
 LB+TR = KEY_A # target nearest attacker of current target
+LB+TL = macro:calibrate.macro
 RB+TL = KEY_F4 # view release
 RB+TR = KEY_F3 # external view
 

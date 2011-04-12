@@ -41,7 +41,7 @@ public:
   static ButtonEventPtr create_key();
   static ButtonEventPtr create_abs(int code);
   static ButtonEventPtr create_rel(int code);
-  static ButtonEventPtr from_string(const std::string& str);
+  static ButtonEventPtr from_string(const std::string& str, const std::string& directory);
 
 protected:
   ButtonEvent(ButtonEventHandler* handler);
