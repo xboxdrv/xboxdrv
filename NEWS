@@ -2,7 +2,7 @@ xboxdrv 0.7.4 - (??/Mar/2011)
 =============================
 
 * fixed deadzone filter issues with MIN:MAX:SMOOTH
-
+* meaning of --timeout 0 has changed
 
 
 xboxdrv 0.7.3 - (16/Mar/2011)

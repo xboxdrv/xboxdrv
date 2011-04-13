@@ -47,8 +47,8 @@ $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-maverick.tgz ../xboxd
 # Ubuntu 10.04 - xboxdrv-stable
 
 $ git checkout stable-lts
-$ git-buildpackage --git-no-create-orig --git-debian-branch=stable-lts --git-tag --git-builder="debuild -S" --git-debian-tag="stable/0.6.6-1_lucid1"
-$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-stable_0.6.6-1~lucid1.dsc
+$ git-buildpackage --git-no-create-orig --git-debian-branch=stable-lts --git-tag --git-builder="debuild -S" --git-debian-tag="stable/0.6.6-1_lucid2"
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-stable_0.6.6-1~lucid2.dsc
 
 
 Stuff to do before 0.8.0 release:
@@ -57,9 +57,13 @@ Stuff to do before 0.8.0 release:
 Checklist
 =========
 
+* print which sub features are enabled: chatpad, force feedback, headset
+
 * make dbus optional
 
 * check force feedback
+
+* rumble-test is broken completely
 
 * check output when --silent not given
 
@@ -102,7 +106,9 @@ Aborted
 
 * headset and chatpad still use thread
 
-* go through checklist, disable headset and chatpad support for now
+* go through checklist, disable headset and chatpad support for now,
+  do a source only release
+
 
 Stuff
 =====
@@ -141,6 +147,28 @@ Stuff
 
 Stuff to do before 0.7.4 release:
 =================================
+
+* macro support needs to search files in a few more locations;
+
+  * current directory
+  * directory of parent .ini file
+  * users xboxdrv config directory (don't have that yet)
+
+* macro supports needs "init" command (somewhat done)
+
+* add support for "include" in macro
+
+* add support for macros that always reload when evaluated (makes testing easier)
+
+* document REL_ -1 better
+
+* when verbose is given, warn when keys are dual mapped, give list of free keys
+
+* space is currently illegal, but shouldn't be "GUIDE = KEY_LEFTALT + KEY_E" 
+
+* write macro that calibrates the joystick for does games
+
+* extra-devices adds a button when one only uses JS_0 buttons, shouldn't happen
 
 * invert y axis on --evdev
 
