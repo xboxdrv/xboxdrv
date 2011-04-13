@@ -24,7 +24,7 @@
 
 #include "evdev_helper.hpp"
 #include "log.hpp"
-#include "helper.hpp"
+#include "path.hpp"
 #include "uinput.hpp"
 
 #include "buttonevent/abs_button_event_handler.hpp"
@@ -103,7 +103,7 @@ ButtonEvent::from_string(const std::string& str, const std::string& directory)
   }
   else if (token == "macro")
   {
-    return ButtonEvent::create(MacroButtonEventHandler::from_string(path_join(directory, rest)));
+    return ButtonEvent::create(MacroButtonEventHandler::from_string(path::join(directory, rest)));
   }
   else
   {

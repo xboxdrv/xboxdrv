@@ -16,19 +16,20 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
+#ifndef HEADER_XBOXDRV_PATH_HPP
+#define HEADER_XBOXDRV_PATH_HPP
 
-#include "path.hpp"
+#include <string>
 
-int main(int argc, char** argv)
-{
-  for(int i = 1; i < argc; ++i)
-  {
-    std::cout << '"' << argv[i] << '"' << std::endl;
-    std::cout << '"' << path::dirname(argv[i]) << '"' << std::endl;
-    std::cout << std::endl;
-  }
-  return 0;
-}
+namespace path {
+
+/** Returns the directory component of a filename, trailing '/' is included */
+std::string dirname(const std::string& filename);
+
+std::string join(const std::string& lhs, const std::string& rhs);
+
+} // namespace path
+
+#endif
 
 /* EOF */

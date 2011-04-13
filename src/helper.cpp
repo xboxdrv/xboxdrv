@@ -210,36 +210,4 @@ pid_t spawn_exe(const std::vector<std::string>& args)
   return pid;
 }
 
-std::string dirname(const std::string& filename)
-{
-  std::string::size_type p = filename.rfind('/');
-  if (p == std::string::npos)
-  {
-    return "./";
-  }
-  else
-  {
-    return filename.substr(0, p+1);
-  }
-}
-
-std::string path_join(const std::string& lhs, const std::string& rhs)
-{
-  if (lhs.empty())
-  {
-    return rhs;
-  }
-  else
-  {
-    if (lhs[lhs.size()-1] == '/')
-    {
-      return lhs + rhs;
-    }
-    else
-    {
-      return lhs + '/' + rhs;
-    }
-  }
-}
-
 /* EOF */

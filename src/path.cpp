@@ -16,19 +16,42 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
-
 #include "path.hpp"
 
-int main(int argc, char** argv)
+namespace path {
+
+std::string dirname(const std::string& filename)
 {
-  for(int i = 1; i < argc; ++i)
+  std::string::size_type p = filename.rfind('/');
+  if (p == std::string::npos)
   {
-    std::cout << '"' << argv[i] << '"' << std::endl;
-    std::cout << '"' << path::dirname(argv[i]) << '"' << std::endl;
-    std::cout << std::endl;
+    return "./";
   }
-  return 0;
+  else
+  {
+    return filename.substr(0, p+1);
+  }
 }
+
+std::string join(const std::string& lhs, const std::string& rhs)
+{
+  if (lhs.empty())
+  {
+    return rhs;
+  }
+  else
+  {
+    if (lhs[lhs.size()-1] == '/')
+    {
+      return lhs + rhs;
+    }
+    else
+    {
+      return lhs + '/' + rhs;
+    }
+  }
+}
+
+} // namespace path
 
 /* EOF */

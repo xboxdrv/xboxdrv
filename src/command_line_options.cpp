@@ -28,8 +28,9 @@
 #include "helper.hpp"
 #include "ini_parser.hpp"
 #include "ini_schema_builder.hpp"
-#include "raise_exception.hpp"
 #include "options.hpp"
+#include "path.hpp"
+#include "raise_exception.hpp"
 #include "ui_event.hpp"
 
 #include "axisfilter/relative_axis_filter.hpp"
@@ -1298,7 +1299,7 @@ CommandLineParser::read_config_file(const std::string& filename)
   }
   else
   {
-    m_directory_context.push_back(dirname(filename));
+    m_directory_context.push_back(path::dirname(filename));
 
     INISchemaBuilder builder(m_ini);
     INIParser parser(in, builder, filename);
