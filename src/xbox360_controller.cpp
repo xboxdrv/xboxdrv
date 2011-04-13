@@ -66,13 +66,22 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
       m_chatpad->start_threads();
     }
   }
+#endif
 
   // create headset
   if (headset)
   {
-    m_headset.reset(new Headset(m_handle, headset_debug, headset_dump, headset_play));
+    m_headset.reset(new Headset(m_handle, headset_debug));
+    if (!headset_play.empty())
+    {
+      m_headset->play_file(headset_play);
+    }
+
+    if (!headset_dump.empty())
+    {
+      m_headset->record_file(headset_dump);
+    }
   }
-#endif
 }
 
 Xbox360Controller::~Xbox360Controller()

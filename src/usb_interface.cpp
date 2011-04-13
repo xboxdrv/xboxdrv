@@ -20,7 +20,39 @@
 
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
+
+struct USBReadCallback
+{
+  USBInterface* iface;
+  boost::function<bool (uint8_t*, int)> callback;
 
+  USBReadCallback(USBInterface* iface_,
+                  boost::function<bool (uint8_t*, int)> callback_) :
+    iface(iface_),
+    callback(callback_)
+  {}
+  
+private:
+  USBReadCallback(const USBReadCallback&);
+  USBReadCallback& operator=(const USBReadCallback&);
+};
+
+struct USBWriteCallback
+{
+  USBInterface* iface;
+  boost::function<bool (libusb_transfer*)> callback;
+
+  USBWriteCallback(USBInterface* iface_,
+                   boost::function<bool (libusb_transfer*)> callback_) :
+    iface(iface_),
+    callback(callback_)
+  {}
+
+private:
+  USBWriteCallback(const USBWriteCallback&);
+  USBWriteCallback& operator=(const USBWriteCallback&);
+};
+
 USBInterface::USBInterface(libusb_device_handle* handle, int interface) :
   m_handle(handle),
   m_interface(interface),
@@ -51,18 +83,19 @@ USBInterface::~USBInterface()
 
 void
 USBInterface::submit_read(int endpoint, int len, 
-                          const boost::function<void (uint8_t, int)>& callback)
+                          const boost::function<bool (uint8_t*, int)>& callback)
 {
   assert(m_endpoints.find(endpoint) == m_endpoints.end());
-
   libusb_transfer* transfer = libusb_alloc_transfer(0);
+  transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
 
   uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
-  transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
+
   libusb_fill_interrupt_transfer(transfer, m_handle,
                                  endpoint | LIBUSB_ENDPOINT_IN,
                                  data, len,
-                                 &USBInterface::on_read_data_wrap, this,
+                                 &USBInterface::on_read_data_wrap, 
+                                 new USBReadCallback(this, callback),
                                  0); // timeout
   int ret;
   ret = libusb_submit_transfer(transfer);
@@ -79,11 +112,11 @@ USBInterface::submit_read(int endpoint, int len,
 }
 
 void
-USBInterface::submit_write(int endpoint, uint8_t* data_in, int len)
+USBInterface::submit_write(int endpoint, uint8_t* data_in, int len,
+                           const boost::function<bool (libusb_transfer*)>& callback)
 {
   libusb_transfer* transfer = libusb_alloc_transfer(0);
   transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
-  transfer->flags |= LIBUSB_TRANSFER_FREE_TRANSFER;
 
   // copy data into a newly allocated buffer
   uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
@@ -92,7 +125,8 @@ USBInterface::submit_write(int endpoint, uint8_t* data_in, int len)
   libusb_fill_interrupt_transfer(transfer, m_handle,
                                  endpoint | LIBUSB_ENDPOINT_OUT,
                                  data, len,
-                                 &USBInterface::on_write_data_wrap, this,
+                                 &USBInterface::on_write_data_wrap, 
+                                 new USBWriteCallback(this, callback),
                                  0); // timeout
 
   int ret;
@@ -137,13 +171,64 @@ USBInterface::cancel_write(int endpoint)
 }
 
 void
-USBInterface::on_read_data(libusb_transfer *transfer)
+USBInterface::on_read_data(USBReadCallback* callback, libusb_transfer* transfer)
 {
+  if (callback->callback(transfer->buffer, transfer->actual_length))
+  {
+    // callback returned true, thus resend the transfer
+    int ret;
+    ret = libusb_submit_transfer(transfer);
+    if (ret != LIBUSB_SUCCESS)
+    {
+      libusb_free_transfer(transfer);
+      raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+    }
+  }
+  else
+  {
+    // callback returned false, thus doing cleanup
+    delete callback;
+    libusb_free_transfer(transfer);
+    m_endpoints.erase(transfer->endpoint);
+  }
 }
  
 void
-USBInterface::on_write_data(libusb_transfer *transfer)
+USBInterface::on_write_data(USBWriteCallback* callback, libusb_transfer* transfer)
 {
+  if (callback->callback(transfer))
+  {
+    // callback returned true, thus resend the transfer (user is free
+    // to fill it with new data)
+    int ret;
+    ret = libusb_submit_transfer(transfer);
+    if (ret != LIBUSB_SUCCESS)
+    {
+      libusb_free_transfer(transfer);
+      raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+    }
+  }
+  else
+  {
+    // callback returned false, thus doing cleanup
+    delete callback;
+    libusb_free_transfer(transfer);
+    m_endpoints.erase(transfer->endpoint);
+  }
+}
+
+void
+USBInterface::on_read_data_wrap(libusb_transfer* transfer)
+{
+  USBReadCallback* cb = static_cast<USBReadCallback*>(transfer->user_data);
+  cb->iface->on_read_data(cb, transfer);
 }
 
+void
+USBInterface::on_write_data_wrap(libusb_transfer* transfer)
+{
+  USBWriteCallback* cb = static_cast<USBWriteCallback*>(transfer->user_data);
+  cb->iface->on_write_data(cb, transfer);
+}
+
 /* EOF */

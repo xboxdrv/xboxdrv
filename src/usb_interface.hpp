@@ -23,6 +23,9 @@
 #include <boost/function.hpp>
 #include <map>
 
+struct USBReadCallback;
+struct USBWriteCallback;
+
 class USBInterface
 {
 private:
@@ -36,26 +39,22 @@ public:
   ~USBInterface();
 
   void submit_read(int endpoint, int len, 
-                   const boost::function<void (uint8_t, int)>& callback);
+                   const boost::function<bool (uint8_t*, int)>& callback);
   void cancel_read(int endpoint);
 
-  void submit_write(int endpoint, uint8_t* data, int len);
+  void submit_write(int endpoint, uint8_t* data, int len,
+                    const boost::function<bool (libusb_transfer*)>& callback);
   void cancel_write(int endpoint);
 
 private:
   void cancel_transfer(int endpoint);
 
-  void on_read_data(libusb_transfer *transfer);
-  static void on_read_data_wrap(libusb_transfer *transfer)
-  {
-    static_cast<USBInterface*>(transfer->user_data)->on_read_data(transfer);
-  }
+  void on_read_data(USBReadCallback* callback, libusb_transfer *transfer);
+  void on_write_data(USBWriteCallback* callback, libusb_transfer *transfer);
 
-  void on_write_data(libusb_transfer *transfer);
-  static void on_write_data_wrap(libusb_transfer *transfer)
-  {
-    static_cast<USBInterface*>(transfer->user_data)->on_write_data(transfer);
-  }
+private:
+  static void on_read_data_wrap(libusb_transfer *transfer);
+  static void on_write_data_wrap(libusb_transfer *transfer);
 
 private:
   USBInterface(const USBInterface&);

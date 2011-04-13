@@ -41,8 +41,8 @@ public:
   void record_file(const std::string& dump_filename);  
 
 private:
-  void send_data();
-  void read_data(uint8_t* data, int len);
+  bool send_data(libusb_transfer* transfer);
+  bool receive_data(uint8_t* data, int len);
 
 private:
   Headset(const Headset&);

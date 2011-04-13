@@ -53,7 +53,17 @@ Headset::play_file(const std::string& filename)
   }
   else
   {
-    send_data();
+    char data[32];
+    int len = m_fin->read(data, sizeof(data)).gcount();
+    if (len != 32)
+    {
+      log_error("short read");
+    }
+    else
+    {
+      m_interface->submit_write(4, reinterpret_cast<uint8_t*>(data), len, 
+                                boost::bind(&Headset::send_data, this, _1));
+    }    
   }
 }
 
@@ -68,29 +78,29 @@ Headset::record_file(const std::string& filename)
   }
   else
   {
-    //FIXME:m_interface->submit_read(3, 32);
+    m_interface->submit_read(3, 32, boost::bind(&Headset::receive_data, this, _1, _2));
   }
 }
 
-void
-Headset::send_data()
+bool
+Headset::send_data(libusb_transfer* transfer)
 {
-  uint8_t data[32];
-  int len = m_fin->read(reinterpret_cast<char*>(data), sizeof(data)).gcount();
+  // fill the buffer with new data from the file
+  int len = m_fin->read(reinterpret_cast<char*>(transfer->buffer), transfer->length).gcount();
   
   if (len != 32)
   {
     log_error("short read");
+    return false;
   }
   else
   {
-    //FIXME: m_interface->submit_write(data, 32,
-    //                          boost::bind(&Headset::send_data, this));
+    return true;
   }
 }
 
-void
-Headset::read_data(uint8_t* data, int len)
+bool
+Headset::receive_data(uint8_t* data, int len)
 {
   if (m_fout.get())
   {
@@ -98,8 +108,7 @@ Headset::read_data(uint8_t* data, int len)
   }
   log_debug(raw2str(data, len));
 
-  //FIXME: m_interface->submit_read(3, 32,
-  //                           boost::bind(&Headset::send_data, this, _1, _2));
+  return true;
 }
 
 /* EOF */
