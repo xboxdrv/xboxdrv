@@ -20,6 +20,7 @@
 #define HEADER_XBOXDRV_CHATPAD_HPP
 
 #include <libusb.h>
+#include <glib.h>
 #include <memory>
 
 class LinuxUinput;
@@ -94,6 +95,23 @@ enum {
 class Chatpad
 {
 private:
+  enum State {
+    kStateInit1,
+    kStateInit2,
+    kStateInit3,
+    kStateInit4,
+    kStateInit5,
+    kStateInit6,
+    kStateInit_1e,
+    kStateInit_1f,
+    kStateInit_1b,
+    kStateKeepAlive_1e,
+    kStateKeepAlive_1f,
+    kStateLoop
+  };
+
+  State m_init_state;
+
   struct ChatpadMsg
   {
     uint8_t type;
@@ -138,6 +156,7 @@ private:
   int m_keymap[256];
   bool m_state[256];
   unsigned int m_led_state;
+  libusb_transfer* m_read_transfer;
 
 public:
   Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
@@ -145,7 +164,6 @@ public:
   ~Chatpad();
 
   void send_init();
-  void start_threads();
 
   void set_led(unsigned int led, bool state);
   bool get_led(unsigned int led); 
@@ -154,10 +172,31 @@ public:
   void init_uinput();
 
 private:
-  void read_thread();
-  void keep_alive_thread();
+  void send_command();
+  void send_timeout(int msec);
   void send_ctrl(uint8_t request_type, uint8_t request, uint16_t value, uint16_t index,
-                 uint8_t* data, uint16_t length);
+                 uint8_t* data_in = NULL, uint16_t length = 0, 
+                 libusb_transfer_cb_fn callback = NULL, void* userdata = NULL);
+
+  void usb_submit_read(int endpoint, int len);
+
+private:
+  bool on_timeout();
+  static gboolean on_timeout_wrap(gpointer data) {
+    return static_cast<Chatpad*>(data)->on_timeout();
+  }
+
+  void on_control(libusb_transfer* transfer);
+  static void on_control_wrap(libusb_transfer* transfer)
+  {
+    static_cast<Chatpad*>(transfer->user_data)->on_control(transfer);
+  }
+
+  void on_read_data(libusb_transfer* transfer);
+  static void on_read_data_wrap(libusb_transfer* transfer)
+  {
+    static_cast<Chatpad*>(transfer->user_data)->on_read_data(transfer);
+  }
 
 private:
   Chatpad(const Chatpad&);

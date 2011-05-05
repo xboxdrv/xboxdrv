@@ -23,21 +23,32 @@
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
 
+struct USBControlMsg 
+{
+  uint8_t bmRequestType;
+  uint8_t bRequest;
+  uint16_t wValue;
+  uint16_t wIndex;
+  unsigned char *data;
+  uint16_t wLength;
+};
+
 Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
                  bool no_init, bool debug) :
+  m_init_state(kStateInit1),
   m_handle(handle),
   m_bcdDevice(bcdDevice),
   m_no_init(no_init),
   m_debug(debug),
   m_quit_thread(false),
-  //m_read_thread(),
-  //m_keep_alive_thread(),
   m_uinput(),
-  m_led_state(0)
+  m_led_state(0),
+  m_read_transfer(0)
 {
   if (m_bcdDevice != 0x0110 && m_bcdDevice != 0x0114)
   {
-    throw std::runtime_error("unknown bcdDevice version number, please report this issue to grumbel@gmail.com and include the output of 'lsusb -v'");
+    throw std::runtime_error("unknown bcdDevice version number, please report this issue "
+                             "to <grumbel@gmail.com> and include the output of 'lsusb -v'");
   }
 
   memset(m_keymap, 0, 256);
@@ -93,18 +104,23 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_keymap[CHATPAD_MOD_PEOPLE] = KEY_LEFTMETA;
   
   init_uinput();
+  
+  if (!no_init)
+  {
+    send_command();
+  }
+
+  usb_submit_read(6, 5);
 }
 
 Chatpad::~Chatpad()
 {
-  m_quit_thread = true;
-  //m_read_thread->join();
-  //m_keep_alive_thread->join();
 }
 
 void
 Chatpad::init_uinput()
 {
+  log_trace();
   struct input_id usbid;
 
   usbid.bustype = 0;
@@ -124,21 +140,236 @@ Chatpad::init_uinput()
   m_uinput->finish();
 }
 
-bool
-Chatpad::get_led(unsigned int led)
+void
+Chatpad::usb_submit_read(int endpoint, int len)
 {
-  return m_led_state & led;
+  log_trace();
+  assert(!m_read_transfer);
+
+  m_read_transfer = libusb_alloc_transfer(0);
+
+  uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
+  m_read_transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
+  libusb_fill_interrupt_transfer(m_read_transfer, m_handle,
+                                 endpoint | LIBUSB_ENDPOINT_IN,
+                                 data, len,
+                                 &Chatpad::on_read_data_wrap, this,
+                                 0); // timeout
+  int ret;
+  ret = libusb_submit_transfer(m_read_transfer);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+  }
+}
+
+void
+Chatpad::on_read_data(libusb_transfer* transfer)
+{
+  log_trace();
+
+  assert(transfer);
+
+  if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
+  {
+    log_error("usb transfer failed: " << usb_transfer_strerror(transfer->status));
+  }
+  else
+  {
+    log_error("chatpad data: " << raw2str(transfer->buffer, transfer->actual_length));
+    
+    if (transfer->actual_length == 5 && transfer->buffer[0] == 0x00)
+    {
+      struct ChatpadKeyMsg msg;
+      memcpy(&msg, transfer->buffer, transfer->actual_length);
+      process(msg);
+    }
+
+    int ret;
+    ret = libusb_submit_transfer(transfer);
+    if (ret != LIBUSB_SUCCESS)
+    {
+      log_error("failed to resubmit USB transfer: " << usb_strerror(ret));
+      libusb_free_transfer(transfer);
+    }
+  }
+}
+
+void
+Chatpad::send_timeout(int msec)
+{
+  log_trace();
+  // FIMXE: must keep track of sources and destroy them in ~Chatpad()
+  //assert(m_timeout_id == -1);
+  //m_timeout_id = 
+  g_timeout_add(1000, &Chatpad::on_timeout_wrap, this);
+}
+
+void
+Chatpad::send_command()
+{
+  log_trace();
+  log_error("send_command: " << m_init_state);
+
+  uint8_t code[2] = { 0x01, 0x02 };
+
+  switch(m_init_state)
+  {
+    case kStateInit1:
+      send_ctrl(0x40, 0xa9, 0xa30c, 0x4423, NULL, 0,
+                &Chatpad::on_control_wrap, this);
+      break;
+
+    case kStateInit2:
+      send_ctrl(0x40, 0xa9, 0x2344, 0x7f03, NULL, 0,
+                &Chatpad::on_control_wrap, this);
+      break;
+
+    case kStateInit3:
+      send_ctrl(0x40, 0xa9, 0x5839, 0x6832, NULL, 0,
+                &Chatpad::on_control_wrap, this);
+      break;
+
+    case kStateInit4:
+      send_ctrl(0xc0, 0xa1, 0x0000, 0xe416, code, 2,
+                &Chatpad::on_control_wrap, this);
+      break;
+
+    case kStateInit5:
+      send_ctrl(0x40, 0xa1, 0x0000, 0xe416, code, 2,
+                &Chatpad::on_control_wrap, this);
+      break;
+
+    case kStateInit6:
+      send_ctrl(0xc0, 0xa1, 0x0000, 0xe416, code, 2,
+                &Chatpad::on_control_wrap, this);
+      break;
+
+    case kStateInit_1e:
+      send_timeout(1000);
+      break;
+
+    case kStateInit_1f:
+      send_timeout(1000);
+      break;
+
+    case kStateInit_1b:
+      send_ctrl(0x41, 0x0, 0x1b, 0x02, NULL, 0,
+                &Chatpad::on_control_wrap, this);
+      break;
+
+    case kStateKeepAlive_1e:
+      send_timeout(1000);
+      break;
+
+    case kStateKeepAlive_1f:
+      send_timeout(1000);
+      break;
+
+    default:
+      assert(!"unknown state");
+      break;
+  }
+}
+
+void
+Chatpad::on_control(libusb_transfer* transfer)
+{
+  log_trace();
+  switch(m_init_state)
+  {
+    case kStateInit1:
+    case kStateInit2:
+    case kStateInit3:
+      // fail ok
+      m_init_state = static_cast<State>(m_init_state + 1);
+      send_command();
+      break;
+
+    case kStateInit4:
+    case kStateInit5:
+    case kStateInit6:
+    case kStateInit_1e:
+    case kStateInit_1f:
+    case kStateInit_1b:
+    case kStateKeepAlive_1e:
+    case kStateKeepAlive_1f:
+      if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
+      {
+        log_error("stuff went wrong");
+      }
+      else
+      {
+        m_init_state = static_cast<State>(m_init_state + 1);
+        if (m_init_state == kStateLoop)
+        {
+          m_init_state = kStateKeepAlive_1e;
+        }
+        send_command();
+      }
+      break;
+
+    default:
+      assert(!"unknown state");
+      break;
+  }
+}
+
+bool
+Chatpad::on_timeout()
+{
+  log_trace();
+  //m_timeout_id = -1;
+  switch(m_init_state)
+  {
+    case kStateInit_1e:
+    case kStateKeepAlive_1e:
+      send_ctrl(0x41, 0x0, 0x1f, 0x02, NULL, 0,
+                &Chatpad::on_control_wrap, this);
+      return false;
+
+    case kStateInit_1f:
+    case kStateKeepAlive_1f:
+      send_ctrl(0x41, 0x0, 0x1e, 0x02, NULL, 0,
+                &Chatpad::on_control_wrap, this);
+      return false;
+
+    default:
+      assert(!"invalid state");
+      break;
+  }
 }
 
 void
 Chatpad::send_ctrl(uint8_t request_type, uint8_t request, uint16_t value, uint16_t index,
-                   uint8_t* data, uint16_t length)
+                   uint8_t* data_in, uint16_t length, 
+                   libusb_transfer_cb_fn callback, void* userdata)
 {
-  int ret = libusb_control_transfer(m_handle, request_type, request, value, index, data, length, 0);
+  log_trace();
+  libusb_transfer* transfer = libusb_alloc_transfer(0);
+  transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
+  transfer->flags |= LIBUSB_TRANSFER_FREE_TRANSFER;
+
+  // create and fill control buffer
+  uint8_t* data = static_cast<uint8_t*>(malloc(length + 8));
+  libusb_fill_control_setup(data, request_type, request, value, index, length);
+  memcpy(data + 8, data_in, length);
+  libusb_fill_control_transfer(transfer, m_handle, data,
+                               callback, userdata, 
+                               0);
+
+  int ret;
+  ret = libusb_submit_transfer(transfer);
   if (ret != LIBUSB_SUCCESS)
   {
-    raise_exception(std::runtime_error, "libusb_control_transfer() failed: " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
   }
+}
+
+bool
+Chatpad::get_led(unsigned int led)
+{
+  return m_led_state & led;
 }
 
 void
@@ -194,50 +425,6 @@ Chatpad::set_led(unsigned int led, bool state)
 }
 
 void
-Chatpad::start_threads()
-{
-  //m_read_thread.reset(new boost::thread(boost::bind(&Chatpad::read_thread, this)));
-  //m_keep_alive_thread.reset(new boost::thread(boost::bind(&Chatpad::keep_alive_thread, this)));
-}
-
-void
-Chatpad::read_thread()
-{
-  try 
-  {
-    uint8_t data[5];
-    while(!m_quit_thread)
-    {
-      int len = 0;
-      int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 6,
-                                          data, sizeof(data), &len, 0);
-      if (ret != LIBUSB_SUCCESS)
-      {
-        raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
-      }
-      else
-      {
-        if (g_logger.get_log_level() > Logger::kDebug)
-        {
-          log_debug("read: " << len << "/5: data: " << raw2str(data, len));
-        }
-        
-        if (data[0] == 0x00)
-        {
-          struct ChatpadKeyMsg msg;
-          memcpy(&msg, data, sizeof(msg));
-          process(msg);
-        }
-      }
-    }
-  }
-  catch(const std::exception& err)
-  {
-    log_error(err.what());
-  }
-}
-
-void
 Chatpad::process(const ChatpadKeyMsg& msg)
 {
   // save old state
@@ -284,6 +471,45 @@ Chatpad::process(const ChatpadKeyMsg& msg)
     }
   }
   m_uinput->sync();
+}
+
+#if 0
+
+void
+Chatpad::read_thread()
+{
+  try 
+  {
+    uint8_t data[5];
+    while(!m_quit_thread)
+    {
+      int len = 0;
+      int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_IN | 6,
+                                          data, sizeof(data), &len, 0);
+      if (ret != LIBUSB_SUCCESS)
+      {
+        raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
+      }
+      else
+      {
+        if (g_logger.get_log_level() > Logger::kDebug)
+        {
+          log_debug("read: " << len << "/5: data: " << raw2str(data, len));
+        }
+        
+        if (data[0] == 0x00)
+        {
+          struct ChatpadKeyMsg msg;
+          memcpy(&msg, data, sizeof(msg));
+          process(msg);
+        }
+      }
+    }
+  }
+  catch(const std::exception& err)
+  {
+    log_error(err.what());
+  }
 }
 
 void
@@ -381,5 +607,7 @@ Chatpad::send_init()
   libusb_control_transfer(m_handle, 0x41, 0x0, 0x1b, 0x02, 0, 0, 0);
   log_debug("0x1b");
 }
+
+#endif
 
 /* EOF */

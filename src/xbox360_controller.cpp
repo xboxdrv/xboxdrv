@@ -49,7 +49,6 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
   usb_claim_interface(0, try_detach);
   usb_submit_read(endpoint_in, 32);
 
-#ifdef FIXME
   // create chatpad
   if (chatpad)
   {
@@ -58,15 +57,13 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
     int ret = libusb_get_device_descriptor(dev, &desc);
     if (ret != LIBUSB_SUCCESS)
     {
-      raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));    }
+      raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));    
+    }
     else
     {
       m_chatpad.reset(new Chatpad(m_handle, desc.bcdDevice, chatpad_no_init, chatpad_debug));
-      m_chatpad->send_init();
-      m_chatpad->start_threads();
     }
   }
-#endif
 
   // create headset
   if (headset)
