@@ -72,9 +72,10 @@ Logger::append_unchecked(LogLevel level, const std::string& str)
   switch(level)
   {
     case kError:   std::cout << "[ERROR] "; break;
-    case kWarning: std::cout << "[WARN] "; break;
-    case kInfo:    std::cout << "[INFO] "; break;
+    case kWarning: std::cout << "[WARN]  "; break;
+    case kInfo:    std::cout << "[INFO]  "; break;
     case kDebug:   std::cout << "[DEBUG] "; break;
+    case kTmp:     std::cout << "[TEMP]  "; break;
   }
     
   std::cout << str << std::endl;

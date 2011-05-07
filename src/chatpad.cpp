@@ -33,6 +33,14 @@ struct USBControlMsg
   uint16_t wLength;
 };
 
+/*
+  Chatpad Interface:
+  ==================
+  bInterfaceNumber        2
+  bInterfaceClass       255 Vendor Specific Class
+  bInterfaceSubClass     93 
+  bInterfaceProtocol      2 
+*/
 Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
                  bool no_init, bool debug) :
   m_init_state(kStateInit1),
@@ -105,12 +113,14 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   
   init_uinput();
   
-  if (!no_init)
+  if (no_init)
   {
-    send_command();
+    m_init_state = kStateKeepAlive_1e;
   }
 
-  usb_submit_read(6, 5);
+  send_command();
+
+  usb_submit_read(6, 32);
 }
 
 Chatpad::~Chatpad()
@@ -120,7 +130,6 @@ Chatpad::~Chatpad()
 void
 Chatpad::init_uinput()
 {
-  log_trace();
   struct input_id usbid;
 
   usbid.bustype = 0;
@@ -143,7 +152,6 @@ Chatpad::init_uinput()
 void
 Chatpad::usb_submit_read(int endpoint, int len)
 {
-  log_trace();
   assert(!m_read_transfer);
 
   m_read_transfer = libusb_alloc_transfer(0);
@@ -166,8 +174,6 @@ Chatpad::usb_submit_read(int endpoint, int len)
 void
 Chatpad::on_read_data(libusb_transfer* transfer)
 {
-  log_trace();
-
   assert(transfer);
 
   if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
@@ -176,7 +182,8 @@ Chatpad::on_read_data(libusb_transfer* transfer)
   }
   else
   {
-    log_error("chatpad data: " << raw2str(transfer->buffer, transfer->actual_length));
+    log_tmp("chatpad data: " << usb_transfer_strerror(transfer->status) << " "
+            << raw2str(transfer->buffer, transfer->actual_length));
     
     if (transfer->actual_length == 5 && transfer->buffer[0] == 0x00)
     {
@@ -198,7 +205,6 @@ Chatpad::on_read_data(libusb_transfer* transfer)
 void
 Chatpad::send_timeout(int msec)
 {
-  log_trace();
   // FIMXE: must keep track of sources and destroy them in ~Chatpad()
   //assert(m_timeout_id == -1);
   //m_timeout_id = 
@@ -208,10 +214,16 @@ Chatpad::send_timeout(int msec)
 void
 Chatpad::send_command()
 {
-  log_trace();
-  log_error("send_command: " << m_init_state);
+  //log_tmp("send_command: " << m_init_state);
 
+  // default init code for m_bcdDevice == 0x0110
   uint8_t code[2] = { 0x01, 0x02 };
+
+  if (m_bcdDevice == 0x0114)
+  {
+    code[0] = 0x09;
+    code[1] = 0x00;
+  }
 
   switch(m_init_state)
   {
@@ -275,7 +287,12 @@ Chatpad::send_command()
 void
 Chatpad::on_control(libusb_transfer* transfer)
 {
-  log_trace();
+  log_tmp(m_init_state << " " << usb_transfer_strerror(transfer->status) << " len: " << transfer->actual_length);
+  if (transfer->actual_length != 0)
+  {
+    log_tmp(" PAYLOAD: " << raw2str(transfer->buffer, transfer->actual_length));
+  }
+
   switch(m_init_state)
   {
     case kStateInit1:
@@ -318,7 +335,6 @@ Chatpad::on_control(libusb_transfer* transfer)
 bool
 Chatpad::on_timeout()
 {
-  log_trace();
   //m_timeout_id = -1;
   switch(m_init_state)
   {
@@ -345,7 +361,6 @@ Chatpad::send_ctrl(uint8_t request_type, uint8_t request, uint16_t value, uint16
                    uint8_t* data_in, uint16_t length, 
                    libusb_transfer_cb_fn callback, void* userdata)
 {
-  log_trace();
   libusb_transfer* transfer = libusb_alloc_transfer(0);
   transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
   transfer->flags |= LIBUSB_TRANSFER_FREE_TRANSFER;
