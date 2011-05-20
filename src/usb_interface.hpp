@@ -42,6 +42,9 @@ public:
                    const boost::function<bool (uint8_t*, int)>& callback);
   void cancel_read(int endpoint);
 
+  // FIXME: could add a prepare_write() that does what submit_write()
+  // does, but uses the callback to fill the data instead of getting
+  // it as argument
   void submit_write(int endpoint, uint8_t* data, int len,
                     const boost::function<bool (libusb_transfer*)>& callback);
   void cancel_write(int endpoint);

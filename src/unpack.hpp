@@ -97,6 +97,11 @@ inline uint32_t uint32be(uint8_t* data)
 }
 
 
+inline bool bit(uint8_t* data, int bit)
+{
+  return (*data >> bit) & 1;
+}
+
 } // namespace unpack
 
 #endif

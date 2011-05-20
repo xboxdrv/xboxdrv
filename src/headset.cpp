@@ -26,8 +26,7 @@
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
 
-Headset::Headset(libusb_device_handle* handle, 
-                 bool debug) :
+Headset::Headset(libusb_device_handle* handle, bool debug) :
   m_handle(handle),
   m_interface(new USBInterface(m_handle, 1)),
   m_fout(),
