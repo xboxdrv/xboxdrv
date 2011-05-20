@@ -23,6 +23,7 @@
 #include "helper.hpp"
 #include "options.hpp"
 #include "raise_exception.hpp"
+#include "unpack.hpp"
 #include "usb_helper.hpp"
 
 Xbox360Controller::Xbox360Controller(libusb_device* dev,
@@ -149,8 +150,44 @@ Xbox360Controller::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
   }
   else if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
   {
-    msg_out->type    = XBOX_MSG_XBOX360;
-    memcpy(&msg_out->xbox360, data, sizeof(Xbox360Msg));
+    msg_out->type = XBOX_MSG_XBOX360;
+    Xbox360Msg& msg = msg_out->xbox360;
+
+    msg.type   = data[0];
+    msg.length = data[1];
+
+    msg.dpad_up    = unpack::bit(data+2, 0);
+    msg.dpad_down  = unpack::bit(data+2, 1);
+    msg.dpad_left  = unpack::bit(data+2, 2);
+    msg.dpad_right = unpack::bit(data+2, 3);
+
+    msg.start   = unpack::bit(data+2, 4);
+    msg.back    = unpack::bit(data+2, 5);
+    msg.thumb_l = unpack::bit(data+2, 6);
+    msg.thumb_r = unpack::bit(data+2, 7);
+
+    msg.lb     = unpack::bit(data+3, 0);
+    msg.rb     = unpack::bit(data+3, 1);
+    msg.guide  = unpack::bit(data+3, 2);
+    msg.dummy1 = unpack::bit(data+3, 3);
+
+    msg.a = unpack::bit(data+3, 4);
+    msg.b = unpack::bit(data+3, 5);
+    msg.x = unpack::bit(data+3, 6);
+    msg.y = unpack::bit(data+3, 7);
+
+    msg.lt = data[4];
+    msg.rt = data[5];
+
+    msg.x1 = unpack::int16le(data+6);
+    msg.y1 = unpack::int16le(data+8);
+
+    msg.x2 = unpack::int16le(data+10);
+    msg.y2 = unpack::int16le(data+12);
+
+    msg.dummy2 = unpack::int32le(data+14);
+    msg.dummy3 = unpack::int16le(data+18);
+
     return true;
   }
   else

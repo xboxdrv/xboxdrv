@@ -23,6 +23,7 @@
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
+#include "unpack.hpp"
 #include "usb_helper.hpp"
 #include "xboxmsg.hpp"
 
@@ -134,7 +135,45 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
       { // Event message
         msg_out->type = XBOX_MSG_XBOX360;
-        memcpy(&msg_out->xbox360, data+4, sizeof(Xbox360Msg));
+        Xbox360Msg& msg = msg_out->xbox360;
+
+        uint8_t* ptr = data+4;
+
+        msg.type   = ptr[0];
+        msg.length = ptr[1];
+
+        msg.dpad_up    = unpack::bit(ptr+2, 0);
+        msg.dpad_down  = unpack::bit(ptr+2, 1);
+        msg.dpad_left  = unpack::bit(ptr+2, 2);
+        msg.dpad_right = unpack::bit(ptr+2, 3);
+
+        msg.start   = unpack::bit(ptr+2, 4);
+        msg.back    = unpack::bit(ptr+2, 5);
+        msg.thumb_l = unpack::bit(ptr+2, 6);
+        msg.thumb_r = unpack::bit(ptr+2, 7);
+
+        msg.lb     = unpack::bit(ptr+3, 0);
+        msg.rb     = unpack::bit(ptr+3, 1);
+        msg.guide  = unpack::bit(ptr+3, 2);
+        msg.dummy1 = unpack::bit(ptr+3, 3);
+
+        msg.a = unpack::bit(ptr+3, 4);
+        msg.b = unpack::bit(ptr+3, 5);
+        msg.x = unpack::bit(ptr+3, 6);
+        msg.y = unpack::bit(ptr+3, 7);
+
+        msg.lt = ptr[4];
+        msg.rt = ptr[5];
+
+        msg.x1 = unpack::int16le(ptr+6);
+        msg.y1 = unpack::int16le(ptr+8);
+
+        msg.x2 = unpack::int16le(ptr+10);
+        msg.y2 = unpack::int16le(ptr+12);
+
+        msg.dummy2 = unpack::int32le(ptr+14);
+        msg.dummy3 = unpack::int16le(ptr+18);
+
         return true;
       }
       else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
