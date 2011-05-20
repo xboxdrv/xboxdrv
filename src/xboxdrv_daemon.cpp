@@ -20,6 +20,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <fstream>
 #include <dbus/dbus-glib.h>
 #include <dbus/dbus-glib-lowlevel.h>
@@ -138,9 +139,13 @@ XboxdrvDaemon::run()
     UdevSubsystem udev_subsystem;
     udev_subsystem.set_device_callback(boost::bind(&XboxdrvDaemon::process_match, this, _1));
 
-    DBusSubsystem dbus_subsystem("org.seul.Xboxdrv");
-    dbus_subsystem.register_xboxdrv_daemon(this);
-    dbus_subsystem.register_controller_slots(m_controller_slots);
+    boost::scoped_ptr<DBusSubsystem> dbus_subsystem;
+    if (m_opts.dbus)
+    {
+      dbus_subsystem.reset(new DBusSubsystem("org.seul.Xboxdrv"));
+      dbus_subsystem->register_xboxdrv_daemon(this);
+      dbus_subsystem->register_controller_slots(m_controller_slots);
+    }
     
     log_debug("launching into main loop");
     g_main_loop_run(m_gmain);
