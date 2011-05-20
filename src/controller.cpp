@@ -25,6 +25,8 @@
 
 Controller::Controller() :
   m_msg_cb(),
+  m_disconnect_cb(),
+  m_is_disconnected(false),
   m_udev_device()
 {
 }
@@ -51,7 +53,7 @@ Controller::set_udev_device(udev_device* udev_dev)
 }
 
 void
-Controller::set_message_cb(boost::function<void(const XboxGenericMsg&)> msg_cb)
+Controller::set_message_cb(const boost::function<void(const XboxGenericMsg&)>& msg_cb)
 {
   m_msg_cb = msg_cb;
 }
@@ -60,6 +62,25 @@ udev_device*
 Controller::get_udev_device() const
 {
   return m_udev_device;
+}
+
+bool
+Controller::is_disconnected() const
+{
+  return m_is_disconnected;
+}
+
+void
+Controller::set_disconnect_cb(const boost::function<void ()>& callback)
+{
+  m_disconnect_cb = callback;
+}
+
+void
+Controller::send_disconnect()
+{
+  m_is_disconnected = true;
+  m_disconnect_cb();
 }
 
 /* EOF */

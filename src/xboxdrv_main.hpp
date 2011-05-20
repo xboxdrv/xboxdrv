@@ -71,6 +71,8 @@ private:
 
   static void on_sigint(int);
 
+  void on_controller_disconnect();
+
   void on_child_watch(GPid pid, gint status);
   static void on_child_watch_wrap(GPid pid, gint status, gpointer data) {
     static_cast<XboxdrvMain*>(data)->on_child_watch(pid, status);

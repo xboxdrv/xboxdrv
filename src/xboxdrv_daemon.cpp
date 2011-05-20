@@ -157,30 +157,6 @@ XboxdrvDaemon::run()
 }
 
 void
-XboxdrvDaemon::cleanup_threads()
-{
-  int count = 0;
-
-  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
-  {
-    if ((*i)->is_connected())
-    {
-      count += 1;
-      on_disconnect(*i);
-
-      // disconnect slot and put the controller back into the inactive group
-      m_inactive_controllers.push_back((*i)->disconnect());
-    }
-  }
-
-  if (count > 0)
-  {
-    log_info("cleaned up " << count << " thread(s), free slots: " <<
-             get_free_slot_count() << "/" << m_controller_slots.size());
-  }
-}
-
-void
 XboxdrvDaemon::process_match(struct udev_device* device)
 {
   // FIXME: bad place?!
@@ -291,56 +267,10 @@ bool
 XboxdrvDaemon::on_wakeup()
 {
   log_info("got a wakeup call");
-  cleanup_threads();
-  check_thread_status();
+
+  on_controller_disconnect();
+
   return false; // remove the registered idle callback
-}
-
-void
-XboxdrvDaemon::check_thread_status()
-{
-  // check for inactive controller and free the slots
-  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
-  {
-    // if a slot contains an inactive controller, disconnect it and save
-    // the controller for later when it might be active again
-    if ((*i)->get_controller() && !(*i)->get_controller()->is_active())
-    {
-      ControllerPtr controller = disconnect(*i);
-      m_inactive_controllers.push_back(controller);
-    }
-  }
-
-  // check for activated controller and connect them to a slot
-  for(Controllers::iterator i = m_inactive_controllers.begin(); i != m_inactive_controllers.end(); ++i)
-  {
-    if (!*i)
-    {
-      log_error("NULL in m_inactive_controllers, shouldn't happen");
-    }
-    else
-    {
-      if ((*i)->is_active())
-      {
-        ControllerSlotPtr slot = find_free_slot((*i)->get_udev_device());
-        if (!slot)
-        {
-          log_info("couldn't find a free slot for activated controller");
-        }
-        else
-        {
-          connect(slot, *i);
-
-          // successfully connected the controller, so set it to NULL and cleanup later
-          *i = ControllerPtr();
-        }
-      }
-    }
-  }
-
-  // cleanup inactive controller
-  m_inactive_controllers.erase(std::remove(m_inactive_controllers.begin(), m_inactive_controllers.end(), ControllerPtr()),
-                               m_inactive_controllers.end());
 }
 
 ControllerSlotPtr
@@ -396,6 +326,8 @@ XboxdrvDaemon::launch_controller_thread(udev_device* udev_dev,
         ++i)
     {
       ControllerPtr& controller = *i;
+
+      controller->set_disconnect_cb(boost::bind(&XboxdrvDaemon::wakeup, this));
 
       // FIXME: Little dirty hack
       controller->set_udev_device(udev_dev);
@@ -527,6 +459,24 @@ XboxdrvDaemon::on_disconnect(ControllerSlotPtr slot)
     args.push_back(controller->get_name());
     spawn_exe(args);
   }
+}
+
+void
+XboxdrvDaemon::on_controller_disconnect()
+{
+  // cleanup active controllers in slots
+  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+  {
+    if ((*i)->get_controller()->is_disconnected())
+    {
+      disconnect(*i); // discard the ControllerPtr
+    }
+  }
+
+  // cleanup inactive controllers
+  m_inactive_controllers.erase(std::remove_if(m_inactive_controllers.begin(), m_inactive_controllers.end(), 
+                                              boost::bind(&Controller::is_disconnected, _1)),
+                               m_inactive_controllers.end());
 }
 
 void

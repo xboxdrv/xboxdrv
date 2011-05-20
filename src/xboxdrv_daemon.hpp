@@ -68,20 +68,20 @@ private:
 
   ControllerSlotPtr find_free_slot(udev_device* dev);
 
-  void cleanup_threads();
   void process_match(struct udev_device* device);
   void print_info(struct udev_device* device);
   void launch_controller_thread(udev_device* dev,
                                 const XPadDevice& dev_type, 
                                 uint8_t busnum, uint8_t devnum);
   int get_free_slot_count() const;
-  void check_thread_status();
   
   void connect(ControllerSlotPtr slot, ControllerPtr controller);
   ControllerPtr disconnect(ControllerSlotPtr slot);
 
   void on_connect(ControllerSlotPtr slot);
   void on_disconnect(ControllerSlotPtr slot);
+
+  void on_controller_disconnect();
 
   void wakeup();
 

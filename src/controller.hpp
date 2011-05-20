@@ -30,8 +30,10 @@ struct XboxGenericMsg;
 
 class Controller
 {
-private:
+protected:
   boost::function<void (const XboxGenericMsg&)> m_msg_cb;
+  boost::function<void ()> m_disconnect_cb;
+  bool m_is_disconnected;
   udev_device* m_udev_device;
 
 public:
@@ -42,13 +44,17 @@ public:
   virtual void set_led(uint8_t status)   =0;
 
   virtual bool is_active() const { return true; }
-  virtual void set_activation_cb(const boost::function<void ()> callback) {}
+  virtual void set_activation_cb(const boost::function<void ()>& callback) {}
+
+  virtual bool is_disconnected() const;
+  virtual void set_disconnect_cb(const boost::function<void ()>& callback);
+  virtual void send_disconnect();
 
   virtual std::string get_usbpath() const { return "-1:-1"; }
   virtual std::string get_usbid() const   { return "-1:-1"; }
   virtual std::string get_name() const    { return "<not implemented>"; }
 
-  void set_message_cb(boost::function<void(const XboxGenericMsg&)> msg_cb);
+  void set_message_cb(const boost::function<void(const XboxGenericMsg&)>& msg_cb);
 
   void set_udev_device(udev_device* udev_dev);
   udev_device* get_udev_device() const;

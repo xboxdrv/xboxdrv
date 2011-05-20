@@ -24,6 +24,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <boost/format.hpp>
+#include <boost/bind.hpp>
 
 #include "controller_factory.hpp"
 #include "evdev_controller.hpp"
@@ -133,11 +134,18 @@ XboxdrvMain::init_controller(const ControllerPtr& controller)
 }
 
 void
+XboxdrvMain::on_controller_disconnect()
+{
+  shutdown();
+}
+
+void
 XboxdrvMain::run()
 {
   USBSubsystem usb_subsystem;
 
   ControllerPtr controller = create_controller();
+  controller->set_disconnect_cb(boost::bind(&XboxdrvMain::on_controller_disconnect, this));
   std::auto_ptr<MessageProcessor> message_proc;
   init_controller(controller);
      

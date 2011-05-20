@@ -78,6 +78,7 @@ USBController::USBController(libusb_device* dev) :
 
 USBController::~USBController()
 {
+  log_tmp("~USBController");
   libusb_close(m_handle);
 }
 
@@ -189,16 +190,20 @@ USBController::on_write_data(libusb_transfer* transfer)
 void
 USBController::usb_cancel_read()
 {
-  assert(m_read_transfer);
-  libusb_cancel_transfer(m_read_transfer);
-  libusb_free_transfer(m_read_transfer);
-  m_read_transfer = 0;
+  if (m_read_transfer)
+  {
+    libusb_cancel_transfer(m_read_transfer);
+    libusb_free_transfer(m_read_transfer);
+    m_read_transfer = 0;
+  }
 }
 
 void
-USBController::on_read_data(libusb_transfer *transfer)
+USBController::on_read_data(libusb_transfer* transfer)
 {
   assert(transfer);
+
+  // FIXME: check for LIBUSB_TRANSFER_COMPLETED
 
   // process data
   XboxGenericMsg msg;
@@ -215,11 +220,16 @@ USBController::on_read_data(libusb_transfer *transfer)
   {   
     int ret;
     ret = libusb_submit_transfer(transfer);
-    if (ret != LIBUSB_SUCCESS)
+    if (ret != LIBUSB_SUCCESS) // could also check for LIBUSB_ERROR_NO_DEVICE
     {
       log_error("failed to resubmit USB transfer: " << usb_strerror(ret));
+
+      assert(m_read_transfer == transfer);
+
       libusb_free_transfer(transfer);
-      // FIXME: must signal somebody that the controller is no longer usable
+      m_read_transfer = 0;
+
+      send_disconnect();
     }
   }
 }
