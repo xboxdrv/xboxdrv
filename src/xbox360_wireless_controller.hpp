@@ -30,14 +30,11 @@ struct XPadDevice;
 class Xbox360WirelessController : public USBController
 {
 private:
-  bool m_active;
   int  m_endpoint;
   int  m_interface;
   int  m_battery_status;
   std::string m_serial;
   int m_led_status;
-
-  boost::function<void ()> m_activation_cb;
 
 public:
   Xbox360WirelessController(libusb_device* dev, int controller_id, bool try_detach);
@@ -48,12 +45,7 @@ public:
   void set_rumble(uint8_t left, uint8_t right);
   void set_led(uint8_t status);
   uint8_t get_battery_status() const;
-  bool is_active() const { return m_active; }
-  void set_activation_cb(const boost::function<void ()> callback);
   
-private:
-  void set_active(bool v);
-
 private:
   Xbox360WirelessController (const Xbox360WirelessController&);
   Xbox360WirelessController& operator= (const Xbox360WirelessController&);

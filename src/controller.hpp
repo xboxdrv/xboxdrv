@@ -33,7 +33,9 @@ class Controller
 protected:
   boost::function<void (const XboxGenericMsg&)> m_msg_cb;
   boost::function<void ()> m_disconnect_cb;
+  boost::function<void ()> m_activation_cb;
   bool m_is_disconnected;
+  bool m_is_active;
   udev_device* m_udev_device;
 
 public:
@@ -43,9 +45,16 @@ public:
   virtual void set_rumble(uint8_t left, uint8_t right) =0;
   virtual void set_led(uint8_t status)   =0;
 
-  virtual bool is_active() const { return true; }
-  virtual void set_activation_cb(const boost::function<void ()>& callback) {}
+  /** Wireless Controller start out inactive when they are not synced
+      with their receiver and become active after the sync. Regular
+      USB controller are always active. Active controllers can become
+      inactive and vice versa. */
+  virtual bool is_active() const { return m_is_active; }
+  virtual void set_active(bool v);
+  virtual void set_activation_cb(const boost::function<void ()>& callback);
 
+  /** Controllers with a disconnect status have been unplugged and are
+      not coming back, thus the Controller object can be destroyed */
   virtual bool is_disconnected() const;
   virtual void set_disconnect_cb(const boost::function<void ()>& callback);
   virtual void send_disconnect();

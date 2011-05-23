@@ -30,14 +30,15 @@
 Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int controller_id, 
                                                      bool try_detach) :
   USBController(dev),
-  m_active(false),
   m_endpoint(),
   m_interface(),
   m_battery_status(),
   m_serial(),
-  m_led_status(0),
-  m_activation_cb()
+  m_led_status(0)
 {
+  // FIXME: A little bit of a hack
+  m_is_active = false;
+
   assert(controller_id >= 0 && controller_id < 4);
   
   // FIXME: Is hardcoding those ok?
@@ -198,26 +199,6 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
   }
 
   return false; 
-}
-
-void
-Xbox360WirelessController::set_active(bool v)
-{
-  if (m_active != v)
-  {
-    log_debug("activation status: " << v);
-    m_active = v;
-    if (m_activation_cb)
-    {
-      m_activation_cb();
-    }
-  }
-}
-
-void
-Xbox360WirelessController::set_activation_cb(const boost::function<void ()> callback)
-{
-  m_activation_cb = callback;
 }
 
 /* EOF */

@@ -268,16 +268,6 @@ XboxdrvDaemon::create_pid_file()
   }
 }
 
-bool
-XboxdrvDaemon::on_wakeup()
-{
-  log_info("got a wakeup call");
-
-  on_controller_disconnect();
-
-  return false; // remove the registered idle callback
-}
-
 ControllerSlotPtr
 XboxdrvDaemon::find_free_slot(udev_device* dev)
 {
@@ -332,7 +322,8 @@ XboxdrvDaemon::launch_controller_thread(udev_device* udev_dev,
     {
       ControllerPtr& controller = *i;
 
-      controller->set_disconnect_cb(boost::bind(&XboxdrvDaemon::wakeup, this));
+      controller->set_disconnect_cb(boost::bind(&g_idle_add, &XboxdrvDaemon::on_controller_disconnect_wrap, this));
+      controller->set_activation_cb(boost::bind(&g_idle_add, &XboxdrvDaemon::on_controller_activate_wrap, this));
 
       // FIXME: Little dirty hack
       controller->set_udev_device(udev_dev);
@@ -358,7 +349,6 @@ XboxdrvDaemon::launch_controller_thread(udev_device* udev_dev,
       }
       else // if (!controller->is_active())
       {
-        controller->set_activation_cb(boost::bind(&XboxdrvDaemon::wakeup, this));
         m_inactive_controllers.push_back(controller);
       }
     }
@@ -469,10 +459,12 @@ XboxdrvDaemon::on_disconnect(ControllerSlotPtr slot)
 void
 XboxdrvDaemon::on_controller_disconnect()
 {
+  log_tmp("on_controller_disconnect");
+
   // cleanup active controllers in slots
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
-    if ((*i)->get_controller()->is_disconnected())
+    if ((*i)->get_controller() && (*i)->get_controller()->is_disconnected())
     {
       disconnect(*i); // discard the ControllerPtr
     }
@@ -485,9 +477,12 @@ XboxdrvDaemon::on_controller_disconnect()
 }
 
 void
-XboxdrvDaemon::wakeup()
+XboxdrvDaemon::on_controller_activate()
 {
-  g_idle_add(&XboxdrvDaemon::on_wakeup_wrap, this);
+  log_tmp("on_controller_activate");
+
+  cleanup_threads();
+  check_thread_status();
 }
 
 std::string
@@ -539,6 +534,77 @@ void
 XboxdrvDaemon::on_sigint(int)
 {
   XboxdrvDaemon::current()->shutdown();
+}
+
+void
+XboxdrvDaemon::cleanup_threads()
+{
+  int count = 0;
+
+  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+  {
+    if ((*i)->is_connected())
+    {
+      count += 1;
+      on_disconnect(*i);
+
+      // disconnect slot and put the controller back into the inactive group
+      m_inactive_controllers.push_back((*i)->disconnect());
+    }
+  }
+
+  if (count > 0)
+  {
+    log_info("cleaned up " << count << " thread(s), free slots: " <<
+             get_free_slot_count() << "/" << m_controller_slots.size());
+  }
+}
+
+void
+XboxdrvDaemon::check_thread_status()
+{
+  // check for inactive controller and free the slots
+  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+  {
+    // if a slot contains an inactive controller, disconnect it and save
+    // the controller for later when it might be active again
+    if ((*i)->get_controller() && !(*i)->get_controller()->is_active())
+    {
+      ControllerPtr controller = disconnect(*i);
+      m_inactive_controllers.push_back(controller);
+    }
+  }
+
+  // check for activated controller and connect them to a slot
+  for(Controllers::iterator i = m_inactive_controllers.begin(); i != m_inactive_controllers.end(); ++i)
+  {
+    if (!*i)
+    {
+      log_error("NULL in m_inactive_controllers, shouldn't happen");
+    }
+    else
+    {
+      if ((*i)->is_active())
+      {
+        ControllerSlotPtr slot = find_free_slot((*i)->get_udev_device());
+        if (!slot)
+        {
+          log_info("couldn't find a free slot for activated controller");
+        }
+        else
+        {
+          connect(slot, *i);
+
+          // successfully connected the controller, so set it to NULL and cleanup later
+          *i = ControllerPtr();
+        }
+      }
+    }
+  }
+
+  // cleanup inactive controller
+  m_inactive_controllers.erase(std::remove(m_inactive_controllers.begin(), m_inactive_controllers.end(), ControllerPtr()),
+                               m_inactive_controllers.end());
 }
 
 /* EOF */

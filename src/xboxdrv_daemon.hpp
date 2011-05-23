@@ -82,13 +82,20 @@ private:
   void on_disconnect(ControllerSlotPtr slot);
 
   void on_controller_disconnect();
+  void on_controller_activate();
 
-  void wakeup();
+  void check_thread_status();
+  void cleanup_threads();
 
 private:
-  bool on_wakeup();
-  static gboolean on_wakeup_wrap(gpointer data) {
-    return static_cast<XboxdrvDaemon*>(data)->on_wakeup();    
+  static gboolean on_controller_disconnect_wrap(gpointer data) {
+    static_cast<XboxdrvDaemon*>(data)->on_controller_disconnect();
+    return false;
+  }
+
+  static gboolean on_controller_activate_wrap(gpointer data) {
+    static_cast<XboxdrvDaemon*>(data)->on_controller_activate();
+    return false;
   }
 
 private:

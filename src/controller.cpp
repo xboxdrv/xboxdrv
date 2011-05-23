@@ -26,7 +26,9 @@
 Controller::Controller() :
   m_msg_cb(),
   m_disconnect_cb(),
+  m_activation_cb(),
   m_is_disconnected(false),
+  m_is_active(true),
   m_udev_device()
 {
 }
@@ -62,6 +64,26 @@ udev_device*
 Controller::get_udev_device() const
 {
   return m_udev_device;
+}
+
+void
+Controller::set_active(bool v)
+{
+  if (m_is_active != v)
+  {
+    log_debug("activation status: " << v << " " << m_activation_cb);
+    m_is_active = v;
+    if (m_activation_cb)
+    {
+      m_activation_cb();
+    }
+  }
+}
+
+void
+Controller::set_activation_cb(const boost::function<void ()>& callback)
+{
+  m_activation_cb = callback;
 }
 
 bool
