@@ -84,9 +84,6 @@ private:
   void on_controller_disconnect();
   void on_controller_activate();
 
-  void check_thread_status();
-  void cleanup_threads();
-
 private:
   static gboolean on_controller_disconnect_wrap(gpointer data) {
     static_cast<XboxdrvDaemon*>(data)->on_controller_disconnect();
