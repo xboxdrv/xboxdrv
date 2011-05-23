@@ -67,6 +67,9 @@ USBGSource::~USBGSource()
 {
   // get rid of the callbacks as they will be triggered by libusb_exit()
   libusb_set_pollfd_notifiers(NULL, NULL, NULL, NULL);
+  
+  // get rid of the GSource created in the constructor
+  g_source_unref(reinterpret_cast<GSource*>(m_source));
 }
 
 void
