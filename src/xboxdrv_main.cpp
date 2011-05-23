@@ -50,7 +50,8 @@ XboxdrvMain::XboxdrvMain(const Options& opts) :
   m_jsdev_number(),
   m_evdev_number(),
   m_use_libusb(false),
-  m_dev_type()
+  m_dev_type(),
+  m_controller()
 {
   assert(!s_current);
   s_current = this;
@@ -144,10 +145,10 @@ XboxdrvMain::run()
 {
   USBSubsystem usb_subsystem;
 
-  ControllerPtr controller = create_controller();
-  controller->set_disconnect_cb(boost::bind(&XboxdrvMain::on_controller_disconnect, this));
+  m_controller = create_controller();
+  m_controller->set_disconnect_cb(boost::bind(&XboxdrvMain::on_controller_disconnect, this));
   std::auto_ptr<MessageProcessor> message_proc;
-  init_controller(controller);
+  init_controller(m_controller);
      
   if (m_opts.instant_exit)
   {
@@ -201,7 +202,7 @@ XboxdrvMain::run()
     }
 
     {
-      ControllerThread thread(controller, message_proc, m_opts);
+      ControllerThread thread(m_controller, message_proc, m_opts);
       log_debug("launching thread");
       
       pid_t pid = 0;
@@ -213,6 +214,8 @@ XboxdrvMain::run()
 
       log_debug("launching main loop");
       g_main_loop_run(m_gmain);
+
+      m_controller.reset();
     }
 
     if (!m_opts.quiet)
@@ -256,6 +259,15 @@ void
 XboxdrvMain::shutdown()
 {
   log_info("shutdown requested");
+
+  if (!m_controller->is_disconnected())
+  {
+    m_controller->set_led(0);
+
+    // give the LED message a few msec to reach the controller
+    g_usleep(10 * 1000); // FIXME: what is a good time to wait?
+  }
+
   g_main_loop_quit(m_gmain);
 }
 

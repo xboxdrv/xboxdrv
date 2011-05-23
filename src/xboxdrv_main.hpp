@@ -53,6 +53,8 @@ private:
 
   XPadDevice m_dev_type;
 
+  ControllerPtr m_controller;
+
 public:
   XboxdrvMain(const Options& opts);
   ~XboxdrvMain();

@@ -567,6 +567,18 @@ XboxdrvDaemon::status()
 void
 XboxdrvDaemon::shutdown()
 {
+  for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
+  {
+    if ((*i)->get_controller() && 
+        !(*i)->get_controller()->is_disconnected())
+    {
+      (*i)->get_controller()->set_led(0);
+    }
+  }
+  
+  // give the LED message a few msec to reach the controller
+  g_usleep(10 * 1000); // FIXME: what is a good time to wait?
+
   assert(m_gmain);
   g_main_loop_quit(m_gmain);
 }
