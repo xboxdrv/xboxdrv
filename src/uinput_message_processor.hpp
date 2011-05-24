@@ -36,6 +36,7 @@ private:
   XboxButton m_config_toggle_button;
 
   int m_rumble_gain;
+  bool m_rumble_test;
   boost::function<void (uint8_t, uint8_t)> m_rumble_callback;
 
 public:
