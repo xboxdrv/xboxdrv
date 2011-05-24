@@ -45,7 +45,7 @@ public:
     kDebug,
 
     /** temporary extra verbose debugging messages */
-    kTmp
+    kTemp
   };
 
 private:
@@ -104,7 +104,7 @@ public:
 #define log_tmp_trace() do { \
     std::ostringstream x6ac1c382; \
     x6ac1c382 << log_pretty_print(__PRETTY_FUNCTION__); \
-    g_logger.append_unchecked(Logger::kDebug, x6ac1c382.str()); \
+    g_logger.append_unchecked(Logger::kTemp, x6ac1c382.str()); \
 } while(false)
 
 /** Write an debug message, while ignoring the log level. Use for
@@ -113,7 +113,7 @@ public:
 #define log_tmp(text) do { \
     std::ostringstream x6ac1c382; \
     x6ac1c382 << log_pretty_print(__PRETTY_FUNCTION__) << ": " << text; \
-    g_logger.append_unchecked(Logger::kDebug, x6ac1c382.str()); \
+    g_logger.append_unchecked(Logger::kTemp, x6ac1c382.str()); \
 } while(false)
 
 extern Logger g_logger;
