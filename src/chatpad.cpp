@@ -120,11 +120,23 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
 
   send_command();
 
-  usb_submit_read(6, 32);
+  if (m_bcdDevice == 0x0110)
+  {
+    usb_submit_read(6, 32);
+  }
+  else if (m_bcdDevice == 0x0114)
+  {
+    usb_submit_read(4, 32);
+  }
 }
 
 Chatpad::~Chatpad()
 {
+  if (m_read_transfer)
+  {
+    libusb_cancel_transfer(m_read_transfer);
+    libusb_free_transfer(m_read_transfer);
+  }
 }
 
 void
