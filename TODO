@@ -5,6 +5,8 @@ Pre Release Testing:
 
 * make sure that all changes are in git
 
+* remove log_tmp()
+
 VERSION="$(cat VERSION)"
 TAG="v${VERSION}"
 git tag -s  "${TAG}" -m "xboxdrv ${TAG}" 
@@ -57,20 +59,29 @@ Stuff to do before 0.8.0 release:
 Checklist
 =========
 
-* make code endian clean:
+* there is a long delay in processing rumble messages
+
+* -r 128,128 --quit doesn't work:
+
+[TEMP]  USBController::~USBController(): ~USBController
+libusb:warning [libusb_close] internal signalling write failed, closing anyway
+
+* chatpad doesn't get a 0x1b signal when its connected after xboxdrv
+  is already running
+
+* active wireless controller aren't detected on startup of the daemon,
+  only they have send an event, any way to get activity status of the thing?
+
+* make code endian clean (done for main Xbox controller, not for the rest):
 
   unpack_uint16(char* ptr, int offset);
   unpack_sint16();
   unpack_uint32();
   unpack_sint32();
 
-* chatpad needs variable endpoint/interface
-
-* chatpad init code doesn't distingush between two chatpads
-
 * print which sub features are enabled: chatpad, force feedback, headset
 
-* make dbus optional
+* make dbus optional, make --no-dbus an alias for --dbus NONE
 
 * check force feedback
 
@@ -124,8 +135,6 @@ Aborted
 Stuff
 =====
 
-* add LD_PRELOAD joystick override hack to running xboxdrv with an app.exe
-
 * realtime pirority currently disabled
 
   if (opts.priority == Options::kPriorityRealtime)
@@ -160,8 +169,18 @@ Stuff
   }
 
 
-Stuff to do before 0.7.4 release:
+Stuff to do before 0.8.x release:
 =================================
+
+* add LD_PRELOAD joystick override hack to running xboxdrv with an app.exe
+
+* change response curve syntax to allow defining two values for the
+  same point, one for the left one for the right to allow hard jumps
+  or allow giving x,y coordinates to have points net evenly spaced out, maybe both
+
+* add expression modifier:
+
+  --modifier X1^expr=V*6+1<<2
 
 * old udev errors:
 
@@ -200,7 +219,7 @@ make: *** [xboxdrv] Error 2
 
 * space is currently illegal, but shouldn't be "GUIDE = KEY_LEFTALT + KEY_E" 
 
-* write macro that calibrates the joystick for does games
+* write macro that calibrates the joystick for DOS games
 
 * extra-devices adds a button when one only uses JS_0 buttons, shouldn't happen
 
@@ -237,6 +256,10 @@ Autolaunch error: X11 initialization failed." failed to open connection to bus: 
 * do something with stdout/stderr when its run in --detach mode
 
 == Other ==
+
+* add a way to refresh/reshuffle controller asignment with xboxdrvctrl
+  (i.e. having two controller and unplugging the first won't reassign
+  the second to the first slot, that should be available on request)
 
 * button presses are lost even with "--priority realtime" for the wireless controller
 

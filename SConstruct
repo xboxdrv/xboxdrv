@@ -101,6 +101,7 @@ if 'BUILD' in env and env['BUILD'] == 'development':
                             "-Werror",
                             "-Wnon-virtual-dtor",
                             "-Weffc++",
+                            # "-Wunreachable-code",
                             # "-Wconversion",
                             "-Wold-style-cast",
                             "-Wshadow",
