@@ -194,8 +194,8 @@ Chatpad::on_read_data(libusb_transfer* transfer)
   }
   else
   {
-    log_tmp("chatpad data: " << usb_transfer_strerror(transfer->status) << " "
-            << raw2str(transfer->buffer, transfer->actual_length));
+    //log_tmp("chatpad data: " << usb_transfer_strerror(transfer->status) << " "
+    //        << raw2str(transfer->buffer, transfer->actual_length));
     
     if (transfer->actual_length == 5 && transfer->buffer[0] == 0x00)
     {
@@ -299,10 +299,10 @@ Chatpad::send_command()
 void
 Chatpad::on_control(libusb_transfer* transfer)
 {
-  log_tmp(m_init_state << " " << usb_transfer_strerror(transfer->status) << " len: " << transfer->actual_length);
+  //log_tmp(m_init_state << " " << usb_transfer_strerror(transfer->status) << " len: " << transfer->actual_length);
   if (transfer->actual_length != 0)
   {
-    log_tmp(" PAYLOAD: " << raw2str(transfer->buffer, transfer->actual_length));
+    //log_tmp(" PAYLOAD: " << raw2str(transfer->buffer, transfer->actual_length));
   }
 
   switch(m_init_state)

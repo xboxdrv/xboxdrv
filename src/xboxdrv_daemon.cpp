@@ -459,7 +459,7 @@ XboxdrvDaemon::on_disconnect(ControllerSlotPtr slot)
 void
 XboxdrvDaemon::on_controller_disconnect()
 {
-  log_tmp("on_controller_disconnect");
+  //log_tmp("on_controller_disconnect");
 
   // cleanup active controllers in slots
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
@@ -479,7 +479,7 @@ XboxdrvDaemon::on_controller_disconnect()
 void
 XboxdrvDaemon::on_controller_activate()
 {
-  log_tmp("on_controller_activate");
+  //log_tmp("on_controller_activate");
    
   // check for inactive controller and free the slots
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)

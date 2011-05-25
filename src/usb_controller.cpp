@@ -78,7 +78,7 @@ USBController::USBController(libusb_device* dev) :
 
 USBController::~USBController()
 {
-  log_tmp("~USBController");
+  //log_tmp("~USBController");
   libusb_close(m_handle);
 }
 
