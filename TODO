@@ -3,7 +3,9 @@ Pre Release Testing:
 
 * check the version number
 
-* make sure that all changes are in git
+* update NEWS
+
+* check git status
 
 * remove log_tmp()
 
