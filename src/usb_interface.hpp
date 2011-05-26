@@ -35,7 +35,7 @@ private:
   Endpoints m_endpoints;
 
 public:
-  USBInterface(libusb_device_handle* handle, int interface);
+  USBInterface(libusb_device_handle* handle, int interface, bool try_detach = false);
   ~USBInterface();
 
   void submit_read(int endpoint, int len, 

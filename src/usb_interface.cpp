@@ -53,13 +53,36 @@ private:
   USBWriteCallback& operator=(const USBWriteCallback&);
 };
 
-USBInterface::USBInterface(libusb_device_handle* handle, int interface) :
+USBInterface::USBInterface(libusb_device_handle* handle, int interface, bool try_detach) :
   m_handle(handle),
   m_interface(interface),
   m_endpoints()
 {
   int ret = libusb_claim_interface(handle, m_interface);
-  if (ret != LIBUSB_SUCCESS)
+  if (ret == LIBUSB_SUCCESS)
+  {
+    // success
+  }
+  else if (ret == LIBUSB_ERROR_BUSY && try_detach)
+  {
+    // try to detach and then try to reopen
+    ret = libusb_detach_kernel_driver(handle, interface);
+    if (ret != LIBUSB_SUCCESS)
+    {
+      raise_exception(std::runtime_error, "error detaching kernel driver: "
+                      << interface << ": " << usb_strerror(ret));
+    }
+    else
+    {
+      // kernel driver detached, try to claim it again
+      ret = libusb_claim_interface(handle, interface);
+      if (ret != LIBUSB_SUCCESS)
+      {
+        raise_exception(std::runtime_error, "error claiming interface: " << interface << ": " << usb_strerror(ret));
+      }
+    }
+  }
+  else
   {
     raise_exception(std::runtime_error, "error claiming interface: " << interface << ": " << usb_strerror(ret));
   }
