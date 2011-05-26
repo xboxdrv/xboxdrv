@@ -92,14 +92,14 @@ AxismapModifier::update(int msec_delta, XboxGenericMsg& msg)
   // clear all lhs values in the newmsg, keep rhs
   for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
-    set_axis_float(newmsg, i->lhs, 0);
+    newmsg.set_axis_float(i->lhs, 0);
   }
 
   for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
     int min = get_axis_min(i->lhs);
     int max = get_axis_max(i->lhs);
-    int value = get_axis(msg, i->lhs);
+    int value = msg.get_axis(i->lhs);
 
     if (i->invert)
     {
@@ -116,15 +116,15 @@ AxismapModifier::update(int msec_delta, XboxGenericMsg& msg)
 
     if (i->lhs == i->rhs)
     {
-      set_axis_float(newmsg, i->rhs, lhs);
+      newmsg.set_axis_float(i->rhs, lhs);
     }
     else
     {
       // FIXME: this primitive merge kind of works for regular axis,
       // but doesn't work for half axis which have their center at
       // -1.0f
-      float rhs = get_axis_float(newmsg, i->rhs);
-      set_axis_float(newmsg, i->rhs, Math::clamp(-1.0f, lhs + rhs, 1.0f));
+      float rhs = newmsg.get_axis_float(i->rhs);
+      newmsg.set_axis_float(i->rhs, Math::clamp(-1.0f, lhs + rhs, 1.0f));
     }
   }
   msg = newmsg;

@@ -48,17 +48,17 @@ UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
 
     if (m_rumble_test)
     {
-      log_debug("rumble: " << get_axis(msg, XBOX_AXIS_LT) << " " << get_axis(msg, XBOX_AXIS_RT));
+      log_debug("rumble: " << msg.get_axis(XBOX_AXIS_LT) << " " << msg.get_axis(XBOX_AXIS_RT));
 
-      set_rumble(get_axis(msg, XBOX_AXIS_LT), 
-                 get_axis(msg, XBOX_AXIS_RT));
+      set_rumble(msg.get_axis(XBOX_AXIS_LT), 
+                 msg.get_axis(XBOX_AXIS_RT));
     }
 
     // handling switching of configurations
     if (m_config_toggle_button != XBOX_BTN_UNKNOWN)
     {
-      bool last = get_button(m_oldmsg, m_config_toggle_button);
-      bool cur  = get_button(msg, m_config_toggle_button);
+      bool last = m_oldmsg.get_button(m_config_toggle_button);
+      bool cur  = msg.get_button(m_config_toggle_button);
 
       if (cur && cur != last)
       {

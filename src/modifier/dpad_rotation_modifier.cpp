@@ -54,10 +54,10 @@ DpadRotationModifier::DpadRotationModifier(int dpad_rotation) :
 void
 DpadRotationModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
-  int up    = get_button(msg, XBOX_DPAD_UP);
-  int down  = get_button(msg, XBOX_DPAD_DOWN);
-  int left  = get_button(msg, XBOX_DPAD_LEFT);
-  int right = get_button(msg, XBOX_DPAD_RIGHT);
+  int up    = msg.get_button(XBOX_DPAD_UP);
+  int down  = msg.get_button(XBOX_DPAD_DOWN);
+  int left  = msg.get_button(XBOX_DPAD_LEFT);
+  int right = msg.get_button(XBOX_DPAD_RIGHT);
 
   // -1: not pressed, 0: up, 1: up/right, ...
   int direction = -1;
@@ -102,48 +102,48 @@ DpadRotationModifier::update(int msec_delta, XboxGenericMsg& msg)
       direction += 8;
 
     // set everything to zero
-    set_button(msg, XBOX_DPAD_UP,    0);
-    set_button(msg, XBOX_DPAD_DOWN,  0);
-    set_button(msg, XBOX_DPAD_LEFT,  0);
-    set_button(msg, XBOX_DPAD_RIGHT, 0);
+    msg.set_button(XBOX_DPAD_UP,    0);
+    msg.set_button(XBOX_DPAD_DOWN,  0);
+    msg.set_button(XBOX_DPAD_LEFT,  0);
+    msg.set_button(XBOX_DPAD_RIGHT, 0);
 
     // apply the given direction
     switch(direction)
     {
       case 0:
-        set_button(msg, XBOX_DPAD_UP, 1);
+        msg.set_button(XBOX_DPAD_UP, 1);
         break;
 
       case 1:
-        set_button(msg, XBOX_DPAD_UP, 1);
-        set_button(msg, XBOX_DPAD_RIGHT, 1);
+        msg.set_button(XBOX_DPAD_UP, 1);
+        msg.set_button(XBOX_DPAD_RIGHT, 1);
         break;
 
       case 2:
-        set_button(msg, XBOX_DPAD_RIGHT, 1);
+        msg.set_button(XBOX_DPAD_RIGHT, 1);
         break;
 
       case 3:
-        set_button(msg, XBOX_DPAD_RIGHT, 1);
-        set_button(msg, XBOX_DPAD_DOWN, 1);
+        msg.set_button(XBOX_DPAD_RIGHT, 1);
+        msg.set_button(XBOX_DPAD_DOWN, 1);
         break;
 
       case 4:
-        set_button(msg, XBOX_DPAD_DOWN, 1);
+        msg.set_button(XBOX_DPAD_DOWN, 1);
         break;
 
       case 5:
-        set_button(msg, XBOX_DPAD_DOWN, 1);
-        set_button(msg, XBOX_DPAD_LEFT, 1);
+        msg.set_button(XBOX_DPAD_DOWN, 1);
+        msg.set_button(XBOX_DPAD_LEFT, 1);
         break;
 
       case 6:
-        set_button(msg, XBOX_DPAD_LEFT, 1);
+        msg.set_button(XBOX_DPAD_LEFT, 1);
         break;
 
       case 7:
-        set_button(msg, XBOX_DPAD_UP, 1);
-        set_button(msg, XBOX_DPAD_LEFT, 1);
+        msg.set_button(XBOX_DPAD_UP, 1);
+        msg.set_button(XBOX_DPAD_LEFT, 1);
         break;
     }
   }

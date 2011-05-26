@@ -209,22 +209,6 @@ struct Playstation3USBMsg
   unsigned int rot_z :16; // very low res (3 or 4 bits), neutral at 5 or 6
 } __attribute__((__packed__));
 
-struct XboxGenericMsg
-{
-  XboxMsgType type;
-  union {
-    struct Xbox360Msg xbox360;
-    struct XboxMsg    xbox;
-    struct Playstation3USBMsg ps3usb;
-  };
-};
-
-std::ostream& operator<<(std::ostream& out, const GamepadType& type);
-std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg);
-std::ostream& operator<<(std::ostream& out, const XboxMsg& msg);
-std::ostream& operator<<(std::ostream& out, const Playstation3USBMsg& msg);
-std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg);
-
 enum XboxButton {
   XBOX_BTN_UNKNOWN,
   XBOX_BTN_START,
@@ -280,14 +264,35 @@ enum XboxAxis {
 
   XBOX_AXIS_MAX
 };
+
+class XboxGenericMsg
+{
+public:
+  XboxMsgType type;
 
-int  get_button(XboxGenericMsg& msg, XboxButton button);
-void set_button(XboxGenericMsg& msg, XboxButton button, bool v);
-int  get_axis(XboxGenericMsg& msg, XboxAxis axis);
-void set_axis(XboxGenericMsg& msg, XboxAxis axis, int v);
-float get_axis_float(XboxGenericMsg& msg, XboxAxis axis);
-void  set_axis_float(XboxGenericMsg& msg, XboxAxis axis, float v);
+  struct Xbox360Msg xbox360;
+  struct XboxMsg    xbox;
+  struct Playstation3USBMsg ps3usb;
 
+public:
+  XboxGenericMsg();
+  
+  int  get_button(XboxButton button) const;
+  void set_button(XboxButton button, bool v);
+
+  int  get_axis(XboxAxis axis) const;
+  void set_axis(XboxAxis axis, int v);
+
+  float get_axis_float(XboxAxis axis) const;
+  void  set_axis_float(XboxAxis axis, float v);
+};
+
+std::ostream& operator<<(std::ostream& out, const GamepadType& type);
+std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg);
+std::ostream& operator<<(std::ostream& out, const XboxMsg& msg);
+std::ostream& operator<<(std::ostream& out, const Playstation3USBMsg& msg);
+std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg);
+
 XboxButton string2btn(const std::string& str_);
 XboxAxis   string2axis(const std::string& str_);
 std::string btn2string(XboxButton btn);

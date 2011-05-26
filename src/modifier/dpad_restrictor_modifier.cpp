@@ -63,28 +63,28 @@ DpadRestrictorModifier::update(int msec_delta, XboxGenericMsg& msg)
   switch(m_mode)
   {
     case kRestrictFourWay:
-      if (get_axis(msg, XBOX_AXIS_DPAD_X) && get_axis(msg, XBOX_AXIS_DPAD_Y))
+      if (msg.get_axis(XBOX_AXIS_DPAD_X) && msg.get_axis(XBOX_AXIS_DPAD_Y))
       { 
         // a diagonal was pressed, thus we reset the axis that wasn't
         // pressed the last time the dpad was touched
-        set_axis(msg, m_last_unpressed_axis, 0);
+        msg.set_axis(m_last_unpressed_axis, 0);
       }
-      else if (get_axis(msg, XBOX_AXIS_DPAD_X))
+      else if (msg.get_axis(XBOX_AXIS_DPAD_X))
       {
         m_last_unpressed_axis = XBOX_AXIS_DPAD_Y;
       }
-      else if (get_axis(msg, XBOX_AXIS_DPAD_Y))
+      else if (msg.get_axis(XBOX_AXIS_DPAD_Y))
       {
         m_last_unpressed_axis = XBOX_AXIS_DPAD_X;
       }
       break;
 
     case kRestrictXAxis:
-      set_axis(msg, XBOX_AXIS_DPAD_Y, 0);
+      msg.set_axis(XBOX_AXIS_DPAD_Y, 0);
       break;
 
     case kRestrictYAxis:
-      set_axis(msg, XBOX_AXIS_DPAD_X, 0);
+      msg.set_axis(XBOX_AXIS_DPAD_X, 0);
       break;
   }
 }

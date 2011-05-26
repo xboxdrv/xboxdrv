@@ -71,13 +71,13 @@ SquareAxisModifier::SquareAxisModifier(XboxAxis xaxis, XboxAxis yaxis) :
 void
 SquareAxisModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
-  int x = get_axis(msg, m_xaxis);
-  int y = get_axis(msg, m_yaxis);
+  int x = msg.get_axis(m_xaxis);
+  int y = msg.get_axis(m_yaxis);
 
   squarify_axis(x, y);
 
-  set_axis(msg, m_xaxis, x);
-  set_axis(msg, m_yaxis, y);
+  msg.set_axis(m_xaxis, x);
+  msg.set_axis(m_yaxis, y);
 }
 
 std::string

@@ -49,8 +49,8 @@ RotateAxisModifier::RotateAxisModifier(XboxAxis xaxis, XboxAxis yaxis, float ang
 void
 RotateAxisModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
-  float x = get_axis_float(msg, m_xaxis);
-  float y = get_axis_float(msg, m_yaxis);
+  float x = msg.get_axis_float(m_xaxis);
+  float y = msg.get_axis_float(m_yaxis);
 
   if (m_mirror)
   {
@@ -60,8 +60,8 @@ RotateAxisModifier::update(int msec_delta, XboxGenericMsg& msg)
   float length = sqrtf(x*x + y*y);
   float angle = atan2f(y, x) + m_angle;
 
-  set_axis_float(msg, m_xaxis, cos(angle) * length);
-  set_axis_float(msg, m_yaxis, sin(angle) * length);
+  msg.set_axis_float(m_xaxis, cos(angle) * length);
+  msg.set_axis_float(m_yaxis, sin(angle) * length);
 }
 
 std::string

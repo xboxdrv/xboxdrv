@@ -202,7 +202,7 @@ EvdevController::parse(const struct input_event& ev, XboxGenericMsg& msg_inout) 
         KeyMap::const_iterator it = m_keymap.find(ev.code);
         if (it != m_keymap.end())
         {
-          set_button(msg_inout, it->second, ev.value);
+          msg_inout.set_button(it->second, ev.value);
           return true;
         }
         else
