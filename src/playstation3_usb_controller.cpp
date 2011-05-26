@@ -42,13 +42,13 @@ Playstation3USBController::~Playstation3USBController()
 }
 
 void
-Playstation3USBController::set_rumble(uint8_t left, uint8_t right)
+Playstation3USBController::set_rumble_real(uint8_t left, uint8_t right)
 {
   // not implemented
 }
 
 void
-Playstation3USBController::set_led(uint8_t status)
+Playstation3USBController::set_led_real(uint8_t status)
 {
   // not implemented
 }

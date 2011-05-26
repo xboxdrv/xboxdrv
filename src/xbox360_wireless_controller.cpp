@@ -33,8 +33,7 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   m_endpoint(),
   m_interface(),
   m_battery_status(),
-  m_serial(),
-  m_led_status(0)
+  m_serial()
 {
   // FIXME: A little bit of a hack
   m_is_active = false;
@@ -56,7 +55,7 @@ Xbox360WirelessController::~Xbox360WirelessController()
 }
 
 void
-Xbox360WirelessController::set_rumble(uint8_t left, uint8_t right)
+Xbox360WirelessController::set_rumble_real(uint8_t left, uint8_t right)
 {
   //                                       +-- typo? might be 0x0c, i.e. length
   //                                       v
@@ -65,9 +64,8 @@ Xbox360WirelessController::set_rumble(uint8_t left, uint8_t right)
 }
 
 void
-Xbox360WirelessController::set_led(uint8_t status)
+Xbox360WirelessController::set_led_real(uint8_t status)
 {
-  m_led_status = status;
   //                                +--- Why not just status?
   //                                v
   uint8_t ledcmd[] = { 0x00, 0x00, 0x08, 0x40 + (status % 0x0e), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -98,7 +96,7 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       else if (data[1] == 0x80) 
       {
         log_info("connection status: controller connected");
-        set_led(m_led_status);
+        set_led(get_led());
         set_active(true);
       } 
       else if (data[1] == 0x40) 
@@ -108,7 +106,7 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       else if (data[1] == 0xc0) 
       {
         log_info("Connection status: controller and headset connected");
-        set_led(m_led_status);
+        set_led(get_led());
       }
       else
       {

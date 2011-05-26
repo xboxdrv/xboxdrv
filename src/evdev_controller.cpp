@@ -150,13 +150,13 @@ EvdevController::~EvdevController()
 }
 
 void
-EvdevController::set_rumble(uint8_t left, uint8_t right)
+EvdevController::set_rumble_real(uint8_t left, uint8_t right)
 {
   // not implemented
 }
 
 void
-EvdevController::set_led(uint8_t status)
+EvdevController::set_led_real(uint8_t status)
 {
   // not implemented
 }

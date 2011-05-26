@@ -34,7 +34,6 @@ private:
   int  m_interface;
   int  m_battery_status;
   std::string m_serial;
-  int m_led_status;
 
 public:
   Xbox360WirelessController(libusb_device* dev, int controller_id, bool try_detach);
@@ -42,8 +41,8 @@ public:
 
   bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out);
 
-  void set_rumble(uint8_t left, uint8_t right);
-  void set_led(uint8_t status);
+  void set_rumble_real(uint8_t left, uint8_t right);
+  void set_led_real(uint8_t status);
   uint8_t get_battery_status() const;
   
 private:

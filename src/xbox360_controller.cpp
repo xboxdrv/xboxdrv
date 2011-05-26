@@ -38,7 +38,9 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
   endpoint_in(1),
   endpoint_out(2),
   m_chatpad(),
-  m_headset()
+  m_headset(),
+  m_rumble_left(0),
+  m_rumble_right(0)
 {
   // find endpoints
   endpoint_in  = usb_find_ep(LIBUSB_ENDPOINT_IN,  LIBUSB_CLASS_VENDOR_SPEC, 93, 1);
@@ -89,14 +91,14 @@ Xbox360Controller::~Xbox360Controller()
 }
 
 void
-Xbox360Controller::set_rumble(uint8_t left, uint8_t right)
+Xbox360Controller::set_rumble_real(uint8_t left, uint8_t right)
 {
   uint8_t rumblecmd[] = { 0x00, 0x08, 0x00, left, right, 0x00, 0x00, 0x00 };
   usb_write(endpoint_out, rumblecmd, sizeof(rumblecmd));
 }
 
 void
-Xbox360Controller::set_led(uint8_t status)
+Xbox360Controller::set_led_real(uint8_t status)
 {
   uint8_t ledcmd[] = { 0x01, 0x03, status }; 
   usb_write(endpoint_out, ledcmd, sizeof(ledcmd));

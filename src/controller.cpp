@@ -29,7 +29,10 @@ Controller::Controller() :
   m_activation_cb(),
   m_is_disconnected(false),
   m_is_active(true),
-  m_udev_device()
+  m_udev_device(),
+  m_led_status(0),
+  m_rumble_left(0),
+  m_rumble_right(0)
 {
 }
 
@@ -44,6 +47,30 @@ Controller::submit_msg(const XboxGenericMsg& msg)
   if (m_msg_cb)
   {
     m_msg_cb(msg);
+  }
+}
+
+void
+Controller::set_rumble(uint8_t left, uint8_t right)
+{
+  if (m_rumble_left  != left ||
+      m_rumble_right != right)
+  {
+    m_rumble_left  = left;
+    m_rumble_right = right;
+
+    set_rumble_real(m_rumble_left, m_rumble_right);
+  }
+}
+
+void
+Controller::set_led(uint8_t status)
+{
+  if (m_led_status != status)
+  {
+    m_led_status = status;
+    
+    set_led_real(m_led_status);
   }
 }
 

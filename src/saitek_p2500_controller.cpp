@@ -71,13 +71,13 @@ SaitekP2500Controller::~SaitekP2500Controller()
 }
 
 void
-SaitekP2500Controller::set_rumble(uint8_t left, uint8_t right)
+SaitekP2500Controller::set_rumble_real(uint8_t left, uint8_t right)
 {
   // not supported
 }
 
 void
-SaitekP2500Controller::set_led(uint8_t status)
+SaitekP2500Controller::set_led_real(uint8_t status)
 {
   // not supported
 }

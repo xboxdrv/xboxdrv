@@ -38,12 +38,21 @@ protected:
   bool m_is_active;
   udev_device* m_udev_device;
 
+  uint8_t m_led_status;
+  uint8_t m_rumble_left;
+  uint8_t m_rumble_right;
+
 public:
   Controller();
   virtual ~Controller();
 
-  virtual void set_rumble(uint8_t left, uint8_t right) =0;
-  virtual void set_led(uint8_t status)   =0;
+  void set_rumble(uint8_t left, uint8_t right);
+
+  uint8_t get_led() const { return m_led_status; }
+  void set_led(uint8_t status);
+
+  virtual void set_rumble_real(uint8_t left, uint8_t right) =0;
+  virtual void set_led_real(uint8_t status) =0;
 
   /** Wireless Controller start out inactive when they are not synced
       with their receiver and become active after the sync. Regular

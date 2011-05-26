@@ -58,8 +58,8 @@ public:
                   bool debug);
   ~EvdevController();
 
-  void set_rumble(uint8_t left, uint8_t right);
-  void set_led(uint8_t status);
+  void set_rumble_real(uint8_t left, uint8_t right);
+  void set_led_real(uint8_t status);
 
   /** @param timeout   timeout in msec, 0 means forever */
   bool read(XboxGenericMsg& msg, int timeout);

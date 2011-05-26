@@ -27,15 +27,13 @@ class FirestormDualController : public USBController
 {
 private:
   bool is_vsb;
-  int left_rumble;
-  int right_rumble;
 
 public:
   FirestormDualController(libusb_device* dev, bool is_vsb, bool try_detach);
   ~FirestormDualController();
 
-  void set_rumble(uint8_t left, uint8_t right);
-  void set_led(uint8_t status);
+  void set_rumble_real(uint8_t left, uint8_t right);
+  void set_led_real(uint8_t status);
 
   bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out);
 

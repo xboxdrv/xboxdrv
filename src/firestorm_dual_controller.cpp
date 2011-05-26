@@ -83,9 +83,7 @@ struct FirestormMsg
 
 FirestormDualController::FirestormDualController(libusb_device* dev, bool is_vsb_, bool try_detach) :
   USBController(dev),
-  is_vsb(is_vsb_),
-  left_rumble(-1),
-  right_rumble(-1)
+  is_vsb(is_vsb_)
 {
   usb_claim_interface(0, try_detach);
 
@@ -106,28 +104,21 @@ FirestormDualController::~FirestormDualController()
 }
 
 void
-FirestormDualController::set_rumble(uint8_t left, uint8_t right)
+FirestormDualController::set_rumble_real(uint8_t left, uint8_t right)
 {
-  if (left_rumble  != left ||
-      right_rumble != right)
+  uint8_t cmd[] = { left, right, 0x00, 0x00 };
+  if (is_vsb)
   {
-    left_rumble  = left;
-    right_rumble = right;
-
-    uint8_t cmd[] = { left, right, 0x00, 0x00 };
-    if (is_vsb)
-    {
-      usb_control(0x21, 0x09, 0x0200, 0x00, cmd, sizeof(cmd));
-    }
-    else
-    {
-      usb_control(0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd));
-    }
+    usb_control(0x21, 0x09, 0x0200, 0x00, cmd, sizeof(cmd));
+  }
+  else
+  {
+    usb_control(0x21, 0x09, 0x02, 0x00, cmd, sizeof(cmd));
   }
 }
 
 void
-FirestormDualController::set_led(uint8_t status)
+FirestormDualController::set_led_real(uint8_t status)
 {
   // not supported
 }
