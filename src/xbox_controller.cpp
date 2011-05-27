@@ -49,13 +49,7 @@ void
 XboxController::set_rumble_real(uint8_t left, uint8_t right)
 {
   uint8_t rumblecmd[] = { 0x00, 0x06, 0x00, left, 0x00, right };
-  int transferred = 0;
-  int ret = libusb_interrupt_transfer(m_handle, LIBUSB_ENDPOINT_OUT | m_endpoint_out, 
-                                      rumblecmd, sizeof(rumblecmd), &transferred, 0);
-  if (ret != LIBUSB_SUCCESS)
-  {
-    raise_exception(std::runtime_error, "libusb_interrupt_transfer() failed: " << usb_strerror(ret));
-  }
+  usb_write(m_endpoint_out, rumblecmd, sizeof(rumblecmd));
 }
 
 void
