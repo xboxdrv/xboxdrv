@@ -133,34 +133,36 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       }
       else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
       { // Event message
-        msg_out->set_button(XBOX_DPAD_UP,    unpack::bit(data+2, 0));
-        msg_out->set_button(XBOX_DPAD_DOWN,  unpack::bit(data+2, 1));
-        msg_out->set_button(XBOX_DPAD_LEFT,  unpack::bit(data+2, 2));
-        msg_out->set_button(XBOX_DPAD_RIGHT, unpack::bit(data+2, 3));
+        uint8_t* ptr = data + 4;
 
-        msg_out->set_button(XBOX_BTN_START,   unpack::bit(data+2, 4));
-        msg_out->set_button(XBOX_BTN_BACK,    unpack::bit(data+2, 5));
-        msg_out->set_button(XBOX_BTN_THUMB_L, unpack::bit(data+2, 6));
-        msg_out->set_button(XBOX_BTN_THUMB_R, unpack::bit(data+2, 7));
+        msg_out->set_button(XBOX_DPAD_UP,    unpack::bit(ptr+2, 0));
+        msg_out->set_button(XBOX_DPAD_DOWN,  unpack::bit(ptr+2, 1));
+        msg_out->set_button(XBOX_DPAD_LEFT,  unpack::bit(ptr+2, 2));
+        msg_out->set_button(XBOX_DPAD_RIGHT, unpack::bit(ptr+2, 3));
 
-        msg_out->set_button(XBOX_BTN_LB, unpack::bit(data+3, 0));
-        msg_out->set_button(XBOX_BTN_RB, unpack::bit(data+3, 1));
-        msg_out->set_button(XBOX_BTN_GUIDE, unpack::bit(data+3, 2));
-        //msg_out->dummy1 = unpack::bit(data+3, 3);
+        msg_out->set_button(XBOX_BTN_START,   unpack::bit(ptr+2, 4));
+        msg_out->set_button(XBOX_BTN_BACK,    unpack::bit(ptr+2, 5));
+        msg_out->set_button(XBOX_BTN_THUMB_L, unpack::bit(ptr+2, 6));
+        msg_out->set_button(XBOX_BTN_THUMB_R, unpack::bit(ptr+2, 7));
 
-        msg_out->set_button(XBOX_BTN_A, unpack::bit(data+3, 4));
-        msg_out->set_button(XBOX_BTN_B, unpack::bit(data+3, 5));
-        msg_out->set_button(XBOX_BTN_X, unpack::bit(data+3, 6));
-        msg_out->set_button(XBOX_BTN_Y, unpack::bit(data+3, 7));
+        msg_out->set_button(XBOX_BTN_LB, unpack::bit(ptr+3, 0));
+        msg_out->set_button(XBOX_BTN_RB, unpack::bit(ptr+3, 1));
+        msg_out->set_button(XBOX_BTN_GUIDE, unpack::bit(ptr+3, 2));
+        //msg_out->dummy1 = unpack::bit(ptr+3, 3);
 
-        msg_out->set_axis(XBOX_AXIS_LT, data[4]);
-        msg_out->set_axis(XBOX_AXIS_RT, data[5]);
+        msg_out->set_button(XBOX_BTN_A, unpack::bit(ptr+3, 4));
+        msg_out->set_button(XBOX_BTN_B, unpack::bit(ptr+3, 5));
+        msg_out->set_button(XBOX_BTN_X, unpack::bit(ptr+3, 6));
+        msg_out->set_button(XBOX_BTN_Y, unpack::bit(ptr+3, 7));
 
-        msg_out->set_axis(XBOX_AXIS_X1, unpack::int16le(data+6));
-        msg_out->set_axis(XBOX_AXIS_Y1, unpack::int16le(data+8));
+        msg_out->set_axis(XBOX_AXIS_LT, ptr[4]);
+        msg_out->set_axis(XBOX_AXIS_RT, ptr[5]);
 
-        msg_out->set_axis(XBOX_AXIS_X2, unpack::int16le(data+10));
-        msg_out->set_axis(XBOX_AXIS_Y2, unpack::int16le(data+12));
+        msg_out->set_axis(XBOX_AXIS_X1, unpack::int16le(ptr+6));
+        msg_out->set_axis(XBOX_AXIS_Y1, unpack::int16le(ptr+8));
+
+        msg_out->set_axis(XBOX_AXIS_X2, unpack::int16le(ptr+10));
+        msg_out->set_axis(XBOX_AXIS_Y2, unpack::int16le(ptr+12));
 
         return true;
       }
