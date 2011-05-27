@@ -86,6 +86,14 @@ XboxGenericMsg::XboxGenericMsg() :
 {
 }
 
+void
+XboxGenericMsg::clear()
+{
+  memset(&xbox360, 0, sizeof(xbox360));
+  memset(&xbox,    0, sizeof(xbox));
+  memset(&ps3usb,  0, sizeof(ps3usb));
+}
+
 int
 XboxGenericMsg::get_button(XboxButton button) const
 {

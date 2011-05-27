@@ -276,7 +276,9 @@ public:
 
 public:
   XboxGenericMsg();
-  
+ 
+  void clear();
+ 
   int  get_button(XboxButton button) const;
   void set_button(XboxButton button, bool v);
 
