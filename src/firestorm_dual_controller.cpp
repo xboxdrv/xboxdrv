@@ -132,7 +132,6 @@ FirestormDualController::parse_vsb(uint8_t* data_in, int len, XboxGenericMsg* ms
     XboxGenericMsg& msg = *msg_out;
 
     msg.clear();
-    msg.type    = XBOX_MSG_XBOX360;
 
     msg.set_button(XBOX_BTN_A, unpack::bit(data_in, 0));
     msg.set_button(XBOX_BTN_B, unpack::bit(data_in, 1));
@@ -189,7 +188,6 @@ FirestormDualController::parse_default(uint8_t* data_in, int len, XboxGenericMsg
     XboxGenericMsg& msg = *msg_out;
 
     msg.clear();
-    msg.type    = XBOX_MSG_XBOX360;
 
     msg.set_button(XBOX_BTN_A, unpack::bit(data_in, 0));
     msg.set_button(XBOX_BTN_B, unpack::bit(data_in, 1));

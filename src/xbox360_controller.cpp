@@ -152,7 +152,6 @@ Xbox360Controller::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
   }
   else if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
   {
-    msg_out->type = XBOX_MSG_XBOX360;
     //Xbox360Msg& msg = msg_out->xbox360;
 
     //msg.type   = data[0];

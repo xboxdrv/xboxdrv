@@ -64,7 +64,6 @@ XboxController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
 {
   if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
   {
-    msg_out->type = XBOX_MSG_XBOX;
     // memcpy(&msg_out->xbox, data, sizeof(XboxMsg));
 
     //unsigned int type       :8;

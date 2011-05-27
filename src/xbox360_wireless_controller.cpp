@@ -120,58 +120,47 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
       { // Initial Announc Message
         m_serial = (boost::format("%2x:%2x:%2x:%2x:%2x:%2x:%2x")
-                  % int(data[7])
-                  % int(data[8])
-                  % int(data[9])
-                  % int(data[10])
-                  % int(data[11])
-                  % int(data[12])
-                  % int(data[13])).str();
+                    % int(data[7])
+                    % int(data[8])
+                    % int(data[9])
+                    % int(data[10])
+                    % int(data[11])
+                    % int(data[12])
+                    % int(data[13])).str();
         m_battery_status = data[17];
         log_info("Serial: " << m_serial);
         log_info("Battery Status: " << m_battery_status);
       }
       else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
       { // Event message
-        msg_out->type = XBOX_MSG_XBOX360;
-        Xbox360Msg& msg = msg_out->xbox360;
+        msg_out->set_button(XBOX_DPAD_UP,    unpack::bit(data+2, 0));
+        msg_out->set_button(XBOX_DPAD_DOWN,  unpack::bit(data+2, 1));
+        msg_out->set_button(XBOX_DPAD_LEFT,  unpack::bit(data+2, 2));
+        msg_out->set_button(XBOX_DPAD_RIGHT, unpack::bit(data+2, 3));
 
-        uint8_t* ptr = data+4;
+        msg_out->set_button(XBOX_BTN_START,   unpack::bit(data+2, 4));
+        msg_out->set_button(XBOX_BTN_BACK,    unpack::bit(data+2, 5));
+        msg_out->set_button(XBOX_BTN_THUMB_L, unpack::bit(data+2, 6));
+        msg_out->set_button(XBOX_BTN_THUMB_R, unpack::bit(data+2, 7));
 
-        msg.type   = ptr[0];
-        msg.length = ptr[1];
+        msg_out->set_button(XBOX_BTN_LB, unpack::bit(data+3, 0));
+        msg_out->set_button(XBOX_BTN_RB, unpack::bit(data+3, 1));
+        msg_out->set_button(XBOX_BTN_GUIDE, unpack::bit(data+3, 2));
+        //msg_out->dummy1 = unpack::bit(data+3, 3);
 
-        msg.dpad_up    = unpack::bit(ptr+2, 0);
-        msg.dpad_down  = unpack::bit(ptr+2, 1);
-        msg.dpad_left  = unpack::bit(ptr+2, 2);
-        msg.dpad_right = unpack::bit(ptr+2, 3);
+        msg_out->set_button(XBOX_BTN_A, unpack::bit(data+3, 4));
+        msg_out->set_button(XBOX_BTN_B, unpack::bit(data+3, 5));
+        msg_out->set_button(XBOX_BTN_X, unpack::bit(data+3, 6));
+        msg_out->set_button(XBOX_BTN_Y, unpack::bit(data+3, 7));
 
-        msg.start   = unpack::bit(ptr+2, 4);
-        msg.back    = unpack::bit(ptr+2, 5);
-        msg.thumb_l = unpack::bit(ptr+2, 6);
-        msg.thumb_r = unpack::bit(ptr+2, 7);
+        msg_out->set_axis(XBOX_AXIS_LT, data[4]);
+        msg_out->set_axis(XBOX_AXIS_RT, data[5]);
 
-        msg.lb     = unpack::bit(ptr+3, 0);
-        msg.rb     = unpack::bit(ptr+3, 1);
-        msg.guide  = unpack::bit(ptr+3, 2);
-        msg.dummy1 = unpack::bit(ptr+3, 3);
+        msg_out->set_axis(XBOX_AXIS_X1, unpack::int16le(data+6));
+        msg_out->set_axis(XBOX_AXIS_Y1, unpack::int16le(data+8));
 
-        msg.a = unpack::bit(ptr+3, 4);
-        msg.b = unpack::bit(ptr+3, 5);
-        msg.x = unpack::bit(ptr+3, 6);
-        msg.y = unpack::bit(ptr+3, 7);
-
-        msg.lt = ptr[4];
-        msg.rt = ptr[5];
-
-        msg.x1 = unpack::int16le(ptr+6);
-        msg.y1 = unpack::int16le(ptr+8);
-
-        msg.x2 = unpack::int16le(ptr+10);
-        msg.y2 = unpack::int16le(ptr+12);
-
-        msg.dummy2 = unpack::int32le(ptr+14);
-        msg.dummy3 = unpack::int16le(ptr+18);
+        msg_out->set_axis(XBOX_AXIS_X2, unpack::int16le(data+10));
+        msg_out->set_axis(XBOX_AXIS_Y2, unpack::int16le(data+12));
 
         return true;
       }

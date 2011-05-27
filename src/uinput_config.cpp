@@ -52,86 +52,24 @@ UInputConfig::UInputConfig(UInput& uinput, int slot, bool extra_devices, const U
 }
 
 void
-UInputConfig::send(XboxGenericMsg& msg)
+UInputConfig::send(const XboxGenericMsg& msg)
 {
   std::copy(button_state, button_state+XBOX_BTN_MAX, last_button_state);
 
-  switch(msg.type)
+  for(int btn = 1; btn < XBOX_BTN_MAX; ++btn)
   {
-    case XBOX_MSG_XBOX:
-      send(msg.xbox);
-      break;
+    send_button(static_cast<XboxButton>(btn), msg.get_button(static_cast<XboxButton>(btn)));
+  }
 
-    case XBOX_MSG_XBOX360:
-      send(msg.xbox360);
-      break;
-
-    case XBOX_MSG_PS3USB:
-      send(msg.ps3usb);
-      break;
-        
-    default:
-      assert(!"never reached");
+  for(int axis = 1; axis < XBOX_AXIS_MAX; ++axis)
+  {
+    send_axis(static_cast<XboxAxis>(axis), msg.get_axis(static_cast<XboxAxis>(axis)));
   }
 
   m_uinput.sync();
 }
 
-void
-UInputConfig::send(Xbox360Msg& msg)
-{
-  // analog stick button
-  send_button(XBOX_BTN_THUMB_L, msg.thumb_l);
-  send_button(XBOX_BTN_THUMB_R, msg.thumb_r);
-
-  // shoulder button
-  send_button(XBOX_BTN_LB, msg.lb);
-  send_button(XBOX_BTN_RB, msg.rb);
-
-  // start/back button
-  send_button(XBOX_BTN_START, msg.start);
-  send_button(XBOX_BTN_GUIDE, msg.guide);
-  send_button(XBOX_BTN_BACK, msg.back);
-
-  // face button
-  send_button(XBOX_BTN_A, msg.a);
-  send_button(XBOX_BTN_B, msg.b);
-  send_button(XBOX_BTN_X, msg.x);
-  send_button(XBOX_BTN_Y, msg.y);
-
-  // trigger
-  send_button(XBOX_BTN_LT, msg.lt); // FIXME: no deadzone handling here
-  send_button(XBOX_BTN_RT, msg.rt);
-
-  // dpad
-  send_button(XBOX_DPAD_UP,    msg.dpad_up);
-  send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
-  send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
-  send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
-
-  // trigger
-  send_axis(XBOX_AXIS_LT, msg.lt);
-  send_axis(XBOX_AXIS_RT, msg.rt);
-
-  send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
-
-  // analog sticks
-  send_axis(XBOX_AXIS_X1,  msg.x1);
-  send_axis(XBOX_AXIS_Y1,  s16_invert(msg.y1));
-  
-  send_axis(XBOX_AXIS_X2,  msg.x2);
-  send_axis(XBOX_AXIS_Y2,  s16_invert(msg.y2));
-
-  // dpad
-  if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
-  else if (msg.dpad_down)  send_axis(XBOX_AXIS_DPAD_Y,  1);
-  else                     send_axis(XBOX_AXIS_DPAD_Y,  0);
-
-  if      (msg.dpad_left)  send_axis(XBOX_AXIS_DPAD_X, -1);
-  else if (msg.dpad_right) send_axis(XBOX_AXIS_DPAD_X,  1);
-  else                     send_axis(XBOX_AXIS_DPAD_X,  0);
-}
-
+#if 0
 void
 UInputConfig::send(XboxMsg& msg)
 {
@@ -251,6 +189,8 @@ UInputConfig::send(Playstation3USBMsg& msg)
   send_axis(XBOX_AXIS_WHITE, msg.a_r1);
 }
 
+#endif
+
 void
 UInputConfig::update(int msec_delta)
 {
@@ -308,10 +248,7 @@ UInputConfig::send_button(XboxButton code, bool value)
 void
 UInputConfig::reset_all_outputs()
 {
-  // FIXME: kind of a hack
-  Xbox360Msg msg;
-  memset(&msg, 0, sizeof(msg));
-  send(msg);
+  send(XboxGenericMsg());
 }
 
 void

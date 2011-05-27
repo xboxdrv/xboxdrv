@@ -89,7 +89,6 @@ SaitekP2500Controller::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
   if (len == 7)
   {
     msg_out->clear();
-    msg_out->type = XBOX_MSG_XBOX360;
 
     msg_out->set_button(XBOX_BTN_A, unpack::bit(data+5, 0));
     msg_out->set_button(XBOX_BTN_B, unpack::bit(data+5, 1));

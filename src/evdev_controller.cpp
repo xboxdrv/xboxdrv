@@ -50,9 +50,6 @@ EvdevController::EvdevController(const std::string& filename,
   m_event_buffer(),
   m_msg()
 {
-  memset(&m_msg, 0, sizeof(m_msg));
-  m_msg.type = XBOX_MSG_XBOX360;
-
   m_fd = open(filename.c_str(), O_RDONLY | O_NONBLOCK);
 
   if (m_fd == -1)
