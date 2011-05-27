@@ -232,7 +232,7 @@ std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg)
   {
     XboxAxis axis = static_cast<XboxAxis>(i);
 
-    out << axis2string(axis) << ":" << msg.get_axis(static_cast<XboxAxis>(axis));
+    out << axis2string(axis) << ":" << msg.get_axis(static_cast<XboxAxis>(axis)) << " ";
   }
 
   for(int i = 1; i < XBOX_BTN_MAX; ++i)
