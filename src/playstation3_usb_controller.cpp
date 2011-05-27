@@ -59,7 +59,7 @@ Playstation3USBController::set_led_real(uint8_t status)
 bool
 Playstation3USBController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
 {
-  if (static_cast<size_t>(len) >= sizeof(msg_out->ps3usb))
+  if (static_cast<size_t>(len) >= sizeof(Playstation3USBMsg))
   {
     msg_out->type = XBOX_MSG_PS3USB;
 

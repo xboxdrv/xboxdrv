@@ -1131,8 +1131,8 @@ CommandLineParser::set_ui_axismap(AxisMap& axis_map, const std::string& name, co
             {
               if (axis != XBOX_AXIS_UNKNOWN)
               {
-                event->set_axis_range(get_axis_min(axis),
-                                      get_axis_max(axis));
+                event->set_axis_range(XboxGenericMsg::get_axis_min(axis),
+                                      XboxGenericMsg::get_axis_max(axis));
               }
 
               axis_map.bind(shift, axis, event);

@@ -270,6 +270,7 @@ class XboxGenericMsg
 public:
   XboxMsgType type;
 
+private:
   struct Xbox360Msg xbox360;
   struct XboxMsg    xbox;
   struct Playstation3USBMsg ps3usb;
@@ -287,6 +288,12 @@ public:
 
   float get_axis_float(XboxAxis axis) const;
   void  set_axis_float(XboxAxis axis, float v);
+
+  static int get_axis_min(XboxAxis axis);
+  static int get_axis_max(XboxAxis axis);
+
+  void set_axis_min(XboxAxis axis, int value);
+  void set_axis_max(XboxAxis axis, int value);
 };
 
 std::ostream& operator<<(std::ostream& out, const GamepadType& type);
@@ -299,9 +306,6 @@ XboxButton string2btn(const std::string& str_);
 XboxAxis   string2axis(const std::string& str_);
 std::string btn2string(XboxButton btn);
 std::string axis2string(XboxAxis axis);
-
-int get_axis_min(XboxAxis axis);
-int get_axis_max(XboxAxis axis);
 
 std::string gamepadtype_to_string(const GamepadType& type);
 std::string gamepadtype_to_macro_string(const GamepadType& type);

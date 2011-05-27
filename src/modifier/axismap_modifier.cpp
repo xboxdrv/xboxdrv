@@ -97,8 +97,8 @@ AxismapModifier::update(int msec_delta, XboxGenericMsg& msg)
 
   for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
-    int min = get_axis_min(i->lhs);
-    int max = get_axis_max(i->lhs);
+    int min = msg.get_axis_min(i->lhs);
+    int max = msg.get_axis_max(i->lhs);
     int value = msg.get_axis(i->lhs);
 
     if (i->invert)

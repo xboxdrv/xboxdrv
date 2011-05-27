@@ -1415,7 +1415,8 @@ std::string btn2string(XboxButton btn)
   return "unknown";
 }
 
-int get_axis_min(XboxAxis axis)
+int
+XboxGenericMsg::get_axis_min(XboxAxis axis)
 {
   switch(axis)
   {
@@ -1444,7 +1445,8 @@ int get_axis_min(XboxAxis axis)
   }
 }
 
-int get_axis_max(XboxAxis axis)
+int
+XboxGenericMsg::get_axis_max(XboxAxis axis)
 {
   switch(axis)
   {
@@ -1471,6 +1473,16 @@ int get_axis_max(XboxAxis axis)
 
     default: assert(!"never reached");
   }
+}
+
+void
+XboxGenericMsg::set_axis_min(XboxAxis axis, int value)
+{
+}
+
+void
+XboxGenericMsg::set_axis_max(XboxAxis axis, int value)
+{
 }
   
 /* EOF */
