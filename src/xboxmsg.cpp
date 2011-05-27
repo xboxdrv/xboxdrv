@@ -90,29 +90,127 @@ XboxGenericMsg::clear()
 {
   std::fill_n(m_axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
   std::fill_n(m_button_state, static_cast<int>(XBOX_BTN_MAX),  false);
+
+  std::fill_n(m_axis_set,   static_cast<int>(XBOX_AXIS_MAX), false);
+  std::fill_n(m_button_set, static_cast<int>(XBOX_BTN_MAX),  false);
 }
 
-int
+bool
 XboxGenericMsg::get_button(XboxButton button) const
 {
-  return m_button_state[button];
+  if (m_button_set[button])
+  {
+    return m_button_state[button];
+  }
+  else
+  {
+    switch(button)
+    {
+      case XBOX_BTN_A:
+        return m_axis_state[XBOX_AXIS_A];
+      case XBOX_BTN_B:
+        return m_axis_state[XBOX_AXIS_B];
+      case XBOX_BTN_X:
+        return m_axis_state[XBOX_AXIS_X];
+      case XBOX_BTN_Y:
+        return m_axis_state[XBOX_AXIS_Y];
+
+      case XBOX_BTN_LB:
+        return m_axis_state[XBOX_AXIS_BLACK];
+      case XBOX_BTN_RB:
+        return m_axis_state[XBOX_AXIS_WHITE];
+
+      case XBOX_BTN_LT:
+        return m_axis_state[XBOX_AXIS_LT];
+      case XBOX_BTN_RT:
+        return m_axis_state[XBOX_AXIS_RT];
+
+      case XBOX_DPAD_UP:
+        return m_axis_state[XBOX_AXIS_DPAD_Y] < 0;
+      case XBOX_DPAD_DOWN:
+        return m_axis_state[XBOX_AXIS_DPAD_Y] > 0;       
+      case XBOX_DPAD_LEFT:
+        return m_axis_state[XBOX_AXIS_DPAD_X] < 0;
+      case XBOX_DPAD_RIGHT:
+        return m_axis_state[XBOX_AXIS_DPAD_X] > 0;
+
+      default:
+        return false;
+    }
+  }
 }
 
 void
 XboxGenericMsg::set_button(XboxButton button, bool v)
 {
+  m_button_set[button] = true;
   m_button_state[button] = v;
 }
 
 int
 XboxGenericMsg::get_axis(XboxAxis axis) const
 {
-  return m_axis_state[axis];
+  if (m_axis_set[axis])
+  {
+    return m_axis_state[axis];
+  }
+  else
+  {
+    switch(axis)
+    {
+      case XBOX_AXIS_A:
+        return m_button_state[XBOX_BTN_A];
+
+      case XBOX_AXIS_B:
+        return m_button_state[XBOX_BTN_B];
+
+      case XBOX_AXIS_X:
+        return m_button_state[XBOX_BTN_X];
+
+      case XBOX_AXIS_Y:
+        return m_button_state[XBOX_BTN_Y];
+
+      case XBOX_AXIS_LT:
+        return m_button_state[XBOX_BTN_LT] * 255;
+
+      case XBOX_AXIS_RT:
+        return m_button_state[XBOX_BTN_RT] * 255;
+
+      case XBOX_AXIS_BLACK:
+        return m_button_state[XBOX_BTN_LB] * 255;
+
+      case XBOX_AXIS_WHITE:
+        return m_button_state[XBOX_BTN_RB] * 255;
+
+      case XBOX_AXIS_DPAD_X:
+        if (m_button_state[XBOX_DPAD_LEFT] && !m_button_state[XBOX_DPAD_RIGHT])
+          return -1;
+        else if (!m_button_state[XBOX_DPAD_LEFT] && m_button_state[XBOX_DPAD_RIGHT])
+          return 1;
+        else
+          return 0;
+
+      case XBOX_AXIS_DPAD_Y:
+        if (m_button_state[XBOX_DPAD_UP] && !m_button_state[XBOX_DPAD_DOWN])
+          return -1;
+        else if (!m_button_state[XBOX_DPAD_UP] && m_button_state[XBOX_DPAD_DOWN])
+          return 1;
+        else
+          return 0;
+
+      case XBOX_AXIS_TRIGGER:
+        return -get_axis(XBOX_AXIS_LT) + get_axis(XBOX_AXIS_RT);
+
+      default:
+        return 0;
+    }
+  }
 }
 
 void
 XboxGenericMsg::set_axis(XboxAxis axis, int v)
 {
+  m_axis_set[axis] = true;
   m_axis_state[axis] = v;
 }
 

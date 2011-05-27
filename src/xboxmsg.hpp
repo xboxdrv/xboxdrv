@@ -103,12 +103,15 @@ private:
   int  m_axis_state[XBOX_AXIS_MAX];
   bool m_button_state[XBOX_BTN_MAX];
 
+  bool m_axis_set[XBOX_AXIS_MAX];
+  bool m_button_set[XBOX_BTN_MAX];
+
 public:
   XboxGenericMsg();
  
   void clear();
  
-  int  get_button(XboxButton button) const;
+  bool get_button(XboxButton button) const;
   void set_button(XboxButton button, bool v);
 
   int  get_axis(XboxAxis axis) const;
