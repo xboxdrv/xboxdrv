@@ -125,6 +125,9 @@ public:
 
   void set_axis_min(XboxAxis axis, int value);
   void set_axis_max(XboxAxis axis, int value);
+
+  bool axis_is_set(XboxAxis axis) const;
+  bool button_is_set(XboxButton button) const;
 };
 
 std::ostream& operator<<(std::ostream& out, const GamepadType& type);

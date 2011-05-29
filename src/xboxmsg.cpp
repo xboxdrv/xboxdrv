@@ -225,6 +225,18 @@ XboxGenericMsg::set_axis_float(XboxAxis axis, float v)
 {
   m_axis_state[axis] = from_float(v, get_axis_min(axis), get_axis_max(axis));
 }
+
+bool
+XboxGenericMsg::axis_is_set(XboxAxis axis) const
+{
+  return m_axis_set[axis];
+}
+
+bool
+XboxGenericMsg::button_is_set(XboxButton button) const
+{
+  return m_button_set[button];
+}
 
 std::string gamepadtype_to_string(const GamepadType& type)
 {

@@ -309,6 +309,7 @@ CommandLineParser::init_argp()
     .add_newline()
 
     .add_text("Modifier:")
+    .add_pseudo("  btn2axis=BTN:BTN:AXIS", "Turns two buttons into an axis")
     .add_pseudo("  dpad-rotate=DEGREE", "Rotate the dpad by the given number of degree")
     .add_pseudo("  dpad-restrictor=RESTRICTION", "Restrict dpad movment to 'x-axis', 'y-axis' or 'four-way'")
     .add_pseudo("  4wayrest, four-way-restrictor=XAXIS:YAXIS", "Restrict the given stick to four directions")
