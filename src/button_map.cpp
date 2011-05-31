@@ -17,80 +17,88 @@
 */
 
 #include "button_map.hpp"
-
-ButtonMap::ButtonMap()
+
+ButtonMap::ButtonMap() :
+  m_mappings()
 {
-  clear();
 }
 
 void
-ButtonMap::bind(XboxButton code, ButtonEventPtr event)
+ButtonMap::bind(const ButtonCombination& buttons, ButtonEventPtr event)
 {
-  btn_map[XBOX_BTN_UNKNOWN][code] = event;
-}
+  // FIXME: binding the same combo twice might lead to problems
+  Mapping mapping(buttons, event);
 
-void
-ButtonMap::bind(XboxButton shift_code, XboxButton code, ButtonEventPtr event)
-{
-  btn_map[shift_code][code] = event;
+  // find of which already bound combinations the new one is a
+  // superset of and add it to the list
+  for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
+  {
+    if (i->m_buttons.is_subset_of(buttons))
+    {
+      i->m_supersets.push_back(buttons);
+    }
+
+    if (buttons.is_subset_of(i->m_buttons))
+    {
+      mapping.m_supersets.push_back(i->m_buttons);
+    }
+  }
+
+  m_mappings.push_back(mapping);
 }
 
 ButtonEventPtr
-ButtonMap::lookup(XboxButton code) const
+ButtonMap::lookup(const ButtonCombination& buttons) const
 {
-  return btn_map[XBOX_BTN_UNKNOWN][code];
-}
-
-ButtonEventPtr
-ButtonMap::lookup(XboxButton shift_code, XboxButton code) const
-{
-  return btn_map[shift_code][code];
-}
-
-bool
-ButtonMap::send(UInput& uinput, XboxButton code, bool value) const
-{
-  return send(uinput, XBOX_BTN_UNKNOWN, code, value);
-}
-
-bool
-ButtonMap::send(UInput& uinput, XboxButton shift_code, XboxButton code, bool value) const
-{
-  const ButtonEventPtr& event = lookup(shift_code, code);
-  if (event)
-  {
-    event->send(uinput, value);
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  assert(!"implement me");
+  return ButtonEventPtr();
 }
 
 void
 ButtonMap::clear()
 {
-  for(int shift_code = 0; shift_code < XBOX_BTN_MAX; ++shift_code)
+  m_mappings.clear();
+}
+
+void
+ButtonMap::init(UInput& uinput, int slot, bool extra_devices)
+{
+  for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
   {
-    for(int code = 0; code < XBOX_BTN_MAX; ++code)
-    {
-      btn_map[shift_code][code] = ButtonEvent::invalid();
-    }
+    i->m_event->init(uinput, slot, extra_devices);
   }
 }
 
 void
-ButtonMap::init(UInput& uinput, int slot, bool extra_devices) const
+ButtonMap::send(UInput& uinput, bool button_state[])
 {
-  for(int shift_code = 0; shift_code < XBOX_BTN_MAX; ++shift_code)
+  for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
   {
-    for(int code = 0; code < XBOX_BTN_MAX; ++code)
+    if (i->m_buttons.match(button_state))
     {
-      if (btn_map[shift_code][code])
-      {
-        btn_map[shift_code][code]->init(uinput, slot, extra_devices);
+      // check if a superset matches
+      bool superset_matches = false;
+      for(std::vector<ButtonCombination>::iterator j = i->m_supersets.begin(); j != i->m_supersets.end(); ++j)
+      {      
+        if (j->match(button_state))
+        {
+          superset_matches = true;
+          break;
+        }
       }
+      
+      if (superset_matches)
+      {
+        i->m_event->send(uinput, false);
+      }
+      else
+      {
+        i->m_event->send(uinput, true);
+      }
+    }
+    else
+    {
+      i->m_event->send(uinput, false);
     }
   }
 }
@@ -98,16 +106,10 @@ ButtonMap::init(UInput& uinput, int slot, bool extra_devices) const
 void
 ButtonMap::update(UInput& uinput, int msec_delta)
 {
-  for(int shift_code = 0; shift_code < XBOX_BTN_MAX; ++shift_code)
+  for(Mappings::const_iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
   {
-    for(int code = 0; code < XBOX_BTN_MAX; ++code)
-    {
-      if (btn_map[shift_code][code])
-      {
-        btn_map[shift_code][code]->update(uinput, msec_delta);
-      }
-    }
-  }  
+    i->m_event->update(uinput, msec_delta);
+  }
 }
 
 /* EOF */

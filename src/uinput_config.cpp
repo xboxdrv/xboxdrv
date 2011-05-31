@@ -55,11 +55,12 @@ void
 UInputConfig::send(const XboxGenericMsg& msg)
 {
   std::copy(button_state, button_state+XBOX_BTN_MAX, last_button_state);
-
+ 
   for(int btn = 1; btn < XBOX_BTN_MAX; ++btn)
   {
-    send_button(static_cast<XboxButton>(btn), msg.get_button(static_cast<XboxButton>(btn)));
+    button_state[btn] = msg.get_button(static_cast<XboxButton>(btn));
   }
+  m_btn_map.send(m_uinput, button_state);
 
   for(int axis = 1; axis < XBOX_AXIS_MAX; ++axis)
   {
@@ -198,51 +199,6 @@ UInputConfig::update(int msec_delta)
   m_axis_map.update(m_uinput, msec_delta);
 
   m_uinput.sync();
-}
-
-void
-UInputConfig::send_button(XboxButton code, bool value)
-{
-  if (button_state[code] != value)
-  {
-    button_state[code] = value;
-
-    // in case a shift button was changed, we have to clear all
-    // connected buttons
-    for(int i = 1; i < XBOX_BTN_MAX; ++i) // iterate over all buttons
-    {
-      if (button_state[i])
-      {
-        const ButtonEventPtr& event = m_btn_map.lookup(code, static_cast<XboxButton>(i));
-        if (event)
-        {
-          for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
-          {
-            m_btn_map.send(m_uinput, 
-                           static_cast<XboxButton>(j), static_cast<XboxButton>(i), 
-                           false);
-          }
-        }
-      }
-    }
-
-    // Shifted button events
-    for(int i = 1; i < XBOX_BTN_MAX; ++i)
-    {
-      if (button_state[i]) // shift button is pressed
-      {
-        if (m_btn_map.send(m_uinput, static_cast<XboxButton>(i), code, value))
-        {
-          // exit after the first successful event, so we don't send
-          // multiple events for the same button
-          return;
-        }
-      }
-    }
-
-    // Non shifted button events
-    m_btn_map.send(m_uinput, code, value);
-  }
 }
 
 void

@@ -16,45 +16,36 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_UINPUT_CONFIG_HPP
-#define HEADER_XBOXDRV_UINPUT_CONFIG_HPP
+#ifndef HEADER_XBOXDRV_BUTTON_COMBINATION_HPP
+#define HEADER_XBOXDRV_BUTTON_COMBINATION_HPP
 
-#include "axis_map.hpp"
-#include "button_map.hpp"
+#include <vector>
+#include <string>
 
-struct Xbox360Msg;
-struct XboxGenericMsg;
-struct Playstation3USBMsg;
-struct XboxMsg;
+#include "xboxmsg.hpp"
 
-class UInputOptions;
-
-class UInputConfig
+class ButtonCombination
 {
-private:
-  UInput& m_uinput;
-
-  ButtonMap m_btn_map;
-  AxisMap   m_axis_map;
-
-  int  axis_state[XBOX_AXIS_MAX];
-  bool button_state[XBOX_BTN_MAX];
-  bool last_button_state[XBOX_BTN_MAX];
+public:
+  static ButtonCombination from_string(const std::string& str);
 
 public:
-  UInputConfig(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);
+  ButtonCombination();
+  ButtonCombination(XboxButton button);
+  ButtonCombination(const std::vector<XboxButton>& buttons);
 
-  void send(const XboxGenericMsg& msg); 
-  void update(int msec_delta);
+  bool has_button(XboxButton button) const;
 
-  void reset_all_outputs();
+  /** Check if all buttons of \a this are also part of \a rhs */
+  bool is_subset_of(const ButtonCombination& rhs) const;
+
+  int size() const;
+
+  bool match(bool button_state[]) const;
 
 private:
-  void send_axis(XboxAxis code, int32_t value);
-
-private:
-  UInputConfig(const UInputConfig&);
-  UInputConfig& operator=(const UInputConfig&);
+  typedef std::vector<XboxButton> Buttons;
+  Buttons m_buttons;
 };
 
 #endif

@@ -18,11 +18,12 @@
 
 #include "command_line_options.hpp"
 
-#include <fstream>
-#include <iostream>
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
+#include <fstream>
+#include <iostream>
+#include <iterator>
 
 #include "evdev_helper.hpp"
 #include "helper.hpp"
@@ -1031,9 +1032,6 @@ void
 CommandLineParser::set_ui_buttonmap(ButtonMap& btn_map, const std::string& name, const std::string& value)
 {
   ButtonEventPtr event;
-
-  XboxButton shift = XBOX_BTN_UNKNOWN;
-  XboxButton btn   = XBOX_BTN_UNKNOWN;
   std::vector<ButtonFilterPtr> filters;
 
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
@@ -1045,28 +1043,18 @@ CommandLineParser::set_ui_buttonmap(ButtonMap& btn_map, const std::string& name,
     { 
       case 0: // shift+key portion
         {
-          std::string::size_type j = t->find('+');
-          if (j == std::string::npos)
-          {
-            shift = XBOX_BTN_UNKNOWN;
-            btn   = string2btn(*t);
-          }
-          else
-          {
-            shift = string2btn(t->substr(0, j));
-            btn   = string2btn(t->substr(j+1));
-          }
-          
+          ButtonCombination buttons = ButtonCombination::from_string(*t);
+
           if (value.empty())
           { // if no rhs value is given, add filters to the current binding
-            event = btn_map.lookup(shift, btn);
+            event = btn_map.lookup(buttons);
           }
           else
           {
             event = ButtonEvent::from_string(value, get_directory_context());
             if (event)
             {
-              btn_map.bind(shift, btn, event);
+              btn_map.bind(buttons, event);
             }
           }
         }
