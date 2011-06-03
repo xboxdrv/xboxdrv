@@ -36,6 +36,11 @@ public:
   std::string str() const;
 
 private:
+  void send_up(UInput& uinput, int value);
+  void send_down(UInput& uinput, int value);
+  int  get_zone(int value) const;
+  
+private:
   static const int MAX_MODIFIER = 4;
 
   int m_old_value;

@@ -117,36 +117,63 @@ KeyAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 }
 
 void
+KeyAxisEventHandler::send_up(UInput& uinput, int value)
+{
+  for(int i = 0; m_up_codes[i].is_valid(); ++i)
+    uinput.send_key(m_up_codes[i].get_device_id(), m_up_codes[i].code, value);
+}
+
+void
+KeyAxisEventHandler::send_down(UInput& uinput, int value)
+{
+  for(int i = 0; m_down_codes[i].is_valid(); ++i)
+    uinput.send_key(m_down_codes[i].get_device_id(), m_down_codes[i].code, value);
+}
+
+int
+KeyAxisEventHandler::get_zone(int value) const
+{
+  if (value >= m_threshold)
+  {
+    return +1;
+  }
+  else if (value <= -m_threshold)
+  {
+    return -1;
+  }
+  else
+  {
+    return 0;
+  }
+}
+
+void
 KeyAxisEventHandler::send(UInput& uinput, int value)
 {
-  if (::abs(m_old_value) <  m_threshold &&
-      ::abs(value)       >= m_threshold)
-  { // entering bigger then threshold zone
-    if (value < 0)
+  int old_zone = get_zone(m_old_value);
+  int zone     = get_zone(value);
+
+  if (old_zone != zone)
+  {
+    // release the keys of the zone we leave
+    if (old_zone == -1)
     {
-      for(int i = 0; m_down_codes[i].is_valid(); ++i)
-        uinput.send_key(m_down_codes[i].get_device_id(), m_down_codes[i].code, false);
-
-      for(int i = 0; m_up_codes[i].is_valid(); ++i)
-        uinput.send_key(m_up_codes[i].get_device_id(), m_up_codes[i].code, true);
+      send_down(uinput, false);
     }
-    else // (value > 0)
-    { 
-      for(int i = 0; m_down_codes[i].is_valid(); ++i)
-        uinput.send_key(m_down_codes[i].get_device_id(), m_down_codes[i].code, true);
-
-      for(int i = 0; m_up_codes[i].is_valid(); ++i)
-        uinput.send_key(m_up_codes[i].get_device_id(), m_up_codes[i].code, false);
+    else if (old_zone == +1)
+    {
+      send_up(uinput, false);
     }
-  }
-  else if (::abs(m_old_value) >= m_threshold &&
-           ::abs(value)       <  m_threshold)
-  { // entering zero zone
-    for(int i = 0; m_down_codes[i].is_valid(); ++i)
-      uinput.send_key(m_down_codes[i].get_device_id(), m_down_codes[i].code, false);
 
-    for(int i = 0; m_up_codes[i].is_valid(); ++i)
-      uinput.send_key(m_up_codes[i].get_device_id(), m_up_codes[i].code, false);
+    // press the keys of the zone we enter
+    if (zone == +1)
+    {
+      send_up(uinput, true);
+    }
+    else if (zone == -1)
+    {
+      send_down(uinput, true);
+    }
   }
 
   m_old_value = value;
