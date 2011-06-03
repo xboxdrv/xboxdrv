@@ -94,7 +94,7 @@ KeyAxisEventHandler::KeyAxisEventHandler() :
   m_old_value(0),
   m_up_codes(),
   m_down_codes(),
-  m_threshold(8000) // FIXME: this doesn't work for triggers
+  m_threshold(8000) // BUG: this doesn't work for triggers
 {
   std::fill_n(m_up_codes,   MAX_MODIFIER+1, UIEvent::invalid());
   std::fill_n(m_down_codes, MAX_MODIFIER+1, UIEvent::invalid());
