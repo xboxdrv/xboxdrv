@@ -42,7 +42,7 @@ Controller::~Controller()
 }
 
 void
-Controller::submit_msg(const XboxGenericMsg& msg)
+Controller::submit_msg(const ControllerMessage& msg)
 {
   if (m_msg_cb)
   {
@@ -82,7 +82,7 @@ Controller::set_udev_device(udev_device* udev_dev)
 }
 
 void
-Controller::set_message_cb(const boost::function<void(const XboxGenericMsg&)>& msg_cb)
+Controller::set_message_cb(const boost::function<void(const ControllerMessage&)>& msg_cb)
 {
   m_msg_cb = msg_cb;
 }

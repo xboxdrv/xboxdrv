@@ -47,7 +47,7 @@ RotateAxisModifier::RotateAxisModifier(XboxAxis xaxis, XboxAxis yaxis, float ang
 }
 
 void
-RotateAxisModifier::update(int msec_delta, XboxGenericMsg& msg)
+RotateAxisModifier::update(int msec_delta, ControllerMessage& msg)
 {
   float x = msg.get_axis_float(m_xaxis);
   float y = msg.get_axis_float(m_yaxis);

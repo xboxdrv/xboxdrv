@@ -22,9 +22,10 @@
 #include <stdexcept>
 #include <string.h>
 
-#include "usb_helper.hpp"
+#include "controller_message.hpp"
 #include "raise_exception.hpp"
 #include "unpack.hpp"
+#include "usb_helper.hpp"
 #include "xboxmsg.hpp"
 
 XboxController::XboxController(libusb_device* dev, bool try_detach) :
@@ -60,7 +61,7 @@ XboxController::set_led_real(uint8_t status)
 }
 
 bool
-XboxController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+XboxController::parse(uint8_t* data, int len, ControllerMessage* msg_out)
 {
   if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
   {

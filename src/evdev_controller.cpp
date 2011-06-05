@@ -24,6 +24,7 @@
 #include <iostream>
 #include <string.h>
 
+#include "controller_message.hpp"
 #include "evdev_helper.hpp"
 #include "log.hpp"
 
@@ -159,7 +160,7 @@ EvdevController::set_led_real(uint8_t status)
 }
 
 bool
-EvdevController::parse(const struct input_event& ev, XboxGenericMsg& msg_inout) const
+EvdevController::parse(const struct input_event& ev, ControllerMessage& msg_inout) const
 {
   if (m_debug)
   {

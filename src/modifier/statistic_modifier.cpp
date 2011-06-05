@@ -57,7 +57,7 @@ StatisticModifier::print_stats()
 }
 
 void
-StatisticModifier::update(int msec_delta, XboxGenericMsg& msg)
+StatisticModifier::update(int msec_delta, ControllerMessage& msg)
 {
   for(int btn = 1; btn < static_cast<int>(XBOX_BTN_MAX); ++btn)
   {

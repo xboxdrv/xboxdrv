@@ -40,11 +40,11 @@ UInputMessageProcessor::~UInputMessageProcessor()
 }
 
 void
-UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
+UInputMessageProcessor::send(const ControllerMessage& msg_in, int msec_delta)
 {
   if (!m_config->empty())
   {
-    XboxGenericMsg msg = msg_in; 
+    ControllerMessage msg = msg_in; 
 
     if (m_rumble_test)
     {
@@ -83,7 +83,7 @@ UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
     m_config->get_config()->get_uinput().update(msec_delta);
 
     // send current Xbox state to uinput
-    if (memcmp(&msg, &m_oldmsg, sizeof(XboxGenericMsg)) != 0)
+    if (memcmp(&msg, &m_oldmsg, sizeof(ControllerMessage)) != 0)
     {
       // Only send a new event out if something has changed,
       // this is useful since some controllers send events

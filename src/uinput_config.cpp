@@ -18,6 +18,7 @@
 
 #include "uinput_config.hpp"
 
+#include "controller_message.hpp"
 #include "helper.hpp"
 #include "uinput.hpp"
 #include "uinput_options.hpp"
@@ -52,7 +53,7 @@ UInputConfig::UInputConfig(UInput& uinput, int slot, bool extra_devices, const U
 }
 
 void
-UInputConfig::send(const XboxGenericMsg& msg)
+UInputConfig::send(const ControllerMessage& msg)
 {
   std::copy(button_state, button_state+XBOX_BTN_MAX, last_button_state);
  
@@ -204,7 +205,7 @@ UInputConfig::update(int msec_delta)
 void
 UInputConfig::reset_all_outputs()
 {
-  send(XboxGenericMsg());
+  send(ControllerMessage());
 }
 
 void

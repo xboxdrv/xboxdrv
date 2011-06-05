@@ -32,7 +32,7 @@ private:
   UInput& m_uinput;
   ControllerSlotConfigPtr m_config;
 
-  XboxGenericMsg m_oldmsg; /// last data send to uinput
+  ControllerMessage m_oldmsg; /// last data send to uinput
   XboxButton m_config_toggle_button;
 
   int m_rumble_gain;
@@ -44,7 +44,7 @@ public:
                           const Options& opts);
   ~UInputMessageProcessor();
 
-  void send(const XboxGenericMsg& msg, int msec_delta);
+  void send(const ControllerMessage& msg, int msec_delta);
   void set_rumble(uint8_t lhs, uint8_t rhs);
   void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
   void set_config(int num);

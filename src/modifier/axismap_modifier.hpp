@@ -20,6 +20,8 @@
 #define HEADER_XBOXDRV_MODIFIER_AXISMAP_MODIFIER_HPP
 
 #include "axis_filter.hpp"
+#include "controller_message.hpp"
+#include "controller_thread.hpp"
 #include "modifier.hpp"
 
 struct AxisMapping
@@ -44,7 +46,7 @@ class AxismapModifier : public Modifier
 public:
   AxismapModifier();
 
-  void update(int msec_delta, XboxGenericMsg& msg);
+  void update(int msec_delta, ControllerMessage& msg);
 
   void add(const AxisMapping& mapping);
   void add_filter(XboxAxis axis, AxisFilterPtr filter);

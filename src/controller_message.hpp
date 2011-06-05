@@ -19,30 +19,42 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_MESSAGE_HPP
 #define HEADER_XBOXDRV_CONTROLLER_MESSAGE_HPP
 
-#include <linux/input.h>
+#include "xboxmsg.hpp"
 
 class ControllerMessage
 {
 private:
-  // FIXME: not the most compact representation
-  bool m_button[KEY_CNT];
-  int m_axis[ABS_CNT];
-  int m_rel[REL_CNT];
+  int  m_axis_state[XBOX_AXIS_MAX];
+  bool m_button_state[XBOX_BTN_MAX];
+
+  bool m_axis_set[XBOX_AXIS_MAX];
+  bool m_button_set[XBOX_BTN_MAX];
 
 public:
   ControllerMessage();
-
-  void set_button(int button, bool value);
-  int  get_button(int button) const;
-
-  void set_axis(int axis, int value);
-  int  get_axis(int axis) const;
-
-  void set_rel(int rel, int value);
-  int  get_rel(int rel) const;
-
+ 
   void clear();
+ 
+  bool get_button(XboxButton button) const;
+  void set_button(XboxButton button, bool v);
+
+  int  get_axis(XboxAxis axis) const;
+  void set_axis(XboxAxis axis, int v);
+
+  float get_axis_float(XboxAxis axis) const;
+  void  set_axis_float(XboxAxis axis, float v);
+
+  static int get_axis_min(XboxAxis axis);
+  static int get_axis_max(XboxAxis axis);
+
+  void set_axis_min(XboxAxis axis, int value);
+  void set_axis_max(XboxAxis axis, int value);
+
+  bool axis_is_set(XboxAxis axis) const;
+  bool button_is_set(XboxButton button) const;
 };
+
+std::ostream& operator<<(std::ostream& out, const ControllerMessage& msg);
 
 #endif
 

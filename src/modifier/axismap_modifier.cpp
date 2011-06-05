@@ -76,9 +76,9 @@ AxismapModifier::AxismapModifier() :
 }
 
 void
-AxismapModifier::update(int msec_delta, XboxGenericMsg& msg)
+AxismapModifier::update(int msec_delta, ControllerMessage& msg)
 {
-  XboxGenericMsg newmsg = msg;
+  ControllerMessage newmsg = msg;
 
   // update all filters in all mappings
   for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)

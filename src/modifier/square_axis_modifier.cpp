@@ -21,6 +21,7 @@
 #include <math.h>
 #include <sstream>
 
+#include "controller_message.hpp"
 #include "helper.hpp"
 
 namespace {
@@ -69,7 +70,7 @@ SquareAxisModifier::SquareAxisModifier(XboxAxis xaxis, XboxAxis yaxis) :
 }
 
 void
-SquareAxisModifier::update(int msec_delta, XboxGenericMsg& msg)
+SquareAxisModifier::update(int msec_delta, ControllerMessage& msg)
 {
   int x = msg.get_axis(m_xaxis);
   int y = msg.get_axis(m_yaxis);

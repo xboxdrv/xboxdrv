@@ -31,7 +31,7 @@ public:
 public:
   SquareAxisModifier(XboxAxis x_axis, XboxAxis y_axis);
 
-  void update(int msec_delta, XboxGenericMsg& msg);
+  void update(int msec_delta, ControllerMessage& msg);
 
   std::string str() const;
 

@@ -67,7 +67,7 @@ ControllerThread::on_timeout()
 }
 
 void
-ControllerThread::on_message(const XboxGenericMsg& msg)
+ControllerThread::on_message(const ControllerMessage& msg)
 {
   if (m_print_messages)
   {

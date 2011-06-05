@@ -23,6 +23,8 @@
 #include "raise_exception.hpp"
 #include "uinput.hpp"
 
+#include "modifier/axismap_modifier.hpp"
+#include "modifier/buttonmap_modifier.hpp"
 #include "modifier/dpad_rotation_modifier.hpp"
 #include "modifier/four_way_restrictor_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"

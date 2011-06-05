@@ -21,6 +21,7 @@
 #include <sstream>
 #include <boost/format.hpp>
 
+#include "controller_message.hpp"
 #include "helper.hpp"
 #include "raise_exception.hpp"
 #include "unpack.hpp"
@@ -73,7 +74,7 @@ Xbox360WirelessController::set_led_real(uint8_t status)
 }
 
 bool
-Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+Xbox360WirelessController::parse(uint8_t* data, int len, ControllerMessage* msg_out)
 {
   if (len == 0)
   {

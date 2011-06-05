@@ -79,6 +79,12 @@ Checklist
 
 * Collect Linux games with force feedback support: Bzflag?
 
+* provide more meaningful debug output for force feedback
+
+* cleanup UIEvent, add UIEventSequence
+
+* --chatpad-debug is broken, use it for all the log_tmp()
+
 * XboxController rumble code is wrong, old usb stuff
 
 * there is a long delay in processing rumble messages, currently
@@ -143,8 +149,6 @@ Aborted
 * move LED setting into ControllerThread or somewhere else, not at controller creation time
 
 * check that threads are cleaned up in daemon
-
-* headset and chatpad still use thread
 
 * go through checklist, disable headset and chatpad support for now,
   do a source only release

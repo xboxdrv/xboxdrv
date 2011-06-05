@@ -31,7 +31,7 @@ public:
 public:
   FourWayRestrictorModifier(XboxAxis xaxis, XboxAxis yaxis);
 
-  void update(int msec_delta, XboxGenericMsg& msg);
+  void update(int msec_delta, ControllerMessage& msg);
 
   std::string str() const;
 

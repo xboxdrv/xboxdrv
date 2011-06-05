@@ -59,9 +59,9 @@ ButtonmapModifier::ButtonmapModifier() :
 }
   
 void
-ButtonmapModifier::update(int msec_delta, XboxGenericMsg& msg)
+ButtonmapModifier::update(int msec_delta, ControllerMessage& msg)
 {
-  XboxGenericMsg newmsg = msg;
+  ControllerMessage newmsg = msg;
 
   // update all filters in all mappings
   for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)

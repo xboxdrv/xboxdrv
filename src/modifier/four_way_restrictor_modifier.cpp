@@ -42,7 +42,7 @@ FourWayRestrictorModifier::FourWayRestrictorModifier(XboxAxis xaxis, XboxAxis ya
 }
 
 void
-FourWayRestrictorModifier::update(int msec_delta, XboxGenericMsg& msg)
+FourWayRestrictorModifier::update(int msec_delta, ControllerMessage& msg)
 {
   // left Stick
   if (abs(msg.get_axis(XBOX_AXIS_X1)) > abs(msg.get_axis(XBOX_AXIS_Y1)))

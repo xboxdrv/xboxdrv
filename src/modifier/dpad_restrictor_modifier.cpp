@@ -58,7 +58,7 @@ DpadRestrictorModifier::DpadRestrictorModifier(Mode mode) :
 }
 
 void
-DpadRestrictorModifier::update(int msec_delta, XboxGenericMsg& msg)
+DpadRestrictorModifier::update(int msec_delta, ControllerMessage& msg)
 {
   switch(m_mode)
   {

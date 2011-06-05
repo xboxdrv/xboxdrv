@@ -39,6 +39,9 @@
 #include "axisfilter/sensitivity_axis_filter.hpp"
 #include "buttonfilter/autofire_button_filter.hpp"
 
+#include "modifier/axismap_modifier.hpp"
+#include "modifier/buttonmap_modifier.hpp"
+
 #include "xboxdrv_vfs.hpp"
 
 enum {
@@ -1120,8 +1123,8 @@ CommandLineParser::set_ui_axismap(AxisMap& axis_map, const std::string& name, co
             {
               if (axis != XBOX_AXIS_UNKNOWN)
               {
-                event->set_axis_range(XboxGenericMsg::get_axis_min(axis),
-                                      XboxGenericMsg::get_axis_max(axis));
+                event->set_axis_range(ControllerMessage::get_axis_min(axis),
+                                      ControllerMessage::get_axis_max(axis));
               }
 
               axis_map.bind(shift, axis, event);

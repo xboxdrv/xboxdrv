@@ -20,6 +20,7 @@
 
 #include <sstream>
 
+#include "controller_message.hpp"
 #include "helper.hpp"
 #include "usb_helper.hpp"
 #include "unpack.hpp"
@@ -84,7 +85,7 @@ SaitekP2500Controller::set_led_real(uint8_t status)
 }
 
 bool
-SaitekP2500Controller::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+SaitekP2500Controller::parse(uint8_t* data, int len, ControllerMessage* msg_out)
 {
   if (len == 7)
   {

@@ -22,6 +22,7 @@
 #include <sstream>
 #include <string.h>
 
+#include "controller_message.hpp"
 #include "log.hpp"
 #include "unpack.hpp"
 #include "usb_helper.hpp"
@@ -57,7 +58,7 @@ Playstation3USBController::set_led_real(uint8_t status)
 #define bitswap(x) x = ((x & 0x00ff) << 8) | ((x & 0xff00) >> 8)
 
 bool
-Playstation3USBController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+Playstation3USBController::parse(uint8_t* data, int len, ControllerMessage* msg_out)
 {
   if (static_cast<size_t>(len) >= 49)
   {

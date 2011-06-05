@@ -97,41 +97,7 @@ enum XboxAxis {
   XBOX_AXIS_MAX
 };
 
-class XboxGenericMsg
-{
-private:
-  int  m_axis_state[XBOX_AXIS_MAX];
-  bool m_button_state[XBOX_BTN_MAX];
-
-  bool m_axis_set[XBOX_AXIS_MAX];
-  bool m_button_set[XBOX_BTN_MAX];
-
-public:
-  XboxGenericMsg();
- 
-  void clear();
- 
-  bool get_button(XboxButton button) const;
-  void set_button(XboxButton button, bool v);
-
-  int  get_axis(XboxAxis axis) const;
-  void set_axis(XboxAxis axis, int v);
-
-  float get_axis_float(XboxAxis axis) const;
-  void  set_axis_float(XboxAxis axis, float v);
-
-  static int get_axis_min(XboxAxis axis);
-  static int get_axis_max(XboxAxis axis);
-
-  void set_axis_min(XboxAxis axis, int value);
-  void set_axis_max(XboxAxis axis, int value);
-
-  bool axis_is_set(XboxAxis axis) const;
-  bool button_is_set(XboxButton button) const;
-};
-
 std::ostream& operator<<(std::ostream& out, const GamepadType& type);
-std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg);
 
 XboxButton string2btn(const std::string& str_);
 XboxAxis   string2axis(const std::string& str_);

@@ -20,6 +20,7 @@
 
 #include <stdexcept>
 
+#include "controller_config.hpp"
 #include "raise_exception.hpp"
 
 Button2AxisModifier*
@@ -49,7 +50,7 @@ Button2AxisModifier::Button2AxisModifier(XboxButton lhs_btn,
 }
 
 void
-Button2AxisModifier::update(int msec_delta, XboxGenericMsg& msg) 
+Button2AxisModifier::update(int msec_delta, ControllerMessage& msg) 
 {
   bool lhs = msg.get_button(m_lhs_btn);
   bool rhs = msg.get_button(m_rhs_btn);

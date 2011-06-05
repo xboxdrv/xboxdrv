@@ -36,7 +36,7 @@ private:
 public:
   Button2AxisModifier(XboxButton lhs_btn, XboxButton rhs_btn, XboxAxis   axis);
 
-  void update(int msec_delta, XboxGenericMsg& msg);
+  void update(int msec_delta, ControllerMessage& msg);
   std::string str() const;
 
 private:

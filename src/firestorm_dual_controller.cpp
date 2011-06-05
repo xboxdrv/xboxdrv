@@ -21,6 +21,7 @@
 #include <sstream>
 #include <boost/format.hpp>
 
+#include "controller_message.hpp"
 #include "helper.hpp"
 #include "log.hpp"
 #include "unpack.hpp"
@@ -125,11 +126,11 @@ FirestormDualController::set_led_real(uint8_t status)
 }
 
 bool
-FirestormDualController::parse_vsb(uint8_t* data_in, int len, XboxGenericMsg* msg_out)
+FirestormDualController::parse_vsb(uint8_t* data_in, int len, ControllerMessage* msg_out)
 {
   if (len == 6)
   {
-    XboxGenericMsg& msg = *msg_out;
+    ControllerMessage& msg = *msg_out;
 
     msg.clear();
 
@@ -181,11 +182,11 @@ FirestormDualController::parse_vsb(uint8_t* data_in, int len, XboxGenericMsg* ms
 }
 
 bool
-FirestormDualController::parse_default(uint8_t* data_in, int len, XboxGenericMsg* msg_out)
+FirestormDualController::parse_default(uint8_t* data_in, int len, ControllerMessage* msg_out)
 {
   if (len == 7)
   {
-    XboxGenericMsg& msg = *msg_out;
+    ControllerMessage& msg = *msg_out;
 
     msg.clear();
 
@@ -236,7 +237,7 @@ FirestormDualController::parse_default(uint8_t* data_in, int len, XboxGenericMsg
 }
 
 bool
-FirestormDualController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+FirestormDualController::parse(uint8_t* data, int len, ControllerMessage* msg_out)
 {
   if (is_vsb)
   {

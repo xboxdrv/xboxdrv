@@ -23,7 +23,7 @@
 #include "button_map.hpp"
 
 struct Xbox360Msg;
-struct XboxGenericMsg;
+struct ControllerMessage;
 struct Playstation3USBMsg;
 struct XboxMsg;
 
@@ -44,7 +44,7 @@ private:
 public:
   UInputConfig(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);
 
-  void send(const XboxGenericMsg& msg); 
+  void send(const ControllerMessage& msg); 
   void update(int msec_delta);
 
   void reset_all_outputs();

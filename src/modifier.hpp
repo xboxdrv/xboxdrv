@@ -21,7 +21,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "xboxmsg.hpp"
+#include "controller_message.hpp"
 
 class Modifier;
 class Options;
@@ -35,7 +35,7 @@ public:
 
 public:
   virtual ~Modifier() {}
-  virtual void update(int msec_delta, XboxGenericMsg& msg) = 0;
+  virtual void update(int msec_delta, ControllerMessage& msg) = 0;
 
   virtual std::string str() const = 0;
 };

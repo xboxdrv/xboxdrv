@@ -22,9 +22,10 @@
 #include <boost/shared_ptr.hpp>
 #include <glib.h>
 
+#include "controller_message.hpp"
+#include "controller_ptr.hpp"
 #include "controller_slot_config.hpp"
 #include "controller_slot_ptr.hpp"
-#include "controller_ptr.hpp"
 
 class Options;
 class MessageProcessor;
@@ -40,7 +41,7 @@ private:
   ControllerPtr m_controller;
   std::auto_ptr<MessageProcessor> m_processor;
 
-  XboxGenericMsg m_oldrealmsg; /// last data read from the device
+  ControllerMessage m_oldrealmsg; /// last data read from the device
 
   int  m_timeout;
   bool m_print_messages;
@@ -56,7 +57,7 @@ public:
   ControllerPtr get_controller() const { return m_controller; }
 
 private:
-  void on_message(const XboxGenericMsg& msg);
+  void on_message(const ControllerMessage& msg);
 
   bool on_timeout();
   static gboolean on_timeout_wrap(gpointer data) {

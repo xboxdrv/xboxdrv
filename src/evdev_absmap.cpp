@@ -18,6 +18,7 @@
 
 #include "evdev_absmap.hpp"
 
+#include "controller_message.hpp"
 #include "helper.hpp"
 
 EvdevAbsMap::EvdevAbsMap() :
@@ -54,7 +55,7 @@ EvdevAbsMap::clear()
 }
 
 void
-EvdevAbsMap::process(XboxGenericMsg& msg, int code, int value, int min, int max) const
+EvdevAbsMap::process(ControllerMessage& msg, int code, int value, int min, int max) const
 {
   { // process plus map
     std::map<int, XboxAxis>::const_iterator it = m_plus_map.find(code);

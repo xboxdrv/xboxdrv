@@ -20,6 +20,8 @@
 
 #include <stdexcept>
 #include <boost/lexical_cast.hpp>
+
+#include "controller_config.hpp"
 
 DpadRotationModifier*
 DpadRotationModifier::from_string(const std::vector<std::string>& args)
@@ -52,7 +54,7 @@ DpadRotationModifier::DpadRotationModifier(int dpad_rotation) :
 }
 
 void
-DpadRotationModifier::update(int msec_delta, XboxGenericMsg& msg)
+DpadRotationModifier::update(int msec_delta, ControllerMessage& msg)
 {
   int up    = msg.get_button(XBOX_DPAD_UP);
   int down  = msg.get_button(XBOX_DPAD_DOWN);

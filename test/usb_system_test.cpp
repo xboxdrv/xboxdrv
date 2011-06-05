@@ -20,11 +20,12 @@
 #include <glib.h>
 #include <stdexcept>
 
+#include "controller_message.hpp"
+#include "dummy_message_processor.hpp"
 #include "log.hpp"
 #include "raise_exception.hpp"
-#include "usb_helper.hpp"
 #include "usb_gsource.hpp"
-#include "dummy_message_processor.hpp"
+#include "usb_helper.hpp"
 #include "xbox360_controller.hpp"
 #include "xboxmsg.hpp"
 
@@ -59,7 +60,7 @@ libusb_device* get_controller_dev()
   return 0;
 }
 
-void process_msg(const XboxGenericMsg& msg)
+void process_msg(const ControllerMessage& msg)
 {
   log_debug(msg);
 }
