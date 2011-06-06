@@ -80,7 +80,7 @@ ButtonCombination::size() const
 }
 
 bool
-ButtonCombination::match(bool button_state[]) const
+ButtonCombination::match(const std::bitset<XBOX_BTN_MAX>& button_state) const
 {
   for(std::vector<XboxButton>::const_iterator btn = m_buttons.begin(); btn != m_buttons.end(); ++btn)
   {

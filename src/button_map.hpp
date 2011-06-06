@@ -19,8 +19,9 @@
 #ifndef HEADER_XBOXDRV_BUTTON_MAP_HPP
 #define HEADER_XBOXDRV_BUTTON_MAP_HPP
 
-#include <vector>
+#include <bitset>
 #include <map>
+#include <vector>
 
 #include "button_event.hpp"
 #include "button_combination.hpp"
@@ -61,7 +62,7 @@ public:
   ButtonEventPtr lookup(const ButtonCombination& buttons) const;
 
   void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, bool button_state[]);
+  void send(UInput& uinput, const std::bitset<XBOX_BTN_MAX>& button_state);
   void update(UInput& uinput, int msec_delta);
 
   void clear();

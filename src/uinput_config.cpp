@@ -42,11 +42,11 @@ int16_t u8_to_s16(uint8_t value)
 UInputConfig::UInputConfig(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
   m_btn_map(opts.get_btn_map()), 
-  m_axis_map(opts.get_axis_map())
+  m_axis_map(opts.get_axis_map()),
+  m_button_state(),
+  m_last_button_state()
 {
   std::fill_n(axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
-  std::fill_n(button_state,      static_cast<int>(XBOX_BTN_MAX),  false);
-  std::fill_n(last_button_state, static_cast<int>(XBOX_BTN_MAX),  false);
 
   m_btn_map.init(uinput, slot, extra_devices);
   m_axis_map.init(uinput, slot, extra_devices);
@@ -55,13 +55,13 @@ UInputConfig::UInputConfig(UInput& uinput, int slot, bool extra_devices, const U
 void
 UInputConfig::send(const ControllerMessage& msg)
 {
-  std::copy(button_state, button_state+XBOX_BTN_MAX, last_button_state);
+  m_last_button_state = m_button_state;
  
   for(int btn = 1; btn < XBOX_BTN_MAX; ++btn)
   {
-    button_state[btn] = msg.get_button(static_cast<XboxButton>(btn));
+    m_button_state[btn] = msg.get_button(static_cast<XboxButton>(btn));
   }
-  m_btn_map.send(m_uinput, button_state);
+  m_btn_map.send(m_uinput, m_button_state);
 
   for(int axis = 1; axis < XBOX_AXIS_MAX; ++axis)
   {
@@ -217,7 +217,7 @@ UInputConfig::send_axis(XboxAxis code, int32_t value)
   // find the curren AxisEvent bound to current axis code
   for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
   {
-    if (button_state[shift])
+    if (m_button_state[shift])
     {
       AxisEventPtr new_ev = m_axis_map.lookup(static_cast<XboxButton>(shift), code);
       if (new_ev)
@@ -231,7 +231,7 @@ UInputConfig::send_axis(XboxAxis code, int32_t value)
   // find the last AxisEvent bound to current axis code
   for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
   {    
-    if (last_button_state[shift])
+    if (m_last_button_state[shift])
     {
       AxisEventPtr new_ev = m_axis_map.lookup(static_cast<XboxButton>(shift), code);
       if (new_ev)

@@ -19,6 +19,8 @@
 #ifndef HEADER_XBOXDRV_UINPUT_CONFIG_HPP
 #define HEADER_XBOXDRV_UINPUT_CONFIG_HPP
 
+#include <bitset>
+
 #include "axis_map.hpp"
 #include "button_map.hpp"
 
@@ -38,8 +40,8 @@ private:
   AxisMap   m_axis_map;
 
   int  axis_state[XBOX_AXIS_MAX];
-  bool button_state[XBOX_BTN_MAX];
-  bool last_button_state[XBOX_BTN_MAX];
+  std::bitset<XBOX_BTN_MAX> m_button_state;
+  std::bitset<XBOX_BTN_MAX> m_last_button_state;
 
 public:
   UInputConfig(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);

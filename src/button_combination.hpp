@@ -19,8 +19,9 @@
 #ifndef HEADER_XBOXDRV_BUTTON_COMBINATION_HPP
 #define HEADER_XBOXDRV_BUTTON_COMBINATION_HPP
 
-#include <vector>
+#include <bitset>
 #include <string>
+#include <vector>
 
 #include "xboxmsg.hpp"
 
@@ -41,7 +42,7 @@ public:
 
   int size() const;
 
-  bool match(bool button_state[]) const;
+  bool match(const std::bitset<XBOX_BTN_MAX>& button_state) const;
 
 private:
   typedef std::vector<XboxButton> Buttons;

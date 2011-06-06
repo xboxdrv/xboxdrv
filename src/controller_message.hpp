@@ -19,16 +19,18 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_MESSAGE_HPP
 #define HEADER_XBOXDRV_CONTROLLER_MESSAGE_HPP
 
+#include <bitset>
+
 #include "xboxmsg.hpp"
 
 class ControllerMessage
 {
 private:
   int  m_axis_state[XBOX_AXIS_MAX];
-  bool m_button_state[XBOX_BTN_MAX];
+  std::bitset<XBOX_BTN_MAX> m_button_state;
 
-  bool m_axis_set[XBOX_AXIS_MAX];
-  bool m_button_set[XBOX_BTN_MAX];
+  std::bitset<XBOX_AXIS_MAX> m_axis_set;
+  std::bitset<XBOX_BTN_MAX>  m_button_set;
 
 public:
   ControllerMessage();

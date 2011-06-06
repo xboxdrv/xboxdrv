@@ -70,7 +70,7 @@ ButtonMap::init(UInput& uinput, int slot, bool extra_devices)
 }
 
 void
-ButtonMap::send(UInput& uinput, bool button_state[])
+ButtonMap::send(UInput& uinput, const std::bitset<XBOX_BTN_MAX>& button_state)
 {
   for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
   {

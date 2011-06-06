@@ -27,7 +27,9 @@
 
 ControllerMessage::ControllerMessage() :
   m_axis_state(),
-  m_button_state()
+  m_button_state(),
+  m_axis_set(),
+  m_button_set()
 {
   clear();
 }
@@ -36,10 +38,10 @@ void
 ControllerMessage::clear()
 {
   std::fill_n(m_axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
-  std::fill_n(m_button_state, static_cast<int>(XBOX_BTN_MAX),  false);
+  m_button_state.reset();
 
-  std::fill_n(m_axis_set,   static_cast<int>(XBOX_AXIS_MAX), false);
-  std::fill_n(m_button_set, static_cast<int>(XBOX_BTN_MAX),  false);
+  m_axis_set.reset();
+  m_button_set.reset();
 }
 
 bool
