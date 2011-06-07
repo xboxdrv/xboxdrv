@@ -379,6 +379,7 @@ CommandLineParser::init_ini(Options* opts)
     ("dpad-only",         boost::bind(&Options::set_dpad_only, opts),         boost::function<void ()>())
     ("force-feedback",    boost::bind(&Options::set_force_feedback, opts, _1))
     ("mimic-xpad",        boost::bind(&Options::set_mimic_xpad, opts),        boost::function<void ()>())
+    ("mimic-xpad-wireless", boost::bind(&Options::set_mimic_xpad_wireless, opts), boost::function<void ()>())
 
     ("chatpad",         &opts->chatpad)
     ("chatpad-no-init", &opts->chatpad_no_init)
