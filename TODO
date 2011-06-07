@@ -71,6 +71,8 @@ Stuff to do before 0.8.1 release:
 
 * pass /dev/input/eventX, slot and serial number to on-connect script
 
+* write DummyController that can be used in automated test cases
+
 
 Checklist
 =========
@@ -105,7 +107,7 @@ libusb:warning [libusb_close] internal signalling write failed, closing anyway
 
 * print which sub features are enabled: chatpad, force feedback, headset
 
-* make dbus optional, make --no-dbus an alias for --dbus NONE
+* make dbus optional, make --no-dbus an alias for --dbus NONE or --dbus false (easier for config file)
 
 * check force feedback
 
