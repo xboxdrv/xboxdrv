@@ -70,6 +70,18 @@ Stuff to do before 0.8.0 release:
 Checklist
 =========
 
+* don't compile tests by default
+
+* use FIXME for random code improvements, use BUG for actual problems
+
+* Collect Linux games with force feedback support: Bzflag?
+
+* provide more meaningful debug output for force feedback
+
+* cleanup UIEvent, add UIEventSequence
+
+* --chatpad-debug is broken, use it for all the log_tmp()
+
 * XboxController rumble code is wrong, old usb stuff
 
 * there is a long delay in processing rumble messages, currently
