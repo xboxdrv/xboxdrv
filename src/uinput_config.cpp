@@ -223,8 +223,8 @@ UInputConfig::send_axis(XboxAxis code, int32_t value)
       if (new_ev)
       {
         ev = new_ev;
+        break;
       }
-      break;
     }
   }
   
