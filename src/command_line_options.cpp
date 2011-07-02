@@ -99,6 +99,7 @@ enum {
   OPTION_HELP_LED,
   OPTION_DEVICE_BY_ID,
   OPTION_DEVICE_BY_PATH,
+  OPTION_GENERIC_USB_SPEC,
   OPTION_LIST_SUPPORTED_DEVICES,
   OPTION_LIST_SUPPORTED_DEVICES_XPAD,
   OPTION_LIST_CONTROLLER,
@@ -200,6 +201,7 @@ CommandLineParser::init_argp()
     .add_option(OPTION_DEVICE_BY_ID,   0, "device-by-id",   "VENDOR:PRODUCT", "Use device that matches VENDOR:PRODUCT (as returned by lsusb)")
     .add_option(OPTION_TYPE,           0, "type",    "TYPE", "Ignore autodetection and enforce controller type (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)")
     .add_option(OPTION_DETACH_KERNEL_DRIVER, 'd', "detach-kernel-driver", "", "Detaches the kernel driver currently associated with the device")
+    .add_option(OPTION_GENERIC_USB_SPEC, 0, "generic-usb-spec", "SPEC", "Specification for generic USB device")
     .add_newline()
 
     .add_text("Evdev Options: ")
@@ -612,6 +614,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         {
           opts.gamepad_type = GAMEPAD_PLAYSTATION3_USB;
         }
+        else if (opt.argument == "generic-usb")
+        {
+          opts.gamepad_type = GAMEPAD_GENERIC_USB;
+        }
         else
         {
           raise_exception(std::runtime_error, "unknown type: " << opt.argument << '\n'
@@ -623,7 +629,8 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
                           << " * xbox360-wireless\n"
                           << " * firestorm\n"
                           << " * firestorm-vsb\n"
-                          << " * saitek-p2500\n");
+                          << " * saitek-p2500\n"
+                          << " * generic-usb\n");
         }
         break;
 
@@ -894,6 +901,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         }
         break;
 
+      case OPTION_GENERIC_USB_SPEC:
+        set_generic_usb_spec(opt.argument);
+        break;
+    
       case OPTION_LIST_SUPPORTED_DEVICES:
         opts.mode = Options::RUN_LIST_SUPPORTED_DEVICES;
         break;
@@ -1386,6 +1397,12 @@ CommandLineParser::mouse()
   read_buildin_config_file("examples/mouse.xboxdrv",
                            xboxdrv_vfs::examples_mouse_xboxdrv,
                            sizeof(xboxdrv_vfs::examples_mouse_xboxdrv));
+}
+
+void
+CommandLineParser::set_generic_usb_spec(const std::string& spec)
+{
+  m_options->m_generic_usb_specs.push_back(Options::GenericUSBSpec::from_string(spec));
 }
 
 std::string

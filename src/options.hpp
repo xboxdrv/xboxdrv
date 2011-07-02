@@ -130,6 +130,44 @@ public:
 
   bool usb_debug;
 
+  struct GenericUSBSpec
+  {
+  private:
+    void apply_pair(const std::string& name,
+                    const std::string& value);
+
+    GenericUSBSpec() :
+      m_vendor_id(-1),
+      m_product_id(-1),
+      m_interface(-1),
+      m_endpoint(-1),
+      m_packetsize(-1)
+    {}
+
+  public:
+    static GenericUSBSpec from_string(const std::string& str);
+
+    GenericUSBSpec(int vendor_id,
+                   int product_id,
+                   int interface,
+                   int endpoint,
+                   int packetsize) :
+      m_vendor_id(vendor_id),
+      m_product_id(product_id),
+      m_interface(interface),
+      m_endpoint(endpoint),
+      m_packetsize(packetsize)
+    {}
+    
+    int m_vendor_id;
+    int m_product_id;
+    int m_interface;
+    int m_endpoint;
+    int m_packetsize;
+  };
+
+  std::vector<GenericUSBSpec> m_generic_usb_specs;
+
 public:
   Options();
 
@@ -171,6 +209,8 @@ public:
   void add_match(const std::string& lhs, const std::string& rhs);
   void set_match(const std::string& str);
   void set_match_group(const std::string& str);
+
+  GenericUSBSpec find_generic_usb_spec(int vendor_id, int product_id) const;
 
   void finish();
 };
