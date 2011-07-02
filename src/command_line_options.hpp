@@ -96,6 +96,8 @@ private:
 
   void mouse();
 
+  void set_generic_usb_spec(const std::string& name);
+
 private:
   void init_argp();
   void init_ini(Options* opts);

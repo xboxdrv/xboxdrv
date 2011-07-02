@@ -21,6 +21,7 @@
 #include <stdexcept>
 
 #include "firestorm_dual_controller.hpp"
+#include "generic_usb_controller.hpp"
 #include "playstation3_usb_controller.hpp"
 #include "saitek_p2500_controller.hpp"
 #include "xbox360_controller.hpp"
@@ -69,6 +70,13 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
 
     case GAMEPAD_PLAYSTATION3_USB:
       return ControllerPtr(new Playstation3USBController(dev, opts.detach_kernel_driver));
+
+    case GAMEPAD_GENERIC_USB:
+      {
+        Options::GenericUSBSpec spec = opts.find_generic_usb_spec(dev_type.idVendor, dev_type.idProduct);
+        return ControllerPtr(new GenericUSBController(dev, spec.m_interface, spec.m_endpoint, 
+                                                      opts.detach_kernel_driver));
+      }
 
     default:
       assert(!"unknown gamepad type");
@@ -127,6 +135,14 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
 
     case GAMEPAD_PLAYSTATION3_USB:
       lst.push_back(ControllerPtr(new Playstation3USBController(dev, opts.detach_kernel_driver)));
+      break;
+
+    case GAMEPAD_GENERIC_USB:
+      {
+        Options::GenericUSBSpec spec = opts.find_generic_usb_spec(dev_type.idVendor, dev_type.idProduct);
+        lst.push_back(ControllerPtr(new GenericUSBController(dev, spec.m_interface, spec.m_endpoint, 
+                                                             opts.detach_kernel_driver)));
+      }
       break;
 
     default:
