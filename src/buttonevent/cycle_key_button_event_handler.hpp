@@ -24,32 +24,46 @@
 #include "button_event.hpp"
 #include "ui_event_sequence.hpp"
 
+#include "buttonevent/cycle_key_sequence.hpp"
+
 class CycleKeyButtonEventHandler : public ButtonEventHandler
 {
 private:
-  static std::map<std::string, CycleKeyButtonEventHandler*> s_lookup_table;
+  static std::map<std::string, CycleKeySequencePtr> s_lookup_table;
 
 public:
   static CycleKeyButtonEventHandler* from_string(const std::string& str);
   static CycleKeyButtonEventHandler* from_string_named(const std::string& str);
-  static CycleKeyButtonEventHandler* lookup(const std::string& name);
+
+  /** 
+      Syntax: "{direction}:{press}"
+      
+      direction: can either be 'forward', 'backward', 'none' or an
+      integer, in the case of an integer, the pointer is moved to that key
+      
+      press: a bool, true if a keypress is send, 
+      false when only the current key should change
+  */
+  static CycleKeyButtonEventHandler* from_string_ref(const std::string& value);
+
+
+  static CycleKeySequencePtr lookup(const std::string& name);
+
+public:
+  enum Direction { kForward, kBackward, kNone };
 
 private:
-  typedef std::vector<UIEventSequence> Keys;
-  Keys m_keys;
-  int m_current_key;
+  CycleKeySequencePtr m_sequence;
+  Direction m_direction;
+  bool m_send_press;
 
 private:
-  CycleKeyButtonEventHandler(const Keys& keys);
+  CycleKeyButtonEventHandler(CycleKeySequencePtr sequence, Direction direction, bool send_press);
 
 public:
   void init(UInput& uinput, int slot, bool extra_devices);
   void send(UInput& uinput, bool value);
-  void send_only(UInput& uinput, bool value);
   void update(UInput& uinput, int msec_delta);
-
-  void next_key();
-  void prev_key();
 
   std::string str() const;
 

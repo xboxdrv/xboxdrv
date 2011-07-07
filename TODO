@@ -70,6 +70,15 @@ Stuff to do before 0.8.1 release:
 * cycle-key is incomplete, should have additional mode that allows
   next/prev without sending events, also has issues with stuck buttons
   when multiple keys are pressed
+
+  -> only one key should be allowed to be pressed, last one will always be released (still fishy)
+  -> separate last and curr key to allow toggle without press
+  -> have each ButtonEvent be responsible to release the keys it
+     pressed? -> tricky, as it doesn't know those right now
+
+  -> need a time delay before button is actually send for situations
+     where sending the key is expensive (weapon switching in game might be slow)
+
 
 * don't compile tests by default
 

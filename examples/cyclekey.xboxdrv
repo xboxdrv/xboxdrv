@@ -11,4 +11,8 @@ Y1=ABS_Y
 RB=cycle-key-named:foo:JS_1:JS_2:JS_3:JS_4
 LB=cycle-key-ref:foo:backward
 
+X=cycle-key-ref:foo:backward:0
+B=cycle-key-ref:foo:forward:0
+A=cycle-key-ref:foo:none:1
+
 # EOF #
