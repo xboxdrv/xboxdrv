@@ -28,6 +28,8 @@
 #include "uinput.hpp"
 
 #include "buttonevent/abs_button_event_handler.hpp"
+#include "buttonevent/cycle_key_button_event_handler.hpp"
+#include "buttonevent/cycle_key_ref_button_event_handler.hpp"
 #include "buttonevent/exec_button_event_handler.hpp"
 #include "buttonevent/key_button_event_handler.hpp"
 #include "buttonevent/macro_button_event_handler.hpp"
@@ -96,6 +98,18 @@ ButtonEvent::from_string(const std::string& str, const std::string& directory)
   else if (token == "key")
   {
     return ButtonEvent::create(KeyButtonEventHandler::from_string(rest));
+  }
+  else if (token == "cycle-key")
+  {
+    return ButtonEvent::create(CycleKeyButtonEventHandler::from_string(rest));
+  }
+  else if (token == "cycle-key-named")
+  {
+    return ButtonEvent::create(CycleKeyButtonEventHandler::from_string_named(rest));
+  }
+  else if (token == "cycle-key-ref")
+  {
+    return ButtonEvent::create(CycleKeyRefButtonEventHandler::from_string(rest));
   }
   else if (token == "exec")
   {
