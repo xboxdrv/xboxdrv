@@ -1,8 +1,9 @@
 xboxdrv 0.8.1 - (??/Jun/2011)
 =============================
 
+* added support for an unlimited number shift buttons
+* added cycle-key support to cycle through a sequence of buttons
 * fixed rumble messages getting delayed
-* added support for an unlimited number shift keys
 * fixed keys not getting pressed in --ui-axismap
 
 
