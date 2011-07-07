@@ -1,3 +1,28 @@
+# cycle-key Example
+# =================
+#
+# The cycle-key feature allows mapping a single or a series of button
+# to a sequence of keys. This is useful for example in older first
+# person shooters where keys 1 to 9 would be needed for selecting
+# weapons, but you don't want to waste nine buttons on the gamepad for
+# that use. cycle-key allows using a single button and changing the
+# event it sends out with each press. 
+#
+# Additionally cycle-key sequences can be named and accessed by
+# reference, this allows multiple buttons to be used to cycle through
+# the same sequence, so one button can cycle forward and another can
+# cycle backward.
+#
+# It is also possible to have buttons that do only cycling and buttons
+# that do only sending, thus you can have a next and previous button
+# as well as a separate send button, instead of sending a button event
+# on each next/previous call.
+#
+# When cycle-key sequences are named, the name must be unique across
+# all configurations, furthermore the named cycle-key must come first
+# in the configuration or else the cycle-key-ref won't be able to find
+# it.
+
 [xboxdrv]
 ui-clear=true
 extra-events=false
@@ -8,9 +33,13 @@ X1=ABS_X
 Y1=ABS_Y
 
 [ui-buttonmap]
+
+# LB and RB are used to cycle through a series of buttons
 RB=cycle-key-named:foo:JS_1:JS_2:JS_3:JS_4
 LB=cycle-key-ref:foo:backward
 
+# X and B are used to cycle only, but not send a button event, while A
+# is used for sending the button out, but doesn't do any cycling
 X=cycle-key-ref:foo:backward:0
 B=cycle-key-ref:foo:forward:0
 A=cycle-key-ref:foo:none:1
