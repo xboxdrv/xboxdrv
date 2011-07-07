@@ -1,0 +1,14 @@
+[xboxdrv]
+ui-clear=true
+extra-events=false
+extra-devices=false
+
+[ui-axismap]
+X1=ABS_X
+Y1=ABS_Y
+
+[ui-buttonmap]
+RB=cycle-key-named:foo:JS_1:JS_2:JS_3:JS_4
+LB=cycle-key-ref:foo:backward
+
+# EOF #

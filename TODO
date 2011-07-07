@@ -64,12 +64,13 @@ $ git-buildpackage --git-no-create-orig --git-debian-branch=stable-lts --git-tag
 $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-stable_0.6.6-1~lucid2.dsc
 
 
-Stuff to do before 0.8.0 release:
+Stuff to do before 0.8.1 release:
 =================================
 
-Checklist
-=========
-
+* cycle-key is incomplete, should have additional mode that allows
+  next/prev without sending events, also has issues with stuck buttons
+  when multiple keys are pressed
+
 * don't compile tests by default
 
 * use FIXME for random code improvements, use BUG for actual problems
