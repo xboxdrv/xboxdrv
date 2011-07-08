@@ -45,6 +45,9 @@ public:
   ~Xboxdrv();
 
   int main(int argc, char** argv);
+
+private:
+  void set_scheduling(const Options& opts);
 };
 
 #endif

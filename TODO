@@ -79,6 +79,12 @@ Stuff to do before 0.8.1 release:
   -> need a time delay before button is actually send for situations
      where sending the key is expensive (weapon switching in game might be slow)
 
+  -> add an option to have the cycle sequence not wrap around: 
+     -> possible use: throttle in a flightsim mapped to 1-9
+
+* implement filter that removes glitched button events, i.e. events
+  that happen in very low timespans and are caused by broken micro switches
+
 
 * don't compile tests by default
 
