@@ -18,13 +18,16 @@
 
 #include "xboxdrv.hpp"
 
-#include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/format.hpp>
 #include <boost/scoped_array.hpp>
 #include <errno.h>
 #include <iostream>
+#include <sched.h>
 #include <signal.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "controller_thread.hpp"
 #include "command_line_options.hpp"
@@ -325,6 +328,32 @@ Xboxdrv::~Xboxdrv()
 {
 }
 
+void
+Xboxdrv::set_scheduling(const Options& opts)
+{
+  if (opts.priority == Options::kPriorityRealtime)
+  {
+    // try to set realtime priority when root, as user there doesn't
+    // seem to be a way to increase the priority
+    log_info("enabling realtime priority scheduling");
+
+    int policy = SCHED_RR;
+    
+    struct sched_param param;
+    memset(&param, 0, sizeof(struct sched_param));
+    param.sched_priority = sched_get_priority_max(policy);
+
+    // we don't try SCHED_OTHER for users as min and max priority is
+    // 0 for that, thus we can't change anything with that
+
+    int ret;
+    if ((ret = sched_setscheduler(getpid(), policy, &param)) != 0)
+    {          
+      raise_exception(std::runtime_error, "sched_setschedparam() failed: " << strerror(errno));
+    }
+  }
+}
+
 int
 Xboxdrv::main(int argc, char** argv)
 {
@@ -334,6 +363,8 @@ Xboxdrv::main(int argc, char** argv)
 
     CommandLineParser cmd_parser;
     cmd_parser.parse_args(argc, argv, &opts);
+
+    set_scheduling(opts);
 
     switch(opts.mode)
     {
