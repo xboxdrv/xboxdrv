@@ -39,6 +39,9 @@ public:
 
   void init(UInput& uinput, int slot, bool extra_devices);
   void send(UInput& uinput, int value);
+
+  /** send the event sequence in reverse order */
+  void send_reverse(UInput& uinput, int value);
 };
 
 #endif
