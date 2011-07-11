@@ -48,7 +48,6 @@ public:
 
 public:
   void resolve_device_id(int slot, bool extra_devices);
-  bool is_valid() const;
   bool operator<(const UIEvent& rhs)  const;
 
   int type;

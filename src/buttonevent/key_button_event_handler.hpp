@@ -21,6 +21,8 @@
 
 #include "button_event.hpp"
 
+#include "ui_event_sequence.hpp"
+
 class KeyButtonEventHandler : public ButtonEventHandler
 {
 public:
@@ -37,12 +39,9 @@ public:
   std::string str() const;
   
 private:
-  static const int MAX_MODIFIER = 4;
-
   bool m_state;
-  // Array is terminated by !is_valid()
-  UIEvent m_codes[MAX_MODIFIER+1];
-  UIEvent m_secondary_codes[MAX_MODIFIER+1];
+  UIEventSequence m_codes;
+  UIEventSequence m_secondary_codes;
   int m_hold_threshold;
   int m_hold_counter;
 };
