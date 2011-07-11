@@ -64,4 +64,13 @@ UIEventSequence::send(UInput& uinput, int value)
   }
 }
 
+void
+UIEventSequence::send_reverse(UInput& uinput, int value)
+{
+  for(UIEvents::reverse_iterator i = m_sequence.rbegin(); i != m_sequence.rend(); ++i)
+  { 
+    uinput.send_key(i->get_device_id(), i->code, value);
+  } 
+}
+
 /* EOF */
