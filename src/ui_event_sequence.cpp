@@ -40,8 +40,18 @@ UIEventSequence::from_string(const std::string& value)
   return sequence;
 }
 
+UIEventSequence::UIEventSequence() :
+  m_sequence()
+{
+}
+
 UIEventSequence::UIEventSequence(const UIEvents& sequence) :
   m_sequence(sequence)
+{
+}
+
+UIEventSequence::UIEventSequence(const UIEvent& event) :
+  m_sequence(1, event)
 {
 }
 
@@ -58,19 +68,43 @@ UIEventSequence::init(UInput& uinput, int slot, bool extra_devices)
 void
 UIEventSequence::send(UInput& uinput, int value)
 {
-  for(UIEvents::iterator i = m_sequence.begin(); i != m_sequence.end(); ++i)
-  { 
-    uinput.send_key(i->get_device_id(), i->code, value);
+  if (value)
+  {
+    for(UIEvents::iterator i = m_sequence.begin(); i != m_sequence.end(); ++i)
+    {
+      uinput.send_key(i->get_device_id(), i->code, value);
+    }
+  }
+  else
+  {
+    // on release, send events in reverse order
+    for(UIEvents::reverse_iterator i = m_sequence.rbegin(); i != m_sequence.rend(); ++i)
+    { 
+      uinput.send_key(i->get_device_id(), i->code, value);
+    }
   }
 }
 
 void
-UIEventSequence::send_reverse(UInput& uinput, int value)
+UIEventSequence::clear()
 {
-  for(UIEvents::reverse_iterator i = m_sequence.rbegin(); i != m_sequence.rend(); ++i)
-  { 
-    uinput.send_key(i->get_device_id(), i->code, value);
-  } 
+  m_sequence.clear();
+}
+
+std::string
+UIEventSequence::str() const
+{
+  std::ostringstream out;
+
+  for(UIEvents::const_iterator i = m_sequence.begin(); i != m_sequence.end(); ++i)
+  {
+    out << i->get_device_id() << "-" << i->code;
+
+    if (i != m_sequence.end()-1)
+      out << "+";
+  }
+
+  return out.str();
 }
 
 /* EOF */

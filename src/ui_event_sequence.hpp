@@ -25,9 +25,17 @@
 
 class UInput;
 
+/** 
+    A sequence of UIEvents (only key events allowed right now)
+    
+    FIXME: class name is kind of wrong
+ */
 class UIEventSequence
 {
 public:
+  /** 
+      "KEY_LEFTSHIFT+KEY_B" 
+  */
   static UIEventSequence from_string(const std::string& value);
 
 private:
@@ -35,13 +43,16 @@ private:
   UIEvents m_sequence;
 
 public:
+  UIEventSequence();
   UIEventSequence(const UIEvents& sequence);
+  UIEventSequence(const UIEvent& event);
 
   void init(UInput& uinput, int slot, bool extra_devices);
   void send(UInput& uinput, int value);
 
-  /** send the event sequence in reverse order */
-  void send_reverse(UInput& uinput, int value);
+  void clear();
+
+  std::string str() const;
 };
 
 #endif

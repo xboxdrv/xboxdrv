@@ -70,15 +70,6 @@ UIEvent::invalid()
 }
 
 bool
-UIEvent::is_valid() const 
-{
-  return 
-    m_device_id != DEVICEID_INVALID &&
-    type != -1 &&
-    code != -1;
-}
-
-bool
 UIEvent::operator<(const UIEvent& rhs)  const
 {
   if (m_device_id == rhs.m_device_id)

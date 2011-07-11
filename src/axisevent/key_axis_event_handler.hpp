@@ -21,6 +21,8 @@
 
 #include "axis_event.hpp"
 
+#include "ui_event_sequence.hpp"
+
 class KeyAxisEventHandler : public AxisEventHandler
 {
 public:
@@ -41,13 +43,11 @@ private:
   int  get_zone(int value) const;
   
 private:
-  static const int MAX_MODIFIER = 4;
-
   int m_old_value;
 
   // Array is terminated by -1
-  UIEvent m_up_codes[MAX_MODIFIER+1];
-  UIEvent m_down_codes[MAX_MODIFIER+1];
+  UIEventSequence m_up_codes;
+  UIEventSequence m_down_codes;
   int m_threshold;
 };
 
