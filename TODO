@@ -82,11 +82,6 @@ Stuff to do before 0.8.1 release:
   -> add an option to have the cycle sequence not wrap around: 
      -> possible use: throttle in a flightsim mapped to 1-9
 
-* implement filter that removes glitched button events, i.e. events
-  that happen in very low timespans and are caused by broken micro switches
-
-* make use of UIEventSequence, get rid of UIEvent::is_valid() if possible
-
 * get rid of UIEvent::resolve_device_id() if possible
 
 
@@ -100,6 +95,9 @@ Target for 0.9.0
 
 * native REL events
 
+* implement filter that removes glitched button events, i.e. events
+  that happen in very low timespans and are caused by broken micro switches
+
 * use FIXME for random code improvements, use BUG for actual problems
 
 * Collect Linux games with force feedback support: Bzflag?
