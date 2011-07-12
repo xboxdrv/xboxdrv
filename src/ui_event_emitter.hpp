@@ -16,34 +16,33 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_BUTTONEVENT_REL_BUTTON_EVENT_HANDLER_HPP
-#define HEADER_XBOXDRV_BUTTONEVENT_REL_BUTTON_EVENT_HANDLER_HPP
+#ifndef HEADER_XBOXDRV_UI_EVENT_EMITTER_HPP
+#define HEADER_XBOXDRV_UI_EVENT_EMITTER_HPP
 
-#include "button_event.hpp"
+#include <boost/shared_ptr.hpp>
+#include <stdint.h>
 
-#include "ui_event_emitter.hpp"
+class UInput;
+class UIEventEmitter;
 
-class RelButtonEventHandler : public ButtonEventHandler
+typedef boost::shared_ptr<UIEventEmitter> UIEventEmitterPtr;
+
+class UIEventEmitter
 {
-public:
-  static RelButtonEventHandler* from_string(const std::string& str);
+private:
+  UInput& m_uinput;
+  uint32_t m_device_id;
+  int m_type;
+  int m_code;
 
 public:
-  RelButtonEventHandler(const UIEvent& code);
+  UIEventEmitter(UInput& uinput, uint32_t device_id, int type, int code);
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, bool value);
-  void update(UInput& uinput, int msec_delta) {}
-
-  std::string str() const;
+  void send(int value);
 
 private:
-  UIEvent m_code;
-
-  int  m_value;
-  int  m_repeat;
-
-  UIEventEmitterPtr m_rel_emitter;
+  UIEventEmitter(const UIEventEmitter&);
+  UIEventEmitter& operator=(const UIEventEmitter&);
 };
 
 #endif

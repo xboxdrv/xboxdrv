@@ -67,7 +67,8 @@ RelAxisEventHandler::RelAxisEventHandler() :
   m_value(5),
   m_repeat(10),
   m_stick_value(0.0f),
-  m_rest_value(0.0f)
+  m_rest_value(0.0f),
+  m_rel_emitter()
 {
 }
 
@@ -76,7 +77,8 @@ RelAxisEventHandler::RelAxisEventHandler(int device_id, int code, int repeat, fl
   m_value(value),
   m_repeat(repeat),
   m_stick_value(0.0f),
-  m_rest_value(0.0f)
+  m_rest_value(0.0f),
+  m_rel_emitter()
 {
 }
 
@@ -84,7 +86,7 @@ void
 RelAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 {
   m_code.resolve_device_id(slot, extra_devices);
-  uinput.add_rel(m_code.get_device_id(), m_code.code);
+  m_rel_emitter = uinput.add_rel(m_code.get_device_id(), m_code.code);
 }
 
 void
@@ -120,7 +122,7 @@ RelAxisEventHandler::update(UInput& uinput, int msec_delta)
     rel_value += m_rest_value;
     m_rest_value = rel_value - truncf(rel_value);
 
-    uinput.send_rel(m_code.get_device_id(), m_code.code, static_cast<int>(rel_value));
+    m_rel_emitter->send(static_cast<int>(rel_value));
   }
 }
 

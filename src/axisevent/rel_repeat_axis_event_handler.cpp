@@ -51,15 +51,18 @@ RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(const UIEvent& code, int va
   m_value(value),
   m_repeat(repeat),
   m_stick_value(0),
-  m_timer(0)
+  m_timer(0),
+  m_rel_emitter()
 {  
 }
 
 void
 RelRepeatAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 {
+  assert(!m_rel_emitter);
+
   m_code.resolve_device_id(slot, extra_devices);
-  uinput.add_rel(m_code.get_device_id(), m_code.code);
+  m_rel_emitter = uinput.add_rel(m_code.get_device_id(), m_code.code);
 }
 
 void
@@ -91,11 +94,11 @@ RelRepeatAxisEventHandler::update(UInput& uinput, int msec_delta)
   {
     if (m_stick_value < 0)
     {
-      uinput.send_rel(m_code.get_device_id(), m_code.code, -m_value);
+      m_rel_emitter->send(-m_value);
     }
     else
     {
-      uinput.send_rel(m_code.get_device_id(), m_code.code, m_value);
+      m_rel_emitter->send(m_value);
     }
     
     m_timer -= m_repeat;

@@ -67,6 +67,18 @@ $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-
 Stuff to do before 0.8.1 release:
 =================================
 
+* buttonevent/key_button_event_handler.hpp
+
+   Problematic, might cause trouble due to lack of sync:
+
+          // send both a press and release event after another, aka a "click"
+          m_codes.send(uinput, true);
+          m_codes.send(uinput, false);
+
+* MacroButtonEventHandler is still using raw UInput::send(), should
+  use UIEventEmitterPtr instead, UInput::send_rel_repetitive() should
+  be removed
+
 * cycle-key is incomplete, should have additional mode that allows
   next/prev without sending events, also has issues with stuck buttons
   when multiple keys are pressed

@@ -21,6 +21,8 @@
 
 #include "axis_event.hpp"
 
+#include "ui_event_emitter.hpp"
+
 class RelAxisEventHandler : public AxisEventHandler
 {
 public:
@@ -43,6 +45,8 @@ private:
 
   float   m_stick_value;
   float   m_rest_value;
+
+  UIEventEmitterPtr m_rel_emitter;
 };
 
 #endif
