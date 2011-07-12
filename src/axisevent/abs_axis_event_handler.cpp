@@ -61,14 +61,16 @@ AbsAxisEventHandler::from_string(const std::string& str)
 AbsAxisEventHandler::AbsAxisEventHandler() :
   m_code(UIEvent::invalid()),
   m_fuzz(0),
-  m_flat(0)
+  m_flat(0),
+  m_abs_emitter()
 {
 }
 
 AbsAxisEventHandler::AbsAxisEventHandler(const UIEvent& code, int min, int max, int fuzz, int flat) :
   m_code(code),
   m_fuzz(fuzz),
-  m_flat(flat)
+  m_flat(flat),
+  m_abs_emitter()
 {
   set_axis_range(min, max);
 }
@@ -76,15 +78,17 @@ AbsAxisEventHandler::AbsAxisEventHandler(const UIEvent& code, int min, int max, 
 void
 AbsAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 {
+  assert(!m_abs_emitter);
+
   m_code.resolve_device_id(slot, extra_devices);
-  uinput.add_abs(m_code.get_device_id(), m_code.code, 
-                 m_min, m_max, m_fuzz, m_flat);
+  m_abs_emitter = uinput.add_abs(m_code.get_device_id(), m_code.code, 
+                                 m_min, m_max, m_fuzz, m_flat);
 }
 
 void
 AbsAxisEventHandler::send(UInput& uinput, int value)
 {
-  uinput.send_abs(m_code.get_device_id(), m_code.code, value);
+  m_abs_emitter->send(value);
 }
  
 void

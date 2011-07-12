@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "ui_event.hpp"
+#include "ui_event_emitter.hpp"
 
 class UInput;
 
@@ -40,7 +41,9 @@ public:
 
 private:
   typedef std::vector<UIEvent> UIEvents;
+  typedef std::vector<UIEventEmitterPtr> UIEventEmitters;
   UIEvents m_sequence;
+  UIEventEmitters m_emitters;
 
 public:
   UIEventSequence();

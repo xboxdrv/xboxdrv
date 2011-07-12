@@ -318,25 +318,31 @@ UInput::create_uinput_device(uint32_t device_id)
   }
 }
 
-void
+UIEventEmitterPtr
 UInput::add_key(uint32_t device_id, int ev_code)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_key(ev_code);
+
+  return UIEventEmitterPtr(new UIEventEmitter(*this, device_id, EV_KEY, ev_code));
 }
 
-void
+UIEventEmitterPtr
 UInput::add_rel(uint32_t device_id, int ev_code)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_rel(ev_code);
+
+  return UIEventEmitterPtr(new UIEventEmitter(*this, device_id, EV_REL, ev_code));
 }
 
-void
+UIEventEmitterPtr
 UInput::add_abs(uint32_t device_id, int ev_code, int min, int max, int fuzz, int flat)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_abs(ev_code, min, max, fuzz, flat);
+
+  return UIEventEmitterPtr(new UIEventEmitter(*this, device_id, EV_KEY, ev_code));
 }
 
 void
@@ -359,30 +365,6 @@ void
 UInput::send(uint32_t device_id, int ev_type, int ev_code, int value)
 {
   get_uinput(device_id)->send(ev_type, ev_code, value);
-}
-
-void
-UInput::send_abs(uint32_t device_id, int ev_code, int value)
-{
-  assert(ev_code != -1);
-  get_uinput(device_id)->send(EV_ABS, ev_code, value);
-}
-
-void
-UInput::send_key(uint32_t device_id, int ev_code, bool value)
-{
-  assert(ev_code != -1);
-  get_uinput(device_id)->send(EV_KEY, ev_code, value);
-}
-
-void
-UInput::send_rel(uint32_t device_id, int ev_code, int value)
-{
-  assert(ev_code != -1);
-  if (value != 0)
-  {
-    get_uinput(device_id)->send(EV_REL, ev_code, value);
-  }
 }
 
 void

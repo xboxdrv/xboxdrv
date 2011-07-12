@@ -21,6 +21,8 @@
 
 #include "button_event.hpp"
 
+#include "ui_event_emitter.hpp"
+
 class AbsButtonEventHandler : public ButtonEventHandler
 {
 public:
@@ -38,6 +40,8 @@ public:
 private:
   UIEvent m_code;
   int m_value;
+
+  UIEventEmitterPtr m_abs_emitter;
 };
 
 #endif

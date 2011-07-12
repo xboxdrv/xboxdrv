@@ -56,7 +56,8 @@ RelButtonEventHandler::from_string(const std::string& str)
 RelButtonEventHandler::RelButtonEventHandler(const UIEvent& code) :
   m_code(code),
   m_value(3),
-  m_repeat(100)
+  m_repeat(100),
+  m_rel_emitter()
 {
 }
 
@@ -64,7 +65,7 @@ void
 RelButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 {
   m_code.resolve_device_id(slot, extra_devices);
-  uinput.add_rel(m_code.get_device_id(), m_code.code);
+  m_rel_emitter = uinput.add_rel(m_code.get_device_id(), m_code.code);
 }
 
 void
@@ -74,7 +75,7 @@ RelButtonEventHandler::send(UInput& uinput, bool value)
   {
     if (value)
     {
-      uinput.send_rel(m_code.get_device_id(), m_code.code, m_value);
+      m_rel_emitter->send(m_value);
     }
   }
   else
