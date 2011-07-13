@@ -25,6 +25,7 @@
 #include "axis_event.hpp"
 #include "linux_uinput.hpp"
 #include "ui_event_emitter.hpp"
+#include "ui_event_collector.hpp"
 
 struct Xbox360Msg;
 struct XboxMsg;
@@ -60,6 +61,9 @@ private:
 
   typedef std::map<uint32_t, struct input_id> DeviceUSBId;
   DeviceUSBId m_device_usbids;
+
+  typedef std::vector<UIEventCollectorPtr> Collectors;
+  Collectors m_collectors;
 
   struct RelRepeat 
   {
@@ -130,6 +134,8 @@ private:
   static gboolean on_timeout_wrap(gpointer data) {
     return static_cast<UInput*>(data)->on_timeout();
   }
+
+  UIEventEmitterPtr create_emitter(int device_id, int type, int code);
 
 private:
   UInput(const UInput&);

@@ -30,51 +30,13 @@ UIEventCollector::UIEventCollector(UInput& uinput,
   m_uinput(uinput),
   m_device_id(device_id),
   m_type(type),
-  m_code(code),
-  m_value(0),
-  m_emitters()
+  m_code(code)
 {
   assert(m_code != -1);
 }
 
-UIEventEmitterPtr
-UIEventCollector::create_emitter()
+UIEventCollector::~UIEventCollector()
 {
-  UIEventEmitterPtr emitter(new UIEventEmitter(*this));
-  m_emitters.push_back(emitter);
-  return emitter;
-}
-
-void
-UIEventCollector::sync()
-{
-  int value = 0;
-  for(Emitters::iterator i = m_emitters.begin(); i != m_emitters.end(); ++i)
-  {
-    switch(m_type)
-    {
-      case EV_KEY:
-        value = value || (*i)->get_value();
-        break;
-
-      case EV_REL:
-        value += (*i)->get_value();
-        break;
-
-      case EV_ABS:
-        value = (*i)->get_value();
-        break;
-
-      default:
-        assert(!"unknown type");
-    }
-  }
-
-  if (value != m_value)
-  {
-    m_value = value;
-    m_uinput.send(m_device_id, m_type, m_code, m_value);
-  }
 }
 
 /* EOF */

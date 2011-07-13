@@ -19,24 +19,8 @@
 #include "ui_event_emitter.hpp"
 
 #include <assert.h>
+
+#include "log.hpp"
 #include "uinput.hpp"
-
-UIEventEmitter::UIEventEmitter(UInput& uinput, 
-                               uint32_t device_id, 
-                               int type, 
-                               int code) :
-  m_uinput(uinput),
-  m_device_id(device_id),
-  m_type(type),
-  m_code(code)
-{
-  assert(m_code != -1);
-}
-
-void
-UIEventEmitter::send(int value)
-{
-  m_uinput.send(m_device_id, m_type, m_code, value);
-}
 
 /* EOF */

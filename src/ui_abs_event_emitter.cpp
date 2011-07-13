@@ -16,41 +16,23 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_UI_EVENT_EMITTER_HPP
-#define HEADER_XBOXDRV_UI_EVENT_EMITTER_HPP
+#include "ui_abs_event_emitter.hpp"
 
-#include <boost/shared_ptr.hpp>
-#include <stdint.h>
-
-class UInput;
-class UIEventEmitter;
-class UIEventCollector;
-
-typedef boost::shared_ptr<UIEventEmitter> UIEventEmitterPtr;
-
-class UIEventEmitter
+UIAbsEventEmitter::UIAbsEventEmitter() :
+  m_value(0)
 {
-public:
-  UIEventEmitter() {}
-  virtual ~UIEventEmitter() {}
+}
 
-  virtual void send(int value) = 0;
-  virtual int get_value() const = 0;
-
-private:
-  UIEventEmitter(const UIEventEmitter&);
-  UIEventEmitter& operator=(const UIEventEmitter&);
-};
-
-class UIRelEmitter
+void
+UIAbsEventEmitter::send(int value)
 {
-private:
-  
-public:
-  UIRelEmitter();
+  m_value = value;
+}
 
-};
-
-#endif
+int
+UIAbsEventEmitter::get_value() const
+{
+  return m_value;
+}
 
 /* EOF */

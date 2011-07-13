@@ -16,43 +16,28 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_UI_EVENT_COLLECTOR_HPP
-#define HEADER_XBOXDRV_UI_EVENT_COLLECTOR_HPP
-
-#include <boost/shared_ptr.hpp>
-#include <stdint.h>
-#include <vector>
+#ifndef HEADER_XBOXDRV_UI_KEY_EVENT_EMITTER_HPP
+#define HEADER_XBOXDRV_UI_KEY_EVENT_EMITTER_HPP
 
 #include "ui_event_emitter.hpp"
 
-class UIEventCollector;
-class UInput;
-
-typedef boost::shared_ptr<UIEventCollector> UIEventCollectorPtr;
-
-class UIEventCollector
+class UIKeyEventEmitter : public UIEventEmitter
 {
-protected:
-  UInput& m_uinput;
-  uint32_t m_device_id;
-  int m_type;
-  int m_code;
-  
+private:
+  int m_value;
+
 public:
-  UIEventCollector(UInput& uinput, uint32_t device_id, int type, int code);
-  virtual ~UIEventCollector();
+  UIKeyEventEmitter();
 
-  uint32_t get_device_id() const { return m_device_id; }
-  int      get_type() const { return m_type; }
-  int      get_code() const { return m_code; }
-
-  virtual UIEventEmitterPtr create_emitter() = 0;
-  virtual void sync() = 0;
+  void send(int value);
+  int get_value() const;
 
 private:
-  UIEventCollector(const UIEventCollector&);
-  UIEventCollector& operator=(const UIEventCollector&);
+  UIKeyEventEmitter(const UIKeyEventEmitter&);
+  UIKeyEventEmitter& operator=(const UIKeyEventEmitter&);
 };
+
+typedef boost::shared_ptr<UIKeyEventEmitter> UIKeyEventEmitterPtr;
 
 #endif
 

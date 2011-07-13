@@ -16,41 +16,39 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_UI_EVENT_EMITTER_HPP
-#define HEADER_XBOXDRV_UI_EVENT_EMITTER_HPP
+#include "ui_key_event_collector.hpp"
 
-#include <boost/shared_ptr.hpp>
-#include <stdint.h>
+#include "uinput.hpp"
 
-class UInput;
-class UIEventEmitter;
-class UIEventCollector;
-
-typedef boost::shared_ptr<UIEventEmitter> UIEventEmitterPtr;
-
-class UIEventEmitter
+UIKeyEventCollector::UIKeyEventCollector(UInput& uinput, uint32_t device_id, int type, int code) :
+  UIEventCollector(uinput, device_id, type, code),
+  m_emitters(),
+  m_value(0)
 {
-public:
-  UIEventEmitter() {}
-  virtual ~UIEventEmitter() {}
+}
 
-  virtual void send(int value) = 0;
-  virtual int get_value() const = 0;
-
-private:
-  UIEventEmitter(const UIEventEmitter&);
-  UIEventEmitter& operator=(const UIEventEmitter&);
-};
-
-class UIRelEmitter
+UIEventEmitterPtr
+UIKeyEventCollector::create_emitter()
 {
-private:
-  
-public:
-  UIRelEmitter();
+  UIKeyEventEmitterPtr emitter(new UIKeyEventEmitter);
+  m_emitters.push_back(emitter);
+  return m_emitters.back();
+}
 
-};
+void
+UIKeyEventCollector::sync()
+{
+  int value = 0;
+  for(Emitters::iterator i = m_emitters.begin(); i != m_emitters.end(); ++i)
+  {
+    value = value || (*i)->get_value();
+  }
 
-#endif
+  if (value != m_value)
+  {
+    m_value = value;
+    m_uinput.send(get_device_id(), get_type(), get_code(), m_value);
+  }
+}
 
 /* EOF */
