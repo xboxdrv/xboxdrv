@@ -1,10 +1,14 @@
 xboxdrv 0.8.1 - (??/Jul/2011)
 =============================
 
-* added support for an unlimited number shift buttons
+* added 'generic-usb' controller type for debugging
 * added cycle-key support to cycle through a sequence of buttons
-* fixed rumble messages getting delayed
+* added proper merging of multiple output events to the same target
+* added support for Street Fighter IV fightpad
+* added support for Tron Xbox 360 controller
+* added support for an unlimited number shift buttons
 * fixed keys not getting pressed in --ui-axismap
+* fixed rumble messages getting delayed
 * reenabled --priority realtime
 
 
