@@ -18,7 +18,10 @@
 
 #include "ui_key_event_emitter.hpp"
 
-UIKeyEventEmitter::UIKeyEventEmitter() :
+#include "ui_key_event_collector.hpp"
+
+UIKeyEventEmitter::UIKeyEventEmitter(UIKeyEventCollector& collector) :
+  m_collector(collector),
   m_value(0)
 {
 }
@@ -26,7 +29,13 @@ UIKeyEventEmitter::UIKeyEventEmitter() :
 void
 UIKeyEventEmitter::send(int value)
 {
-  m_value = value;
+  assert(value == 0 || value == 1);
+
+  if (m_value != value)
+  {
+    m_value = value;
+    m_collector.send(m_value);
+  }
 }
 
 int

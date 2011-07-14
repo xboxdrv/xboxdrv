@@ -21,13 +21,16 @@
 
 #include "ui_event_emitter.hpp"
 
+class UIKeyEventCollector;
+
 class UIKeyEventEmitter : public UIEventEmitter
 {
 private:
-  int m_value;
+  UIKeyEventCollector& m_collector;
+  bool m_value;
 
 public:
-  UIKeyEventEmitter();
+  UIKeyEventEmitter(UIKeyEventCollector& collector);
 
   void send(int value);
   int get_value() const;

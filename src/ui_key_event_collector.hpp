@@ -29,13 +29,14 @@ class UIKeyEventCollector : public UIEventCollector
 private:
   typedef std::vector<UIKeyEventEmitterPtr> Emitters;
   Emitters m_emitters;
-  
+
   int m_value;
 
 public:
   UIKeyEventCollector(UInput& uinput, uint32_t device_id, int type, int code);
 
   UIEventEmitterPtr create_emitter();
+  void send(int value);
   void sync();
 
 private:
