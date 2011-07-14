@@ -32,6 +32,7 @@ public:
   UIAbsEventCollector(UInput& uinput, uint32_t device_id, int type, int code);
 
   UIEventEmitterPtr create_emitter();
+  void send(int value);
   void sync();
 
 private:

@@ -29,18 +29,20 @@ UIAbsEventCollector::UIAbsEventCollector(UInput& uinput, uint32_t device_id, int
 UIEventEmitterPtr
 UIAbsEventCollector::create_emitter()
 {
-  UIAbsEventEmitterPtr emitter(new UIAbsEventEmitter);
+  UIAbsEventEmitterPtr emitter(new UIAbsEventEmitter(*this));
   m_emitters.push_back(emitter);
   return m_emitters.back();
 }
 
 void
+UIAbsEventCollector::send(int value)
+{
+  m_uinput.send(get_device_id(), get_type(), get_code(), value);
+}
+
+void
 UIAbsEventCollector::sync()
 {
-  for(Emitters::iterator i = m_emitters.begin(); i != m_emitters.end(); ++i)
-  {
-    m_uinput.send(get_device_id(), get_type(), get_code(), (*i)->get_value());    
-  }
 }
 
 /* EOF */

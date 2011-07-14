@@ -18,27 +18,17 @@
 
 #include "ui_rel_event_emitter.hpp"
 
-UIRelEventEmitter::UIRelEventEmitter() : 
-  m_value()
+#include "ui_rel_event_collector.hpp"
+
+UIRelEventEmitter::UIRelEventEmitter(UIRelEventCollector& collector) :
+  m_collector(collector)
 {
 }
 
 void
 UIRelEventEmitter::send(int value)
 {
-  m_value = value;
-}
-
-int
-UIRelEventEmitter::get_value() const
-{
-  return m_value;
-}
-
-void
-UIRelEventEmitter::clear()
-{
-  m_value = 0;
+  m_collector.send(value);
 }
 
 /* EOF */

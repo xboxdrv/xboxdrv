@@ -35,7 +35,6 @@ public:
   virtual ~UIEventEmitter() {}
 
   virtual void send(int value) = 0;
-  virtual int get_value() const = 0;
 
 private:
   UIEventEmitter(const UIEventEmitter&);

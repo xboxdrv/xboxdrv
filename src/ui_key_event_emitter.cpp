@@ -38,10 +38,4 @@ UIKeyEventEmitter::send(int value)
   }
 }
 
-int
-UIKeyEventEmitter::get_value() const
-{
-  return m_value;
-}
-
 /* EOF */

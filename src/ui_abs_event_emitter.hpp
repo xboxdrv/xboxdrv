@@ -21,16 +21,18 @@
 
 #include "ui_event_emitter.hpp"
 
+class UIAbsEventCollector;
+
 class UIAbsEventEmitter : public UIEventEmitter
 {
 private:
+  UIAbsEventCollector& m_collector;
   int m_value;
 
 public:
-  UIAbsEventEmitter();
+  UIAbsEventEmitter(UIAbsEventCollector& collector);
 
   void send(int value);
-  int get_value() const;
 
 private:
   UIAbsEventEmitter(const UIAbsEventEmitter&);
