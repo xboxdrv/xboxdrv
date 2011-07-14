@@ -18,6 +18,7 @@
 
 #include "ui_key_event_collector.hpp"
 
+#include "log.hpp"
 #include "uinput.hpp"
 
 UIKeyEventCollector::UIKeyEventCollector(UInput& uinput, uint32_t device_id, int type, int code) :
@@ -30,25 +31,49 @@ UIKeyEventCollector::UIKeyEventCollector(UInput& uinput, uint32_t device_id, int
 UIEventEmitterPtr
 UIKeyEventCollector::create_emitter()
 {
-  UIKeyEventEmitterPtr emitter(new UIKeyEventEmitter);
+  UIKeyEventEmitterPtr emitter(new UIKeyEventEmitter(*this));
   m_emitters.push_back(emitter);
   return m_emitters.back();
 }
 
 void
+UIKeyEventCollector::send(int value)
+{
+  assert(value == 0 || value == 1);
+
+  if (value)
+  {
+    if (m_value >= static_cast<int>(m_emitters.size()))
+    {
+      log_error("got press event while all emitter where already pressed");
+    }
+
+    m_value += 1;
+
+    if (m_value == 1)
+    {
+      m_uinput.send(get_device_id(), get_type(), get_code(), m_value);
+    }
+  }
+  else
+  {
+    if (m_value <= 0)
+    {
+      log_error("got release event while collector was in release state");
+    }
+
+    m_value -= 1;
+
+    if (m_value == 0)
+    {
+      m_uinput.send(get_device_id(), get_type(), get_code(), 0);
+    }
+  }
+}
+
+void
 UIKeyEventCollector::sync()
 {
-  int value = 0;
-  for(Emitters::iterator i = m_emitters.begin(); i != m_emitters.end(); ++i)
-  {
-    value = value || (*i)->get_value();
-  }
-
-  if (value != m_value)
-  {
-    m_value = value;
-    m_uinput.send(get_device_id(), get_type(), get_code(), m_value);
-  }
 }
 
 /* EOF */
