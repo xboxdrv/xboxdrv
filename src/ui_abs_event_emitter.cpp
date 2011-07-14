@@ -18,7 +18,10 @@
 
 #include "ui_abs_event_emitter.hpp"
 
-UIAbsEventEmitter::UIAbsEventEmitter() :
+#include "ui_abs_event_collector.hpp"
+
+UIAbsEventEmitter::UIAbsEventEmitter(UIAbsEventCollector& collector) :
+  m_collector(collector),
   m_value(0)
 {
 }
@@ -26,13 +29,11 @@ UIAbsEventEmitter::UIAbsEventEmitter() :
 void
 UIAbsEventEmitter::send(int value)
 {
-  m_value = value;
-}
-
-int
-UIAbsEventEmitter::get_value() const
-{
-  return m_value;
+  if (m_value != value)
+  {
+    m_value = value;
+    m_collector.send(m_value);
+  }
 }
 
 /* EOF */

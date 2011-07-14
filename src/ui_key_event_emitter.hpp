@@ -33,7 +33,6 @@ public:
   UIKeyEventEmitter(UIKeyEventCollector& collector);
 
   void send(int value);
-  int get_value() const;
 
 private:
   UIKeyEventEmitter(const UIKeyEventEmitter&);

@@ -21,18 +21,17 @@
 
 #include "ui_event_emitter.hpp"
 
+class UIRelEventCollector;
+
 class UIRelEventEmitter : public UIEventEmitter
 {
 private:
-  int m_value;
+  UIRelEventCollector& m_collector;
 
 public:
-  UIRelEventEmitter();
+  UIRelEventEmitter(UIRelEventCollector& collector);
 
   void send(int value);
-  int get_value() const;
-
-  void clear();
 
 private:
   UIRelEventEmitter(const UIRelEventEmitter&);

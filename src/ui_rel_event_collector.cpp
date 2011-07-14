@@ -29,25 +29,20 @@ UIRelEventCollector::UIRelEventCollector(UInput& uinput, uint32_t device_id, int
 UIEventEmitterPtr
 UIRelEventCollector::create_emitter()
 {
-  UIRelEventEmitterPtr emitter(new UIRelEventEmitter);
+  UIRelEventEmitterPtr emitter(new UIRelEventEmitter(*this));
   m_emitters.push_back(emitter);
   return m_emitters.back();
 }
 
 void
+UIRelEventCollector::send(int value)
+{
+  m_uinput.send(get_device_id(), get_type(), get_code(), value);
+}
+
+void
 UIRelEventCollector::sync() 
 {
-  int value = 0;
-  for(Emitters::iterator i = m_emitters.begin(); i != m_emitters.end(); ++i)
-  {
-    value += (*i)->get_value();
-    (*i)->clear();
-  }
- 
-  if (value != 0)
-  {
-    m_uinput.send(get_device_id(), get_type(), get_code(), value);
-  }
 }
 
 /* EOF */
