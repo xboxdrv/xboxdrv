@@ -36,6 +36,11 @@ private:
   int m_key_width;
   int m_key_height;
 
+  bool m_shift_mode;
+
+  int m_cursor_x;
+  int m_cursor_y;
+
 public:
   VirtualKeyboard();
   ~VirtualKeyboard();
@@ -44,9 +49,22 @@ public:
   void hide();
 
   void on_expose(GtkWidget* widget, GdkEventExpose* event);
+  void on_key_press(GtkWidget* widget, GdkEventKey* event);
 
   void draw_keyboard(cairo_t* cr);
-  void draw_key(cairo_t* cr, int x, int y, const Key& key);
+  void draw_key(cairo_t* cr, int x, int y, const Key& key, bool highlight);
+  void draw_centered_text(cairo_t* cr, double x, double y, const std::string& str);
+
+  int get_width() const;
+  int get_height() const;
+
+  void cursor_set(int x, int y);
+
+  void cursor_left();
+  void cursor_right();
+
+  void cursor_up();
+  void cursor_down();
 
 private:
   Key* get_key(int x, int y);
@@ -54,6 +72,10 @@ private:
 private:
   static void on_expose_wrap(GtkWidget* widget, GdkEventExpose* event, gpointer userdata) {
     static_cast<VirtualKeyboard*>(userdata)->on_expose(widget, event);
+  }
+
+  static void on_key_press_wrap(GtkWidget* widget, GdkEventKey* event, gpointer userdata) {
+    static_cast<VirtualKeyboard*>(userdata)->on_key_press(widget, event);
   }
 
 private:
