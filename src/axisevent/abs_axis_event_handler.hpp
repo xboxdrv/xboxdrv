@@ -21,6 +21,8 @@
 
 #include "axis_event.hpp"
 
+#include "ui_event_emitter.hpp"
+
 class AbsAxisEventHandler : public AxisEventHandler
 {
 public:
@@ -40,6 +42,8 @@ private:
   UIEvent m_code;
   int m_fuzz;
   int m_flat;
+
+  UIEventEmitterPtr m_abs_emitter;
 };
 
 #endif

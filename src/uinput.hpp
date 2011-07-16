@@ -24,6 +24,8 @@
 
 #include "axis_event.hpp"
 #include "linux_uinput.hpp"
+#include "ui_event_emitter.hpp"
+#include "ui_event_collector.hpp"
 
 struct Xbox360Msg;
 struct XboxMsg;
@@ -60,6 +62,9 @@ private:
   typedef std::map<uint32_t, struct input_id> DeviceUSBId;
   DeviceUSBId m_device_usbids;
 
+  typedef std::vector<UIEventCollectorPtr> Collectors;
+  Collectors m_collectors;
+
   struct RelRepeat 
   {
     UIEvent code;
@@ -92,9 +97,9 @@ public:
 
   /** Device construction functions
       @{*/
-  void add_rel(uint32_t device_id, int ev_code);
-  void add_abs(uint32_t device_id, int ev_code, int min, int max, int fuzz, int flat);
-  void add_key(uint32_t device_id, int ev_code);
+  UIEventEmitterPtr add_rel(uint32_t device_id, int ev_code);
+  UIEventEmitterPtr add_abs(uint32_t device_id, int ev_code, int min, int max, int fuzz, int flat);
+  UIEventEmitterPtr add_key(uint32_t device_id, int ev_code);
   void add_ff(uint32_t device_id, uint16_t code);
 
   /** needs to be called to finish device creation and create the
@@ -105,12 +110,9 @@ public:
   /** Send events to the kernel
       @{*/
   void send(uint32_t device_id, int ev_type, int ev_code, int value);
-  void send_abs(uint32_t device_id, int ev_code, int value);
-  void send_key(uint32_t device_id, int ev_code, bool value);
-  void send_rel(uint32_t device_id, int ev_code, int value);
   void send_rel_repetitive(const UIEvent& code, float value, int repeat_interval);
 
-  /** should be called to single that all events of the current frame
+  /** should be called to signal that all events of the current frame
       have been send */
   void sync();
   /** @} */
@@ -132,6 +134,8 @@ private:
   static gboolean on_timeout_wrap(gpointer data) {
     return static_cast<UInput*>(data)->on_timeout();
   }
+
+  UIEventEmitterPtr create_emitter(int device_id, int type, int code);
 
 private:
   UInput(const UInput&);

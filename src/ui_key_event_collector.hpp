@@ -16,39 +16,32 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_AXISEVENT_KEY_AXIS_EVENT_HANDLER_HPP
-#define HEADER_XBOXDRV_AXISEVENT_KEY_AXIS_EVENT_HANDLER_HPP
+#ifndef HEADER_XBOXDRV_UI_KEY_EVENT_COLLECTOR_HPP
+#define HEADER_XBOXDRV_UI_KEY_EVENT_COLLECTOR_HPP
 
-#include "axis_event.hpp"
+#include "ui_event_collector.hpp"
+#include "ui_key_event_emitter.hpp"
 
-#include "ui_event_sequence.hpp"
+#include <vector>
 
-class KeyAxisEventHandler : public AxisEventHandler
+class UIKeyEventCollector : public UIEventCollector
 {
-public:
-  static KeyAxisEventHandler* from_string(const std::string& str);
-  
-public:
-  KeyAxisEventHandler();
+private:
+  typedef std::vector<UIKeyEventEmitterPtr> Emitters;
+  Emitters m_emitters;
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, int value);
-  void update(UInput& uinput, int msec_delta);
+  int m_value;
 
-  std::string str() const;
+public:
+  UIKeyEventCollector(UInput& uinput, uint32_t device_id, int type, int code);
+
+  UIEventEmitterPtr create_emitter();
+  void send(int value);
+  void sync();
 
 private:
-  void send_up(UInput& uinput, int value);
-  void send_down(UInput& uinput, int value);
-  int  get_zone(int value) const;
-  
-private:
-  int m_old_value;
-
-  // Array is terminated by -1
-  UIEventSequence m_up_codes;
-  UIEventSequence m_down_codes;
-  int m_threshold;
+  UIKeyEventCollector(const UIKeyEventCollector&);
+  UIKeyEventCollector& operator=(const UIKeyEventCollector&);
 };
 
 #endif

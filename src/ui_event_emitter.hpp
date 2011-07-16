@@ -16,39 +16,38 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_AXISEVENT_KEY_AXIS_EVENT_HANDLER_HPP
-#define HEADER_XBOXDRV_AXISEVENT_KEY_AXIS_EVENT_HANDLER_HPP
+#ifndef HEADER_XBOXDRV_UI_EVENT_EMITTER_HPP
+#define HEADER_XBOXDRV_UI_EVENT_EMITTER_HPP
 
-#include "axis_event.hpp"
+#include <boost/shared_ptr.hpp>
+#include <stdint.h>
 
-#include "ui_event_sequence.hpp"
+class UInput;
+class UIEventEmitter;
+class UIEventCollector;
 
-class KeyAxisEventHandler : public AxisEventHandler
+typedef boost::shared_ptr<UIEventEmitter> UIEventEmitterPtr;
+
+class UIEventEmitter
 {
 public:
-  static KeyAxisEventHandler* from_string(const std::string& str);
+  UIEventEmitter() {}
+  virtual ~UIEventEmitter() {}
+
+  virtual void send(int value) = 0;
+
+private:
+  UIEventEmitter(const UIEventEmitter&);
+  UIEventEmitter& operator=(const UIEventEmitter&);
+};
+
+class UIRelEmitter
+{
+private:
   
 public:
-  KeyAxisEventHandler();
+  UIRelEmitter();
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, int value);
-  void update(UInput& uinput, int msec_delta);
-
-  std::string str() const;
-
-private:
-  void send_up(UInput& uinput, int value);
-  void send_down(UInput& uinput, int value);
-  int  get_zone(int value) const;
-  
-private:
-  int m_old_value;
-
-  // Array is terminated by -1
-  UIEventSequence m_up_codes;
-  UIEventSequence m_down_codes;
-  int m_threshold;
 };
 
 #endif

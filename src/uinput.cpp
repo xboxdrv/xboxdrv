@@ -24,6 +24,10 @@
 #include <stdexcept>
 #include <stdio.h>
 
+#include "ui_abs_event_collector.hpp"
+#include "ui_key_event_collector.hpp"
+#include "ui_rel_event_collector.hpp"
+
 #include "helper.hpp"
 #include "log.hpp"
 #include "raise_exception.hpp"
@@ -103,6 +107,7 @@ UInput::UInput(bool extra_events) :
   m_uinput_devs(),
   m_device_names(),
   m_device_usbids(),
+  m_collectors(),
   m_rel_repeat_lst(),
   m_extra_events(extra_events),
   m_timeout_id(),
@@ -318,25 +323,31 @@ UInput::create_uinput_device(uint32_t device_id)
   }
 }
 
-void
+UIEventEmitterPtr
 UInput::add_key(uint32_t device_id, int ev_code)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_key(ev_code);
+
+  return create_emitter(device_id, EV_KEY, ev_code);
 }
 
-void
+UIEventEmitterPtr
 UInput::add_rel(uint32_t device_id, int ev_code)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_rel(ev_code);
+
+  return create_emitter(device_id, EV_REL, ev_code);
 }
 
-void
+UIEventEmitterPtr
 UInput::add_abs(uint32_t device_id, int ev_code, int min, int max, int fuzz, int flat)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_abs(ev_code, min, max, fuzz, flat);
+
+  return create_emitter(device_id, EV_ABS, ev_code);
 }
 
 void
@@ -344,6 +355,51 @@ UInput::add_ff(uint32_t device_id, uint16_t code)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
   dev->add_ff(code);
+}
+
+UIEventEmitterPtr
+UInput::create_emitter(int device_id, int type, int code)
+{
+  // search for an already existing emitter
+  for(Collectors::iterator i = m_collectors.begin(); i != m_collectors.end(); ++i)
+  {
+    if (static_cast<int>((*i)->get_device_id()) == device_id && 
+        (*i)->get_type() == type && 
+        (*i)->get_code() == code)
+    {
+      log_tmp("found collector " << device_id << " " << type << " " << code);
+      return (*i)->create_emitter();
+    }
+  }
+
+  // no emitter found, create a new one
+  switch(type)
+  {
+    case EV_ABS:
+      {
+        UIEventCollectorPtr collector(new UIAbsEventCollector(*this, device_id, type, code));
+        m_collectors.push_back(collector);
+        return collector->create_emitter();
+      }
+
+    case EV_KEY:
+      {
+        UIEventCollectorPtr collector(new UIKeyEventCollector(*this, device_id, type, code));
+        m_collectors.push_back(collector);
+        return collector->create_emitter();
+      }
+
+    case EV_REL:
+      {
+        UIEventCollectorPtr collector(new UIRelEventCollector(*this, device_id, type, code));
+        m_collectors.push_back(collector);
+        return collector->create_emitter();
+      }
+
+    default:
+      assert(!"unknown type");
+      break;
+  }
 }
 
 void
@@ -359,30 +415,6 @@ void
 UInput::send(uint32_t device_id, int ev_type, int ev_code, int value)
 {
   get_uinput(device_id)->send(ev_type, ev_code, value);
-}
-
-void
-UInput::send_abs(uint32_t device_id, int ev_code, int value)
-{
-  assert(ev_code != -1);
-  get_uinput(device_id)->send(EV_ABS, ev_code, value);
-}
-
-void
-UInput::send_key(uint32_t device_id, int ev_code, bool value)
-{
-  assert(ev_code != -1);
-  get_uinput(device_id)->send(EV_KEY, ev_code, value);
-}
-
-void
-UInput::send_rel(uint32_t device_id, int ev_code, int value)
-{
-  assert(ev_code != -1);
-  if (value != 0)
-  {
-    get_uinput(device_id)->send(EV_REL, ev_code, value);
-  }
 }
 
 void
@@ -416,6 +448,11 @@ UInput::update(int msec_delta)
 void
 UInput::sync()
 {
+  for(Collectors::iterator i = m_collectors.begin(); i != m_collectors.end(); ++i)
+  {
+    (*i)->sync();
+  }
+
   for(UInputDevs::iterator i = m_uinput_devs.begin(); i != m_uinput_devs.end(); ++i)
   {
     i->second->sync();

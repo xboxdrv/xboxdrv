@@ -16,34 +16,42 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_BUTTONEVENT_REL_BUTTON_EVENT_HANDLER_HPP
-#define HEADER_XBOXDRV_BUTTONEVENT_REL_BUTTON_EVENT_HANDLER_HPP
+#ifndef HEADER_XBOXDRV_UI_EVENT_COLLECTOR_HPP
+#define HEADER_XBOXDRV_UI_EVENT_COLLECTOR_HPP
 
-#include "button_event.hpp"
+#include <boost/shared_ptr.hpp>
+#include <stdint.h>
+#include <vector>
 
 #include "ui_event_emitter.hpp"
 
-class RelButtonEventHandler : public ButtonEventHandler
+class UIEventCollector;
+class UInput;
+
+typedef boost::shared_ptr<UIEventCollector> UIEventCollectorPtr;
+
+class UIEventCollector
 {
+protected:
+  UInput& m_uinput;
+  uint32_t m_device_id;
+  int m_type;
+  int m_code;
+  
 public:
-  static RelButtonEventHandler* from_string(const std::string& str);
+  UIEventCollector(UInput& uinput, uint32_t device_id, int type, int code);
+  virtual ~UIEventCollector();
 
-public:
-  RelButtonEventHandler(const UIEvent& code);
+  uint32_t get_device_id() const { return m_device_id; }
+  int      get_type() const { return m_type; }
+  int      get_code() const { return m_code; }
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, bool value);
-  void update(UInput& uinput, int msec_delta) {}
-
-  std::string str() const;
+  virtual UIEventEmitterPtr create_emitter() = 0;
+  virtual void sync() = 0;
 
 private:
-  UIEvent m_code;
-
-  int  m_value;
-  int  m_repeat;
-
-  UIEventEmitterPtr m_rel_emitter;
+  UIEventCollector(const UIEventCollector&);
+  UIEventCollector& operator=(const UIEventCollector&);
 };
 
 #endif

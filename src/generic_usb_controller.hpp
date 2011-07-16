@@ -16,39 +16,31 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_AXISEVENT_KEY_AXIS_EVENT_HANDLER_HPP
-#define HEADER_XBOXDRV_AXISEVENT_KEY_AXIS_EVENT_HANDLER_HPP
+#ifndef HEADER_XBOXDRV_GENERIC_USB_CONTROLLER_HPP
+#define HEADER_XBOXDRV_GENERIC_USB_CONTROLLER_HPP
 
-#include "axis_event.hpp"
+#include <libusb.h>
 
-#include "ui_event_sequence.hpp"
+#include "xboxmsg.hpp"
+#include "usb_controller.hpp"
 
-class KeyAxisEventHandler : public AxisEventHandler
+class GenericUSBController : public USBController
 {
-public:
-  static KeyAxisEventHandler* from_string(const std::string& str);
-  
-public:
-  KeyAxisEventHandler();
+private:
+  int m_interface;
+  int m_endpoint;
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, int value);
-  void update(UInput& uinput, int msec_delta);
+public:
+  GenericUSBController(libusb_device* dev, int interface, int endpoint, bool try_detach);
+  ~GenericUSBController();
 
-  std::string str() const;
+  void set_rumble_real(uint8_t left, uint8_t right);
+  void set_led_real(uint8_t status);
+  bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out);
 
 private:
-  void send_up(UInput& uinput, int value);
-  void send_down(UInput& uinput, int value);
-  int  get_zone(int value) const;
-  
-private:
-  int m_old_value;
-
-  // Array is terminated by -1
-  UIEventSequence m_up_codes;
-  UIEventSequence m_down_codes;
-  int m_threshold;
+  GenericUSBController(const GenericUSBController&);
+  GenericUSBController& operator=(const GenericUSBController&);
 };
 
 #endif

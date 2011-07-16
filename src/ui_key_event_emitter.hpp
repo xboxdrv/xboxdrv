@@ -16,40 +16,30 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_AXISEVENT_KEY_AXIS_EVENT_HANDLER_HPP
-#define HEADER_XBOXDRV_AXISEVENT_KEY_AXIS_EVENT_HANDLER_HPP
+#ifndef HEADER_XBOXDRV_UI_KEY_EVENT_EMITTER_HPP
+#define HEADER_XBOXDRV_UI_KEY_EVENT_EMITTER_HPP
 
-#include "axis_event.hpp"
+#include "ui_event_emitter.hpp"
 
-#include "ui_event_sequence.hpp"
+class UIKeyEventCollector;
 
-class KeyAxisEventHandler : public AxisEventHandler
+class UIKeyEventEmitter : public UIEventEmitter
 {
-public:
-  static KeyAxisEventHandler* from_string(const std::string& str);
-  
-public:
-  KeyAxisEventHandler();
+private:
+  UIKeyEventCollector& m_collector;
+  bool m_value;
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, int value);
-  void update(UInput& uinput, int msec_delta);
+public:
+  UIKeyEventEmitter(UIKeyEventCollector& collector);
 
-  std::string str() const;
+  void send(int value);
 
 private:
-  void send_up(UInput& uinput, int value);
-  void send_down(UInput& uinput, int value);
-  int  get_zone(int value) const;
-  
-private:
-  int m_old_value;
-
-  // Array is terminated by -1
-  UIEventSequence m_up_codes;
-  UIEventSequence m_down_codes;
-  int m_threshold;
+  UIKeyEventEmitter(const UIKeyEventEmitter&);
+  UIKeyEventEmitter& operator=(const UIKeyEventEmitter&);
 };
+
+typedef boost::shared_ptr<UIKeyEventEmitter> UIKeyEventEmitterPtr;
 
 #endif
 

@@ -18,14 +18,49 @@
 
 #include "options.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <boost/bind.hpp>
+#include <boost/format.hpp>
+#include <boost/tokenizer.hpp>
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
 #include "uinput.hpp"
 
 Options* g_options;
+
+Options::GenericUSBSpec
+Options::GenericUSBSpec::from_string(const std::string& str)
+{
+  GenericUSBSpec spec;
+  process_name_value_string(str, boost::bind(&GenericUSBSpec::apply_pair, boost::ref(spec), _1, _2));
+  return spec;
+}
+
+void
+Options::GenericUSBSpec::apply_pair(const std::string& name,
+                                    const std::string& value)
+{
+  if (name == "if" || name == "interface")
+  {
+    m_interface = boost::lexical_cast<int>(value);
+  }
+  else if (name == "ep" || name == "endpoint")
+  {
+    m_endpoint = boost::lexical_cast<int>(value);
+  }
+  else if (name == "vid" || name == "vendor_id" || name == "vendorid" || name == "vendor")
+  {
+    m_vendor_id = hexstr2int(value);
+  }
+  else if (name == "pid" || name == "product_id" || name == "productid" || name == "product")
+  {
+    m_product_id = hexstr2int(value);
+  }
+  else
+  {
+    raise_exception(std::runtime_error, "unknown name " << name);
+  }
+}
 
 Options::Options() :
   mode(RUN_DEFAULT),
@@ -75,7 +110,8 @@ Options::Options() :
   extra_events(true),
   uinput_device_names(),
   uinput_device_usbids(),
-  usb_debug(false)
+  usb_debug(false),
+  m_generic_usb_specs()
 {
   // create the entry if not already available
   controller_slots[controller_slot].get_options(config_slot);
@@ -332,6 +368,25 @@ Options::set_match_group(const std::string& str)
   process_name_value_string(str, boost::bind(&ControllerMatchRuleGroup::add_rule_from_string, group, _1, _2));
 
   get_controller_slot().add_match_rule(group);
+}
+
+Options::GenericUSBSpec
+Options::find_generic_usb_spec(int vendor_id_, int product_id_) const
+{
+  for(std::vector<GenericUSBSpec>::const_iterator i = m_generic_usb_specs.begin(); i != m_generic_usb_specs.end(); ++i)
+  {
+    log_tmp(i->m_vendor_id  << " - " << vendor_id_ << " " 
+            << i->m_product_id << " - " << product_id_);
+
+    if (i->m_vendor_id  == vendor_id_ &&
+        i->m_product_id == product_id_)
+    {
+      return *i;
+    }
+  }
+
+  raise_exception(std::runtime_error, "no matching GenericUSBSpec found for " 
+                  << boost::format("%04x:%04x") % static_cast<int>(vendor_id_) % static_cast<int>(product_id_));
 }
 
 void

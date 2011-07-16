@@ -155,9 +155,9 @@ libxboxdrv = env.StaticLibrary('xboxdrv',
                                Glob('src/modifier/*.cpp'))
 env.Append(LIBS = libxboxdrv)
 
-env.Program('xboxdrv', Glob('src/main/main.cpp'))
-
 for file in Glob('test/*_test.cpp', strings=True):
-    env.Program(file[:-4], file)
+    Alias('tests', env.Program(file[:-4], file))
+
+Default(env.Program('xboxdrv', Glob('src/main/main.cpp')))
 
 # EOF #

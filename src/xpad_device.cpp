@@ -59,6 +59,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360_PLAY_N_CHARGE, 0x045e, 0x028f, "Microsoft Xbox 360 Play&Charge Kit" },
   { GAMEPAD_XBOX360,          0x0738, 0x4716, "Mad Catz Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x0738, 0x4726, "Mad Catz Xbox 360 Controller" },
+  { GAMEPAD_XBOX360,          0x0738, 0x4728, "Mad Catz Street Fighter IV FightPad" },
   { GAMEPAD_XBOX360,          0x0738, 0x4740, "Mad Catz Beat Pad" },
   { GAMEPAD_XBOX360,          0x0738, 0xb726, "Mad Catz Xbox controller - MW2" },
   { GAMEPAD_XBOX360,          0x0738, 0xf738, "Super SFIV FightStick TE S" },

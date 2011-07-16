@@ -41,27 +41,13 @@ KeyButtonEventHandler::from_string(const std::string& str)
       case 0: 
         {
           ev.reset(new KeyButtonEventHandler());
-
-          boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
-          tokenizer ev_tokens(*i, plus_sep);
-          int k = 0;
-          for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end() && k < MAX_MODIFIER; ++m, ++k)
-          {
-            ev->m_codes[k] = str2key_event(*m);
-          }
+          ev->m_codes = UIEventSequence::from_string(*i);
         }
         break;
 
       case 1:
         {
-          boost::char_separator<char> plus_sep("+", "", boost::keep_empty_tokens);
-          tokenizer ev_tokens(*i, plus_sep);
-          int k = 0;
-          for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end() && k < MAX_MODIFIER; ++m, ++k)
-          {
-            ev->m_secondary_codes[k] = str2key_event(*m);
-          }
-
+          ev->m_secondary_codes = UIEventSequence::from_string(*i);
           ev->m_hold_threshold = 250;
         }
         break;
@@ -92,38 +78,25 @@ KeyButtonEventHandler::KeyButtonEventHandler() :
   m_hold_threshold(0),
   m_hold_counter(0)
 {
-  std::fill_n(m_codes, MAX_MODIFIER + 1, UIEvent::invalid());
-  std::fill_n(m_secondary_codes, MAX_MODIFIER + 1, UIEvent::invalid());
 }
 
 KeyButtonEventHandler::KeyButtonEventHandler(int device_id, int code) :
   m_state(false),
-  m_codes(),
+  m_codes(UIEvent::create(device_id, EV_KEY, code)),
   m_secondary_codes(),
   m_hold_threshold(0),
   m_hold_counter(0)
 {
-  std::fill_n(m_codes, MAX_MODIFIER + 1, UIEvent::invalid());
-  std::fill_n(m_secondary_codes, MAX_MODIFIER + 1, UIEvent::invalid());
-  m_codes[0] = UIEvent::create(device_id, EV_KEY, code);
 }
 
 void
 KeyButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 {
-  for(int i = 0; m_codes[i].is_valid(); ++i)
-  {
-    m_codes[i].resolve_device_id(slot, extra_devices);
-    uinput.add_key(m_codes[i].get_device_id(), m_codes[i].code);
-  }
+  m_codes.init(uinput, slot, extra_devices);
 
   if (m_hold_threshold)
   {
-    for(int i = 0; m_secondary_codes[i].is_valid(); ++i)
-    {
-      m_secondary_codes[i].resolve_device_id(slot, extra_devices);
-      uinput.add_key(m_secondary_codes[i].get_device_id(), m_secondary_codes[i].code);
-    }
+    m_secondary_codes.init(uinput, slot, extra_devices);
   }
 }
 
@@ -136,11 +109,7 @@ KeyButtonEventHandler::send(UInput& uinput, bool value)
 
     if (m_hold_threshold == 0)
     {
-      // FIXME: should handle key releases in reverse order
-      for(int i = 0; m_codes[i].is_valid(); ++i)
-      {
-        uinput.send_key(m_codes[i].get_device_id(), m_codes[i].code, m_state);
-      }
+      m_codes.send(uinput, m_state);
     }
     else
     {
@@ -154,15 +123,8 @@ KeyButtonEventHandler::send(UInput& uinput, bool value)
         else
         {
           // send both a press and release event after another, aka a "click"
-          for(int i = 0; m_codes[i].is_valid(); ++i)
-          {
-            uinput.send_key(m_codes[i].get_device_id(), m_codes[i].code, true);
-          }
-          // FIXME: should do this in reverse order
-          for(int i = 0; m_codes[i].is_valid(); ++i)
-          {
-            uinput.send_key(m_codes[i].get_device_id(), m_codes[i].code, false);
-          }
+          m_codes.send(uinput, true);
+          m_codes.send(uinput, false);
         }
       }
       else
@@ -173,11 +135,7 @@ KeyButtonEventHandler::send(UInput& uinput, bool value)
         }
         else
         {
-          // FIXME: should do in reverse
-          for(int i = 0; m_secondary_codes[i].is_valid(); ++i)
-          {
-            uinput.send_key(m_secondary_codes[i].get_device_id(), m_secondary_codes[i].code, false);
-          }
+          m_secondary_codes.send(uinput, false);
         }
       }
 
@@ -198,10 +156,7 @@ KeyButtonEventHandler::update(UInput& uinput, int msec_delta)
         m_hold_counter + msec_delta >= m_hold_threshold)
     {
       // start sending the secondary events
-      for(int i = 0; m_secondary_codes[i].is_valid(); ++i)
-      {
-        uinput.send_key(m_secondary_codes[i].get_device_id(), m_secondary_codes[i].code, true);
-      }
+      m_secondary_codes.send(uinput, true);
       uinput.sync();
     }
 
@@ -216,14 +171,7 @@ std::string
 KeyButtonEventHandler::str() const
 {
   std::ostringstream out;
-  for(int i = 0; m_codes[i].is_valid();)
-  {
-    out << m_codes[i].get_device_id() << "-" << m_codes[i].code;
-
-    ++i;
-    if (m_codes[i].is_valid())
-      out << "+";
-  }
+  out << m_codes.str() << ":" << m_secondary_codes.str() << ":" << m_hold_threshold;
   return out.str();
 }
 

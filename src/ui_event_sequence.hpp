@@ -16,39 +16,46 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_AXISEVENT_KEY_AXIS_EVENT_HANDLER_HPP
-#define HEADER_XBOXDRV_AXISEVENT_KEY_AXIS_EVENT_HANDLER_HPP
+#ifndef HEADER_XBOXDRV_UI_EVENT_SEQUENCE_HPP
+#define HEADER_XBOXDRV_UI_EVENT_SEQUENCE_HPP
 
-#include "axis_event.hpp"
+#include <vector>
 
-#include "ui_event_sequence.hpp"
+#include "ui_event.hpp"
+#include "ui_event_emitter.hpp"
 
-class KeyAxisEventHandler : public AxisEventHandler
+class UInput;
+
+/** 
+    A sequence of UIEvents (only key events allowed right now)
+    
+    FIXME: class name is kind of wrong
+ */
+class UIEventSequence
 {
 public:
-  static KeyAxisEventHandler* from_string(const std::string& str);
-  
+  /** 
+      "KEY_LEFTSHIFT+KEY_B" 
+  */
+  static UIEventSequence from_string(const std::string& value);
+
+private:
+  typedef std::vector<UIEvent> UIEvents;
+  typedef std::vector<UIEventEmitterPtr> UIEventEmitters;
+  UIEvents m_sequence;
+  UIEventEmitters m_emitters;
+
 public:
-  KeyAxisEventHandler();
+  UIEventSequence();
+  UIEventSequence(const UIEvents& sequence);
+  UIEventSequence(const UIEvent& event);
 
   void init(UInput& uinput, int slot, bool extra_devices);
   void send(UInput& uinput, int value);
-  void update(UInput& uinput, int msec_delta);
+
+  void clear();
 
   std::string str() const;
-
-private:
-  void send_up(UInput& uinput, int value);
-  void send_down(UInput& uinput, int value);
-  int  get_zone(int value) const;
-  
-private:
-  int m_old_value;
-
-  // Array is terminated by -1
-  UIEventSequence m_up_codes;
-  UIEventSequence m_down_codes;
-  int m_threshold;
 };
 
 #endif

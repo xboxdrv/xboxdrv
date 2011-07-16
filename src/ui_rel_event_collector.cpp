@@ -16,36 +16,33 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_BUTTONEVENT_REL_BUTTON_EVENT_HANDLER_HPP
-#define HEADER_XBOXDRV_BUTTONEVENT_REL_BUTTON_EVENT_HANDLER_HPP
+#include "ui_rel_event_collector.hpp"
 
-#include "button_event.hpp"
+#include "uinput.hpp"
 
-#include "ui_event_emitter.hpp"
-
-class RelButtonEventHandler : public ButtonEventHandler
+UIRelEventCollector::UIRelEventCollector(UInput& uinput, uint32_t device_id, int type, int code) :
+  UIEventCollector(uinput, device_id, type, code),
+  m_emitters()
 {
-public:
-  static RelButtonEventHandler* from_string(const std::string& str);
+}
 
-public:
-  RelButtonEventHandler(const UIEvent& code);
+UIEventEmitterPtr
+UIRelEventCollector::create_emitter()
+{
+  UIRelEventEmitterPtr emitter(new UIRelEventEmitter(*this));
+  m_emitters.push_back(emitter);
+  return m_emitters.back();
+}
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, bool value);
-  void update(UInput& uinput, int msec_delta) {}
+void
+UIRelEventCollector::send(int value)
+{
+  m_uinput.send(get_device_id(), get_type(), get_code(), value);
+}
 
-  std::string str() const;
-
-private:
-  UIEvent m_code;
-
-  int  m_value;
-  int  m_repeat;
-
-  UIEventEmitterPtr m_rel_emitter;
-};
-
-#endif
+void
+UIRelEventCollector::sync() 
+{
+}
 
 /* EOF */

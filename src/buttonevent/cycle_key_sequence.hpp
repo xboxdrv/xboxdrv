@@ -16,34 +16,50 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_BUTTONEVENT_KEY_BUTTON_EVENT_HANDLER_HPP
-#define HEADER_XBOXDRV_BUTTONEVENT_KEY_BUTTON_EVENT_HANDLER_HPP
+#ifndef HEADER_XBOXDRV_BUTTONEVENT_CYCLE_KEY_SEQUENCE_HPP
+#define HEADER_XBOXDRV_BUTTONEVENT_CYCLE_KEY_SEQUENCE_HPP
 
-#include "button_event.hpp"
+#include <boost/shared_ptr.hpp>
+#include <vector>
 
 #include "ui_event_sequence.hpp"
 
-class KeyButtonEventHandler : public ButtonEventHandler
+class CycleKeySequence;
+
+typedef boost::shared_ptr<CycleKeySequence> CycleKeySequencePtr;
+
+class CycleKeySequence
 {
 public:
-  static KeyButtonEventHandler* from_string(const std::string& str);
+  static CycleKeySequencePtr from_range(std::vector<std::string>::const_iterator beg,
+                                        std::vector<std::string>::const_iterator end);
+
+private:
+  typedef std::vector<UIEventSequence> Keys;
+  Keys m_keys;
+
+  bool m_inited;
+
+  /** the position of the cursor in the sequence, if -1, it is unset */
+  int m_current_key;
+
+  /** the last key that was send out */
+  int m_last_key;
 
 public:
-  KeyButtonEventHandler();
-  KeyButtonEventHandler(int deviceid, int code);
+  CycleKeySequence(const Keys& keys);
 
+  bool has_current_key() const { return m_current_key != -1; }
+
+  void next_key();
+  void prev_key();
+  
   void init(UInput& uinput, int slot, bool extra_devices);
   void send(UInput& uinput, bool value);
-  void update(UInput& uinput, int msec_delta);
 
-  std::string str() const;
-  
 private:
-  bool m_state;
-  UIEventSequence m_codes;
-  UIEventSequence m_secondary_codes;
-  int m_hold_threshold;
-  int m_hold_counter;
+  CycleKeySequence(const CycleKeySequence&);
+  CycleKeySequence& operator=(const CycleKeySequence&);
 };
 
 #endif
