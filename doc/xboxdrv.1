@@ -56,7 +56,7 @@ for more information.
 \*(T<\fB\-h\fR\*(T>, \*(T<\fB\-\-help\fR\*(T>
 Display help text and exit.
 .TP 
--V, --version
+\-V, \-\-version
 Print the version number and exit.
 .TP 
 \*(T<\fB\-v\fR\*(T>, \*(T<\fB\-\-verbose\fR\*(T>
@@ -140,8 +140,8 @@ files. Regular key/value pairs must go into the
 [xboxdrv] section. '#' and ';' can be used for comments.
 Key names have for most part the same name as command
 line options. Command line options that take a list of
-input mappings (--ui-buttonmap, --ui-axismap,
---evdev-absmap, ...) can be split of into their own
+input mappings (\-\-ui\-buttonmap, \-\-ui\-axismap,
+\-\-evdev\-absmap, ...) can be split of into their own
 section for better readability.
 
 The \*(T<\fIexamples/\fR\*(T> directory contains
@@ -348,7 +348,7 @@ events from that device. This is done to avoid confusing
 applications, as otherwise an app would receive every
 event twice, once from the original device and once from
 the virtual xboxdrv one. In some cases this behaviour is
-undesired, such when mapping only an other wise
+undesired, such when mapping only an otherwise
 unhandled subset of keys of an device, i.e. mapping the
 multimedia keys on a keyboard, so this option turns the
 grab off.
@@ -530,10 +530,10 @@ for developers only and will dump raw headset data, not .wav
 files.
 .TP 
 \*(T<\fB\-\-headset\fR\*(T>
-Enable headset support and dump incomming data to stdout.
+Enable headset support and dump incoming data to stdout.
 .TP 
 \*(T<\fB\-\-headset\-dump\fR\*(T> \fIFILE\fR
-Enable headset support and dump incomming data to FILE.
+Enable headset support and dump incoming data to FILE.
 .TP 
 \*(T<\fB\-\-headset\-play\fR\*(T> \fIFILE\fR
 Enable headset support and send FILE to the headset for playback.
@@ -596,7 +596,7 @@ Match controllers that have the
 given USB idProduct.
 .TP 
 property=\fIPROPERTY\fR:\fIVALUE\fR
-Match against an arbitary udev property, with
+Match against an arbitrary udev property, with
 name \fIPROPERTY\fR and
 value \fIVALUE\fR.
 .TP 
@@ -724,7 +724,7 @@ T}
 T{
 lt(7), rt(8)
 T}	T{
-analog trigger (needs --trigger-as-button option)
+analog trigger (needs \-\-trigger\-as\-button option)
 T}
 T{
 tl, tr
@@ -734,7 +734,7 @@ T}
 T{
 du(up), dd(down), dl(left), dr(right)
 T}	T{
-dpad directions (needs --dpad-as-button option)
+dpad directions (needs \-\-dpad\-as\-button option)
 T}
 T{
 green, red, yellow, blue, orange
@@ -746,7 +746,7 @@ T}
 Just like with \*(T<\fB\-\-ui\-buttonmap\fR\*(T> you can add button filter to each button.
 .TP 
 \*(T<\fB\-\-axismap\fR\*(T> \fIAXIS=MAPPING,...\fR
-Axis remapping is available via --axismap and works the same as button
+Axis remapping is available via \-\-axismap and works the same as button
 mapping. In addition you can supply a sign to indicate that an axis
 should be inverted. So if you want to invert the y1 axis start with:
 
@@ -789,7 +789,7 @@ as autofire while another one, emitting the same signal, acts normally.
 .fi
 .TP 
 \*(T<\fB\-\-axis\-sensitivty \fR\*(T>\fIAXIS=SENSITIVITY\fR,...
-The sensitive of an axis can be adjusted via --axis-sensitivty:
+The sensitive of an axis can be adjusted via \-\-axis\-sensitivty:
 
 .nf
 \*(T<$ xboxdrv \-\-axis\-sensitivty X1=\-1.0,Y1=\-1.0\*(T>
@@ -798,7 +798,7 @@ The sensitive of an axis can be adjusted via --axis-sensitivty:
 A value of 0 gives you the default linear sensitivity,
 values larger then 0 will give you higher sensitivity,
 while values smaller then 0 will give you lower
-sensitivity. Sensitivity values in the range of [-1, 1]
+sensitivity. Sensitivity values in the range of [\-1, 1]
 will generally give good results, everything beyond that
 won't be of much practical use.
 
@@ -881,7 +881,7 @@ Will give you controls that are relative to your
 character instead of your viewpoint.
 .TP 
 \*(T<\fB\-\-four\-way\-restrictor\fR\*(T>
-The \*(T<\fB\-\-four\-way\-restrictor\fR\*(T> option allows to
+The \*(T<\fB\-\-four\-way\-restrictor\fR\*(T> option allows one to
 limit the movement on both analogsticks to only four
 directions (up, down, left, right), the diagonals (up/left,
 up/right, down/left, down/right) are filtered out from the
@@ -1017,7 +1017,7 @@ switch this behaviour off.
 \*(T<\fB\-\-device\-name NAME\fR\*(T>
 Changes the descriptive name the device will have. This
 options acts the same as
---device-names \fICURRENTSLOT\fR.auto=\fINAME\fR
+\-\-device\-names \fICURRENTSLOT\fR.auto=\fINAME\fR
 .TP 
 \*(T<\fB\-\-device\-names TYPE.SLOT=NAME,...\fR\*(T>
 Changes the descriptive name the device will
@@ -1032,7 +1032,7 @@ matches everything.
 Changes the vendor, product, version and bus id that the
 device will have. The last two arguments are optional.
 This options acts the same as
---device-usbids \fICURRENTSLOT\fR.auto=\fIVENDOR:PRODUCT:VERSION:BUS\fR
+\-\-device\-usbids \fICURRENTSLOT\fR.auto=\fIVENDOR:PRODUCT:VERSION:BUS\fR
 .TP 
 \*(T<\fB\-\-device\-usbids TYPE.SLOT=VENDOR:PRODUCT:VERSION:BUS,...\fR\*(T>
 Changes the vendor, product, version and bus id the device will
@@ -1138,7 +1138,7 @@ event. The final determination of which device gets
 handled as what will be done by the Kernel or Xorg
 depending on what events a device provides. 
 
-An example configuration makeing use of device_id would look like this:
+An example configuration making use of device_id would look like this:
 
 .nf
 \*(T<xboxdrv \-s \e
@@ -1272,7 +1272,7 @@ is \fIVALUE\fR * axis_state.
 gives the number of milisecond to pass before the event
 is fired again (default: 5).
 
-The value of -1 has a special meaning, it will result in
+The value of \-1 has a special meaning, it will result in
 the REL event being fired as soon as possible (i.e.
 every \fItimeout\fR miliseconds).
 This is the recomment way for handling mouse emulation,
@@ -1324,7 +1324,7 @@ when it is not pressed and in unpressed state when it is
 pressed.
 .TP 
 \*(T<\fBauto\fR\*(T>, \*(T<\fBautofire\fR\*(T>:\fIRATE\fR:\fIDELAY\fR
-The autofire filter allows to repeatatly send button
+The autofire filter allows one to repeatedly send button
 press events when the button is held down. It takes two
 optional parameters:
 
@@ -1445,7 +1445,7 @@ If you want to permanently unload it add the following line to
 .fi
 .PP
 Next you have to load the uinput kernel module which allows
-userspace programms to create virtual input devices and the
+userspace programs to create virtual input devices and the
 joydev module handles the \*(T<\fI/dev/input/jsX\fR\*(T>
 devices:
 .PP
@@ -1465,7 +1465,7 @@ start the userspace driver with:
 \*(T<$ xboxdrv\*(T>
 .fi
 .PP
-Or in case you don't have the neccesary rights (being in group root
+Or in case you don't have the necessary rights (being in group root
 should often be enough) start the driver as root via:
 .PP
 .nf
@@ -1492,7 +1492,7 @@ cases it is recomment to change the triggers to regular buttons via:
 .fi
 .SS "USING MULTIPLE CONTROLLER"
 If you want to use multiple wired controllers you need to start
-multiple instances of the xboxdrv driver and append the -i
+multiple instances of the xboxdrv driver and append the \-i
 argument to select the appropriate controller like this:
 .PP
 .nf
@@ -1547,7 +1547,7 @@ can limit which gamepad gets assigned to which slot with
 the \*(T<\fB\-\-match\fR\*(T> option.
 .PP
 Note that xboxdrv will create the virtual uinput devices on
-startup, not when a gamepad gets plugged in, this allows to
+startup, not when a gamepad gets plugged in, this allows one to
 plug in gamepads even after a game or an application like XBMC
 has already been launched and still have it all function
 properly. 
@@ -1617,7 +1617,7 @@ configuration in a game is most often not helpful, since you won't see
 the true cause beyond endless layers of abstraction between you and
 the actual events. Luckily there are a few tools you can use to test,
 all of these are command line based and it is recomment that you get
-familar with them when you want to do any more complex configuration.
+familiar with them when you want to do any more complex configuration.
 .SS EVTEST
 evtest lets you read raw input events from \*(T<\fI/dev/input/eventX\fR\*(T>. The
 event devices are the very core of all event handling, things like the
@@ -1899,7 +1899,7 @@ If you have success with that, send a patch
 to <\*(T<grumbel@gmx.de\*(T>>, if not, contact me too, I
 might be able to provide additional help.
 .PP
-As an alternative you can also use the --device and --type option to
+As an alternative you can also use the \-\-device and \-\-type option to
 enforce a USB device as well as a controller type an bypass any auto
 detection.
 .SS "\(dqUNKNOWN DATA: BYTES: 3 DATA: ...\(dq"
@@ -2042,7 +2042,7 @@ And insert the following lines:
 .fi
 .SS "PERMANENT WORKAROUND BY DISABLING DEVICE AUTO DETECTION"
 A fourth workaround involved disabling the autodetection of Xorg
-completly, you can do that by adding the following lines to
+completely, you can do that by adding the following lines to
 \*(T<\fI/etc/X11/xorg.conf\fR\*(T>:
 .PP
 .nf
