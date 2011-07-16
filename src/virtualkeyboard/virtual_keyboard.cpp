@@ -20,14 +20,23 @@
 
 #include <iostream>
 
-VirtualKeyboard::VirtualKeyboard()
+VirtualKeyboard::VirtualKeyboard() :
+  m_keyboard(KeyboardDescription::create_us_layout()),
+  m_key_width(48),
+  m_key_height(48)
 {
   m_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_container_set_border_width(GTK_CONTAINER(m_window), 10);
 
   m_drawing_area = gtk_drawing_area_new();
+  
+  GdkColor color;
+  gdk_color_parse("#444", &color);
+  gtk_widget_modify_bg(m_window, GTK_STATE_NORMAL, &color);
+  gtk_widget_modify_bg(m_drawing_area, GTK_STATE_NORMAL, &color);
 
-  gtk_widget_set_size_request(m_drawing_area, 400, 300);
+  gtk_widget_set_size_request(m_window, 1280, 400);
+  //gtk_widget_set_size_request(m_drawing_area, 1280, 400);
 
   gtk_container_add(GTK_CONTAINER(m_window), m_drawing_area);
 
@@ -52,8 +61,8 @@ VirtualKeyboard::show()
 void
 VirtualKeyboard::hide()
 {
+  gtk_widget_hide(m_window);
 }
-
 
 
 void
@@ -76,23 +85,62 @@ VirtualKeyboard::on_expose(GtkWidget* widget, GdkEventExpose* event)
 void
 VirtualKeyboard::draw_keyboard(cairo_t* cr)
 {
-  cairo_save(cr);
+  cairo_select_font_face(cr, "Vera", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 
-  cairo_translate(cr, 0, 0);
-
-  int kw = 48;
-  int kh = 48;
-  cairo_rectangle(cr, 2, 2, kw-4, kh-4);
-  cairo_set_source_rgb(cr, 1, 1, 1);
-  cairo_fill(cr);
-
-  cairo_restore(cr);
+  for(int y = 0; y < m_keyboard.get_height(); ++y)
+  {
+    for(int x = 0; x < m_keyboard.get_width(); ++x)
+    {
+      draw_key(cr, x, y, m_keyboard.get_key(x, y));
+    }
+  }
 }
 
 void
-VirtualKeyboard::draw_key(cairo_t* cr, int x, int y)
+VirtualKeyboard::draw_key(cairo_t* cr, int x, int y, const Key& key)
 {
-  
+  if (key)
+  {
+    cairo_save(cr);
+
+    cairo_translate(cr, x * m_key_width, y * m_key_height);
+
+    cairo_rectangle(cr, 2, 2, m_key_width * key.m_xspan - 4, m_key_height * key.m_yspan - 4);
+    cairo_set_source_rgb(cr, 0.5, 0.5, 0.5);
+    cairo_fill(cr);
+
+    cairo_rectangle(cr, 6, 4, m_key_width * key.m_xspan - 12, m_key_height * key.m_yspan - 12);
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
+    cairo_fill(cr);
+
+    cairo_set_source_rgb(cr, 0, 0, 0);
+
+    cairo_text_extents_t extents;
+    cairo_text_extents(cr, key.m_label.c_str(), &extents);
+
+    switch(key.m_style)
+    {
+      case Key::kLetter:
+        cairo_set_font_size(cr, 18.0);
+        cairo_move_to(cr, (m_key_width - extents.width)/2.0, 24);
+        cairo_show_text(cr, key.m_label.c_str());
+        break;
+
+      case Key::kFunction:
+        cairo_set_font_size(cr, 14.0);
+        cairo_move_to(cr, 24 - extents.width/2, 24);
+        cairo_show_text(cr, key.m_label.c_str());
+        break;
+
+      case Key::kModifier:
+        cairo_set_font_size(cr, 11.0);
+        cairo_move_to(cr, (m_key_width * key.m_xspan)/2.0 - extents.width/2, 24);
+        cairo_show_text(cr, key.m_label.c_str());
+        break;
+    }
+ 
+    cairo_restore(cr);
+  }
 }
 
 /* EOF */

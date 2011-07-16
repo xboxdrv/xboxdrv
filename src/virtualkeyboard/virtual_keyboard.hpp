@@ -23,47 +23,7 @@
 #include <string>
 #include <vector>
 
-class Key
-{
-  enum Style { kCenter }; 
-    
-  //UIEventSequence m_sequence;
-  int m_code;
-  std::string m_label;
-  std::string m_shift_label;
-  std::string m_alt_label;
-  Style m_style;
-
-  Key(//const UIEventSequence& sequence,
-    int code,
-      Style style,
-      const std::string& label, 
-      const std::string& shift_label  = std::string(),
-      const std::string& alt_label = std::string()) :
-    //m_sequence(sequence),
-    m_code(code),
-    m_style(style),
-    m_label(label),
-    m_shift_label(shift_label),
-    m_alt_label(alt_label)    
-  {}
-};
-
-class Keyboard
-{
-private:
-  int m_width;
-  int m_height;
-
-  std::vector<Key*> m_keys;
-
-public:
-  Keyboard() {}
-
-  int get_width() const  { return m_width; }
-  int get_height() const { return m_height; }
-  Key* get_key(int x, int y) const { return m_keys[m_width * y + x]; }
-};
+#include "keyboard_description.hpp"
 
 class VirtualKeyboard
 {
@@ -71,7 +31,10 @@ private:
   GtkWidget* m_window;
   GtkWidget* m_drawing_area;
 
-  Keyboard m_keyboard;
+  KeyboardDescription m_keyboard;
+
+  int m_key_width;
+  int m_key_height;
 
 public:
   VirtualKeyboard();
@@ -83,7 +46,7 @@ public:
   void on_expose(GtkWidget* widget, GdkEventExpose* event);
 
   void draw_keyboard(cairo_t* cr);
-  void draw_key(cairo_t* cr, int x, int y);
+  void draw_key(cairo_t* cr, int x, int y, const Key& key);
 
 private:
   Key* get_key(int x, int y);
