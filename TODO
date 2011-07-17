@@ -77,6 +77,10 @@ Stuff to do before 0.8.1 release:
 Checklist
 =========
 
+* ./xboxdrv --axismap X1=X2,-Y1=Y2,X2=X1,-Y2=Y1   --mouse  -s
+
+   Why do have the axis to be inverted in this case?
+
 * add function that can handle PC game style inventories, i.e. 0-9
   keys by using less buttons (maybe do graphical overlay stuff):
 
