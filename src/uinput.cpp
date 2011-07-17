@@ -367,7 +367,6 @@ UInput::create_emitter(int device_id, int type, int code)
         (*i)->get_type() == type && 
         (*i)->get_code() == code)
     {
-      log_tmp("found collector " << device_id << " " << type << " " << code);
       return (*i)->create_emitter();
     }
   }

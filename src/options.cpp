@@ -375,8 +375,8 @@ Options::find_generic_usb_spec(int vendor_id_, int product_id_) const
 {
   for(std::vector<GenericUSBSpec>::const_iterator i = m_generic_usb_specs.begin(); i != m_generic_usb_specs.end(); ++i)
   {
-    log_tmp(i->m_vendor_id  << " - " << vendor_id_ << " " 
-            << i->m_product_id << " - " << product_id_);
+    //log_tmp(i->m_vendor_id  << " - " << vendor_id_ << " " 
+    //        << i->m_product_id << " - " << product_id_);
 
     if (i->m_vendor_id  == vendor_id_ &&
         i->m_product_id == product_id_)
