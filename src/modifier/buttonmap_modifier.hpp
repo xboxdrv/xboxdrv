@@ -44,7 +44,7 @@ class ButtonmapModifier : public Modifier
 public:
   ButtonmapModifier();
   
-  void update(int msec_delta, XboxGenericMsg& msg);
+  void update(int msec_delta, ControllerMessage& msg);
 
   void add(const ButtonMapping& mapping);
   void add_filter(XboxButton btn, ButtonFilterPtr filter);

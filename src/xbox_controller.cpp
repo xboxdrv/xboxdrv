@@ -22,8 +22,10 @@
 #include <stdexcept>
 #include <string.h>
 
-#include "usb_helper.hpp"
+#include "controller_message.hpp"
 #include "raise_exception.hpp"
+#include "unpack.hpp"
+#include "usb_helper.hpp"
 #include "xboxmsg.hpp"
 
 XboxController::XboxController(libusb_device* dev, bool try_detach) :
@@ -59,12 +61,45 @@ XboxController::set_led_real(uint8_t status)
 }
 
 bool
-XboxController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+XboxController::parse(uint8_t* data, int len, ControllerMessage* msg_out)
 {
   if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
   {
-    msg_out->type = XBOX_MSG_XBOX;
-    memcpy(&msg_out->xbox, data, sizeof(XboxMsg));
+    // memcpy(&msg_out->xbox, data, sizeof(XboxMsg));
+
+    //unsigned int type       :8;
+    //unsigned int length     :8;
+
+    msg_out->set_button(XBOX_DPAD_UP,    unpack::bit(data+2, 0));
+    msg_out->set_button(XBOX_DPAD_DOWN,  unpack::bit(data+2, 1));
+    msg_out->set_button(XBOX_DPAD_LEFT,  unpack::bit(data+2, 2));
+    msg_out->set_button(XBOX_DPAD_RIGHT, unpack::bit(data+2, 3));
+
+    msg_out->set_button(XBOX_BTN_START,   unpack::bit(data+2, 4));
+    msg_out->set_button(XBOX_BTN_BACK,    unpack::bit(data+2, 5));
+    msg_out->set_button(XBOX_BTN_THUMB_L, unpack::bit(data+2, 6));
+    msg_out->set_button(XBOX_BTN_THUMB_R, unpack::bit(data+2, 7));
+
+    //unsigned int dummy       :8;
+
+    msg_out->set_axis(XBOX_AXIS_A, data[4]);
+    msg_out->set_axis(XBOX_AXIS_B, data[5]);
+    msg_out->set_axis(XBOX_AXIS_X, data[6]);
+    msg_out->set_axis(XBOX_AXIS_Y, data[7]);
+
+    msg_out->set_axis(XBOX_AXIS_BLACK, data[8]);
+    msg_out->set_axis(XBOX_AXIS_WHITE, data[9]);
+
+    msg_out->set_axis(XBOX_AXIS_LT, data[10]);
+    msg_out->set_axis(XBOX_AXIS_RT, data[11]);
+
+
+    msg_out->set_axis(XBOX_AXIS_X1, unpack::int16le(data+12));
+    msg_out->set_axis(XBOX_AXIS_Y1, unpack::int16le(data+13));
+
+    msg_out->set_axis(XBOX_AXIS_X2, unpack::int16le(data+14));
+    msg_out->set_axis(XBOX_AXIS_Y2, unpack::int16le(data+15));
+
     return true;
   }
   else

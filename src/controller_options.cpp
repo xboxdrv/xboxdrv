@@ -18,6 +18,9 @@
 
 #include "controller_options.hpp"
 
+#include "modifier/axismap_modifier.hpp"
+#include "modifier/buttonmap_modifier.hpp"
+
 ControllerOptions::ControllerOptions() :
   uinput(),
   modifier(),

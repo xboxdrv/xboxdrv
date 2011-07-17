@@ -2047,6 +2047,28 @@ NAME       = STRING ;]]></programlisting>
       </para>
       <variablelist>
         <varlistentry>
+          <term><option>btn2axis</option>=<replaceable>BUTTON</replaceable>:<replaceable>BUTTON</replaceable>:<replaceable>AXIS</replaceable></term>
+          <listitem>
+            <para>
+              Takes two buttons and turns them into an axis.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>dpad-restrictor</option>=<replaceable>RESTRICTON</replaceable></term>
+          <listitem>
+            <para>
+              Restricts the dpad movement, values
+              for <replaceable>RESTRICTON</replaceable> can be:
+            </para>
+            <para>x-axis: only allow movement in the X axis</para>
+            <para>y-axis: only allow movement in the Y axis</para>
+            <para>fourway: allow movement in X and Y axis, but filter out diagonals</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>dpad-rotate</option>=<replaceable>DEGREE</replaceable></term>
           <listitem>
             <para>

@@ -45,7 +45,7 @@ public:
   virtual std::string get_usbid() const;
   virtual std::string get_name() const;
 
-  virtual bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out) =0;
+  virtual bool parse(uint8_t* data, int len, ControllerMessage* msg_out) =0;
 
   int  usb_find_ep(int direction, uint8_t if_class, uint8_t if_subclass, uint8_t if_protocol);
 

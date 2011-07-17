@@ -80,7 +80,7 @@ KeyAxisEventHandler::KeyAxisEventHandler() :
   m_old_value(0),
   m_up_codes(),
   m_down_codes(),
-  m_threshold(8000) // FIXME: this doesn't work for triggers
+  m_threshold(8000) // BUG: this doesn't work for triggers
 {
 }
 

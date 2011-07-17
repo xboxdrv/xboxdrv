@@ -26,12 +26,12 @@
 #include <libudev.h>
 
 class MessageProcessor;
-struct XboxGenericMsg;
+struct ControllerMessage;
 
 class Controller
 {
 protected:
-  boost::function<void (const XboxGenericMsg&)> m_msg_cb;
+  boost::function<void (const ControllerMessage&)> m_msg_cb;
   boost::function<void ()> m_disconnect_cb;
   boost::function<void ()> m_activation_cb;
   bool m_is_disconnected;
@@ -72,12 +72,12 @@ public:
   virtual std::string get_usbid() const   { return "-1:-1"; }
   virtual std::string get_name() const    { return "<not implemented>"; }
 
-  void set_message_cb(const boost::function<void(const XboxGenericMsg&)>& msg_cb);
+  void set_message_cb(const boost::function<void(const ControllerMessage&)>& msg_cb);
 
   void set_udev_device(udev_device* udev_dev);
   udev_device* get_udev_device() const;
 
-  void submit_msg(const XboxGenericMsg& msg);
+  void submit_msg(const ControllerMessage& msg);
 
 private:
   Controller (const Controller&);

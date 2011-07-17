@@ -22,6 +22,8 @@
 #include <boost/function.hpp>
 
 #include "controller_config.hpp"
+#include "controller_slot_options.hpp"
+#include "modifier.hpp"
 #include "options.hpp"
 
 class Options;
@@ -35,7 +37,7 @@ class ControllerSlotConfig
 public:
   /** Creates a ControllerSlotConfig from the Options object and connects it to UInput */
   static ControllerSlotConfigPtr create(UInput& uinput, int slot, bool extra_devices, 
-                                       const ControllerSlotOptions& opts);
+                                        const ControllerSlotOptions& opts);
 
 private:
   static void create_modifier(const ControllerOptions& options, std::vector<ModifierPtr>* modifier);

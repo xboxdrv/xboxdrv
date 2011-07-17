@@ -42,34 +42,34 @@ FourWayRestrictorModifier::FourWayRestrictorModifier(XboxAxis xaxis, XboxAxis ya
 }
 
 void
-FourWayRestrictorModifier::update(int msec_delta, XboxGenericMsg& msg)
+FourWayRestrictorModifier::update(int msec_delta, ControllerMessage& msg)
 {
   // left Stick
-  if (abs(get_axis(msg, XBOX_AXIS_X1)) > abs(get_axis(msg, XBOX_AXIS_Y1)))
+  if (abs(msg.get_axis(XBOX_AXIS_X1)) > abs(msg.get_axis(XBOX_AXIS_Y1)))
   {
-    set_axis(msg, XBOX_AXIS_Y1, 0);
+    msg.set_axis(XBOX_AXIS_Y1, 0);
   }
-  else if (abs(get_axis(msg, XBOX_AXIS_Y1)) > abs(get_axis(msg, XBOX_AXIS_X1)))
+  else if (abs(msg.get_axis(XBOX_AXIS_Y1)) > abs(msg.get_axis(XBOX_AXIS_X1)))
   {
-    set_axis(msg, XBOX_AXIS_X1, 0);
+    msg.set_axis(XBOX_AXIS_X1, 0);
   }
   else
   {
-    set_axis(msg, XBOX_AXIS_X1, 0);
+    msg.set_axis(XBOX_AXIS_X1, 0);
   }
 
   // right stick
-  if (abs(get_axis(msg, XBOX_AXIS_X2)) > abs(get_axis(msg, XBOX_AXIS_Y2)))
+  if (abs(msg.get_axis(XBOX_AXIS_X2)) > abs(msg.get_axis(XBOX_AXIS_Y2)))
   {
-    set_axis(msg, XBOX_AXIS_Y2, 0);
+    msg.set_axis(XBOX_AXIS_Y2, 0);
   }
-  else if (abs(get_axis(msg, XBOX_AXIS_Y2)) > abs(get_axis(msg, XBOX_AXIS_X2)))
+  else if (abs(msg.get_axis(XBOX_AXIS_Y2)) > abs(msg.get_axis(XBOX_AXIS_X2)))
   {
-    set_axis(msg, XBOX_AXIS_X2, 0);
+    msg.set_axis(XBOX_AXIS_X2, 0);
   }
   else
   {
-    set_axis(msg, XBOX_AXIS_X2, 0);
+    msg.set_axis(XBOX_AXIS_X2, 0);
   }
 }
 

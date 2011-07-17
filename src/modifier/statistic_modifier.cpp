@@ -57,11 +57,11 @@ StatisticModifier::print_stats()
 }
 
 void
-StatisticModifier::update(int msec_delta, XboxGenericMsg& msg)
+StatisticModifier::update(int msec_delta, ControllerMessage& msg)
 {
   for(int btn = 1; btn < static_cast<int>(XBOX_BTN_MAX); ++btn)
   {
-    bool state = get_button(msg, static_cast<XboxButton>(btn));
+    bool state = msg.get_button(static_cast<XboxButton>(btn));
 
     // state changed and button is pressed
     if (state != m_button_state[btn] && state)

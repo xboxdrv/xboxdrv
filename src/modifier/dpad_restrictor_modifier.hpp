@@ -39,7 +39,7 @@ public:
 public:
   DpadRestrictorModifier(Mode mode);
 
-  void update(int msec_delta, XboxGenericMsg& msg);
+  void update(int msec_delta, ControllerMessage& msg);
   std::string str() const;
 
 private:

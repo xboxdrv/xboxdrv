@@ -18,6 +18,7 @@
 
 #include "uinput_config.hpp"
 
+#include "controller_message.hpp"
 #include "helper.hpp"
 #include "uinput.hpp"
 #include "uinput_options.hpp"
@@ -41,97 +42,36 @@ int16_t u8_to_s16(uint8_t value)
 UInputConfig::UInputConfig(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
   m_btn_map(opts.get_btn_map()), 
-  m_axis_map(opts.get_axis_map())
+  m_axis_map(opts.get_axis_map()),
+  m_button_state(),
+  m_last_button_state()
 {
   std::fill_n(axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
-  std::fill_n(button_state,      static_cast<int>(XBOX_BTN_MAX),  false);
-  std::fill_n(last_button_state, static_cast<int>(XBOX_BTN_MAX),  false);
 
   m_btn_map.init(uinput, slot, extra_devices);
   m_axis_map.init(uinput, slot, extra_devices);
 }
 
 void
-UInputConfig::send(XboxGenericMsg& msg)
+UInputConfig::send(const ControllerMessage& msg)
 {
-  std::copy(button_state, button_state+XBOX_BTN_MAX, last_button_state);
-
-  switch(msg.type)
+  m_last_button_state = m_button_state;
+ 
+  for(int btn = 1; btn < XBOX_BTN_MAX; ++btn)
   {
-    case XBOX_MSG_XBOX:
-      send(msg.xbox);
-      break;
+    m_button_state[btn] = msg.get_button(static_cast<XboxButton>(btn));
+  }
+  m_btn_map.send(m_uinput, m_button_state);
 
-    case XBOX_MSG_XBOX360:
-      send(msg.xbox360);
-      break;
-
-    case XBOX_MSG_PS3USB:
-      send(msg.ps3usb);
-      break;
-        
-    default:
-      assert(!"never reached");
+  for(int axis = 1; axis < XBOX_AXIS_MAX; ++axis)
+  {
+    send_axis(static_cast<XboxAxis>(axis), msg.get_axis(static_cast<XboxAxis>(axis)));
   }
 
   m_uinput.sync();
 }
 
-void
-UInputConfig::send(Xbox360Msg& msg)
-{
-  // analog stick button
-  send_button(XBOX_BTN_THUMB_L, msg.thumb_l);
-  send_button(XBOX_BTN_THUMB_R, msg.thumb_r);
-
-  // shoulder button
-  send_button(XBOX_BTN_LB, msg.lb);
-  send_button(XBOX_BTN_RB, msg.rb);
-
-  // start/back button
-  send_button(XBOX_BTN_START, msg.start);
-  send_button(XBOX_BTN_GUIDE, msg.guide);
-  send_button(XBOX_BTN_BACK, msg.back);
-
-  // face button
-  send_button(XBOX_BTN_A, msg.a);
-  send_button(XBOX_BTN_B, msg.b);
-  send_button(XBOX_BTN_X, msg.x);
-  send_button(XBOX_BTN_Y, msg.y);
-
-  // trigger
-  send_button(XBOX_BTN_LT, msg.lt); // FIXME: no deadzone handling here
-  send_button(XBOX_BTN_RT, msg.rt);
-
-  // dpad
-  send_button(XBOX_DPAD_UP,    msg.dpad_up);
-  send_button(XBOX_DPAD_DOWN,  msg.dpad_down);
-  send_button(XBOX_DPAD_LEFT,  msg.dpad_left);
-  send_button(XBOX_DPAD_RIGHT, msg.dpad_right);
-
-  // trigger
-  send_axis(XBOX_AXIS_LT, msg.lt);
-  send_axis(XBOX_AXIS_RT, msg.rt);
-
-  send_axis(XBOX_AXIS_TRIGGER, (int(msg.rt) - int(msg.lt)));
-
-  // analog sticks
-  send_axis(XBOX_AXIS_X1,  msg.x1);
-  send_axis(XBOX_AXIS_Y1,  s16_invert(msg.y1));
-  
-  send_axis(XBOX_AXIS_X2,  msg.x2);
-  send_axis(XBOX_AXIS_Y2,  s16_invert(msg.y2));
-
-  // dpad
-  if      (msg.dpad_up)    send_axis(XBOX_AXIS_DPAD_Y, -1);
-  else if (msg.dpad_down)  send_axis(XBOX_AXIS_DPAD_Y,  1);
-  else                     send_axis(XBOX_AXIS_DPAD_Y,  0);
-
-  if      (msg.dpad_left)  send_axis(XBOX_AXIS_DPAD_X, -1);
-  else if (msg.dpad_right) send_axis(XBOX_AXIS_DPAD_X,  1);
-  else                     send_axis(XBOX_AXIS_DPAD_X,  0);
-}
-
+#if 0
 void
 UInputConfig::send(XboxMsg& msg)
 {
@@ -251,6 +191,8 @@ UInputConfig::send(Playstation3USBMsg& msg)
   send_axis(XBOX_AXIS_WHITE, msg.a_r1);
 }
 
+#endif
+
 void
 UInputConfig::update(int msec_delta)
 {
@@ -261,57 +203,9 @@ UInputConfig::update(int msec_delta)
 }
 
 void
-UInputConfig::send_button(XboxButton code, bool value)
-{
-  if (button_state[code] != value)
-  {
-    button_state[code] = value;
-
-    // in case a shift button was changed, we have to clear all
-    // connected buttons
-    for(int i = 1; i < XBOX_BTN_MAX; ++i) // iterate over all buttons
-    {
-      if (button_state[i])
-      {
-        const ButtonEventPtr& event = m_btn_map.lookup(code, static_cast<XboxButton>(i));
-        if (event)
-        {
-          for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
-          {
-            m_btn_map.send(m_uinput, 
-                           static_cast<XboxButton>(j), static_cast<XboxButton>(i), 
-                           false);
-          }
-        }
-      }
-    }
-
-    // Shifted button events
-    for(int i = 1; i < XBOX_BTN_MAX; ++i)
-    {
-      if (button_state[i]) // shift button is pressed
-      {
-        if (m_btn_map.send(m_uinput, static_cast<XboxButton>(i), code, value))
-        {
-          // exit after the first successful event, so we don't send
-          // multiple events for the same button
-          return;
-        }
-      }
-    }
-
-    // Non shifted button events
-    m_btn_map.send(m_uinput, code, value);
-  }
-}
-
-void
 UInputConfig::reset_all_outputs()
 {
-  // FIXME: kind of a hack
-  Xbox360Msg msg;
-  memset(&msg, 0, sizeof(msg));
-  send(msg);
+  send(ControllerMessage());
 }
 
 void
@@ -323,7 +217,7 @@ UInputConfig::send_axis(XboxAxis code, int32_t value)
   // find the curren AxisEvent bound to current axis code
   for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
   {
-    if (button_state[shift])
+    if (m_button_state[shift])
     {
       AxisEventPtr new_ev = m_axis_map.lookup(static_cast<XboxButton>(shift), code);
       if (new_ev)
@@ -337,7 +231,7 @@ UInputConfig::send_axis(XboxAxis code, int32_t value)
   // find the last AxisEvent bound to current axis code
   for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
   {    
-    if (last_button_state[shift])
+    if (m_last_button_state[shift])
     {
       AxisEventPtr new_ev = m_axis_map.lookup(static_cast<XboxButton>(shift), code);
       if (new_ev)

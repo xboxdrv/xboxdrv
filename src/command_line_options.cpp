@@ -18,11 +18,12 @@
 
 #include "command_line_options.hpp"
 
-#include <fstream>
-#include <iostream>
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
+#include <fstream>
+#include <iostream>
+#include <iterator>
 
 #include "evdev_helper.hpp"
 #include "helper.hpp"
@@ -37,6 +38,9 @@
 #include "axisfilter/calibration_axis_filter.hpp"
 #include "axisfilter/sensitivity_axis_filter.hpp"
 #include "buttonfilter/autofire_button_filter.hpp"
+
+#include "modifier/axismap_modifier.hpp"
+#include "modifier/buttonmap_modifier.hpp"
 
 #include "xboxdrv_vfs.hpp"
 
@@ -311,6 +315,7 @@ CommandLineParser::init_argp()
     .add_newline()
 
     .add_text("Modifier:")
+    .add_pseudo("  btn2axis=BTN:BTN:AXIS", "Turns two buttons into an axis")
     .add_pseudo("  dpad-rotate=DEGREE", "Rotate the dpad by the given number of degree")
     .add_pseudo("  dpad-restrictor=RESTRICTION", "Restrict dpad movment to 'x-axis', 'y-axis' or 'four-way'")
     .add_pseudo("  4wayrest, four-way-restrictor=XAXIS:YAXIS", "Restrict the given stick to four directions")
@@ -1042,9 +1047,6 @@ void
 CommandLineParser::set_ui_buttonmap(ButtonMap& btn_map, const std::string& name, const std::string& value)
 {
   ButtonEventPtr event;
-
-  XboxButton shift = XBOX_BTN_UNKNOWN;
-  XboxButton btn   = XBOX_BTN_UNKNOWN;
   std::vector<ButtonFilterPtr> filters;
 
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
@@ -1056,28 +1058,18 @@ CommandLineParser::set_ui_buttonmap(ButtonMap& btn_map, const std::string& name,
     { 
       case 0: // shift+key portion
         {
-          std::string::size_type j = t->find('+');
-          if (j == std::string::npos)
-          {
-            shift = XBOX_BTN_UNKNOWN;
-            btn   = string2btn(*t);
-          }
-          else
-          {
-            shift = string2btn(t->substr(0, j));
-            btn   = string2btn(t->substr(j+1));
-          }
-          
+          ButtonCombination buttons = ButtonCombination::from_string(*t);
+
           if (value.empty())
           { // if no rhs value is given, add filters to the current binding
-            event = btn_map.lookup(shift, btn);
+            event = btn_map.lookup(buttons);
           }
           else
           {
             event = ButtonEvent::from_string(value, get_directory_context());
             if (event)
             {
-              btn_map.bind(shift, btn, event);
+              btn_map.bind(buttons, event);
             }
           }
         }
@@ -1143,8 +1135,8 @@ CommandLineParser::set_ui_axismap(AxisMap& axis_map, const std::string& name, co
             {
               if (axis != XBOX_AXIS_UNKNOWN)
               {
-                event->set_axis_range(get_axis_min(axis),
-                                      get_axis_max(axis));
+                event->set_axis_range(ControllerMessage::get_axis_min(axis),
+                                      ControllerMessage::get_axis_max(axis));
               }
 
               axis_map.bind(shift, axis, event);

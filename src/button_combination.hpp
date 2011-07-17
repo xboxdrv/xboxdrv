@@ -16,28 +16,37 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_MODIFIER_SQUARE_AXIS_MODIFIER_HPP
-#define HEADER_XBOXDRV_MODIFIER_SQUARE_AXIS_MODIFIER_HPP
+#ifndef HEADER_XBOXDRV_BUTTON_COMBINATION_HPP
+#define HEADER_XBOXDRV_BUTTON_COMBINATION_HPP
 
+#include <bitset>
+#include <string>
 #include <vector>
 
-#include "modifier.hpp"
+#include "xboxmsg.hpp"
 
-class SquareAxisModifier : public Modifier
+class ButtonCombination
 {
 public:
-  static SquareAxisModifier* from_string(const std::vector<std::string>& args);
+  static ButtonCombination from_string(const std::string& str);
 
 public:
-  SquareAxisModifier(XboxAxis x_axis, XboxAxis y_axis);
+  ButtonCombination();
+  ButtonCombination(XboxButton button);
+  ButtonCombination(const std::vector<XboxButton>& buttons);
 
-  void update(int msec_delta, ControllerMessage& msg);
+  bool has_button(XboxButton button) const;
 
-  std::string str() const;
+  /** Check if all buttons of \a this are also part of \a rhs */
+  bool is_subset_of(const ButtonCombination& rhs) const;
+
+  int size() const;
+
+  bool match(const std::bitset<XBOX_BTN_MAX>& button_state) const;
 
 private:
-  XboxAxis m_xaxis;
-  XboxAxis m_yaxis;
+  typedef std::vector<XboxButton> Buttons;
+  Buttons m_buttons;
 };
 
 #endif

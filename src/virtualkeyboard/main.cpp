@@ -1,6 +1,6 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,30 +16,21 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_MODIFIER_HPP
-#define HEADER_MODIFIER_HPP
+#include <gtk/gtk.h>
+#include <iostream>
 
-#include <boost/shared_ptr.hpp>
+#include "virtual_keyboard.hpp"
 
-#include "controller_message.hpp"
-
-class Modifier;
-class Options;
-
-typedef boost::shared_ptr<Modifier> ModifierPtr;
-
-class Modifier
+int main(int argc, char** argv)
 {
-public:
-  static Modifier* from_string(const std::string& name, const std::string& value);
+  gtk_init(&argc, &argv);
+  
+  VirtualKeyboard virtual_keyboard;
+  virtual_keyboard.show();
 
-public:
-  virtual ~Modifier() {}
-  virtual void update(int msec_delta, ControllerMessage& msg) = 0;
+  gtk_main();
 
-  virtual std::string str() const = 0;
-};
-
-#endif
+  return 0;
+}
 
 /* EOF */

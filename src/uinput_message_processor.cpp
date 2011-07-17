@@ -40,25 +40,25 @@ UInputMessageProcessor::~UInputMessageProcessor()
 }
 
 void
-UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
+UInputMessageProcessor::send(const ControllerMessage& msg_in, int msec_delta)
 {
   if (!m_config->empty())
   {
-    XboxGenericMsg msg = msg_in; 
+    ControllerMessage msg = msg_in; 
 
     if (m_rumble_test)
     {
-      log_debug("rumble: " << get_axis(msg, XBOX_AXIS_LT) << " " << get_axis(msg, XBOX_AXIS_RT));
+      log_debug("rumble: " << msg.get_axis(XBOX_AXIS_LT) << " " << msg.get_axis(XBOX_AXIS_RT));
 
-      set_rumble(get_axis(msg, XBOX_AXIS_LT), 
-                 get_axis(msg, XBOX_AXIS_RT));
+      set_rumble(msg.get_axis(XBOX_AXIS_LT), 
+                 msg.get_axis(XBOX_AXIS_RT));
     }
 
     // handling switching of configurations
     if (m_config_toggle_button != XBOX_BTN_UNKNOWN)
     {
-      bool last = get_button(m_oldmsg, m_config_toggle_button);
-      bool cur  = get_button(msg, m_config_toggle_button);
+      bool last = m_oldmsg.get_button(m_config_toggle_button);
+      bool cur  = msg.get_button(m_config_toggle_button);
 
       if (cur && cur != last)
       {
@@ -83,7 +83,7 @@ UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
     m_config->get_config()->get_uinput().update(msec_delta);
 
     // send current Xbox state to uinput
-    if (memcmp(&msg, &m_oldmsg, sizeof(XboxGenericMsg)) != 0)
+    if (memcmp(&msg, &m_oldmsg, sizeof(ControllerMessage)) != 0)
     {
       // Only send a new event out if something has changed,
       // this is useful since some controllers send events

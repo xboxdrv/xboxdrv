@@ -22,10 +22,12 @@
 #include <vector>
 #include <map>
 
+#include "controller_message.hpp"
+#include "modifier.hpp"
 #include "uinput_options.hpp"
 
-#include "modifier/axismap_modifier.hpp"
-#include "modifier/buttonmap_modifier.hpp"
+class AxismapModifier;
+class ButtonmapModifier;
 
 class ControllerOptions
 {

@@ -1,6 +1,6 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,30 +16,30 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_MODIFIER_HPP
-#define HEADER_MODIFIER_HPP
+#ifndef HEADER_XBOXDRV_MODIFIER_LOG_MODIFIER_HPP
+#define HEADER_XBOXDRV_MODIFIER_LOG_MODIFIER_HPP
 
-#include <boost/shared_ptr.hpp>
+#include "modifier.hpp"
 
-#include "controller_message.hpp"
-
-class Modifier;
-class Options;
-
-typedef boost::shared_ptr<Modifier> ModifierPtr;
-
-class Modifier
+class LogModifier : public Modifier
 {
 public:
-  static Modifier* from_string(const std::string& name, const std::string& value);
+  static LogModifier* from_string(const std::string& value);
 
 public:
-  virtual ~Modifier() {}
-  virtual void update(int msec_delta, ControllerMessage& msg) = 0;
+  LogModifier(const std::string& value);
+  void update(int msec_delta, ControllerMessage& msg);
 
-  virtual std::string str() const = 0;
+  std::string str() const;
+
+private:
+  std::string m_prefix;
+
+private:
+  LogModifier(const LogModifier&);
+  LogModifier& operator=(const LogModifier&);
 };
-
+
 #endif
 
 /* EOF */

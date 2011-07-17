@@ -20,9 +20,11 @@
 
 #include <boost/tokenizer.hpp>
 
+#include "modifier/button2axis_modifier.hpp"
 #include "modifier/dpad_restrictor_modifier.hpp"
 #include "modifier/dpad_rotation_modifier.hpp"
 #include "modifier/four_way_restrictor_modifier.hpp"
+#include "modifier/log_modifier.hpp"
 #include "modifier/rotate_axis_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 #include "modifier/statistic_modifier.hpp"
@@ -70,6 +72,14 @@ Modifier::from_string(const std::string& name, const std::string& value)
     else if (name == "dpad-restrictor")
     {
       return DpadRestrictorModifier::from_string(args);
+    }
+    else if (name == "btn2axis" || name == "button2axis")
+    {
+      return Button2AxisModifier::from_string(args);
+    }
+    else if (name == "log")
+    {
+      return LogModifier::from_string(value);
     }
     else
     {

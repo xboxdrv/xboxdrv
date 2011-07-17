@@ -18,6 +18,7 @@
 
 #include "evdev_absmap.hpp"
 
+#include "controller_message.hpp"
 #include "helper.hpp"
 
 EvdevAbsMap::EvdevAbsMap() :
@@ -54,7 +55,7 @@ EvdevAbsMap::clear()
 }
 
 void
-EvdevAbsMap::process(XboxGenericMsg& msg, int code, int value, int min, int max) const
+EvdevAbsMap::process(ControllerMessage& msg, int code, int value, int min, int max) const
 {
   { // process plus map
     std::map<int, XboxAxis>::const_iterator it = m_plus_map.find(code);
@@ -63,7 +64,7 @@ EvdevAbsMap::process(XboxGenericMsg& msg, int code, int value, int min, int max)
       // '+ 1' so that we round up, instead of round down 
       const int center = (max - min + 1) / 2;
       const float v = to_float(value, center, min);
-      set_axis_float(msg, it->second, v); 
+      msg.set_axis_float(it->second, v); 
     }
   }
 
@@ -74,7 +75,7 @@ EvdevAbsMap::process(XboxGenericMsg& msg, int code, int value, int min, int max)
       // '+ 1' so that we round up, instead of round down 
       const int center = (max - min + 1) / 2;
       const float v = to_float(value, center, max);
-      set_axis_float(msg, it->second, v);       
+      msg.set_axis_float(it->second, v);
     }
   }
 
@@ -84,7 +85,7 @@ EvdevAbsMap::process(XboxGenericMsg& msg, int code, int value, int min, int max)
     {
       // '+ 1' so that we round up, instead of round down 
       const float v = to_float(value, min, max);
-      set_axis_float(msg, it->second, v); 
+      msg.set_axis_float(it->second, v); 
     }
   }
 }

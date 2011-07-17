@@ -1,6 +1,6 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,30 +16,34 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_MODIFIER_HPP
-#define HEADER_MODIFIER_HPP
+#ifndef HEADER_XBOXDRV_MODIFIER_BUTTON2AXIS_MODIFIER_HPP
+#define HEADER_XBOXDRV_MODIFIER_BUTTON2AXIS_MODIFIER_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <vector>
 
-#include "controller_message.hpp"
+#include "modifier.hpp"
 
-class Modifier;
-class Options;
-
-typedef boost::shared_ptr<Modifier> ModifierPtr;
-
-class Modifier
+class Button2AxisModifier : public Modifier
 {
 public:
-  static Modifier* from_string(const std::string& name, const std::string& value);
+  static Button2AxisModifier* from_string(const std::vector<std::string>& args);
+
+private:
+  XboxButton m_lhs_btn;
+  XboxButton m_rhs_btn;
+  XboxAxis   m_axis;
 
 public:
-  virtual ~Modifier() {}
-  virtual void update(int msec_delta, ControllerMessage& msg) = 0;
+  Button2AxisModifier(XboxButton lhs_btn, XboxButton rhs_btn, XboxAxis   axis);
 
-  virtual std::string str() const = 0;
+  void update(int msec_delta, ControllerMessage& msg);
+  std::string str() const;
+
+private:
+  Button2AxisModifier(const Button2AxisModifier&);
+  Button2AxisModifier& operator=(const Button2AxisModifier&);
 };
-
+
 #endif
 
 /* EOF */

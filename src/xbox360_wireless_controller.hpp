@@ -24,7 +24,7 @@
 
 #include "usb_controller.hpp"
 
-struct XboxGenericMsg;
+struct ControllerMessage;
 struct XPadDevice;
 
 class Xbox360WirelessController : public USBController
@@ -39,7 +39,7 @@ public:
   Xbox360WirelessController(libusb_device* dev, int controller_id, bool try_detach);
   virtual ~Xbox360WirelessController();
 
-  bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out);
+  bool parse(uint8_t* data, int len, ControllerMessage* msg_out);
 
   void set_rumble_real(uint8_t left, uint8_t right);
   void set_led_real(uint8_t status);

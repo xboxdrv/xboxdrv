@@ -20,6 +20,7 @@
 
 #include <boost/format.hpp>
 
+#include "controller_message.hpp"
 #include "log.hpp"
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
@@ -206,7 +207,7 @@ USBController::on_read_data(libusb_transfer* transfer)
   // FIXME: check for LIBUSB_TRANSFER_COMPLETED
 
   // process data
-  XboxGenericMsg msg;
+  ControllerMessage msg;
   if (parse(transfer->buffer, transfer->actual_length, &msg))
   {
     submit_msg(msg);

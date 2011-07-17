@@ -23,7 +23,7 @@
 
 #include "modifier.hpp"
 
-class XboxGenericMsg;
+class ControllerMessage;
 
 class DpadRotationModifier : public Modifier
 {
@@ -37,7 +37,7 @@ private:
 public:
   DpadRotationModifier(int dpad_rotation);
 
-  void update(int msec_delta, XboxGenericMsg& msg);
+  void update(int msec_delta, ControllerMessage& msg);
 
   std::string str() const;
 

@@ -19,27 +19,50 @@
 #ifndef HEADER_XBOXDRV_BUTTON_MAP_HPP
 #define HEADER_XBOXDRV_BUTTON_MAP_HPP
 
+#include <bitset>
+#include <map>
+#include <vector>
+
 #include "button_event.hpp"
+#include "button_combination.hpp"
 #include "xboxmsg.hpp"
 
 class ButtonMap
 {
 private:
-  ButtonEventPtr btn_map[XBOX_BTN_MAX][XBOX_BTN_MAX];
+  struct Mapping
+  {
+    ButtonCombination m_buttons;
+    std::vector<ButtonCombination> m_supersets;
+    ButtonEventPtr m_event;
+    
+    Mapping() : 
+      m_buttons(), 
+      m_supersets(),
+      m_event() 
+    {}
+
+    Mapping(const ButtonCombination& buttons,
+            ButtonEventPtr event) : 
+      m_buttons(buttons),
+      m_supersets(),
+      m_event(event)
+    {}
+  };
+
+  typedef std::vector<Mapping> Mappings;
+  Mappings m_mappings;
   
 public:
   ButtonMap();
 
-  void bind(XboxButton code, ButtonEventPtr event);
-  void bind(XboxButton shift_code, XboxButton code, ButtonEventPtr event);
+  /** Bind a combination of multiple buttons to an event (i.e. "LB+A=KEY_A") */
+  void bind(const ButtonCombination& buttons, ButtonEventPtr event);
 
-  ButtonEventPtr lookup(XboxButton code) const;
-  ButtonEventPtr lookup(XboxButton shift_code, XboxButton code) const;
+  ButtonEventPtr lookup(const ButtonCombination& buttons) const;
 
-  void init(UInput& uinput, int slot, bool extra_devices) const;
-
-  bool send(UInput& uinput, XboxButton code, bool value) const;
-  bool send(UInput& uinput, XboxButton shift_code, XboxButton code, bool value) const;
+  void init(UInput& uinput, int slot, bool extra_devices);
+  void send(UInput& uinput, const std::bitset<XBOX_BTN_MAX>& button_state);
   void update(UInput& uinput, int msec_delta);
 
   void clear();

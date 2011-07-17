@@ -20,8 +20,10 @@
 
 #include <sstream>
 
+#include "controller_message.hpp"
 #include "helper.hpp"
 #include "usb_helper.hpp"
+#include "unpack.hpp"
 
 struct SaitekP2500Msg
 {
@@ -83,95 +85,91 @@ SaitekP2500Controller::set_led_real(uint8_t status)
 }
 
 bool
-SaitekP2500Controller::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+SaitekP2500Controller::parse(uint8_t* data, int len, ControllerMessage* msg_out)
 {
-  if (len == sizeof(SaitekP2500Msg))
+  if (len == 7)
   {
-    SaitekP2500Msg msg_in;
-    memcpy(&msg_in, data, sizeof(SaitekP2500Msg));
+    msg_out->clear();
 
-    memset(msg_out, 0, sizeof(*msg_out));
-    msg_out->type = XBOX_MSG_XBOX360;
+    msg_out->set_button(XBOX_BTN_A, unpack::bit(data+5, 0));
+    msg_out->set_button(XBOX_BTN_B, unpack::bit(data+5, 1));
+    msg_out->set_button(XBOX_BTN_X, unpack::bit(data+5, 2));
+    msg_out->set_button(XBOX_BTN_Y, unpack::bit(data+5, 3));
 
-    msg_out->xbox360.a = msg_in.a;
-    msg_out->xbox360.b = msg_in.b;
-    msg_out->xbox360.x = msg_in.x;
-    msg_out->xbox360.y = msg_in.y;
+    msg_out->set_button(XBOX_BTN_LB, unpack::bit(data+5, 4));
+    msg_out->set_button(XBOX_BTN_LT, unpack::bit(data+5, 5));
+    msg_out->set_button(XBOX_BTN_RB, unpack::bit(data+5, 6));
+    msg_out->set_button(XBOX_BTN_RT, unpack::bit(data+5, 7));
 
-    msg_out->xbox360.lb = msg_in.lb;
-    msg_out->xbox360.rb = msg_in.rb;
 
-    msg_out->xbox360.lt = msg_in.lt * 255;
-    msg_out->xbox360.rt = msg_in.rt * 255;
+    msg_out->set_button(XBOX_BTN_THUMB_L, unpack::bit(data+6, 0));
+    msg_out->set_button(XBOX_BTN_THUMB_R, unpack::bit(data+6, 1));
 
-    msg_out->xbox360.start = msg_in.start;
-    msg_out->xbox360.back  = msg_in.back;
-
-    msg_out->xbox360.thumb_l = msg_in.thumb_l;
-    msg_out->xbox360.thumb_r = msg_in.thumb_r;
+    msg_out->set_button(XBOX_BTN_START, unpack::bit(data+6, 2));
+    msg_out->set_button(XBOX_BTN_BACK,  unpack::bit(data+6, 3));
       
-    msg_out->xbox360.x1 = scale_8to16(msg_in.x1);
-    msg_out->xbox360.y1 = scale_8to16(msg_in.y1);
+    msg_out->set_axis(XBOX_AXIS_X1, scale_8to16(data[1]));
+    msg_out->set_axis(XBOX_AXIS_Y1, scale_8to16(data[2]));
 
-    msg_out->xbox360.x2 = scale_8to16(msg_in.x2);
-    msg_out->xbox360.y2 = scale_8to16(msg_in.y2);
-
-    switch(msg_in.dpad)
+    msg_out->set_axis(XBOX_AXIS_X2, scale_8to16(data[3]));
+    msg_out->set_axis(XBOX_AXIS_Y2, scale_8to16(data[4]));
+    
+    switch(data[6] >> 4)
     {
       case 0:
-        msg_out->xbox360.dpad_up    = 1;
-        msg_out->xbox360.dpad_down  = 0;
-        msg_out->xbox360.dpad_left  = 0;
-        msg_out->xbox360.dpad_right = 0;
+        msg_out->set_button(XBOX_DPAD_UP,     1);
+        msg_out->set_button(XBOX_DPAD_DOWN,   0);
+        msg_out->set_button(XBOX_DPAD_LEFT,   0);
+        msg_out->set_button(XBOX_DPAD_RIGHT,  0);
         break;
 
       case 1:
-        msg_out->xbox360.dpad_up    = 1;
-        msg_out->xbox360.dpad_down  = 0;
-        msg_out->xbox360.dpad_left  = 0;
-        msg_out->xbox360.dpad_right = 1;
+        msg_out->set_button(XBOX_DPAD_UP,     1);
+        msg_out->set_button(XBOX_DPAD_DOWN,   0);
+        msg_out->set_button(XBOX_DPAD_LEFT,   0);
+        msg_out->set_button(XBOX_DPAD_RIGHT,  1);
         break;
 
       case 2:
-        msg_out->xbox360.dpad_up    = 0;
-        msg_out->xbox360.dpad_down  = 0;
-        msg_out->xbox360.dpad_left  = 0;
-        msg_out->xbox360.dpad_right = 1;
+        msg_out->set_button(XBOX_DPAD_UP,     0);
+        msg_out->set_button(XBOX_DPAD_DOWN,   0);
+        msg_out->set_button(XBOX_DPAD_LEFT,   0);
+        msg_out->set_button(XBOX_DPAD_RIGHT,  1);
         break;
 
       case 3:
-        msg_out->xbox360.dpad_up    = 0;
-        msg_out->xbox360.dpad_down  = 1;
-        msg_out->xbox360.dpad_left  = 0;
-        msg_out->xbox360.dpad_right = 1;
+        msg_out->set_button(XBOX_DPAD_UP,     0);
+        msg_out->set_button(XBOX_DPAD_DOWN,   1);
+        msg_out->set_button(XBOX_DPAD_LEFT,   0);
+        msg_out->set_button(XBOX_DPAD_RIGHT,  1);
         break;
 
       case 4:
-        msg_out->xbox360.dpad_up    = 0;
-        msg_out->xbox360.dpad_down  = 1;
-        msg_out->xbox360.dpad_left  = 0;
-        msg_out->xbox360.dpad_right = 0;
+        msg_out->set_button(XBOX_DPAD_UP,     0);
+        msg_out->set_button(XBOX_DPAD_DOWN,   1);
+        msg_out->set_button(XBOX_DPAD_LEFT,   0);
+        msg_out->set_button(XBOX_DPAD_RIGHT,  0);
         break;
 
       case 5:
-        msg_out->xbox360.dpad_up    = 0;
-        msg_out->xbox360.dpad_down  = 1;
-        msg_out->xbox360.dpad_left  = 1;
-        msg_out->xbox360.dpad_right = 0;
+        msg_out->set_button(XBOX_DPAD_UP,     0);
+        msg_out->set_button(XBOX_DPAD_DOWN,   1);
+        msg_out->set_button(XBOX_DPAD_LEFT,   1);
+        msg_out->set_button(XBOX_DPAD_RIGHT,  0);
         break;
 
       case 6:
-        msg_out->xbox360.dpad_up    = 0;
-        msg_out->xbox360.dpad_down  = 0;
-        msg_out->xbox360.dpad_left  = 1;
-        msg_out->xbox360.dpad_right = 0;
+        msg_out->set_button(XBOX_DPAD_UP,     0);
+        msg_out->set_button(XBOX_DPAD_DOWN,   0);
+        msg_out->set_button(XBOX_DPAD_LEFT,   1);
+        msg_out->set_button(XBOX_DPAD_RIGHT,  0);
         break;
 
       case 7:
-        msg_out->xbox360.dpad_up    = 1;
-        msg_out->xbox360.dpad_down  = 0;
-        msg_out->xbox360.dpad_left  = 1;
-        msg_out->xbox360.dpad_right = 0;
+        msg_out->set_button(XBOX_DPAD_UP,     1);
+        msg_out->set_button(XBOX_DPAD_DOWN,   0);
+        msg_out->set_button(XBOX_DPAD_LEFT,   1);
+        msg_out->set_button(XBOX_DPAD_RIGHT,  0);
         break;
     }
 

@@ -24,8 +24,9 @@
 #include <glib.h>
 #include <queue>
 
-#include "evdev_absmap.hpp"
 #include "controller.hpp"
+#include "controller_message.hpp"
+#include "evdev_absmap.hpp"
 
 class EvdevAbsMap;
 
@@ -48,7 +49,7 @@ private:
   typedef std::queue<struct input_event> EventBuffer;
   EventBuffer m_event_buffer;
 
-  XboxGenericMsg m_msg;
+  ControllerMessage m_msg;
 
 public:
   EvdevController(const std::string& filename, 
@@ -62,10 +63,10 @@ public:
   void set_led_real(uint8_t status);
 
   /** @param timeout   timeout in msec, 0 means forever */
-  bool read(XboxGenericMsg& msg, int timeout);
+  bool read(ControllerMessage& msg, int timeout);
 
 private:
-  bool parse(const struct input_event& ev, XboxGenericMsg& msg_inout) const;
+  bool parse(const struct input_event& ev, ControllerMessage& msg_inout) const;
   void read_data_to_buffer();
 
   gboolean on_read_data(GIOChannel* source,

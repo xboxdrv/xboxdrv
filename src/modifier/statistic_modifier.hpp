@@ -32,7 +32,7 @@ public:
   StatisticModifier();
   ~StatisticModifier();
 
-  void update(int msec_delta, XboxGenericMsg& msg);
+  void update(int msec_delta, ControllerMessage& msg);
   void print_stats();
   std::string str() const;
 

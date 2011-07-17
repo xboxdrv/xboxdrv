@@ -15,10 +15,10 @@
 ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 DESTDIR = 
-PREFIX  = "/usr/local"
-DATADIR = "${PREFIX}/share/xboxdrv"
-MANDIR  = "${PREFIX}/share/man"
-BINDIR  = "${PREFIX}/bin"
+PREFIX  = /usr/local
+DATADIR = $(PREFIX)/share/xboxdrv
+MANDIR  = $(PREFIX)/share/man
+BINDIR  = $(PREFIX)/bin
 
 xboxdrv:
 	scons
@@ -32,11 +32,11 @@ clean:
 install: install-exec install-man
 
 install-exec: xboxdrv
-	install -D xboxdrv "${DESTDIR}${BINDIR}/xboxdrv"
-	install -D xboxdrvctl "${DESTDIR}${BINDIR}/xboxdrvctl"
+	install -D xboxdrv "$(DESTDIR)$(BINDIR)/xboxdrv"
+	install -D xboxdrvctl "$(DESTDIR)$(BINDIR)/xboxdrvctl"
 
 install-man:
-	install -D doc/xboxdrv.1 "${DESTDIR}${MANDIR}/man1/xboxdrv.1"
+	install -D doc/xboxdrv.1 "$(DESTDIR)$(MANDIR)/man1/xboxdrv.1"
 
 .PHONY : clean install install-exec install-man
 
