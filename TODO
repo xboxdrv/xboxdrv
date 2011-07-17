@@ -67,6 +67,47 @@ $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-
 Stuff to do before 0.8.1 release:
 =================================
 
+* look at suspend handling
+
+* pass /dev/input/eventX, slot and serial number to on-connect script
+
+* write DummyController that can be used in automated test cases
+
+
+Checklist
+=========
+
+* ./xboxdrv --axismap X1=X2,-Y1=Y2,X2=X1,-Y2=Y1   --mouse  -s
+
+   Why do have the axis to be inverted in this case?
+
+* add function that can handle PC game style inventories, i.e. 0-9
+  keys by using less buttons (maybe do graphical overlay stuff):
+
+  - next/prev button, either instant press, an activate button or
+    activate by timeout (to work around slow weapon change in some
+    games)
+
+  - graphical overlay that displays the current position
+
+  - single button inventory: next, hold to activate
+
+  Possible Syntax (could need list of lists tokenizer):
+
+  --emitter inventory=(LB:RB):A:(KEY_1:KEY_2:KEY_3:KEY_4:KEY_5:KEY_6)
+                        ^  ^  ^  ^- button to which to toggle through
+                        |  |  `---- activate button
+                        |  `------- next button
+                        `---------- previous button
+
+* alternative inventory solution: use the dpad, which gives however
+  only eight directions, need some timeout thing to make the
+  directions sticky
+
+* develop a simple scripting language or use an existing one
+
+* don't compile tests by default
+
 * buttonevent/key_button_event_handler.hpp
 
    Problematic, might cause trouble due to lack of sync:
