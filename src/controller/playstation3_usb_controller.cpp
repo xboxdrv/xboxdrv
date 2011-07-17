@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "playstation3_usb_controller.hpp"
+#include "controller/playstation3_usb_controller.hpp"
 
 #include <boost/format.hpp>
 #include <sstream>

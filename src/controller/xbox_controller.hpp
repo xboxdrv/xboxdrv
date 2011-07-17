@@ -16,52 +16,34 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOX360_CONTROLLER_HPP
-#define HEADER_XBOX360_CONTROLLER_HPP
+#ifndef HEADER_XBOX_CONTROLLER_HPP
+#define HEADER_XBOX_CONTROLLER_HPP
 
 #include <libusb.h>
-#include <memory>
-#include <string>
 
-#include "usb_controller.hpp"
+#include "controller/usb_controller.hpp"
 
-class Chatpad;
-class Headset;
 struct XPadDevice;
-
-class Xbox360Controller : public USBController
+
+class XboxController : public USBController
 {
 private:
-  XPadDevice*        dev_type;
+  int m_endpoint_in;
+  int m_endpoint_out;
   
-  int endpoint_in;
-  int endpoint_out;
-
-  std::auto_ptr<Chatpad> m_chatpad;
-  std::auto_ptr<Headset> m_headset;
-
-  uint8_t m_rumble_left;
-  uint8_t m_rumble_right;
-
 public:
-  Xbox360Controller(libusb_device* dev, 
-                    bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
-                    bool headset, 
-                    bool headset_debug, 
-                    const std::string& headset_dump,
-                    const std::string& headset_play,
-                    bool try_detach);
-  ~Xbox360Controller();
+  XboxController(libusb_device* dev, bool try_detach);
+  virtual ~XboxController();
 
   void set_rumble_real(uint8_t left, uint8_t right);
   void set_led_real(uint8_t status);
   bool parse(uint8_t* data, int len, ControllerMessage* msg_out);
 
 private:
-  Xbox360Controller (const Xbox360Controller&);
-  Xbox360Controller& operator= (const Xbox360Controller&);
+  XboxController (const XboxController&);
+  XboxController& operator= (const XboxController&);
 };
-
+
 #endif
 
 /* EOF */

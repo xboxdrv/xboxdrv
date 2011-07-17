@@ -148,10 +148,11 @@ env.DBusGlue("src/xboxdrv_controller_glue.hpp", "src/xboxdrv_controller.xml", DB
 
 libxboxdrv = env.StaticLibrary('xboxdrv',
                                Glob('src/*.cpp') +
-                               Glob('src/axisfilter/*.cpp') +
-                               Glob('src/buttonfilter/*.cpp') +
                                Glob('src/axisevent/*.cpp') +
+                               Glob('src/axisfilter/*.cpp') +
                                Glob('src/buttonevent/*.cpp') +
+                               Glob('src/buttonfilter/*.cpp') +
+                               Glob('src/controller/*.cpp') +
                                Glob('src/modifier/*.cpp'))
 env.Append(LIBS = libxboxdrv)
 

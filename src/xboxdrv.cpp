@@ -32,7 +32,7 @@
 #include "controller_thread.hpp"
 #include "command_line_options.hpp"
 #include "dummy_message_processor.hpp"
-#include "evdev_controller.hpp"
+#include "controller/evdev_controller.hpp"
 #include "evdev_helper.hpp"
 #include "helper.hpp"
 #include "raise_exception.hpp"

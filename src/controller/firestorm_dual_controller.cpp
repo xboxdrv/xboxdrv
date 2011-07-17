@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "firestorm_dual_controller.hpp"
+#include "controller/firestorm_dual_controller.hpp"
 
 #include <sstream>
 #include <boost/format.hpp>

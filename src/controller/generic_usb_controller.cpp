@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "generic_usb_controller.hpp"
+#include "controller/generic_usb_controller.hpp"
 
 #include <iostream>
 

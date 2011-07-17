@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "xbox360_controller.hpp"
+#include "controller/xbox360_controller.hpp"
 
 #include "chatpad.hpp"
 #include "headset.hpp"

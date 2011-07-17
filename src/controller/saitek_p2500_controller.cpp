@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "saitek_p2500_controller.hpp"
+#include "controller/saitek_p2500_controller.hpp"
 
 #include <sstream>
 

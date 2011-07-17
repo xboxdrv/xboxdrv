@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "evdev_controller.hpp"
+#include "controller/evdev_controller.hpp"
 
 #include <boost/format.hpp>
 #include <errno.h>

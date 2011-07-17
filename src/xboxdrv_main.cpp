@@ -27,7 +27,7 @@
 #include <boost/bind.hpp>
 
 #include "controller_factory.hpp"
-#include "evdev_controller.hpp"
+#include "controller/evdev_controller.hpp"
 #include "message_processor.hpp"
 #include "uinput_message_processor.hpp"
 #include "dummy_message_processor.hpp"

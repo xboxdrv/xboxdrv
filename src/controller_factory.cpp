@@ -20,13 +20,13 @@
 
 #include <stdexcept>
 
-#include "firestorm_dual_controller.hpp"
-#include "generic_usb_controller.hpp"
-#include "playstation3_usb_controller.hpp"
-#include "saitek_p2500_controller.hpp"
-#include "xbox360_controller.hpp"
-#include "xbox360_wireless_controller.hpp"
-#include "xbox_controller.hpp"
+#include "controller/firestorm_dual_controller.hpp"
+#include "controller/generic_usb_controller.hpp"
+#include "controller/playstation3_usb_controller.hpp"
+#include "controller/saitek_p2500_controller.hpp"
+#include "controller/xbox360_controller.hpp"
+#include "controller/xbox360_wireless_controller.hpp"
+#include "controller/xbox_controller.hpp"
 
 ControllerPtr
 ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const Options& opts)

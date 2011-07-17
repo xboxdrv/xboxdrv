@@ -16,40 +16,52 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOX360_WIRELESS_CONTROLLER_HPP
-#define HEADER_XBOX360_WIRELESS_CONTROLLER_HPP
+#ifndef HEADER_XBOX360_CONTROLLER_HPP
+#define HEADER_XBOX360_CONTROLLER_HPP
 
 #include <libusb.h>
+#include <memory>
 #include <string>
 
-#include "usb_controller.hpp"
+#include "controller/usb_controller.hpp"
 
-struct ControllerMessage;
+class Chatpad;
+class Headset;
 struct XPadDevice;
-
-class Xbox360WirelessController : public USBController
+
+class Xbox360Controller : public USBController
 {
 private:
-  int  m_endpoint;
-  int  m_interface;
-  int  m_battery_status;
-  std::string m_serial;
+  XPadDevice*        dev_type;
+  
+  int endpoint_in;
+  int endpoint_out;
+
+  std::auto_ptr<Chatpad> m_chatpad;
+  std::auto_ptr<Headset> m_headset;
+
+  uint8_t m_rumble_left;
+  uint8_t m_rumble_right;
 
 public:
-  Xbox360WirelessController(libusb_device* dev, int controller_id, bool try_detach);
-  virtual ~Xbox360WirelessController();
-
-  bool parse(uint8_t* data, int len, ControllerMessage* msg_out);
+  Xbox360Controller(libusb_device* dev, 
+                    bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
+                    bool headset, 
+                    bool headset_debug, 
+                    const std::string& headset_dump,
+                    const std::string& headset_play,
+                    bool try_detach);
+  ~Xbox360Controller();
 
   void set_rumble_real(uint8_t left, uint8_t right);
   void set_led_real(uint8_t status);
-  uint8_t get_battery_status() const;
-  
-private:
-  Xbox360WirelessController (const Xbox360WirelessController&);
-  Xbox360WirelessController& operator= (const Xbox360WirelessController&);
-};
+  bool parse(uint8_t* data, int len, ControllerMessage* msg_out);
 
+private:
+  Xbox360Controller (const Xbox360Controller&);
+  Xbox360Controller& operator= (const Xbox360Controller&);
+};
+
 #endif
 
 /* EOF */

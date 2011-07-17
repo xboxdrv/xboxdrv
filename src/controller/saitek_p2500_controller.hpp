@@ -1,6 +1,6 @@
-/*
-**  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
+/* 
+**  Xbox/Xbox360 USB Gamepad Userspace Driver
+**  Copyright (C) 2009 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,22 +16,23 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_PLAYSTATION3_USB_CONTROLLER_HPP
-#define HEADER_XBOXDRV_PLAYSTATION3_USB_CONTROLLER_HPP
+#ifndef HEADER_SAITEK_P2500_CONTROLLER_HPP
+#define HEADER_SAITEK_P2500_CONTROLLER_HPP
 
 #include <libusb.h>
 
-#include "usb_controller.hpp"
-
-class Playstation3USBController : public USBController
+#include "xboxmsg.hpp"
+#include "controller/usb_controller.hpp"
+
+class SaitekP2500Controller : public USBController
 {
-private:
-  int endpoint_in;
-  int endpoint_out;
+private: 
+  int left_rumble;
+  int right_rumble;
 
 public:
-  Playstation3USBController(libusb_device* dev, bool try_detach);
-  ~Playstation3USBController();
+  SaitekP2500Controller(libusb_device* dev, bool try_detach);
+  ~SaitekP2500Controller();
 
   void set_rumble_real(uint8_t left, uint8_t right);
   void set_led_real(uint8_t status);
@@ -39,10 +40,10 @@ public:
   bool parse(uint8_t* data, int len, ControllerMessage* msg_out);
 
 private:
-  Playstation3USBController(const Playstation3USBController&);
-  Playstation3USBController& operator=(const Playstation3USBController&);
+  SaitekP2500Controller(const SaitekP2500Controller&);
+  SaitekP2500Controller& operator=(const SaitekP2500Controller&);
 };
-
+
 #endif
 
 /* EOF */

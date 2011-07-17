@@ -1,6 +1,6 @@
-/* 
-**  Xbox/Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+/*
+**  Xbox360 USB Gamepad Userspace Driver
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,32 +16,31 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOX_CONTROLLER_HPP
-#define HEADER_XBOX_CONTROLLER_HPP
+#ifndef HEADER_XBOXDRV_PLAYSTATION3_USB_CONTROLLER_HPP
+#define HEADER_XBOXDRV_PLAYSTATION3_USB_CONTROLLER_HPP
 
 #include <libusb.h>
 
-#include "usb_controller.hpp"
+#include "controller/usb_controller.hpp"
 
-struct XPadDevice;
-
-class XboxController : public USBController
+class Playstation3USBController : public USBController
 {
 private:
-  int m_endpoint_in;
-  int m_endpoint_out;
-  
+  int endpoint_in;
+  int endpoint_out;
+
 public:
-  XboxController(libusb_device* dev, bool try_detach);
-  virtual ~XboxController();
+  Playstation3USBController(libusb_device* dev, bool try_detach);
+  ~Playstation3USBController();
 
   void set_rumble_real(uint8_t left, uint8_t right);
   void set_led_real(uint8_t status);
+
   bool parse(uint8_t* data, int len, ControllerMessage* msg_out);
 
 private:
-  XboxController (const XboxController&);
-  XboxController& operator= (const XboxController&);
+  Playstation3USBController(const Playstation3USBController&);
+  Playstation3USBController& operator=(const Playstation3USBController&);
 };
 
 #endif

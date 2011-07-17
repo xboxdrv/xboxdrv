@@ -62,9 +62,6 @@ public:
   void set_rumble_real(uint8_t left, uint8_t right);
   void set_led_real(uint8_t status);
 
-  /** @param timeout   timeout in msec, 0 means forever */
-  bool read(ControllerMessage& msg, int timeout);
-
 private:
   bool parse(const struct input_event& ev, ControllerMessage& msg_inout) const;
   void read_data_to_buffer();
