@@ -22,6 +22,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "buttonfilter/autofire_button_filter.hpp"
+#include "buttonfilter/const_button_filter.hpp"
 #include "buttonfilter/invert_button_filter.hpp"
 #include "buttonfilter/log_button_filter.hpp"
 #include "buttonfilter/toggle_button_filter.hpp"
@@ -43,6 +44,10 @@ ButtonFilter::from_string(const std::string& str)
   else if (filtername == "invert" || filtername == "inv")
   {
     return ButtonFilterPtr(new InvertButtonFilter);
+  }
+  else if (filtername == "const")
+  {
+    return ButtonFilterPtr(ConstButtonFilter::from_string(rest));
   }
   else if (filtername == "auto" || filtername == "autofire")
   {

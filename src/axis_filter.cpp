@@ -22,6 +22,7 @@
 #include <stdexcept>
 
 #include "axisfilter/calibration_axis_filter.hpp"
+#include "axisfilter/const_axis_filter.hpp"
 #include "axisfilter/deadzone_axis_filter.hpp"
 #include "axisfilter/invert_axis_filter.hpp"
 #include "axisfilter/log_axis_filter.hpp"
@@ -54,6 +55,10 @@ AxisFilter::from_string(const std::string& str)
   else if (filtername == "deadzone" || filtername == "dead")
   {
     return AxisFilterPtr(DeadzoneAxisFilter::from_string(rest));
+  }
+  else if (filtername == "const")
+  {
+    return AxisFilterPtr(ConstAxisFilter::from_string(rest));
   }
   else if (filtername == "relative" || filtername == "rel")
   {
