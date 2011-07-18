@@ -45,28 +45,31 @@ VirtualKeyboard::VirtualKeyboard(const KeyboardDescription& keyboard_desc) :
   gtk_widget_modify_bg(m_drawing_area, GTK_STATE_NORMAL, &color);
 
   gtk_window_set_resizable(GTK_WINDOW(m_window), FALSE);
-  //gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
+  gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
 
   //  gtk_widget_set_size_request(m_window, 1280, 400);
   gtk_widget_set_size_request(m_drawing_area, get_width(), get_height());
 
   gtk_container_add(GTK_CONTAINER(m_window), m_drawing_area);
 
+  g_signal_connect(m_window, "destroy", G_CALLBACK(&VirtualKeyboard::on_destroy), NULL);
+
   g_signal_connect(m_drawing_area, "expose-event", 
                    G_CALLBACK(&VirtualKeyboard::on_expose_wrap), this);
 
-  g_signal_connect(m_window, "key-press-event", 
-                   G_CALLBACK(&VirtualKeyboard::on_key_press_wrap), this);
-  g_signal_connect(m_window, "key-release-event", 
-                   G_CALLBACK(&VirtualKeyboard::on_key_release_wrap), this);
+  if (false)
+  {
+    g_signal_connect(m_window, "key-press-event", 
+                     G_CALLBACK(&VirtualKeyboard::on_key_press_wrap), this);
+    g_signal_connect(m_window, "key-release-event", 
+                     G_CALLBACK(&VirtualKeyboard::on_key_release_wrap), this);
+  }
 
   gtk_widget_show(m_drawing_area);
 }
 
 VirtualKeyboard::~VirtualKeyboard()
 {
-  gtk_widget_destroy(m_drawing_area);
-  gtk_widget_destroy(m_window);
 }
 
 int
@@ -98,35 +101,63 @@ VirtualKeyboard::cursor_set(int x, int y)
 {
   m_cursor_x = x;
   m_cursor_y = y;
+
+  gtk_widget_queue_draw(m_drawing_area);
 }
 
 void
 VirtualKeyboard::cursor_left()
 {
-  m_cursor_x -= 1;
+  if (m_cursor_x == 0)
+    m_cursor_x = m_keyboard.get_width() - 1;
+  else
+    m_cursor_x -= 1;
+
+  gtk_widget_queue_draw(m_drawing_area);
 }
 
 void
 VirtualKeyboard::cursor_right()
 {
-  m_cursor_x += 1;
+  if (m_cursor_x == m_keyboard.get_width() - 1)
+    m_cursor_x = 0;
+  else
+    m_cursor_x += 1;
+
+  gtk_widget_queue_draw(m_drawing_area);
 }
 
 void
 VirtualKeyboard::cursor_up()
 {
-  m_cursor_y -= 1;
+  if (m_cursor_y == 0)
+    m_cursor_y = m_keyboard.get_height() - 1;
+  else
+    m_cursor_y -= 1;
+
+  gtk_widget_queue_draw(m_drawing_area);
 }
 
 void
 VirtualKeyboard::cursor_down()
 {
-  m_cursor_y += 1;
+  if (m_cursor_y == m_keyboard.get_height() - 1)
+    m_cursor_y = 0;
+  else
+    m_cursor_y += 1;
+
+  gtk_widget_queue_draw(m_drawing_area);
 }
 
 void
 VirtualKeyboard::on_key_release(GtkWidget* widget, GdkEventKey* event)
 {
+  switch (event->keyval)
+  {
+    case GDK_KEY_Return:
+      send_key(false);
+      break;
+  }
 }
 
 void
@@ -154,10 +185,7 @@ VirtualKeyboard::on_key_press(GtkWidget* widget, GdkEventKey* event)
       break;
 
     case GDK_KEY_Return:
-      if (m_key_callback)
-      {
-        m_key_callback(m_keyboard.get_key(m_cursor_x, m_cursor_y), true);
-      }
+      send_key(true);
       break;
 
     case GDK_KEY_Shift_L:
@@ -165,8 +193,15 @@ VirtualKeyboard::on_key_press(GtkWidget* widget, GdkEventKey* event)
       m_shift_mode = !m_shift_mode;
       break;
   }
+}
 
-  gtk_widget_queue_draw(m_drawing_area);
+void
+VirtualKeyboard::send_key(bool value)
+{
+  if (m_key_callback)
+  {
+    m_key_callback(m_keyboard.get_key(m_cursor_x, m_cursor_y), value);
+  }
 }
 
 void

@@ -62,6 +62,8 @@ public:
   void cursor_up();
   void cursor_down();
 
+  void send_key(bool value);
+
   KeyboardDescription get_description() const { return m_keyboard; }
 
   void set_key_callback(const boost::function<void (const Key&, bool)>& callback);
@@ -86,6 +88,10 @@ private:
 
   static void on_key_release_wrap(GtkWidget* widget, GdkEventKey* event, gpointer userdata) {
     static_cast<VirtualKeyboard*>(userdata)->on_key_release(widget, event);
+  }
+
+  static void on_destroy(GtkWidget *widget, gpointer data) {
+    gtk_main_quit ();
   }
 
 private:
