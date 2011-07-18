@@ -161,6 +161,13 @@ KeyboardDescription::create_us_layout()
   return desc;
 }
 
+KeyboardDescription::KeyboardDescription() :
+  m_width(0),
+  m_height(),
+  m_keys()
+{
+}
+
 KeyboardDescription::KeyboardDescription(int width, int height) :
   m_width(width),
   m_height(height),

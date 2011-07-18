@@ -159,6 +159,11 @@ env.Append(LIBS = libxboxdrv)
 for file in Glob('test/*_test.cpp', strings=True):
     Alias('tests', env.Program(file[:-4], file))
 
+if 'virtualkeyboard' in COMMAND_LINE_TARGETS:
+    gtk_env = env.Clone()
+    gtk_env.ParseConfig("pkg-config --libs --cflags gtk+-2.0")
+    Alias('virtualkeyboard', gtk_env.Program("virtual_keyboard", Glob("src/virtualkeyboard/*.cpp")))
+
 Default(env.Program('xboxdrv', Glob('src/main/main.cpp')))
 
 # EOF #

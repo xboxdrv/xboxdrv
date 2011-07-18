@@ -39,6 +39,10 @@ public:
 
   Key() :
     m_code(-1),
+    m_label(),
+    m_shift_label(),
+    m_alt_label(),
+    m_style(kLetter),
     m_xspan(1),
     m_yspan(1)
   {}
@@ -51,10 +55,10 @@ public:
       int xspan = 1,
       int yspan = 1) :
     m_code(code),
-    m_style(style),
     m_label(label),
     m_shift_label(shift_label),
     m_alt_label(alt_label),
+    m_style(style),
     m_xspan(xspan),
     m_yspan(yspan)
   {}
@@ -76,9 +80,11 @@ private:
 
   std::vector<Key> m_keys;
 
-public:
-  KeyboardDescription() {}
+private:
+  KeyboardDescription();
   KeyboardDescription(int width, int height);
+
+public:
   ~KeyboardDescription();
 
   int get_width() const  { return m_width; }

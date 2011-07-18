@@ -18,14 +18,64 @@
 
 #include <gtk/gtk.h>
 #include <iostream>
+#include <boost/bind.hpp>
+#include <linux/input.h>
 
+#include "log.hpp"
+#include "ui_key_event_emitter.hpp"
+#include "uinput.hpp"
 #include "virtual_keyboard.hpp"
+
+class KeyboardDispatcher
+{
+private:
+  std::vector<UIEventEmitterPtr> m_emitter;
+
+public:
+  KeyboardDispatcher(VirtualKeyboard& gui_keyboard,
+                     UInput& uinput) :
+    m_emitter(KEY_CNT)
+  {
+    const KeyboardDescription& desc = gui_keyboard.get_description();
+
+    for(int y = 0; y < desc.get_height(); ++y)
+    {
+      for(int x = 0; x < desc.get_width(); ++x)
+      {
+        const Key& key = desc.get_key(x, y);
+        if (key.m_code != -1)
+        {
+          m_emitter[key.m_code] = uinput.add_key(0, key.m_code);
+        }
+      }
+    }
+
+    gui_keyboard.set_key_callback(boost::bind(&KeyboardDispatcher::on_key, this, _1, _2));
+  }
+
+  void on_key(const Key& key, bool pressed)
+  {
+    log_tmp(key.m_code << " " << pressed);
+    /*
+    if (key.m_code != -1)
+    {
+      m_emitter[key.m_code]->send(pressed);
+    }*/
+  }
+};
 
 int main(int argc, char** argv)
 {
   gtk_init(&argc, &argv);
-  
-  VirtualKeyboard virtual_keyboard;
+
+  UInput uinput(false);
+
+  KeyboardDescription keyboard_desc(KeyboardDescription::create_us_layout()); 
+  VirtualKeyboard virtual_keyboard(keyboard_desc);
+  KeyboardDispatcher dispatcher(virtual_keyboard, uinput);
+
+  uinput.finish();
+
   virtual_keyboard.show();
 
   gtk_main();

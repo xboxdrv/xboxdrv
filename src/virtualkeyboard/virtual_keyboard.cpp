@@ -21,13 +21,18 @@
 #include <gdk/gdkkeysyms.h>
 #include <iostream>
 
-VirtualKeyboard::VirtualKeyboard() :
-  m_keyboard(KeyboardDescription::create_us_layout()),
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+
+VirtualKeyboard::VirtualKeyboard(const KeyboardDescription& keyboard_desc) :
+  m_keyboard(keyboard_desc),
+  m_window(0),
+  m_drawing_area(0),
   m_key_width(48),
   m_key_height(48),
   m_shift_mode(false),
   m_cursor_x(0),
-  m_cursor_y(0)
+  m_cursor_y(0),
+  m_key_callback()
 {
   m_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_container_set_border_width(GTK_CONTAINER(m_window), 10);
@@ -40,6 +45,7 @@ VirtualKeyboard::VirtualKeyboard() :
   gtk_widget_modify_bg(m_drawing_area, GTK_STATE_NORMAL, &color);
 
   gtk_window_set_resizable(GTK_WINDOW(m_window), FALSE);
+  //gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
 
   //  gtk_widget_set_size_request(m_window, 1280, 400);
   gtk_widget_set_size_request(m_drawing_area, get_width(), get_height());
@@ -51,6 +57,8 @@ VirtualKeyboard::VirtualKeyboard() :
 
   g_signal_connect(m_window, "key-press-event", 
                    G_CALLBACK(&VirtualKeyboard::on_key_press_wrap), this);
+  g_signal_connect(m_window, "key-release-event", 
+                   G_CALLBACK(&VirtualKeyboard::on_key_release_wrap), this);
 
   gtk_widget_show(m_drawing_area);
 }
@@ -117,6 +125,11 @@ VirtualKeyboard::cursor_down()
 }
 
 void
+VirtualKeyboard::on_key_release(GtkWidget* widget, GdkEventKey* event)
+{
+}
+
+void
 VirtualKeyboard::on_key_press(GtkWidget* widget, GdkEventKey* event)
 {
   switch (event->keyval)
@@ -140,6 +153,13 @@ VirtualKeyboard::on_key_press(GtkWidget* widget, GdkEventKey* event)
       cursor_down();
       break;
 
+    case GDK_KEY_Return:
+      if (m_key_callback)
+      {
+        m_key_callback(m_keyboard.get_key(m_cursor_x, m_cursor_y), true);
+      }
+      break;
+
     case GDK_KEY_Shift_L:
     case GDK_KEY_Shift_R:
       m_shift_mode = !m_shift_mode;
@@ -152,8 +172,6 @@ VirtualKeyboard::on_key_press(GtkWidget* widget, GdkEventKey* event)
 void
 VirtualKeyboard::on_expose(GtkWidget* widget, GdkEventExpose* event)
 {
-  std::cout << "on-expose" << std::endl;
-
   cairo_t *cr = gdk_cairo_create (widget->window);
 
   cairo_rectangle(cr, 
@@ -273,6 +291,12 @@ VirtualKeyboard::draw_key(cairo_t* cr, int x, int y, const Key& key, bool highli
  
     cairo_restore(cr);
   }
+}
+
+void
+VirtualKeyboard::set_key_callback(const boost::function<void (const Key&, bool)>& callback)
+{
+  m_key_callback = callback;
 }
 
 /* EOF */

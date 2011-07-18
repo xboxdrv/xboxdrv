@@ -19,6 +19,7 @@
 #ifndef HEADER_XBOXDRV_VIRTUALKEYBOARD_VIRTUAL_KEYBOARD_HPP
 #define HEADER_XBOXDRV_VIRTUALKEYBOARD_VIRTUAL_KEYBOARD_HPP
 
+#include <boost/function.hpp>
 #include <gtk/gtk.h>
 #include <string>
 #include <vector>
@@ -28,10 +29,10 @@
 class VirtualKeyboard
 {
 private:
+  KeyboardDescription m_keyboard;
+
   GtkWidget* m_window;
   GtkWidget* m_drawing_area;
-
-  KeyboardDescription m_keyboard;
 
   int m_key_width;
   int m_key_height;
@@ -41,19 +42,14 @@ private:
   int m_cursor_x;
   int m_cursor_y;
 
+  boost::function<void (const Key&, bool)> m_key_callback;
+
 public:
-  VirtualKeyboard();
+  VirtualKeyboard(const KeyboardDescription& keyboard_desc);
   ~VirtualKeyboard();
 
   void show();
   void hide();
-
-  void on_expose(GtkWidget* widget, GdkEventExpose* event);
-  void on_key_press(GtkWidget* widget, GdkEventKey* event);
-
-  void draw_keyboard(cairo_t* cr);
-  void draw_key(cairo_t* cr, int x, int y, const Key& key, bool highlight);
-  void draw_centered_text(cairo_t* cr, double x, double y, const std::string& str);
 
   int get_width() const;
   int get_height() const;
@@ -66,8 +62,18 @@ public:
   void cursor_up();
   void cursor_down();
 
+  KeyboardDescription get_description() const { return m_keyboard; }
+
+  void set_key_callback(const boost::function<void (const Key&, bool)>& callback);
+
 private:
-  Key* get_key(int x, int y);
+  void on_expose(GtkWidget* widget, GdkEventExpose* event);
+  void on_key_press(GtkWidget* widget, GdkEventKey* event);
+  void on_key_release(GtkWidget* widget, GdkEventKey* event);
+
+  void draw_keyboard(cairo_t* cr);
+  void draw_key(cairo_t* cr, int x, int y, const Key& key, bool highlight);
+  void draw_centered_text(cairo_t* cr, double x, double y, const std::string& str);
 
 private:
   static void on_expose_wrap(GtkWidget* widget, GdkEventExpose* event, gpointer userdata) {
@@ -76,6 +82,10 @@ private:
 
   static void on_key_press_wrap(GtkWidget* widget, GdkEventKey* event, gpointer userdata) {
     static_cast<VirtualKeyboard*>(userdata)->on_key_press(widget, event);
+  }
+
+  static void on_key_release_wrap(GtkWidget* widget, GdkEventKey* event, gpointer userdata) {
+    static_cast<VirtualKeyboard*>(userdata)->on_key_release(widget, event);
   }
 
 private:
