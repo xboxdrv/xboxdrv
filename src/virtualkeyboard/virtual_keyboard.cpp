@@ -26,6 +26,7 @@
 VirtualKeyboard::VirtualKeyboard(const KeyboardDescription& keyboard_desc) :
   m_keyboard(keyboard_desc),
   m_window(0),
+  m_vbox(0),
   m_drawing_area(0),
   m_key_width(48),
   m_key_height(48),
@@ -35,8 +36,9 @@ VirtualKeyboard::VirtualKeyboard(const KeyboardDescription& keyboard_desc) :
   m_key_callback()
 {
   m_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  gtk_container_set_border_width(GTK_CONTAINER(m_window), 10);
+  gtk_container_set_border_width(GTK_CONTAINER(m_window), 0);
 
+  m_vbox = gtk_vbox_new(FALSE, 0);
   m_drawing_area = gtk_drawing_area_new();
   
   GdkColor color;
@@ -44,20 +46,22 @@ VirtualKeyboard::VirtualKeyboard(const KeyboardDescription& keyboard_desc) :
   gtk_widget_modify_bg(m_window, GTK_STATE_NORMAL, &color);
   gtk_widget_modify_bg(m_drawing_area, GTK_STATE_NORMAL, &color);
 
-  gtk_window_set_resizable(GTK_WINDOW(m_window), FALSE);
-  gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
+  //gtk_window_set_resizable(GTK_WINDOW(m_window), FALSE);
+  //gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
 
-  //  gtk_widget_set_size_request(m_window, 1280, 400);
-  gtk_widget_set_size_request(m_drawing_area, get_width(), get_height());
+  gtk_window_set_default_size(GTK_WINDOW(m_window), 3*get_width()/4, 3*get_height()/4);
+  //gtk_widget_set_size_request(m_window, get_width(), get_height());
+  //gtk_widget_set_size_request(m_drawing_area, get_width(), get_height());
 
-  gtk_container_add(GTK_CONTAINER(m_window), m_drawing_area);
+  gtk_container_add(GTK_CONTAINER(m_window), GTK_WIDGET(m_vbox));
+  gtk_box_pack_start(GTK_BOX(m_vbox), GTK_WIDGET(m_drawing_area), TRUE, TRUE, 0);
 
-  g_signal_connect(m_window, "destroy", G_CALLBACK(&VirtualKeyboard::on_destroy), NULL);
-
-  g_signal_connect(m_drawing_area, "expose-event", 
+  g_signal_connect(G_OBJECT(m_window), "destroy", G_CALLBACK(&VirtualKeyboard::on_destroy), NULL);
+  //g_signal_connect(G_OBJECT(m_window), "configure-event", G_CALLBACK(&VirtualKeyboard::on_configure_wrap), this);
+  g_signal_connect(G_OBJECT(m_drawing_area), "expose-event", 
                    G_CALLBACK(&VirtualKeyboard::on_expose_wrap), this);
 
-  if (false)
+  if (true)
   {
     g_signal_connect(m_window, "key-press-event", 
                      G_CALLBACK(&VirtualKeyboard::on_key_press_wrap), this);
@@ -66,6 +70,7 @@ VirtualKeyboard::VirtualKeyboard(const KeyboardDescription& keyboard_desc) :
   }
 
   gtk_widget_show(m_drawing_area);
+  gtk_widget_show(m_vbox);
 }
 
 VirtualKeyboard::~VirtualKeyboard()
@@ -191,6 +196,7 @@ VirtualKeyboard::on_key_press(GtkWidget* widget, GdkEventKey* event)
     case GDK_KEY_Shift_L:
     case GDK_KEY_Shift_R:
       m_shift_mode = !m_shift_mode;
+      gtk_widget_queue_draw(m_drawing_area);
       break;
   }
 }
@@ -205,14 +211,45 @@ VirtualKeyboard::send_key(bool value)
 }
 
 void
+VirtualKeyboard::move(int x, int y)
+{
+  gtk_window_move(GTK_WINDOW(m_window), x, y);
+}
+
+void
+VirtualKeyboard::get_position(int* x, int* y)
+{
+  gtk_window_get_position(GTK_WINDOW(m_window), x, y);
+}
+
+void
+VirtualKeyboard::on_configure(GtkWindow *window, GdkEvent *event)
+{
+  std::cout << event->configure.x << " "
+            << event->configure.y << " "
+            << event->configure.width << " "
+            << event->configure.height
+            << std::endl;
+}
+
+void
 VirtualKeyboard::on_expose(GtkWidget* widget, GdkEventExpose* event)
 {
+  std::cout << "Size: " << 
+    widget->allocation.width << " " << 
+    widget->allocation.height << std::endl;
+
   cairo_t *cr = gdk_cairo_create (widget->window);
 
   cairo_rectangle(cr, 
                   event->area.x, event->area.y, 
                   event->area.width, event->area.height);
   cairo_clip(cr);
+
+  // scale the keyboard to the size of the window
+  cairo_scale(cr,
+              static_cast<double>(widget->allocation.width)  / get_width(),
+              static_cast<double>(widget->allocation.height) / get_height());
 
   draw_keyboard(cr);
     
@@ -304,21 +341,21 @@ VirtualKeyboard::draw_key(cairo_t* cr, int x, int y, const Key& key, bool highli
     {
       case Key::kLetter:
         {
-          cairo_set_font_size(cr, 18.0);
+          cairo_set_font_size(cr, 24.0);
           draw_centered_text(cr, m_key_width/2.0, m_key_width/2.0, text.c_str());
         }
         break;
 
       case Key::kFunction:
         {
-          cairo_set_font_size(cr, 14.0);
+          cairo_set_font_size(cr, 18.0);
           draw_centered_text(cr, m_key_width/2.0, m_key_width/2.0, text.c_str());
         }
         break;
 
       case Key::kModifier:
         {
-          cairo_set_font_size(cr, 11.0);
+          cairo_set_font_size(cr, 12.0);
           draw_centered_text(cr, m_key_width/2.0, m_key_width/2.0, text.c_str());
         }
         break;

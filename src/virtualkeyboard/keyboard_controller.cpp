@@ -92,12 +92,37 @@ KeyboardController::parse(const struct input_event& ev)
         m_keyboard.cursor_down();
       }
     }
+    else if (ev.code == ABS_RX)
+    {
+      if (abs(ev.value) > 8000)
+      {
+        //m_keyboard.move(ev.value / 4, 0);
+      }
+    }
+    else if (ev.code == ABS_RY)
+    {
+      if (abs(ev.value) > 8000)
+      {
+        m_keyboard.move(0, ev.value / 40);
+      }
+    }
   }
   else if (ev.type == EV_KEY)
   {
     if (ev.code == BTN_A)
     {
       m_keyboard.send_key(ev.value);
+    }
+    else if (ev.code == BTN_TL)
+    {
+      if (ev.value)
+      {
+        m_keyboard.show();
+      }
+      else
+      {
+        m_keyboard.hide();
+      }
     }
   }
 }

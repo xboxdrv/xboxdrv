@@ -73,19 +73,25 @@ int main(int argc, char** argv)
   }
   else
   {
-    UInput uinput(false);
-
     KeyboardDescription keyboard_desc(KeyboardDescription::create_us_layout()); 
     VirtualKeyboard virtual_keyboard(keyboard_desc);
-    KeyboardDispatcher dispatcher(virtual_keyboard, uinput);
 
-    KeyboardController controller(virtual_keyboard, device);
+    if (false)
+    {
+      UInput uinput(false);
+      KeyboardDispatcher dispatcher(virtual_keyboard, uinput);
+      KeyboardController controller(virtual_keyboard, device);
+      uinput.finish();
 
-    uinput.finish();
-
-    virtual_keyboard.show();
-
-    gtk_main();
+      virtual_keyboard.show();
+      gtk_main();
+    }
+    else
+    { 
+      // non-interactive test mode
+      virtual_keyboard.show();
+      gtk_main();
+    }
 
     return EXIT_SUCCESS;
   }

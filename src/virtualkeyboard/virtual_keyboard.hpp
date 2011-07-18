@@ -32,6 +32,7 @@ private:
   KeyboardDescription m_keyboard;
 
   GtkWidget* m_window;
+  GtkWidget* m_vbox;
   GtkWidget* m_drawing_area;
 
   int m_key_width;
@@ -64,11 +65,15 @@ public:
 
   void send_key(bool value);
 
+  void move(int x, int y);
+  void get_position(int* x, int* y);
+
   KeyboardDescription get_description() const { return m_keyboard; }
 
   void set_key_callback(const boost::function<void (const Key&, bool)>& callback);
 
 private:
+  void on_configure(GtkWindow *window, GdkEvent *event);
   void on_expose(GtkWidget* widget, GdkEventExpose* event);
   void on_key_press(GtkWidget* widget, GdkEventKey* event);
   void on_key_release(GtkWidget* widget, GdkEventKey* event);
@@ -88,6 +93,10 @@ private:
 
   static void on_key_release_wrap(GtkWidget* widget, GdkEventKey* event, gpointer userdata) {
     static_cast<VirtualKeyboard*>(userdata)->on_key_release(widget, event);
+  }
+
+  static void on_configure_wrap(GtkWindow *window, GdkEvent *event, gpointer userdata) {
+    static_cast<VirtualKeyboard*>(userdata)->on_configure(window, event);
   }
 
   static void on_destroy(GtkWidget *widget, gpointer data) {
