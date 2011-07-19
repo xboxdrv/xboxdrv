@@ -67,7 +67,24 @@ $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-
 Target for 0.8.1
 ================
 
-* update/fix man-page
+* don't bother with virtualkeyboard, just make it basically functional, not polished
+
+* implement ButtonMap::send_clear(), ButtonEvent::send_clear() to fix
+  UInputConfig::reset_all_outputs()
+
+* rewrite AxisMap to support unlimited number of shift key
+
+* implement ButtonEventPtr ButtonMap::lookup(const ButtonCombination& buttons) const;
+
+* check that Playstation3 controller works with new ControllerMessage
+
+* mouse emulation is broken?! axis are inverted
+
+* update/fix man-page: document
+
+  - 'const' axis and button filter
+
+  - 'cycle-key' and 'cycle-key-ref', etc.
 
 * add function that can handle PC game style inventories, i.e. 0-9
   keys by using less buttons (maybe do graphical overlay stuff):

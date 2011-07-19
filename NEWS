@@ -7,6 +7,7 @@ xboxdrv 0.8.1 - (??/Jul/2011)
 * added support for Street Fighter IV fightpad
 * added support for Tron Xbox 360 controller
 * added support for an unlimited number shift buttons
+* fixed axis shift key getting ignored when another button was pressed
 * fixed keys not getting pressed in --ui-axismap
 * fixed rumble messages getting delayed
 * reenabled --priority realtime
