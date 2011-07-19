@@ -20,7 +20,7 @@
 #define HEADER_XBOXDRV_VIRTUALKEYBOARD_KEYBOARD_CONTROLLER_HPP
 
 #include <string>
-
+#include <linux/input.h>
 #include <glib.h>
 
 class VirtualKeyboard;
@@ -32,6 +32,16 @@ private:
   std::string m_device;
   int m_fd;
   GIOChannel* m_io_channel;
+
+  enum {
+    kSendButton = BTN_A,
+    kHoldButton = BTN_Y,
+    kBackspaceButton  = BTN_X,
+    kCancelHoldButton = BTN_B,
+    kShiftButton = BTN_TL,
+    kCtrlButton  = BTN_TR,
+    kHideButton  = BTN_MODE
+  };
 
 public:
   KeyboardController(VirtualKeyboard& keyboard, const std::string& device);

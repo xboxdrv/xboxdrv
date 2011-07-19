@@ -21,7 +21,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <linux/input.h>
 #include <errno.h>
 #include <stdexcept>
 
@@ -109,20 +108,42 @@ KeyboardController::parse(const struct input_event& ev)
   }
   else if (ev.type == EV_KEY)
   {
-    if (ev.code == BTN_A)
+    switch(ev.code)
     {
-      m_keyboard.send_key(ev.value);
-    }
-    else if (ev.code == BTN_TL)
-    {
-      if (ev.value)
-      {
-        m_keyboard.show();
-      }
-      else
-      {
-        m_keyboard.hide();
-      }
+      case kSendButton:
+        m_keyboard.send_key(ev.value);
+        break;
+
+      case kHoldButton:
+        //m_hold_key.send_key();
+        break;
+
+      case kCancelHoldButton:
+        //m_keyboard.cancel_holds();
+        break;
+
+      case kShiftButton:
+        //m_keyboard.send_key(KEY_LEFTSHIFT, ev.value);
+        break;
+
+      case kCtrlButton:
+        //m_keyboard.send_key(KEY_LEFTCTRL, ev.value);
+        break;
+
+      case kBackspaceButton:
+        //m_keyboard.send_key(KEY_BACKSPACE, ev.value);
+        break;
+
+      case kHideButton:
+        if (ev.value)
+        {
+          m_keyboard.show();
+        }
+        else
+        {
+          m_keyboard.hide();
+        }
+        break;
     }
   }
 }

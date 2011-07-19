@@ -47,7 +47,7 @@ VirtualKeyboard::VirtualKeyboard(const KeyboardDescription& keyboard_desc) :
   gtk_widget_modify_bg(m_drawing_area, GTK_STATE_NORMAL, &color);
 
   //gtk_window_set_resizable(GTK_WINDOW(m_window), FALSE);
-  //gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
+  gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
 
   gtk_window_set_default_size(GTK_WINDOW(m_window), 3*get_width()/4, 3*get_height()/4);
   //gtk_widget_set_size_request(m_window, get_width(), get_height());

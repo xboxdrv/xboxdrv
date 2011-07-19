@@ -76,7 +76,7 @@ int main(int argc, char** argv)
     KeyboardDescription keyboard_desc(KeyboardDescription::create_us_layout()); 
     VirtualKeyboard virtual_keyboard(keyboard_desc);
 
-    if (false)
+    if (true)
     {
       UInput uinput(false);
       KeyboardDispatcher dispatcher(virtual_keyboard, uinput);
