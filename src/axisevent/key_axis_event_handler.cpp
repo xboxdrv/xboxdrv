@@ -121,37 +121,6 @@ KeyAxisEventHandler::get_zone(int value) const
 }
 
 void
-KeyAxisEventHandler::send_up(UInput& uinput, int value)
-{
-  for(int i = 0; m_up_codes[i].is_valid(); ++i)
-    uinput.send_key(m_up_codes[i].get_device_id(), m_up_codes[i].code, value);
-}
-
-void
-KeyAxisEventHandler::send_down(UInput& uinput, int value)
-{
-  for(int i = 0; m_down_codes[i].is_valid(); ++i)
-    uinput.send_key(m_down_codes[i].get_device_id(), m_down_codes[i].code, value);
-}
-
-int
-KeyAxisEventHandler::get_zone(int value) const
-{
-  if (value >= m_threshold)
-  {
-    return +1;
-  }
-  else if (value <= -m_threshold)
-  {
-    return -1;
-  }
-  else
-  {
-    return 0;
-  }
-}
-
-void
 KeyAxisEventHandler::send(UInput& uinput, int value)
 {
   int old_zone = get_zone(m_old_value);
