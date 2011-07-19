@@ -118,7 +118,7 @@
           <listitem>
             <para>
               Do not display controller events on the terminal. For
-              regular use this option should alway be used as output
+              regular use this option should always be used as output
               data to the terminal can eat up quite a bit of CPU.
             </para>
           </listitem>
@@ -139,7 +139,7 @@
             <para>
               Possible values for <replaceable>PRIORITY</replaceable>
               are "normal" and "realtime". Realtime scheduling gives
-              the xboxdrv process heigher priority and thus allows it
+              the xboxdrv process higher priority and thus allows it
               to function properly even when the machine is under
               load.
             </para>
@@ -147,6 +147,11 @@
               Note that realtime priority requires running xboxdrv as
               root, when running xboxdrv as user there is no way to
               increase the priority.
+            </para>
+            <para>
+              This option is deprecated,
+              use <citerefentry><refentrytitle>chrt</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+              instead to achive the same effect.
             </para>
           </listitem>
         </varlistentry>
@@ -529,7 +534,19 @@ start=KEY_ESC
               <listitem><para>xbox360</para></listitem>
               <listitem><para>xbox360-wireless</para></listitem>
               <listitem><para>xbox360-guitar</para></listitem>
+              <listitem><para>firestorm</para></listitem>
+              <listitem><para>firestorm-vsb</para></listitem>
+              <listitem><para>saitek-p2500</para></listitem>
+              <listitem><para>generic-usb</para></listitem>
             </itemizedlist>
+            <para>
+              The <option>generic-usb</option> type is a special type
+              that will work with any USB controller, it will however
+              not interpret the input it gets, but just dump it to the
+              console for development purposes.
+              See <option>--generic-usb-spec</option> for further
+              information.
+            </para>
           </listitem>
         </varlistentry>
 
@@ -544,6 +561,39 @@ start=KEY_ESC
             </para>
           </listitem>
         </varlistentry>
+
+        <varlistentry>
+          <term><option>--generic-usb-spec</option> <replaceable>NAME=VALUE,...</replaceable></term>
+          <listitem>
+            <para>
+              Allows to specify from which
+              endpoint <option>generic-usb</option> will read. The
+              spec as the form
+              of <replaceable>NAME=VALUE,...</replaceable>. Allowed values are:
+            </para>
+            <variablelist>
+              <varlistentry>
+                <term>vid=HEX</term>
+                <listitem><para>The vendor id of the controller to which this spec applies</para></listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>pid=HEX</term>
+                <listitem><para>The product id of the controller to which this spec applies</para></listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>if=NUM</term>
+                <listitem><para>The interface from which GenericUSBController should be read</para></listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>ep=NUM</term>
+                <listitem><para>The endpoint from which GenericUSBController should be read</para></listitem>
+              </varlistentry>
+            </variablelist>
+          </listitem>
+        </varlistentry>        
 
       </variablelist>
     </refsect2>
@@ -604,7 +654,7 @@ start=KEY_ESC
               applications, as otherwise an app would receive every
               event twice, once from the original device and once from
               the virtual xboxdrv one. In some cases this behaviour is
-              undesired, such when mapping only an other wise
+              undesired, such when mapping only an otherwise
               unhandled subset of keys of an device, i.e. mapping the
               multimedia keys on a keyboard, so this option turns the
               grab off.
@@ -673,7 +723,7 @@ start=KEY_ESC
                 <thead>
                   <row>
                     <entry>Num</entry>
-                    <entry>Behaviour</entry>
+                    <entry>Behavior</entry>
                   </row>
                 </thead>
                 <tbody>
@@ -786,7 +836,7 @@ start=KEY_ESC
           <term><option>--headset</option></term>
           <listitem>
             <para>
-              Enable headset support and dump incomming data to stdout.
+              Enable headset support and dump incoming data to stdout.
             </para>
           </listitem>
 
@@ -795,7 +845,7 @@ start=KEY_ESC
           <term><option>--headset-dump</option> <replaceable class="parameter">FILE</replaceable></term>
           <listitem>
             <para>
-              Enable headset support and dump incomming data to FILE.
+              Enable headset support and dump incoming data to FILE.
             </para>
           </listitem>
         </varlistentry>
@@ -935,7 +985,7 @@ start=KEY_ESC
                 <term>property=<replaceable>PROPERTY</replaceable>:<replaceable>VALUE</replaceable></term>
                 <listitem>
                   <para>
-                    Match against an arbitary udev property, with
+                    Match against an arbitrary udev property, with
                     name <replaceable>PROPERTY</replaceable> and
                     value <replaceable>VALUE</replaceable>.
                   </para>
@@ -984,7 +1034,7 @@ start=KEY_ESC
     <refsect2>
       <title>Config Slot Options</title>
       <para>
-        You can use multple configurations, called config slots, with
+        You can use multiple configurations, called config slots, with
         your controller. You switch between those multiple
         configurations by pressing the Guide button by default, but
         you can also set another button via the option <option>--toggle</option>.
@@ -1069,7 +1119,7 @@ start=KEY_ESC
               for events from the controller before moving on and
               processing things like auto-fire or relative-axis.
               Default value is 10, smaller values will give you a
-              higher resoultion auto fire and relative event movement, but will waste some more
+              higher resolution auto fire and relative event movement, but will waste some more
               CPU.
             </para>
           </listitem>
@@ -1432,7 +1482,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
             <para>
               Sets a predefined button and axis mapping for use with
               guitar controllers. This mainly gets rid of a few
-              unnecesary buttons and axis not used by a guitar
+              unnecessary buttons and axis not used by a guitar
               controller.
             </para>
           </listitem>
@@ -1650,7 +1700,7 @@ DEVICEID     = NUMBER ;]]></programlisting>
               which represent keycodes, you can also use the higher
               level X11 keysyms <keysym>XK_</keysym>, the keysyms have
               the advantage that they map directly to the key you
-              expect, while a <keysym>KEY_</keysym> name gets mungled
+              expect, while a <keysym>KEY_</keysym> name gets mangled
               by the X11 keymap and will often not report what you
               expect in case you use a keymap that is different then
               your keyboard (i.e. dvorak on a qwerty keyboard).
@@ -1709,7 +1759,7 @@ DEVICEID     = NUMBER ;]]></programlisting>
               depending on what events a device provides. 
             </para>
             <para>
-              An example configuration makeing use of device_id would look like this:
+              An example configuration making use of device_id would look like this:
             </para>
             <programlisting><![CDATA[xboxdrv -s \
   --ui-clear \
@@ -1934,6 +1984,19 @@ NAME       = STRING ;]]></programlisting>
         </varlistentry>
 
         <varlistentry>
+          <term><option>const</option>:<replaceable>VALUE</replaceable></term>
+          <listitem>
+            <para>
+              The const filter will ignore the input signal and send a
+              constant value to the output. This can be used for
+              example in combination with multiple configurations to
+              signal a game or another application which configuration
+              is currently active.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>log</option>:<replaceable>STRING</replaceable></term>
           <listitem>
             <para>
@@ -2013,6 +2076,19 @@ NAME       = STRING ;]]></programlisting>
               Here the X1 axis is manipulated so that it will have a
               lower sensitivity in the center and a higher one on the
               outside.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>const</option>:<replaceable>VALUE</replaceable></term>
+          <listitem>
+            <para>
+              The const filter will ignore the input signal and send a
+              constant value to the output. This can be used for
+              example in combination with multiple configurations to
+              signal a game or another application which configuration
+              is currently active.
             </para>
           </listitem>
         </varlistentry>
@@ -2234,7 +2310,7 @@ $ modprobe joydev]]></programlisting>
         thread to handle that gamepad.
       </para>
       <para>
-        Note that xboxdrv will not allow an arbitarily large number of
+        Note that xboxdrv will not allow an arbitrary large number of
         controllers to be used in that mode, it can only handle as
         many controllers as you have allocated controller slots at
         startup. New slots can be allocated

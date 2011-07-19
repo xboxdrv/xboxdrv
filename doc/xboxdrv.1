@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 2010-05-05 0.7.3 "User Commands"
+.TH "xboxdrv " 1 2010-05-05 0.8.1 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -83,6 +83,10 @@ load.
 Note that realtime priority requires running xboxdrv as
 root, when running xboxdrv as user there is no way to
 increase the priority.
+
+This option is deprecated,
+use \fBchrt\fR(1)
+instead to achive the same effect.
 .SS "LIST OPTIONS"
 .TP 
 \*(T<\fB\-\-help\-led\fR\*(T>
@@ -302,13 +306,52 @@ xbox360-wireless
 .TP 0.2i
 \(bu
 xbox360-guitar
+.TP 0.2i
+\(bu
+firestorm
+.TP 0.2i
+\(bu
+firestorm-vsb
+.TP 0.2i
+\(bu
+saitek-p2500
+.TP 0.2i
+\(bu
+generic-usb
 .RE
+
+The \*(T<\fBgeneric\-usb\fR\*(T> type is a special type
+that will work with any USB controller, it will however
+not interpret the input it gets, but just dump it to the
+console for developemnt purposes.
+See \*(T<\fB\-\-generic\-usb\-spec\fR\*(T> for further
+information.
 .TP 
 \*(T<\fB\-d\fR\*(T>, \*(T<\fB\-\-detach\-kernel\-driver\fR\*(T>
 Detaches the kernel driver that is currently associated
 with the given device. This is useful when you have the
 xpad module loaded and want to use xboxdrv without
 unloading it.
+.TP 
+\*(T<\fB\-\-generic\-usb\-spec\fR\*(T> \fINAME=VALUE,...\fR
+Allows to specify from which
+endpoint \*(T<\fBgeneric\-usb\fR\*(T> will read. The
+spec as the form
+of \fINAME=VALUE,...\fR. Allowed values are:
+.RS 
+.TP 
+vid=HEX
+The vendor id of the controller to which this spec applies
+.TP 
+pid=HEX
+The product id of the controller to which this spec applies
+.TP 
+if=NUM
+The interface from which GenericUSBController should be read
+.TP 
+ep=NUM
+The endpoint from which GenericUSBController should be read
+.RE
 .SS "EVDEV OPTION"
 .TP 
 \*(T<\fB\-\-evdev\fR\*(T> \fIDEVICE\fR
@@ -1335,6 +1378,13 @@ miliseconds between button press events.
 miliseconds till the autofire will start, before that
 delay the button will act as normal.
 .TP 
+\*(T<\fBconst\fR\*(T>:\fIVALUE\fR
+The const filter will ignore the input signal and send a
+constant value to the output. This can be used for
+example in combination with multiple configurations to
+signal a game or another application which configuration
+is currently active.
+.TP 
 \*(T<\fBlog\fR\*(T>:\fISTRING\fR
 The log filter will output everything to stdout that
 goes through it to, this is useful for debugging the
@@ -1377,6 +1427,13 @@ of the axis. An example would look like this:
 Here the X1 axis is manipulated so that it will have a
 lower sensitivity in the center and a higher one on the
 outside.
+.TP 
+\*(T<\fBconst\fR\*(T>:\fIVALUE\fR
+The const filter will ignore the input signal and send a
+constant value to the output. This can be used for
+example in combination with multiple configurations to
+signal a game or another application which configuration
+is currently active.
 .TP 
 \*(T<\fBlog\fR\*(T>:\fISTRING\fR
 The log filter will output everything to stdout that
