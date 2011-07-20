@@ -124,6 +124,9 @@ Target for 0.8.1
 Target for 0.9.0
 ================
 
+* RelButtonEventHandler: add DELAY:REPEAT (like keyboard keys) instead
+  of just REPEAT
+
 * ./xboxdrv --axismap X1=X2,-Y1=Y2,X2=X1,-Y2=Y1   --mouse  -s
 
    Why do have the axis to be inverted in this case?
