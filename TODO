@@ -26,30 +26,30 @@ Ubuntu Package:
 
 $ cd ../debian/xboxdrv
 $ git checkout master
-$ git-import-orig -u 0.8.0 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.8.0.tar.bz2 
-$ dch -v "0.8.0-1" "xboxdrv 0.8.0 release"
+$ git-import-orig -u 0.8.1 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.8.1.tar.bz2 
+$ dch -v "0.8.1-1" "xboxdrv 0.8.1 release"
 $ git-buildpackage --git-no-create-orig --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-natty.tgz ../xboxdrv_0.8.0-1.dsc
-$ dput my-ppa ../xboxdrv_0.8.0-1_source.changes
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-natty.tgz ../xboxdrv_0.8.1-1.dsc
+$ dput my-ppa ../xboxdrv_0.8.1-1_source.changes
 
 # Ubuntu 10.10
 
 $ git checkout master-10.10
 $ git merge master
-$ dch -b -v "0.8.0-1~maverick1" --distribution maverick "xboxdrv 0.8.0 backport"
+$ dch -b -v "0.8.1-1~maverick1" --distribution maverick "xboxdrv 0.8.1 backport"
 $ git-buildpackage --git-no-create-orig --git-debian-branch=master-10.10 --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-maverick.tgz ../xboxdrv_0.8.0-1~maverick1.dsc
-$ dput my-ppa ../xboxdrv_0.8.0-1~maverick1_source.changes
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-maverick.tgz ../xboxdrv_0.8.1-1~maverick1.dsc
+$ dput my-ppa ../xboxdrv_0.8.1-1~maverick1_source.changes
 
 # Ubuntu 10.04 (LTS)
 
 $ cd ../debian/xboxdrv
 $ git checkout master-lts
 $ git merge master
-$ dch -b -v "0.8.0-1~lucid1" --distribution lucid "xboxdrv 0.8.0 backport"
+$ dch -b -v "0.8.1-1~lucid1" --distribution lucid "xboxdrv 0.8.1 backport"
 $ git-buildpackage --git-no-create-orig --git-debian-branch=master-lts --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv_0.8.0-1~lucid1.dsc
-$ dput my-ppa ../xboxdrv_0.8.0-1~lucid1_source.changes
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv_0.8.1-1~lucid1.dsc
+$ dput my-ppa ../xboxdrv_0.8.1-1~lucid1_source.changes
 
 # Ubuntu 10.10 - xboxdrv-stable
 
@@ -85,6 +85,9 @@ Target for 0.8.1
   - 'const' axis and button filter
 
   - 'cycle-key' and 'cycle-key-ref', etc.
+
+  -> rewrite the --ui-axismap, --ui-buttonmap section, currently kind
+     of confusing
 
 * add function that can handle PC game style inventories, i.e. 0-9
   keys by using less buttons (maybe do graphical overlay stuff):

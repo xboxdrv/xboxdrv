@@ -1,13 +1,14 @@
-xboxdrv 0.8.1 - (??/Jul/2011)
+xboxdrv 0.8.1 - (20/Jul/2011)
 =============================
 
+* added const axis and button filter
 * added 'generic-usb' controller type for debugging
 * added cycle-key support to cycle through a sequence of buttons
 * added proper merging of multiple output events to the same target
 * added support for Street Fighter IV fightpad
 * added support for Tron Xbox 360 controller
 * added support for an unlimited number shift buttons
-* fixed axis shift key getting ignored when another button was pressed
+* fixed axis-shift getting ignored when another button is pressed
 * fixed keys not getting pressed in --ui-axismap
 * fixed rumble messages getting delayed
 * reenabled --priority realtime

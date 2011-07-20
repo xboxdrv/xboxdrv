@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 2010-05-05 0.7.3 "User Commands"
+.TH "xboxdrv " 1 2011-07-20 0.8.1 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -67,7 +67,7 @@ Print even more verbose messages then \*(T<\fB\-\-verbose\fR\*(T>.
 .TP 
 \*(T<\fB\-s\fR\*(T>, \*(T<\fB\-\-silent\fR\*(T>
 Do not display controller events on the terminal. For
-regular use this option should alway be used as output
+regular use this option should always be used as output
 data to the terminal can eat up quite a bit of CPU.
 .TP 
 \*(T<\fB\-\-quiet\fR\*(T>
@@ -76,13 +76,17 @@ Do not display startup text and suppress most other output.
 \*(T<\fB\-\-priority\fR\*(T> \fIPRIORITY\fR
 Possible values for \fIPRIORITY\fR
 are "normal" and "realtime". Realtime scheduling gives
-the xboxdrv process heigher priority and thus allows it
+the xboxdrv process higher priority and thus allows it
 to function properly even when the machine is under
 load.
 
 Note that realtime priority requires running xboxdrv as
 root, when running xboxdrv as user there is no way to
 increase the priority.
+
+This option is deprecated,
+use \fBchrt\fR(1)
+instead to achive the same effect.
 .SS "LIST OPTIONS"
 .TP 
 \*(T<\fB\-\-help\-led\fR\*(T>
@@ -302,13 +306,52 @@ xbox360-wireless
 .TP 0.2i
 \(bu
 xbox360-guitar
+.TP 0.2i
+\(bu
+firestorm
+.TP 0.2i
+\(bu
+firestorm-vsb
+.TP 0.2i
+\(bu
+saitek-p2500
+.TP 0.2i
+\(bu
+generic-usb
 .RE
+
+The \*(T<\fBgeneric\-usb\fR\*(T> type is a special type
+that will work with any USB controller, it will however
+not interpret the input it gets, but just dump it to the
+console for development purposes.
+See \*(T<\fB\-\-generic\-usb\-spec\fR\*(T> for further
+information.
 .TP 
 \*(T<\fB\-d\fR\*(T>, \*(T<\fB\-\-detach\-kernel\-driver\fR\*(T>
 Detaches the kernel driver that is currently associated
 with the given device. This is useful when you have the
 xpad module loaded and want to use xboxdrv without
 unloading it.
+.TP 
+\*(T<\fB\-\-generic\-usb\-spec\fR\*(T> \fINAME=VALUE,...\fR
+Allows to specify from which
+endpoint \*(T<\fBgeneric\-usb\fR\*(T> will read. The
+spec as the form
+of \fINAME=VALUE,...\fR. Allowed values are:
+.RS 
+.TP 
+vid=HEX
+The vendor id of the controller to which this spec applies
+.TP 
+pid=HEX
+The product id of the controller to which this spec applies
+.TP 
+if=NUM
+The interface from which GenericUSBController should be read
+.TP 
+ep=NUM
+The endpoint from which GenericUSBController should be read
+.RE
 .SS "EVDEV OPTION"
 .TP 
 \*(T<\fB\-\-evdev\fR\*(T> \fIDEVICE\fR
@@ -348,7 +391,7 @@ events from that device. This is done to avoid confusing
 applications, as otherwise an app would receive every
 event twice, once from the original device and once from
 the virtual xboxdrv one. In some cases this behaviour is
-undesired, such when mapping only an other wise
+undesired, such when mapping only an otherwise
 unhandled subset of keys of an device, i.e. mapping the
 multimedia keys on a keyboard, so this option turns the
 grab off.
@@ -401,7 +444,7 @@ r l.
 T{
 Num
 T}	T{
-Behaviour
+Behavior
 T}
 .T&
 r l.
@@ -530,10 +573,10 @@ for developers only and will dump raw headset data, not .wav
 files.
 .TP 
 \*(T<\fB\-\-headset\fR\*(T>
-Enable headset support and dump incomming data to stdout.
+Enable headset support and dump incoming data to stdout.
 .TP 
 \*(T<\fB\-\-headset\-dump\fR\*(T> \fIFILE\fR
-Enable headset support and dump incomming data to FILE.
+Enable headset support and dump incoming data to FILE.
 .TP 
 \*(T<\fB\-\-headset\-play\fR\*(T> \fIFILE\fR
 Enable headset support and send FILE to the headset for playback.
@@ -596,7 +639,7 @@ Match controllers that have the
 given USB idProduct.
 .TP 
 property=\fIPROPERTY\fR:\fIVALUE\fR
-Match against an arbitary udev property, with
+Match against an arbitrary udev property, with
 name \fIPROPERTY\fR and
 value \fIVALUE\fR.
 .TP 
@@ -614,7 +657,7 @@ Limits a controller slot to devices that match all of
 the given rules. Possible match rules are the same as
 for \*(T<\fB\-\-match\fR\*(T>.
 .SS "CONFIG SLOT OPTIONS"
-You can use multple configurations, called config slots, with
+You can use multiple configurations, called config slots, with
 your controller. You switch between those multiple
 configurations by pressing the Guide button by default, but
 you can also set another button via the option \*(T<\fB\-\-toggle\fR\*(T>.
@@ -666,7 +709,7 @@ Specify the number of miliseconds that xboxdrv will wait
 for events from the controller before moving on and
 processing things like auto-fire or relative-axis.
 Default value is 10, smaller values will give you a
-higher resoultion auto fire and relative event movement, but will waste some more
+higher resolution auto fire and relative event movement, but will waste some more
 CPU.
 .TP 
 \*(T<\fB\-b, \-\-buttonmap BUTTON=BUTTON,...\fR\*(T>
@@ -944,7 +987,7 @@ in most situations.
 \*(T<\fB\-\-guitar\fR\*(T>
 Sets a predefined button and axis mapping for use with
 guitar controllers. This mainly gets rid of a few
-unnecesary buttons and axis not used by a guitar
+unnecessary buttons and axis not used by a guitar
 controller.
 .TP 
 \*(T<\fB\-m, \-\-mouse\fR\*(T>
@@ -1083,7 +1126,7 @@ Instead of the low level \fBKEY_\fR names,
 which represent keycodes, you can also use the higher
 level X11 keysyms \fBXK_\fR, the keysyms have
 the advantage that they map directly to the key you
-expect, while a \fBKEY_\fR name gets mungled
+expect, while a \fBKEY_\fR name gets mangled
 by the X11 keymap and will often not report what you
 expect in case you use a keymap that is different then
 your keyboard (i.e. dvorak on a qwerty keyboard).
@@ -1138,7 +1181,7 @@ event. The final determination of which device gets
 handled as what will be done by the Kernel or Xorg
 depending on what events a device provides. 
 
-An example configuration makeing use of device_id would look like this:
+An example configuration making use of device_id would look like this:
 
 .nf
 \*(T<xboxdrv \-s \e
@@ -1185,51 +1228,6 @@ You can also apply filters to button events:
 \*(T<xboxdrv \-s \e
   \-\-ui\-buttonmap A^toggle=JS_0\*(T>
 .fi
-
-Hold Button
-
-You can send different events depending on how long a
-button was pressed by:
-
-.nf
-\*(T<xboxdrv \e
-  \-\-ui\-buttonmap A=JS_0:JS_1:500\*(T>
-.fi
-
-This will send JS_0 events when the button is pressed
-and switch to JS_1 events when the button was hold for
-500 miliseconds.
-
-Exec Button
-
-You can bind a button to an application, so that the
-application will be launched when the button was
-pressed:
-
-.nf
-\*(T<xboxdrv \e
-  \-\-ui\-buttonmap A=exec:/home/juser/local/bin/screenshot.sh\*(T>
-.fi
-
-Macro Button
-
-A button can be bound to a macros via:
-
-.nf
-\*(T<xboxdrv \e
-  \-\-ui\-buttonmap A=macro:/home/juser/.xboxdrv/somefile.macro\*(T>
-.fi
-
-The \*(T<\fI.macro\fR\*(T> file has the form of:
-
-.nf
-\*(T<
-send KEY_LEFTSHIFT 1
-wait 500
-send KEY_LEFTSHIFT 0\*(T>
-.fi
-
-All abs, rel and key events can be send from a macro file.
 
 For documentation on the filters you can apply to events
 see [Button Filter].
@@ -1301,6 +1299,245 @@ This allows you to send ABS_X events normally and ABS_RX
 events when the LB button is held down.
 
 For information on how to use axis filters, see [Axis Filter].
+.SH "INPUT EVENT HANDLER"
+Input event handler decide what comes out of the virtual input
+devices that xboxdrv creates. They for example decide that when
+button A is pressed on a gamepad, that a virtual keyboard will
+emit a press of the space key.
+.PP
+Furthermore input event handler can also perform some basic
+transformation of the input signals, thus a joystick can be used
+to send WASD keys.
+.SS "BUTTON EVENT HANDLER"
+A button event handler decides what happens when a button is
+pressed, it needs to be specified with
+the \*(T<\fB\-\-ui\-buttonmap\fR\*(T> option. The example below
+shows the simplest use case:
+.PP
+.nf
+\*(T<$ xboxdrv \-\-ui\-buttonmap A=key:KEY_A\*(T>
+.fi
+.PP
+Here \*(T<\fBkey\fR\*(T> is the name of the button event
+handler, while \*(T<\fBKEY_A\fR\*(T> is an argument for the
+event handler. What kind of arguments an event handler allows
+depends on the event handler.
+.PP
+There is also a shorthand form of specifing event handlers by
+just writing:
+.PP
+.nf
+\*(T<$ xboxdrv \-\-ui\-buttonmap A=KEY_A\*(T>
+.fi
+.PP
+Here no handler is specified explicitly, if that is the case,
+the appropriate handler will be guessed based on the event
+type. \*(T<EV_KEY\*(T> events will be handled by
+the \*(T<\fBkey\fR\*(T> handler, \*(T<EV_REL\*(T> by
+the \*(T<\fBrel\fR\*(T> handler and \*(T<EV_ABS\*(T> by
+the \*(T<\fBabs\fR\*(T> handler. 
+.TP 
+\*(T<\fBkey\fR\*(T>:\fIKEY_EVENT\fR, \*(T<\fBkey\fR\*(T>:\fIKEY_EVENT\fR:\fIKEY_EVENT\fR:\fIHOLD_THRESHOLD_MSEC\fR
+The \*(T<\fBkey\fR\*(T> handler is the most basic one,
+it maps a button directly to a virtual key or another
+button.
+
+If additional arguments are supplied the button will be
+able to send out two different events. The first event
+specified will be send when the button is clicked
+normally, while the second event will be send in case
+the button is hold down for the time specified
+in \fIHOLD_THRESHOLD_MSEC\fR.
+
+An example for the hold button would look like:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=JS_0:JS_1:500\*(T>
+.fi
+
+This will send JS_0 events when the button is pressed
+and switch to JS_1 events when the button was hold for
+500 miliseconds.
+
+The hold button feature is useful to effectly double the
+number of available buttons, thus the dpad can for
+example be used to send out eight different button
+events instead of just four, which is enough to handle
+weapons in most FPS games.
+.TP 
+\*(T<\fBabs\fR\*(T>
+not yet implemented
+.TP 
+\*(T<\fBrel\fR\*(T>:\fIREL_EVENT\fR:\fIVALUE\fR:\fIREPEAT\fR
+The rel handler will send out a REL event whenever the
+button is pressed. \fIVALUE\fR
+gives the value of the event that will be send,
+while \fIREPEAT\fR gives the number
+of miliseconds till the event will be send again.
+
+A typical use for REL events is emulation of the scroll
+wheel of a mouse, an example configuration would be:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap Y=rel:REL_WHEEL:1:500,A=rel:REL_WHEEL:\-1:500\*(T>
+.fi
+
+Here Y will scroll up and A will scroll down.
+.TP 
+\*(T<\fBcycle\-key\fR\*(T>:\fIKEY_EVENT\fR:...
+The cycle-key handler will switch
+the \fIKEY_EVENT\fR that gets send
+with each button press. This is useful in situations
+where a range of buttons should be mapped to a single
+key. For example a FPS might have weapons mapped from 1
+to 6, but only a single key on the gamepad is free, thus
+one could write:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=cycle\-key:KEY_1:KEY_2:KEY_3:KEY_4:KEY_5:KEY_6\*(T>
+.fi
+.TP 
+\*(T<\fBcycle\-key\-named:\fR\*(T>\fINAME\fR\*(T<\fB:\fR\*(T>\fIKEY_EVENT\fR\*(T<\fB:...\fR\*(T>
+The \*(T<\fBcycle\-key\-named\fR\*(T> handler works
+exactly like the \*(T<\fBcycle\-key\fR\*(T> handler,
+except that a name has to be supplied for the cycle
+sequence. The name of the sequence is used
+by \*(T<\fBcycle\-key\-ref\fR\*(T> to access the
+sequence and reuse it for another button.
+
+In this simple example A is used to toggle through all
+weapon keys forward, while B is used to toggle the keys backwards:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=cycle\-key\-named:weapons:KEY_1:KEY_2:KEY_3:KEY_4,B=cycle\-key\-ref:weapons\*(T>
+.fi
+.TP 
+\*(T<\fBcycle\-key\-ref\fR\*(T>:\fINAME\fR:\fIDIRECTION\fR
+The \*(T<\fBcycle\-key\-ref\fR\*(T> handler will access
+and reuse the named cycle keysequence given
+by \fINAME\fR.
+If \fIDIRECTION\fR can either be
+\&'forward' or 'backward', if no direction is supplied it
+will default to 'backward'.
+
+See \*(T<\fBcycle\-key\-named\fR\*(T> for a full example.
+.TP 
+\*(T<\fBexec\fR\*(T>
+The exec button handler allows to launch an application
+when the button was pressed. An example would look like
+this:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=exec:/home/juser/local/bin/screenshot.sh\*(T>
+.fi
+
+Possible uses for the button are the ability to do
+screenshots or perform other tasks that are outside the
+main application you are using xboxdrv with.
+.TP 
+\*(T<\fBmacro\fR\*(T>
+A button can be bound to a macro via:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=macro:/home/juser/.xboxdrv/somefile.macro\*(T>
+.fi
+
+The \*(T<\fI.macro\fR\*(T> file has the form of:
+
+.nf
+\*(T<
+send KEY_LEFTSHIFT 1
+wait 500
+send KEY_LEFTSHIFT 0\*(T>
+.fi
+
+All abs, rel and key events can be send from a macro file.
+.SS "AXIS EVENT HANDLER"
+Axis event handler decide what happens when an axis is moved.
+Like button event handler they come in different forms and
+like button event handler they provide a shortcut
+form. \*(T<EV_KEY\*(T> events will be handled by
+the \*(T<\fBkey\fR\*(T> handler, \*(T<EV_REL\*(T> by
+the \*(T<\fBrel\fR\*(T> handler and \*(T<EV_ABS\*(T>
+by the \*(T<\fBabs\fR\*(T> handler.
+.TP 
+\*(T<\fBabs\fR\*(T>:\fIABS_EVENT\fR
+The \*(T<\fBabs\fR\*(T> handler is the simplest of them
+all, it will simply send out the value it gets as input
+as the given \fIABS_EVENT\fR event
+to the kernel. Thus a basic configuration to make the
+left stick behave as joystick would look like this:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-axismap X1=abs:ABS_X,Y1=abs:ABS_Y\*(T>
+.fi
+.TP 
+\*(T<\fBkey\fR\*(T>:\fIKEY_UP\fR:\fIKEY_DOWN\fR:\fITHRESHOLD\fR
+\fIKEY_UP\fR gives the keycode to be send when the axis is moved up
+
+\fIKEY_DOWN\fR gives the keycode to be send when the axis is moved down
+
+\fITHRESHOLD\fR gives the threshold that triggers the sending of an event
+
+Just like \*(T<\fB\-\-ui\-buttonmap\fR\*(T>, you can
+also use shift keys in place of the XBOXAXIS:
+
+.nf
+\*(T<$ xboxdrv \-\-ui\-axismap X1=ABS_X,LB+X1=ABS_RX\*(T>
+.fi
+
+This allows you to send ABS_X events normally and ABS_RX
+events when the LB button is held down.
+.TP 
+\*(T<\fBrel\fR\*(T>:\fIREL_EVENT\fR:\fIVALUE\fR:\fIREPEAT\fR
+\fIVALUE\fR gives
+the maximum value of the event, the actual value that gets send
+is \fIVALUE\fR * axis_state.
+(default: 10)
+
+\fIREPEAT\fR
+gives the number of milisecond to pass before the event
+is fired again (default: 5).
+
+The value of -1 has a special meaning, it will result in
+the REL event being fired as soon as possible (i.e.
+every \fItimeout\fR miliseconds).
+This is the recomment way for handling mouse emulation,
+as it will keep REL events syncronized and thus avoid
+jaggies in the movement, that will result from manually
+specifying a timeout.
+
+The \*(T<\fBrel\fR\*(T> handler is mainly useful for
+mouse pointer emulation, if you want to emulate a mouse
+scroll wheel use the \*(T<\fBrel\-repeat\fR\*(T> handler
+instead.
+.TP 
+\*(T<\fBrel\-repeat\fR\*(T>:\fIREL_EVENT\fR:\fIVALUE\fR:\fIREPEAT\fR
+The \*(T<\fBrel\-repeat\fR\*(T> handler is similar to
+the \*(T<\fBrel\fR\*(T> handler, but optimized for
+emulating the scroll wheel of a mouse.
+
+\fIVALUE\fR isn't scaled to how far
+the axis has moved, instead it is constant, instead the
+time given in \fIREPEAT\fR is
+scaled according to the axis movement. Thus the further
+the stick is moved, the more events will be send.
+
+The need for both \*(T<\fBrel\-repeat\fR\*(T>
+and \*(T<\fBrel\fR\*(T> arises from the fact that Xorg
+converts scroll wheel movement to button presses before
+they are handed to an application, thus an application
+never properly sees the changes
+in \fIVALUE\fR, by
+scaling \fIREPEAT\fR instead that
+problem is worked around.
 .SH "INPUT FILTER"
 Input filter allow to manipulate the events that come from the
 controller. They can be used
@@ -1334,6 +1571,13 @@ miliseconds between button press events.
 \fIDELAY\fR the amount of
 miliseconds till the autofire will start, before that
 delay the button will act as normal.
+.TP 
+\*(T<\fBconst\fR\*(T>:\fIVALUE\fR
+The const filter will ignore the input signal and send a
+constant value to the output. This can be used for
+example in combination with multiple configurations to
+signal a game or another application which configuration
+is currently active.
 .TP 
 \*(T<\fBlog\fR\*(T>:\fISTRING\fR
 The log filter will output everything to stdout that
@@ -1377,6 +1621,13 @@ of the axis. An example would look like this:
 Here the X1 axis is manipulated so that it will have a
 lower sensitivity in the center and a higher one on the
 outside.
+.TP 
+\*(T<\fBconst\fR\*(T>:\fIVALUE\fR
+The const filter will ignore the input signal and send a
+constant value to the output. This can be used for
+example in combination with multiple configurations to
+signal a game or another application which configuration
+is currently active.
 .TP 
 \*(T<\fBlog\fR\*(T>:\fISTRING\fR
 The log filter will output everything to stdout that
@@ -1530,7 +1781,7 @@ plugged into the computer. It will then match that device
 against its list of supported devices and launch a separate
 thread to handle that gamepad.
 .PP
-Note that xboxdrv will not allow an arbitarily large number of
+Note that xboxdrv will not allow an arbitrary large number of
 controllers to be used in that mode, it can only handle as
 many controllers as you have allocated controller slots at
 startup. New slots can be allocated
@@ -1896,7 +2147,7 @@ Once done you can try to add them to this array in \*(T<\fIsrc/xpad_device.cpp\f
 .fi
 .PP
 If you have success with that, send a patch
-to <\*(T<grumbel@gmx.de\*(T>>, if not, contact me too, I
+to <\*(T<grumbel@gmail.com\*(T>>, if not, contact me too, I
 might be able to provide additional help.
 .PP
 As an alternative you can also use the --device and --type option to
@@ -1909,7 +2160,7 @@ the Xbox360 controller seems to send out useless data every now and
 then. If your controller does not work and you get plenty of those
 lines when you move the sticks or press buttons it means that your
 controller talks an un-understood protocol and some reverse
-enginiering is required. Contact <\*(T<grumbel@gmx.de\*(T>> and include the output
+enginiering is required. Contact <\*(T<grumbel@gmail.com\*(T>> and include the output
 of:
 .PP
 .nf
@@ -2101,13 +2352,17 @@ basically have to reboot. This looks like it might be a kernel issue
 and not a xboxdrv one.
 .PP
 Workaround: Kill the app that uses xboxdrv before xboxdrv itself.
-.SS "BUG REPORTS AND FEATURE REQUESTS"
-If you have bug reports or feature request report them by
-email to:
+.SS "QUESTIONS, BUG REPORTS AND FEATURE REQUESTS"
+Bug reports and feature request can be report to the xboxdrv issue tracker at:
 .PP
-Ingo Ruhnke <\*(T<grumbel@gmx.de\*(T>>
+.URL https://github.com/Grumbel/xboxdrv/issues/new ""
+.PP
+General questions and requests for configuration help should
+be directed to the xboxdrv mailing list at:
+.PP
+.URL http://groups.google.com/group/xboxdrv ""
 .SH COPYRIGHT
-Copyright \(co 2010 Ingo Ruhnke <\*(T<grumbel@gmx.de\*(T>>
+Copyright \(co 2010-2011 Ingo Ruhnke <\*(T<grumbel@gmail.com\*(T>>
 License GPLv3+: GNU GPL version 3 or later
 .URL http://gnu.org/licenses/gpl.html ""
 \&. This is free software: you

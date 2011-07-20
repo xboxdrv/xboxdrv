@@ -6,7 +6,7 @@
           ]>
 <refentry id="xboxdrv">
   <refentryinfo>
-    <date>2010-05-05</date>
+    <date>2011-07-20</date>
   </refentryinfo>
   
   <refmeta>
@@ -118,7 +118,7 @@
           <listitem>
             <para>
               Do not display controller events on the terminal. For
-              regular use this option should alway be used as output
+              regular use this option should always be used as output
               data to the terminal can eat up quite a bit of CPU.
             </para>
           </listitem>
@@ -139,7 +139,7 @@
             <para>
               Possible values for <replaceable>PRIORITY</replaceable>
               are "normal" and "realtime". Realtime scheduling gives
-              the xboxdrv process heigher priority and thus allows it
+              the xboxdrv process higher priority and thus allows it
               to function properly even when the machine is under
               load.
             </para>
@@ -147,6 +147,11 @@
               Note that realtime priority requires running xboxdrv as
               root, when running xboxdrv as user there is no way to
               increase the priority.
+            </para>
+            <para>
+              This option is deprecated,
+              use <citerefentry><refentrytitle>chrt</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+              instead to achive the same effect.
             </para>
           </listitem>
         </varlistentry>
@@ -529,7 +534,19 @@ start=KEY_ESC
               <listitem><para>xbox360</para></listitem>
               <listitem><para>xbox360-wireless</para></listitem>
               <listitem><para>xbox360-guitar</para></listitem>
+              <listitem><para>firestorm</para></listitem>
+              <listitem><para>firestorm-vsb</para></listitem>
+              <listitem><para>saitek-p2500</para></listitem>
+              <listitem><para>generic-usb</para></listitem>
             </itemizedlist>
+            <para>
+              The <option>generic-usb</option> type is a special type
+              that will work with any USB controller, it will however
+              not interpret the input it gets, but just dump it to the
+              console for development purposes.
+              See <option>--generic-usb-spec</option> for further
+              information.
+            </para>
           </listitem>
         </varlistentry>
 
@@ -544,6 +561,39 @@ start=KEY_ESC
             </para>
           </listitem>
         </varlistentry>
+
+        <varlistentry>
+          <term><option>--generic-usb-spec</option> <replaceable>NAME=VALUE,...</replaceable></term>
+          <listitem>
+            <para>
+              Allows to specify from which
+              endpoint <option>generic-usb</option> will read. The
+              spec as the form
+              of <replaceable>NAME=VALUE,...</replaceable>. Allowed values are:
+            </para>
+            <variablelist>
+              <varlistentry>
+                <term>vid=HEX</term>
+                <listitem><para>The vendor id of the controller to which this spec applies</para></listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>pid=HEX</term>
+                <listitem><para>The product id of the controller to which this spec applies</para></listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>if=NUM</term>
+                <listitem><para>The interface from which GenericUSBController should be read</para></listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>ep=NUM</term>
+                <listitem><para>The endpoint from which GenericUSBController should be read</para></listitem>
+              </varlistentry>
+            </variablelist>
+          </listitem>
+        </varlistentry>        
 
       </variablelist>
     </refsect2>
@@ -604,7 +654,7 @@ start=KEY_ESC
               applications, as otherwise an app would receive every
               event twice, once from the original device and once from
               the virtual xboxdrv one. In some cases this behaviour is
-              undesired, such when mapping only an other wise
+              undesired, such when mapping only an otherwise
               unhandled subset of keys of an device, i.e. mapping the
               multimedia keys on a keyboard, so this option turns the
               grab off.
@@ -673,7 +723,7 @@ start=KEY_ESC
                 <thead>
                   <row>
                     <entry>Num</entry>
-                    <entry>Behaviour</entry>
+                    <entry>Behavior</entry>
                   </row>
                 </thead>
                 <tbody>
@@ -786,7 +836,7 @@ start=KEY_ESC
           <term><option>--headset</option></term>
           <listitem>
             <para>
-              Enable headset support and dump incomming data to stdout.
+              Enable headset support and dump incoming data to stdout.
             </para>
           </listitem>
 
@@ -795,7 +845,7 @@ start=KEY_ESC
           <term><option>--headset-dump</option> <replaceable class="parameter">FILE</replaceable></term>
           <listitem>
             <para>
-              Enable headset support and dump incomming data to FILE.
+              Enable headset support and dump incoming data to FILE.
             </para>
           </listitem>
         </varlistentry>
@@ -935,7 +985,7 @@ start=KEY_ESC
                 <term>property=<replaceable>PROPERTY</replaceable>:<replaceable>VALUE</replaceable></term>
                 <listitem>
                   <para>
-                    Match against an arbitary udev property, with
+                    Match against an arbitrary udev property, with
                     name <replaceable>PROPERTY</replaceable> and
                     value <replaceable>VALUE</replaceable>.
                   </para>
@@ -984,7 +1034,7 @@ start=KEY_ESC
     <refsect2>
       <title>Config Slot Options</title>
       <para>
-        You can use multple configurations, called config slots, with
+        You can use multiple configurations, called config slots, with
         your controller. You switch between those multiple
         configurations by pressing the Guide button by default, but
         you can also set another button via the option <option>--toggle</option>.
@@ -1069,7 +1119,7 @@ start=KEY_ESC
               for events from the controller before moving on and
               processing things like auto-fire or relative-axis.
               Default value is 10, smaller values will give you a
-              higher resoultion auto fire and relative event movement, but will waste some more
+              higher resolution auto fire and relative event movement, but will waste some more
               CPU.
             </para>
           </listitem>
@@ -1432,7 +1482,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
             <para>
               Sets a predefined button and axis mapping for use with
               guitar controllers. This mainly gets rid of a few
-              unnecesary buttons and axis not used by a guitar
+              unnecessary buttons and axis not used by a guitar
               controller.
             </para>
           </listitem>
@@ -1650,7 +1700,7 @@ DEVICEID     = NUMBER ;]]></programlisting>
               which represent keycodes, you can also use the higher
               level X11 keysyms <keysym>XK_</keysym>, the keysyms have
               the advantage that they map directly to the key you
-              expect, while a <keysym>KEY_</keysym> name gets mungled
+              expect, while a <keysym>KEY_</keysym> name gets mangled
               by the X11 keymap and will often not report what you
               expect in case you use a keymap that is different then
               your keyboard (i.e. dvorak on a qwerty keyboard).
@@ -1709,7 +1759,7 @@ DEVICEID     = NUMBER ;]]></programlisting>
               depending on what events a device provides. 
             </para>
             <para>
-              An example configuration makeing use of device_id would look like this:
+              An example configuration making use of device_id would look like this:
             </para>
             <programlisting><![CDATA[xboxdrv -s \
   --ui-clear \
@@ -1751,45 +1801,6 @@ DEVICEID     = NUMBER ;]]></programlisting>
             </para>
             <programlisting><![CDATA[xboxdrv -s \
   --ui-buttonmap A^toggle=JS_0]]></programlisting>
-
-            <bridgehead renderas="sect3">Hold Button</bridgehead>
-            <para>
-              You can send different events depending on how long a
-              button was pressed by:
-            </para>
-            <programlisting><![CDATA[xboxdrv \
-  --ui-buttonmap A=JS_0:JS_1:500]]></programlisting>
-            <para>
-              This will send JS_0 events when the button is pressed
-              and switch to JS_1 events when the button was hold for
-              500 miliseconds.
-            </para>
-
-            <bridgehead renderas="sect3">Exec Button</bridgehead>
-            <para>
-              You can bind a button to an application, so that the
-              application will be launched when the button was
-              pressed:
-            </para>
-            <programlisting><![CDATA[xboxdrv \
-  --ui-buttonmap A=exec:/home/juser/local/bin/screenshot.sh]]></programlisting>
-
-            <bridgehead renderas="sect3">Macro Button</bridgehead>
-            <para>
-              A button can be bound to a macros via:
-            </para>
-            <programlisting><![CDATA[xboxdrv \
-  --ui-buttonmap A=macro:/home/juser/.xboxdrv/somefile.macro]]></programlisting>
-            <para>
-              The <filename>.macro</filename> file has the form of:
-            </para>
-            <programlisting><![CDATA[
-send KEY_LEFTSHIFT 1
-wait 500
-send KEY_LEFTSHIFT 0]]></programlisting>
-            <para>
-              All abs, rel and key events can be send from a macro file.
-            </para>
             <para>
               For documentation on the filters you can apply to events
               see <link linkend="buttonfilter" endterm="buttonfilter.title" />.
@@ -1875,6 +1886,329 @@ NAME       = STRING ;]]></programlisting>
     </refsect2>
   </refsect1> 
 
+  <refsect1 id="inputeventhandler">
+    <title id="inputeventhandler.title">Input Event Handler</title>
+    <para>
+      Input event handler decide what comes out of the virtual input
+      devices that xboxdrv creates. They for example decide that when
+      button A is pressed on a gamepad, that a virtual keyboard will
+      emit a press of the space key.
+    </para>
+    <para>
+      Furthermore input event handler can also perform some basic
+      transformation of the input signals, thus a joystick can be used
+      to send WASD keys.
+    </para>
+
+    <refsect2 id="buttoneventhandler">
+      <title id="buttoneventhandler.title">Button Event Handler</title>
+      <para>
+        A button event handler decides what happens when a button is
+        pressed, it needs to be specified with
+        the <option>--ui-buttonmap</option> option. The example below
+        shows the simplest use case:
+      </para>
+      <programlisting>$ xboxdrv --ui-buttonmap A=key:KEY_A</programlisting>
+      <para>
+        Here <option>key</option> is the name of the button event
+        handler, while <option>KEY_A</option> is an argument for the
+        event handler. What kind of arguments an event handler allows
+        depends on the event handler.
+      </para>
+      <para>
+        There is also a shorthand form of specifing event handlers by
+        just writing:
+      </para>
+      <programlisting>$ xboxdrv --ui-buttonmap A=KEY_A</programlisting>        
+      <para>
+        Here no handler is specified explicitly, if that is the case,
+        the appropriate handler will be guessed based on the event
+        type. <literal>EV_KEY</literal> events will be handled by
+        the <option>key</option> handler, <literal>EV_REL</literal> by
+        the <option>rel</option> handler and <literal>EV_ABS</literal> by
+        the <option>abs</option> handler. 
+      </para>
+
+      <variablelist>
+
+        <varlistentry>
+          <term><option>key</option>:<replaceable>KEY_EVENT</replaceable></term>
+          <term><option>key</option>:<replaceable>KEY_EVENT</replaceable>:<replaceable>KEY_EVENT</replaceable>:<replaceable>HOLD_THRESHOLD_MSEC</replaceable></term>
+          <listitem>
+            <para>
+              The <option>key</option> handler is the most basic one,
+              it maps a button directly to a virtual key or another
+              button.
+            </para>
+            <para>
+              If additional arguments are supplied the button will be
+              able to send out two different events. The first event
+              specified will be send when the button is clicked
+              normally, while the second event will be send in case
+              the button is hold down for the time specified
+              in <replaceable>HOLD_THRESHOLD_MSEC</replaceable>.
+            </para>
+            <para>
+              An example for the hold button would look like:
+            </para>
+            <programlisting><![CDATA[xboxdrv \
+  --ui-buttonmap A=JS_0:JS_1:500]]></programlisting>
+            <para>
+              This will send JS_0 events when the button is pressed
+              and switch to JS_1 events when the button was hold for
+              500 miliseconds.
+            </para>
+            <para>
+              The hold button feature is useful to effectly double the
+              number of available buttons, thus the dpad can for
+              example be used to send out eight different button
+              events instead of just four, which is enough to handle
+              weapons in most FPS games.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>abs</option></term>
+          <listitem>
+            <para>
+              not yet implemented
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>rel</option>:<replaceable>REL_EVENT</replaceable>:<replaceable>VALUE</replaceable>:<replaceable>REPEAT</replaceable></term>
+          <listitem>
+            <para>
+              The rel handler will send out a REL event whenever the
+              button is pressed. <replaceable>VALUE</replaceable>
+              gives the value of the event that will be send,
+              while <replaceable>REPEAT</replaceable> gives the number
+              of miliseconds till the event will be send again.
+            </para>
+            <para>
+              A typical use for REL events is emulation of the scroll
+              wheel of a mouse, an example configuration would be:
+            </para>
+            <programlisting><![CDATA[xboxdrv \
+  --ui-buttonmap Y=rel:REL_WHEEL:1:500,A=rel:REL_WHEEL:-1:500]]></programlisting>
+            <para>
+              Here Y will scroll up and A will scroll down.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>cycle-key</option>:<replaceable>KEY_EVENT</replaceable>:...</term>
+          <listitem>
+            <para>
+              The cycle-key handler will switch
+              the <replaceable>KEY_EVENT</replaceable> that gets send
+              with each button press. This is useful in situations
+              where a range of buttons should be mapped to a single
+              key. For example a FPS might have weapons mapped from 1
+              to 6, but only a single key on the gamepad is free, thus
+              one could write:
+            </para>
+            <programlisting><![CDATA[xboxdrv \
+  --ui-buttonmap A=cycle-key:KEY_1:KEY_2:KEY_3:KEY_4:KEY_5:KEY_6]]></programlisting>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>cycle-key-named:<replaceable>NAME</replaceable>:<replaceable>KEY_EVENT</replaceable>:...</option></term>
+          <listitem>
+            <para>
+              The <option>cycle-key-named</option> handler works
+              exactly like the <option>cycle-key</option> handler,
+              except that a name has to be supplied for the cycle
+              sequence. The name of the sequence is used
+              by <option>cycle-key-ref</option> to access the
+              sequence and reuse it for another button.
+            </para>
+            <para>
+              In this simple example A is used to toggle through all
+              weapon keys forward, while B is used to toggle the keys backwards:
+            </para>
+            <programlisting><![CDATA[xboxdrv \
+  --ui-buttonmap A=cycle-key-named:weapons:KEY_1:KEY_2:KEY_3:KEY_4,B=cycle-key-ref:weapons]]></programlisting>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>cycle-key-ref</option>:<replaceable>NAME</replaceable>:<replaceable>DIRECTION</replaceable></term>
+          <listitem>
+            <para>
+              The <option>cycle-key-ref</option> handler will access
+              and reuse the named cycle keysequence given
+              by <replaceable>NAME</replaceable>.
+              If <replaceable>DIRECTION</replaceable> can either be
+              'forward' or 'backward', if no direction is supplied it
+              will default to 'backward'.
+            </para>
+            <para>
+              See <option>cycle-key-named</option> for a full example.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>exec</option></term>
+          <listitem>
+            <para>
+              The exec button handler allows to launch an application
+              when the button was pressed. An example would look like
+              this:
+            </para>
+            <programlisting><![CDATA[xboxdrv \
+  --ui-buttonmap A=exec:/home/juser/local/bin/screenshot.sh]]></programlisting>
+            <para>
+              Possible uses for the button are the ability to do
+              screenshots or perform other tasks that are outside the
+              main application you are using xboxdrv with.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>macro</option></term>
+          <listitem>
+            <para>
+              A button can be bound to a macro via:
+            </para>
+            <programlisting><![CDATA[xboxdrv \
+  --ui-buttonmap A=macro:/home/juser/.xboxdrv/somefile.macro]]></programlisting>
+            <para>
+              The <filename>.macro</filename> file has the form of:
+            </para>
+            <programlisting><![CDATA[
+send KEY_LEFTSHIFT 1
+wait 500
+send KEY_LEFTSHIFT 0]]></programlisting>
+            <para>
+              All abs, rel and key events can be send from a macro file.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>      
+    </refsect2>
+
+    <refsect2 id="axiseventhandler">
+      <title id="axiseventhandler.title">Axis Event Handler</title>
+      <para>
+        Axis event handler decide what happens when an axis is moved.
+        Like button event handler they come in different forms and
+        like button event handler they provide a shortcut
+        form. <literal>EV_KEY</literal> events will be handled by
+        the <option>key</option> handler, <literal>EV_REL</literal> by
+        the <option>rel</option> handler and <literal>EV_ABS</literal>
+        by the <option>abs</option> handler.
+      </para>
+      
+      <variablelist>
+        <varlistentry>
+          <term><option>abs</option>:<replaceable>ABS_EVENT</replaceable></term>
+          <listitem>
+            <para>
+              The <option>abs</option> handler is the simplest of them
+              all, it will simply send out the value it gets as input
+              as the given <replaceable>ABS_EVENT</replaceable> event
+              to the kernel. Thus a basic configuration to make the
+              left stick behave as joystick would look like this:
+            </para>
+            <programlisting><![CDATA[xboxdrv \
+  --ui-axismap X1=abs:ABS_X,Y1=abs:ABS_Y]]></programlisting>            
+          </listitem>
+        </varlistentry>      
+
+        <varlistentry>
+          <term><option>key</option>:<replaceable>KEY_UP</replaceable>:<replaceable>KEY_DOWN</replaceable>:<replaceable>THRESHOLD</replaceable></term>
+          <listitem>
+            <para>
+              <replaceable class="parameter">KEY_UP</replaceable> gives the keycode to be send when the axis is moved up
+            </para>
+            <para>
+              <replaceable class="parameter">KEY_DOWN</replaceable> gives the keycode to be send when the axis is moved down
+            </para>
+            <para>
+              <replaceable class="parameter">THRESHOLD</replaceable> gives the threshold that triggers the sending of an event
+            </para>
+            <para>
+              Just like <option>--ui-buttonmap</option>, you can
+              also use shift keys in place of the XBOXAXIS:
+            </para>
+            <programlisting>$ xboxdrv --ui-axismap X1=ABS_X,LB+X1=ABS_RX</programlisting>
+            <para>
+              This allows you to send ABS_X events normally and ABS_RX
+              events when the LB button is held down.
+            </para>
+          </listitem>
+        </varlistentry>      
+
+        <varlistentry>
+          <term><option>rel</option>:<replaceable>REL_EVENT</replaceable>:<replaceable>VALUE</replaceable>:<replaceable>REPEAT</replaceable></term>
+          <listitem>
+            <para>
+              <replaceable class="parameter">VALUE</replaceable> gives
+              the maximum value of the event, the actual value that gets send
+              is <replaceable>VALUE</replaceable> * axis_state.
+              (default: 10)
+            </para>
+            <para>
+              <replaceable class="parameter">REPEAT</replaceable>
+              gives the number of milisecond to pass before the event
+              is fired again (default: 5).
+            </para>
+            <para>
+              The value of -1 has a special meaning, it will result in
+              the REL event being fired as soon as possible (i.e.
+              every <replaceable>timeout</replaceable> miliseconds).
+              This is the recomment way for handling mouse emulation,
+              as it will keep REL events syncronized and thus avoid
+              jaggies in the movement, that will result from manually
+              specifying a timeout.
+            </para>
+            <para>
+              The <option>rel</option> handler is mainly useful for
+              mouse pointer emulation, if you want to emulate a mouse
+              scroll wheel use the <option>rel-repeat</option> handler
+              instead.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>rel-repeat</option>:<replaceable>REL_EVENT</replaceable>:<replaceable>VALUE</replaceable>:<replaceable>REPEAT</replaceable></term>
+          <listitem>
+            <para>
+              The <option>rel-repeat</option> handler is similar to
+              the <option>rel</option> handler, but optimized for
+              emulating the scroll wheel of a mouse.
+            </para>
+            <para>
+              <replaceable>VALUE</replaceable> isn't scaled to how far
+              the axis has moved, instead it is constant, instead the
+              time given in <replaceable>REPEAT</replaceable> is
+              scaled according to the axis movement. Thus the further
+              the stick is moved, the more events will be send.
+            </para>
+            <para>
+              The need for both <option>rel-repeat</option>
+              and <option>rel</option> arises from the fact that Xorg
+              converts scroll wheel movement to button presses before
+              they are handed to an application, thus an application
+              never properly sees the changes
+              in <replaceable>VALUE</replaceable>, by
+              scaling <replaceable>REPEAT</replaceable> instead that
+              problem is worked around.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+  </refsect1>
+
   <refsect1 id="inputfilter">
     <title id="inputfilter.title">Input Filter</title>
     <para>
@@ -1929,6 +2263,19 @@ NAME       = STRING ;]]></programlisting>
               <replaceable>DELAY</replaceable> the amount of
               miliseconds till the autofire will start, before that
               delay the button will act as normal.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>const</option>:<replaceable>VALUE</replaceable></term>
+          <listitem>
+            <para>
+              The const filter will ignore the input signal and send a
+              constant value to the output. This can be used for
+              example in combination with multiple configurations to
+              signal a game or another application which configuration
+              is currently active.
             </para>
           </listitem>
         </varlistentry>
@@ -2013,6 +2360,19 @@ NAME       = STRING ;]]></programlisting>
               Here the X1 axis is manipulated so that it will have a
               lower sensitivity in the center and a higher one on the
               outside.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>const</option>:<replaceable>VALUE</replaceable></term>
+          <listitem>
+            <para>
+              The const filter will ignore the input signal and send a
+              constant value to the output. This can be used for
+              example in combination with multiple configurations to
+              signal a game or another application which configuration
+              is currently active.
             </para>
           </listitem>
         </varlistentry>
@@ -2256,7 +2616,7 @@ $ modprobe joydev]]></programlisting>
         thread to handle that gamepad.
       </para>
       <para>
-        Note that xboxdrv will not allow an arbitarily large number of
+        Note that xboxdrv will not allow an arbitrary large number of
         controllers to be used in that mode, it can only handle as
         many controllers as you have allocated controller slots at
         startup. New slots can be allocated
@@ -2726,7 +3086,7 @@ $ export SDL_JOYSTICK_DEVICE]]></programlisting>
 
       <para>
         If you have success with that, send a patch
-        to <email>grumbel@gmx.de</email>, if not, contact me too, I
+        to <email>grumbel@gmail.com</email>, if not, contact me too, I
         might be able to provide additional help.
       </para>
 
@@ -2746,7 +3106,7 @@ $ export SDL_JOYSTICK_DEVICE]]></programlisting>
         then. If your controller does not work and you get plenty of those
         lines when you move the sticks or press buttons it means that your
         controller talks an un-understood protocol and some reverse
-        enginiering is required. Contact <email>grumbel@gmx.de</email> and include the output
+        enginiering is required. Contact <email>grumbel@gmail.com</email> and include the output
         of:
       </para>
 
@@ -3013,13 +3373,19 @@ EndSection]]></programlisting>
     </refsect2>
 
     <refsect2>
-      <title>Bug Reports and Feature Requests</title>
+      <title>Questions, Bug Reports and Feature Requests</title>
       <para>
-        If you have bug reports or feature request report them by
-        email to:
+        Bug reports and feature request can be report to the xboxdrv issue tracker at:
       </para>
       <para>
-        Ingo Ruhnke <email>grumbel@gmx.de</email>
+        <ulink url="https://github.com/Grumbel/xboxdrv/issues/new" />
+      </para>
+      <para>
+        General questions and requests for configuration help should
+        be directed to the xboxdrv mailing list at:
+      </para>
+      <para>
+        <ulink url="http://groups.google.com/group/xboxdrv" />
       </para>
     </refsect2>
   </refsect1>
@@ -3027,7 +3393,7 @@ EndSection]]></programlisting>
   <refsect1>
     <title>Copyright</title>
     <para>
-      Copyright © 2010 Ingo Ruhnke <email>grumbel@gmx.de</email>
+      Copyright © 2010-2011 Ingo Ruhnke <email>grumbel@gmail.com</email>
       License GPLv3+: GNU GPL version 3 or later
       <ulink url="http://gnu.org/licenses/gpl.html" />.  This is free software: you
       are free to change and redistribute it.  There is NO WARRANTY,
