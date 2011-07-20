@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 2010-05-05 0.8.1 "User Commands"
+.TH "xboxdrv " 1 2011-07-20 0.8.1 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -1229,51 +1229,6 @@ You can also apply filters to button events:
   \-\-ui\-buttonmap A^toggle=JS_0\*(T>
 .fi
 
-Hold Button
-
-You can send different events depending on how long a
-button was pressed by:
-
-.nf
-\*(T<xboxdrv \e
-  \-\-ui\-buttonmap A=JS_0:JS_1:500\*(T>
-.fi
-
-This will send JS_0 events when the button is pressed
-and switch to JS_1 events when the button was hold for
-500 miliseconds.
-
-Exec Button
-
-You can bind a button to an application, so that the
-application will be launched when the button was
-pressed:
-
-.nf
-\*(T<xboxdrv \e
-  \-\-ui\-buttonmap A=exec:/home/juser/local/bin/screenshot.sh\*(T>
-.fi
-
-Macro Button
-
-A button can be bound to a macros via:
-
-.nf
-\*(T<xboxdrv \e
-  \-\-ui\-buttonmap A=macro:/home/juser/.xboxdrv/somefile.macro\*(T>
-.fi
-
-The \*(T<\fI.macro\fR\*(T> file has the form of:
-
-.nf
-\*(T<
-send KEY_LEFTSHIFT 1
-wait 500
-send KEY_LEFTSHIFT 0\*(T>
-.fi
-
-All abs, rel and key events can be send from a macro file.
-
 For documentation on the filters you can apply to events
 see [Button Filter].
 .TP 
@@ -1344,6 +1299,245 @@ This allows you to send ABS_X events normally and ABS_RX
 events when the LB button is held down.
 
 For information on how to use axis filters, see [Axis Filter].
+.SH "INPUT EVENT HANDLER"
+Input event handler decide what comes out of the virtual input
+devices that xboxdrv creates. They for example decide that when
+button A is pressed on a gamepad, that a virtual keyboard will
+emit a press of the space key.
+.PP
+Furthermore input event handler can also perform some basic
+transformation of the input signals, thus a joystick can be used
+to send WASD keys.
+.SS "BUTTON EVENT HANDLER"
+A button event handler decides what happens when a button is
+pressed, it needs to be specified with
+the \*(T<\fB\-\-ui\-buttonmap\fR\*(T> option. The example below
+shows the simplest use case:
+.PP
+.nf
+\*(T<$ xboxdrv \-\-ui\-buttonmap A=key:KEY_A\*(T>
+.fi
+.PP
+Here \*(T<\fBkey\fR\*(T> is the name of the button event
+handler, while \*(T<\fBKEY_A\fR\*(T> is an argument for the
+event handler. What kind of arguments an event handler allows
+depends on the event handler.
+.PP
+There is also a shorthand form of specifing event handlers by
+just writing:
+.PP
+.nf
+\*(T<$ xboxdrv \-\-ui\-buttonmap A=KEY_A\*(T>
+.fi
+.PP
+Here no handler is specified explicitly, if that is the case,
+the appropriate handler will be guessed based on the event
+type. \*(T<EV_KEY\*(T> events will be handled by
+the \*(T<\fBkey\fR\*(T> handler, \*(T<EV_REL\*(T> by
+the \*(T<\fBrel\fR\*(T> handler and \*(T<EV_ABS\*(T> by
+the \*(T<\fBabs\fR\*(T> handler. 
+.TP 
+\*(T<\fBkey\fR\*(T>:\fIKEY_EVENT\fR, \*(T<\fBkey\fR\*(T>:\fIKEY_EVENT\fR:\fIKEY_EVENT\fR:\fIHOLD_THRESHOLD_MSEC\fR
+The \*(T<\fBkey\fR\*(T> handler is the most basic one,
+it maps a button directly to a virtual key or another
+button.
+
+If additional arguments are supplied the button will be
+able to send out two different events. The first event
+specified will be send when the button is clicked
+normally, while the second event will be send in case
+the button is hold down for the time specified
+in \fIHOLD_THRESHOLD_MSEC\fR.
+
+An example for the hold button would look like:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=JS_0:JS_1:500\*(T>
+.fi
+
+This will send JS_0 events when the button is pressed
+and switch to JS_1 events when the button was hold for
+500 miliseconds.
+
+The hold button feature is useful to effectly double the
+number of available buttons, thus the dpad can for
+example be used to send out eight different button
+events instead of just four, which is enough to handle
+weapons in most FPS games.
+.TP 
+\*(T<\fBabs\fR\*(T>
+not yet implemented
+.TP 
+\*(T<\fBrel\fR\*(T>:\fIREL_EVENT\fR:\fIVALUE\fR:\fIREPEAT\fR
+The rel handler will send out a REL event whenever the
+button is pressed. \fIVALUE\fR
+gives the value of the event that will be send,
+while \fIREPEAT\fR gives the number
+of miliseconds till the event will be send again.
+
+A typical use for REL events is emulation of the scroll
+wheel of a mouse, an example configuration would be:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap Y=rel:REL_WHEEL:1:500,A=rel:REL_WHEEL:\-1:500\*(T>
+.fi
+
+Here Y will scroll up and A will scroll down.
+.TP 
+\*(T<\fBcycle\-key\fR\*(T>:\fIKEY_EVENT\fR:...
+The cycle-key handler will switch
+the \fIKEY_EVENT\fR that gets send
+with each button press. This is useful in situations
+where a range of buttons should be mapped to a single
+key. For example a FPS might have weapons mapped from 1
+to 6, but only a single key on the gamepad is free, thus
+one could write:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=cycle\-key:KEY_1:KEY_2:KEY_3:KEY_4:KEY_5:KEY_6\*(T>
+.fi
+.TP 
+\*(T<\fBcycle\-key\-named:\fR\*(T>\fINAME\fR\*(T<\fB:\fR\*(T>\fIKEY_EVENT\fR\*(T<\fB:...\fR\*(T>
+The \*(T<\fBcycle\-key\-named\fR\*(T> handler works
+exactly like the \*(T<\fBcycle\-key\fR\*(T> handler,
+except that a name has to be supplied for the cycle
+sequence. The name of the sequence is used
+by \*(T<\fBcycle\-key\-ref\fR\*(T> to access the
+sequence and reuse it for another button.
+
+In this simple example A is used to toggle through all
+weapon keys forward, while B is used to toggle the keys backwards:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=cycle\-key\-named:weapons:KEY_1:KEY_2:KEY_3:KEY_4,B=cycle\-key\-ref:weapons\*(T>
+.fi
+.TP 
+\*(T<\fBcycle\-key\-ref\fR\*(T>:\fINAME\fR:\fIDIRECTION\fR
+The \*(T<\fBcycle\-key\-ref\fR\*(T> handler will access
+and reuse the named cycle keysequence given
+by \fINAME\fR.
+If \fIDIRECTION\fR can either be
+\&'forward' or 'backward', if no direction is supplied it
+will default to 'backward'.
+
+See \*(T<\fBcycle\-key\-named\fR\*(T> for a full example.
+.TP 
+\*(T<\fBexec\fR\*(T>
+The exec button handler allows to launch an application
+when the button was pressed. An example would look like
+this:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=exec:/home/juser/local/bin/screenshot.sh\*(T>
+.fi
+
+Possible uses for the button are the ability to do
+screenshots or perform other tasks that are outside the
+main application you are using xboxdrv with.
+.TP 
+\*(T<\fBmacro\fR\*(T>
+A button can be bound to a macro via:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-buttonmap A=macro:/home/juser/.xboxdrv/somefile.macro\*(T>
+.fi
+
+The \*(T<\fI.macro\fR\*(T> file has the form of:
+
+.nf
+\*(T<
+send KEY_LEFTSHIFT 1
+wait 500
+send KEY_LEFTSHIFT 0\*(T>
+.fi
+
+All abs, rel and key events can be send from a macro file.
+.SS "AXIS EVENT HANDLER"
+Axis event handler decide what happens when an axis is moved.
+Like button event handler they come in different forms and
+like button event handler they provide a shortcut
+form. \*(T<EV_KEY\*(T> events will be handled by
+the \*(T<\fBkey\fR\*(T> handler, \*(T<EV_REL\*(T> by
+the \*(T<\fBrel\fR\*(T> handler and \*(T<EV_ABS\*(T>
+by the \*(T<\fBabs\fR\*(T> handler.
+.TP 
+\*(T<\fBabs\fR\*(T>:\fIABS_EVENT\fR
+The \*(T<\fBabs\fR\*(T> handler is the simplest of them
+all, it will simply send out the value it gets as input
+as the given \fIABS_EVENT\fR event
+to the kernel. Thus a basic configuration to make the
+left stick behave as joystick would look like this:
+
+.nf
+\*(T<xboxdrv \e
+  \-\-ui\-axismap X1=abs:ABS_X,Y1=abs:ABS_Y\*(T>
+.fi
+.TP 
+\*(T<\fBkey\fR\*(T>:\fIKEY_UP\fR:\fIKEY_DOWN\fR:\fITHRESHOLD\fR
+\fIKEY_UP\fR gives the keycode to be send when the axis is moved up
+
+\fIKEY_DOWN\fR gives the keycode to be send when the axis is moved down
+
+\fITHRESHOLD\fR gives the threshold that triggers the sending of an event
+
+Just like \*(T<\fB\-\-ui\-buttonmap\fR\*(T>, you can
+also use shift keys in place of the XBOXAXIS:
+
+.nf
+\*(T<$ xboxdrv \-\-ui\-axismap X1=ABS_X,LB+X1=ABS_RX\*(T>
+.fi
+
+This allows you to send ABS_X events normally and ABS_RX
+events when the LB button is held down.
+.TP 
+\*(T<\fBrel\fR\*(T>:\fIREL_EVENT\fR:\fIVALUE\fR:\fIREPEAT\fR
+\fIVALUE\fR gives
+the maximum value of the event, the actual value that gets send
+is \fIVALUE\fR * axis_state.
+(default: 10)
+
+\fIREPEAT\fR
+gives the number of milisecond to pass before the event
+is fired again (default: 5).
+
+The value of -1 has a special meaning, it will result in
+the REL event being fired as soon as possible (i.e.
+every \fItimeout\fR miliseconds).
+This is the recomment way for handling mouse emulation,
+as it will keep REL events syncronized and thus avoid
+jaggies in the movement, that will result from manually
+specifying a timeout.
+
+The \*(T<\fBrel\fR\*(T> handler is mainly useful for
+mouse pointer emulation, if you want to emulate a mouse
+scroll wheel use the \*(T<\fBrel\-repeat\fR\*(T> handler
+instead.
+.TP 
+\*(T<\fBrel\-repeat\fR\*(T>:\fIREL_EVENT\fR:\fIVALUE\fR:\fIREPEAT\fR
+The \*(T<\fBrel\-repeat\fR\*(T> handler is similar to
+the \*(T<\fBrel\fR\*(T> handler, but optimized for
+emulating the scroll wheel of a mouse.
+
+\fIVALUE\fR isn't scaled to how far
+the axis has moved, instead it is constant, instead the
+time given in \fIREPEAT\fR is
+scaled according to the axis movement. Thus the further
+the stick is moved, the more events will be send.
+
+The need for both \*(T<\fBrel\-repeat\fR\*(T>
+and \*(T<\fBrel\fR\*(T> arises from the fact that Xorg
+converts scroll wheel movement to button presses before
+they are handed to an application, thus an application
+never properly sees the changes
+in \fIVALUE\fR, by
+scaling \fIREPEAT\fR instead that
+problem is worked around.
 .SH "INPUT FILTER"
 Input filter allow to manipulate the events that come from the
 controller. They can be used
@@ -2168,7 +2362,7 @@ be directed to the xboxdrv mailing list at:
 .PP
 .URL http://groups.google.com/group/xboxdrv ""
 .SH COPYRIGHT
-Copyright \(co 2010 Ingo Ruhnke <\*(T<grumbel@gmail.com\*(T>>
+Copyright \(co 2010-2011 Ingo Ruhnke <\*(T<grumbel@gmail.com\*(T>>
 License GPLv3+: GNU GPL version 3 or later
 .URL http://gnu.org/licenses/gpl.html ""
 \&. This is free software: you
