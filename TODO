@@ -69,6 +69,8 @@ Target for 0.8.1
 
 * don't bother with virtualkeyboard, just make it basically functional, not polished
 
+* cleanup event output, add ControllerMessageDescription or something like that
+
 * implement ButtonMap::send_clear(), ButtonEvent::send_clear() to fix
   UInputConfig::reset_all_outputs()
 
