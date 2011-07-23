@@ -1,0 +1,85 @@
+# Virtual Keyboard
+# ================
+#
+# This configuration file needs to be used together with the
+# virtualkeyboard application, that has to be started manually after
+# xboxdrv has launched, as this configuration file will only set the
+# inputs that virtualkeyboard needs.
+
+[xboxdrv]
+ui-clear = true
+# extra-devices = false
+# extra-events = false
+toggle = back
+
+[ui-buttonmap]
+a = BTN_A
+b = BTN_B
+x = BTN_X
+y = BTN_Y
+
+lt = BTN_TL
+rt = BTN_TR
+
+LB = BTN_TL
+RB = BTN_TR
+
+TL = BTN_THUMBL
+TR = BTN_THUMBR
+
+start  = BTN_START
+guide^const:1 = BTN_MODE@joystick
+# back   = BTN_SELECT
+
+[ui-axismap]
+dpad_x = ABS_HAT0X
+dpad_y = ABS_HAT0Y
+
+X1 = ABS_X
+Y1 = ABS_Y
+
+X2 = ABS_RX
+Y2 = ABS_RY
+
+################################################################################
+[xboxdrv]
+next=true
+ui-clear = true
+
+[ui-axismap]
+x1^dead:4000 = REL_X:750:-1
+y1^dead:4000 = REL_Y:750:-1
+
+y2^dead:6000 = rel-repeat:REL_WHEEL:1:50
+x2^dead:6000 = rel-repeat:REL_HWHEEL:1:50
+
+lt = KEY_VOLUMEDOWN:20
+rt = KEY_VOLUMEUP:20
+
+[ui-buttonmap]
+a = BTN_LEFT
+b = BTN_RIGHT
+x = BTN_MIDDLE
+y = KEY_ENTER
+
+rb = KEY_PAGEDOWN
+lb = KEY_PAGEUP
+
+tl = KEY_BACKSPACE
+tr = KEY_SPACE
+
+dl = KEY_LEFT
+dr = KEY_RIGHT
+du = KEY_UP
+dd = KEY_DOWN
+
+# lt = KEY_VOLUMEDOWN
+# rt = KEY_VOLUMEUP
+
+[ui-buttonmap]
+start = KEY_FORWARD
+# back  = KEY_BACK
+# guide = BTN_MODE@joystick
+guide^const:0 = BTN_Z@joystick
+
+# EOF #
