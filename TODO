@@ -26,30 +26,30 @@ Ubuntu Package:
 
 $ cd ../debian/xboxdrv
 $ git checkout master
-$ git-import-orig -u 0.8.1 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.8.1.tar.bz2 
-$ dch -v "0.8.1-1" "xboxdrv 0.8.1 release"
+$ git-import-orig -u 0.9.0 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.9.0.tar.bz2 
+$ dch -v "0.9.0-1" "xboxdrv 0.9.0 release"
 $ git-buildpackage --git-no-create-orig --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-natty.tgz ../xboxdrv_0.8.1-1.dsc
-$ dput my-ppa ../xboxdrv_0.8.1-1_source.changes
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-natty.tgz ../xboxdrv_0.9.0-1.dsc
+$ dput my-ppa ../xboxdrv_0.9.0-1_source.changes
 
 # Ubuntu 10.10
 
 $ git checkout master-10.10
 $ git merge master
-$ dch -b -v "0.8.1-1~maverick1" --distribution maverick "xboxdrv 0.8.1 backport"
+$ dch -b -v "0.9.0-1~maverick1" --distribution maverick "xboxdrv 0.9.0 backport"
 $ git-buildpackage --git-no-create-orig --git-debian-branch=master-10.10 --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-maverick.tgz ../xboxdrv_0.8.1-1~maverick1.dsc
-$ dput my-ppa ../xboxdrv_0.8.1-1~maverick1_source.changes
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-maverick.tgz ../xboxdrv_0.9.0-1~maverick1.dsc
+$ dput my-ppa ../xboxdrv_0.9.0-1~maverick1_source.changes
 
 # Ubuntu 10.04 (LTS)
 
 $ cd ../debian/xboxdrv
 $ git checkout master-lts
 $ git merge master
-$ dch -b -v "0.8.1-1~lucid1" --distribution lucid "xboxdrv 0.8.1 backport"
+$ dch -b -v "0.9.0-1~lucid1" --distribution lucid "xboxdrv 0.9.0 backport"
 $ git-buildpackage --git-no-create-orig --git-debian-branch=master-lts --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv_0.8.1-1~lucid1.dsc
-$ dput my-ppa ../xboxdrv_0.8.1-1~lucid1_source.changes
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv_0.9.0-1~lucid1.dsc
+$ dput my-ppa ../xboxdrv_0.9.0-1~lucid1_source.changes
 
 # Ubuntu 10.10 - xboxdrv-stable
 
@@ -64,8 +64,102 @@ $ git-buildpackage --git-no-create-orig --git-debian-branch=stable-lts --git-tag
 $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-stable_0.6.6-1~lucid2.dsc
 
 
+Target for 0.8.2
+================
+
+* XboxController rumble code is wrong, old usb stuff
+
+* -r 128,128 --quit doesn't work:
+
+[TEMP]  USBController::~USBController(): ~USBController
+libusb:warning [libusb_close] internal signalling write failed, closing anyway
+
+* chatpad doesn't get a 0x1b signal when its connected after xboxdrv
+  is already running
+
+* rumble-test is broken completely
+
+* add "null" button and key event to disable a button or axis (useful
+  to not triggering regular events when a shift button is pressed)
+
+  - LB+A=do_something,LB+B=null
+
+  - naming needs to be cleaned up: null (send nothing), void (clear
+    the binding) would be confusing
+
+== Documentation ==
+
+* X11 will convert a REL_WHEEL value of 1 into a single click (press
+  and release) of button 4, values of 3 would result in three clicks,
+  etc. REL_HWEEL will be button 6 and 7, add that to documentation somewhere
+
+== Bugs ==
+     
+* multiple ControllerThread lead to UInput::update() being called
+  multiple times, as UInputMessageProcessor does call the update()
+  which is wrong
+
+* glib/D-Bus causes crash/exit when USBController::get_name() returns an invalid unicode string?!
+
+Checklist
+=========
+
+* print which sub features are enabled: chatpad, force feedback, headset
+
+* make dbus optional, make --no-dbus an alias for --dbus NONE or --dbus false (easier for config file)
+
+* check force feedback
+
+* check output when --silent not given
+
+* check clean shutdown
+
+* check valgrind
+
+* check daemon
+
+* check autofire and other modifier that depend on time
+
+* test all controller
+
+* check that the child process works
+
+* check that uinput gets its timeout/update calls (send_rel_event)
+
+* cleanup a lot of the log_trace() and other temporary debug output
+
+* check that repeated wireless controller connects and disconnects work [done]
+
+* check that --quit works, currently broken
+
+* search for "#ifdef FIXME"
+
+* do proper error checking: 
+
+xboxdrv: src/usb_controller.cpp:218: void USBController::on_read_data(libusb_transfer*): Assertion `ret == LIBUSB_SUCCESS' failed.
+Aborted
+
+* exceptions in glib main loop might be dangerous and not really do what is intended
+
+* move sigint/sigterm handling out of main.cpp and into xboxdrv_daemon.cpp (needs to use gmain_quit())
+
+* LED do currently not get down on controller quit
+
+* move LED setting into ControllerThread or somewhere else, not at controller creation time
+
+* check that threads are cleaned up in daemon
+
+* go through checklist, disable headset and chatpad support for now,
+  do a source only release
+
+
 Target for 0.9.0
 ================
+
+* add AxisJoinModifier, take two half-axis and make a whole (trigger-as-zaxis style)
+
+* add AxisSplitModifier, take a full-axis and make two half ones out
+  of it (break left analog-stick into ABS_GAS and ABS_BREAK)
 
 * Playstation3 Controller ignores its analog data and doesn't record it into ControllerMsg
 
@@ -127,35 +221,50 @@ Target for 0.?.?
 ================
 
 * RelButtonEventHandler: add DELAY:REPEAT (like keyboard keys) instead
-  of just REPEAT
-
-* ./xboxdrv --axismap X1=X2,-Y1=Y2,X2=X1,-Y2=Y1   --mouse  -s
-
-   Why do have the axis to be inverted in this case?
+  of just REPEAT (or not? should be doable with autofire filter)
 
 * alternative inventory solution: use the dpad, which gives however
   only eight directions, need some timeout thing to make the
   directions sticky
 
+  - modifier that separates the dpad into eight buttons
+
+  - hold button to make it 'sticky' (maybe a delay filter to allow two
+    level hold buttons, one to not confuse diagonals with vert/horz
+    movement, another regular hold buttos)  
+
 * MacroButtonEventHandler is still using raw UInput::send(), should
-  use UIEventEmitterPtr instead, UInput::send_rel_repetitive() should
-  be removed
+  use UIEventEmitterPtr instead
+
+- UInput::send_rel_repetitive() should be removed or refactored into
+  its own class
 
 * develop a simple scripting language or use an existing one
+
+  - script gets message object and last message object as input,
+    provides modified message object as output
 
 * look at suspend handling
 
 * pass /dev/input/eventX, slot and serial number to on-connect script
+
+  - write a class to guess which event devices will be created given a
+    configuration
 
 * write DummyController that can be used in automated test cases
 
 * allow the creation of virtual mice and keyboards with all buttons
   and rel events, to allow realtime reconfiguration
 
-* OR all output buttons and axis together
+  - --all-key-events, --add-rel-events, --add-abs-events (might cause
+      trouble with type auto detection, thus limiting to only mouse-,
+      joystick- and keyboard-events might be needed instead of
+      separating by REL, ABS and KEY alone
+
+  - call should be just a shortcut for --ui-buttonmap void=BTN_A,void=BTN_B,...
 
 * native REL events
-
+
 * get rid of UIEvent::resolve_device_id() if possible
 
 * implement filter that removes glitched button events, i.e. events
@@ -167,80 +276,17 @@ Target for 0.?.?
 
 * provide more meaningful debug output for force feedback
 
-* cleanup UIEvent, add UIEventSequence
+* cleanup UIEvent
 
 * --chatpad-debug is broken, use it for all the log_tmp()
-
-* XboxController rumble code is wrong, old usb stuff
 
 * there is a long delay in processing rumble messages, currently
   worked around by only sending rumble commands on changes, but that
   isn't a full solution, proper solution would be discarding messages
   and only sending the current value
 
-* -r 128,128 --quit doesn't work:
-
-[TEMP]  USBController::~USBController(): ~USBController
-libusb:warning [libusb_close] internal signalling write failed, closing anyway
-
-* chatpad doesn't get a 0x1b signal when its connected after xboxdrv
-  is already running
-
 * active wireless controller aren't detected on startup of the daemon,
   only they have send an event, any way to get activity status of the thing?
-
-* print which sub features are enabled: chatpad, force feedback, headset
-
-* make dbus optional, make --no-dbus an alias for --dbus NONE or --dbus false (easier for config file)
-
-* check force feedback
-
-* rumble-test is broken completely
-
-* check output when --silent not given
-
-* check clean shutdown
-
-* check valgrind
-
-* check daemon
-
-* check autofire and other modifier that depend on time
-
-* test all controller
-
-* check that the child process works
-
-* check that uinput gets its timeout/update calls (send_rel_event)
-
-* cleanup a lot of the log_trace() and other temporary debug output
-
-* check that repeated wireless controller connects and disconnects work [done]
-
-* check that --quit works, currently broken
-
-* search for "#ifdef FIXME"
-
-* do proper error checking: 
-
-xboxdrv: src/usb_controller.cpp:218: void USBController::on_read_data(libusb_transfer*): Assertion `ret == LIBUSB_SUCCESS' failed.
-Aborted
-
-* exceptions in glib main loop might be dangerous and not really do what is intended
-
-* move sigint/sigterm handling out of main.cpp and into xboxdrv_daemon.cpp (needs to use gmain_quit())
-
-* LED do currently not get down on controller quit
-
-* move LED setting into ControllerThread or somewhere else, not at controller creation time
-
-* check that threads are cleaned up in daemon
-
-* go through checklist, disable headset and chatpad support for now,
-  do a source only release
-
-Stuff to do before 0.8.x release:
-=================================
 
 * add LD_PRELOAD joystick override hack to running xboxdrv with an app.exe
 
@@ -267,9 +313,6 @@ this scope
 scons: *** [src/xboxdrv_daemon.o] Error 1
 scons: building terminated because of errors.
 make: *** [xboxdrv] Error 2
-
-* add "null" button and key event to disable a button or axis (useful
-  to not triggering regular events when a shift button is pressed)
 
 * macro support needs to search files in a few more locations;
 
@@ -381,20 +424,6 @@ disable LT and RT -> already fixed, check it
 
 * add a "click" filter or something like that, that causes a button to only be clicked, not hold
 
-== Documentation ==
-
-* X11 will convert a REL_WHEEL value of 1 into a single click (press
-  and release) of button 4, values of 3 would result in three clicks,
-  etc. REL_HWEEL will be button 6 and 7, add that to documentation somewhere
-
-== Bugs ==
-     
-* multiple ControllerThread lead to UInput::update() being called
-  multiple times, as UInputMessageProcessor does call the update()
-  which is wrong
-
-* glib/D-Bus causes crash/exit when USBController::get_name() returns an invalid unicode string?!
-
 * LED isn't set proper when wireless controllers wake up from power-down
 
 
@@ -427,6 +456,8 @@ disable LT and RT -> already fixed, check it
 
 * BTN_A@joystick.1 doesn't work for a single joystick, why? (joystick isn't id=0, why?)
 
+  - should there be a '@default'? should @joystick be the default?
+
 * improve output on which uinput devices are created (even with udev
   there doesn't seem to be a bullet proof way to detect what gets
   created)
@@ -434,7 +465,6 @@ disable LT and RT -> already fixed, check it
   -> insert "guess code" before the uinput create call and just pretent thats bullet proof
   -> figure out how exactly device names are choosen (first free or
      are there other means? need to take special axes/buttons into account)
-
 
 == Daemon ==
 
@@ -603,9 +633,6 @@ Stuff to do before 0.7.3 release:
   - Options::finish() to do final things?
 
 
-Stuff to do before 0.7.x release:
-=================================
-
 * add Wiimote and PS3 bluetooth support 
 
 * -R, --rumble-test is broken for FirestormDualController (has no analog triggers)
@@ -688,9 +715,6 @@ http://www.mp3car.com/vbulletin/input-devices/108554-xbox360-chatpad-awsome-back
 * guitar handling was changed in a4e1003cba0ff925358ce5ed84d2bf9a728e93d6 
 
 * REL_ events could need acceleration support, as mouse emulation is currently kind of imprecise
-
-Stuff to do before 0.7.x release:
-=================================
 
 * add extra checks to make sure the evdev buttons and axis given exist
   on the current device when using --evdev
