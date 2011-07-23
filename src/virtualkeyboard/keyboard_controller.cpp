@@ -31,7 +31,10 @@ KeyboardController::KeyboardController(VirtualKeyboard& keyboard, const std::str
   m_keyboard(keyboard),
   m_device(device),
   m_fd(-1),
-  m_io_channel(0)
+  m_io_channel(0),
+  m_timeout_source(-1),
+  m_stick_x(0),
+  m_stick_y(0)
 {
   m_fd = open(m_device.c_str(), O_RDONLY | O_NONBLOCK);
 
@@ -55,12 +58,18 @@ KeyboardController::KeyboardController(VirtualKeyboard& keyboard, const std::str
   source_id = g_io_add_watch(m_io_channel, 
                              static_cast<GIOCondition>(G_IO_IN | G_IO_ERR | G_IO_HUP),
                              &KeyboardController::on_read_data_wrap, this);
+
+  // FIXME: Could limit calling this to when the stick actually moved
+  m_timeout_source = g_timeout_add(25, &KeyboardController::on_timeout_wrap, this);
 }
 
 KeyboardController::~KeyboardController()
 {
   g_io_channel_unref(m_io_channel);
   close(m_fd);
+
+  if (m_timeout_source > 0)
+    g_source_remove(m_timeout_source);
 }
 
 void
@@ -96,13 +105,23 @@ KeyboardController::parse(const struct input_event& ev)
       if (abs(ev.value) > 8000)
       {
         //m_keyboard.move(ev.value / 4, 0);
+        m_stick_x = ev.value / 32768.0f;
+      }
+      else
+      {
+        m_stick_x = 0.0f;
       }
     }
     else if (ev.code == ABS_RY)
     {
       if (abs(ev.value) > 8000)
       {
-        m_keyboard.move(0, ev.value / 40);
+        m_stick_y = ev.value / -32768.0f;
+        //m_keyboard.move(0, ev.value / 40);
+      }
+      else
+      {
+        m_stick_y = 0.0f;
       }
     }
   }
@@ -163,6 +182,20 @@ KeyboardController::on_read_data(GIOChannel* source, GIOCondition condition)
   }
   
   return TRUE;
+}
+
+bool
+KeyboardController::on_timeout()
+{
+  int x;
+  int y;
+
+  m_keyboard.get_position(&x, &y);
+  x += m_stick_x * 40.0f;
+  y += m_stick_y * 40.0f;
+  m_keyboard.move(x, y);
+
+  return true;
 }
 
 /* EOF */

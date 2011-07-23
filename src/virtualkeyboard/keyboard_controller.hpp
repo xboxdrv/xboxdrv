@@ -32,7 +32,11 @@ private:
   std::string m_device;
   int m_fd;
   GIOChannel* m_io_channel;
+  int m_timeout_source;
 
+  float m_stick_x;
+  float m_stick_y;
+  
   enum {
     kSendButton = BTN_A,
     kHoldButton = BTN_Y,
@@ -49,10 +53,15 @@ public:
 
   void parse(const struct input_event& ev);
   gboolean on_read_data(GIOChannel* source, GIOCondition condition);
+  bool on_timeout();
 
 private:
   static gboolean on_read_data_wrap(GIOChannel* source, GIOCondition condition, gpointer userdata) {
     return static_cast<KeyboardController*>(userdata)->on_read_data(source, condition);
+  }
+
+  static gboolean on_timeout_wrap(gpointer data) {
+    return static_cast<KeyboardController*>(data)->on_timeout();
   }
 
 private:

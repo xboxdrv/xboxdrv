@@ -27,6 +27,10 @@ class Key;
 class UInput;
 class VirtualKeyboard;
 
+/** The KeyboardDispatcher receives key events from the
+    VirtualKeyboard and passes them on to UInput to translate them
+    into device driver level events. It also takes care of creates
+    the UInput devices in the first place. */
 class KeyboardDispatcher
 {
 private:

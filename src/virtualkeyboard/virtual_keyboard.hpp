@@ -82,6 +82,8 @@ private:
   void draw_key(cairo_t* cr, int x, int y, const Key& key, bool highlight);
   void draw_centered_text(cairo_t* cr, double x, double y, const std::string& str);
 
+  Key* get_current_key() const;
+
 private:
   static void on_expose_wrap(GtkWidget* widget, GdkEventExpose* event, gpointer userdata) {
     static_cast<VirtualKeyboard*>(userdata)->on_expose(widget, event);

@@ -136,10 +136,16 @@ VirtualKeyboard::cursor_set(int x, int y)
   gtk_widget_queue_draw(m_drawing_area);
 }
 
+Key*
+VirtualKeyboard::get_current_key() const
+{
+  return m_keyboard->get_key(m_cursor_x, m_cursor_y);
+}
+
 void
 VirtualKeyboard::cursor_left()
 {
-  Key* old_key = m_keyboard->get_key(m_cursor_x, m_cursor_y);
+  Key* old_key = get_current_key();
 
   m_cursor_x = advance(m_cursor_x, m_keyboard->get_width(), -1);
 
@@ -161,7 +167,7 @@ VirtualKeyboard::cursor_left()
 void
 VirtualKeyboard::cursor_right()
 {
-  Key* old_key = m_keyboard->get_key(m_cursor_x, m_cursor_y);
+  Key* old_key = get_current_key();
 
   m_cursor_x = advance(m_cursor_x, m_keyboard->get_width(), 1);
 
@@ -183,7 +189,7 @@ VirtualKeyboard::cursor_right()
 void
 VirtualKeyboard::cursor_up()
 {
-  Key* old_key = m_keyboard->get_key(m_cursor_x, m_cursor_y);
+  Key* old_key = get_current_key();
 
   m_cursor_y = advance(m_cursor_y, m_keyboard->get_height(), -1);
 
@@ -205,7 +211,7 @@ VirtualKeyboard::cursor_up()
 void
 VirtualKeyboard::cursor_down()
 {
-  Key* old_key = m_keyboard->get_key(m_cursor_x, m_cursor_y);
+  Key* old_key = get_current_key();
 
   m_cursor_y = advance(m_cursor_y, m_keyboard->get_height(), 1);
 
@@ -276,7 +282,7 @@ VirtualKeyboard::send_key(bool value)
 {
   if (m_key_callback)
   {
-    Key* key = m_keyboard->get_key(m_cursor_x, m_cursor_y);
+    Key* key = get_current_key();
     if (key)
     {
       m_key_callback(*key, value);
@@ -335,7 +341,7 @@ VirtualKeyboard::draw_keyboard(cairo_t* cr)
 {
   cairo_select_font_face(cr, "Vera", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 
-  Key* current_key = m_keyboard->get_key(m_cursor_x, m_cursor_y);
+  Key* current_key = get_current_key();
   assert(current_key);
   
   for(int y = 0; y < m_keyboard->get_height(); ++y)
@@ -361,8 +367,8 @@ VirtualKeyboard::draw_centered_text(cairo_t* cr, double x, double y, const std::
   cairo_text_extents(cr, str.c_str(), &extents);
 
   cairo_move_to(cr, 
-                (m_key_width - extents.width)/2.0 - extents.x_bearing, 
-                (m_key_height + (font_extents.descent + font_extents.ascent * 0.1f))/2.0);
+                x - (extents.width)/2.0 - extents.x_bearing, 
+                y + ((font_extents.descent + font_extents.ascent * 0.1f))/2.0);
   cairo_show_text(cr, str.c_str()); 
 }
 
@@ -421,21 +427,21 @@ VirtualKeyboard::draw_key(cairo_t* cr, int x, int y, const Key& key, bool highli
     case Key::kLetter:
       {
         cairo_set_font_size(cr, 24.0);
-        draw_centered_text(cr, m_key_width/2.0, m_key_width/2.0, text.c_str());
+        draw_centered_text(cr, (m_key_width * key.get_xspan())/2.0, m_key_height/2.0, text.c_str());
       }
       break;
 
     case Key::kFunction:
       {
         cairo_set_font_size(cr, 18.0);
-        draw_centered_text(cr, m_key_width/2.0, m_key_width/2.0, text.c_str());
+        draw_centered_text(cr, (m_key_width * key.get_xspan())/2.0, m_key_height/2.0, text.c_str());
       }
       break;
 
     case Key::kModifier:
       {
         cairo_set_font_size(cr, 12.0);
-        draw_centered_text(cr, m_key_width/2.0, m_key_width/2.0, text.c_str());
+        draw_centered_text(cr, (m_key_width * key.get_xspan())/2.0, m_key_height/2.0, text.c_str());
       }
       break;
   }
