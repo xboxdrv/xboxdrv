@@ -63,6 +63,7 @@ public:
 
   void init(UInput& uinput, int slot, bool extra_devices);
   void send(UInput& uinput, const std::bitset<XBOX_BTN_MAX>& button_state);
+  void send_clear(UInput& uinput);
   void update(UInput& uinput, int msec_delta);
 
   void clear();

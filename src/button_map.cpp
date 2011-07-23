@@ -104,6 +104,15 @@ ButtonMap::send(UInput& uinput, const std::bitset<XBOX_BTN_MAX>& button_state)
 }
 
 void
+ButtonMap::send_clear(UInput& uinput)
+{
+  for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
+  {
+    i->m_event->send_clear(uinput);
+  }
+}
+
+void
 ButtonMap::update(UInput& uinput, int msec_delta)
 {
   for(Mappings::const_iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)

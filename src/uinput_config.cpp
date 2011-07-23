@@ -83,7 +83,18 @@ UInputConfig::update(int msec_delta)
 void
 UInputConfig::reset_all_outputs()
 {
-  send(ControllerMessage());
+  m_last_button_state.reset();
+  m_button_state.reset();
+
+  m_btn_map.send_clear(m_uinput);
+
+  // FIXME: incorrect, due to the effect of filter
+  for(int axis = 1; axis < XBOX_AXIS_MAX; ++axis)
+  {
+    send_axis(static_cast<XboxAxis>(axis), 0);
+  }
+
+  m_uinput.sync();
 }
 
 void

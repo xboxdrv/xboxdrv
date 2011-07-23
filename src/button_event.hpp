@@ -49,6 +49,7 @@ protected:
 public: 
   void init(UInput& uinput, int slot, bool extra_devices);
   void send(UInput& uinput, bool value);
+  void send_clear(UInput& uinput);
   void update(UInput& uinput, int msec_delta);
   std::string str() const;
 
@@ -69,6 +70,7 @@ public:
   
   virtual void init(UInput& uinput, int slot, bool extra_devices) =0;
   virtual void send(UInput& uinput, bool value) =0;
+  virtual void send_clear(UInput& uinput) { send(uinput, false); }
   virtual void update(UInput& uinput, int msec_delta) =0;
   virtual std::string str() const =0;
 };

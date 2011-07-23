@@ -182,6 +182,13 @@ ButtonEvent::send(UInput& uinput, bool raw_state)
 }
 
 void
+ButtonEvent::send_clear(UInput& uinput)
+{
+  m_last_send_state = false;
+  m_handler->send_clear(uinput);
+}
+
+void
 ButtonEvent::update(UInput& uinput, int msec_delta)
 {
   for(std::vector<ButtonFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
