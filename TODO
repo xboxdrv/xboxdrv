@@ -64,15 +64,16 @@ $ git-buildpackage --git-no-create-orig --git-debian-branch=stable-lts --git-tag
 $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-stable_0.6.6-1~lucid2.dsc
 
 
-Target for 0.8.1
+Target for 0.9.0
 ================
+
+* Playstation3 Controller ignores its analog data and doesn't record it into ControllerMsg
 
 * don't bother with virtualkeyboard, just make it basically functional, not polished
 
 * cleanup event output, add ControllerMessageDescription or something like that
 
-* implement ButtonMap::send_clear(), ButtonEvent::send_clear() to fix
-  UInputConfig::reset_all_outputs()
+* implement AxisEvent::send_clear()
 
 * rewrite AxisMap to support unlimited number of shift key
 
@@ -84,12 +85,8 @@ Target for 0.8.1
 
 * update/fix man-page: document
 
-  - 'const' axis and button filter
-
-  - 'cycle-key' and 'cycle-key-ref', etc.
-
   -> rewrite the --ui-axismap, --ui-buttonmap section, currently kind
-     of confusing
+     of confusing and overlapping with Input Event section
 
 * add function that can handle PC game style inventories, i.e. 0-9
   keys by using less buttons (maybe do graphical overlay stuff):
@@ -126,7 +123,7 @@ Target for 0.8.1
      -> possible use: throttle in a flightsim mapped to 1-9
 
 
-Target for 0.9.0
+Target for 0.?.?
 ================
 
 * RelButtonEventHandler: add DELAY:REPEAT (like keyboard keys) instead
@@ -422,7 +419,7 @@ disable LT and RT -> already fixed, check it
   and use them when a slot got free -> discard, bad idea, as it
   results in confusing behaviour
 
-* daemon on regular xboxdrv have different controller orderings 
+* daemon and regular xboxdrv have different controller orderings 
 
   -> hard to avoid, as wireless controllers are only picked up when
      active, which they always become later then the wired ones, which
