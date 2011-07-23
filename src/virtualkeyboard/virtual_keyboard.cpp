@@ -23,7 +23,33 @@
 
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
-VirtualKeyboard::VirtualKeyboard(const KeyboardDescription& keyboard_desc) :
+namespace {
+
+int overflow(int pos, int width)
+{
+  if (pos >= width)
+  {
+    return pos % width;
+  }
+  else if (pos < 0)
+  {
+    return pos % width + width;
+  }
+  else
+  {
+    return pos;
+  }
+}
+
+int advance(int pos, int width, int steps)
+{
+  pos += steps;
+  return overflow(pos, width);
+}
+
+} // namespace
+
+VirtualKeyboard::VirtualKeyboard(KeyboardDescriptionPtr keyboard_desc) :
   m_keyboard(keyboard_desc),
   m_window(0),
   m_vbox(0),
@@ -47,7 +73,7 @@ VirtualKeyboard::VirtualKeyboard(const KeyboardDescription& keyboard_desc) :
   gtk_widget_modify_bg(m_drawing_area, GTK_STATE_NORMAL, &color);
 
   //gtk_window_set_resizable(GTK_WINDOW(m_window), FALSE);
-  gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
+  //gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
 
   gtk_window_set_default_size(GTK_WINDOW(m_window), 3*get_width()/4, 3*get_height()/4);
   //gtk_widget_set_size_request(m_window, get_width(), get_height());
@@ -80,13 +106,13 @@ VirtualKeyboard::~VirtualKeyboard()
 int
 VirtualKeyboard::get_width() const
 {
-  return m_key_width * m_keyboard.get_width() + 24;
+  return m_key_width * m_keyboard->get_width() + 24;
 }
 
 int
 VirtualKeyboard::get_height() const
 {
-  return m_key_height * m_keyboard.get_height() + 12;
+  return m_key_height * m_keyboard->get_height() + 12;
 }
 
 void
@@ -113,45 +139,89 @@ VirtualKeyboard::cursor_set(int x, int y)
 void
 VirtualKeyboard::cursor_left()
 {
-  if (m_cursor_x == 0)
-    m_cursor_x = m_keyboard.get_width() - 1;
-  else
-    m_cursor_x -= 1;
+  Key* old_key = m_keyboard->get_key(m_cursor_x, m_cursor_y);
 
-  gtk_widget_queue_draw(m_drawing_area);
+  m_cursor_x = advance(m_cursor_x, m_keyboard->get_width(), -1);
+
+  if (old_key)
+  {
+    old_key = old_key->get_parent();
+  }
+  if (!m_keyboard->get_key(m_cursor_x, m_cursor_y) ||
+      m_keyboard->get_key(m_cursor_x, m_cursor_y)->get_parent() == old_key)
+  {
+    cursor_left();
+  }
+  else
+  {
+    gtk_widget_queue_draw(m_drawing_area);
+  }
 }
 
 void
 VirtualKeyboard::cursor_right()
 {
-  if (m_cursor_x == m_keyboard.get_width() - 1)
-    m_cursor_x = 0;
-  else
-    m_cursor_x += 1;
+  Key* old_key = m_keyboard->get_key(m_cursor_x, m_cursor_y);
 
-  gtk_widget_queue_draw(m_drawing_area);
+  m_cursor_x = advance(m_cursor_x, m_keyboard->get_width(), 1);
+
+  if (old_key)
+  {
+    old_key = old_key->get_parent();
+  }
+  if (!m_keyboard->get_key(m_cursor_x, m_cursor_y) ||
+      m_keyboard->get_key(m_cursor_x, m_cursor_y)->get_parent() == old_key)
+  {
+    cursor_right();
+  }
+  else
+  {
+    gtk_widget_queue_draw(m_drawing_area);
+  }
 }
 
 void
 VirtualKeyboard::cursor_up()
 {
-  if (m_cursor_y == 0)
-    m_cursor_y = m_keyboard.get_height() - 1;
-  else
-    m_cursor_y -= 1;
+  Key* old_key = m_keyboard->get_key(m_cursor_x, m_cursor_y);
 
-  gtk_widget_queue_draw(m_drawing_area);
+  m_cursor_y = advance(m_cursor_y, m_keyboard->get_height(), -1);
+
+  if (old_key)
+  {
+    old_key = old_key->get_parent();
+  }
+  if (!m_keyboard->get_key(m_cursor_x, m_cursor_y) ||
+      m_keyboard->get_key(m_cursor_x, m_cursor_y)->get_parent() == old_key)
+  {
+    cursor_up();
+  }
+  else
+  {
+    gtk_widget_queue_draw(m_drawing_area);
+  }
 }
 
 void
 VirtualKeyboard::cursor_down()
 {
-  if (m_cursor_y == m_keyboard.get_height() - 1)
-    m_cursor_y = 0;
-  else
-    m_cursor_y += 1;
+  Key* old_key = m_keyboard->get_key(m_cursor_x, m_cursor_y);
 
-  gtk_widget_queue_draw(m_drawing_area);
+  m_cursor_y = advance(m_cursor_y, m_keyboard->get_height(), 1);
+
+  if (old_key)
+  {
+    old_key = old_key->get_parent();
+  }
+  if (!m_keyboard->get_key(m_cursor_x, m_cursor_y) ||
+      m_keyboard->get_key(m_cursor_x, m_cursor_y)->get_parent() == old_key)
+  {
+    cursor_down();
+  }
+  else
+  {
+    gtk_widget_queue_draw(m_drawing_area);
+  }
 }
 
 void
@@ -206,7 +276,11 @@ VirtualKeyboard::send_key(bool value)
 {
   if (m_key_callback)
   {
-    m_key_callback(m_keyboard.get_key(m_cursor_x, m_cursor_y), value);
+    Key* key = m_keyboard->get_key(m_cursor_x, m_cursor_y);
+    if (key)
+    {
+      m_key_callback(*key, value);
+    }
   }
 }
 
@@ -261,11 +335,18 @@ VirtualKeyboard::draw_keyboard(cairo_t* cr)
 {
   cairo_select_font_face(cr, "Vera", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 
-  for(int y = 0; y < m_keyboard.get_height(); ++y)
+  Key* current_key = m_keyboard->get_key(m_cursor_x, m_cursor_y);
+  assert(current_key);
+  
+  for(int y = 0; y < m_keyboard->get_height(); ++y)
   {
-    for(int x = 0; x < m_keyboard.get_width(); ++x)
+    for(int x = 0; x < m_keyboard->get_width(); ++x)
     {
-      draw_key(cr, x, y, m_keyboard.get_key(x, y), (m_cursor_x == x && m_cursor_y == y));
+      Key* key = m_keyboard->get_key(x, y);
+      if (key && !key->is_ref_key())
+      {
+        draw_key(cr, x, y, *key, (current_key->get_parent() == key));
+      }
     }
   }
 }
@@ -288,81 +369,78 @@ VirtualKeyboard::draw_centered_text(cairo_t* cr, double x, double y, const std::
 void
 VirtualKeyboard::draw_key(cairo_t* cr, int x, int y, const Key& key, bool highlight)
 {
-  if (key)
-  {
-    cairo_save(cr);
+  cairo_save(cr);
 
-    cairo_translate(cr, x * m_key_width, y * m_key_height);
+  cairo_translate(cr, x * m_key_width, y * m_key_height);
 
-    { // add some spacing between F'keys, cursor keys and numpad
-      int spacing = 12;
+  { // add some spacing between F'keys, cursor keys and numpad
+    int spacing = 12;
 
-      if (y > 0)
-        cairo_translate(cr, 0, spacing);
+    if (y > 0)
+      cairo_translate(cr, 0, spacing);
 
-      if (x > 13)
-        cairo_translate(cr, spacing, 0);
+    if (x > 13)
+      cairo_translate(cr, spacing, 0);
 
-      if (x > 16)
-        cairo_translate(cr, spacing, 0);
-    }
-
-    cairo_rectangle(cr, 2, 2, m_key_width * key.m_xspan - 4, m_key_height * key.m_yspan - 4);
-    if (highlight)
-      cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
-    else
-      cairo_set_source_rgb(cr, 0.5, 0.5, 0.5);
-    cairo_fill(cr);
-
-    cairo_rectangle(cr, 6, 4, m_key_width * key.m_xspan - 12, m_key_height * key.m_yspan - 12);
-    if (highlight)
-      cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-    else
-      cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
-    cairo_fill(cr);
-
-    cairo_set_source_rgb(cr, 0, 0, 0);
-
-    std::string text;
-
-    if (m_shift_mode)
-    {
-      text = key.m_label;
-    }
-    else
-    {
-      if (key.m_shift_label.empty())
-        text = key.m_label;
-      else
-        text = key.m_shift_label;
-    }
-
-    switch(key.m_style)
-    {
-      case Key::kLetter:
-        {
-          cairo_set_font_size(cr, 24.0);
-          draw_centered_text(cr, m_key_width/2.0, m_key_width/2.0, text.c_str());
-        }
-        break;
-
-      case Key::kFunction:
-        {
-          cairo_set_font_size(cr, 18.0);
-          draw_centered_text(cr, m_key_width/2.0, m_key_width/2.0, text.c_str());
-        }
-        break;
-
-      case Key::kModifier:
-        {
-          cairo_set_font_size(cr, 12.0);
-          draw_centered_text(cr, m_key_width/2.0, m_key_width/2.0, text.c_str());
-        }
-        break;
-    }
- 
-    cairo_restore(cr);
+    if (x > 16)
+      cairo_translate(cr, spacing, 0);
   }
+
+  cairo_rectangle(cr, 2, 2, m_key_width * key.get_xspan() - 4, m_key_height * key.get_yspan() - 4);
+  if (highlight)
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
+  else
+    cairo_set_source_rgb(cr, 0.5, 0.5, 0.5);
+  cairo_fill(cr);
+
+  cairo_rectangle(cr, 6, 4, m_key_width * key.get_xspan() - 12, m_key_height * key.get_yspan() - 12);
+  if (highlight)
+    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+  else
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
+  cairo_fill(cr);
+
+  cairo_set_source_rgb(cr, 0, 0, 0);
+
+  std::string text;
+
+  if (!m_shift_mode)
+  {
+    text = key.get_label();
+  }
+  else
+  {
+    if (key.get_shift_label().empty())
+      text = key.get_label();
+    else
+      text = key.get_shift_label();
+  }
+
+  switch(key.get_style())
+  {
+    case Key::kLetter:
+      {
+        cairo_set_font_size(cr, 24.0);
+        draw_centered_text(cr, m_key_width/2.0, m_key_width/2.0, text.c_str());
+      }
+      break;
+
+    case Key::kFunction:
+      {
+        cairo_set_font_size(cr, 18.0);
+        draw_centered_text(cr, m_key_width/2.0, m_key_width/2.0, text.c_str());
+      }
+      break;
+
+    case Key::kModifier:
+      {
+        cairo_set_font_size(cr, 12.0);
+        draw_centered_text(cr, m_key_width/2.0, m_key_width/2.0, text.c_str());
+      }
+      break;
+  }
+ 
+  cairo_restore(cr);
 }
 
 void

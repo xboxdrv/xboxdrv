@@ -31,16 +31,16 @@ KeyboardDispatcher::KeyboardDispatcher(VirtualKeyboard& gui_keyboard,
   m_uinput(uinput),
   m_emitter(KEY_CNT)
 {
-  const KeyboardDescription& desc = gui_keyboard.get_description();
+  const KeyboardDescription& desc = *gui_keyboard.get_description();
 
   for(int y = 0; y < desc.get_height(); ++y)
   {
     for(int x = 0; x < desc.get_width(); ++x)
     {
-      const Key& key = desc.get_key(x, y);
-      if (key.m_code != -1)
+      Key* key = desc.get_key(x, y);
+      if (key)
       {
-        m_emitter[key.m_code] = uinput.add_key(0, key.m_code);
+        m_emitter[key->get_code()] = uinput.add_key(0, key->get_code());
       }
     }
   }
@@ -51,12 +51,9 @@ KeyboardDispatcher::KeyboardDispatcher(VirtualKeyboard& gui_keyboard,
 void
 KeyboardDispatcher::on_key(const Key& key, bool pressed)
 {
-  if (key.m_code != -1)
-  {
-    log_tmp("emitting: " << key.m_code << " " << pressed);
-    m_emitter[key.m_code]->send(pressed);
-    m_uinput.sync();
-  }
+  log_tmp("emitting: " << key.get_code() << " " << pressed);
+  m_emitter[key.get_code()]->send(pressed);
+  m_uinput.sync();
 }
 
 /* EOF */

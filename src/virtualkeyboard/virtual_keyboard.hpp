@@ -29,7 +29,7 @@
 class VirtualKeyboard
 {
 private:
-  KeyboardDescription m_keyboard;
+  KeyboardDescriptionPtr m_keyboard;
 
   GtkWidget* m_window;
   GtkWidget* m_vbox;
@@ -46,7 +46,7 @@ private:
   boost::function<void (const Key&, bool)> m_key_callback;
 
 public:
-  VirtualKeyboard(const KeyboardDescription& keyboard_desc);
+  VirtualKeyboard(KeyboardDescriptionPtr keyboard_desc);
   ~VirtualKeyboard();
 
   void show();
@@ -68,7 +68,7 @@ public:
   void move(int x, int y);
   void get_position(int* x, int* y);
 
-  KeyboardDescription get_description() const { return m_keyboard; }
+  KeyboardDescriptionPtr get_description() const { return m_keyboard; }
 
   void set_key_callback(const boost::function<void (const Key&, bool)>& callback);
 

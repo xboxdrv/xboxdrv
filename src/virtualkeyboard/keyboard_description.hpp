@@ -22,66 +22,135 @@
 #include <vector>
 #include <string>
 #include <assert.h>
+#include <boost/shared_ptr.hpp>
 
 class Key
 {
 public:
-  enum Style { kLetter, kFunction, kModifier }; 
-    
+  enum Style { kLetter, kFunction, kModifier };   
+
+public:
+  virtual ~Key() {}
+
+  virtual int get_code() const =0;
+
+  virtual int get_x() const =0;
+  virtual int get_y() const =0;
+
+  virtual int get_xspan() const =0;
+  virtual int get_yspan() const =0;
+
+  virtual Style get_style() const =0;
+
+  virtual std::string get_label() const =0;
+  virtual std::string get_shift_label() const =0;
+  virtual std::string get_alt_label() const =0;
+
+  virtual bool is_ref_key() const =0;
+  virtual Key* get_parent() =0;
+};
+
+class RealKey : public Key
+{
+public:
   //UIEventSequence m_sequence;
+  int m_x;
+  int m_y;
   int m_code;
-  std::string m_label;
-  std::string m_shift_label;
-  std::string m_alt_label;
   Style m_style;
   int m_xspan;
   int m_yspan;
 
-  Key() :
-    m_code(-1),
-    m_label(),
-    m_shift_label(),
-    m_alt_label(),
-    m_style(kLetter),
-    m_xspan(1),
-    m_yspan(1)
-  {}
+  std::string m_label;
+  std::string m_shift_label;
+  std::string m_alt_label;
 
-  Key(int code,
-      Style style,
-      const std::string& label, 
-      const std::string& shift_label = std::string(),
-      const std::string& alt_label = std::string(),
-      int xspan = 1,
-      int yspan = 1) :
+  RealKey(int x, int y,
+          int code,
+          Style style,
+          const std::string& label, 
+          const std::string& shift_label = std::string(),
+          const std::string& alt_label = std::string(),
+          int xspan = 1,
+          int yspan = 1) :
+    m_x(x),
+    m_y(y),
     m_code(code),
-    m_label(label),
-    m_shift_label(shift_label),
-    m_alt_label(alt_label),
     m_style(style),
     m_xspan(xspan),
-    m_yspan(yspan)
+    m_yspan(yspan),
+    m_label(label),
+    m_shift_label(shift_label),
+    m_alt_label(alt_label)
   {}
 
-  operator bool() const
-  {
-    return (m_code != -1);
-  }
+  int get_code() const { return m_code; }
+
+  int get_x() const { return m_x; }
+  int get_y() const { return m_y; }
+
+  int get_xspan() const { return m_xspan; }
+  int get_yspan() const { return m_yspan; }
+
+  Style get_style() const { return m_style; }
+
+  std::string get_label() const { return m_label; }
+  std::string get_shift_label() const { return m_shift_label; }
+  std::string get_alt_label() const { return m_alt_label; }
+
+  bool is_ref_key() const { return false; }
+  Key* get_parent() { return this; }
 };
+
+class ReferenceKey : public Key
+{
+private:
+  Key* m_key;
+
+public:
+  ReferenceKey(Key* key) :
+    m_key(key)
+  { 
+  }
+
+  int get_code() const { return m_key->get_code(); }
+
+  int get_x() const { return m_key->get_x(); }
+  int get_y() const { return m_key->get_y(); }
+
+  int get_xspan() const { return m_key->get_xspan(); }
+  int get_yspan() const { return m_key->get_yspan(); }
+
+  Style get_style() const { return m_key->get_style(); }
+
+  std::string get_label() const { return m_key->get_label(); }
+  std::string get_shift_label() const { return m_key->get_shift_label(); }
+  std::string get_alt_label() const { return m_key->get_alt_label(); }
+
+  bool is_ref_key() const { return true; }
+  Key* get_parent() { return m_key; }
+
+private:
+  ReferenceKey(const ReferenceKey&);
+  ReferenceKey& operator=(const ReferenceKey&);
+};
+
+class KeyboardDescription;
+
+typedef boost::shared_ptr<KeyboardDescription> KeyboardDescriptionPtr;
 
 class KeyboardDescription
 {
 public:
-  static KeyboardDescription create_us_layout();
+  static KeyboardDescriptionPtr create_us_layout();
 
 private:
   int m_width;
   int m_height;
 
-  std::vector<Key> m_keys;
+  std::vector<Key*> m_keys;
 
 private:
-  KeyboardDescription();
   KeyboardDescription(int width, int height);
 
 public:
@@ -89,11 +158,23 @@ public:
 
   int get_width() const  { return m_width; }
   int get_height() const { return m_height; }
-  const Key& get_key(int x, int y) const { return m_keys[m_width * y + x]; }
-  void set_key(int x, int y, const Key& key) 
-  { 
-    m_keys[m_width * y + x] = key; 
-  }
+
+  Key* get_key(int x, int y) const;
+
+private:
+  void make_key(int x, int y, 
+                int code,
+                Key::Style style,
+                const std::string& label, 
+                const std::string& shift_label = std::string(),
+                const std::string& alt_label = std::string(),
+                int xspan = 1,
+                int yspan = 1);
+  void set_key(int x, int y, Key* key);
+  
+private:
+  KeyboardDescription(const KeyboardDescription&);
+  KeyboardDescription& operator=(const KeyboardDescription&);
 };
 
 #endif
