@@ -66,28 +66,25 @@ int main(int argc, char** argv)
     }
   }
 
-  if (device.empty())
+
+  KeyboardDescriptionPtr keyboard_desc = KeyboardDescription::create_us_layout(); 
+  VirtualKeyboard virtual_keyboard(keyboard_desc);
+
+  if (!device.empty())
   {
-    std::cerr << "Error: --device DEVICE option must be given" << std::endl;
-    return EXIT_FAILURE;
+    UInput uinput(false);
+    KeyboardDispatcher dispatcher(virtual_keyboard, uinput);
+    KeyboardController controller(virtual_keyboard, device);
+    uinput.finish();
+
+    virtual_keyboard.show();
+    gtk_main();
   }
   else
-  {
-    KeyboardDescription keyboard_desc(KeyboardDescription::create_us_layout()); 
-    VirtualKeyboard virtual_keyboard(keyboard_desc);
-
-    if (true)
+  { 
     {
-      UInput uinput(false);
-      KeyboardDispatcher dispatcher(virtual_keyboard, uinput);
-      KeyboardController controller(virtual_keyboard, device);
-      uinput.finish();
-
-      virtual_keyboard.show();
-      gtk_main();
-    }
-    else
-    { 
+      std::cout << "--device DEVICE option not given, starting in test mode" << std::endl;
+    
       // non-interactive test mode
       virtual_keyboard.show();
       gtk_main();
