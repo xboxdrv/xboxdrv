@@ -26,7 +26,7 @@
 #include "raise_exception.hpp"
 #include "usb_gsource.hpp"
 #include "usb_helper.hpp"
-#include "xbox360_controller.hpp"
+#include "controller/xbox360_controller.hpp"
 #include "xboxmsg.hpp"
 
 libusb_device* get_controller_dev()
