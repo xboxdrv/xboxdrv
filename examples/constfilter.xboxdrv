@@ -1,0 +1,39 @@
+# Const Filter
+# ============
+# 
+# Simple configuration that uses the joystick buttons 0, 1, 2 and 3 to
+# signal which configuration is currently active.
+
+[xboxdrv]
+ui-clear = true
+# extra-devices = false
+# extra-events = false
+toggle = guide
+
+[ui-buttonmap]
+a^const:1 = JS_0
+
+############## snip ##############
+[xboxdrv]
+next=true
+ui-clear = true
+
+[ui-buttonmap]
+a^const:1 = JS_1
+############## snip ##############
+[xboxdrv]
+next=true
+ui-clear = true
+
+[ui-buttonmap]
+a^const:1 = JS_2
+############## snip ##############
+[xboxdrv]
+next=true
+ui-clear = true
+
+[ui-buttonmap]
+a^const:1 = JS_3
+############## snip ##############
+
+# EOF #
