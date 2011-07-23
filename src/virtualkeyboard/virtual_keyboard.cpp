@@ -73,7 +73,12 @@ VirtualKeyboard::VirtualKeyboard(KeyboardDescriptionPtr keyboard_desc) :
   gtk_widget_modify_bg(m_drawing_area, GTK_STATE_NORMAL, &color);
 
   //gtk_window_set_resizable(GTK_WINDOW(m_window), FALSE);
-  //gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
+  gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
+
+  //gdk_window_set_override_redirect(GTK_WINDOW(m_window)->window, TRUE);
+  //gdk_window_set_decorations(GTK_WINDOW(m_window)->window, 0);
+  gtk_window_set_decorated(GTK_WINDOW(m_window), FALSE);
+  gtk_window_set_keep_above(GTK_WINDOW(m_window), TRUE);
 
   gtk_window_set_default_size(GTK_WINDOW(m_window), 3*get_width()/4, 3*get_height()/4);
   //gtk_widget_set_size_request(m_window, get_width(), get_height());
@@ -118,6 +123,18 @@ VirtualKeyboard::get_height() const
 void
 VirtualKeyboard::show()
 {
+  /*
+    GdkScreen* ;
+  GdkWindow* 
+  GdkWindow* gdk_window_get_pointer(gdk_screen_get_root_window(gdk_screen_get_default()),
+                                    gint *x, gint *y,
+                                    GdkModifierType *mask);
+  */
+  gint x, y;
+  GdkModifierType mask;
+  gdk_window_get_pointer(gdk_screen_get_root_window(gdk_screen_get_default()),
+                         &x, &y, &mask);
+  move(x - get_width()/2, y + get_height()/2);
   gtk_widget_show(m_window);
 }
 
@@ -315,9 +332,12 @@ VirtualKeyboard::on_configure(GtkWindow *window, GdkEvent *event)
 void
 VirtualKeyboard::on_expose(GtkWidget* widget, GdkEventExpose* event)
 {
-  std::cout << "Size: " << 
-    widget->allocation.width << " " << 
-    widget->allocation.height << std::endl;
+  if (false)
+  {
+    std::cout << "Size: " << 
+      widget->allocation.width << " " << 
+      widget->allocation.height << std::endl;
+  }
 
   cairo_t *cr = gdk_cairo_create (widget->window);
 

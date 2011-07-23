@@ -116,7 +116,7 @@ KeyboardController::parse(const struct input_event& ev)
     {
       if (abs(ev.value) > 8000)
       {
-        m_stick_y = ev.value / -32768.0f;
+        m_stick_y = ev.value / 32768.0f;
         //m_keyboard.move(0, ev.value / 40);
       }
       else
