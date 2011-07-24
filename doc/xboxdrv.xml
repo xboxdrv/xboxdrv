@@ -2281,6 +2281,17 @@ send KEY_LEFTSHIFT 0]]></programlisting>
         </varlistentry>
 
         <varlistentry>
+          <term><option>delay</option>:<replaceable>TIME</replaceable></term>
+          <listitem>
+            <para>
+              A button has to be held down for TIME miliseconds before
+              it will emit an event, press events shorter then that will
+              be ignored.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>log</option>:<replaceable>STRING</replaceable></term>
           <listitem>
             <para>
