@@ -106,28 +106,28 @@ LogitechF310Controller::parse(uint8_t* data, int len, ControllerMessage* msg_out
     if (data[6] < 128)
       msg_out->set_axis(XBOX_AXIS_X1, -(32767 - (data[6] * 256)));
     else if (data[6] > 128)
-      msg_out->set_axis(XBOX_AXIS_X1, (int) (data[6] - 128) * 258.015);
+      msg_out->set_axis(XBOX_AXIS_X1, static_cast<int>((data[6] - 128) * 258.015));
 
     // axis y1
 
     if (data[8] < 128)
       msg_out->set_axis(XBOX_AXIS_Y1, (32767 - (data[8] * 256)));
     else if (data[8] > 128)
-      msg_out->set_axis(XBOX_AXIS_Y1, (int) -(data[8] - 128) * 258.015);
+      msg_out->set_axis(XBOX_AXIS_Y1, static_cast<int>(-(data[8] - 128) * 258.015));
 
     // axis x2
 
     if (data[10] < 128)
       msg_out->set_axis(XBOX_AXIS_X2, -(32767 - (data[10] * 256)));
     else if (data[10] > 128)
-      msg_out->set_axis(XBOX_AXIS_X2, (int) (data[10] - 128) * 258.015);
+      msg_out->set_axis(XBOX_AXIS_X2, static_cast<int>((data[10] - 128) * 258.015));
 
     // axis y2
 
     if (data[12] < 128)
       msg_out->set_axis(XBOX_AXIS_Y2, (32767 - (data[12] * 256)));
     else if (data[12] > 128)
-      msg_out->set_axis(XBOX_AXIS_Y2, (int) -(data[12] - 128) * 258.015);
+      msg_out->set_axis(XBOX_AXIS_Y2, static_cast<int>(-(data[12] - 128) * 258.015));
 
     return true;
   }
