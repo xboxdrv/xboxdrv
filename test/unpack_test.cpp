@@ -31,6 +31,12 @@ int main(int argc, char** argv)
   std::cout << "uint32be: " << unpack::uint32be(data) << std::endl;
   std::cout << "uint32le: " << unpack::uint32le(data) << std::endl;
 
+  uint8_t data2[] = { 0, 128, 255 };
+  std::cout << std::dec;
+  std::cout << "u8_to_s16: " << 0 << " " << unpack::u8_to_s16(data2[0]) << std::endl;
+  std::cout << "u8_to_s16: " << 128 << " " << unpack::u8_to_s16(data2[1]) << std::endl;
+  std::cout << "u8_to_s16: " << 255 << " " << unpack::u8_to_s16(data2[2]) << std::endl;
+
   return 0;
 }
 
