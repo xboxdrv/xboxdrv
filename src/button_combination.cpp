@@ -19,6 +19,8 @@
 #include "button_combination.hpp"
 
 #include <boost/tokenizer.hpp>
+
+#include "xboxmsg.hpp"
 
 ButtonCombination
 ButtonCombination::from_string(const std::string& str)
@@ -90,6 +92,23 @@ ButtonCombination::match(const std::bitset<XBOX_BTN_MAX>& button_state) const
     }
   }
   return true;
+}
+
+void
+ButtonCombination::print(std::ostream& os) const
+{
+  for(std::vector<XboxButton>::const_iterator btn = m_buttons.begin(); btn != m_buttons.end(); ++btn)
+  {
+    os << btn2string(*btn);
+    if (btn != m_buttons.end()-1)
+      os << "+";
+  }
+}
+
+std::ostream& operator<<(std::ostream& os, const ButtonCombination& buttons)
+{
+  buttons.print(os);
+  return os;
 }
 
 /* EOF */

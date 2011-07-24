@@ -44,10 +44,14 @@ public:
 
   bool match(const std::bitset<XBOX_BTN_MAX>& button_state) const;
 
+  void print(std::ostream& os) const;
+
 private:
   typedef std::vector<XboxButton> Buttons;
   Buttons m_buttons;
 };
+
+std::ostream& operator<<(std::ostream& os, const ButtonCombination& buttons);
 
 #endif
 
