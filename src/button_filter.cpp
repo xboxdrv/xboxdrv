@@ -23,6 +23,7 @@
 
 #include "buttonfilter/autofire_button_filter.hpp"
 #include "buttonfilter/const_button_filter.hpp"
+#include "buttonfilter/delay_button_filter.hpp"
 #include "buttonfilter/invert_button_filter.hpp"
 #include "buttonfilter/log_button_filter.hpp"
 #include "buttonfilter/toggle_button_filter.hpp"
@@ -56,6 +57,10 @@ ButtonFilter::from_string(const std::string& str)
   else if (filtername == "log")
   {
     return ButtonFilterPtr(LogButtonFilter::from_string(rest));
+  }
+  else if (filtername == "delay")
+  {
+    return ButtonFilterPtr(DelayButtonFilter::from_string(rest));
   }
   else
   {
