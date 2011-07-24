@@ -1579,6 +1579,11 @@ example in combination with multiple configurations to
 signal a game or another application which configuration
 is currently active.
 .TP 
+\*(T<\fBdelay\fR\*(T>:\fITIME\fR
+A button has to be held down for TIME miliseconds before
+it will emit an event, press events shorter then that will
+be ignored.
+.TP 
 \*(T<\fBlog\fR\*(T>:\fISTRING\fR
 The log filter will output everything to stdout that
 goes through it to, this is useful for debugging the
@@ -1645,6 +1650,19 @@ regular options, but allow more fine tuning, such as limiting
 the effects to a single analog stick instead of just applyig
 it to all. Note that modifiers are applied one after the
 other, so order is important.
+.TP 
+\*(T<\fBbtn2axis\fR\*(T>=\fIBUTTON\fR:\fIBUTTON\fR:\fIAXIS\fR
+Takes two buttons and turns them into an axis.
+.TP 
+\*(T<\fBdpad\-restrictor\fR\*(T>=\fIRESTRICTON\fR
+Restricts the dpad movement, values
+for \fIRESTRICTON\fR can be:
+
+x-axis: only allow movement in the X axis
+
+y-axis: only allow movement in the Y axis
+
+fourway: allow movement in X and Y axis, but filter out diagonals
 .TP 
 \*(T<\fBdpad\-rotate\fR\*(T>=\fIDEGREE\fR
 See \*(T<\fB\-\-dpad\-rotation\fR\*(T>.
