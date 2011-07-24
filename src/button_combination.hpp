@@ -37,7 +37,8 @@ public:
 
   bool has_button(XboxButton button) const;
 
-  /** Check if all buttons of \a this are also part of \a rhs */
+  /** Check if all buttons of \a this are also part of \a rhs. If
+      ButtonCombination is empty, always returns false */
   bool is_subset_of(const ButtonCombination& rhs) const;
 
   int size() const;

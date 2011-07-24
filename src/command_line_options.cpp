@@ -1051,8 +1051,18 @@ CommandLineParser::set_ui_buttonmap(ButtonMap& btn_map, const std::string& name,
 
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  std::vector<std::string> lst(tokens.begin(), tokens.end());
+
+  // boost::tokenizer doesn't return any tokens on an empty string, so
+  // add an empty token to the list to make the interpretation work
+  // properly
+  if (lst.empty())
+  {
+    lst.push_back(std::string());
+  }
+
   int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  for(std::vector<std::string>::iterator t = lst.begin(); t != lst.end(); ++t, ++idx)
   {
     switch(idx)
     { 

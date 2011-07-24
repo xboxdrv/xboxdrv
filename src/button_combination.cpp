@@ -61,18 +61,24 @@ ButtonCombination::has_button(XboxButton button) const
   return std::find(m_buttons.begin(), m_buttons.end(), button) != m_buttons.end();
 }
 
-/** Check if all buttons of \a this are also part of \a rhs */
 bool
 ButtonCombination::is_subset_of(const ButtonCombination& rhs) const
 {
-  for(Buttons::const_iterator i = m_buttons.begin(); i != m_buttons.end(); ++i)
+  if (m_buttons.empty())
   {
-    if (!rhs.has_button(*i))
-    {
-      return false;
-    }
+    return false;
   }
-  return true;
+  else
+  {
+    for(Buttons::const_iterator i = m_buttons.begin(); i != m_buttons.end(); ++i)
+    {
+      if (!rhs.has_button(*i))
+      {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 int
