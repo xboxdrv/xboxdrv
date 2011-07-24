@@ -108,11 +108,11 @@ SaitekP2500Controller::parse(uint8_t* data, int len, ControllerMessage* msg_out)
     msg_out->set_button(XBOX_BTN_START, unpack::bit(data+6, 2));
     msg_out->set_button(XBOX_BTN_BACK,  unpack::bit(data+6, 3));
       
-    msg_out->set_axis(XBOX_AXIS_X1, scale_8to16(data[1]));
-    msg_out->set_axis(XBOX_AXIS_Y1, scale_8to16(data[2]));
+    msg_out->set_axis(XBOX_AXIS_X1, unpack::s8_to_s16(data[1]));
+    msg_out->set_axis(XBOX_AXIS_Y1, unpack::s8_to_s16(data[2]));
 
-    msg_out->set_axis(XBOX_AXIS_X2, scale_8to16(data[3]));
-    msg_out->set_axis(XBOX_AXIS_Y2, scale_8to16(data[4]));
+    msg_out->set_axis(XBOX_AXIS_X2, unpack::s8_to_s16(data[3]));
+    msg_out->set_axis(XBOX_AXIS_Y2, unpack::s8_to_s16(data[4]));
     
     switch(data[6] >> 4)
     {

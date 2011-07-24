@@ -181,10 +181,10 @@ Xbox360Controller::parse(uint8_t* data, int len, ControllerMessage* msg_out)
     msg_out->set_axis(XBOX_AXIS_RT, data[5]);
 
     msg_out->set_axis(XBOX_AXIS_X1, unpack::int16le(data+6));
-    msg_out->set_axis(XBOX_AXIS_Y1, s16_invert(unpack::int16le(data+8)));
+    msg_out->set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::int16le(data+8)));
 
     msg_out->set_axis(XBOX_AXIS_X2, unpack::int16le(data+10));
-    msg_out->set_axis(XBOX_AXIS_Y2, s16_invert(unpack::int16le(data+12)));
+    msg_out->set_axis(XBOX_AXIS_Y2, unpack::s16_invert(unpack::int16le(data+12)));
 
     //msg.dummy2 = unpack::int32le(data+14);
     //msg.dummy3 = unpack::int16le(data+18);

@@ -22,61 +22,7 @@
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
-
-int16_t u8_to_s16(uint8_t value)
-{
-  // FIXME: verify this
-  if (value < 128)
-  {
-    return -32768 + (value * 32768 / 128);
-  }
-  else
-  {
-    return (value-128) * 32767 / 127;
-  }
-}
-
-float s16_to_float(int16_t value)
-{
-  if (value >= 0)
-  {
-    return static_cast<float>(value) / 32767.0f;
-  }
-  else
-  {
-    return static_cast<float>(value) / 32768.0f;
-  }
-}
-
-/**
-   input:  [0, 255]
-   output: [ -1.0f, 1.0f ] 
-*/
-float u8_to_float(uint8_t value)
-{
-  return static_cast<float>(value) / 255.0f * 2.0f - 1.0f;
-}
-
-int16_t float_to_s16(float v)
-{
-  if (v >= 0.0f)
-  {
-    return static_cast<int16_t>(std::min(1.0f, v) * 32767.0f);
-  }
-  else
-  {
-    return static_cast<int16_t>(std::max(-1.0f, v) * 32768.0f);
-  }
-}
-
-/**
-   input:  [ -1.0f, 1.0f ] 
-   output: [0, 255]
-*/
-uint8_t float_to_u8(float v)
-{
-  return static_cast<uint8_t>(Math::clamp(0.0f, (v + 1.0f) / 2.0f, 1.0f) * 255.0f);
-}
+#include "unpack.hpp"
 
 std::string gamepadtype_to_string(const GamepadType& type)
 {

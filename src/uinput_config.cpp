@@ -23,22 +23,6 @@
 #include "uinput.hpp"
 #include "uinput_options.hpp"
 
-namespace {
-// FIXME: duplicate code
-int16_t u8_to_s16(uint8_t value)
-{
-  // FIXME: verify this
-  if (value < 128)
-  {
-    return -32768 + (value * 32768 / 128);
-  }
-  else
-  {
-    return (value-128) * 32767 / 127;
-  }
-}
-} // namespace
-
 UInputConfig::UInputConfig(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
   m_btn_map(opts.get_btn_map()), 

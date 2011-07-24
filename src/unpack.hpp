@@ -21,6 +21,8 @@
 
 #include <stdint.h>
 
+#include "helper.hpp"
+
 namespace unpack {
 
 inline bool is_big_endian()
@@ -100,6 +102,78 @@ inline uint32_t uint32be(uint8_t* data)
 inline bool bit(uint8_t* data, int bit)
 {
   return (*data >> bit) & 1;
+}
+
+// Change the sign
+inline int16_t s16_invert(int16_t v)
+{
+  if (v)
+    return static_cast<int16_t>(~v);
+  else // v == 0
+    return v;
+}
+
+inline int16_t s8_to_s16(int8_t v)
+{
+  if (v > 0) 
+    return static_cast<int16_t>(v * 32767 / 127);
+  else
+    return static_cast<int16_t>(v * 32768 / 128);
+}
+
+inline int16_t u8_to_s16(uint8_t value)
+{
+  int16_t v = value;
+  if (v > 128)
+  {
+    return (v-128) * 32767 / 127;
+  }
+  else 
+  {
+    return (v-128) * 32768 / 128;
+  }
+}
+
+inline float s16_to_float(int16_t value)
+{
+  if (value >= 0)
+  {
+    return static_cast<float>(value) / 32767.0f;
+  }
+  else
+  {
+    return static_cast<float>(value) / 32768.0f;
+  }
+}
+
+/**
+   input:  [0, 255]
+   output: [ -1.0f, 1.0f ] 
+*/
+inline float u8_to_float(uint8_t value)
+{
+  return static_cast<float>(value) / 255.0f * 2.0f - 1.0f;
+}
+
+inline int16_t float_to_s16(float v)
+{
+  if (v >= 0.0f)
+  {
+    return static_cast<int16_t>(std::min(1.0f, v) * 32767.0f);
+  }
+  else
+  {
+    return static_cast<int16_t>(std::max(-1.0f, v) * 32768.0f);
+  }
+}
+
+/**
+   input:  [ -1.0f, 1.0f ] 
+   output: [0, 255]
+*/
+inline uint8_t float_to_u8(float v)
+{
+  return static_cast<uint8_t>(Math::clamp(0.0f, (v + 1.0f) / 2.0f, 1.0f) * 255.0f);
 }
 
 } // namespace unpack

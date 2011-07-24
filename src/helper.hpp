@@ -49,23 +49,6 @@ T clamp (const T& low, const T& v, const T& high)
 }
 } // namespace Math
 
-// Change the sign
-inline int16_t s16_invert(int16_t v)
-{
-  if (v)
-    return static_cast<int16_t>(~v);
-  else // v == 0
-    return v;
-}
-
-inline int16_t scale_8to16(int8_t a)
-{
-  if (a > 0) 
-    return static_cast<int16_t>(a * 32767 / 127);
-  else
-    return static_cast<int16_t>(a * 32768 / 128);
-}
-
 /** converts the arbitary range to [-1,1] */
 float to_float(int value, int min, int max);
 float to_float_no_range_check(int value, int min, int max);

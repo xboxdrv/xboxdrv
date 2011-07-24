@@ -160,10 +160,10 @@ Xbox360WirelessController::parse(uint8_t* data, int len, ControllerMessage* msg_
         msg_out->set_axis(XBOX_AXIS_RT, ptr[5]);
 
         msg_out->set_axis(XBOX_AXIS_X1, unpack::int16le(ptr+6));
-        msg_out->set_axis(XBOX_AXIS_Y1, s16_invert(unpack::int16le(ptr+8)));
+        msg_out->set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::int16le(ptr+8)));
 
         msg_out->set_axis(XBOX_AXIS_X2, unpack::int16le(ptr+10));
-        msg_out->set_axis(XBOX_AXIS_Y2, s16_invert(unpack::int16le(ptr+12)));
+        msg_out->set_axis(XBOX_AXIS_Y2, unpack::s16_invert(unpack::int16le(ptr+12)));
 
         return true;
       }

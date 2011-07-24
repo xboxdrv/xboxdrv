@@ -167,11 +167,11 @@ FirestormDualController::parse_vsb(uint8_t* data_in, int len, ControllerMessage*
     if (dpad == 0x5 || dpad == 0x6 || dpad == 0x7)
       msg.set_button(XBOX_DPAD_LEFT, 1);
 
-    msg.set_axis(XBOX_AXIS_X1, scale_8to16(data_in[2]));
-    msg.set_axis(XBOX_AXIS_Y1, s16_invert(scale_8to16(data_in[3])));
+    msg.set_axis(XBOX_AXIS_X1, unpack::s8_to_s16(data_in[2]));
+    msg.set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(data_in[3])));
 
-    msg.set_axis(XBOX_AXIS_X2, scale_8to16(data_in[4]));
-    msg.set_axis(XBOX_AXIS_Y2, s16_invert(scale_8to16(data_in[5])));
+    msg.set_axis(XBOX_AXIS_X2, unpack::s8_to_s16(data_in[4]));
+    msg.set_axis(XBOX_AXIS_Y2, unpack::s16_invert(unpack::s8_to_s16(data_in[5])));
 
     return true;
   }
@@ -222,11 +222,11 @@ FirestormDualController::parse_default(uint8_t* data_in, int len, ControllerMess
     if (data_in[2] == 0x50 || data_in[2] == 0x60 || data_in[2] == 0x70)
       msg.set_button(XBOX_DPAD_LEFT, 1);
 
-    msg.set_axis(XBOX_AXIS_X1, scale_8to16(data_in[2]));
-    msg.set_axis(XBOX_AXIS_Y1, s16_invert(scale_8to16(data_in[3])));
+    msg.set_axis(XBOX_AXIS_X1, unpack::s8_to_s16(data_in[2]));
+    msg.set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(data_in[3])));
 
-    msg.set_axis(XBOX_AXIS_X2, scale_8to16(data_in[4]));
-    msg.set_axis(XBOX_AXIS_Y2, s16_invert(scale_8to16(data_in[5] - 128)));
+    msg.set_axis(XBOX_AXIS_X2, unpack::s8_to_s16(data_in[4]));
+    msg.set_axis(XBOX_AXIS_Y2, unpack::s16_invert(unpack::s8_to_s16(data_in[5] - 128)));
 
     return true;
   }
