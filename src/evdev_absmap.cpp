@@ -79,11 +79,10 @@ EvdevAbsMap::process(ControllerMessage& msg, int code, int value, int min, int m
     }
   }
 
-  { // process minus map
+  { // process both map
     std::map<int, XboxAxis>::const_iterator it = m_both_map.find(code);
     if (it != m_both_map.end())
     {
-      // '+ 1' so that we round up, instead of round down 
       const float v = to_float(value, min, max);
       msg.set_axis_float(it->second, v); 
     }
