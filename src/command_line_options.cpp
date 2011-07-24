@@ -615,6 +615,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         {
           opts.gamepad_type = GAMEPAD_SAITEK_P2500;
         }
+        else if (opt.argument == "logitech-f310")
+        {
+          opts.gamepad_type = GAMEPAD_LOGITECH_F310;
+        }
         else if (opt.argument == "playstation3-usb")
         {
           opts.gamepad_type = GAMEPAD_PLAYSTATION3_USB;
@@ -635,6 +639,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
                           << " * firestorm\n"
                           << " * firestorm-vsb\n"
                           << " * saitek-p2500\n"
+                          << " * logitech-f310\n"
                           << " * generic-usb\n");
         }
         break;

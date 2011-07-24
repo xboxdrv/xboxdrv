@@ -109,6 +109,9 @@ std::string gamepadtype_to_string(const GamepadType& type)
     case GAMEPAD_SAITEK_P2500:
       return "saitek-p2500";
 
+    case GAMEPAD_LOGITECH_F310:
+      return "logitech-f310";
+
     case GAMEPAD_PLAYSTATION3_USB:
       return "playstation3-usb";
 

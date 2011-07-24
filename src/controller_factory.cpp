@@ -24,6 +24,7 @@
 #include "controller/generic_usb_controller.hpp"
 #include "controller/playstation3_usb_controller.hpp"
 #include "controller/saitek_p2500_controller.hpp"
+#include "controller/logitech_f310_controller.hpp"
 #include "controller/xbox360_controller.hpp"
 #include "controller/xbox360_wireless_controller.hpp"
 #include "controller/xbox_controller.hpp"
@@ -67,6 +68,9 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
 
     case GAMEPAD_SAITEK_P2500:
       return ControllerPtr(new SaitekP2500Controller(dev, opts.detach_kernel_driver));
+
+    case GAMEPAD_LOGITECH_F310:
+      return ControllerPtr(new LogitechF310Controller(dev, opts.detach_kernel_driver));
 
     case GAMEPAD_PLAYSTATION3_USB:
       return ControllerPtr(new Playstation3USBController(dev, opts.detach_kernel_driver));
@@ -131,6 +135,10 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
 
     case GAMEPAD_SAITEK_P2500:
       lst.push_back(ControllerPtr(new SaitekP2500Controller(dev, opts.detach_kernel_driver)));
+      break;
+
+    case GAMEPAD_LOGITECH_F310:
+      lst.push_back(ControllerPtr(new LogitechF310Controller(dev, opts.detach_kernel_driver)));
       break;
 
     case GAMEPAD_PLAYSTATION3_USB:
