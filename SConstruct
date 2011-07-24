@@ -153,7 +153,7 @@ libxboxdrv = env.StaticLibrary('xboxdrv',
                                Glob('src/axisevent/*.cpp') +
                                Glob('src/buttonevent/*.cpp') +
                                Glob('src/modifier/*.cpp'))
-env.Append(LIBS = libxboxdrv)
+env.Prepend(LIBS = libxboxdrv)
 
 for file in Glob('test/*_test.cpp', strings=True):
     Alias('tests', env.Program(file[:-4], file))
