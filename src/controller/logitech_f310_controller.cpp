@@ -102,10 +102,10 @@ LogitechF310Controller::parse(uint8_t* data, int len, ControllerMessage* msg_out
     // makes the most of it.
 
     msg_out->set_axis(XBOX_AXIS_X1, unpack::u8_to_s16(data[6]));
-    msg_out->set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::u8_to_s16(255 - data[8])));
+    msg_out->set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::u8_to_s16(data[8])));
 
     msg_out->set_axis(XBOX_AXIS_X2, unpack::u8_to_s16(data[10]));
-    msg_out->set_axis(XBOX_AXIS_Y2, unpack::s16_invert(unpack::u8_to_s16(255 - data[12])));
+    msg_out->set_axis(XBOX_AXIS_Y2, unpack::s16_invert(unpack::u8_to_s16(data[12])));
 
     return true;
   }
