@@ -156,6 +156,23 @@ Aborted
 Target for 0.9.0
 ================
 
+* allow something like:
+
+  void=BTN_A
+
+  to create empty events on uinput
+
+  - boost::tokenizer() with an empty input string produces no tokens,
+    not a single token with an empty string
+
+  - see: CommandLineParser::set_ui_buttonmap(ButtonMap& btn_map, const std::string& name, const std::string& value)
+
+  - need ButtonCombination::void() or something like that, just
+    ButtonCombination() probably already does the right thing, except
+    for the btn_map.lookup() thing
+
+    ButtonCombination::from_string("void") -> ButtonCombination() could be the solution
+
 * add AxisJoinModifier, take two half-axis and make a whole (trigger-as-zaxis style)
 
 * add AxisSplitModifier, take a full-axis and make two half ones out
@@ -558,12 +575,6 @@ disable LT and RT -> already fixed, check it
   when needed, not when another button is present that can be used to
   identify the device as joystick, also document exactly which
   buttons/axis combinations are valid.
-
-* allow something like:
-
-  void = BTN_A
-
-  to create empty events on uinput
 
 Other Stuff
 ===========
