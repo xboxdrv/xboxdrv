@@ -41,12 +41,13 @@ Required libraries and tools:
  * X11
  * libdbus
  * glib
+ * Gtk+
 
 Once everything installed, you can compile by typing:
 
  $ scons
 
-On Ubuntu 10.10 you can install all the required libraries via:
+On Ubuntu 11.04 you can install all the required libraries via:
 
  $ sudo apt-get install \
      g++ \
@@ -58,7 +59,8 @@ On Ubuntu 10.10 you can install all the required libraries via:
      libx11-dev \
      libudev-dev \
      x11proto-core-dev \
-     libdbus-glib-1-dev
+     libdbus-glib-1-dev \
+     libgtk2.0-dev
 
 To load the uinput kernel module automatically on boot add it
 /etc/modules, to load it manually type:
@@ -92,11 +94,6 @@ XBOXDRV section of the xboxdrv manpage. When you haven't installed
 xboxdrv the man page can be found in doc/xboxdrv.1 and be read with:
 
  $ man -l doc/xboxdrv.1
-
-Documentation on xboxdrv-daemon, a daemon that will automatically
-launch xboxdrv when a pad is plugged in can be read via:
-
- $ man -l doc/xboxdrv-daemon.1
 
 
 # EOF #
