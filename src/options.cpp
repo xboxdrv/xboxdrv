@@ -235,14 +235,14 @@ Options::set_led(const std::string& value)
 void
 Options::set_device_name(const std::string& name)
 {
-  uint32_t device_id = UInput::create_device_id(controller_slot, DEVICEID_AUTO);
+  uint32_t device_id = UInput::create_device_id(static_cast<uint16_t>(controller_slot), DEVICEID_AUTO);
   uinput_device_names[device_id] = name;
 }
 
 void
 Options::set_device_usbid(const std::string& name)
 {
-  uint32_t device_id = UInput::create_device_id(controller_slot, DEVICEID_AUTO);
+  uint32_t device_id = UInput::create_device_id(static_cast<uint16_t>(controller_slot), DEVICEID_AUTO);
   uinput_device_usbids[device_id] = UInput::parse_input_id(name);
 }
 

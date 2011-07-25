@@ -153,7 +153,7 @@ private:
   //std::auto_ptr<boost::thread> m_read_thread;
   //std::auto_ptr<boost::thread> m_keep_alive_thread;
   std::auto_ptr<LinuxUinput> m_uinput;
-  int m_keymap[256];
+  uint16_t m_keymap[256];
   bool m_state[256];
   unsigned int m_led_state;
   libusb_transfer* m_read_transfer;

@@ -139,7 +139,7 @@ public:
   INIPairSchemaFloat(float* data) : m_data(data) {}
   void call(const std::string& value)
   {
-    *m_data = atoi(value.c_str());
+    *m_data = static_cast<float>(atof(value.c_str()));
   }
 
   std::string str() const 

@@ -115,7 +115,7 @@ USBInterface::submit_read(int endpoint, int len,
   uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
 
   libusb_fill_interrupt_transfer(transfer, m_handle,
-                                 endpoint | LIBUSB_ENDPOINT_IN,
+                                 static_cast<unsigned char>(endpoint | LIBUSB_ENDPOINT_IN),
                                  data, len,
                                  &USBInterface::on_read_data_wrap, 
                                  new USBReadCallback(this, callback),
@@ -146,7 +146,7 @@ USBInterface::submit_write(int endpoint, uint8_t* data_in, int len,
   memcpy(data, data_in, len);
 
   libusb_fill_interrupt_transfer(transfer, m_handle,
-                                 endpoint | LIBUSB_ENDPOINT_OUT,
+                                 static_cast<unsigned char>(endpoint | LIBUSB_ENDPOINT_OUT),
                                  data, len,
                                  &USBInterface::on_write_data_wrap, 
                                  new USBWriteCallback(this, callback),

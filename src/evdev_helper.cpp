@@ -232,7 +232,7 @@ UIEvent str2key_event(const std::string& str)
   int device_id;
   std::string rest;
   split_event_name(str, &rest, &slot_id, &device_id);
-  return UIEvent::create(device_id, EV_KEY, str2key(rest));
+  return UIEvent::create(static_cast<uint16_t>(device_id), EV_KEY, str2key(rest));
 }
 
 UIEvent str2rel_event(const std::string& str)
@@ -241,7 +241,7 @@ UIEvent str2rel_event(const std::string& str)
   int device_id;
   std::string rest;
   split_event_name(str, &rest, &slot_id, &device_id);
-  return UIEvent::create(device_id, EV_REL, str2rel(rest));
+  return UIEvent::create(static_cast<uint16_t>(device_id), EV_REL, str2rel(rest));
 }
 
 UIEvent str2abs_event(const std::string& str)
@@ -250,7 +250,7 @@ UIEvent str2abs_event(const std::string& str)
   int device_id;
   std::string rest;
   split_event_name(str, &rest, &slot_id, &device_id);
-  return UIEvent::create(device_id, EV_ABS, str2abs(rest));
+  return UIEvent::create(static_cast<uint16_t>(device_id), EV_ABS, str2abs(rest));
 }
 
 std::string key2str(int v)

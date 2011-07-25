@@ -44,12 +44,12 @@ public:
 
   static inline uint16_t get_type_id(uint32_t device_id)
   {
-    return device_id & 0xffff;
+    return static_cast<uint16_t>(device_id & 0xffff);
   }
 
   static inline uint16_t get_slot_id(uint32_t device_id)
   {
-    return ((device_id) >> 16) & 0xffff;
+    return static_cast<uint16_t>(((device_id) >> 16) & 0xffff);
   }
 
 private:

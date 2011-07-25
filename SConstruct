@@ -102,7 +102,7 @@ if 'BUILD' in env and env['BUILD'] == 'development':
                             "-Wnon-virtual-dtor",
                             "-Weffc++",
                             # "-Wunreachable-code",
-                            # "-Wconversion",
+                            "-Wconversion",
                             "-Wold-style-cast",
                             "-Wshadow",
                             "-Wcast-qual",

@@ -46,7 +46,7 @@ RelRepeatAxisEventHandler::from_string(const std::string& str)
   }
 }
 
-RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(const UIEvent& code, int value, int repeat) :
+RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(const UIEvent& code, int value, float repeat) :
   m_code(code),
   m_value(value),
   m_repeat(repeat),
@@ -70,11 +70,11 @@ RelRepeatAxisEventHandler::send(UInput& uinput, int value)
 {
   if (value < 0)
   {
-    m_stick_value = value / static_cast<float>(-m_min);
+    m_stick_value = static_cast<float>(value) / static_cast<float>(-m_min);
   }
   else
   {
-    m_stick_value = value / static_cast<float>(m_max);
+    m_stick_value = static_cast<float>(value) / static_cast<float>(m_max);
   }
 
   // reset timer when in center position
@@ -87,8 +87,8 @@ RelRepeatAxisEventHandler::send(UInput& uinput, int value)
 void
 RelRepeatAxisEventHandler::update(UInput& uinput, int msec_delta)
 {
-  // time ticks slower depending on how fr the stick is moved
-  m_timer += msec_delta * fabsf(m_stick_value);
+  // time ticks slower depending on how far the stick is moved
+  m_timer += static_cast<float>(msec_delta) * fabsf(m_stick_value);
 
   while(m_timer > m_repeat)
   {

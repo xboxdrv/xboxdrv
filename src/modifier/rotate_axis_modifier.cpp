@@ -33,7 +33,7 @@ RotateAxisModifier::from_string(const std::vector<std::string>& args)
   {
     return new RotateAxisModifier(string2axis(args[0]),
                                   string2axis(args[1]),
-                                  boost::lexical_cast<float>(args[2]) * M_PI / 180.0f,
+                                  boost::lexical_cast<float>(args[2]) * static_cast<float>(M_PI) / 180.0f,
                                   args.size() == 3 ? false : boost::lexical_cast<bool>(args[3]));
   }
 }
@@ -60,8 +60,8 @@ RotateAxisModifier::update(int msec_delta, ControllerMessage& msg)
   float length = sqrtf(x*x + y*y);
   float angle = atan2f(y, x) + m_angle;
 
-  msg.set_axis_float(m_xaxis, cos(angle) * length);
-  msg.set_axis_float(m_yaxis, sin(angle) * length);
+  msg.set_axis_float(m_xaxis, cosf(angle) * length);
+  msg.set_axis_float(m_yaxis, sinf(angle) * length);
 }
 
 std::string

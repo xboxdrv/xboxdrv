@@ -89,8 +89,8 @@ USBSubsystem::find_controller(libusb_device** dev, XPadDevice& dev_type, const O
       else
       {
         dev_type.type = opts.gamepad_type;
-        dev_type.idVendor  = opts.vendor_id;
-        dev_type.idProduct = opts.product_id;
+        dev_type.idVendor  = static_cast<uint16_t>(opts.vendor_id);
+        dev_type.idProduct = static_cast<uint16_t>(opts.product_id);
         dev_type.name = "unknown";
       }
     }

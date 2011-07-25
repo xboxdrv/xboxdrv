@@ -74,7 +74,7 @@ xboxdrv_g_controller_set_led(XboxdrvGController* self, int status, GError** erro
   if (self->controller &&
       self->controller->get_controller())
   {
-    self->controller->get_controller()->set_led(status);
+    self->controller->get_controller()->set_led(static_cast<uint8_t>(status));
     return TRUE;
   }
   else
@@ -93,7 +93,8 @@ xboxdrv_g_controller_set_rumble(XboxdrvGController* self, int strong, int weak, 
   if (self->controller &&
       self->controller->get_controller())
   {
-    self->controller->get_controller()->set_rumble(strong, weak);
+    self->controller->get_controller()->set_rumble(static_cast<uint8_t>(strong),
+                                                   static_cast<uint8_t>(weak));
     return TRUE;
   }
   else

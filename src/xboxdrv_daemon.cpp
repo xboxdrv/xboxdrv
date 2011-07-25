@@ -53,7 +53,7 @@ bool get_usb_id(udev_device* device, uint16_t* vendor_id, uint16_t* product_id)
   }
   else
   {
-    *vendor_id = hexstr2int(vendor_id_str);
+    *vendor_id = hexstr2uint16(vendor_id_str);
   }
 
   const char* product_id_str = udev_device_get_property_value(device, "ID_MODEL_ID");
@@ -63,7 +63,7 @@ bool get_usb_id(udev_device* device, uint16_t* vendor_id, uint16_t* product_id)
   }
   else
   {
-    *product_id = hexstr2int(product_id_str);
+    *product_id = hexstr2uint16(product_id_str);
   }
 
   return true;
@@ -194,7 +194,7 @@ XboxdrvDaemon::process_match(struct udev_device* device)
       {
         try 
         {
-          launch_controller_thread(device, dev_type, bus, dev);
+          launch_controller_thread(device, dev_type, static_cast<uint8_t>(bus), static_cast<uint8_t>(dev));
         }
         catch(const std::exception& err)
         {
@@ -381,11 +381,11 @@ XboxdrvDaemon::connect(ControllerSlotPtr slot, ControllerPtr controller)
     // set the LED status
     if (slot->get_led_status() == -1)
     {
-      controller->set_led(2 + (slot->get_id() % 4));
+      controller->set_led(static_cast<uint8_t>(2 + (slot->get_id() % 4)));
     }
     else
     {
-      controller->set_led(slot->get_led_status());
+      controller->set_led(static_cast<uint8_t>(slot->get_led_status()));
     }
   }
   catch(const std::exception& err)

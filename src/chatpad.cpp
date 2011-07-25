@@ -171,7 +171,7 @@ Chatpad::usb_submit_read(int endpoint, int len)
   uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
   m_read_transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
   libusb_fill_interrupt_transfer(m_read_transfer, m_handle,
-                                 endpoint | LIBUSB_ENDPOINT_IN,
+                                 static_cast<unsigned char>(endpoint | LIBUSB_ENDPOINT_IN),
                                  data, len,
                                  &Chatpad::on_read_data_wrap, this,
                                  0); // timeout

@@ -50,8 +50,8 @@ UInputMessageProcessor::send(const ControllerMessage& msg_in, int msec_delta)
     {
       log_debug("rumble: " << msg.get_axis(XBOX_AXIS_LT) << " " << msg.get_axis(XBOX_AXIS_RT));
 
-      set_rumble(msg.get_axis(XBOX_AXIS_LT), 
-                 msg.get_axis(XBOX_AXIS_RT));
+      set_rumble(static_cast<uint8_t>(msg.get_axis(XBOX_AXIS_LT)), 
+                 static_cast<uint8_t>(msg.get_axis(XBOX_AXIS_RT)));
     }
 
     // handling switching of configurations
@@ -101,8 +101,8 @@ UInputMessageProcessor::set_rumble(uint8_t lhs, uint8_t rhs)
 {
   if (m_rumble_callback)
   {
-    lhs = std::min(lhs * m_rumble_gain / 255, 255);
-    rhs = std::min(rhs * m_rumble_gain / 255, 255);
+    lhs = static_cast<uint8_t>(std::min(lhs * m_rumble_gain / 255, 255));
+    rhs = static_cast<uint8_t>(std::min(rhs * m_rumble_gain / 255, 255));
   
     m_rumble_callback(lhs, rhs);
   }

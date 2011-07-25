@@ -38,7 +38,7 @@ enum {
 class UIEvent 
 {
 public:
-  static UIEvent create(int device_id, int type, int code);
+  static UIEvent create(uint16_t device_id, int type, int code);
   static UIEvent from_string(const std::string& str);
   static UIEvent invalid();
 
@@ -69,8 +69,8 @@ private:
  */
 void split_event_name(const std::string& str, std::string* event_str, int* slot_id, int* device_id);
 
-int str2deviceid(const std::string& device);
-int str2slotid(const std::string& slot);
+uint16_t str2deviceid(const std::string& device);
+uint16_t str2slotid(const std::string& slot);
 
 #endif
 

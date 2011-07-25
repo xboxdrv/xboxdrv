@@ -34,7 +34,7 @@ UIEvent::is_keyboard_button(int ev_code)
 }
 
 UIEvent
-UIEvent::create(int device_id, int type, int code) 
+UIEvent::create(uint16_t device_id, int type, int code) 
 {
   UIEvent ev;
   ev.m_slot_id = SLOTID_AUTO;
@@ -104,7 +104,7 @@ UIEvent::resolve_device_id(int slot, bool extra_devices)
 
   if (m_slot_id == SLOTID_AUTO)
   {
-    m_slot_id = slot;
+    m_slot_id = static_cast<uint16_t>(slot);
   }
 
   if (m_device_id == DEVICEID_AUTO)
@@ -154,7 +154,7 @@ UIEvent::get_device_id() const
   return UInput::create_device_id(m_slot_id, m_device_id);
 }
 
-int str2deviceid(const std::string& device)
+uint16_t str2deviceid(const std::string& device)
 {
   if (device == "auto" || device.empty())
   {
@@ -174,11 +174,11 @@ int str2deviceid(const std::string& device)
   }
   else
   {
-    return boost::lexical_cast<int>(device);
+    return boost::lexical_cast<uint16_t>(device);
   }
 }
 
-int str2slotid(const std::string& slot)
+uint16_t str2slotid(const std::string& slot)
 {
   if (slot == "auto" || slot.empty())
   {
@@ -186,7 +186,7 @@ int str2slotid(const std::string& slot)
   }
   else
   {
-    return boost::lexical_cast<int>(slot);
+    return boost::lexical_cast<uint16_t>(slot);
   }
 }
 

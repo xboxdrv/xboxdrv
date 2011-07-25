@@ -47,6 +47,11 @@ int hexstr2int(const std::string& str)
     raise_exception(std::runtime_error, "couldn't convert '" << str << "' to int");
   }
 }
+
+uint16_t hexstr2uint16(const std::string& str)
+{
+  return static_cast<uint16_t>(hexstr2int(str));
+}
 
 std::string raw2str(uint8_t* data, int len)
 {
@@ -163,7 +168,7 @@ float to_float(int value, int min, int max)
 
 int from_float(float value, int min, int max)
 {
-  return (value + 1.0f) / 2.0f * static_cast<float>(max - min) + min;
+  return static_cast<int>((value + 1.0f) / 2.0f * static_cast<float>(max - min)) + min;
 }
 
 int get_terminal_width()

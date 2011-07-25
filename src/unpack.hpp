@@ -37,7 +37,7 @@ inline bool is_big_endian()
 
 inline uint16_t swap16(uint16_t v)
 {
-  return (v<<8) | (v>>8);
+  return static_cast<uint16_t>((v<<8) | (v>>8));
 }
 
 inline uint32_t swap32(uint32_t v)
@@ -126,11 +126,11 @@ inline int16_t u8_to_s16(uint8_t value)
   int16_t v = value;
   if (v > 128)
   {
-    return (v-128) * 32767 / 127;
+    return static_cast<int16_t>((v-128) * 32767 / 127);
   }
   else 
   {
-    return (v-128) * 32768 / 128;
+    return static_cast<int16_t>((v-128) * 32768 / 128);
   }
 }
 

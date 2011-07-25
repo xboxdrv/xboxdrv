@@ -82,11 +82,11 @@ RelButtonEventHandler::send(UInput& uinput, bool value)
   {
     if (value)
     {
-      uinput.send_rel_repetitive(m_code, m_value, m_repeat);
+      uinput.send_rel_repetitive(m_code, static_cast<float>(m_value), m_repeat);
     }
     else
     {
-      uinput.send_rel_repetitive(m_code, m_value, -1);
+      uinput.send_rel_repetitive(m_code, static_cast<float>(m_value), -1);
     }
   } 
 }

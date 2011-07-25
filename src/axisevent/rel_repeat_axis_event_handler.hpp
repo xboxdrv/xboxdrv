@@ -29,7 +29,7 @@ public:
   static RelRepeatAxisEventHandler* from_string(const std::string& str);
 
 public:
-  RelRepeatAxisEventHandler(const UIEvent& code, int value, int repeat);
+  RelRepeatAxisEventHandler(const UIEvent& code, int value, float repeat);
 
   void init(UInput& uinput, int slot, bool extra_devices);
   void send(UInput& uinput, int value);
@@ -43,7 +43,7 @@ private:
   float   m_repeat;
 
   float   m_stick_value;
-  int     m_timer;
+  float   m_timer;
 
   UIEventEmitterPtr m_rel_emitter;
 };

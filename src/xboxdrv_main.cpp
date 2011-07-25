@@ -121,16 +121,17 @@ XboxdrvMain::init_controller(const ControllerPtr& controller)
 
   if (m_opts.get_controller_slot().get_led_status() == -1)
   {
-    controller->set_led(2 + m_jsdev_number % 4);
+    controller->set_led(static_cast<uint8_t>(2 + m_jsdev_number % 4));
   }
   else
   {
-    controller->set_led(m_opts.get_controller_slot().get_led_status());
+    controller->set_led(static_cast<uint8_t>(m_opts.get_controller_slot().get_led_status()));
   }
 
   if (m_opts.rumble_l != -1 && m_opts.rumble_r != -1)
   { // Only set rumble when explicitly requested
-    controller->set_rumble(m_opts.rumble_l, m_opts.rumble_r);
+    controller->set_rumble(static_cast<uint8_t>(m_opts.rumble_l),
+                           static_cast<uint8_t>(m_opts.rumble_r));
   }
 }
 

@@ -76,7 +76,8 @@ ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const
     // '- FF_CUSTOM
     
     // FIXME: this should go through the regular resolution process
-    uint32_t ff_device = UInput::create_device_id(slot, opts.get_ff_device());
+    uint32_t ff_device = UInput::create_device_id(static_cast<uint16_t>(slot), 
+                                                  static_cast<uint16_t>(opts.get_ff_device()));
 
     // basic types
     uinput.add_ff(ff_device, FF_RUMBLE);

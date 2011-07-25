@@ -73,7 +73,7 @@ RelAxisEventHandler::RelAxisEventHandler() :
 }
 
 RelAxisEventHandler::RelAxisEventHandler(int device_id, int code, int repeat, float value) :
-  m_code(UIEvent::create(device_id, EV_REL, code)),
+  m_code(UIEvent::create(static_cast<uint16_t>(device_id), EV_REL, code)),
   m_value(value),
   m_repeat(repeat),
   m_stick_value(0.0f),
@@ -93,9 +93,9 @@ void
 RelAxisEventHandler::send(UInput& uinput, int value)
 {
   if (value < 0)
-    m_stick_value = value / static_cast<float>(-m_min);
+    m_stick_value = static_cast<float>(value) / static_cast<float>(-m_min);
   else
-    m_stick_value = value / static_cast<float>(m_max);
+    m_stick_value = static_cast<float>(value) / static_cast<float>(m_max);
 
   if (m_repeat != -1)
   { 

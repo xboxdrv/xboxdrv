@@ -41,7 +41,8 @@ AxisEvent::invalid()
 AxisEventPtr
 AxisEvent::create_abs(int device_id, int code, int min, int max, int fuzz, int flat)
 {
-  return AxisEventPtr(new AxisEvent(new AbsAxisEventHandler(UIEvent::create(device_id, EV_ABS, code),
+  return AxisEventPtr(new AxisEvent(new AbsAxisEventHandler(UIEvent::create(static_cast<uint16_t>(device_id),
+                                                                            EV_ABS, code),
                                                             min, max, fuzz, flat),
                                     min, max));
 }

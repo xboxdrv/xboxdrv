@@ -54,7 +54,7 @@ RelativeAxisFilter::RelativeAxisFilter(int speed) :
 void
 RelativeAxisFilter::update(int msec_delta)
 {
-  m_state += m_float_speed * m_value * msec_delta / 1000.0f;
+  m_state += m_float_speed * m_value * static_cast<float>(msec_delta) / 1000.0f;
   m_state = Math::clamp(-1.0f, m_state, 1.0f);
 }
 

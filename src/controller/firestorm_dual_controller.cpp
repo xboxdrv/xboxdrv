@@ -154,7 +154,7 @@ FirestormDualController::parse_vsb(uint8_t* data_in, int len, ControllerMessage*
     // data_in.dpad == 0xf0 -> dpad centered
     // data_in.dpad == 0xe0 -> dpad-only mode is enabled
 
-    const uint8_t dpad = data_in[1] >> 4;
+    const uint8_t dpad = static_cast<uint8_t>(data_in[1] >> 4);
     if (dpad == 0x0 || dpad == 0x7 || dpad == 0x1)
       msg.set_button(XBOX_DPAD_UP, 1);
 
@@ -226,7 +226,7 @@ FirestormDualController::parse_default(uint8_t* data_in, int len, ControllerMess
     msg.set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(data_in[3])));
 
     msg.set_axis(XBOX_AXIS_X2, unpack::s8_to_s16(data_in[4]));
-    msg.set_axis(XBOX_AXIS_Y2, unpack::s16_invert(unpack::s8_to_s16(data_in[5] - 128)));
+    msg.set_axis(XBOX_AXIS_Y2, unpack::s16_invert(unpack::u8_to_s16(data_in[5])));
 
     return true;
   }

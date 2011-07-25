@@ -51,21 +51,21 @@ UInput::parse_input_id(const std::string& str)
 
   if (args.size() == 2)
   { // VENDOR:PRODUCT
-    usbid.vendor  = hexstr2int(args[0]);
-    usbid.product = hexstr2int(args[1]);
+    usbid.vendor  = hexstr2uint16(args[0]);
+    usbid.product = hexstr2uint16(args[1]);
   }
   else if (args.size() == 3)
   { // VENDOR:PRODUCT:VERSION
-    usbid.vendor  = hexstr2int(args[0]);
-    usbid.product = hexstr2int(args[1]);
-    usbid.version = hexstr2int(args[2]);
+    usbid.vendor  = hexstr2uint16(args[0]);
+    usbid.product = hexstr2uint16(args[1]);
+    usbid.version = hexstr2uint16(args[2]);
   } 
   else if (args.size() == 4)
   { // VENDOR:PRODUCT:VERSION:BUS
-    usbid.vendor  = hexstr2int(args[0]);
-    usbid.product = hexstr2int(args[1]);
-    usbid.version = hexstr2int(args[2]);
-    usbid.bustype = hexstr2int(args[3]);
+    usbid.vendor  = hexstr2uint16(args[0]);
+    usbid.product = hexstr2uint16(args[1]);
+    usbid.version = hexstr2uint16(args[2]);
+    usbid.bustype = hexstr2uint16(args[3]);
   }
   else
   {
@@ -327,7 +327,7 @@ UIEventEmitterPtr
 UInput::add_key(uint32_t device_id, int ev_code)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
-  dev->add_key(ev_code);
+  dev->add_key(static_cast<uint16_t>(ev_code));
 
   return create_emitter(device_id, EV_KEY, ev_code);
 }
@@ -336,7 +336,7 @@ UIEventEmitterPtr
 UInput::add_rel(uint32_t device_id, int ev_code)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
-  dev->add_rel(ev_code);
+  dev->add_rel(static_cast<uint16_t>(ev_code));
 
   return create_emitter(device_id, EV_REL, ev_code);
 }
@@ -345,7 +345,7 @@ UIEventEmitterPtr
 UInput::add_abs(uint32_t device_id, int ev_code, int min, int max, int fuzz, int flat)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
-  dev->add_abs(ev_code, min, max, fuzz, flat);
+  dev->add_abs(static_cast<uint16_t>(ev_code), min, max, fuzz, flat);
 
   return create_emitter(device_id, EV_ABS, ev_code);
 }
@@ -413,7 +413,7 @@ UInput::finish()
 void
 UInput::send(uint32_t device_id, int ev_type, int ev_code, int value)
 {
-  get_uinput(device_id)->send(ev_type, ev_code, value);
+  get_uinput(device_id)->send(static_cast<uint16_t>(ev_type), static_cast<uint16_t>(ev_code), value);
 }
 
 void
@@ -433,7 +433,7 @@ UInput::update(int msec_delta)
       i->second.rest -= truncf(i->second.rest);
       i->second.rest += i->second.value - truncf(i->second.value);
 
-      get_uinput(i->second.code.get_device_id())->send(EV_REL, i->second.code.code, i_value);
+      get_uinput(i->second.code.get_device_id())->send(EV_REL, static_cast<uint16_t>(i->second.code.code), i_value);
       i->second.time_count -= i->second.repeat_interval;
     }
   }
@@ -482,7 +482,7 @@ UInput::send_rel_repetitive(const UIEvent& code, float value, int repeat_interva
       m_rel_repeat_lst.insert(std::pair<UIEvent, RelRepeat>(code, rel_rep));
     
       // Send the event once
-      get_uinput(code.get_device_id())->send(EV_REL, code.code, value);
+      get_uinput(code.get_device_id())->send(EV_REL, static_cast<uint16_t>(code.code), static_cast<int32_t>(value));
     }
     else
     {

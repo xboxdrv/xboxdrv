@@ -82,7 +82,7 @@ KeyButtonEventHandler::KeyButtonEventHandler() :
 
 KeyButtonEventHandler::KeyButtonEventHandler(int device_id, int code) :
   m_state(false),
-  m_codes(UIEvent::create(device_id, EV_KEY, code)),
+  m_codes(UIEvent::create(static_cast<uint16_t>(device_id), EV_KEY, code)),
   m_secondary_codes(),
   m_hold_threshold(0),
   m_hold_counter(0)

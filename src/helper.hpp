@@ -24,6 +24,7 @@
 #include <vector>
 
 int hexstr2int(const std::string& str);
+uint16_t hexstr2uint16(const std::string& str);
 
 std::string raw2str(uint8_t* buffer, int len);
 std::string to_lower(const std::string &str);
