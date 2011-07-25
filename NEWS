@@ -1,3 +1,13 @@
+xboxdrv 0.9.0 - (??/Aug/2011)
+=============================
+
+* added virtual on-screen keyboard
+* added PDP AFTERGLOW AX.1 Xbox360 controller support
+* added Logitech Gamepad F310 support
+* added support for unbound button events, i.e. "--ui-buttonmap =KEY_ESC"
+* added delay button filter
+
+
 xboxdrv 0.8.1 - (20/Jul/2011)
 =============================
 
