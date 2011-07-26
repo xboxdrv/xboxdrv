@@ -23,6 +23,7 @@
 
 #include "arg_parser.hpp"
 #include "log.hpp"
+#include "status_icon.hpp"
 #include "ui_key_event_emitter.hpp"
 #include "uinput.hpp"
 #include "virtualkeyboard/virtual_keyboard.hpp"
@@ -66,7 +67,7 @@ int main(int argc, char** argv)
     }
   }
 
-
+  StatusIcon status_icon;
   KeyboardDescriptionPtr keyboard_desc = KeyboardDescription::create_us_layout(); 
   VirtualKeyboard virtual_keyboard(keyboard_desc);
 

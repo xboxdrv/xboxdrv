@@ -102,7 +102,7 @@ private:
   }
 
   static void on_destroy(GtkWidget *widget, gpointer data) {
-    gtk_main_quit ();
+    gtk_main_quit();
   }
 
 private:
