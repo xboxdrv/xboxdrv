@@ -10,7 +10,7 @@
 ui-clear = true
 # extra-devices = false
 # extra-events = false
-toggle = back
+toggle = guide
 
 [ui-buttonmap]
 a = BTN_A
@@ -28,7 +28,8 @@ TL = BTN_THUMBL
 TR = BTN_THUMBR
 
 start  = BTN_START
-guide^const:1 = BTN_MODE@joystick
+# guide = BTN_MODE@joystick
+^const:1 = BTN_MODE@joystick
 # back   = BTN_SELECT
 
 [ui-axismap]
@@ -44,42 +45,10 @@ Y2 = ABS_RY
 ################################################################################
 [xboxdrv]
 next=true
-ui-clear = true
-
-[ui-axismap]
-x1^dead:4000 = REL_X:750:-1
-y1^dead:4000 = REL_Y:750:-1
-
-y2^dead:6000^inv = rel-repeat:REL_WHEEL:1:50
-x2^dead:6000 = rel-repeat:REL_HWHEEL:1:50
-
-lt = KEY_VOLUMEDOWN:20
-rt = KEY_VOLUMEUP:20
+mouse = true
 
 [ui-buttonmap]
-a = BTN_LEFT
-b = BTN_RIGHT
-x = BTN_MIDDLE
-y = KEY_ENTER
-
-rb = KEY_PAGEDOWN
-lb = KEY_PAGEUP
-
-tl = KEY_BACKSPACE
-tr = KEY_SPACE
-
-dl = KEY_LEFT
-dr = KEY_RIGHT
-du = KEY_UP
-dd = KEY_DOWN
-
-# lt = KEY_VOLUMEDOWN
-# rt = KEY_VOLUMEUP
-
-[ui-buttonmap]
-start = KEY_FORWARD
-# back  = KEY_BACK
-# guide = BTN_MODE@joystick
-guide^const:0 = BTN_MODE@joystick
+guide=void
+^const:0 = BTN_MODE@joystick
 
 # EOF #
