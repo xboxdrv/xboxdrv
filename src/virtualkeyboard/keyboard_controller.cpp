@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <stdexcept>
+#include <math.h>
 
 #include "log.hpp"
 #include "virtualkeyboard/virtual_keyboard.hpp"
@@ -34,7 +35,11 @@ KeyboardController::KeyboardController(VirtualKeyboard& keyboard, const std::str
   m_io_channel(0),
   m_timeout_source(-1),
   m_stick_x(0),
-  m_stick_y(0)
+  m_stick_y(0),
+  m_stick2_x(0),
+  m_stick2_y(0),
+  m_timer_x(0),
+  m_timer_y(0)
 {
   m_fd = open(m_device.c_str(), O_RDONLY | O_NONBLOCK);
 
@@ -58,9 +63,6 @@ KeyboardController::KeyboardController(VirtualKeyboard& keyboard, const std::str
   source_id = g_io_add_watch(m_io_channel, 
                              static_cast<GIOCondition>(G_IO_IN | G_IO_ERR | G_IO_HUP),
                              &KeyboardController::on_read_data_wrap, this);
-
-  // FIXME: Could limit calling this to when the stick actually moved
-  m_timeout_source = g_timeout_add(25, &KeyboardController::on_timeout_wrap, this);
 }
 
 KeyboardController::~KeyboardController()
@@ -100,28 +102,52 @@ KeyboardController::parse(const struct input_event& ev)
         m_keyboard.cursor_down();
       }
     }
-    else if (ev.code == ABS_RX)
+    else if (ev.code == ABS_X)
     {
       if (abs(ev.value) > 8000)
       {
         //m_keyboard.move(ev.value / 4, 0);
-        m_stick_x = ev.value / 32768.0f;
+        m_stick_x = static_cast<float>(ev.value) / 32768.0f;
       }
       else
       {
         m_stick_x = 0.0f;
       }
     }
-    else if (ev.code == ABS_RY)
+    else if (ev.code == ABS_Y)
     {
       if (abs(ev.value) > 8000)
       {
-        m_stick_y = ev.value / 32768.0f;
-        //m_keyboard.move(0, ev.value / 40);
+        //m_keyboard.move(ev.value / 4, 0);
+        m_stick_y = static_cast<float>(ev.value) / 32768.0f;
       }
       else
       {
         m_stick_y = 0.0f;
+      }
+    }
+    else if (ev.code == ABS_RX)
+    {
+      if (abs(ev.value) > 6000)
+      {
+        //m_keyboard.move(ev.value / 4, 0);
+        m_stick2_x = static_cast<float>(ev.value) / 32768.0f;
+      }
+      else
+      {
+        m_stick2_x = 0.0f;
+      }
+    }
+    else if (ev.code == ABS_RY)
+    {
+      if (abs(ev.value) > 6000)
+      {
+        m_stick2_y = static_cast<float>(ev.value) / 32768.0f;
+        //m_keyboard.move(0, ev.value / 40);
+      }
+      else
+      {
+        m_stick2_y = 0.0f;
       }
     }
   }
@@ -167,6 +193,28 @@ KeyboardController::parse(const struct input_event& ev)
   }
 }
 
+void
+KeyboardController::sync()
+{
+  if (m_timeout_source > 0)
+  {
+    if (m_stick_x  == 0 && m_stick_y  == 0 &&
+        m_stick2_x == 0 && m_stick2_y == 0)
+    {
+      g_source_remove(m_timeout_source);
+      m_timeout_source = -1;
+    }
+  }
+  else
+  {
+    if (m_stick_x  != 0 || m_stick_y  != 0 ||
+        m_stick2_x != 0 || m_stick2_y != 0)
+    {
+      m_timeout_source = g_timeout_add(25, &KeyboardController::on_timeout_wrap, this);
+    }
+  }
+}
+
 gboolean
 KeyboardController::on_read_data(GIOChannel* source, GIOCondition condition)
 {
@@ -181,19 +229,62 @@ KeyboardController::on_read_data(GIOChannel* source, GIOCondition condition)
     }
   }
   
+  sync();
+
   return TRUE;
 }
 
 bool
 KeyboardController::on_timeout()
 {
-  int x;
-  int y;
+  { // left stick
+    const int m_repeat = 100;
 
-  m_keyboard.get_position(&x, &y);
-  x += m_stick_x * 40.0f;
-  y += m_stick_y * 40.0f;
-  m_keyboard.move(x, y);
+    m_timer_x += static_cast<int>(static_cast<float>(25) * fabsf(m_stick_x));
+    m_timer_y += static_cast<int>(static_cast<float>(25) * fabsf(m_stick_y));
+    
+    // FIXME: should reset m_timer when direction changes
+    while(m_timer_x > m_repeat)
+    {
+      if (m_stick_x < 0)
+      {
+        m_keyboard.cursor_left();
+      }
+      else
+      {
+        m_keyboard.cursor_right();
+      }
+    
+      m_timer_x -= m_repeat;
+    }
+
+    while(m_timer_y > m_repeat)
+    {
+      if (m_stick_y < 0)
+      {
+        m_keyboard.cursor_up();
+      }
+      else
+      {
+        m_keyboard.cursor_down();
+      }
+    
+      m_timer_y -= m_repeat;
+    }
+  }
+
+  { // right stick
+    int x;
+    int y;
+
+    m_keyboard.get_position(&x, &y);
+
+    // FIXME: should take actual time, as on_timeout() might not be reliable
+    x += static_cast<int>(static_cast<float>(m_stick2_x) * 40.0f);
+    y += static_cast<int>(static_cast<float>(m_stick2_y) * 40.0f);
+
+    m_keyboard.move(x, y);
+  }
 
   return true;
 }

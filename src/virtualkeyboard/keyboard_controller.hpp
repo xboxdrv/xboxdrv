@@ -36,6 +36,12 @@ private:
 
   float m_stick_x;
   float m_stick_y;
+
+  float m_stick2_x;
+  float m_stick2_y;
+
+  int m_timer_x;
+  int m_timer_y;
   
   enum {
     kSendButton = BTN_A,
@@ -54,6 +60,9 @@ public:
   void parse(const struct input_event& ev);
   gboolean on_read_data(GIOChannel* source, GIOCondition condition);
   bool on_timeout();
+
+private:
+  void sync();
 
 private:
   static gboolean on_read_data_wrap(GIOChannel* source, GIOCondition condition, gpointer userdata) {
