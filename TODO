@@ -156,6 +156,8 @@ Aborted
 Target for 0.9.0
 ================
 
+* "--ui-buttonmap=void" style button events are broken
+
 * allow something like:
 
   void=BTN_A
