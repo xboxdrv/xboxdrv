@@ -25,40 +25,26 @@
 #include <gtk/gtkimagemenuitem.h>
 #include <gtk/gtkmain.h>
 
+#include "virtualkeyboard/virtualkeyboard_png.h"
+
 #pragma GCC diagnostic ignored "-Wold-style-cast"
-
-template<class C, class Call>
-void c_callback(GtkMenuItem* menuitem,
-                gpointer     userdata)
-{
-  static_cast<C>(userdata)->Call(menuitem);
-}
-
-// http://developer.gimp.org/api/2.0/gdk-pixbuf/gdk-pixbuf-creating.html
-// http://developer.gnome.org/gtk/2.24/GtkStatusIcon.html#gtk-status-icon-new-from-pixbuf
 
 StatusIcon::StatusIcon() :
   m_status_icon(),
   m_menu()
 {
-  /*
-    GdkPixbuf* gdk_pixbuf_new_from_data(const guchar *data,
-    GdkColorspace colorspace,
-    gboolean has_alpha,
-    int bits_per_sample,
-    int width,
-    int height,
-    int rowstride,
-    GdkPixbufDestroyNotify destroy_fn,
-    gpointer destroy_fn_data);
-  */
-  m_status_icon = gtk_status_icon_new_from_stock(GTK_STOCK_OPEN);
+  //gdk-pixbuf-csource --raw --name=virtualkeyboard_png ../../data/virtualkeyboard.png > virtualkeyboard_png.h
+
+  GdkPixbuf* pixbuf = gdk_pixbuf_new_from_inline(-1, virtualkeyboard_png, FALSE, NULL);
+  m_status_icon = gtk_status_icon_new_from_pixbuf(pixbuf);
+  g_object_ref(pixbuf);
+
   gtk_status_icon_set_title(m_status_icon, "Virtual Keyboard");
-  gtk_status_icon_set_tooltip_text(m_status_icon, "Virtual Keyboard Tooltip");
+  gtk_status_icon_set_tooltip_text(m_status_icon, "Virtual Keyboard");
  
   m_menu = GTK_MENU(gtk_menu_new());
-  GtkImageMenuItem *menuitem;
-  
+
+  GtkImageMenuItem* menuitem; 
   menuitem = GTK_IMAGE_MENU_ITEM(gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, NULL));
   gtk_menu_item_set_label(GTK_MENU_ITEM(menuitem), "Quit");
   g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(&StatusIcon::on_quit_wrap), this);
@@ -79,22 +65,6 @@ StatusIcon::on_menu_popup(GtkStatusIcon *status_icon,
                           guint button,
                           guint activate_time)
 {
-  /*
-  void gtk_status_icon_position_menu(GtkMenu *menu,
-                                     gint *x,
-                                     gint *y,
-                                     gboolean *push_in,
-                                     gpointer user_data);
-
-  void gtk_menu_popup(GtkMenu *menu,
-                      GtkWidget *parent_menu_shell,
-                      GtkWidget *parent_menu_item,
-                      GtkMenuPositionFunc func,
-                      gpointer data,
-                      guint button,
-                      guint32 activate_time);
-  */
-    
   gtk_widget_show_all(GTK_WIDGET(m_menu));
 
   gtk_menu_popup(GTK_MENU(m_menu),
