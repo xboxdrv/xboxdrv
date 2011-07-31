@@ -22,6 +22,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "buttonfilter/autofire_button_filter.hpp"
+#include "buttonfilter/click_button_filter.hpp"
 #include "buttonfilter/const_button_filter.hpp"
 #include "buttonfilter/delay_button_filter.hpp"
 #include "buttonfilter/invert_button_filter.hpp"
@@ -61,6 +62,18 @@ ButtonFilter::from_string(const std::string& str)
   else if (filtername == "delay")
   {
     return ButtonFilterPtr(DelayButtonFilter::from_string(rest));
+  }
+  else if (filtername == "click-press")
+  {
+    return ButtonFilterPtr(new ClickButtonFilter(ClickButtonFilter::kPress));
+  }
+  else if (filtername == "click-release")
+  {
+    return ButtonFilterPtr(new ClickButtonFilter(ClickButtonFilter::kRelease));
+  }
+  else if (filtername == "click-both")
+  {
+    return ButtonFilterPtr(new ClickButtonFilter(ClickButtonFilter::kBoth));
   }
   else
   {
