@@ -24,6 +24,7 @@
 #include "modifier/dpad_restrictor_modifier.hpp"
 #include "modifier/dpad_rotation_modifier.hpp"
 #include "modifier/four_way_restrictor_modifier.hpp"
+#include "modifier/key_copy_modifier.hpp"
 #include "modifier/log_modifier.hpp"
 #include "modifier/rotate_axis_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
@@ -76,6 +77,10 @@ Modifier::from_string(const std::string& name, const std::string& value)
     else if (name == "btn2axis" || name == "button2axis")
     {
       return Button2AxisModifier::from_string(args);
+    }
+    else if (name == "key-copy")
+    {
+      return KeyCopyModifier::from_string(args);
     }
     else if (name == "log")
     {
