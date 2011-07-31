@@ -1572,6 +1572,19 @@ miliseconds between button press events.
 miliseconds till the autofire will start, before that
 delay the button will act as normal.
 .TP 
+\*(T<\fBclick\-press\fR\*(T>
+The \*(T<\fBclick\-press\fR\*(T> filter will transmit a single button
+click when the button is pressed.
+.TP 
+\*(T<\fBclick\-release\fR\*(T>
+The \*(T<\fBclick\-release\fR\*(T> filter will transmit a single button
+click when the button is released.
+.TP 
+\*(T<\fBclick\-both\fR\*(T>
+The \*(T<\fBclick\-both\fR\*(T> filter will transmit a
+single button click when the button is pressed and
+another one when it is released.
+.TP 
 \*(T<\fBconst\fR\*(T>:\fIVALUE\fR
 The const filter will ignore the input signal and send a
 constant value to the output. This can be used for
@@ -1650,19 +1663,6 @@ regular options, but allow more fine tuning, such as limiting
 the effects to a single analog stick instead of just applyig
 it to all. Note that modifiers are applied one after the
 other, so order is important.
-.TP 
-\*(T<\fBbtn2axis\fR\*(T>=\fIBUTTON\fR:\fIBUTTON\fR:\fIAXIS\fR
-Takes two buttons and turns them into an axis.
-.TP 
-\*(T<\fBdpad\-restrictor\fR\*(T>=\fIRESTRICTON\fR
-Restricts the dpad movement, values
-for \fIRESTRICTON\fR can be:
-
-x-axis: only allow movement in the X axis
-
-y-axis: only allow movement in the Y axis
-
-fourway: allow movement in X and Y axis, but filter out diagonals
 .TP 
 \*(T<\fBdpad\-rotate\fR\*(T>=\fIDEGREE\fR
 See \*(T<\fB\-\-dpad\-rotation\fR\*(T>.

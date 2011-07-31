@@ -2268,6 +2268,37 @@ send KEY_LEFTSHIFT 0]]></programlisting>
         </varlistentry>
 
         <varlistentry>
+          <term><option>click-press</option></term>
+          <listitem>
+            <para>
+              The <option>click-press</option> filter will transmit a single button
+              click when the button is pressed.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>click-release</option></term>
+          <listitem>
+            <para>
+              The <option>click-release</option> filter will transmit a single button
+              click when the button is released.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>click-both</option></term>
+          <listitem>
+            <para>
+              The <option>click-both</option> filter will transmit a
+              single button click when the button is pressed and
+              another one when it is released.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>const</option>:<replaceable>VALUE</replaceable></term>
           <listitem>
             <para>
