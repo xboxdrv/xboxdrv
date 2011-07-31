@@ -1,0 +1,44 @@
+'\" -*- coding: us-ascii -*-
+.if \n(.g .ds T< \\FC
+.if \n(.g .ds T> \\F[\n[.fam]]
+.de URL
+\\$2 \(la\\$1\(ra\\$3
+..
+.if \n(.g .mso www.tmac
+.TH "virtualkeyboard " 1 "28 July 2011" 0.9.0 "User Commands"
+.SH SYNOPSIS
+'nh
+.fi
+.ad l
+\fBvirtualkeyboard\fR \kx
+.if (\nx>(\n(.l/2)) .nr x (\n(.l/5)
+'in \n(.iu+\nxu
+[OPTION]\&...
+'in \n(.iu-\nxu
+.ad b
+'hy
+.SH DESCRIPTION
+\fBvirtualkeyboard\fR is a simple on-screen
+keyboard emulator for use with gamepads or joysticks. It works
+via the Linux uinput kernel driver and thus functions
+essentially the same as a real keyboard would.
+.PP
+\fBvirtualkeyboard\fR works by reading input events
+from /dev/input/eventX, mapping those inputs to control a cursor
+on the virtual keyboard and then sending all those virtual
+keypressed back out via uinput. 
+.SH OPTIONS
+.TP 
+\*(T<\fB\-h\fR\*(T>, \*(T<\fB\-\-help\fR\*(T>
+Display help text and exit.
+.TP 
+\*(T<\fB\-d\fR\*(T>, \*(T<\fB\-\-device\fR\*(T> \fIDEVICE\fR
+Read input events from \fIDEVICE\fR.
+.TP 
+\*(T<\fB\-b\fR\*(T>, \*(T<\fB\-\-buttonmap\fR\*(T> \fIMAP\fR
+-- write me --
+.TP 
+\*(T<\fB\-a\fR\*(T>, \*(T<\fB\-\-axismap\fR\*(T> \fIMAP\fR
+-- write me --
+.SH "SEE ALSO"
+\fBvirtualkeyboard\fR(1)

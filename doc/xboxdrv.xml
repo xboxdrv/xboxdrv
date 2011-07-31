@@ -4,11 +4,7 @@
           <!ENTITY % xboxdrvstuff SYSTEM "xboxdrv.ent">
           %xboxdrvstuff;
           ]>
-<refentry id="xboxdrv">
-  <refentryinfo>
-    <date>2011-07-20</date>
-  </refentryinfo>
-  
+<refentry id="xboxdrv"> 
   <refmeta>
     <refentrytitle>
       <application>xboxdrv</application>
@@ -3419,6 +3415,10 @@ EndSection]]></programlisting>
         <refentrytitle>xboxdrvctl</refentrytitle>
         <manvolnum>1</manvolnum>
       </citerefentry>, 
+      <citerefentry>
+        <refentrytitle>virtualkeyboard</refentrytitle>
+        <manvolnum>1</manvolnum>
+      </citerefentry>,
       <citerefentry>
         <refentrytitle>evtest</refentrytitle>
         <manvolnum>1</manvolnum>
