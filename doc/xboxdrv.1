@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 "28 July 2011" 0.9.0 "User Commands"
+.TH "xboxdrv " 1 "31 July 2011" 0.9.0 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -1571,6 +1571,19 @@ miliseconds between button press events.
 \fIDELAY\fR the amount of
 miliseconds till the autofire will start, before that
 delay the button will act as normal.
+.TP 
+\*(T<\fBclick\-press\fR\*(T>
+The \*(T<\fBclick\-press\fR\*(T> filter will transmit a single button
+click when the button is pressed.
+.TP 
+\*(T<\fBclick\-release\fR\*(T>
+The \*(T<\fBclick\-release\fR\*(T> filter will transmit a single button
+click when the button is released.
+.TP 
+\*(T<\fBclick\-both\fR\*(T>
+The \*(T<\fBclick\-both\fR\*(T> filter will transmit a
+single button click when the button is pressed and
+another one when it is released.
 .TP 
 \*(T<\fBconst\fR\*(T>:\fIVALUE\fR
 The const filter will ignore the input signal and send a
