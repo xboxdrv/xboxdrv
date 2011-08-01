@@ -45,6 +45,18 @@ ControllerMessage::clear()
 }
 
 bool
+ControllerMessage::get_key(int key) const
+{
+  return get_button(static_cast<XboxButton>(key));
+}
+
+void
+ControllerMessage::set_key(int key, bool v)
+{
+  return set_button(static_cast<XboxButton>(key), v);
+}
+
+bool
 ControllerMessage::get_button(XboxButton button) const
 {
   if (m_button_set[button])

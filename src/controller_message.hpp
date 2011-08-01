@@ -36,7 +36,10 @@ public:
   ControllerMessage();
  
   void clear();
- 
+
+  bool get_key(int key) const;
+  void set_key(int key, bool v);
+
   bool get_button(XboxButton button) const;
   void set_button(XboxButton button, bool v);
 
