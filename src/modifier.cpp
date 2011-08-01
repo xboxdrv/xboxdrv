@@ -19,6 +19,7 @@
 #include "modifier.hpp"
 
 #include <boost/tokenizer.hpp>
+#include <linux/input.h>
 
 #include "modifier/button2axis_modifier.hpp"
 #include "modifier/dpad_restrictor_modifier.hpp"
@@ -29,6 +30,9 @@
 #include "modifier/rotate_axis_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 #include "modifier/statistic_modifier.hpp"
+
+#include "evdev_helper.hpp"
+#include "raise_exception.hpp"
 
 Modifier*
 Modifier::from_string(const std::string& name, const std::string& value)
@@ -77,6 +81,29 @@ Modifier::from_string(const std::string& name, const std::string& value)
     else if (name == "btn2axis" || name == "button2axis")
     {
       return Button2AxisModifier::from_string(args);
+    }
+    else if (name == "copy")
+    {
+      if (args.size() < 2)
+      {
+        raise_exception(std::runtime_error, "'copy' modifier requires at least two arguments");
+      }
+      else
+      {
+        switch(get_event_type(args[0]))
+        {
+          case EV_REL:
+          case EV_ABS:
+            raise_exception(std::runtime_error, "not implemented");
+            break;
+
+          case EV_KEY:
+            return KeyCopyModifier::from_string(args);
+
+          default:
+            raise_exception(std::runtime_error, "'copy' modifier couldn't guess");
+        }
+      }
     }
     else if (name == "key-copy")
     {

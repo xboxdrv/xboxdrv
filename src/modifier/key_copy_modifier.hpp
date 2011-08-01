@@ -25,7 +25,7 @@
 
 class KeyCopyModifier : public Modifier
 {
-private:
+public:
   static KeyCopyModifier* from_string(const std::vector<std::string>& args);
 
 public:
