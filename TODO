@@ -153,8 +153,36 @@ Aborted
   do a source only release
 
 
+Virtual Keyboard
+================
+
+* -d, --device DEVICE - the input device from which to read
+
+* -b, --buttonmap KEY_A=key:KEY_Z maps input key KEY_A directly to output
+   key KEY_Z, the graphical keyboard should show which of those bound
+   keys are pressed, mainly useful for shift, ctrl, backspace and
+   other frequently used keys
+
+* -b, --buttonmap KEY_A=function:cursor_left,KEY_B=function:send_key
+   button KEY_A to some internal function, such as advancing the
+   cursor, sending the key currently under the cursor, etc.
+
+* -a, --axismap
+   ABS_X+=function:cursor_right,ABS_X-=function:cursor_left maps a
+   half axis to an internal function, support for configurable
+   auto-repeat on analog axis should be provided
+
+* full input filter and modifier stack might be worth a consideration
+
+* crazy stuff: allow both left and right analog sticks for cursor
+  movement to allow double handed typing, sending would be done with
+  the trigger
+
+
 Target for 0.9.0
 ================
+
+* wireless controller LED should be reset on connect
 
 * "--ui-buttonmap=void" style button events are broken
 
