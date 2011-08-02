@@ -75,7 +75,7 @@ int main(int argc, char** argv)
   {
     UInput uinput(false);
     KeyboardDispatcher dispatcher(virtual_keyboard, uinput);
-    KeyboardController controller(virtual_keyboard, device);
+    KeyboardController controller(virtual_keyboard, uinput, device);
     uinput.finish();
 
     virtual_keyboard.show();

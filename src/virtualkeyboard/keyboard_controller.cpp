@@ -26,10 +26,13 @@
 #include <math.h>
 
 #include "log.hpp"
+#include "uinput.hpp"
 #include "virtualkeyboard/virtual_keyboard.hpp"
 
-KeyboardController::KeyboardController(VirtualKeyboard& keyboard, const std::string& device) :
+KeyboardController::KeyboardController(VirtualKeyboard& keyboard, UInput& uinput, 
+                                       const std::string& device) :
   m_keyboard(keyboard),
+  m_uinput(uinput),
   m_device(device),
   m_fd(-1),
   m_io_channel(0),
@@ -39,7 +42,10 @@ KeyboardController::KeyboardController(VirtualKeyboard& keyboard, const std::str
   m_stick2_x(0),
   m_stick2_y(0),
   m_timer_x(0),
-  m_timer_y(0)
+  m_timer_y(0),
+  m_backspace_key(),
+ m_shift_key(),
+ m_ctrl_key()
 {
   m_fd = open(m_device.c_str(), O_RDONLY | O_NONBLOCK);
 
@@ -63,6 +69,10 @@ KeyboardController::KeyboardController(VirtualKeyboard& keyboard, const std::str
   source_id = g_io_add_watch(m_io_channel, 
                              static_cast<GIOCondition>(G_IO_IN | G_IO_ERR | G_IO_HUP),
                              &KeyboardController::on_read_data_wrap, this);
+
+  m_backspace_key = m_uinput.add_key(0, KEY_BACKSPACE);
+  m_shift_key     = m_uinput.add_key(0, KEY_LEFTSHIFT);
+  m_ctrl_key      = m_uinput.add_key(0, KEY_LEFTCTRL);
 }
 
 KeyboardController::~KeyboardController()
@@ -168,15 +178,19 @@ KeyboardController::parse(const struct input_event& ev)
         break;
 
       case kShiftButton:
-        //m_keyboard.send_key(KEY_LEFTSHIFT, ev.value);
+        log_tmp("Shift: " << ev.value);
+        m_shift_key->send(ev.value);
+        m_keyboard.set_shift_mode(ev.value);
         break;
 
       case kCtrlButton:
-        //m_keyboard.send_key(KEY_LEFTCTRL, ev.value);
+        log_tmp("Ctrl: " << ev.value);
+        m_ctrl_key->send(ev.value);
         break;
 
       case kBackspaceButton:
-        //m_keyboard.send_key(KEY_BACKSPACE, ev.value);
+        log_tmp("Backspace: " << ev.value);
+        m_backspace_key->send(ev.value);
         break;
 
       case kHideButton:
@@ -213,6 +227,8 @@ KeyboardController::sync()
       m_timeout_source = g_timeout_add(25, &KeyboardController::on_timeout_wrap, this);
     }
   }
+
+  m_uinput.sync();
 }
 
 gboolean

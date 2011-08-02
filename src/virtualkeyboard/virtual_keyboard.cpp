@@ -475,4 +475,14 @@ VirtualKeyboard::set_key_callback(const boost::function<void (const Key&, bool)>
   m_key_callback = callback;
 }
 
+void
+VirtualKeyboard::set_shift_mode(bool shift) 
+{
+  if (shift != m_shift_mode)
+  {
+    m_shift_mode = shift; 
+    gtk_widget_queue_draw(m_drawing_area);
+  }
+}
+
 /* EOF */

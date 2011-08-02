@@ -72,6 +72,8 @@ public:
 
   void set_key_callback(const boost::function<void (const Key&, bool)>& callback);
 
+  void set_shift_mode(bool shift);
+
 private:
   void on_configure(GtkWindow *window, GdkEvent *event);
   void on_expose(GtkWidget* widget, GdkEventExpose* event);
