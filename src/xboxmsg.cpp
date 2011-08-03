@@ -124,6 +124,9 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
     case GAMEPAD_PLAYSTATION3_USB:
       return out << "Playstation 3 USB";
 
+    case GAMEPAD_PLAYSTATION3_BLUETOOTH:
+      return out << "Playstation 3 Bluetooth";
+
     case GAMEPAD_WIIMOTE:
       return out << "Wiimote";
 
