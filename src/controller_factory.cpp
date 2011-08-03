@@ -22,9 +22,10 @@
 
 #include "controller/firestorm_dual_controller.hpp"
 #include "controller/generic_usb_controller.hpp"
+#include "controller/logitech_f310_controller.hpp"
 #include "controller/playstation3_usb_controller.hpp"
 #include "controller/saitek_p2500_controller.hpp"
-#include "controller/logitech_f310_controller.hpp"
+#include "controller/wiimote_controller.hpp"
 #include "controller/xbox360_controller.hpp"
 #include "controller/xbox360_wireless_controller.hpp"
 #include "controller/xbox_controller.hpp"
@@ -74,6 +75,9 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
 
     case GAMEPAD_PLAYSTATION3_USB:
       return ControllerPtr(new Playstation3USBController(dev, opts.detach_kernel_driver));
+
+    case GAMEPAD_WIIMOTE:
+      return ControllerPtr(new WiimoteController);
 
     case GAMEPAD_GENERIC_USB:
       {
@@ -143,6 +147,10 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
 
     case GAMEPAD_PLAYSTATION3_USB:
       lst.push_back(ControllerPtr(new Playstation3USBController(dev, opts.detach_kernel_driver)));
+      break;
+
+    case GAMEPAD_WIIMOTE:
+      lst.push_back(ControllerPtr(new WiimoteController));
       break;
 
     case GAMEPAD_GENERIC_USB:

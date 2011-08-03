@@ -118,6 +118,7 @@ env.ParseConfig("pkg-config --cflags --libs glib-2.0 | sed 's/-I/-isystem/g'")
 env.ParseConfig("pkg-config --cflags --libs gthread-2.0 | sed 's/-I/-isystem/g'")
 env.ParseConfig("pkg-config --cflags --libs libusb-1.0 | sed 's/-I/-isystem/g'")
 env.ParseConfig("pkg-config --cflags --libs libudev | sed 's/-I/-isystem/g'")
+env.ParseConfig("pkg-config --cflags --libs cwiid | sed 's/-I/-isystem/g'")
 
 f = open("VERSION")
 package_version = f.read()

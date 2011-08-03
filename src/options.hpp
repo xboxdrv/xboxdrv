@@ -90,6 +90,8 @@ public:
   bool evdev_debug;
   std::map<int, XboxButton> evdev_keymap;
 
+  bool wiimote;
+
   // controller options
   typedef std::map<int, ControllerSlotOptions> ControllerSlots;
   ControllerSlots controller_slots;
