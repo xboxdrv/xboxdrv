@@ -240,6 +240,8 @@ WiimoteController::on_acc(const cwiid_acc_mesg& msg)
   m_ctrl_msg.set_axis(WIIMOTE_ACC_X, msg.acc[0]);
   m_ctrl_msg.set_axis(WIIMOTE_ACC_Y, msg.acc[1]);
   m_ctrl_msg.set_axis(WIIMOTE_ACC_Z, msg.acc[2]);
+
+  submit_msg(m_ctrl_msg);
 }
 
 void
@@ -260,6 +262,8 @@ WiimoteController::on_ir(const cwiid_ir_mesg& msg)
 
   m_ctrl_msg.set_axis(WIIMOTE_IR_X4, msg.src[3].pos[0]);
   m_ctrl_msg.set_axis(WIIMOTE_IR_Y4, msg.src[3].pos[1]);
+
+  submit_msg(m_ctrl_msg);
 }
 
 // FIXME: use proper CalibrationAxisFilter instead of this hack:

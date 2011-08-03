@@ -184,6 +184,7 @@ ControllerMessage::get_axis_float(XboxAxis axis) const
 void
 ControllerMessage::set_axis_float(XboxAxis axis, float v)
 {
+  m_axis_set[axis] = true;
   m_axis_state[axis] = from_float(v, get_axis_min(axis), get_axis_max(axis));
 }
 

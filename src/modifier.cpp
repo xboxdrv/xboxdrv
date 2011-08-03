@@ -21,6 +21,7 @@
 #include <boost/tokenizer.hpp>
 #include <linux/input.h>
 
+#include "modifier/acc2axis_modifier.hpp"
 #include "modifier/button2axis_modifier.hpp"
 #include "modifier/dpad_restrictor_modifier.hpp"
 #include "modifier/dpad_rotation_modifier.hpp"
@@ -81,6 +82,10 @@ Modifier::from_string(const std::string& name, const std::string& value)
     else if (name == "btn2axis" || name == "button2axis")
     {
       return Button2AxisModifier::from_string(args);
+    }
+    else if (name == "acc2axis")
+    {
+      return Acc2AxisModifier::from_string(args);
     }
     else if (name == "copy")
     {
