@@ -225,8 +225,31 @@ ControllerMessage::get_axis_min(XboxAxis axis)
     case XBOX_AXIS_BLACK: return 0;
     case XBOX_AXIS_WHITE: return 0;
 
-    default: assert(!"never reached");
+    case WIIMOTE_ACC_X: return 0;
+    case WIIMOTE_ACC_Y: return 0;
+    case WIIMOTE_ACC_Z: return 0;
+
+    case NUNCHUK_ACC_X: return 0;
+    case NUNCHUK_ACC_Y: return 0;
+    case NUNCHUK_ACC_Z: return 0;
+
+    case WIIMOTE_IR_X: return 0;
+    case WIIMOTE_IR_Y: return 0;
+
+    case WIIMOTE_IR_X2: return 0;
+    case WIIMOTE_IR_Y2: return 0;
+
+    case WIIMOTE_IR_X3: return 0;
+    case WIIMOTE_IR_Y3: return 0;
+
+    case WIIMOTE_IR_X4: return 0;
+    case WIIMOTE_IR_Y4: return 0;
+
+    case XBOX_AXIS_UNKNOWN: return 0;
+    case XBOX_AXIS_MAX: return 0;
   }
+
+  assert(!"never reached");
 }
 
 int
@@ -255,8 +278,31 @@ ControllerMessage::get_axis_max(XboxAxis axis)
     case XBOX_AXIS_BLACK: return 255;
     case XBOX_AXIS_WHITE: return 255;
 
-    default: assert(!"never reached");
+    case WIIMOTE_ACC_X: return 255;
+    case WIIMOTE_ACC_Y: return 255;
+    case WIIMOTE_ACC_Z: return 255;
+
+    case NUNCHUK_ACC_X: return 255;
+    case NUNCHUK_ACC_Y: return 255;
+    case NUNCHUK_ACC_Z: return 255;  
+
+    case WIIMOTE_IR_X: return 1024;
+    case WIIMOTE_IR_Y: return 768;
+
+    case WIIMOTE_IR_X2: return 1024;
+    case WIIMOTE_IR_Y2: return 768;
+
+    case WIIMOTE_IR_X3: return 1024;
+    case WIIMOTE_IR_Y3: return 768;
+
+    case WIIMOTE_IR_X4: return 1024;
+    case WIIMOTE_IR_Y4: return 768;
+
+    case XBOX_AXIS_UNKNOWN: return 0;
+    case XBOX_AXIS_MAX: return 0;
   }
+  
+  assert(!"never reached");
 }
 
 void

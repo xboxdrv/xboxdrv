@@ -124,12 +124,20 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
     case GAMEPAD_PLAYSTATION3_USB:
       return out << "Playstation 3 USB";
 
+    case GAMEPAD_WIIMOTE:
+      return out << "Wiimote";
+
     case GAMEPAD_GENERIC_USB:
       return out << "Generic USB";
 
-    default:
-      return out << "unknown" << std::endl;
+    case GAMEPAD_LOGITECH_F310:
+      return out << "Logitech F310";
+
+    case GAMEPAD_UNKNOWN:
+      return out << "unknown";
   }
+
+  return out << "unknown" << std::endl;
 }
 
 XboxButton string2btn(const std::string& str_)
@@ -224,6 +232,48 @@ XboxAxis string2axis(const std::string& str_)
   else if (str == "black" || str == "rb" || str == "r1")
     return XBOX_AXIS_BLACK;
 
+  else if (str == "acc_x")
+    return WIIMOTE_ACC_X;
+
+  else if (str == "acc_y")
+    return WIIMOTE_ACC_Y;
+
+  else if (str == "acc_z")
+    return WIIMOTE_ACC_Z;
+
+  else if (str == "acc_x2")
+    return NUNCHUK_ACC_X;
+
+  else if (str == "acc_y2")
+    return NUNCHUK_ACC_Y;
+
+  else if (str == "acc_z2")
+    return NUNCHUK_ACC_Z;
+
+  else if (str == "ir_x")
+    return WIIMOTE_IR_X;
+
+  else if (str == "ir_y")
+    return WIIMOTE_IR_Y;
+
+  else if (str == "ir_x2")
+    return WIIMOTE_IR_X2;
+
+  else if (str == "ir_y2")
+    return WIIMOTE_IR_Y2;
+
+  else if (str == "ir_x3")
+    return WIIMOTE_IR_X3;
+
+  else if (str == "ir_y3")
+    return WIIMOTE_IR_Y3;
+
+  else if (str == "ir_x4")
+    return WIIMOTE_IR_X4;
+
+  else if (str == "ir_y4")
+    return WIIMOTE_IR_Y4;
+
   else
     raise_exception(std::runtime_error, "couldn't convert string \"" + str + "\" to XboxAxis");
 }
@@ -255,6 +305,26 @@ std::string axis2string(XboxAxis axis)
     case XBOX_AXIS_Y:     return "BTN_Y"; 
     case XBOX_AXIS_BLACK: return "Black";
     case XBOX_AXIS_WHITE: return "White";
+
+    case WIIMOTE_ACC_X: return "ACC_X";
+    case WIIMOTE_ACC_Y: return "ACC_Y";
+    case WIIMOTE_ACC_Z: return "ACC_Z";
+  
+    case WIIMOTE_IR_X: return "IR_X";
+    case WIIMOTE_IR_Y: return "IR_Y";
+
+    case WIIMOTE_IR_X2: return "IR_X2";
+    case WIIMOTE_IR_Y2: return "IR_Y2";
+
+    case WIIMOTE_IR_X3: return "IR_X3";
+    case WIIMOTE_IR_Y3: return "IR_Y3";
+
+    case WIIMOTE_IR_X4: return "IR_X4";
+    case WIIMOTE_IR_Y4: return "IR_Y4";
+
+    case NUNCHUK_ACC_X: return "ACC_X2";
+    case NUNCHUK_ACC_Y: return "ACC_Y2";
+    case NUNCHUK_ACC_Z: return "ACC_Z2";
   }
   return "unknown";
 }

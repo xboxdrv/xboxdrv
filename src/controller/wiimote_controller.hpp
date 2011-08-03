@@ -68,6 +68,7 @@ private:
   void disconnect();
 
   void read_nunchuk_calibration();
+  void read_wiimote_calibration();
 
   void on_status (const cwiid_status_mesg& msg);
   void on_error  (const cwiid_error_mesg& msg);

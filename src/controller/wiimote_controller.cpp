@@ -78,40 +78,14 @@ WiimoteController::connect()
     if (cwiid_command(m_wiimote, CWIID_CMD_RPT_MODE, 
                       CWIID_RPT_STATUS  |
                       CWIID_RPT_NUNCHUK |
-                      //CWIID_RPT_ACC     |
+                      CWIID_RPT_ACC     |
                       CWIID_RPT_BTN))
     {
       std::cerr << "Wiimote: Error setting report mode" << std::endl;
     }
 
-    { // read calibration data
-      uint8_t buf[7];
-
-      if (cwiid_read(m_wiimote, CWIID_RW_EEPROM, 0x16, 7, buf))
-      {
-        std::cout << "Wiimote: Unable to retrieve accelerometer calibration" << std::endl;
-      }
-      else
-      {
-        m_wiimote_zero.x = buf[0];
-        m_wiimote_zero.y = buf[1];
-        m_wiimote_zero.z = buf[2];
-
-        m_wiimote_one.x  = buf[4];
-        m_wiimote_one.y  = buf[5];
-        m_wiimote_one.z  = buf[6];
-      }
-
-      std::cout << "Wiimote Calibration: "
-                << static_cast<int>(m_wiimote_zero.x) << ", "
-                << static_cast<int>(m_wiimote_zero.x) << ", "
-                << static_cast<int>(m_wiimote_zero.x) << " - "
-                << static_cast<int>(m_wiimote_one.x) << ", "
-                << static_cast<int>(m_wiimote_one.x) << ", "
-                << static_cast<int>(m_wiimote_one.x) << std::endl;
-
-      read_nunchuk_calibration();
-    }
+    read_wiimote_calibration();
+    read_nunchuk_calibration();
   }
 }
 
@@ -131,6 +105,35 @@ std::ostream& operator<<(std::ostream& os, const AccCalibration& cal)
             << static_cast<int>(cal.x) << " " 
             << static_cast<int>(cal.y) << " " 
             << static_cast<int>(cal.z) << ")";
+}
+
+void
+WiimoteController::read_wiimote_calibration()
+{
+  uint8_t buf[7];
+
+  if (cwiid_read(m_wiimote, CWIID_RW_EEPROM, 0x16, 7, buf))
+  {
+    std::cout << "Wiimote: Unable to retrieve accelerometer calibration" << std::endl;
+  }
+  else
+  {
+    m_wiimote_zero.x = buf[0];
+    m_wiimote_zero.y = buf[1];
+    m_wiimote_zero.z = buf[2];
+
+    m_wiimote_one.x  = buf[4];
+    m_wiimote_one.y  = buf[5];
+    m_wiimote_one.z  = buf[6];
+  }
+
+  std::cout << "Wiimote Calibration: "
+            << static_cast<int>(m_wiimote_zero.x) << ", "
+            << static_cast<int>(m_wiimote_zero.x) << ", "
+            << static_cast<int>(m_wiimote_zero.x) << " - "
+            << static_cast<int>(m_wiimote_one.x) << ", "
+            << static_cast<int>(m_wiimote_one.x) << ", "
+            << static_cast<int>(m_wiimote_one.x) << std::endl;
 }
 
 void
@@ -234,15 +237,32 @@ WiimoteController::on_button(const cwiid_btn_mesg& msg)
 void
 WiimoteController::on_acc(const cwiid_acc_mesg& msg)
 {
-  log_tmp_trace();
+  m_ctrl_msg.set_axis(WIIMOTE_ACC_X, msg.acc[0]);
+  m_ctrl_msg.set_axis(WIIMOTE_ACC_Y, msg.acc[1]);
+  m_ctrl_msg.set_axis(WIIMOTE_ACC_Z, msg.acc[2]);
 }
 
 void
 WiimoteController::on_ir(const cwiid_ir_mesg& msg)
 {
   log_tmp_trace();
+
+  // size and valid are not handled
+
+  m_ctrl_msg.set_axis(WIIMOTE_IR_X, msg.src[0].pos[0]);
+  m_ctrl_msg.set_axis(WIIMOTE_IR_Y, msg.src[0].pos[1]);
+
+  m_ctrl_msg.set_axis(WIIMOTE_IR_X2, msg.src[1].pos[0]);
+  m_ctrl_msg.set_axis(WIIMOTE_IR_Y2, msg.src[1].pos[1]);
+
+  m_ctrl_msg.set_axis(WIIMOTE_IR_X3, msg.src[2].pos[0]);
+  m_ctrl_msg.set_axis(WIIMOTE_IR_Y3, msg.src[2].pos[1]);
+
+  m_ctrl_msg.set_axis(WIIMOTE_IR_X4, msg.src[3].pos[0]);
+  m_ctrl_msg.set_axis(WIIMOTE_IR_Y4, msg.src[3].pos[1]);
 }
 
+// FIXME: use proper CalibrationAxisFilter instead of this hack:
 int8_t calibrate(int value, const AccCalibration& cal)
 {
   int m_center = cal.z;
@@ -268,7 +288,9 @@ WiimoteController::on_nunchuk(const cwiid_nunchuk_mesg& msg)
   m_ctrl_msg.set_axis(XBOX_AXIS_X1, unpack::s8_to_s16(calibrate(msg.stick[0], m_nunchuk_x)));
   m_ctrl_msg.set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(calibrate(msg.stick[1], m_nunchuk_y))));
 
-  // unhandled: msg.acc[3];
+  m_ctrl_msg.set_axis(NUNCHUK_ACC_X, msg.acc[0]);
+  m_ctrl_msg.set_axis(NUNCHUK_ACC_Y, msg.acc[1]);
+  m_ctrl_msg.set_axis(NUNCHUK_ACC_Z, msg.acc[2]);
 
   m_ctrl_msg.set_button(XBOX_BTN_LT, msg.buttons & CWIID_NUNCHUK_BTN_Z);
   m_ctrl_msg.set_button(XBOX_BTN_LB, msg.buttons & CWIID_NUNCHUK_BTN_C);
