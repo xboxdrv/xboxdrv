@@ -236,15 +236,19 @@ ControllerMessage::get_axis_min(XboxAxis axis)
 
     case WIIMOTE_IR_X: return 0;
     case WIIMOTE_IR_Y: return 0;
+    case WIIMOTE_IR_SIZE: return -128;
 
     case WIIMOTE_IR_X2: return 0;
     case WIIMOTE_IR_Y2: return 0;
+    case WIIMOTE_IR_SIZE2: return -128;
 
     case WIIMOTE_IR_X3: return 0;
     case WIIMOTE_IR_Y3: return 0;
+    case WIIMOTE_IR_SIZE3: return -128;
 
     case WIIMOTE_IR_X4: return 0;
     case WIIMOTE_IR_Y4: return 0;
+    case WIIMOTE_IR_SIZE4: return -128;
 
     case XBOX_AXIS_UNKNOWN: return 0;
     case XBOX_AXIS_MAX: return 0;
@@ -289,15 +293,19 @@ ControllerMessage::get_axis_max(XboxAxis axis)
 
     case WIIMOTE_IR_X: return 1024;
     case WIIMOTE_IR_Y: return 768;
+    case WIIMOTE_IR_SIZE: return 127;
 
     case WIIMOTE_IR_X2: return 1024;
     case WIIMOTE_IR_Y2: return 768;
+    case WIIMOTE_IR_SIZE2: return 127;
 
     case WIIMOTE_IR_X3: return 1024;
     case WIIMOTE_IR_Y3: return 768;
+    case WIIMOTE_IR_SIZE3: return 127;
 
     case WIIMOTE_IR_X4: return 1024;
     case WIIMOTE_IR_Y4: return 768;
+    case WIIMOTE_IR_SIZE4: return 127;
 
     case XBOX_AXIS_UNKNOWN: return 0;
     case XBOX_AXIS_MAX: return 0;

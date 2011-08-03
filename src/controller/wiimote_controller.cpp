@@ -79,6 +79,7 @@ WiimoteController::connect()
                       CWIID_RPT_STATUS  |
                       CWIID_RPT_NUNCHUK |
                       CWIID_RPT_ACC     |
+                      CWIID_RPT_IR      |
                       CWIID_RPT_BTN))
     {
       std::cerr << "Wiimote: Error setting report mode" << std::endl;
@@ -215,8 +216,6 @@ WiimoteController::on_error(const cwiid_error_mesg& msg)
 void
 WiimoteController::on_button(const cwiid_btn_mesg& msg)
 {
-  log_tmp_trace();
-
   m_ctrl_msg.set_button(XBOX_BTN_BACK, msg.buttons & CWIID_BTN_MINUS);
   m_ctrl_msg.set_button(XBOX_BTN_GUIDE, msg.buttons & CWIID_BTN_HOME);
   m_ctrl_msg.set_button(XBOX_BTN_START, msg.buttons & CWIID_BTN_PLUS);
@@ -247,26 +246,54 @@ WiimoteController::on_acc(const cwiid_acc_mesg& msg)
 void
 WiimoteController::on_ir(const cwiid_ir_mesg& msg)
 {
-  log_tmp_trace();
+  // size: 1-7
+  // valid 0, 1
+  // x 0,1024
+  // y 0,768
+  if (false)
+    log_tmp("IR: " << 
+            msg.src[0].pos[0] << " " << msg.src[0].pos[1] << " " << static_cast<int>(msg.src[0].size) << " " << static_cast<int>(msg.src[0].valid) << " - " <<
+            msg.src[1].pos[0] << " " << msg.src[1].pos[1] << " " << static_cast<int>(msg.src[1].size) << " " << static_cast<int>(msg.src[1].valid) << " - " <<
+            msg.src[2].pos[0] << " " << msg.src[2].pos[1] << " " << static_cast<int>(msg.src[2].size) << " " << static_cast<int>(msg.src[2].valid) << " - " <<
+            msg.src[3].pos[0] << " " << msg.src[3].pos[1] << " " << static_cast<int>(msg.src[3].size) << " " << static_cast<int>(msg.src[3].valid));
 
   // size and valid are not handled
 
+  // FIXME: encoding 'valid' in size might not be such a good idea, as
+  // it overwrites the last valid value
+
   m_ctrl_msg.set_axis(WIIMOTE_IR_X, msg.src[0].pos[0]);
   m_ctrl_msg.set_axis(WIIMOTE_IR_Y, msg.src[0].pos[1]);
+  if (msg.src[0].valid)
+    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE, msg.src[0].size);
+  else
+    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE, -1);
 
   m_ctrl_msg.set_axis(WIIMOTE_IR_X2, msg.src[1].pos[0]);
   m_ctrl_msg.set_axis(WIIMOTE_IR_Y2, msg.src[1].pos[1]);
+  if (msg.src[1].valid)
+    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE2, msg.src[1].size);
+  else
+    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE2, -1);
 
   m_ctrl_msg.set_axis(WIIMOTE_IR_X3, msg.src[2].pos[0]);
   m_ctrl_msg.set_axis(WIIMOTE_IR_Y3, msg.src[2].pos[1]);
+  if (msg.src[2].valid)
+    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE3, msg.src[2].size);
+  else
+    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE3, -1);
 
   m_ctrl_msg.set_axis(WIIMOTE_IR_X4, msg.src[3].pos[0]);
   m_ctrl_msg.set_axis(WIIMOTE_IR_Y4, msg.src[3].pos[1]);
+  if (msg.src[3].valid)
+    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE4, msg.src[3].size);
+  else
+    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE4, -1);
 
   submit_msg(m_ctrl_msg);
 }
 
-// FIXME: use proper CalibrationAxisFilter instead of this hack:
+// FIXME: use proper CalibrationAxisFilter instead of this hack, also CalibrationAxisFilter doesn't handle min/max properly
 int8_t calibrate(int value, const AccCalibration& cal)
 {
   int m_center = cal.z;

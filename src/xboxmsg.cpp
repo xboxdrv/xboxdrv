@@ -256,11 +256,17 @@ XboxAxis string2axis(const std::string& str_)
   else if (str == "ir_y")
     return WIIMOTE_IR_Y;
 
+  else if (str == "ir_size")
+    return WIIMOTE_IR_SIZE;
+
   else if (str == "ir_x2")
     return WIIMOTE_IR_X2;
 
   else if (str == "ir_y2")
     return WIIMOTE_IR_Y2;
+
+  else if (str == "ir_size2")
+    return WIIMOTE_IR_SIZE2;
 
   else if (str == "ir_x3")
     return WIIMOTE_IR_X3;
@@ -268,11 +274,17 @@ XboxAxis string2axis(const std::string& str_)
   else if (str == "ir_y3")
     return WIIMOTE_IR_Y3;
 
+  else if (str == "ir_size3")
+    return WIIMOTE_IR_SIZE3;
+
   else if (str == "ir_x4")
     return WIIMOTE_IR_X4;
 
   else if (str == "ir_y4")
     return WIIMOTE_IR_Y4;
+
+  else if (str == "ir_size4")
+    return WIIMOTE_IR_SIZE2;
 
   else
     raise_exception(std::runtime_error, "couldn't convert string \"" + str + "\" to XboxAxis");
@@ -312,15 +324,19 @@ std::string axis2string(XboxAxis axis)
   
     case WIIMOTE_IR_X: return "IR_X";
     case WIIMOTE_IR_Y: return "IR_Y";
+    case WIIMOTE_IR_SIZE: return "IR_SIZE";
 
     case WIIMOTE_IR_X2: return "IR_X2";
     case WIIMOTE_IR_Y2: return "IR_Y2";
+    case WIIMOTE_IR_SIZE2: return "IR_SIZE2";
 
     case WIIMOTE_IR_X3: return "IR_X3";
     case WIIMOTE_IR_Y3: return "IR_Y3";
+    case WIIMOTE_IR_SIZE3: return "IR_SIZE3";
 
     case WIIMOTE_IR_X4: return "IR_X4";
     case WIIMOTE_IR_Y4: return "IR_Y4";
+    case WIIMOTE_IR_SIZE4: return "IR_SIZE4";
 
     case NUNCHUK_ACC_X: return "ACC_X2";
     case NUNCHUK_ACC_Y: return "ACC_Y2";
