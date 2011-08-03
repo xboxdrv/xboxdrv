@@ -29,7 +29,11 @@ WiimoteController* WiimoteController::s_wiimote = 0;
 WiimoteController::WiimoteController() :
   m_mutex(),
   m_wiimote(),
-  m_ctrl_msg()
+  m_ctrl_msg(),
+  m_wiimote_zero(),
+  m_wiimote_one(),
+  m_nunchuk_zero(),
+  m_nunchuk_one()
 {
   assert(!s_wiimote);
   s_wiimote = this;
@@ -78,8 +82,6 @@ WiimoteController::connect()
       std::cerr << "Wiimote: Error setting report mode" << std::endl;
     }
 
-#if 0
-    if (false)
     { // read calibration data
       uint8_t buf[7];
 
@@ -89,50 +91,46 @@ WiimoteController::connect()
       }
       else
       {
-        wiimote_zero.x = buf[0];
-        wiimote_zero.y = buf[1];
-        wiimote_zero.z = buf[2];
+        m_wiimote_zero.x = buf[0];
+        m_wiimote_zero.y = buf[1];
+        m_wiimote_zero.z = buf[2];
 
-        wiimote_one.x  = buf[4];
-        wiimote_one.y  = buf[5];
-        wiimote_one.z  = buf[6];
+        m_wiimote_one.x  = buf[4];
+        m_wiimote_one.y  = buf[5];
+        m_wiimote_one.z  = buf[6];
       }
 
-      if (false)
+      if (cwiid_read(m_wiimote, CWIID_RW_REG | CWIID_RW_DECODE, 0xA40020, 7, buf))
       {
-        if (cwiid_read(m_wiimote, CWIID_RW_REG | CWIID_RW_DECODE, 0xA40020, 7, buf))
-        {
-          std::cout << "Wiimote: Unable to retrieve wiimote accelerometer calibration" << std::endl;
-        }
-        else
-        {
-          nunchuk_zero.x = buf[0];
-          nunchuk_zero.y = buf[1];
-          nunchuk_zero.z = buf[2];
+        std::cout << "Wiimote: Unable to retrieve wiimote accelerometer calibration" << std::endl;
+      }
+      else
+      {
+        m_nunchuk_zero.x = buf[0];
+        m_nunchuk_zero.y = buf[1];
+        m_nunchuk_zero.z = buf[2];
             
-          nunchuk_one.x  = buf[4];
-          nunchuk_one.y  = buf[5];
-          nunchuk_one.z  = buf[6];
-        }
+        m_nunchuk_one.x  = buf[4];
+        m_nunchuk_one.y  = buf[5];
+        m_nunchuk_one.z  = buf[6];
       }
 
       std::cout << "Wiimote Calibration: "
-                << static_cast<int>(wiimote_zero.x) << ", "
-                << static_cast<int>(wiimote_zero.x) << ", "
-                << static_cast<int>(wiimote_zero.x) << " - "
-                << static_cast<int>(wiimote_one.x) << ", "
-                << static_cast<int>(wiimote_one.x) << ", "
-                << static_cast<int>(wiimote_one.x) << std::endl;
+                << static_cast<int>(m_wiimote_zero.x) << ", "
+                << static_cast<int>(m_wiimote_zero.x) << ", "
+                << static_cast<int>(m_wiimote_zero.x) << " - "
+                << static_cast<int>(m_wiimote_one.x) << ", "
+                << static_cast<int>(m_wiimote_one.x) << ", "
+                << static_cast<int>(m_wiimote_one.x) << std::endl;
 
       std::cout << "Nunchuk Calibration: "
-                << static_cast<int>(nunchuk_zero.x) << ", "
-                << static_cast<int>(nunchuk_zero.x) << ", "
-                << static_cast<int>(nunchuk_zero.x) << " - "
-                << static_cast<int>(nunchuk_one.x) << ", "
-                << static_cast<int>(nunchuk_one.x) << ", "
-                << static_cast<int>(nunchuk_one.x) << std::endl;
+                << static_cast<int>(m_nunchuk_zero.x) << ", "
+                << static_cast<int>(m_nunchuk_zero.x) << ", "
+                << static_cast<int>(m_nunchuk_zero.x) << " - "
+                << static_cast<int>(m_nunchuk_one.x) << ", "
+                << static_cast<int>(m_nunchuk_one.x) << ", "
+                << static_cast<int>(m_nunchuk_one.x) << std::endl;
     }
-#endif         
   }
 }
 

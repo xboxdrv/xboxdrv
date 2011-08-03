@@ -25,6 +25,13 @@
 #include "controller.hpp"
 #include "controller_message.hpp"
 
+struct AccCalibration
+{
+  uint8_t x;
+  uint8_t y;
+  uint8_t z;
+};
+
 class WiimoteController : public Controller
 {
 private:
@@ -39,6 +46,12 @@ private:
   cwiid_wiimote_t* m_wiimote;
 
   ControllerMessage m_ctrl_msg;
+
+  AccCalibration m_wiimote_zero;
+  AccCalibration m_wiimote_one;
+
+  AccCalibration m_nunchuk_zero;
+  AccCalibration m_nunchuk_one;
 
 public:
   WiimoteController();
