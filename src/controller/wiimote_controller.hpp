@@ -53,6 +53,9 @@ private:
   AccCalibration m_nunchuk_zero;
   AccCalibration m_nunchuk_one;
 
+  AccCalibration m_nunchuk_x;
+  AccCalibration m_nunchuk_y;
+
 public:
   WiimoteController();
   ~WiimoteController();
@@ -64,13 +67,15 @@ private:
   void connect();
   void disconnect();
 
-  void on_status  (const cwiid_status_mesg& msg);
-  void on_error   (const cwiid_error_mesg& msg);
-  void on_button  (const cwiid_btn_mesg& msg);
-  void on_acc     (const cwiid_acc_mesg& msg);
-  void on_ir      (const cwiid_ir_mesg& msg);
-  void on_nunchuck(const cwiid_nunchuk_mesg& msg);
-  void on_classic (const cwiid_classic_mesg& msg);
+  void read_nunchuk_calibration();
+
+  void on_status (const cwiid_status_mesg& msg);
+  void on_error  (const cwiid_error_mesg& msg);
+  void on_button (const cwiid_btn_mesg& msg);
+  void on_acc    (const cwiid_acc_mesg& msg);
+  void on_ir     (const cwiid_ir_mesg& msg);
+  void on_nunchuk(const cwiid_nunchuk_mesg& msg);
+  void on_classic(const cwiid_classic_mesg& msg);
 
 private:
   WiimoteController(const WiimoteController&);

@@ -42,7 +42,7 @@ CalibrationAxisFilter::from_string(const std::string& str)
       case 1: center = boost::lexical_cast<int>(*i); break;
       case 2: max    = boost::lexical_cast<int>(*i); break;
       default: throw std::runtime_error("to many arguments");
-    };
+    }
   }
 
   return new CalibrationAxisFilter(min, center, max);

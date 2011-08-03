@@ -33,7 +33,9 @@ WiimoteController::WiimoteController() :
   m_wiimote_zero(),
   m_wiimote_one(),
   m_nunchuk_zero(),
-  m_nunchuk_one()
+  m_nunchuk_one(),
+  m_nunchuk_x(),
+  m_nunchuk_y()
 {
   assert(!s_wiimote);
   s_wiimote = this;
@@ -100,21 +102,6 @@ WiimoteController::connect()
         m_wiimote_one.z  = buf[6];
       }
 
-      if (cwiid_read(m_wiimote, CWIID_RW_REG | CWIID_RW_DECODE, 0xA40020, 7, buf))
-      {
-        std::cout << "Wiimote: Unable to retrieve wiimote accelerometer calibration" << std::endl;
-      }
-      else
-      {
-        m_nunchuk_zero.x = buf[0];
-        m_nunchuk_zero.y = buf[1];
-        m_nunchuk_zero.z = buf[2];
-            
-        m_nunchuk_one.x  = buf[4];
-        m_nunchuk_one.y  = buf[5];
-        m_nunchuk_one.z  = buf[6];
-      }
-
       std::cout << "Wiimote Calibration: "
                 << static_cast<int>(m_wiimote_zero.x) << ", "
                 << static_cast<int>(m_wiimote_zero.x) << ", "
@@ -123,13 +110,7 @@ WiimoteController::connect()
                 << static_cast<int>(m_wiimote_one.x) << ", "
                 << static_cast<int>(m_wiimote_one.x) << std::endl;
 
-      std::cout << "Nunchuk Calibration: "
-                << static_cast<int>(m_nunchuk_zero.x) << ", "
-                << static_cast<int>(m_nunchuk_zero.x) << ", "
-                << static_cast<int>(m_nunchuk_zero.x) << " - "
-                << static_cast<int>(m_nunchuk_one.x) << ", "
-                << static_cast<int>(m_nunchuk_one.x) << ", "
-                << static_cast<int>(m_nunchuk_one.x) << std::endl;
+      read_nunchuk_calibration();
     }
   }
 }
@@ -141,6 +122,46 @@ WiimoteController::disconnect()
   {
     cwiid_disconnect(m_wiimote);
     m_wiimote = 0;
+  }
+}
+
+std::ostream& operator<<(std::ostream& os, const AccCalibration& cal)
+{
+  return os << "(" 
+            << static_cast<int>(cal.x) << " " 
+            << static_cast<int>(cal.y) << " " 
+            << static_cast<int>(cal.z) << ")";
+}
+
+void
+WiimoteController::read_nunchuk_calibration()
+{
+  uint8_t buf[14];
+
+  if (cwiid_read(m_wiimote, CWIID_RW_REG | CWIID_RW_DECODE, 0xA40020, sizeof(buf), buf))
+  {
+    log_error("unable to retrieve nunchuk calibration data");
+  }
+  else
+  {
+    m_nunchuk_zero.x = buf[0];
+    m_nunchuk_zero.y = buf[1];
+    m_nunchuk_zero.z = buf[2];
+            
+    m_nunchuk_one.x  = buf[4];
+    m_nunchuk_one.y  = buf[5];
+    m_nunchuk_one.z  = buf[6];
+
+    m_nunchuk_x.x = buf[8]; // max
+    m_nunchuk_x.y = buf[9]; // min
+    m_nunchuk_x.z = buf[10]; // center
+
+    m_nunchuk_y.x = buf[11]; // max
+    m_nunchuk_y.y = buf[12]; // min
+    m_nunchuk_y.z = buf[13]; // center
+
+    log_tmp("X: " << m_nunchuk_x);
+    log_tmp("Y: " << m_nunchuk_y);
   }
 }
 
@@ -157,7 +178,29 @@ WiimoteController::set_led_real(uint8_t status)
 void
 WiimoteController::on_status(const cwiid_status_mesg& msg)
 {
-  log_tmp_trace();
+  log_tmp("Battery: " << static_cast<int>(msg.battery) << " Status: " << msg.ext_type);
+
+  switch(msg.ext_type)
+  {
+    case CWIID_EXT_NONE:
+      break;
+
+    case CWIID_EXT_NUNCHUK:
+      read_nunchuk_calibration();
+      break;
+
+    case CWIID_EXT_CLASSIC:
+      break;
+
+    case CWIID_EXT_BALANCE:
+      break;
+
+    case CWIID_EXT_MOTIONPLUS:
+      break;
+
+    case CWIID_EXT_UNKNOWN:
+      break;        
+  }
 }
 
 void
@@ -200,13 +243,30 @@ WiimoteController::on_ir(const cwiid_ir_mesg& msg)
   log_tmp_trace();
 }
 
-void
-WiimoteController::on_nunchuck(const cwiid_nunchuk_mesg& msg)
+int8_t calibrate(int value, const AccCalibration& cal)
 {
-  log_tmp_trace();
+  int m_center = cal.z;
+  int m_max  = cal.x;
+  int m_min  = cal.y;
+  
+  int min = -128;
+  int max =  127;
 
-  m_ctrl_msg.set_axis(XBOX_AXIS_X1, unpack::u8_to_s16(msg.stick[0]));
-  m_ctrl_msg.set_axis(XBOX_AXIS_Y1, unpack::u8_to_s16(msg.stick[1]));
+  if (value < m_center)
+    value = -min * (value - m_center) / (m_center - m_min);
+  else if (value > m_center)
+    value = max * (value - m_center) / (m_max - m_center);
+  else
+    value = 0;
+
+  return static_cast<int8_t>(Math::clamp(min, value, max));
+}
+
+void
+WiimoteController::on_nunchuk(const cwiid_nunchuk_mesg& msg)
+{
+  m_ctrl_msg.set_axis(XBOX_AXIS_X1, unpack::s8_to_s16(calibrate(msg.stick[0], m_nunchuk_x)));
+  m_ctrl_msg.set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(calibrate(msg.stick[1], m_nunchuk_y))));
 
   // unhandled: msg.acc[3];
 
@@ -255,7 +315,7 @@ WiimoteController::mesg_callback(cwiid_wiimote_t*, int mesg_count, union cwiid_m
         break;
 
       case CWIID_MESG_NUNCHUK:
-        s_wiimote->on_nunchuck(msg[i].nunchuk_mesg);
+        s_wiimote->on_nunchuk(msg[i].nunchuk_mesg);
         break;
 
       case CWIID_MESG_CLASSIC:
