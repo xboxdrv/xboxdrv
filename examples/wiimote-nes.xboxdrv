@@ -1,0 +1,28 @@
+# Wiimote
+# =======
+#
+# Simple configuration that enables using the Wiimote rotated 90
+# degree like a classic NES controller. Use with:
+#
+# ./xboxdrv --wiimote -c examples/wiimote-nes.xboxdrv
+
+[xboxdrv]
+ui-clear=true
+
+[modifier]
+dpad-rotate=270
+
+[ui-axismap]
+dpad_x=ABS_X
+dpad_y=ABS_Y
+
+[ui-buttonmap]
+X=BTN_A
+Y=BTN_B
+A=BTN_X
+B=BTN_Y
+start=BTN_START
+guide=BTN_MODE
+back=BTN_SELECT
+
+# EOF #
