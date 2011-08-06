@@ -131,21 +131,21 @@ KeyAxisEventHandler::send(UInput& uinput, int value)
     // release the keys of the zone we leave
     if (old_zone == -1)
     {
-      send_down(uinput, false);
+      send_up(uinput, false);
     }
     else if (old_zone == +1)
     {
-      send_up(uinput, false);
+      send_down(uinput, false);
     }
 
     // press the keys of the zone we enter
     if (zone == +1)
     {
-      send_up(uinput, true);
+      send_down(uinput, true);
     }
     else if (zone == -1)
     {
-      send_down(uinput, true);
+      send_up(uinput, true);
     }
   }
 
