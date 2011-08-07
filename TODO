@@ -182,6 +182,8 @@ Virtual Keyboard
 Target for 0.9.0
 ================
 
+* add battery status as axis output
+
 * wireless controller LED should be reset on connect
 
 * "--ui-buttonmap=void" style button events are broken
