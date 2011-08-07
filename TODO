@@ -26,30 +26,30 @@ Ubuntu Package:
 
 $ cd ../debian/xboxdrv
 $ git checkout master
-$ git-import-orig -u 0.8.1 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.8.1.tar.bz2 
-$ dch -v "0.8.1-1" "xboxdrv 0.8.1 release"
+$ git-import-orig -u 0.8.2 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.8.2.tar.bz2 
+$ dch -v "0.8.2-1" "xboxdrv 0.8.2 release"
 $ git-buildpackage --git-no-create-orig --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-natty.tgz ../xboxdrv_0.8.1-1.dsc
-$ dput my-ppa ../xboxdrv_0.8.1-1_source.changes
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-natty.tgz ../xboxdrv_0.8.2-1.dsc
+$ dput my-ppa ../xboxdrv_0.8.2-1_source.changes
 
 # Ubuntu 10.10
 
 $ git checkout master-10.10
 $ git merge master
-$ dch -b -v "0.8.1-1~maverick1" --distribution maverick "xboxdrv 0.8.1 backport"
+$ dch -b -v "0.8.2-1~maverick1" --distribution maverick "xboxdrv 0.8.2 backport"
 $ git-buildpackage --git-no-create-orig --git-debian-branch=master-10.10 --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-maverick.tgz ../xboxdrv_0.8.1-1~maverick1.dsc
-$ dput my-ppa ../xboxdrv_0.8.1-1~maverick1_source.changes
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-maverick.tgz ../xboxdrv_0.8.2-1~maverick1.dsc
+$ dput my-ppa ../xboxdrv_0.8.2-1~maverick1_source.changes
 
 # Ubuntu 10.04 (LTS)
 
 $ cd ../debian/xboxdrv
 $ git checkout master-lts
 $ git merge master
-$ dch -b -v "0.8.1-1~lucid1" --distribution lucid "xboxdrv 0.8.1 backport"
+$ dch -b -v "0.8.2-1~lucid1" --distribution lucid "xboxdrv 0.8.2 backport"
 $ git-buildpackage --git-no-create-orig --git-debian-branch=master-lts --git-tag --git-builder="debuild -S"
-$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv_0.8.1-1~lucid1.dsc
-$ dput my-ppa ../xboxdrv_0.8.1-1~lucid1_source.changes
+$ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv_0.8.2-1~lucid1.dsc
+$ dput my-ppa ../xboxdrv_0.8.2-1~lucid1_source.changes
 
 # Ubuntu 10.10 - xboxdrv-stable
 
@@ -64,7 +64,7 @@ $ git-buildpackage --git-no-create-orig --git-debian-branch=stable-lts --git-tag
 $ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-stable_0.6.6-1~lucid2.dsc
 
 
-Target for 0.8.1
+Target for 0.8.3
 ================
 
 * update/fix man-page

@@ -1,3 +1,13 @@
+xboxdrv 0.8.2 - (07/Aug/2011)
+=============================
+
+* added click-press, click-release, click-both button filter
+* added delay button filter
+* added simple Python script for response curve generation
+* added PDF Afterglow AX.1 Xbox360 controller support
+* fixed swapped keys in KeyAxisEventHandler
+
+
 xboxdrv 0.8.1 - (20/Jul/2011)
 =============================
 
