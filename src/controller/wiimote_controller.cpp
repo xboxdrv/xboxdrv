@@ -21,6 +21,8 @@
 #include <assert.h>
 #include <iostream>
 
+#include "bluetooth.hpp"
+
 #include "unpack.hpp"
 #include "log.hpp"
 
@@ -56,7 +58,7 @@ WiimoteController::connect()
   assert(m_wiimote == 0);
 
   /* Connect to any wiimote */
-  bdaddr_t bdaddr = {{0, 0, 0, 0, 0, 0}}; // BDADDR_ANY
+  bdaddr_t bdaddr = Bluetooth::addr_any;
 
   /* Connect to address in string WIIMOTE_BDADDR */
   /* str2ba(WIIMOTE_BDADDR, &bdaddr); */
@@ -64,11 +66,9 @@ WiimoteController::connect()
   /* Connect to the wiimote */
   printf("Put Wiimote in discoverable mode now (press 1+2)...\n");
 
-  if (!(m_wiimote = cwiid_connect(&bdaddr, CWIID_FLAG_MESG_IFC))) 
-  {
-    fprintf(stderr, "Unable to connect to wiimote\n");
-  }
-  else 
+  // wait forever till a Wiimote is found
+  m_wiimote = cwiid_open_timeout(&bdaddr, CWIID_FLAG_MESG_IFC, -1);
+
   {
     std::cout << "Wiimote connected: " << m_wiimote << std::endl;
     if (cwiid_set_mesg_callback(m_wiimote, &WiimoteController::mesg_callback)) {
@@ -95,7 +95,7 @@ WiimoteController::disconnect()
 {
   if (m_wiimote)
   {
-    cwiid_disconnect(m_wiimote);
+    cwiid_close(m_wiimote);
     m_wiimote = 0;
   }
 }
