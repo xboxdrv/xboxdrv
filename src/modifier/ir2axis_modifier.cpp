@@ -19,6 +19,7 @@
 #include "ir2axis_modifier.hpp"
 
 #include <stdexcept>
+#include <math.h>
 
 #include "raise_exception.hpp"
 
@@ -46,11 +47,75 @@ void
 IR2AxisModifier::update(int msec_delta, ControllerMessage& msg)
 {
   // find center of two biggest points, return that as axis values
+  float x1 = 0.0f;
+  float y1 = 0.0f;
+  int size1 = 0;
 
-  if (msg.get_axis(WIIMOTE_IR_SIZE) >= 0)
+  float x2 = 0.0f;
+  float y2 = 0.0f;
+  int size2 = 0;
+
+  bool valid1 = false;
+  bool valid2 = false;
+
+  for(int idx = 0; idx < 4; ++idx)
   {
-    msg.set_axis_float(m_axis_x, msg.get_axis_float(WIIMOTE_IR_X));
-    msg.set_axis_float(m_axis_y, msg.get_axis_float(WIIMOTE_IR_Y));
+    if (msg.get_axis(static_cast<XboxAxis>(WIIMOTE_IR_SIZE + 3*idx)) >= 0)
+    {
+      float x = msg.get_axis_float(static_cast<XboxAxis>(WIIMOTE_IR_X + 3*idx));
+      float y = msg.get_axis_float(static_cast<XboxAxis>(WIIMOTE_IR_Y + 3*idx));
+      int size = msg.get_axis(static_cast<XboxAxis>(WIIMOTE_IR_SIZE + 3*idx));
+
+      if (!valid1)
+      {
+        x1 = x;
+        y1 = y;
+        size1 = size;
+        valid1 = true;
+      }
+      else if (!valid2)
+      {
+        x2 = x;
+        y2 = y;
+        size2 = size;
+        valid2 = true;
+      }
+      else if (size > size1)
+      {
+        x2 = x1;
+        y2 = y1;
+        size2 = size1;
+
+        x1 = x;
+        y1 = y;
+        size1 = size;
+      }
+      else if (size > size2)
+      {
+        x2 = x;
+        y2 = y;
+        size2 = size;       
+      }
+    }
+  }
+
+  if (!valid1 && !valid2)
+  {
+    // no IR data, can't do anything
+  }
+  else if (!valid2)
+  {
+    log_tmp(x1 << " " << y1);
+    msg.set_axis_float(m_axis_x, -x1);
+    msg.set_axis_float(m_axis_y, y1);
+  }
+  else // both valid
+  {
+    // FIXME: need accelerometer data to find out where is up
+    //log_tmp(x1 << " " << y1 << " - " << x2 << " " << y2);
+    log_tmp(atan2f(y1 - y2, x1 - x2));
+    msg.set_axis_float(m_axis_x, -((x1+x2)/2.0f));
+    msg.set_axis_float(m_axis_y, (y1+y2)/2.0f);
   }
 }
 
