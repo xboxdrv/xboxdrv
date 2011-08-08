@@ -18,6 +18,9 @@ git archive --format=tar --prefix="xboxdrv-linux-${VERSION}/" ${TAG} | bzip2 -c 
 
 git push --tags
 
+* also remember to "git push --tags" both the xboxdrv-ubuntu and
+  xboxdrv-htdocs repositories
+
 
 Ubuntu Package:
 ===============
@@ -71,6 +74,8 @@ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-st
 
 Target for 0.8.3
 ================
+
+* update Standards-Version in the Ubuntu packages
 
 * XboxController rumble code is wrong, old usb stuff
 
@@ -186,6 +191,8 @@ Virtual Keyboard
 
 Target for 0.9.0
 ================
+
+* make --led X part of the --config, that would allow free LED switching
 
 * add battery status as axis output
 
