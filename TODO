@@ -75,6 +75,8 @@ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-st
 Target for 0.8.3
 ================
 
+* print warning or something when people don't use rel with -1
+
 * update Standards-Version in the Ubuntu packages
 
 * XboxController rumble code is wrong, old usb stuff
