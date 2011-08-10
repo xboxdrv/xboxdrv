@@ -32,6 +32,7 @@
 #include "modifier/rotate_axis_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 #include "modifier/statistic_modifier.hpp"
+#include "modifier/stick_zone_modifier.hpp"
 
 #include "evdev_helper.hpp"
 #include "raise_exception.hpp"
@@ -91,6 +92,10 @@ Modifier::from_string(const std::string& name, const std::string& value)
     else if (name == "ir2axis")
     {
       return IR2AxisModifier::from_string(args);
+    }
+    else if (name == "stickzone")
+    {
+      return StickZoneModifier::from_string(args);
     }
     else if (name == "copy")
     {
