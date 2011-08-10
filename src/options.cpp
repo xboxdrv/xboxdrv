@@ -87,6 +87,7 @@ Options::Options() :
   evdev_grab(true),
   evdev_debug(false),
   evdev_keymap(),
+  wiimote(false),
   controller_slots(),
   chatpad(false),
   chatpad_no_init(false),

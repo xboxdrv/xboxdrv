@@ -28,6 +28,7 @@
 
 #include "controller_factory.hpp"
 #include "controller/evdev_controller.hpp"
+#include "controller/wiimote_controller.hpp"
 #include "message_processor.hpp"
 #include "uinput_message_processor.hpp"
 #include "dummy_message_processor.hpp"
@@ -89,8 +90,17 @@ XboxdrvMain::create_controller()
     m_dev_type.idProduct = 0;
     m_dev_type.name = "Evdev device";
   }
+  else if (m_opts.wiimote)
+  {
+#ifdef HAVE_CWIID
+    log_tmp("Creating Wiimote controller");
+    return ControllerPtr(new WiimoteController);
+#else
+    throw std::runtime_error("libcwiid not found at compile time, Wiimote support is not available");
+#endif
+  }
   else
-  { // regular USB Xbox360 controller    
+  { // regular USB Xbox360-like controller    
 
     // FIXME: this must be libusb_unref_device()'ed, child code must not keep a copy around
     libusb_device* dev = 0;

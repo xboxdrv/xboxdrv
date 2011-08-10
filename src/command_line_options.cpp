@@ -114,6 +114,7 @@ enum {
   OPTION_EVDEV_DEBUG,
   OPTION_EVDEV_ABSMAP,
   OPTION_EVDEV_KEYMAP,
+  OPTION_WIIMOTE,
   OPTION_CHATPAD,
   OPTION_CHATPAD_NO_INIT,
   OPTION_CHATPAD_DEBUG,
@@ -215,6 +216,9 @@ CommandLineParser::init_argp()
     .add_option(OPTION_EVDEV_ABSMAP,   0, "evdev-absmap", "MAP", "Map evdev key events to Xbox360 button events")
     .add_option(OPTION_EVDEV_KEYMAP,   0, "evdev-keymap", "MAP", "Map evdev abs events to Xbox360 axis events")
     .add_newline()
+
+    .add_text("Wiimote Options: ")
+    .add_option(OPTION_WIIMOTE,   0, "wiimote", "", "Use Wiimote as main controller")
 
     .add_text("Status Options: ")
     .add_option(OPTION_LED,     'l', "led",    "STATUS", "set LED status, see --help-led for possible values")
@@ -769,6 +773,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_EVDEV_KEYMAP:
         process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
+        break;
+
+      case OPTION_WIIMOTE:
+        opts.wiimote = true;
         break;
 
       case OPTION_ID:

@@ -26,6 +26,7 @@
 #include "axisfilter/deadzone_axis_filter.hpp"
 #include "axisfilter/invert_axis_filter.hpp"
 #include "axisfilter/log_axis_filter.hpp"
+#include "axisfilter/lowpass_axis_filter.hpp"
 #include "axisfilter/relative_axis_filter.hpp"
 #include "axisfilter/response_curve_axis_filter.hpp"
 #include "axisfilter/sensitivity_axis_filter.hpp"
@@ -67,6 +68,10 @@ AxisFilter::from_string(const std::string& str)
   else if (filtername == "resp" || filtername == "response" || filtername == "responsecurve")
   {
     return AxisFilterPtr(ResponseCurveAxisFilter::from_string(rest));
+  }
+  else if (filtername == "lowpass")
+  {
+    return LowpassAxisFilter::from_string(rest);
   }
   else if (filtername == "log")
   {
