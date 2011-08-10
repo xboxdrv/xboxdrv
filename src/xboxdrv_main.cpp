@@ -92,8 +92,12 @@ XboxdrvMain::create_controller()
   }
   else if (m_opts.wiimote)
   {
+#ifdef HAVE_CWIID
     log_tmp("Creating Wiimote controller");
     return ControllerPtr(new WiimoteController);
+#else
+    throw std::runtime_error("libcwiid not found at compile time, Wiimote support is not available");
+#endif
   }
   else
   { // regular USB Xbox360-like controller    

@@ -16,6 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifdef HAVE_CWIID
+
 #include "controller/wiimote_controller.hpp"
 
 #include <assert.h>
@@ -386,4 +388,6 @@ WiimoteController::mesg_callback(cwiid_wiimote_t*, int mesg_count, union cwiid_m
   }
 }
 
+#endif /* HAVE_CWIID */
+
 /* EOF */

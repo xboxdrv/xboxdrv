@@ -64,14 +64,23 @@ def build_bin2h(target, source, env):
         if env.has_key("BIN2H_NAMESPACE"):
             fout.write("} // namespace %s\n\n" % env["BIN2H_NAMESPACE"])
                 
-        fout.write("/* EOF */\n")
-                
+        fout.write("/* EOF */\n")                
 
-env = Environment(BUILDERS = {
+def CheckPKGConfig(context, name):
+    context.Message( 'Checking for %s... ' % name )
+    ret = context.TryAction('pkg-config --exists \'%s\'' % name)[0]
+    context.Result( ret )
+    return ret
+
+env = Environment(
+    CPPPATH = ["src/"],
+    BUILDERS = {
     'DBusGlue' : Builder(action = build_dbus_glue),
     'Bin2H'    : Builder(action = build_bin2h)
-    })
+    },
+    )
 
+# Begin: Option handling
 opts = Variables(['custom.py'], ARGUMENTS)
 
 opts.Add('CPPPATH', 'Additional preprocessor paths')
@@ -88,8 +97,7 @@ opts.Add('BUILD', 'Build type: release, custom, development')
 
 opts.Update(env)
 Help(opts.GenerateHelpText(env))
-
-env.Append(CPPPATH=["src/"])
+# End: Option handling
 
 if 'BUILD' in env and env['BUILD'] == 'development':
     env.Append(CXXFLAGS = [ "-O3",
@@ -118,15 +126,15 @@ env.ParseConfig("pkg-config --cflags --libs glib-2.0 | sed 's/-I/-isystem/g'")
 env.ParseConfig("pkg-config --cflags --libs gthread-2.0 | sed 's/-I/-isystem/g'")
 env.ParseConfig("pkg-config --cflags --libs libusb-1.0 | sed 's/-I/-isystem/g'")
 env.ParseConfig("pkg-config --cflags --libs libudev | sed 's/-I/-isystem/g'")
-env.ParseConfig("pkg-config --cflags --libs cwiid | sed 's/-I/-isystem/g'")
 
 with open("VERSION", "r") as fin:
     package_version = fin.readline().strip()
     
 env.Append(CPPDEFINES = { 'PACKAGE_VERSION': "'\"%s\"'" % package_version })
-
-conf = Configure(env)
 
+conf = Configure(env,
+                 custom_tests = { 'CheckPKG' : CheckPKGConfig })
+
 if not conf.env['CXX']:
     print "g++ must be installed!"
     Exit(1)
@@ -135,9 +143,26 @@ if not conf.env['CXX']:
 if not conf.CheckLibWithHeader('X11', 'X11/Xlib.h', 'C++'):
     print 'libx11-dev must be installed!'
     Exit(1)
+    
+if conf.CheckPKG('cwiid'):
+    conf.env.ParseConfig("pkg-config --cflags --libs cwiid | sed 's/-I/-isystem/g'")
+    conf.env.Append(CPPDEFINES = 'HAVE_CWIID')
 
 env = conf.Finish()
+
+gtk_env = env.Clone()
 
+conf = Configure(gtk_env,
+                 custom_tests = { 'CheckPKG' : CheckPKGConfig })
+
+if conf.CheckPKG('gtk+-2.0'):
+    gtk_env.ParseConfig("pkg-config --libs --cflags gtk+-2.0")
+    gtk_env['BUILD_VIRTUALKEYBOARD'] = True
+else:
+    gtk_env['BUILD_VIRTUALKEYBOARD'] = False
+    
+gtk_env = conf.Finish()
+
 env.Bin2H("src/xboxdrv_vfs.hpp", [
     "examples/mouse.xboxdrv",
     "examples/xpad-wireless.xboxdrv"
@@ -159,10 +184,8 @@ env.Prepend(LIBS = libxboxdrv)
 for file in Glob('test/*_test.cpp', strings=True):
     Alias('tests', env.Program(file[:-4], file))
 
-if 'virtualkeyboard' in COMMAND_LINE_TARGETS:
-    gtk_env = env.Clone()
-    gtk_env.ParseConfig("pkg-config --libs --cflags gtk+-2.0")
-    Alias('virtualkeyboard', gtk_env.Program("virtualkeyboard", Glob("src/virtualkeyboard/*.cpp")))
+if gtk_env['BUILD_VIRTUALKEYBOARD']:
+    gtk_env.Program("virtualkeyboard", Glob("src/virtualkeyboard/*.cpp"))
 
 Default(env.Program('xboxdrv', Glob('src/main/main.cpp')))
 

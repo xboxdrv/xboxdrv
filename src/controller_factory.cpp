@@ -76,8 +76,13 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
     case GAMEPAD_PLAYSTATION3_USB:
       return ControllerPtr(new Playstation3USBController(dev, opts.detach_kernel_driver));
 
+#ifdef HAVE_CWIID
     case GAMEPAD_WIIMOTE:
       return ControllerPtr(new WiimoteController);
+#else
+    case GAMEPAD_WIIMOTE:
+      throw std::runtime_error("libcwiid not found at compile time, Wiimote support is not available");
+#endif
 
     case GAMEPAD_GENERIC_USB:
       {
@@ -149,9 +154,14 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
       lst.push_back(ControllerPtr(new Playstation3USBController(dev, opts.detach_kernel_driver)));
       break;
 
+#ifdef HAVE_CWIID
     case GAMEPAD_WIIMOTE:
       lst.push_back(ControllerPtr(new WiimoteController));
       break;
+#else
+    case GAMEPAD_WIIMOTE:
+      throw std::runtime_error("libcwiid not found at compile time, Wiimote support is not available");
+#endif
 
     case GAMEPAD_GENERIC_USB:
       {

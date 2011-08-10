@@ -19,6 +19,8 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_WIIMOTE_CONTROLLER_HPP
 #define HEADER_XBOXDRV_CONTROLLER_WIIMOTE_CONTROLLER_HPP
 
+#ifdef HAVE_CWIID
+
 #include <pthread.h>
 #include <cwiid.h>
 
@@ -82,6 +84,8 @@ private:
   WiimoteController(const WiimoteController&);
   WiimoteController& operator=(const WiimoteController&);
 };
+
+#endif /* HAVE_CWIID */
 
 #endif
 
