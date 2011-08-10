@@ -1237,7 +1237,7 @@ start=KEY_ESC
     <refsect2>
       <title>Modifier Preset Configuration Options</title>
       <para>
-        The options in this sections are sortcuts
+        The options in this sections are shortcuts
         for <option>--modifier</option> options.
         Unlike <option>--modifier</option> they are not order
         depended, but have a predefined order that is used no matter
@@ -2511,6 +2511,29 @@ send KEY_LEFTSHIFT 0]]></programlisting>
           <listitem>
             <para>
               Rotates the stick given by <replaceable>XAXIS</replaceable> and <replaceable>YAXIS</replaceable> by <replaceable>DEGREE</replaceable> and optionally <replaceable>MIRRORS</replaceable> it.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>stickzone</option>=<replaceable>XAXIS</replaceable>:<replaceable>YXAXIS</replaceable>:<replaceable>OUTBUTTON</replaceable>:<replaceable>RANGESTART</replaceable>:<replaceable>RANGEEND</replaceable></term>
+          <listitem>
+            <para>
+              The <option>stickzone</option> modifier translate the
+              area in which a stick is in into a button event. This
+              is useful for games that don't have analog controls, but
+              instead feature dedicated sneak or run buttons. Using
+              the modifier allows to press the run button when the
+              stick is moved a lot and it allows to press the sneak
+              button when it is only pressed a little.
+            </para>
+            <para>
+              A typical example for an FPS would look like:
+            </para>
+            <programlisting><![CDATA[$ --modifier stickzone=X1:Y1:LT:0:0.4,stickzone=X1:Y1:RT:0.9:1.0]]></programlisting>
+            <para>
+              Here the stick is given by X1:Y1, while LT is the sneak
+              button and RT is the run button.
             </para>
           </listitem>
         </varlistentry>

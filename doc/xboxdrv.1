@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 "31 July 2011" 0.9.0 "User Commands"
+.TH "xboxdrv " 1 "10 August 2011" 0.9.0 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -810,7 +810,7 @@ their range is different.
 
 Just like with \*(T<\fB\-\-ui\-axismap\fR\*(T> you can add axis filter to each axis.
 .SS "MODIFIER PRESET CONFIGURATION OPTIONS"
-The options in this sections are sortcuts
+The options in this sections are shortcuts
 for \*(T<\fB\-\-modifier\fR\*(T> options.
 Unlike \*(T<\fB\-\-modifier\fR\*(T> they are not order
 depended, but have a predefined order that is used no matter
@@ -1698,6 +1698,24 @@ See \*(T<\fB\-\-square\-axis\fR\*(T>.
 .TP 
 \*(T<\fBrotate\fR\*(T>=\fIXAXIS\fR:\fIYAXIS\fR:\fIDEGREE\fR:\fIMIRROR\fR
 Rotates the stick given by \fIXAXIS\fR and \fIYAXIS\fR by \fIDEGREE\fR and optionally \fIMIRRORS\fR it.
+.TP 
+\*(T<\fBstickzone\fR\*(T>=\fIXAXIS\fR:\fIYXAXIS\fR:\fIOUTBUTTON\fR:\fIRANGESTART\fR:\fIRANGEEND\fR
+The \*(T<\fBstickzone\fR\*(T> modifier translate the
+area in which a stick is in into a button event. This
+is useful for games that don't have analog controls, but
+instead feature dedicated sneak or run buttons. Using
+the modifier allows to press the run button when the
+stick is moved a lot and it allows to press the sneak
+button when it is only pressed a little.
+
+A typical example for an FPS would look like:
+
+.nf
+\*(T<$ \-\-modifier stickzone=X1:Y1:LT:0:0.4,stickzone=X1:Y1:RT:0.9:1.0\*(T>
+.fi
+
+Here the stick is given by X1:Y1, while LT is the sneak
+button and RT is the run button.
 .TP 
 \*(T<\fBstat\fR\*(T>, \*(T<\fBstatistic\fR\*(T>
 The statistic modifier doesn't actually modify anything,
