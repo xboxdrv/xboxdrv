@@ -1122,7 +1122,7 @@ start=KEY_ESC
         </varlistentry>
 
         <varlistentry>
-          <term><option>-b, --buttonmap BUTTON=BUTTON,...</option></term>
+          <term><option>-b, --buttonmap</option> <replaceable>BUTTON[^FILTER]...=BUTTON,...</replaceable></term>
           <listitem>
             <para>
               Button remapping is available via the <option>--buttonmap</option> option. If you want
@@ -1201,7 +1201,7 @@ start=KEY_ESC
         </varlistentry>
 
         <varlistentry>
-          <term><option>--axismap</option> <replaceable class="parameter">AXIS=MAPPING,...</replaceable></term>
+          <term><option>--axismap</option> <replaceable class="parameter">AXIS[^FILTER]...=AXIS,...</replaceable></term>
           <listitem>
             <para>
               Axis remapping is available via --axismap and works the same as button
@@ -2444,6 +2444,36 @@ send KEY_LEFTSHIFT 0]]></programlisting>
         other, so order is important.
       </para>
       <variablelist>
+        <varlistentry>
+          <term><option>axismap</option>=<replaceable>AXIS</replaceable>[^<replaceable>FILTER</replaceable>]...=<replaceable>AXIS</replaceable>,...</term>
+          <listitem>
+            <para>
+              Works the same as <option>--axismap</option>, but
+              allows you to place it at any part in the modifier
+              stack.
+            </para>
+            <para>
+              Note that you have to quote the list of buttons when supplying multiple axis:
+            </para>
+            <programlisting><![CDATA[$ --modifier axismap=[X1^invert=Y1,Y2=X2,X2=Y2]]]></programlisting>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>buttonmap</option>=<replaceable>BUTTON</replaceable>[^<replaceable>FILTER</replaceable>]...=<replaceable>BUTTON</replaceable>,...</term>
+          <listitem>
+            <para>
+              Works the same as <option>--buttonmap</option>, but
+              allows you to place it at any part in the modifier
+              stack.
+            </para>
+            <para>
+              Note that you have to quote the list of buttons when supplying multiple button:
+            </para>
+            <programlisting><![CDATA[$ --modifier buttonmap=[A^auto=B,Y=X,X=Y]]]></programlisting>
+          </listitem>
+        </varlistentry>
+
         <varlistentry>
           <term><option>btn2axis</option>=<replaceable>BUTTON</replaceable>:<replaceable>BUTTON</replaceable>:<replaceable>AXIS</replaceable></term>
           <listitem>

@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 "10 August 2011" 0.9.0 "User Commands"
+.TH "xboxdrv " 1 "11 August 2011" 0.9.0 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -712,7 +712,7 @@ Default value is 10, smaller values will give you a
 higher resolution auto fire and relative event movement, but will waste some more
 CPU.
 .TP 
-\*(T<\fB\-b, \-\-buttonmap BUTTON=BUTTON,...\fR\*(T>
+\*(T<\fB\-b, \-\-buttonmap\fR\*(T> \fIBUTTON[^FILTER]...=BUTTON,...\fR
 Button remapping is available via the \*(T<\fB\-\-buttonmap\fR\*(T> option. If you want
 to swap button A and B start with:
 
@@ -788,7 +788,7 @@ T}
 
 Just like with \*(T<\fB\-\-ui\-buttonmap\fR\*(T> you can add button filter to each button.
 .TP 
-\*(T<\fB\-\-axismap\fR\*(T> \fIAXIS=MAPPING,...\fR
+\*(T<\fB\-\-axismap\fR\*(T> \fIAXIS[^FILTER]...=AXIS,...\fR
 Axis remapping is available via --axismap and works the same as button
 mapping. In addition you can supply a sign to indicate that an axis
 should be inverted. So if you want to invert the y1 axis start with:
@@ -1663,6 +1663,28 @@ regular options, but allow more fine tuning, such as limiting
 the effects to a single analog stick instead of just applyig
 it to all. Note that modifiers are applied one after the
 other, so order is important.
+.TP 
+\*(T<\fBaxismap\fR\*(T>=\fIAXIS\fR[^\fIFILTER\fR]...=\fIAXIS\fR,...
+Works the same as \*(T<\fB\-\-axismap\fR\*(T>, but
+allows you to place it at any part in the modifier
+stack.
+
+Note that you have to quote the list of buttons when supplying multiple axis:
+
+.nf
+\*(T<$ \-\-modifier axismap=[X1^invert=Y1,Y2=X2,X2=Y2]\*(T>
+.fi
+.TP 
+\*(T<\fBbuttonmap\fR\*(T>=\fIBUTTON\fR[^\fIFILTER\fR]...=\fIBUTTON\fR,...
+Works the same as \*(T<\fB\-\-buttonmap\fR\*(T>, but
+allows you to place it at any part in the modifier
+stack.
+
+Note that you have to quote the list of buttons when supplying multiple button:
+
+.nf
+\*(T<$ \-\-modifier buttonmap=[A^auto=B,Y=X,X=Y]\*(T>
+.fi
 .TP 
 \*(T<\fBbtn2axis\fR\*(T>=\fIBUTTON\fR:\fIBUTTON\fR:\fIAXIS\fR
 Takes two buttons and turns them into an axis.

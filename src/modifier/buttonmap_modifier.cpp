@@ -18,8 +18,11 @@
 
 #include "buttonmap_modifier.hpp"
 
+#include <boost/bind.hpp>
 #include <boost/tokenizer.hpp>
 #include <sstream>
+
+#include "helper.hpp"
 
 ButtonMapping 
 ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
@@ -51,6 +54,17 @@ ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
   }
 
   return mapping;
+}
+
+ButtonmapModifier*
+ButtonmapModifier::from_string(const std::string& args)
+{
+  ButtonmapModifier* modifier = new ButtonmapModifier;
+
+  process_name_value_string(args, boost::bind(&ButtonmapModifier::add, modifier, 
+                                              boost::bind(&ButtonMapping::from_string, _1, _2)));
+
+  return modifier;
 }
 
 ButtonmapModifier::ButtonmapModifier() :

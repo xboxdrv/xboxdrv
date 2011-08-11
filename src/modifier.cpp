@@ -22,7 +22,11 @@
 #include <linux/input.h>
 
 #include "modifier/acc2axis_modifier.hpp"
+#include "modifier/axismap_modifier.hpp"
+#include "modifier/axismap_modifier.hpp"
 #include "modifier/button2axis_modifier.hpp"
+#include "modifier/buttonmap_modifier.hpp"
+#include "modifier/buttonmap_modifier.hpp"
 #include "modifier/dpad_restrictor_modifier.hpp"
 #include "modifier/dpad_rotation_modifier.hpp"
 #include "modifier/four_way_restrictor_modifier.hpp"
@@ -42,13 +46,11 @@ Modifier::from_string(const std::string& name, const std::string& value)
 {
   if (name == "axismap")
   {
-    //return AxismapModifier::from_string(value);
-    throw std::runtime_error("unknown modifier: " + name);
+    return AxismapModifier::from_string(value);
   }
-  else if (name == "buttonmap")
+  else if (name == "buttonmap" || name == "btnmap")
   {
-    //return ButtonmapModifier::from_string(value);
-    throw std::runtime_error("unknown modifier: " + name);
+    return ButtonmapModifier::from_string(value);
   }
   else
   {

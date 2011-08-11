@@ -18,6 +18,7 @@
 
 #include "axismap_modifier.hpp"
 
+#include <boost/bind.hpp>
 #include <boost/tokenizer.hpp>
 #include <sstream>
 
@@ -68,6 +69,17 @@ AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
   }
 
   return mapping;
+}
+
+AxismapModifier*
+AxismapModifier::from_string(const std::string& args)
+{
+  AxismapModifier* modifier = new AxismapModifier;
+
+  process_name_value_string(args, boost::bind(&AxismapModifier::add, modifier, 
+                                              boost::bind(&AxisMapping::from_string, _1, _2)));
+
+  return modifier;
 }
 
 AxismapModifier::AxismapModifier() :

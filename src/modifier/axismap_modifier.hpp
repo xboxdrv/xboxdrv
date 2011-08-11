@@ -44,6 +44,9 @@ struct AxisMapping
 class AxismapModifier : public Modifier 
 {
 public:
+  static AxismapModifier* from_string(const std::string& args);
+
+public:
   AxismapModifier();
 
   void update(int msec_delta, ControllerMessage& msg);

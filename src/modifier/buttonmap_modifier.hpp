@@ -42,6 +42,9 @@ struct ButtonMapping
 class ButtonmapModifier : public Modifier
 {
 public:
+  static ButtonmapModifier* from_string(const std::string& args);
+
+public:
   ButtonmapModifier();
   
   void update(int msec_delta, ControllerMessage& msg);
