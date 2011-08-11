@@ -30,14 +30,26 @@ std::string raw2str(uint8_t* buffer, int len);
 std::string to_lower(const std::string &str);
 bool is_number(const std::string& str);
 
-/** Splits apart a string of the form NAME=VALUE,... and calls func(NAME, VALUE) on each */
+/**
+   Splits apart a string of the form "NAME=VALUE,..." and calls
+   func(NAME, VALUE) on each.
+
+   When VALUE is supposed to contain a "," the value has to be quoted
+   with [], i.e. "NAME=[VALUE1,VALUE2]", the "[" and "]" itself can
+   be quoted with "\[" and "\]" 
+*/
 void process_name_value_string(const std::string& str, const boost::function<void (const std::string&, const std::string&)>& func);
+
+/** Split \a str at characters c */
+std::vector<std::string> split_string_at_comma(const std::string& str);
 
 void split_string_at(const std::string& str, char c, std::string* lhs, std::string* rhs);
 
-/** Convert the given string \a str to an integer, the string can
-    either be an exact integer or a percent value (i.e. "75%"), in
-    which case it is handled as (range * int(str)) */
+/**
+   Convert the given string \a str to an integer, the string can
+   either be an exact integer or a percent value (i.e. "75%"), in
+   which case it is handled as (range * int(str)) 
+*/
 int to_number(int range, const std::string& str);
 uint32_t get_time();
 

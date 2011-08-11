@@ -95,13 +95,67 @@ void split_string_at(const std::string& str, char c, std::string* lhs, std::stri
 
 void process_name_value_string(const std::string& str, const boost::function<void (const std::string&, const std::string&)>& func)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(",", "", boost::drop_empty_tokens));
+  int quote_count = 0;
+  std::string res;
+  for(std::string::size_type i = 0; i < str.size(); ++i)
+  {
+    if (str[i] == '[')
+    {
+      quote_count += 1;
+    }
+    else if (str[i] == ']')
+    {
+      quote_count -= 1;
+      if (quote_count < 0)
+      {
+        raise_exception(std::runtime_error, "unexpected ']' at " << i);
+      }
+    }
+    else if (str[i] == '\\')
+    {
+      i += 1;
+      if (i < str.size())
+      {
+        res += str[i+1];
+      }
+      else
+      {
+        res += '\\';
+      }
+    }
+    else if (str[i] == ',')
+    {
+      if (quote_count == 0)
+      {
+        if (!res.empty())
+        {
+          std::string lhs, rhs;
+          split_string_at(res, '=', &lhs, &rhs);
+          func(lhs, rhs);
 
-  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i)
+          res.clear();
+        }
+      }
+      else
+      {
+        res += str[i];
+      }
+    }
+    else
+    {
+      res += str[i];
+    }
+  }
+
+  if (quote_count != 0)
+  {
+    raise_exception(std::runtime_error, "unclosed '['");
+  }
+
+  if (!res.empty())
   {
     std::string lhs, rhs;
-    split_string_at(*i, '=', &lhs, &rhs);
+    split_string_at(res, '=', &lhs, &rhs);
     func(lhs, rhs);
   }
 }
