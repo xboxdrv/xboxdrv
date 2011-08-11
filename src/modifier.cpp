@@ -31,9 +31,11 @@
 #include "modifier/dpad_rotation_modifier.hpp"
 #include "modifier/four_way_restrictor_modifier.hpp"
 #include "modifier/ir2axis_modifier.hpp"
+#include "modifier/join_axis_modifier.hpp"
 #include "modifier/key_copy_modifier.hpp"
 #include "modifier/log_modifier.hpp"
 #include "modifier/rotate_axis_modifier.hpp"
+#include "modifier/split_axis_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 #include "modifier/statistic_modifier.hpp"
 #include "modifier/stick_zone_modifier.hpp"
@@ -98,6 +100,14 @@ Modifier::from_string(const std::string& name, const std::string& value)
     else if (name == "stickzone")
     {
       return StickZoneModifier::from_string(args);
+    }
+    else if (name == "split-axis" || name == "splitaxis")
+    {
+      return SplitAxisModifier::from_string(args);
+    }
+    else if (name == "join-axis" || name == "joinaxis")
+    {
+      return JoinAxisModifier::from_string(args);
     }
     else if (name == "copy")
     {
