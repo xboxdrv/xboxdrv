@@ -47,6 +47,8 @@ public:
 
   void print(std::ostream& os) const;
 
+  bool operator==(const ButtonCombination&) const;
+
 private:
   typedef std::vector<XboxButton> Buttons;
   Buttons m_buttons;

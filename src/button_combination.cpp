@@ -19,6 +19,7 @@
 #include "button_combination.hpp"
 
 #include <boost/tokenizer.hpp>
+#include <algorithm>
 
 #include "xboxmsg.hpp"
 
@@ -27,15 +28,22 @@ ButtonCombination::from_string(const std::string& str)
 {
   ButtonCombination comp;
 
-  boost::tokenizer<boost::char_separator<char> > 
-    btn_tokens(str, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
+  if (str == "void")
+  {
+    return comp;
+  }
+  else
+  {
+    boost::tokenizer<boost::char_separator<char> > 
+      btn_tokens(str, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
 
-  std::transform(btn_tokens.begin(), btn_tokens.end(),
-                 std::back_inserter(comp.m_buttons), string2btn);
+    std::transform(btn_tokens.begin(), btn_tokens.end(),
+                   std::back_inserter(comp.m_buttons), string2btn);
 
-  std::sort(comp.m_buttons.begin(), comp.m_buttons.end());
+    std::sort(comp.m_buttons.begin(), comp.m_buttons.end());
 
-  return comp;
+    return comp;
+  }
 }
 
 ButtonCombination::ButtonCombination() :
@@ -108,6 +116,20 @@ ButtonCombination::print(std::ostream& os) const
     os << btn2string(*btn);
     if (btn != m_buttons.end()-1)
       os << "+";
+  }
+}
+
+bool
+ButtonCombination::operator==(const ButtonCombination& rhs) const
+{
+  if (m_buttons.size() != rhs.m_buttons.size())
+  {
+    return false;
+  }
+  else
+  {
+    return std::equal(m_buttons.begin(), m_buttons.end(),
+                      rhs.m_buttons.begin());
   }
 }
 
