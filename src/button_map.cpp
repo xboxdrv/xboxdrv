@@ -50,7 +50,13 @@ ButtonMap::bind(const ButtonCombination& buttons, ButtonEventPtr event)
 ButtonEventPtr
 ButtonMap::lookup(const ButtonCombination& buttons) const
 {
-  assert(!"implement me");
+  for(Mappings::const_iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
+  {
+    if (i->m_buttons == buttons)
+    {
+      return i->m_event;
+    }
+  }
   return ButtonEventPtr();
 }
 
