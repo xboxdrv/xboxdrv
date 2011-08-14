@@ -174,11 +174,45 @@ WiimoteController::read_nunchuk_calibration()
 void
 WiimoteController::set_rumble_real(uint8_t left, uint8_t right)
 {
+  if (left > 127 || right > 127)
+  {
+    cwiid_set_rumble(m_wiimote, 1);
+  }
+  else
+  {
+    cwiid_set_rumble(m_wiimote, 0);
+  }
 }
 
 void
 WiimoteController::set_led_real(uint8_t status)
 {
+  switch(status)
+  {
+    case 2:
+    case 6:
+      cwiid_set_led(m_wiimote, CWIID_LED1_ON);
+      break;
+
+    case 3:
+    case 7:
+      cwiid_set_led(m_wiimote, CWIID_LED2_ON);
+      break;
+
+    case 4:
+    case 8:
+      cwiid_set_led(m_wiimote, CWIID_LED3_ON);
+      break;
+
+    case 5:
+    case 9:
+      cwiid_set_led(m_wiimote, CWIID_LED4_ON);
+      break;
+
+    default:
+      cwiid_set_led(m_wiimote, 0);
+      break;
+  }
 }
 
 void
