@@ -24,7 +24,8 @@
 
 CycleKeySequencePtr
 CycleKeySequence::from_range(std::vector<std::string>::const_iterator beg,
-                             std::vector<std::string>::const_iterator end)
+                             std::vector<std::string>::const_iterator end, 
+                             bool wrap_around)
 {
   Keys keys;
 
@@ -39,12 +40,13 @@ CycleKeySequence::from_range(std::vector<std::string>::const_iterator beg,
   }
   else
   {
-    return CycleKeySequencePtr(new CycleKeySequence(keys));
+    return CycleKeySequencePtr(new CycleKeySequence(keys, wrap_around));
   }
 }
 
-CycleKeySequence::CycleKeySequence(const Keys& keys) :
+CycleKeySequence::CycleKeySequence(const Keys& keys, bool wrap_around) :
   m_keys(keys),
+  m_wrap_around(wrap_around),
   m_inited(false),
   m_current_key(0),
   m_last_key(0)
@@ -83,7 +85,10 @@ CycleKeySequence::next_key()
   {
     if (m_current_key == static_cast<int>(m_keys.size() - 1))
     {
-      m_current_key = 0;
+      if (m_wrap_around)
+      {
+        m_current_key = 0;
+      }
     }
     else
     {
@@ -104,7 +109,10 @@ CycleKeySequence::prev_key()
   {
     if (m_current_key == 0)
     {
-      m_current_key = static_cast<int>(m_keys.size() - 1);
+      if (m_wrap_around)
+      {
+        m_current_key = static_cast<int>(m_keys.size() - 1);
+      }
     }
     else
     {
