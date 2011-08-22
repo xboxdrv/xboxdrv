@@ -2412,6 +2412,17 @@ send KEY_LEFTSHIFT 0]]></programlisting>
               signal a game or another application which configuration
               is currently active.
             </para>
+            <para>
+              Another usecase is in producing synthetic button events
+              without a vasting a native button when used in
+              combination with anonymous buttons:
+            </para>
+            <programlisting><![CDATA[--ui-buttonmap void^const:1^auto:1000=KEY_SPACE]]></programlisting>
+            <para>
+              Here 'void', the anonymous button, is returning a value
+              of 1 that is then turned by the autofire filter into
+              regular button presses every second.
+            </para>
           </listitem>
         </varlistentry>
 

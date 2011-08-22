@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 "11 August 2011" 0.9.0 "User Commands"
+.TH "xboxdrv " 1 "12 August 2011" 0.9.0 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -1646,6 +1646,18 @@ constant value to the output. This can be used for
 example in combination with multiple configurations to
 signal a game or another application which configuration
 is currently active.
+
+Another usecase is in producing synthetic button events
+without a vasting a native button when used in
+combination with anonymous buttons:
+
+.nf
+\*(T<\-\-ui\-buttonmap void^const:1^auto:1000=KEY_SPACE\*(T>
+.fi
+
+Here 'void', the anonymous button, is returning a value
+of 1 that is then turned by the autofire filter into
+regular button presses every second.
 .TP 
 \*(T<\fBlog\fR\*(T>:\fISTRING\fR
 The log filter will output everything to stdout that
