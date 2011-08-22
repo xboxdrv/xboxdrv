@@ -96,7 +96,7 @@ Options::Options() :
   headset_dump(),
   headset_play(),
   detach(false),
-  dbus(true),
+  dbus(kDBusAuto),
   pid_file(),
   on_connect(),
   on_disconnect(),
@@ -224,6 +224,47 @@ void
 Options::set_usb_debug()
 {
   usb_debug = true;
+}
+
+void
+Options::set_dbus_mode(const std::string& value)
+{
+  if (value == "system")
+  {
+    dbus = kDBusSystem;
+  }
+  else if (value == "session")
+  {
+    dbus = kDBusSession;
+  }
+  else if (value == "auto")
+  {
+    dbus = kDBusAuto;
+  }
+  else if (value == "disabled")
+  {
+    dbus = kDBusDisabled;
+  }
+  else
+  {
+    try {
+      // Fallback for backward compatibility
+      if (boost::lexical_cast<bool>(value))
+      {
+        dbus = kDBusAuto;
+      }
+      else
+      {
+        dbus = kDBusDisabled;        
+      }
+    }
+    catch(const std::exception& err)
+    {
+      // fallback failed, so assume that the user used the new way and
+      // did a typing error
+      raise_exception(std::runtime_error, "unknown dbus mode: " << value);
+    }
+  }
 }
 
 void

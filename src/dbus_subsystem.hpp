@@ -33,7 +33,7 @@ private:
   DBusGConnection* m_connection;
 
 public:
-  DBusSubsystem(const std::string& name);
+  DBusSubsystem(const std::string& name, DBusBusType bus_type);
   ~DBusSubsystem();
 
   void register_xboxdrv_daemon(XboxdrvDaemon* c_daemon);

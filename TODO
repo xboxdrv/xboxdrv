@@ -72,10 +72,23 @@ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-st
 Target for 0.8.3
 ================
 
+* "--dbus system" currently does not work as expected
+
+$ sudo ./xboxdrv --daemon  --dbus system --quiet
+[ERROR] XboxdrvDaemon::run(): fatal exception: failed to get unique dbus name: Connection ":1.55" is not allowed to own the service "org.seul.Xboxdrv" due to security policies in the configuration file
+libusb:warning [libusb_close] internal signalling write failed, closing anyway
+libusb:warning [libusb_close] internal signalling write failed, closing anyway
+libusb:warning [libusb_close] internal signalling write failed, closing anyway
+libusb:warning [libusb_close] internal signalling write failed, closing anyway
+
+ -> http://stackoverflow.com/questions/4560877/dbus-bus-request-name-connections-are-not-allowed-to-own-the-service
+
 * update/fix man-page
 
   -> rewrite the --ui-axismap, --ui-buttonmap section, currently kind
      of confusing
+
+  -> add --dbus documentation
 
 * add function that can handle PC game style inventories, i.e. 0-9
   keys by using less buttons (maybe do graphical overlay stuff):
@@ -176,8 +189,6 @@ libusb:warning [libusb_close] internal signalling write failed, closing anyway
   only they have send an event, any way to get activity status of the thing?
 
 * print which sub features are enabled: chatpad, force feedback, headset
-
-* make dbus optional, make --no-dbus an alias for --dbus NONE or --dbus false (easier for config file)
 
 * check force feedback
 
