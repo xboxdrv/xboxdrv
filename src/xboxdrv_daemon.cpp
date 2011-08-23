@@ -140,9 +140,37 @@ XboxdrvDaemon::run()
     udev_subsystem.set_device_callback(boost::bind(&XboxdrvDaemon::process_match, this, _1));
 
     boost::scoped_ptr<DBusSubsystem> dbus_subsystem;
-    if (m_opts.dbus)
+    if (m_opts.dbus != Options::kDBusDisabled)
     {
-      dbus_subsystem.reset(new DBusSubsystem("org.seul.Xboxdrv"));
+      DBusBusType dbus_bus_type;
+
+      switch(m_opts.dbus)
+      {
+        case Options::kDBusAuto:
+          if (getuid() == 0)
+          {
+            dbus_bus_type = DBUS_BUS_SYSTEM;
+          }
+          else
+          {
+            dbus_bus_type = DBUS_BUS_SESSION;
+          }
+          break;
+
+        case Options::kDBusSession:
+          dbus_bus_type = DBUS_BUS_SESSION;
+          break;
+
+        case Options::kDBusSystem:
+          dbus_bus_type = DBUS_BUS_SYSTEM;
+          break;
+
+        case Options::kDBusDisabled:
+          assert(!"should never happen");
+          break;
+      }
+
+      dbus_subsystem.reset(new DBusSubsystem("org.seul.Xboxdrv", dbus_bus_type));
       dbus_subsystem->register_xboxdrv_daemon(this);
       dbus_subsystem->register_controller_slots(m_controller_slots);
     }

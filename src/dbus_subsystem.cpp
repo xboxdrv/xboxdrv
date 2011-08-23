@@ -31,13 +31,13 @@
 #include "xboxdrv_daemon_glue.hpp"
 #include "xboxdrv_controller_glue.hpp"
 
-DBusSubsystem::DBusSubsystem(const std::string& name) :
+DBusSubsystem::DBusSubsystem(const std::string& name, DBusBusType bus_type) :
   m_connection()
 {
   GError* gerror = NULL;
 
   // this calls automatically sets up connection to the main loop
-  m_connection = dbus_g_bus_get(DBUS_BUS_SESSION, &gerror);
+  m_connection = dbus_g_bus_get(bus_type, &gerror);
   if (!m_connection)
   {
     std::ostringstream out;

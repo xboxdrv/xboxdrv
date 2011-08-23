@@ -245,24 +245,26 @@ Target for 0.9.0
   -> rewrite the --ui-axismap, --ui-buttonmap section, currently kind
      of confusing and overlapping with Input Event section
 
-* add function that can handle PC game style inventories, i.e. 0-9
-  keys by using less buttons (maybe do graphical overlay stuff):
+* test if its possible to mix cycle-key with macro: or other advanced
+  ButtonEvents
 
-  - next/prev button, either instant press, an activate button or
-    activate by timeout (to work around slow weapon change in some
-    games)
+* "--dbus system" currently does not work as expected
 
-  - graphical overlay that displays the current position
+$ sudo ./xboxdrv --daemon  --dbus system --quiet
+[ERROR] XboxdrvDaemon::run(): fatal exception: failed to get unique dbus name: Connection ":1.55" is not allowed to own the service "org.seul.Xboxdrv" due to security policies in the configuration file
+libusb:warning [libusb_close] internal signalling write failed, closing anyway
+libusb:warning [libusb_close] internal signalling write failed, closing anyway
+libusb:warning [libusb_close] internal signalling write failed, closing anyway
+libusb:warning [libusb_close] internal signalling write failed, closing anyway
 
-  - single button inventory: next, hold to activate
+ -> http://stackoverflow.com/questions/4560877/dbus-bus-request-name-connections-are-not-allowed-to-own-the-service
 
-  Possible Syntax (could need list of lists tokenizer):
+* update/fix man-page
 
-  --emitter inventory=(LB:RB):A:(KEY_1:KEY_2:KEY_3:KEY_4:KEY_5:KEY_6)
-                        ^  ^  ^  ^- button to which to toggle through
-                        |  |  `---- activate button
-                        |  `------- next button
-                        `---------- previous button
+  -> rewrite the --ui-axismap, --ui-buttonmap section, currently kind
+     of confusing
+
+  -> add --dbus documentation
 
 * cycle-key is incomplete, should have additional mode that allows
   next/prev without sending events, also has issues with stuck buttons
@@ -278,6 +280,17 @@ Target for 0.9.0
 
   -> add an option to have the cycle sequence not wrap around: 
      -> possible use: throttle in a flightsim mapped to 1-9
+
+  Possible future improvements:
+
+  - next/prev button that don't trigger the key, an activate button or
+    activate by timeout (to work around slow weapon change in some
+    games)
+
+  - graphical overlay that displays the current position
+    -> requires separate process
+
+  - single button inventory: next, hold to activate
 
 
 Target for 0.?.?
@@ -350,6 +363,57 @@ Target for 0.?.?
 
 * active wireless controller aren't detected on startup of the daemon,
   only they have send an event, any way to get activity status of the thing?
+
+* print which sub features are enabled: chatpad, force feedback, headset
+
+* check force feedback
+
+* rumble-test is broken completely
+
+* check output when --silent not given
+
+* check clean shutdown
+
+* check valgrind
+
+* check daemon
+
+* check autofire and other modifier that depend on time
+
+* test all controller
+
+* check that the child process works
+
+* check that uinput gets its timeout/update calls (send_rel_event)
+
+* cleanup a lot of the log_trace() and other temporary debug output
+
+* check that repeated wireless controller connects and disconnects work [done]
+
+* check that --quit works, currently broken
+
+* search for "#ifdef FIXME"
+
+* do proper error checking: 
+
+xboxdrv: src/usb_controller.cpp:218: void USBController::on_read_data(libusb_transfer*): Assertion `ret == LIBUSB_SUCCESS' failed.
+Aborted
+
+* exceptions in glib main loop might be dangerous and not really do what is intended
+
+* move sigint/sigterm handling out of main.cpp and into xboxdrv_daemon.cpp (needs to use gmain_quit())
+
+* LED do currently not get down on controller quit
+
+* move LED setting into ControllerThread or somewhere else, not at controller creation time
+
+* check that threads are cleaned up in daemon
+
+* go through checklist, disable headset and chatpad support for now,
+  do a source only release
+
+Stuff to do before 0.8.x release:
+=================================
 
 * add LD_PRELOAD joystick override hack to running xboxdrv with an app.exe
 

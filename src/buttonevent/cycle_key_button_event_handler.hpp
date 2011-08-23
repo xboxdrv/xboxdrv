@@ -32,8 +32,8 @@ private:
   static std::map<std::string, CycleKeySequencePtr> s_lookup_table;
 
 public:
-  static CycleKeyButtonEventHandler* from_string(const std::string& str);
-  static CycleKeyButtonEventHandler* from_string_named(const std::string& str);
+  static CycleKeyButtonEventHandler* from_string(const std::string& str, bool wrap_around);
+  static CycleKeyButtonEventHandler* from_string_named(const std::string& str, bool wrap_around);
 
   /** 
       Syntax: "{direction}:{press}"

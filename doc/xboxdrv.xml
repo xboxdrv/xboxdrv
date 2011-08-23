@@ -2034,6 +2034,7 @@ NAME       = STRING ;]]></programlisting>
 
         <varlistentry>
           <term><option>cycle-key-ref</option>:<replaceable>NAME</replaceable>:<replaceable>DIRECTION</replaceable></term>
+          <term><option>sequence-key-ref</option>:<replaceable>NAME</replaceable>:<replaceable>DIRECTION</replaceable></term>
           <listitem>
             <para>
               The <option>cycle-key-ref</option> handler will access
@@ -2045,6 +2046,30 @@ NAME       = STRING ;]]></programlisting>
             </para>
             <para>
               See <option>cycle-key-named</option> for a full example.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>sequence-key-named:<replaceable>NAME</replaceable>:<replaceable>KEY_EVENT</replaceable>:...</option></term>
+          <listitem>
+            <para>
+              The <option>sequence-key-named</option> works exactly
+              the same as the <option>cycle-key-named</option>, with
+              the only difference being that
+              the <option>sequence-key-named</option> will not wrap
+              around when reaching the beginning or end of the
+              sequence.
+            </para>
+            <para>
+              This behaviour is useful in flight simulations or other
+              games where thrusters might be controllered by numeric
+              keys and it wouldn't make much sense to jump from zero
+              to full thrust in one go.
+            </para>
+            <para>
+              To move backwards through the sequence another key must
+              be bound to <option>sequence-key-ref</option>.
             </para>
           </listitem>
         </varlistentry>

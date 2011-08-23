@@ -52,13 +52,13 @@ direction_from_string(const std::string& value)
 } // namespace
 
 CycleKeyButtonEventHandler*
-CycleKeyButtonEventHandler::from_string(const std::string& value)
+CycleKeyButtonEventHandler::from_string(const std::string& value, bool wrap_around)
 {
-  return from_string_named(":" + value);
+  return from_string_named(":" + value, wrap_around);
 }
 
 CycleKeyButtonEventHandler*
-CycleKeyButtonEventHandler::from_string_named(const std::string& value)
+CycleKeyButtonEventHandler::from_string_named(const std::string& value, bool wrap_around)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
@@ -71,7 +71,7 @@ CycleKeyButtonEventHandler::from_string_named(const std::string& value)
   else
   {
     std::string name = args[0];
-    CycleKeySequencePtr sequence = CycleKeySequence::from_range(args.begin()+1, args.end());
+    CycleKeySequencePtr sequence = CycleKeySequence::from_range(args.begin()+1, args.end(), wrap_around);
 
     // if name is empty, don't put it in the lookup table
     if (!name.empty())

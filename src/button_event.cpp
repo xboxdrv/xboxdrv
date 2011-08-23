@@ -100,13 +100,17 @@ ButtonEvent::from_string(const std::string& str, const std::string& directory)
   }
   else if (token == "cycle-key")
   {
-    return ButtonEvent::create(CycleKeyButtonEventHandler::from_string(rest));
+    return ButtonEvent::create(CycleKeyButtonEventHandler::from_string(rest, true));
   }
   else if (token == "cycle-key-named")
   {
-    return ButtonEvent::create(CycleKeyButtonEventHandler::from_string_named(rest));
+    return ButtonEvent::create(CycleKeyButtonEventHandler::from_string_named(rest, true));
   }
-  else if (token == "cycle-key-ref")
+  else if (token == "sequence-key-named" || token == "seq-key-named")
+  {
+    return ButtonEvent::create(CycleKeyButtonEventHandler::from_string_named(rest, false));
+  }
+  else if (token == "cycle-key-ref" || token == "seq-key-ref" || token == "sequence-key-ref")
   {
     return ButtonEvent::create(CycleKeyButtonEventHandler::from_string_ref(rest));
   }

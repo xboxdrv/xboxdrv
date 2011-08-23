@@ -32,11 +32,15 @@ class CycleKeySequence
 {
 public:
   static CycleKeySequencePtr from_range(std::vector<std::string>::const_iterator beg,
-                                        std::vector<std::string>::const_iterator end);
+                                        std::vector<std::string>::const_iterator end, 
+                                        bool wrap_around);
 
 private:
   typedef std::vector<UIEventSequence> Keys;
   Keys m_keys;
+  
+  /** If set the sequence wraps around when at the begin/end */
+  bool m_wrap_around;
 
   bool m_inited;
 
@@ -47,7 +51,7 @@ private:
   int m_last_key;
 
 public:
-  CycleKeySequence(const Keys& keys);
+  CycleKeySequence(const Keys& keys, bool wrap_around);
 
   bool has_current_key() const { return m_current_key != -1; }
 

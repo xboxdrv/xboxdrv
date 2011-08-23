@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 "12 August 2011" 0.9.0 "User Commands"
+.TH "xboxdrv " 1 "23 August 2011" 0.9.0 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -1416,7 +1416,7 @@ weapon keys forward, while B is used to toggle the keys backwards:
   \-\-ui\-buttonmap A=cycle\-key\-named:weapons:KEY_1:KEY_2:KEY_3:KEY_4,B=cycle\-key\-ref:weapons\*(T>
 .fi
 .TP 
-\*(T<\fBcycle\-key\-ref\fR\*(T>:\fINAME\fR:\fIDIRECTION\fR
+\*(T<\fBcycle\-key\-ref\fR\*(T>:\fINAME\fR:\fIDIRECTION\fR, \*(T<\fBsequence\-key\-ref\fR\*(T>:\fINAME\fR:\fIDIRECTION\fR
 The \*(T<\fBcycle\-key\-ref\fR\*(T> handler will access
 and reuse the named cycle keysequence given
 by \fINAME\fR.
@@ -1425,6 +1425,22 @@ If \fIDIRECTION\fR can either be
 will default to 'backward'.
 
 See \*(T<\fBcycle\-key\-named\fR\*(T> for a full example.
+.TP 
+\*(T<\fBsequence\-key\-named:\fR\*(T>\fINAME\fR\*(T<\fB:\fR\*(T>\fIKEY_EVENT\fR\*(T<\fB:...\fR\*(T>
+The \*(T<\fBsequence\-key\-named\fR\*(T> works exactly
+the same as the \*(T<\fBcycle\-key\-named\fR\*(T>, with
+the only difference being that
+the \*(T<\fBsequence\-key\-named\fR\*(T> will not wrap
+around when reaching the beginning or end of the
+sequence.
+
+This behaviour is useful in flight simulations or other
+games where thrusters might be controllered by numeric
+keys and it wouldn't make much sense to jump from zero
+to full thrust in one go.
+
+To move backwards through the sequence another key must
+be bound to \*(T<\fBsequence\-key\-ref\fR\*(T>.
 .TP 
 \*(T<\fBexec\fR\*(T>
 The exec button handler allows to launch an application
