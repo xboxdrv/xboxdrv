@@ -72,6 +72,9 @@ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-st
 Target for 0.8.3
 ================
 
+* test if its possible to mix cycle-key with macro: or other advanced
+  ButtonEvents
+
 * "--dbus system" currently does not work as expected
 
 $ sudo ./xboxdrv --daemon  --dbus system --quiet
@@ -90,25 +93,6 @@ libusb:warning [libusb_close] internal signalling write failed, closing anyway
 
   -> add --dbus documentation
 
-* add function that can handle PC game style inventories, i.e. 0-9
-  keys by using less buttons (maybe do graphical overlay stuff):
-
-  - next/prev button, either instant press, an activate button or
-    activate by timeout (to work around slow weapon change in some
-    games)
-
-  - graphical overlay that displays the current position
-
-  - single button inventory: next, hold to activate
-
-  Possible Syntax (could need list of lists tokenizer):
-
-  --emitter inventory=(LB:RB):A:(KEY_1:KEY_2:KEY_3:KEY_4:KEY_5:KEY_6)
-                        ^  ^  ^  ^- button to which to toggle through
-                        |  |  `---- activate button
-                        |  `------- next button
-                        `---------- previous button
-
 * cycle-key is incomplete, should have additional mode that allows
   next/prev without sending events, also has issues with stuck buttons
   when multiple keys are pressed
@@ -123,6 +107,17 @@ libusb:warning [libusb_close] internal signalling write failed, closing anyway
 
   -> add an option to have the cycle sequence not wrap around: 
      -> possible use: throttle in a flightsim mapped to 1-9
+
+  Possible future improvements:
+
+  - next/prev button that don't trigger the key, an activate button or
+    activate by timeout (to work around slow weapon change in some
+    games)
+
+  - graphical overlay that displays the current position
+    -> requires separate process
+
+  - single button inventory: next, hold to activate
 
 
 Target for 0.9.0
