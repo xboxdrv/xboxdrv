@@ -23,7 +23,10 @@
 
 #include <boost/function.hpp>
 #include <memory>
+
+extern "C" {
 #include <libudev.h>
+}
 
 class MessageProcessor;
 struct ControllerMessage;

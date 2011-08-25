@@ -20,7 +20,9 @@
 #define HEADER_XBOXDRV_UDEV_SUBSYSTEM_HPP
 
 #include <boost/function.hpp>
+extern "C" {
 #include <libudev.h>
+}
 #include <glib.h>
 
 class UdevSubsystem
