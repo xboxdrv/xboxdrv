@@ -19,7 +19,9 @@
 #ifndef HEADER_XBOXDRV_XBOXDRV_DAEMON_HPP
 #define HEADER_XBOXDRV_XBOXDRV_DAEMON_HPP
 
+extern "C" {
 #include <libudev.h>
+}
 #include <boost/scoped_ptr.hpp>
 #include <glib.h>
 
