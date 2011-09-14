@@ -76,7 +76,8 @@ KeyButtonEventHandler::KeyButtonEventHandler() :
   m_codes(),
   m_secondary_codes(),
   m_hold_threshold(0),
-  m_hold_counter(0)
+  m_hold_counter(0),
+  m_release_scheduled(false)
 {
 }
 
@@ -85,7 +86,8 @@ KeyButtonEventHandler::KeyButtonEventHandler(int device_id, int code) :
   m_codes(UIEvent::create(static_cast<uint16_t>(device_id), EV_KEY, code)),
   m_secondary_codes(),
   m_hold_threshold(0),
-  m_hold_counter(0)
+  m_hold_counter(0),
+  m_release_scheduled(false)
 {
 }
 
@@ -124,7 +126,7 @@ KeyButtonEventHandler::send(UInput& uinput, bool value)
         {
           // send both a press and release event after another, aka a "click"
           m_codes.send(uinput, true);
-          m_codes.send(uinput, false);
+          m_release_scheduled = 50;
         }
       }
       else
@@ -150,6 +152,17 @@ KeyButtonEventHandler::send(UInput& uinput, bool value)
 void
 KeyButtonEventHandler::update(UInput& uinput, int msec_delta) 
 {
+  if (m_release_scheduled)
+  {
+    m_release_scheduled -= msec_delta;
+
+    if (m_release_scheduled <= 0)
+    {
+      m_codes.send(uinput, false);
+      m_release_scheduled = 0;
+    }
+  }
+
   if (m_state && m_hold_threshold)
   {
     if (m_hold_counter < m_hold_threshold &&

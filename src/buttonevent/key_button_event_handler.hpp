@@ -42,8 +42,10 @@ private:
   bool m_state;
   UIEventSequence m_codes;
   UIEventSequence m_secondary_codes;
+
   int m_hold_threshold;
   int m_hold_counter;
+  int m_release_scheduled;
 };
 
 #endif
