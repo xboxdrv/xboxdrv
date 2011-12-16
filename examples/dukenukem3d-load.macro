@@ -1,0 +1,21 @@
+# Simple Macro that does a quickload
+
+# open save dialog
+send KEY_F3 1
+wait 50
+send KEY_F3 0
+wait 100
+
+# select save game
+send KEY_ENTER 1
+wait 50
+send KEY_ENTER 0
+wait 100
+
+# confirm overwrite
+send KEY_Y 1
+wait 50
+send KEY_Y 0
+wait 100
+
+# EOF #

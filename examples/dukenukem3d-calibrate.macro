@@ -1,0 +1,29 @@
+# Simple Macro that automate calibration in old DOS games
+
+send ABS_X 0
+send ABS_Y 0
+wait 500
+send JS_0 1
+wait 200
+send JS_0 0
+
+send ABS_X -32768
+send ABS_Y -32768
+wait 500
+send JS_0 1
+wait 200
+send JS_0 0
+
+send ABS_X 32767
+send ABS_Y 32767
+wait 500
+send JS_0 1
+wait 200
+send JS_0 0
+
+# reset joystick back to center so we don't end up spinning around
+wait 200
+send ABS_X 0
+send ABS_Y 0
+
+# EOF #

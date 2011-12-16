@@ -1,0 +1,67 @@
+# Duke Nukem 3D
+# =============
+#
+# Example configuration for Duke Nukem 3D running in Dosbox. 
+#
+# Configure Dosbox with:
+#
+# [joystick]
+# joysticktype = 4axis
+
+[xboxdrv]
+ui-clear=true
+extra-events=false
+
+[modifier]
+dpad-restrictor=fourway
+
+[ui-buttonmap]
+A=JS_1 # jump
+B=JS_3 # quickkick
+X=JS_2 # open
+Y=KEY_ENTER # inventory
+
+# guide=macro:save.macro # quicksave
+# start=macro:load.macro # quickload
+lb+rb+guide=macro:dukenukem3d-calibrate.macro
+rb+back=macro:dukenukem3d-load.macro
+rb+start=macro:dukenukem3d-save.macro
+start=KEY_ESC
+back=KEY_TAB # display automap
+
+LT=KEY_SPACE
+RT=JS_0
+
+LB=KEY_LEFTSHIFT
+# RB= modifier
+
+# thumb click
+TL^toggle=KEY_Z # crouch
+TR=KEY_KP5 # center view
+
+# weapon switching
+# du=cycle-key:KEY_1:KEY_5:KEY_9
+# dr=cycle-key:KEY_2:KEY_6
+# dd=cycle-key:KEY_3:KEY_7:KEY_0
+# dl=cycle-key:KEY_4:KEY_8
+du=KEY_2:KEY_6:500
+dr=KEY_3:KEY_7:500
+dd=KEY_4:KEY_8:500
+dl=KEY_5:KEY_9:500
+
+rb+du=KEY_J:KEY_H:500 # jetpack/holo duke
+rb+dr=KEY_M # medkit
+rb+dd=KEY_N # night vision
+rb+dl=KEY_R # jetpack
+
+rb+x=KEY_LEFTBRACE
+rb+b=KEY_RIGHTBRACE
+rb+A=KEY_ENTER
+
+[ui-axismap]
+X1^dead:12000=KEY_COMMA:KEY_DOT
+Y1=ABS_Y
+X2^sen:-0.5=ABS_X
+Y2^dead:12000=KEY_END:KEY_HOME
+
+# EOF #

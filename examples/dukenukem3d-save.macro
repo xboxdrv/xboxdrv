@@ -1,0 +1,27 @@
+# Simple Macro that does a quicksave
+
+# open save dialog
+send KEY_F2 1
+wait 50
+send KEY_F2 0
+wait 100
+
+# select save game
+send KEY_ENTER 1
+wait 50
+send KEY_ENTER 0
+wait 100
+
+# confirm overwrite
+send KEY_Y 1
+wait 50
+send KEY_Y 0
+wait 100
+
+# confirm save game name
+send KEY_ENTER 1
+wait 50
+send KEY_ENTER 0
+wait 100
+
+# EOF #
