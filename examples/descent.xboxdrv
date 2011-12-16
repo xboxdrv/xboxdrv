@@ -1,0 +1,70 @@
+# Descent 1 - Dosbox
+# ==================
+#
+# Example configuration for Descent 1 running in Dosbox. 
+#
+# Configure Dosbox with:
+#
+# [joystick]
+# joysticktype = 4axis
+
+[xboxdrv]
+ui-clear=true
+extra-events=false
+
+[modifier]
+dpad-restrictor=fourway
+
+[ui-buttonmap]
+A=JS_0 # fire flare
+B=JS_1 # drop bomb
+# X=KEY_LEFTSHIFT+KEY_F4 # guide bot menu
+# Y=JS_3
+
+guide=macro:save.macro # quicksave
+start=macro:load.macro # quickload
+back=KEY_TAB # display automap
+
+# Descent saves the calibration, so we have to calibrate only once
+# guide=macro:calibrate.macro
+
+LT=KEY_SPACE    # fire missile
+RT=KEY_LEFTCTRL # fire laser
+
+LB=KEY_KPPLUS   # slide up
+RB=KEY_KPMINUS  # slide down
+
+dl=KEY_KP7 # roll left
+dr=KEY_KP9 # roll right
+
+# du=KEY_COMMA # toggle primary
+# dd=KEY_DOT   # toggle secondary
+
+TL=KEY_S # afterburner
+TR=KEY_H # headlights
+
+# guide bot commands
+X+du=KEY_LEFTSHIFT+KEY_0:KEY_LEFTSHIFT+KEY_8:500 # next-goal, my powerups
+X+dd=KEY_LEFTSHIFT+KEY_6:KEY_LEFTSHIFT+KEY_5:500 # hostagers, robot
+X+dl=KEY_LEFTSHIFT+KEY_3:KEY_LEFTSHIFT+KEY_4:500 # shield, any powerup
+X+dr=KEY_LEFTSHIFT+KEY_2:KEY_LEFTSHIFT+KEY_1:500 # energy center, energy
+
+# weapon switching
+du=KEY_1 # laser
+dd=KEY_6 # missile
+
+Y+dl=KEY_2:KEY_7:500 # vulcan, home
+Y+dr=KEY_3:KEY_9:500 # spread, merc
+
+Y+du=KEY_4:KEY_8:500 # plasma, bomb
+Y+dd=KEY_5:KEY_0:500 # fusion, mega
+
+X+Y=KEY_T # energy transfer
+
+[ui-axismap]
+X1^dead:4000=ABS_X  # slide left/right
+Y1^dead:4000=ABS_Y  # accelerate/revers
+X2^dead:4000=ABS_RX # pitch up/down
+Y2^dead:4000=ABS_RY # turn left/right
+
+# EOF #
