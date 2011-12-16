@@ -1,0 +1,67 @@
+# Wing Commander
+# ==============
+# 
+# Configuration for Wing Commander running in Dosbox
+
+[xboxdrv]
+square-axis = true
+ui-clear=true
+extra-events=false
+
+[ui-axismap]
+x1=ABS_X
+y1=ABS_Y
+
+x2=key:KEY_KP0:KEY_KPDOT:16000      # ruddle
+y2=key:KEY_KPPLUS:KEY_KPMINUS:16000 # throttle
+
+lt=key:KEY_ENTER:1 # fire missile
+rt=key:JS_0:1 # fire laser
+
+[ui-buttonmap]
+du=KEY_G # change gun
+dd=KEY_W # change weapon/missile
+dr=KEY_D # damage report
+dl=KEY_C # comm system
+
+A=JS_0
+B=KEY_ESC
+X=KEY_T # target
+Y=KEY_L # lock target
+
+TR=KEY_TAB
+
+LB+du=KEY_F1 # cockpit view
+LB+dr=KEY_F3 # cockpit right view
+LB+dd=KEY_F4 # cockpit back view
+LB+dl=KEY_F2 # cockpit left view
+
+LB+Y=KEY_F5 # chase cam
+LB+B=KEY_F6 # battle cam
+LB+A=KEY_F7 # tactical cam
+LB+X=KEY_F8 # missile cam
+
+LB+start=KEY_F9 # tail cam
+
+RB+A=KEY_1 # comm 1
+RB+B=KEY_2 # comm 2
+RB+X=KEY_3 # comm 3
+RB+Y=KEY_4 # comm 4
+
+RB+du=KEY_5 # comm 5
+RB+dr=KEY_6 # comm 6
+RB+dd=KEY_7 # comm 7
+RB+dl=KEY_8 # comm 8
+
+back=KEY_N
+start=KEY_P
+guide=KEY_A
+lb+guide=KEY_LEFTCTRL+KEY_E
+rb+guide=KEY_LEFTCTRL+KEY_E
+
+[modifier]
+dpad-restrictor=fourway
+square=x1:y1
+4wayrest=x2:y2
+
+# EOF #
