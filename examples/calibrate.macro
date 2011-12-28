@@ -1,5 +1,19 @@
-# Simple Macro that automate calibration in old DOS games
+# Calibration Macro
+# =================
+#
+# Simple macro that can be bound to a button to automate calibration
+# in old DOS games. It simply moves the stick to the center and the
+# corner and presses a button to confirm it.
+#
+# This is useful as modern gamepads have a circular movement range,
+# thus making it hard to precisely hitten the top/left or bottom/right
+# corner, leading to accidental miscalibration.
+#
+# Note that different games handle calibration all a little different,
+# so this macro will not work out of the box, but need a little
+# adjustment.
 
+# move joystick into center 
 send ABS_X 0
 send ABS_Y 0
 wait 500
@@ -7,6 +21,7 @@ send JS_0 1
 wait 200
 send JS_0 0
 
+# move joystick to top/left
 send ABS_X -32768
 send ABS_Y -32768
 wait 500
@@ -14,6 +29,7 @@ send JS_0 1
 wait 200
 send JS_0 0
 
+# move joystick to bottom/right
 send ABS_X 32767
 send ABS_Y 32767
 wait 500
@@ -21,6 +37,7 @@ send JS_0 1
 wait 200
 send JS_0 0
 
+# move joystick to center
 send ABS_X 0
 send ABS_Y 0
 wait 500
