@@ -75,6 +75,21 @@ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-st
 Target for 0.8.3
 ================
 
+* support arguments in exec via quoting:
+
+  --ui-buttonmap du=exec:/usr/bin/script:Arg1:Arg2:Arg3
+  --ui-buttonmap du=exec:/usr/bin/script:[Arg1:Arg2:Arg3]
+  
+  - what about more common quoting style:
+
+  --ui-buttonmap du=exec:"/usr/bin/script":"Arg1":"Arg2":"Arg3"
+
+    -> bad idea, as the " are eaten by bash, thus one would need double quots
+
+  --ui-buttonmap 'du=exec:"/usr/bin/script":"Arg1":"Arg2":"Arg3"'
+
+* [BUG] force feedback seems to be on the wrong evdev device!
+
 * print warning or something when people don't use rel with -1
 
 * update Standards-Version in the Ubuntu packages
@@ -194,15 +209,23 @@ Virtual Keyboard
 Target for 0.9.0
 ================
 
-* make --led X part of the --config, that would allow free LED switching
+* add support for multiple Wiimotes
 
-* add battery status as axis output
+  -> can CWiid listen to multiple ones at once or does it need an Addr for that?
 
-* wireless controller LED should be reset on connect
+* cleanup all the assert("not implemented")/assert("implement me");
 
-* "--ui-buttonmap=void" style button events are broken
+* set_axis_float(foo, 0) does not result in a 0 value due to two-complement
 
-* allow something like:
+* cleanup axis, half-axis and rel events
+
+  -> Linux doesn't handle half-axis special
+
+  -> some filter might need to know if its a half axis or not
+
+  -> CompressHalfAxisFilter?
+
+* allow something like [done, test it some more]:
 
   void=BTN_A
 
@@ -219,22 +242,32 @@ Target for 0.9.0
 
     ButtonCombination::from_string("void") -> ButtonCombination() could be the solution
 
-* add AxisJoinModifier, take two half-axis and make a whole (trigger-as-zaxis style)
+* implement AxisEvent::send_clear()
 
-* add AxisSplitModifier, take a full-axis and make two half ones out
-  of it (break left analog-stick into ABS_GAS and ABS_BREAK)
+* rewrite AxisMap to support unlimited number of shift key
+
+* implement ButtonEventPtr ButtonMap::lookup(const ButtonCombination& buttons) const;
+
+
+
+* check if key_copy_modifier is needed or if it could be done with
+  axismap/buttonmap
+
+* add --clear-buttonmap, --clear-axismap
+
+* make --led X part of the --config, that would allow free LED switching
+
+* add battery status as axis output
+
+* wireless controller LED should be reset on connect
+
+* "--ui-buttonmap=void" style button events are broken
 
 * Playstation3 Controller ignores its analog data and doesn't record it into ControllerMsg
 
 * don't bother with virtualkeyboard, just make it basically functional, not polished
 
 * cleanup event output, add ControllerMessageDescription or something like that
-
-* implement AxisEvent::send_clear()
-
-* rewrite AxisMap to support unlimited number of shift key
-
-* implement ButtonEventPtr ButtonMap::lookup(const ButtonCombination& buttons) const;
 
 * check that Playstation3 controller works with new ControllerMessage
 
@@ -291,6 +324,8 @@ libusb:warning [libusb_close] internal signalling write failed, closing anyway
     -> requires separate process
 
   - single button inventory: next, hold to activate
+
+* d-bus requires X11?! -> try system bus when running as root
 
 
 Target for 0.?.?
@@ -459,13 +494,13 @@ make: *** [xboxdrv] Error 2
 
 * space is currently illegal, but shouldn't be "GUIDE = KEY_LEFTALT + KEY_E" 
 
-* write macro that calibrates the joystick for DOS games
-
 * extra-devices adds a button when one only uses JS_0 buttons, shouldn't happen
+
+  -> or maybe it should, as not only the kernel matters, but also SDL
 
 * invert y axis on --evdev
 
-* add double-click button, in the same wayne as hold-button
+* add double-click button, in the same way as hold-button
 
 * add --controller 4 or --controller-count 4 or something like that
 
@@ -476,8 +511,6 @@ make: *** [xboxdrv] Error 2
 * deadzone:MIN:MAX:SMOOTH is broken (fixed)
 
 * deadzone filter documentation is wrong
-
-* d-bus requires X11?! -> try system bus when running as root
 
 Autolaunch error: X11 initialization failed." failed to open connection to bus: /bin/dbus-launch terminated abnormally with the following error: Autolaunch error: X11 initialization failed.
 
