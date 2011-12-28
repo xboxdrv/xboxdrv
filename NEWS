@@ -6,6 +6,12 @@ xboxdrv 0.9.0 - (??/Aug/2011)
 * added Logitech Gamepad F310 support
 * added support for unbound button events, i.e. "--ui-buttonmap =KEY_ESC"
 * added delay button filter
+* added Xbox Airflo wired controller support
+* added Razer Onza support
+* added Descent configuration
+* added Wing Commander configuration
+* added Duke Nukem 3D configuration
+* fixed incorrect axis being used in 4wayrest modifier
 
 
 xboxdrv 0.8.2 - (07/Aug/2011)
