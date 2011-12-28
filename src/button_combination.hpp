@@ -47,6 +47,7 @@ public:
 
   void print(std::ostream& os) const;
 
+  bool empty() const;
   bool operator==(const ButtonCombination&) const;
 
 private:

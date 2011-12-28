@@ -120,6 +120,12 @@ ButtonCombination::print(std::ostream& os) const
 }
 
 bool
+ButtonCombination::empty() const
+{
+  return m_buttons.empty();
+}
+
+bool
 ButtonCombination::operator==(const ButtonCombination& rhs) const
 {
   if (m_buttons.size() != rhs.m_buttons.size())
