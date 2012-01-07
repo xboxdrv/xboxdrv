@@ -1,0 +1,38 @@
+# Unbound Events
+# ==============
+#
+# Simple example that demonstrates unbound axis and button events.
+# These events have an empty left hand side and aren't bound to any
+# key or axis, in turn this means that they can't be triggered via
+# regular means.
+#
+# Unbound events are useful in cases where an application uses the
+# existance of specific events to determine how to handle an device,
+# both the kernel and SDL for example decide if a virtual device is a
+# joystick by the present of ABS_X, ABS_Y and BTN_JOYSTICK.
+#
+# Other uses for unbound events are "cycle-key-named", where it is
+# useful to create a named cycle key without attaching it to a button
+# and "const" filter where it can be used to set a specific events to
+# a fixed value.
+#
+# By default, xboxdrv will automatically add extra event needed for
+# most common use cases, a behaviour that can be disabled with
+# --no-extra-events if one wants more control.
+
+[xboxdrv]
+ui-clear=true
+
+[ui-buttonmap]
+void^const:1=BTN_A
+^const:1=BTN_B
+^const:1^auto:200=BTN_C
+
+# void=BTN_X
+# void=BTN_Y
+# void=BTN_Z
+
+[ui-axismap]
+
+
+# EOF #
