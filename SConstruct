@@ -160,6 +160,7 @@ if conf.CheckPKG('gtk+-2.0'):
     gtk_env['BUILD_VIRTUALKEYBOARD'] = True
 else:
     gtk_env['BUILD_VIRTUALKEYBOARD'] = False
+    print "gtk+-2.0 not found, virtualkeyboard will not be build"
     
 gtk_env = conf.Finish()
 
