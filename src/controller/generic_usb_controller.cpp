@@ -37,26 +37,46 @@ GenericUSBController::GenericUSBController(libusb_device* dev,
   }
   else
   {
-    if (config->bNumInterfaces == 0)
+    print(config, std::cout);
+    
+    if (config->bNumInterfaces <= m_interface)
     {
-      raise_exception(std::runtime_error, "no interfaces available");
+      raise_exception(std::runtime_error, "interface " << m_interface << " not available");
     }
     
-    if (config->interface[0].num_altsetting == 0)
+    if (config->interface[m_interface].num_altsetting == 0)
     {
       raise_exception(std::runtime_error, "no interface descriptors available");
     }
-
-    if (config->interface[0].altsetting[0].bNumEndpoints <= m_endpoint)
+   
+    // search for the given endpoint
+    const libusb_endpoint_descriptor* ep = 0;
+    for(int i = 0; i < config->interface[m_interface].altsetting[0].bNumEndpoints; ++i)
     {
-      raise_exception(std::runtime_error, "endpoint not available");
+      ep = &(config->interface[m_interface].altsetting[0].endpoint[i]);
+      
+      if ((ep->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK) == m_endpoint)
+      {
+        break;
+      }
+      else
+      {
+        ep = 0;
+      }
     }
 
-    uint16_t wMaxPacketSize = config->interface[0].altsetting[0].endpoint[m_endpoint].wMaxPacketSize;
+    if (!ep)
+    {
+      raise_exception(std::runtime_error, "endpoint " << m_endpoint << " not available");
+    }
+    else
+    {
+      uint16_t wMaxPacketSize = ep->wMaxPacketSize;
 
-    log_debug("wMaxPacketSize: " << wMaxPacketSize);
-    usb_claim_interface(m_interface, try_detach);
-    usb_submit_read(m_endpoint, wMaxPacketSize);
+      log_debug("wMaxPacketSize: " << wMaxPacketSize);
+      usb_claim_interface(m_interface, try_detach);
+      usb_submit_read(m_endpoint, wMaxPacketSize);
+    }
   }
 }
 
@@ -64,6 +84,27 @@ GenericUSBController::~GenericUSBController()
 {
   usb_cancel_read();
   usb_release_interface(m_interface);
+}
+
+void
+GenericUSBController::print(libusb_config_descriptor* cfg, std::ostream& out) const
+{
+  for(int i = 0; i < cfg->bNumInterfaces; ++i)
+  {
+    std::cout << "Interface " << i << std::endl;
+    for(int j = 0; j < cfg->interface[i].num_altsetting; ++j)
+    {
+      std::cout << "  AltSetting " << j << std::endl;
+      for(int k = 0; k < cfg->interface[i].altsetting[j].bNumEndpoints; ++k)
+      {
+        const libusb_endpoint_descriptor& ep = cfg->interface[i].altsetting[j].endpoint[k];
+        std::cout << "    Endpoint " << k << " " 
+                  << static_cast<int>(ep.bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK)
+                  << ((ep.bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? " IN" : " OUT")
+                  << std::endl;
+      }
+    }
+  }
 }
 
 void

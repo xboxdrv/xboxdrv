@@ -40,6 +40,9 @@ public:
   bool parse(uint8_t* data, int len, ControllerMessage* msg_out);
 
 private:
+  void print(libusb_config_descriptor* config, std::ostream& out) const;
+
+private:
   GenericUSBController(const GenericUSBController&);
   GenericUSBController& operator=(const GenericUSBController&);
 };
