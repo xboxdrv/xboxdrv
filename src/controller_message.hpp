@@ -20,6 +20,7 @@
 #define HEADER_XBOXDRV_CONTROLLER_MESSAGE_HPP
 
 #include <bitset>
+#include <linux/input.h>
 
 #include "xboxmsg.hpp"
 
@@ -27,6 +28,7 @@ class ControllerMessage
 {
 private:
   int  m_axis_state[XBOX_AXIS_MAX];
+  int  m_rel_state[REL_CNT];
   std::bitset<XBOX_BTN_MAX> m_button_state;
 
   std::bitset<XBOX_AXIS_MAX> m_axis_set;
@@ -46,6 +48,9 @@ public:
   int  get_axis(XboxAxis axis) const;
   void set_axis(XboxAxis axis, int v);
 
+  int get_rel(int rel) const;
+  void set_rel(int rel, int v);
+
   float get_axis_float(XboxAxis axis) const;
   void  set_axis_float(XboxAxis axis, float v);
 
@@ -60,6 +65,10 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& out, const ControllerMessage& msg);
+
+std::ostream& format_playstation3(std::ostream& out, const ControllerMessage& msg);
+std::ostream& format_xbox360(std::ostream& out, const ControllerMessage& msg);
+std::ostream& format_xbox(std::ostream& out, const ControllerMessage& msg);
 
 #endif
 

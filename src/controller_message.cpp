@@ -18,10 +18,11 @@
 
 #include "controller_message.hpp"
 
-#include <string.h>
-#include <assert.h>
 #include <algorithm>
+#include <assert.h>
+#include <boost/format.hpp>
 #include <ostream>
+#include <string.h>
 
 #include "helper.hpp"
 
@@ -188,6 +189,18 @@ ControllerMessage::set_axis_float(XboxAxis axis, float v)
   m_axis_state[axis] = from_float(v, get_axis_min(axis), get_axis_max(axis));
 }
 
+int
+ControllerMessage::get_rel(int rel) const
+{
+  return m_rel_state[rel];
+}
+
+void
+ControllerMessage::set_rel(int rel, int v)
+{
+  m_rel_state[rel] = v;
+}
+
 bool
 ControllerMessage::axis_is_set(XboxAxis axis) const
 {
@@ -342,5 +355,116 @@ std::ostream& operator<<(std::ostream& out, const ControllerMessage& msg)
   
   return out;
 }
+
+std::ostream& format_playstation3(std::ostream& out, const ControllerMessage& msg)
+{
+  out << boost::format("X1:%3d Y1:%3d")
+    % int(msg.get_axis(XBOX_AXIS_X1)) % int(msg.get_axis(XBOX_AXIS_Y1));
 
+  out << boost::format("  X2:%3d Y2:%3d")
+    % int(msg.get_axis(XBOX_AXIS_X2)) % int(msg.get_axis(XBOX_AXIS_Y2));
+#if 0
+  // FIXME: analog data gets currently not recorded in the message
+  out << boost::format("  du:%3d dd:%3d dl:%3d dr:%3d")
+    % int(msg.a_dpad_up)
+    % int(msg.a_dpad_down)
+    % int(msg.a_dpad_left)
+    % int(msg.a_dpad_right);
+
+  out << "  select:" << msg.select;
+  out << " ps:" << msg.playstation;
+  out << " start:" << msg.start;
+
+  out << boost::format("  L3:%d R3:%d") % static_cast<int>(msg.l3) % static_cast<int>(msg.r3);
+
+  out << boost::format("  /\\:%3d O:%3d X:%3d []:%3d  L1:%3d R1:%3d")
+    % static_cast<int>(msg.a_triangle)
+    % static_cast<int>(msg.a_circle)
+    % static_cast<int>(msg.a_cross)
+    % static_cast<int>(msg.a_square)
+    % static_cast<int>(msg.a_l1)
+    % static_cast<int>(msg.a_r1);
+
+  out << boost::format("  L2:%3d R2:%3d")
+    % int(msg.a_l2) % int(msg.a_r2);
+#endif
+  return out;
+}
+
+std::ostream& format_xbox360(std::ostream& out, const ControllerMessage& msg)
+{
+  out << boost::format("X1:%6d Y1:%6d") 
+    % int(msg.get_axis(XBOX_AXIS_X1)) % int(msg.get_axis(XBOX_AXIS_Y1));
+
+  out << boost::format("  X2:%6d Y2:%6d")
+    % int(msg.get_axis(XBOX_AXIS_X2)) % int(msg.get_axis(XBOX_AXIS_Y2));
+                          
+  out << boost::format("  du:%d dd:%d dl:%d dr:%d")
+    % int(msg.get_button(XBOX_DPAD_UP))
+    % int(msg.get_button(XBOX_DPAD_DOWN))
+    % int(msg.get_button(XBOX_DPAD_LEFT))
+    % int(msg.get_button(XBOX_DPAD_RIGHT));
+
+  out << "  back:" << msg.get_button(XBOX_BTN_BACK);
+  out << " guide:" << msg.get_button(XBOX_BTN_GUIDE);
+  out << " start:" << msg.get_button(XBOX_BTN_START);
+
+  out << "  TL:" << msg.get_button(XBOX_BTN_THUMB_L);
+  out << " TR:"  << msg.get_button(XBOX_BTN_THUMB_R);
+
+  out << "  A:" << msg.get_button(XBOX_BTN_A);
+  out << " B:"  << msg.get_button(XBOX_BTN_B);
+  out << " X:"  << msg.get_button(XBOX_BTN_X);
+  out << " Y:"  << msg.get_button(XBOX_BTN_Y);
+  
+  out << "  LB:" << msg.get_button(XBOX_BTN_LB);
+  out << " RB:" <<  msg.get_button(XBOX_BTN_RB);
+
+  out << boost::format("  LT:%3d RT:%3d")
+    % int(msg.get_button(XBOX_BTN_LT)) % int(msg.get_button(XBOX_BTN_RT));
+
+  // out << " Dummy: " << msg.dummy1 << " " << msg.dummy2 << " " << msg.dummy3;
+
+  return out;
+}
+
+std::ostream& format_xbox(std::ostream& out, const ControllerMessage& msg) 
+{
+  out << boost::format(" X1:%6d Y1:%6d  X2:%6d Y2:%6d "
+                       " du:%d dd:%d dl:%d dr:%d "
+                       " start:%d back:%d "
+                       " TL:%d TR:%d "
+                       " A:%3d B:%3d X:%3d Y:%3d "
+                       " black:%3d white:%3d "
+                       " LT:%3d RT:%3d ")
+    % int(msg.get_axis(XBOX_AXIS_X1)) % int(msg.get_axis(XBOX_AXIS_Y1))
+    % int(msg.get_axis(XBOX_AXIS_X2)) % int(msg.get_axis(XBOX_AXIS_Y2))
+
+    % int(msg.get_button(XBOX_DPAD_UP))
+    % int(msg.get_button(XBOX_DPAD_DOWN))
+    % int(msg.get_button(XBOX_DPAD_LEFT))
+    % int(msg.get_button(XBOX_DPAD_RIGHT))
+
+    % int(msg.get_button(XBOX_BTN_START))
+    % int(msg.get_button(XBOX_BTN_BACK))
+
+    % int(msg.get_button(XBOX_BTN_THUMB_L))
+    % int(msg.get_button(XBOX_BTN_THUMB_R))
+
+    % int(msg.get_axis(XBOX_AXIS_A))
+    % int(msg.get_axis(XBOX_AXIS_B))
+    % int(msg.get_axis(XBOX_AXIS_X))
+    % int(msg.get_axis(XBOX_AXIS_Y))
+
+    % int(msg.get_axis(XBOX_AXIS_BLACK))
+    % int(msg.get_axis(XBOX_AXIS_WHITE))
+
+    % int(msg.get_axis(XBOX_AXIS_LT))
+    % int(msg.get_axis(XBOX_AXIS_RT));
+
+  // out << " Dummy: " << msg.dummy;
+
+  return out;
+}
+
 /* EOF */
