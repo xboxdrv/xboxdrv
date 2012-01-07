@@ -1,6 +1,6 @@
 # -*- python -*-
 
-env = Environment(CPPFLAGS=["-g", "-O2", "-Wall"])
+env = Environment(CXXFLAGS=["-g", "-O2", "-Wall"])
 env.Program("jstest", ["jstest.c"])
 env.Program("evtest", ["evtest.c"])
 env.Program("usbcat", ["usbcat.cpp"], LIBS = ["usb"])
@@ -8,5 +8,23 @@ env.Program("usbdebug", ["usbdebug.cpp"], LIBS = ["usb", "pthread"])
 env.Program("evtestplus", ["evtestplus.cpp"])
 env.Program("evsend", ["evsend.cpp"])
 env.Program("usbtool", ["usbtool.c"])
+
+wiimote_env = Environment(CXXFLAGS = [ "-O3",
+                                       "-g3",
+                                       "-ansi",
+                                       "-pedantic",
+                                       "-Wall",
+                                       "-Wextra",
+                                       "-Werror",
+                                       "-Wnon-virtual-dtor",
+                                       "-Weffc++",
+                                       # "-Wunreachable-code",
+                                       "-Wconversion",
+                                       "-Wold-style-cast",
+                                       "-Wshadow",
+                                       "-Wcast-qual",
+                                       "-Winit-self", # only works with >= -O1
+                                       "-Wno-unused-parameter"])
+wiimote_env.Program("wiimote", ["wiimote.cpp"])
 
 # EOF #
