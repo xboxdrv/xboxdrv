@@ -105,7 +105,7 @@ Xbox360Controller::set_led_real(uint8_t status)
 }
 
 bool
-Xbox360Controller::parse(uint8_t* data, int len, ControllerMessage* msg_out)
+Xbox360Controller::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
 {
   if (len == 0)
   {

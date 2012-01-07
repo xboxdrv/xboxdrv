@@ -53,7 +53,7 @@ uint16_t hexstr2uint16(const std::string& str)
   return static_cast<uint16_t>(hexstr2int(str));
 }
 
-std::string raw2str(uint8_t* data, int len)
+std::string raw2str(const uint8_t* data, int len)
 {
   std::ostringstream out;
   out << "len: " << len 

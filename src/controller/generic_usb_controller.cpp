@@ -120,7 +120,7 @@ GenericUSBController::set_led_real(uint8_t status)
 }
 
 bool
-GenericUSBController::parse(uint8_t* data, int len, ControllerMessage* msg_out)
+GenericUSBController::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
 {
   std::cout << "GenericUSBController:parse(): " << raw2str(data, len) << std::endl;
   return false;

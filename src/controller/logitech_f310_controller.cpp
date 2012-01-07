@@ -54,7 +54,7 @@ LogitechF310Controller::set_led_real(uint8_t status)
 }
 
 bool
-LogitechF310Controller::parse(uint8_t* data, int len, ControllerMessage* msg_out)
+LogitechF310Controller::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
 {
   if (len == 20)
   {

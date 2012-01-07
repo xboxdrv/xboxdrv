@@ -55,7 +55,7 @@ public:
 
   void set_rumble_real(uint8_t left, uint8_t right);
   void set_led_real(uint8_t status);
-  bool parse(uint8_t* data, int len, ControllerMessage* msg_out);
+  bool parse(const uint8_t* data, int len, ControllerMessage* msg_out);
 
 private:
   Xbox360Controller (const Xbox360Controller&);

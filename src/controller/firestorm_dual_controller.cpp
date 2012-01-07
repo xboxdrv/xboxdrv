@@ -126,7 +126,7 @@ FirestormDualController::set_led_real(uint8_t status)
 }
 
 bool
-FirestormDualController::parse_vsb(uint8_t* data_in, int len, ControllerMessage* msg_out)
+FirestormDualController::parse_vsb(const uint8_t* data_in, int len, ControllerMessage* msg_out)
 {
   if (len == 6)
   {
@@ -182,7 +182,7 @@ FirestormDualController::parse_vsb(uint8_t* data_in, int len, ControllerMessage*
 }
 
 bool
-FirestormDualController::parse_default(uint8_t* data_in, int len, ControllerMessage* msg_out)
+FirestormDualController::parse_default(const uint8_t* data_in, int len, ControllerMessage* msg_out)
 {
   if (len == 7)
   {
@@ -237,7 +237,7 @@ FirestormDualController::parse_default(uint8_t* data_in, int len, ControllerMess
 }
 
 bool
-FirestormDualController::parse(uint8_t* data, int len, ControllerMessage* msg_out)
+FirestormDualController::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
 {
   if (is_vsb)
   {
