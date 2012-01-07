@@ -62,6 +62,7 @@ Acc2AxisModifier::update(int msec_delta, ControllerMessage& msg)
   float rx = (atan2f(az, ax) - static_cast<float>(M_PI)/2.0f) * -1.0f;
   float ry = (atan2f(az, ay) - static_cast<float>(M_PI)/2.0f) * -1.0f;
 
+  // FIXME: to simplistic, need a better way to normalize the angles
   // normalize the range from [-pi/2, 3/2pi] to [-pi,pi]
   if (rx > static_cast<float>(M_PI))
     rx -= static_cast<float>(M_PI*2.0);
