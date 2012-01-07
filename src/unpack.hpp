@@ -46,60 +46,60 @@ inline uint32_t swap32(uint32_t v)
 }
 
 
-inline int16_t int16le(uint8_t* data)
+inline int16_t int16le(const uint8_t* data)
 {
-  if (is_big_endian()) return swap16(*reinterpret_cast<int16_t*>(data));
-  else                 return *reinterpret_cast<int16_t*>(data);
+  if (is_big_endian()) return swap16(*reinterpret_cast<const int16_t*>(data));
+  else                 return *reinterpret_cast<const int16_t*>(data);
 }
 
-inline uint16_t uint16le(uint8_t* data)
+inline uint16_t uint16le(const uint8_t* data)
 {
-  if (is_big_endian()) return swap16(*reinterpret_cast<uint16_t*>(data));
-  else                 return *reinterpret_cast<uint16_t*>(data);
-}
-
-
-inline int32_t int32le(uint8_t* data)
-{
-  if (is_big_endian()) return swap32(*reinterpret_cast<int32_t*>(data));
-  else                 return *reinterpret_cast<int32_t*>(data);
-}
-
-inline uint32_t uint32le(uint8_t* data)
-{
-  if (is_big_endian()) return swap32(*reinterpret_cast<uint32_t*>(data));
-  else                 return *reinterpret_cast<uint32_t*>(data);
+  if (is_big_endian()) return swap16(*reinterpret_cast<const uint16_t*>(data));
+  else                 return *reinterpret_cast<const uint16_t*>(data);
 }
 
 
-
-inline int16_t int16be(uint8_t* data)
+inline int32_t int32le(const uint8_t* data)
 {
-  if (!is_big_endian()) return swap16(*reinterpret_cast<int16_t*>(data));
-  else                  return *reinterpret_cast<int16_t*>(data);
+  if (is_big_endian()) return swap32(*reinterpret_cast<const int32_t*>(data));
+  else                 return *reinterpret_cast<const int32_t*>(data);
 }
 
-inline uint16_t uint16be(uint8_t* data)
+inline uint32_t uint32le(const uint8_t* data)
 {
-  if (!is_big_endian()) return swap16(*reinterpret_cast<uint16_t*>(data));
-  else                  return *reinterpret_cast<uint16_t*>(data);
-}
-
-
-inline int32_t int32be(uint8_t* data)
-{
-  if (!is_big_endian()) return swap32(*reinterpret_cast<int32_t*>(data));
-  else                  return *reinterpret_cast<int32_t*>(data);
-}
-
-inline uint32_t uint32be(uint8_t* data)
-{
-  if (!is_big_endian()) return swap32(*reinterpret_cast<uint32_t*>(data));
-  else                  return *reinterpret_cast<uint32_t*>(data);
+  if (is_big_endian()) return swap32(*reinterpret_cast<const uint32_t*>(data));
+  else                 return *reinterpret_cast<const uint32_t*>(data);
 }
 
 
-inline bool bit(uint8_t* data, int bit)
+
+inline int16_t int16be(const uint8_t* data)
+{
+  if (!is_big_endian()) return swap16(*reinterpret_cast<const int16_t*>(data));
+  else                  return *reinterpret_cast<const int16_t*>(data);
+}
+
+inline uint16_t uint16be(const uint8_t* data)
+{
+  if (!is_big_endian()) return swap16(*reinterpret_cast<const uint16_t*>(data));
+  else                  return *reinterpret_cast<const uint16_t*>(data);
+}
+
+
+inline int32_t int32be(const uint8_t* data)
+{
+  if (!is_big_endian()) return swap32(*reinterpret_cast<const int32_t*>(data));
+  else                  return *reinterpret_cast<const int32_t*>(data);
+}
+
+inline uint32_t uint32be(const uint8_t* data)
+{
+  if (!is_big_endian()) return swap32(*reinterpret_cast<const uint32_t*>(data));
+  else                  return *reinterpret_cast<const uint32_t*>(data);
+}
+
+
+inline bool bit(const uint8_t* data, int bit)
 {
   return (*data >> bit) & 1;
 }
