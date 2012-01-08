@@ -32,7 +32,6 @@ UInputMessageProcessor::UInputMessageProcessor(UInput& uinput,
   m_rumble_test(opts.rumble),
   m_rumble_callback()
 {
-  memset(&m_oldmsg, 0, sizeof(m_oldmsg));
 }
 
 UInputMessageProcessor::~UInputMessageProcessor()
