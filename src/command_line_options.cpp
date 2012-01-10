@@ -34,6 +34,8 @@
 #include "raise_exception.hpp"
 #include "ui_event.hpp"
 
+#include "button_event_factory.hpp"
+
 #include "axisfilter/relative_axis_filter.hpp"
 #include "axisfilter/calibration_axis_filter.hpp"
 #include "axisfilter/sensitivity_axis_filter.hpp"
@@ -1095,7 +1097,7 @@ CommandLineParser::set_ui_buttonmap(ButtonMap& btn_map, const std::string& name,
           }
           else
           {
-            event = ButtonEvent::from_string(value, get_directory_context());
+            event = ButtonEventFactory::from_string(value, get_directory_context());
             if (event)
             {
               btn_map.bind(buttons, event);
