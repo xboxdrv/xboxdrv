@@ -75,6 +75,16 @@ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-st
 Target for 0.8.3
 ================
 
+* --ff-device [auto|joystick|mouse|keyboard|NUM]
+
+* fix get_ff_device() and default to JOYSTICK not 0
+
+* include latest vendor/product id stuff (update NEWS accordingly)
+
+
+Target for 0.8.?
+================
+
 * support arguments in exec via quoting:
 
   --ui-buttonmap du=exec:/usr/bin/script:Arg1:Arg2:Arg3
