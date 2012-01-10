@@ -34,19 +34,8 @@ typedef boost::shared_ptr<ButtonEvent> ButtonEventPtr;
 class ButtonEvent
 {
 public:
-  static ButtonEventPtr invalid();
-  static ButtonEventPtr create(ButtonEventHandler* handler);
-  static ButtonEventPtr create_key(int code);
-  static ButtonEventPtr create_key(int device_id, int code);
-  static ButtonEventPtr create_key();
-  static ButtonEventPtr create_abs(int code);
-  static ButtonEventPtr create_rel(int code);
-  static ButtonEventPtr from_string(const std::string& str, const std::string& directory);
-
-protected:
   ButtonEvent(ButtonEventHandler* handler);
 
-public: 
   void init(UInput& uinput, int slot, bool extra_devices);
   void send(UInput& uinput, bool value);
   void send_clear(UInput& uinput);
