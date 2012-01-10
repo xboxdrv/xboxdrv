@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_MESSAGE_HPP
 #define HEADER_XBOXDRV_CONTROLLER_MESSAGE_HPP
 
-#include <bitset>
+#include <boost/dynamic_bitset.hpp>
 #include <linux/input.h>
 
 #include "xboxmsg.hpp"
@@ -27,15 +27,16 @@
 class ControllerMessage
 {
 private:
-  int  m_axis_state[XBOX_AXIS_MAX];
-  int  m_rel_state[REL_CNT];
-  std::bitset<XBOX_BTN_MAX> m_button_state;
+  std::vector<int> m_axis_state;
+  std::vector<int> m_rel_state;
+  boost::dynamic_bitset<unsigned long> m_button_state;
 
-  std::bitset<XBOX_AXIS_MAX> m_axis_set;
-  std::bitset<XBOX_BTN_MAX>  m_button_set;
+  boost::dynamic_bitset<unsigned long> m_axis_set;
+  boost::dynamic_bitset<unsigned long> m_button_set;
 
 public:
   ControllerMessage();
+  ControllerMessage(int num_keys, int num_axis, int num_rel);
  
   void clear();
 

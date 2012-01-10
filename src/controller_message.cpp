@@ -28,9 +28,19 @@
 
 ControllerMessage::ControllerMessage() :
   m_axis_state(),
+  m_rel_state(),
   m_button_state(),
   m_axis_set(),
   m_button_set()
+{
+}
+
+ControllerMessage::ControllerMessage(int num_key, int num_axis, int num_rel) :
+  m_axis_state(num_axis),
+  m_rel_state(num_rel),
+  m_button_state(num_key),
+  m_axis_set(num_axis),
+  m_button_set(num_key)
 {
   clear();
 }
@@ -38,7 +48,7 @@ ControllerMessage::ControllerMessage() :
 void
 ControllerMessage::clear()
 {
-  std::fill_n(m_axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
+  std::fill(m_axis_state.begin(), m_axis_state.end(), 0);
   m_button_state.reset();
 
   m_axis_set.reset();
