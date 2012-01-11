@@ -21,8 +21,7 @@
 #include "log.hpp"
 #include "uinput.hpp"
 
-MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config, 
-                                               const Options& opts) :
+MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config, const Options& opts) :
   m_config(config),
   m_oldmsg(),
   m_config_toggle_button(opts.config_toggle_button),
@@ -39,7 +38,7 @@ MessageProcessor::~MessageProcessor()
 void
 MessageProcessor::send(const ControllerMessage& msg_in, int msec_delta)
 {
-  if (!m_config->empty())
+  if (m_config && !m_config->empty())
   {
     ControllerMessage msg = msg_in; 
 
@@ -108,14 +107,20 @@ MessageProcessor::set_rumble(uint8_t lhs, uint8_t rhs)
 void
 MessageProcessor::set_config(int num)
 {
+  if (m_config)
+  {
   m_config->set_current_config(num);
+  }
 }
 
 void
 MessageProcessor::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
 {
   m_rumble_callback = callback;
-  m_config->set_ff_callback(callback);
+  if (m_config)
+  {
+    m_config->set_ff_callback(callback);
+  }
 }
 
 /* EOF */

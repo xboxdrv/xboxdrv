@@ -49,8 +49,7 @@ private:
   GTimer* m_timer;
 
 public:
-  ControllerThread(ControllerPtr controller, std::auto_ptr<MessageProcessor> processor, 
-                   const Options& opts);
+  ControllerThread(ControllerPtr controller, ControllerSlotConfigPtr config, const Options& opts);
   ~ControllerThread();
 
   MessageProcessor* get_message_proc() const { return m_processor.get(); }

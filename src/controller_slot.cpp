@@ -20,21 +20,17 @@
 
 #include <boost/format.hpp>
 
-#include "message_processor.hpp"
-
 ControllerSlot::ControllerSlot(int id_,
                                ControllerSlotConfigPtr config_,
                                std::vector<ControllerMatchRulePtr> rules_,
                                int led_status_,
-                               const Options& opts,
-                               UInput* uinput) :
+                               const Options& opts) :
   m_id(id_),
   m_config(config_),
   m_rules(rules_),
   m_led_status(led_status_),
   m_thread(),
-  m_opts(opts),
-  m_uinput(uinput)
+  m_opts(opts)
 {}
 
 void
@@ -43,11 +39,7 @@ ControllerSlot::connect(ControllerPtr controller)
   assert(!m_thread);
 
   std::auto_ptr<MessageProcessor> message_proc;
-  if (m_uinput)
-  {
-    message_proc.reset(new MessageProcessor(m_config, m_opts));
-  }
-  m_thread.reset(new ControllerThread(controller, message_proc, m_opts));
+  m_thread.reset(new ControllerThread(controller, m_config, m_opts));
 }
 
 ControllerPtr

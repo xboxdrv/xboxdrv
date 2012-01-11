@@ -266,8 +266,7 @@ XboxdrvDaemon::init_uinput()
                                                                           controller->second),
                                              controller->second.get_match_rules(),
                                              controller->second.get_led_status(),
-                                             m_opts,
-                                             m_uinput.get())));
+                                             m_opts)));
       slot_count += 1;
     }
 

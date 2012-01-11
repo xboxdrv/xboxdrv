@@ -34,15 +34,13 @@ private:
   ControllerThreadPtr m_thread;
   
   const Options& m_opts;
-  UInput* m_uinput;
 
 public:
   ControllerSlot(int id_,
                  ControllerSlotConfigPtr config_,
                  std::vector<ControllerMatchRulePtr> rules_,
                  int led_status_,
-                 const Options& opts,
-                 UInput* uinput);
+                 const Options& opts);
 
   bool is_connected() const;
   void connect(ControllerPtr controller);

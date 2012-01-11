@@ -37,8 +37,7 @@ private:
   boost::function<void (uint8_t, uint8_t)> m_rumble_callback;
 
 public:
-  MessageProcessor(ControllerSlotConfigPtr config,
-                         const Options& opts);
+  MessageProcessor(ControllerSlotConfigPtr config, const Options& opts);
   ~MessageProcessor();
 
   void send(const ControllerMessage& msg, int msec_delta);

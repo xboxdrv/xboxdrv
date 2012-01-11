@@ -29,7 +29,6 @@
 #include "controller_factory.hpp"
 #include "controller/evdev_controller.hpp"
 #include "controller/wiimote_controller.hpp"
-#include "message_processor.hpp"
 #include "options.hpp"
 #include "raise_exception.hpp"
 #include "uinput.hpp"
@@ -156,7 +155,6 @@ XboxdrvMain::run()
 
   m_controller = create_controller();
   m_controller->set_disconnect_cb(boost::bind(&XboxdrvMain::on_controller_disconnect, this));
-  std::auto_ptr<MessageProcessor> message_proc;
   init_controller(m_controller);
      
   if (m_opts.instant_exit)
@@ -164,7 +162,8 @@ XboxdrvMain::run()
     usleep(1000);
   }
   else
-  {          
+  {   
+    ControllerSlotConfigPtr config_set;       
     if (m_opts.no_uinput)
     {
       if (!m_opts.quiet)
@@ -180,16 +179,14 @@ XboxdrvMain::run()
       m_uinput->set_device_usbids(m_opts.uinput_device_usbids);
 
       log_debug("creating ControllerSlotConfig");
-      ControllerSlotConfigPtr config_set = ControllerSlotConfig::create(*m_uinput, 
-                                                                        0, m_opts.extra_devices,
-                                                                        m_opts.get_controller_slot());
+      config_set = ControllerSlotConfig::create(*m_uinput, 
+                                                0, m_opts.extra_devices,
+                                                m_opts.get_controller_slot());
       
       // After all the ControllerConfig registered their events, finish up
       // the device creation
       log_debug("finish UInput creation");
       m_uinput->finish();
-      
-      message_proc.reset(new MessageProcessor(config_set, m_opts));
     }
 
     if (!m_opts.quiet)
@@ -209,7 +206,7 @@ XboxdrvMain::run()
     }
 
     {
-      ControllerThread thread(m_controller, message_proc, m_opts);
+      ControllerThread thread(m_controller, config_set, m_opts);
       log_debug("launching thread");
       
       pid_t pid = 0;
