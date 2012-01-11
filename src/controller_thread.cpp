@@ -25,12 +25,12 @@
 #include "helper.hpp"
 #include "log.hpp"
 #include "controller.hpp"
-#include "uinput_message_processor.hpp"
+#include "message_processor.hpp"
 
 extern bool global_exit_xboxdrv;
 
 ControllerThread::ControllerThread(ControllerPtr controller, 
-                                   std::auto_ptr<UInputMessageProcessor> processor,
+                                   std::auto_ptr<MessageProcessor> processor,
                                    const Options& opts) :
   m_controller(controller),
   m_processor(processor),

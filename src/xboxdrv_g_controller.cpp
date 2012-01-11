@@ -21,7 +21,7 @@
 #include "controller.hpp"
 #include "controller_slot.hpp"
 #include "controller_thread.hpp"
-#include "uinput_message_processor.hpp"
+#include "message_processor.hpp"
 #include "log.hpp"
 
 #define XBOXDRV_CONTROLLER_ERROR xboxdrv_controller_error_quark()
@@ -114,7 +114,7 @@ xboxdrv_g_controller_set_config(XboxdrvGController* self, int config_num, GError
       self->controller->get_thread() &&
       self->controller->get_thread()->get_controller())
   {
-    UInputMessageProcessor* msg_proc = self->controller->get_thread()->get_message_proc();
+    MessageProcessor* msg_proc = self->controller->get_thread()->get_message_proc();
 
     try 
     {

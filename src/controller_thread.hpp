@@ -28,18 +28,18 @@
 #include "controller_slot_ptr.hpp"
 
 class Options;
-class UInputMessageProcessor;
+class MessageProcessor;
 class ControllerThread;
 
 typedef boost::shared_ptr<ControllerThread> ControllerThreadPtr;
 
 /** ControllerThread handles a single Controller, reads it messages
-    and passes it to the UInputMessageProcessor */
+    and passes it to the MessageProcessor */
 class ControllerThread // FIXME: find a better name,ControllerLoop?!
 {
 private:
   ControllerPtr m_controller;
-  std::auto_ptr<UInputMessageProcessor> m_processor;
+  std::auto_ptr<MessageProcessor> m_processor;
 
   ControllerMessage m_oldrealmsg; /// last data read from the device
 
@@ -49,11 +49,11 @@ private:
   GTimer* m_timer;
 
 public:
-  ControllerThread(ControllerPtr controller, std::auto_ptr<UInputMessageProcessor> processor, 
+  ControllerThread(ControllerPtr controller, std::auto_ptr<MessageProcessor> processor, 
                    const Options& opts);
   ~ControllerThread();
 
-  UInputMessageProcessor* get_message_proc() const { return m_processor.get(); }
+  MessageProcessor* get_message_proc() const { return m_processor.get(); }
   ControllerPtr get_controller() const { return m_controller; }
 
 private:

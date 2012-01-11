@@ -21,14 +21,12 @@
 
 #include "controller_slot_config.hpp"
 
-class UInput;
 class Options;
 class ControllerOptions;
 
-class UInputMessageProcessor
+class MessageProcessor
 {
 private:
-  UInput& m_uinput;
   ControllerSlotConfigPtr m_config;
 
   ControllerMessage m_oldmsg; /// last data send to uinput
@@ -39,9 +37,9 @@ private:
   boost::function<void (uint8_t, uint8_t)> m_rumble_callback;
 
 public:
-  UInputMessageProcessor(UInput& uinput, ControllerSlotConfigPtr config,
-                          const Options& opts);
-  ~UInputMessageProcessor();
+  MessageProcessor(ControllerSlotConfigPtr config,
+                         const Options& opts);
+  ~MessageProcessor();
 
   void send(const ControllerMessage& msg, int msec_delta);
   void set_rumble(uint8_t lhs, uint8_t rhs);
@@ -50,8 +48,8 @@ public:
   ControllerSlotConfigPtr get_config() const { return m_config; }
 
 private:
-  UInputMessageProcessor(const UInputMessageProcessor&);
-  UInputMessageProcessor& operator=(const UInputMessageProcessor&);
+  MessageProcessor(const MessageProcessor&);
+  MessageProcessor& operator=(const MessageProcessor&);
 };
 
 #endif

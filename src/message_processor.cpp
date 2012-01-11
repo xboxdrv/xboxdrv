@@ -16,15 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "uinput_message_processor.hpp"
+#include "message_processor.hpp"
 
 #include "log.hpp"
 #include "uinput.hpp"
 
-UInputMessageProcessor::UInputMessageProcessor(UInput& uinput, 
-                                               ControllerSlotConfigPtr config, 
+MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config, 
                                                const Options& opts) :
-  m_uinput(uinput),
   m_config(config),
   m_oldmsg(),
   m_config_toggle_button(opts.config_toggle_button),
@@ -34,12 +32,12 @@ UInputMessageProcessor::UInputMessageProcessor(UInput& uinput,
 {
 }
 
-UInputMessageProcessor::~UInputMessageProcessor()
+MessageProcessor::~MessageProcessor()
 {
 }
 
 void
-UInputMessageProcessor::send(const ControllerMessage& msg_in, int msec_delta)
+MessageProcessor::send(const ControllerMessage& msg_in, int msec_delta)
 {
   if (!m_config->empty())
   {
@@ -96,7 +94,7 @@ UInputMessageProcessor::send(const ControllerMessage& msg_in, int msec_delta)
 }
 
 void
-UInputMessageProcessor::set_rumble(uint8_t lhs, uint8_t rhs)
+MessageProcessor::set_rumble(uint8_t lhs, uint8_t rhs)
 {
   if (m_rumble_callback)
   {
@@ -108,13 +106,13 @@ UInputMessageProcessor::set_rumble(uint8_t lhs, uint8_t rhs)
 }
 
 void
-UInputMessageProcessor::set_config(int num)
+MessageProcessor::set_config(int num)
 {
   m_config->set_current_config(num);
 }
 
 void
-UInputMessageProcessor::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+MessageProcessor::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
 {
   m_rumble_callback = callback;
   m_config->set_ff_callback(callback);

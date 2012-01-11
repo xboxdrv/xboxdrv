@@ -20,7 +20,7 @@
 
 #include <boost/format.hpp>
 
-#include "uinput_message_processor.hpp"
+#include "message_processor.hpp"
 
 ControllerSlot::ControllerSlot(int id_,
                                ControllerSlotConfigPtr config_,
@@ -42,10 +42,10 @@ ControllerSlot::connect(ControllerPtr controller)
 {
   assert(!m_thread);
 
-  std::auto_ptr<UInputMessageProcessor> message_proc;
+  std::auto_ptr<MessageProcessor> message_proc;
   if (m_uinput)
   {
-    message_proc.reset(new UInputMessageProcessor(*m_uinput, m_config, m_opts));
+    message_proc.reset(new MessageProcessor(m_config, m_opts));
   }
   m_thread.reset(new ControllerThread(controller, message_proc, m_opts));
 }

@@ -35,7 +35,7 @@
 #include "evdev_helper.hpp"
 #include "helper.hpp"
 #include "raise_exception.hpp"
-#include "uinput_message_processor.hpp"
+#include "message_processor.hpp"
 #include "usb_helper.hpp"
 #include "usb_gsource.hpp"
 #include "word_wrap.hpp"
