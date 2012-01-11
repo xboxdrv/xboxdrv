@@ -27,7 +27,6 @@
 #include "xpad_device.hpp"
 #include "controller_ptr.hpp"
 
-class MessageProcessor;
 class Options;
 class UInput;
 class USBGSource;

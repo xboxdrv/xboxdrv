@@ -21,7 +21,6 @@
 #include <boost/bind.hpp>
 
 #include "log.hpp"
-#include "message_processor.hpp"
 
 Controller::Controller() :
   m_msg_cb(),

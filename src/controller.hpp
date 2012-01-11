@@ -28,7 +28,6 @@ extern "C" {
 #include <libudev.h>
 }
 
-class MessageProcessor;
 struct ControllerMessage;
 
 class Controller

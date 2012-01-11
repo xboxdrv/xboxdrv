@@ -114,8 +114,7 @@ xboxdrv_g_controller_set_config(XboxdrvGController* self, int config_num, GError
       self->controller->get_thread() &&
       self->controller->get_thread()->get_controller())
   {
-    MessageProcessor* gen_msg_proc = self->controller->get_thread()->get_message_proc();
-    UInputMessageProcessor* msg_proc = dynamic_cast<UInputMessageProcessor*>(gen_msg_proc);
+    UInputMessageProcessor* msg_proc = self->controller->get_thread()->get_message_proc();
 
     try 
     {

@@ -20,13 +20,12 @@
 #define HEADER_XBOXDRV_DEFAULT_MESSAGE_PROCESSOR_HPP
 
 #include "controller_slot_config.hpp"
-#include "message_processor.hpp"
 
 class UInput;
 class Options;
 class ControllerOptions;
 
-class UInputMessageProcessor : public MessageProcessor
+class UInputMessageProcessor
 {
 private:
   UInput& m_uinput;

@@ -29,9 +29,7 @@
 #include "controller_factory.hpp"
 #include "controller/evdev_controller.hpp"
 #include "controller/wiimote_controller.hpp"
-#include "message_processor.hpp"
 #include "uinput_message_processor.hpp"
-#include "dummy_message_processor.hpp"
 #include "options.hpp"
 #include "raise_exception.hpp"
 #include "uinput.hpp"
@@ -158,7 +156,7 @@ XboxdrvMain::run()
 
   m_controller = create_controller();
   m_controller->set_disconnect_cb(boost::bind(&XboxdrvMain::on_controller_disconnect, this));
-  std::auto_ptr<MessageProcessor> message_proc;
+  std::auto_ptr<UInputMessageProcessor> message_proc;
   init_controller(m_controller);
      
   if (m_opts.instant_exit)
@@ -173,8 +171,6 @@ XboxdrvMain::run()
       {
         std::cout << "Starting without uinput" << std::endl;
       }
-
-      message_proc.reset(new DummyMessageProcessor);
     }
     else
     {
