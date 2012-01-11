@@ -31,9 +31,6 @@ private:
   std::vector<int> m_rel_state;
   boost::dynamic_bitset<unsigned long> m_button_state;
 
-  boost::dynamic_bitset<unsigned long> m_axis_set;
-  boost::dynamic_bitset<unsigned long> m_button_set;
-
 public:
   ControllerMessage();
   ControllerMessage(int num_keys, int num_axis, int num_rel);
@@ -60,9 +57,6 @@ public:
 
   void set_axis_min(XboxAxis axis, int value);
   void set_axis_max(XboxAxis axis, int value);
-
-  bool axis_is_set(XboxAxis axis) const;
-  bool button_is_set(XboxButton button) const;
 };
 
 std::ostream& operator<<(std::ostream& out, const ControllerMessage& msg);

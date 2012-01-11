@@ -27,22 +27,17 @@
 #include "helper.hpp"
 
 ControllerMessage::ControllerMessage() :
-  m_axis_state(),
-  m_rel_state(),
-  m_button_state(),
-  m_axis_set(),
-  m_button_set()
+  m_axis_state(255), // BROKEN: need to get proper size from ControllerMessageDescriptor
+  m_rel_state(255),
+  m_button_state(255)
 {
 }
 
 ControllerMessage::ControllerMessage(int num_key, int num_axis, int num_rel) :
   m_axis_state(num_axis),
   m_rel_state(num_rel),
-  m_button_state(num_key),
-  m_axis_set(num_axis),
-  m_button_set(num_key)
+  m_button_state(num_key)
 {
-  clear();
 }
 
 void
@@ -50,9 +45,6 @@ ControllerMessage::clear()
 {
   std::fill(m_axis_state.begin(), m_axis_state.end(), 0);
   m_button_state.reset();
-
-  m_axis_set.reset();
-  m_button_set.reset();
 }
 
 bool
@@ -70,119 +62,24 @@ ControllerMessage::set_key(int key, bool v)
 bool
 ControllerMessage::get_button(XboxButton button) const
 {
-  if (m_button_set[button])
-  {
-    return m_button_state[button];
-  }
-  else
-  {
-    switch(button)
-    {
-      case XBOX_BTN_A:
-        return m_axis_state[XBOX_AXIS_A];
-      case XBOX_BTN_B:
-        return m_axis_state[XBOX_AXIS_B];
-      case XBOX_BTN_X:
-        return m_axis_state[XBOX_AXIS_X];
-      case XBOX_BTN_Y:
-        return m_axis_state[XBOX_AXIS_Y];
-
-      case XBOX_BTN_LB:
-        return m_axis_state[XBOX_AXIS_BLACK];
-      case XBOX_BTN_RB:
-        return m_axis_state[XBOX_AXIS_WHITE];
-
-      case XBOX_BTN_LT:
-        return m_axis_state[XBOX_AXIS_LT];
-      case XBOX_BTN_RT:
-        return m_axis_state[XBOX_AXIS_RT];
-
-      case XBOX_DPAD_UP:
-        return m_axis_state[XBOX_AXIS_DPAD_Y] < 0;
-      case XBOX_DPAD_DOWN:
-        return m_axis_state[XBOX_AXIS_DPAD_Y] > 0;       
-      case XBOX_DPAD_LEFT:
-        return m_axis_state[XBOX_AXIS_DPAD_X] < 0;
-      case XBOX_DPAD_RIGHT:
-        return m_axis_state[XBOX_AXIS_DPAD_X] > 0;
-
-      default:
-        return false;
-    }
-  }
+  return m_button_state[button];
 }
 
 void
 ControllerMessage::set_button(XboxButton button, bool v)
 {
-  m_button_set[button] = true;
   m_button_state[button] = v;
 }
 
 int
 ControllerMessage::get_axis(XboxAxis axis) const
 {
-  if (m_axis_set[axis])
-  {
-    return m_axis_state[axis];
-  }
-  else
-  {
-    switch(axis)
-    {
-      case XBOX_AXIS_A:
-        return m_button_state[XBOX_BTN_A];
-
-      case XBOX_AXIS_B:
-        return m_button_state[XBOX_BTN_B];
-
-      case XBOX_AXIS_X:
-        return m_button_state[XBOX_BTN_X];
-
-      case XBOX_AXIS_Y:
-        return m_button_state[XBOX_BTN_Y];
-
-      case XBOX_AXIS_LT:
-        return m_button_state[XBOX_BTN_LT] * 255;
-
-      case XBOX_AXIS_RT:
-        return m_button_state[XBOX_BTN_RT] * 255;
-
-      case XBOX_AXIS_BLACK:
-        return m_button_state[XBOX_BTN_LB] * 255;
-
-      case XBOX_AXIS_WHITE:
-        return m_button_state[XBOX_BTN_RB] * 255;
-
-      case XBOX_AXIS_DPAD_X:
-        if (m_button_state[XBOX_DPAD_LEFT] && !m_button_state[XBOX_DPAD_RIGHT])
-          return -1;
-        else if (!m_button_state[XBOX_DPAD_LEFT] && m_button_state[XBOX_DPAD_RIGHT])
-          return 1;
-        else
-          return 0;
-
-      case XBOX_AXIS_DPAD_Y:
-        if (m_button_state[XBOX_DPAD_UP] && !m_button_state[XBOX_DPAD_DOWN])
-          return -1;
-        else if (!m_button_state[XBOX_DPAD_UP] && m_button_state[XBOX_DPAD_DOWN])
-          return 1;
-        else
-          return 0;
-
-      case XBOX_AXIS_TRIGGER:
-        return -get_axis(XBOX_AXIS_LT) + get_axis(XBOX_AXIS_RT);
-
-      default:
-        return 0;
-    }
-  }
+  return m_axis_state[axis];
 }
 
 void
 ControllerMessage::set_axis(XboxAxis axis, int v)
 {
-  m_axis_set[axis] = true;
   m_axis_state[axis] = v;
 }
 
@@ -195,7 +92,6 @@ ControllerMessage::get_axis_float(XboxAxis axis) const
 void
 ControllerMessage::set_axis_float(XboxAxis axis, float v)
 {
-  m_axis_set[axis] = true;
   m_axis_state[axis] = from_float(v, get_axis_min(axis), get_axis_max(axis));
 }
 
@@ -209,18 +105,6 @@ void
 ControllerMessage::set_rel(int rel, int v)
 {
   m_rel_state[rel] = v;
-}
-
-bool
-ControllerMessage::axis_is_set(XboxAxis axis) const
-{
-  return m_axis_set[axis];
-}
-
-bool
-ControllerMessage::button_is_set(XboxButton button) const
-{
-  return m_button_set[button];
 }
 
 int
