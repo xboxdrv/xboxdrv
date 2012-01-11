@@ -22,6 +22,7 @@
 #include <vector>
 #include <map>
 
+#include "button_filter.hpp"
 #include "controller_message.hpp"
 #include "modifier.hpp"
 #include "uinput_options.hpp"

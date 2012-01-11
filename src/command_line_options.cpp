@@ -35,6 +35,7 @@
 #include "ui_event.hpp"
 
 #include "button_event_factory.hpp"
+#include "button_map_option.hpp"
 
 #include "axisfilter/relative_axis_filter.hpp"
 #include "axisfilter/calibration_axis_filter.hpp"
@@ -1065,11 +1066,8 @@ CommandLineParser::set_ui_buttonmap(const std::string& name, const std::string& 
 }
 
 void
-CommandLineParser::set_ui_buttonmap(ButtonMap& btn_map, const std::string& name, const std::string& value)
+CommandLineParser::set_ui_buttonmap(ButtonMapOptions& btn_map, const std::string& name, const std::string& value)
 {
-  ButtonEventPtr event;
-  std::vector<ButtonFilterPtr> filters;
-
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
   std::vector<std::string> lst(tokens.begin(), tokens.end());
@@ -1088,31 +1086,11 @@ CommandLineParser::set_ui_buttonmap(ButtonMap& btn_map, const std::string& name,
     switch(idx)
     { 
       case 0: // shift+key portion
-        {
-          ButtonCombination buttons = ButtonCombination::from_string(*t);
-
-          if (value.empty())
-          { // if no rhs value is given, add filters to the current binding
-            event = btn_map.lookup(buttons);
-          }
-          else
-          {
-            event = ButtonEventFactory::from_string(value, get_directory_context());
-            if (event)
-            {
-              btn_map.bind(buttons, event);
-            }
-          }
-        }
+        btn_map.push_back(ButtonMapOption(*t, value));
         break;
 
       default:
-        { // filter
-          if (event)
-          {
-            event->add_filter(ButtonFilter::from_string(*t));
-          }
-        }
+        btn_map.back().add_filter(*t);
         break;
     }
   }

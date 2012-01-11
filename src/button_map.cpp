@@ -17,6 +17,8 @@
 */
 
 #include "button_map.hpp"
+
+#include "button_event_factory.hpp"
 
 ButtonMap::ButtonMap() :
   m_mappings()
@@ -67,8 +69,42 @@ ButtonMap::clear()
 }
 
 void
-ButtonMap::init(UInput& uinput, int slot, bool extra_devices)
+ButtonMap::init(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices)
 {
+  ButtonEventFactory button_event_factory(uinput, slot, extra_devices);
+
+  for(ButtonMapOptions::const_iterator it = opts.begin(); it != opts.end(); ++it)
+  {
+    ButtonCombination buttons = ButtonCombination::from_string(it->get_button());
+
+    ButtonEventPtr event;
+    if (it->get_event().empty())
+    { 
+      // if no new event is given, add filters to the current binding
+      event = lookup(buttons);
+    }
+    else
+    {
+      event = button_event_factory.from_string(it->get_event(), it->get_directory()); 
+      if (event)
+      {
+        bind(buttons, event);
+      }
+    }
+
+    // FIXME: How are unbound events handled?!
+    for(std::vector<std::string>::const_iterator j = it->get_filter().begin(); 
+        j != it->get_filter().end();
+        ++j)
+    {
+      if (event)
+      {
+        event->add_filter(ButtonFilter::from_string(*j));
+      }
+    }
+  }
+
+  // init all the binding
   for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
   {
     i->m_event->init(uinput, slot, extra_devices);

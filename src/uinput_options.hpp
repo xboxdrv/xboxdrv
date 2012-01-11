@@ -19,13 +19,13 @@
 #ifndef HEADER_XBOXDRV_UINPUT_CFG_HPP
 #define HEADER_XBOXDRV_UINPUT_CFG_HPP
 
-#include "button_map.hpp"
+#include "button_map_option.hpp"
 #include "axis_map.hpp"
 
 class UInputOptions
 {
 private:
-  ButtonMap m_btn_map;
+  std::vector<ButtonMapOption> m_btn_map;
   AxisMap   m_axis_map;
   
 public:
@@ -48,10 +48,10 @@ public:
 
   /** \addtogroup access Access Functions
    ** @{*/
-  ButtonMap& get_btn_map();
+  std::vector<ButtonMapOption>& get_btn_map();
   AxisMap&   get_axis_map();
 
-  const ButtonMap& get_btn_map() const;
+  const std::vector<ButtonMapOption>& get_btn_map() const;
   const AxisMap&   get_axis_map() const;
   /** @}*/
 };

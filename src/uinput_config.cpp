@@ -25,15 +25,15 @@
 
 UInputConfig::UInputConfig(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
-  m_btn_map(opts.get_btn_map()), 
+  m_btn_map(),
   m_axis_map(opts.get_axis_map()),
   m_button_state(),
   m_last_button_state()
 {
-  std::fill_n(axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
-
-  m_btn_map.init(uinput, slot, extra_devices);
+  std::fill_n(axis_state, static_cast<int>(XBOX_AXIS_MAX), 0);
   m_axis_map.init(uinput, slot, extra_devices);
+  
+  m_btn_map.init(opts.get_btn_map(), uinput, slot, extra_devices);
 }
 
 void

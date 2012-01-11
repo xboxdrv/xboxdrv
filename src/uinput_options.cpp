@@ -30,7 +30,7 @@ UInputOptions::UInputOptions() :
   set_defaults();
 }
 
-ButtonMap&
+ButtonMapOptions&
 UInputOptions::get_btn_map()
 {
   return m_btn_map;
@@ -42,7 +42,7 @@ UInputOptions::get_axis_map()
   return m_axis_map;
 }
 
-const ButtonMap&
+const ButtonMapOptions&
 UInputOptions::get_btn_map() const
 {
   return m_btn_map;
@@ -60,7 +60,8 @@ UInputOptions::mimic_xpad()
   // device_name is set in Options::set_mimic_xpad()
   get_axis_map().clear();
   get_btn_map().clear();
-  
+
+#if 0  
   get_btn_map().bind(XBOX_BTN_START, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_START));
   get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_MODE));
   get_btn_map().bind(XBOX_BTN_BACK,  ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_BACK));
@@ -85,6 +86,7 @@ UInputOptions::mimic_xpad()
   get_axis_map().bind(XBOX_AXIS_RT,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_RZ, 0, 255, 0, 0));
   get_axis_map().bind(XBOX_AXIS_DPAD_X,  AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_HAT0X, -1, 1, 0, 0));
   get_axis_map().bind(XBOX_AXIS_DPAD_Y,  AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_HAT0Y, -1, 1, 0, 0));
+#endif
 }
 
 void
@@ -93,7 +95,8 @@ UInputOptions::mimic_xpad_wireless()
   // device_name is set in Options::set_mimic_xpad_wireless()
   get_axis_map().clear();
   get_btn_map().clear();
-  
+
+#if 0  
   get_btn_map().bind(XBOX_DPAD_UP,    ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_0));
   get_btn_map().bind(XBOX_DPAD_DOWN,  ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_1));
   get_btn_map().bind(XBOX_DPAD_LEFT,  ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_LEFT));
@@ -121,6 +124,7 @@ UInputOptions::mimic_xpad_wireless()
   get_axis_map().bind(XBOX_AXIS_Y2,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_RY, -32768, 32767, 16, 128));
   get_axis_map().bind(XBOX_AXIS_LT,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_Z,  0, 255, 0, 0));
   get_axis_map().bind(XBOX_AXIS_RT,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_RZ, 0, 255, 0, 0));
+#endif
 }
 
 void
@@ -129,6 +133,7 @@ UInputOptions::set_defaults()
   get_btn_map().clear();
   get_axis_map().clear();
 
+#if 0
   // Button Mapping
   get_btn_map().bind(XBOX_BTN_START, ButtonEventFactory::create_key(BTN_START));
   get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEventFactory::create_key(BTN_MODE));
@@ -168,6 +173,7 @@ UInputOptions::set_defaults()
   
   get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0X, -1, 1, 0, 0));
   get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0Y, -1, 1, 0, 0));
+#endif
 }
 
 void
@@ -175,8 +181,10 @@ UInputOptions::trigger_as_button()
 {
   get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
   get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::invalid());
+#if 0
   get_btn_map().bind(XBOX_BTN_LT, ButtonEventFactory::create_key(BTN_TL2));
   get_btn_map().bind(XBOX_BTN_RT, ButtonEventFactory::create_key(BTN_TR2));
+#endif
 }
 
 void
@@ -190,6 +198,7 @@ UInputOptions::trigger_as_zaxis()
 void
 UInputOptions::dpad_as_button()
 {
+#if 0
   get_btn_map().bind(XBOX_DPAD_UP,    ButtonEventFactory::create_key(BTN_BASE));
   get_btn_map().bind(XBOX_DPAD_DOWN,  ButtonEventFactory::create_key(BTN_BASE2));
   get_btn_map().bind(XBOX_DPAD_LEFT,  ButtonEventFactory::create_key(BTN_BASE3));
@@ -197,6 +206,7 @@ UInputOptions::dpad_as_button()
 
   get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::invalid());
   get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::invalid());
+#endif
 }
 
 void
@@ -217,6 +227,7 @@ UInputOptions::guitar()
   get_btn_map().clear();
   get_axis_map().clear();
 
+#if 0
   // Button Mapping
   get_btn_map().bind(XBOX_BTN_START, ButtonEventFactory::create_key(BTN_START));
   get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEventFactory::create_key(BTN_MODE));
@@ -234,6 +245,7 @@ UInputOptions::guitar()
   
   get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0X, -1, 1, 0, 0));
   get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0Y, -1, 1, 0, 0));
+#endif
 }
 
 /* EOF */

@@ -24,16 +24,22 @@
 class ButtonEventFactory
 {
 private:
-public:
-  ButtonEventFactory();
+  UInput& m_uinput;
+  int  m_slot;
+  bool m_extra_devices;
 
-  static ButtonEventPtr create(ButtonEventHandler* handler);
-  static ButtonEventPtr create_key(int code);
-  static ButtonEventPtr create_key(int device_id, int code);
-  static ButtonEventPtr create_key();
-  static ButtonEventPtr create_abs(int code);
-  static ButtonEventPtr create_rel(int code);
-  static ButtonEventPtr from_string(const std::string& str, const std::string& directory);
+public:
+  ButtonEventFactory(UInput& uinput, int slot, bool extra_devices);
+
+  ButtonEventPtr from_string(const std::string& str, const std::string& directory);
+
+private:
+  ButtonEventPtr create(ButtonEventHandler* handler);
+  ButtonEventPtr create_key(int code);
+  ButtonEventPtr create_key(int device_id, int code);
+  ButtonEventPtr create_key();
+  ButtonEventPtr create_abs(int code);
+  ButtonEventPtr create_rel(int code);
 
 private:
   ButtonEventFactory(const ButtonEventFactory&);

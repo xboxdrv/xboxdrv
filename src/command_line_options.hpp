@@ -22,12 +22,12 @@
 #include <vector>
 
 #include "arg_parser.hpp"
+#include "button_map_option.hpp"
 #include "ini_schema.hpp"
 #include "uinput.hpp"
 
 class Options;
 class Xboxdrv;
-class ButtonMap;
 class AxisMap;
 
 class CommandLineParser 
@@ -52,7 +52,7 @@ private:
   void set_device_name(const std::string& name, const std::string& value);
   void set_device_usbid(const std::string& name, const std::string& value);
 
-  void set_ui_buttonmap(ButtonMap& btn_map, const std::string& name, const std::string& value);
+  void set_ui_buttonmap(ButtonMapOptions& btn_map, const std::string& name, const std::string& value);
   void set_ui_buttonmap(const std::string& name, const std::string& value);
   void set_ui_axismap(AxisMap& axis_map, const std::string& name, const std::string& value);
   void set_ui_axismap(const std::string& name, const std::string& value);
