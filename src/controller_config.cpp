@@ -18,12 +18,141 @@
 
 #include "controller_config.hpp"
 
+#include "axisfilter/deadzone_axis_filter.hpp"
 #include "controller_options.hpp"
+#include "modifier/axismap_modifier.hpp"
+#include "modifier/axismap_modifier.hpp"
+#include "modifier/buttonmap_modifier.hpp"
+#include "modifier/dpad_rotation_modifier.hpp"
+#include "modifier/four_way_restrictor_modifier.hpp"
+#include "modifier/square_axis_modifier.hpp"
 
 ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices, const ControllerOptions& opts) :
   m_modifier(),
   m_uinput(uinput, slot, extra_devices, opts.uinput)
 {
+  // create modifier
+  if (!opts.calibration_map.empty())
+  {
+    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+
+    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.calibration_map.begin();
+        i != opts.calibration_map.end();
+        ++i)
+    {
+      axismap->add_filter(i->first, i->second); 
+    }
+
+    m_modifier.push_back(axismap);
+  }
+
+  if (opts.deadzone)
+  {
+    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+
+    XboxAxis axes[] = { XBOX_AXIS_X1,
+                        XBOX_AXIS_Y1,
+                      
+                        XBOX_AXIS_X2,
+                        XBOX_AXIS_Y2 };
+
+    for(size_t i = 0; i < sizeof(axes)/sizeof(XboxAxis); ++i)
+    {
+      axismap->add_filter(axes[i],
+                          AxisFilterPtr(new DeadzoneAxisFilter(-opts.deadzone,
+                                                               opts.deadzone,
+                                                               true)));
+    }
+
+    m_modifier.push_back(axismap);
+  }
+
+  if (opts.deadzone_trigger)
+  {
+    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+
+    XboxAxis axes[] = { XBOX_AXIS_LT,
+                        XBOX_AXIS_RT };
+
+    for(size_t i = 0; i < sizeof(axes)/sizeof(XboxAxis); ++i)
+    {
+      axismap->add_filter(axes[i],
+                          AxisFilterPtr(new DeadzoneAxisFilter(-opts.deadzone_trigger,
+                                                               opts.deadzone_trigger,
+                                                               true)));
+    }
+
+    m_modifier.push_back(axismap);
+  }
+
+  if (opts.square_axis)
+  {
+    m_modifier.push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
+    m_modifier.push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
+  }
+
+  if (!opts.sensitivity_map.empty())
+  {
+    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+
+    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.sensitivity_map.begin();
+        i != opts.sensitivity_map.end(); ++i)
+    {
+      axismap->add_filter(i->first, i->second); 
+    }
+
+    m_modifier.push_back(axismap);
+  }
+
+  if (opts.four_way_restrictor)
+  {
+    m_modifier.push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
+    m_modifier.push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
+  }
+
+  if (!opts.relative_axis_map.empty())
+  {
+    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+
+    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.relative_axis_map.begin();
+        i != opts.relative_axis_map.end(); ++i)
+    {
+      axismap->add_filter(i->first, i->second); 
+    }
+
+    m_modifier.push_back(axismap);
+  }
+
+  if (opts.dpad_rotation)
+  {
+    m_modifier.push_back(ModifierPtr(new DpadRotationModifier(opts.dpad_rotation)));
+  }
+
+  if (!opts.autofire_map.empty())
+  {
+    boost::shared_ptr<ButtonmapModifier> buttonmap(new ButtonmapModifier);
+
+    for(std::map<XboxButton, ButtonFilterPtr>::const_iterator i = opts.autofire_map.begin();
+        i != opts.autofire_map.end(); ++i)
+    {
+      buttonmap->add_filter(i->first, i->second); 
+    }
+
+    m_modifier.push_back(buttonmap);
+  }
+
+  // axismap, buttonmap comes last, as otherwise they would mess up the button and axis names
+  if (!opts.buttonmap->empty())
+  {
+    m_modifier.push_back(opts.buttonmap);
+  }
+
+  if (!opts.axismap->empty())
+  {
+    m_modifier.push_back(opts.axismap);
+  }
+
+  m_modifier.insert(m_modifier.end(), opts.modifier.begin(), opts.modifier.end());
 }
 
 std::vector<ModifierPtr>&
