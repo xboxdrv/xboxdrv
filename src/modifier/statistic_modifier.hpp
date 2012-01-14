@@ -26,7 +26,8 @@
 class StatisticModifier : public Modifier
 {
 public:
-  static StatisticModifier* from_string(const std::vector<std::string>& args);
+  static StatisticModifier* from_string(const std::vector<std::string>& args,
+                                        const ControllerMessageDescriptor& msg_desc);
 
 public:
   StatisticModifier();

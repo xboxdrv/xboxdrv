@@ -43,13 +43,13 @@ UInputConfig::send(const ControllerMessage& msg)
  
   for(int btn = 1; btn < XBOX_BTN_MAX; ++btn)
   {
-    m_button_state[btn] = msg.get_button(static_cast<XboxButton>(btn));
+    m_button_state[btn] = msg.get_key(static_cast<XboxButton>(btn));
   }
   m_btn_map.send(m_uinput, m_button_state);
 
   for(int axis = 1; axis < XBOX_AXIS_MAX; ++axis)
   {
-    send_axis(static_cast<XboxAxis>(axis), msg.get_axis(static_cast<XboxAxis>(axis)));
+    send_axis(static_cast<XboxAxis>(axis), msg.get_abs(static_cast<XboxAxis>(axis)));
   }
 
   m_uinput.sync();

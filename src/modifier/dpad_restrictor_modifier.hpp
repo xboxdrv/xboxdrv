@@ -34,7 +34,8 @@ private:
   };
 
 public:
-  static DpadRestrictorModifier* from_string(const std::vector<std::string>& args);
+  static DpadRestrictorModifier* from_string(const std::vector<std::string>& args,
+                                             const ControllerMessageDescriptor& msg_desc);
 
 public:
   DpadRestrictorModifier(Mode mode);
@@ -44,7 +45,7 @@ public:
 
 private:
   Mode m_mode;
-  XboxAxis m_last_unpressed_axis;
+  int m_last_unpressed_axis;
 
 private:
   DpadRestrictorModifier(const DpadRestrictorModifier&);

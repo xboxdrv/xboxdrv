@@ -20,6 +20,7 @@
 
 #include <boost/bind.hpp>
 
+#include "controller_slot_options.hpp"
 #include "raise_exception.hpp"
 #include "uinput.hpp"
 
@@ -35,17 +36,6 @@ ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const
 
     ControllerConfigPtr config(new ControllerConfig(uinput, slot, extra_devices, ctrl_opt));
     m_config->add_config(config);
-
-#ifdef FIXME
-    // introspection of the config
-    std::cout << "==[[ Active Modifier ]]==" << std::endl;
-    for(std::vector<ModifierPtr>::iterator mod = config->get_modifier().begin(); 
-        mod != config->get_modifier().end(); 
-        ++mod)
-    {
-      std::cout << (*mod)->str() << std::endl;
-    }
-#endif
   }
 
   // LED

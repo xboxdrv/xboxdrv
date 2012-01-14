@@ -26,18 +26,19 @@
 class StickZoneModifier : public Modifier
 {
 public:
-  static StickZoneModifier* from_string(const std::vector<std::string>& args);
+  static StickZoneModifier* from_string(const std::vector<std::string>& args,
+                                        const ControllerMessageDescriptor& msg_desc);
 
 private:
-  XboxAxis m_x_axis;
-  XboxAxis m_y_axis;
-  XboxButton m_button;
+  int m_x_axis;
+  int m_y_axis;
+  int m_button;
 
   float m_range_start;
   float m_range_end;
 
 public:
-  StickZoneModifier(XboxAxis x_axis, XboxAxis y_axis, XboxButton button,
+  StickZoneModifier(int x_axis, int y_axis, int button,
                     float range_start, float range_end);
 
   void update(int msec_delta, ControllerMessage& msg);

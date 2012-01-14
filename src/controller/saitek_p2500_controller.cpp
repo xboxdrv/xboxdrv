@@ -91,85 +91,85 @@ SaitekP2500Controller::parse(const uint8_t* data, int len, ControllerMessage* ms
   {
     msg_out->clear();
 
-    msg_out->set_button(XBOX_BTN_A, unpack::bit(data+5, 0));
-    msg_out->set_button(XBOX_BTN_B, unpack::bit(data+5, 1));
-    msg_out->set_button(XBOX_BTN_X, unpack::bit(data+5, 2));
-    msg_out->set_button(XBOX_BTN_Y, unpack::bit(data+5, 3));
+    msg_out->set_key(XBOX_BTN_A, unpack::bit(data+5, 0));
+    msg_out->set_key(XBOX_BTN_B, unpack::bit(data+5, 1));
+    msg_out->set_key(XBOX_BTN_X, unpack::bit(data+5, 2));
+    msg_out->set_key(XBOX_BTN_Y, unpack::bit(data+5, 3));
 
-    msg_out->set_button(XBOX_BTN_LB, unpack::bit(data+5, 4));
-    msg_out->set_button(XBOX_BTN_LT, unpack::bit(data+5, 5));
-    msg_out->set_button(XBOX_BTN_RB, unpack::bit(data+5, 6));
-    msg_out->set_button(XBOX_BTN_RT, unpack::bit(data+5, 7));
+    msg_out->set_key(XBOX_BTN_LB, unpack::bit(data+5, 4));
+    msg_out->set_key(XBOX_BTN_LT, unpack::bit(data+5, 5));
+    msg_out->set_key(XBOX_BTN_RB, unpack::bit(data+5, 6));
+    msg_out->set_key(XBOX_BTN_RT, unpack::bit(data+5, 7));
 
 
-    msg_out->set_button(XBOX_BTN_THUMB_L, unpack::bit(data+6, 0));
-    msg_out->set_button(XBOX_BTN_THUMB_R, unpack::bit(data+6, 1));
+    msg_out->set_key(XBOX_BTN_THUMB_L, unpack::bit(data+6, 0));
+    msg_out->set_key(XBOX_BTN_THUMB_R, unpack::bit(data+6, 1));
 
-    msg_out->set_button(XBOX_BTN_START, unpack::bit(data+6, 2));
-    msg_out->set_button(XBOX_BTN_BACK,  unpack::bit(data+6, 3));
+    msg_out->set_key(XBOX_BTN_START, unpack::bit(data+6, 2));
+    msg_out->set_key(XBOX_BTN_BACK,  unpack::bit(data+6, 3));
       
-    msg_out->set_axis(XBOX_AXIS_X1, unpack::s8_to_s16(data[1]));
-    msg_out->set_axis(XBOX_AXIS_Y1, unpack::s8_to_s16(data[2]));
+    msg_out->set_abs(XBOX_AXIS_X1, unpack::s8_to_s16(data[1]));
+    msg_out->set_abs(XBOX_AXIS_Y1, unpack::s8_to_s16(data[2]));
 
-    msg_out->set_axis(XBOX_AXIS_X2, unpack::s8_to_s16(data[3]));
-    msg_out->set_axis(XBOX_AXIS_Y2, unpack::s8_to_s16(data[4]));
+    msg_out->set_abs(XBOX_AXIS_X2, unpack::s8_to_s16(data[3]));
+    msg_out->set_abs(XBOX_AXIS_Y2, unpack::s8_to_s16(data[4]));
     
     switch(data[6] >> 4)
     {
       case 0:
-        msg_out->set_button(XBOX_DPAD_UP,     1);
-        msg_out->set_button(XBOX_DPAD_DOWN,   0);
-        msg_out->set_button(XBOX_DPAD_LEFT,   0);
-        msg_out->set_button(XBOX_DPAD_RIGHT,  0);
+        msg_out->set_key(XBOX_DPAD_UP,     1);
+        msg_out->set_key(XBOX_DPAD_DOWN,   0);
+        msg_out->set_key(XBOX_DPAD_LEFT,   0);
+        msg_out->set_key(XBOX_DPAD_RIGHT,  0);
         break;
 
       case 1:
-        msg_out->set_button(XBOX_DPAD_UP,     1);
-        msg_out->set_button(XBOX_DPAD_DOWN,   0);
-        msg_out->set_button(XBOX_DPAD_LEFT,   0);
-        msg_out->set_button(XBOX_DPAD_RIGHT,  1);
+        msg_out->set_key(XBOX_DPAD_UP,     1);
+        msg_out->set_key(XBOX_DPAD_DOWN,   0);
+        msg_out->set_key(XBOX_DPAD_LEFT,   0);
+        msg_out->set_key(XBOX_DPAD_RIGHT,  1);
         break;
 
       case 2:
-        msg_out->set_button(XBOX_DPAD_UP,     0);
-        msg_out->set_button(XBOX_DPAD_DOWN,   0);
-        msg_out->set_button(XBOX_DPAD_LEFT,   0);
-        msg_out->set_button(XBOX_DPAD_RIGHT,  1);
+        msg_out->set_key(XBOX_DPAD_UP,     0);
+        msg_out->set_key(XBOX_DPAD_DOWN,   0);
+        msg_out->set_key(XBOX_DPAD_LEFT,   0);
+        msg_out->set_key(XBOX_DPAD_RIGHT,  1);
         break;
 
       case 3:
-        msg_out->set_button(XBOX_DPAD_UP,     0);
-        msg_out->set_button(XBOX_DPAD_DOWN,   1);
-        msg_out->set_button(XBOX_DPAD_LEFT,   0);
-        msg_out->set_button(XBOX_DPAD_RIGHT,  1);
+        msg_out->set_key(XBOX_DPAD_UP,     0);
+        msg_out->set_key(XBOX_DPAD_DOWN,   1);
+        msg_out->set_key(XBOX_DPAD_LEFT,   0);
+        msg_out->set_key(XBOX_DPAD_RIGHT,  1);
         break;
 
       case 4:
-        msg_out->set_button(XBOX_DPAD_UP,     0);
-        msg_out->set_button(XBOX_DPAD_DOWN,   1);
-        msg_out->set_button(XBOX_DPAD_LEFT,   0);
-        msg_out->set_button(XBOX_DPAD_RIGHT,  0);
+        msg_out->set_key(XBOX_DPAD_UP,     0);
+        msg_out->set_key(XBOX_DPAD_DOWN,   1);
+        msg_out->set_key(XBOX_DPAD_LEFT,   0);
+        msg_out->set_key(XBOX_DPAD_RIGHT,  0);
         break;
 
       case 5:
-        msg_out->set_button(XBOX_DPAD_UP,     0);
-        msg_out->set_button(XBOX_DPAD_DOWN,   1);
-        msg_out->set_button(XBOX_DPAD_LEFT,   1);
-        msg_out->set_button(XBOX_DPAD_RIGHT,  0);
+        msg_out->set_key(XBOX_DPAD_UP,     0);
+        msg_out->set_key(XBOX_DPAD_DOWN,   1);
+        msg_out->set_key(XBOX_DPAD_LEFT,   1);
+        msg_out->set_key(XBOX_DPAD_RIGHT,  0);
         break;
 
       case 6:
-        msg_out->set_button(XBOX_DPAD_UP,     0);
-        msg_out->set_button(XBOX_DPAD_DOWN,   0);
-        msg_out->set_button(XBOX_DPAD_LEFT,   1);
-        msg_out->set_button(XBOX_DPAD_RIGHT,  0);
+        msg_out->set_key(XBOX_DPAD_UP,     0);
+        msg_out->set_key(XBOX_DPAD_DOWN,   0);
+        msg_out->set_key(XBOX_DPAD_LEFT,   1);
+        msg_out->set_key(XBOX_DPAD_RIGHT,  0);
         break;
 
       case 7:
-        msg_out->set_button(XBOX_DPAD_UP,     1);
-        msg_out->set_button(XBOX_DPAD_DOWN,   0);
-        msg_out->set_button(XBOX_DPAD_LEFT,   1);
-        msg_out->set_button(XBOX_DPAD_RIGHT,  0);
+        msg_out->set_key(XBOX_DPAD_UP,     1);
+        msg_out->set_key(XBOX_DPAD_DOWN,   0);
+        msg_out->set_key(XBOX_DPAD_LEFT,   1);
+        msg_out->set_key(XBOX_DPAD_RIGHT,  0);
         break;
     }
 

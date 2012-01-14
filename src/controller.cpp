@@ -31,7 +31,8 @@ Controller::Controller() :
   m_udev_device(),
   m_led_status(0),
   m_rumble_left(0),
-  m_rumble_right(0)
+  m_rumble_right(0),
+  m_message_descriptor()  
 {
 }
 
@@ -41,11 +42,11 @@ Controller::~Controller()
 }
 
 void
-Controller::submit_msg(const ControllerMessage& msg)
+Controller::submit_msg(const ControllerMessage& msg, const ControllerMessageDescriptor& msg_desc)
 {
   if (m_msg_cb)
   {
-    m_msg_cb(msg);
+    m_msg_cb(msg, msg_desc);
   }
 }
 
@@ -81,7 +82,7 @@ Controller::set_udev_device(udev_device* udev_dev)
 }
 
 void
-Controller::set_message_cb(const boost::function<void(const ControllerMessage&)>& msg_cb)
+Controller::set_message_cb(const boost::function<void(const ControllerMessage&, const ControllerMessageDescriptor&)>& msg_cb)
 {
   m_msg_cb = msg_cb;
 }

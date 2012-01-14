@@ -60,26 +60,26 @@ LogitechF310Controller::parse(const uint8_t* data, int len, ControllerMessage* m
   {
     msg_out->clear();
 
-    msg_out->set_button(XBOX_BTN_A, unpack::bit(data+3, 4));
-    msg_out->set_button(XBOX_BTN_B, unpack::bit(data+3, 5));
-    msg_out->set_button(XBOX_BTN_X, unpack::bit(data+3, 6));
-    msg_out->set_button(XBOX_BTN_Y, unpack::bit(data+3, 7));
+    msg_out->set_key(XBOX_BTN_A, unpack::bit(data+3, 4));
+    msg_out->set_key(XBOX_BTN_B, unpack::bit(data+3, 5));
+    msg_out->set_key(XBOX_BTN_X, unpack::bit(data+3, 6));
+    msg_out->set_key(XBOX_BTN_Y, unpack::bit(data+3, 7));
 
-    msg_out->set_button(XBOX_BTN_RB, unpack::bit(data+3, 1));
-    msg_out->set_button(XBOX_BTN_LB, unpack::bit(data+3, 0));
+    msg_out->set_key(XBOX_BTN_RB, unpack::bit(data+3, 1));
+    msg_out->set_key(XBOX_BTN_LB, unpack::bit(data+3, 0));
 
-    msg_out->set_button(XBOX_BTN_THUMB_R, unpack::bit(data+2, 7));
-    msg_out->set_button(XBOX_BTN_THUMB_L, unpack::bit(data+2, 6));
-    msg_out->set_button(XBOX_BTN_START, unpack::bit(data+2, 4));
-    msg_out->set_button(XBOX_BTN_BACK,  unpack::bit(data+2, 5));
+    msg_out->set_key(XBOX_BTN_THUMB_R, unpack::bit(data+2, 7));
+    msg_out->set_key(XBOX_BTN_THUMB_L, unpack::bit(data+2, 6));
+    msg_out->set_key(XBOX_BTN_START, unpack::bit(data+2, 4));
+    msg_out->set_key(XBOX_BTN_BACK,  unpack::bit(data+2, 5));
 
-    msg_out->set_axis(XBOX_AXIS_LT, data[4]);
-    msg_out->set_axis(XBOX_AXIS_RT, data[5]);
+    msg_out->set_abs(XBOX_AXIS_LT, data[4]);
+    msg_out->set_abs(XBOX_AXIS_RT, data[5]);
 
-    msg_out->set_button(XBOX_DPAD_UP,    unpack::bit(data+2, 0));
-    msg_out->set_button(XBOX_DPAD_DOWN,  unpack::bit(data+2, 1));
-    msg_out->set_button(XBOX_DPAD_LEFT,  unpack::bit(data+2, 2));
-    msg_out->set_button(XBOX_DPAD_RIGHT, unpack::bit(data+2, 3));
+    msg_out->set_key(XBOX_DPAD_UP,    unpack::bit(data+2, 0));
+    msg_out->set_key(XBOX_DPAD_DOWN,  unpack::bit(data+2, 1));
+    msg_out->set_key(XBOX_DPAD_LEFT,  unpack::bit(data+2, 2));
+    msg_out->set_key(XBOX_DPAD_RIGHT, unpack::bit(data+2, 3));
 
     // the logitech gamepad f310 reports its two joysticks in a rather
     // odd manner: only 8 bits are used with one bit -- the most significant
@@ -101,11 +101,11 @@ LogitechF310Controller::parse(const uint8_t* data, int len, ControllerMessage* m
     // of information are availble for each half axis, so the code below
     // makes the most of it.
 
-    msg_out->set_axis(XBOX_AXIS_X1, unpack::u8_to_s16(data[6]));
-    msg_out->set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::u8_to_s16(data[8])));
+    msg_out->set_abs(XBOX_AXIS_X1, unpack::u8_to_s16(data[6]));
+    msg_out->set_abs(XBOX_AXIS_Y1, unpack::s16_invert(unpack::u8_to_s16(data[8])));
 
-    msg_out->set_axis(XBOX_AXIS_X2, unpack::u8_to_s16(data[10]));
-    msg_out->set_axis(XBOX_AXIS_Y2, unpack::s16_invert(unpack::u8_to_s16(data[12])));
+    msg_out->set_abs(XBOX_AXIS_X2, unpack::u8_to_s16(data[10]));
+    msg_out->set_abs(XBOX_AXIS_Y2, unpack::s16_invert(unpack::u8_to_s16(data[12])));
 
     return true;
   }

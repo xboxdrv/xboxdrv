@@ -64,7 +64,7 @@ EvdevAbsMap::process(ControllerMessage& msg, int code, int value, int min, int m
       // '+ 1' so that we round up, instead of round down 
       const int center = (max - min + 1) / 2;
       const float v = to_float(value, center, min);
-      msg.set_axis_float(it->second, v); 
+      msg.set_abs_float(it->second, v); 
     }
   }
 
@@ -75,7 +75,7 @@ EvdevAbsMap::process(ControllerMessage& msg, int code, int value, int min, int m
       // '+ 1' so that we round up, instead of round down 
       const int center = (max - min + 1) / 2;
       const float v = to_float(value, center, max);
-      msg.set_axis_float(it->second, v);
+      msg.set_abs_float(it->second, v);
     }
   }
 
@@ -84,7 +84,7 @@ EvdevAbsMap::process(ControllerMessage& msg, int code, int value, int min, int m
     if (it != m_both_map.end())
     {
       const float v = to_float(value, min, max);
-      msg.set_axis_float(it->second, v); 
+      msg.set_abs_float(it->second, v); 
     }
   }
 }

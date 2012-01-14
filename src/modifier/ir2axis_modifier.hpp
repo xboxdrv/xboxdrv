@@ -28,14 +28,15 @@
 class IR2AxisModifier : public Modifier
 {
 public:
-  static IR2AxisModifier* from_string(const std::vector<std::string>& args);
+  static IR2AxisModifier* from_string(const std::vector<std::string>& args,
+                                      const ControllerMessageDescriptor& msg_desc);
 
 private:
-  XboxAxis m_axis_x;
-  XboxAxis m_axis_y;
+  int m_axis_x;
+  int m_axis_y;
 
 public:
-  IR2AxisModifier(XboxAxis axis_x, XboxAxis axis_y);
+  IR2AxisModifier(int axis_x, int axis_y);
 
   void update(int msec_delta, ControllerMessage& msg);
   std::string str() const;

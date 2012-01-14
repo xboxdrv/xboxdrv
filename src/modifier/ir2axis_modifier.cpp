@@ -24,7 +24,8 @@
 #include "raise_exception.hpp"
 
 IR2AxisModifier*
-IR2AxisModifier::from_string(const std::vector<std::string>& args)
+IR2AxisModifier::from_string(const std::vector<std::string>& args,
+                             const ControllerMessageDescriptor& msg_desc)
 {
   if (args.size() != 2)
   {
@@ -32,12 +33,12 @@ IR2AxisModifier::from_string(const std::vector<std::string>& args)
   }
   else
   {
-    return new IR2AxisModifier(string2axis(args[0]),
-                               string2axis(args[1]));
+    return new IR2AxisModifier(msg_desc.get_abs(args[0]),
+                               msg_desc.get_abs(args[1]));
   }
 }
 
-IR2AxisModifier::IR2AxisModifier(XboxAxis axis_x, XboxAxis axis_y) :
+IR2AxisModifier::IR2AxisModifier(int axis_x, int axis_y) :
   m_axis_x(axis_x),
   m_axis_y(axis_y)
 {
@@ -60,11 +61,11 @@ IR2AxisModifier::update(int msec_delta, ControllerMessage& msg)
 
   for(int idx = 0; idx < 4; ++idx)
   {
-    if (msg.get_axis(static_cast<XboxAxis>(WIIMOTE_IR_SIZE + 3*idx)) >= 0)
+    if (msg.get_abs(static_cast<int>(WIIMOTE_IR_SIZE + 3*idx)) >= 0)
     {
-      float x = msg.get_axis_float(static_cast<XboxAxis>(WIIMOTE_IR_X + 3*idx));
-      float y = msg.get_axis_float(static_cast<XboxAxis>(WIIMOTE_IR_Y + 3*idx));
-      int size = msg.get_axis(static_cast<XboxAxis>(WIIMOTE_IR_SIZE + 3*idx));
+      float x = msg.get_abs_float(WIIMOTE_IR_X + 3*idx);
+      float y = msg.get_abs_float(WIIMOTE_IR_Y + 3*idx);
+      int size = msg.get_abs(WIIMOTE_IR_SIZE + 3*idx);
 
       if (!valid1)
       {
@@ -106,16 +107,16 @@ IR2AxisModifier::update(int msec_delta, ControllerMessage& msg)
   else if (!valid2)
   {
     log_tmp(x1 << " " << y1);
-    msg.set_axis_float(m_axis_x, -x1);
-    msg.set_axis_float(m_axis_y, y1);
+    msg.set_abs_float(m_axis_x, -x1);
+    msg.set_abs_float(m_axis_y, y1);
   }
   else // both valid
   {
     // FIXME: need accelerometer data to find out where is up
     //log_tmp(x1 << " " << y1 << " - " << x2 << " " << y2);
     log_tmp(atan2f(y1 - y2, x1 - x2));
-    msg.set_axis_float(m_axis_x, -((x1+x2)/2.0f));
-    msg.set_axis_float(m_axis_y, (y1+y2)/2.0f);
+    msg.set_abs_float(m_axis_x, -((x1+x2)/2.0f));
+    msg.set_abs_float(m_axis_y, (y1+y2)/2.0f);
   }
 }
 

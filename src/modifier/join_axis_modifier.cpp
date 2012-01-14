@@ -24,7 +24,8 @@
 #include "raise_exception.hpp"
 
 JoinAxisModifier*
-JoinAxisModifier::from_string(const std::vector<std::string>& args)
+JoinAxisModifier::from_string(const std::vector<std::string>& args,
+                              const ControllerMessageDescriptor& msg_desc)
 {
   if (args.size() != 3)
   {
@@ -32,13 +33,13 @@ JoinAxisModifier::from_string(const std::vector<std::string>& args)
   }
   else
   {
-    return new JoinAxisModifier(string2axis(args[0]),
-                                string2axis(args[1]),
-                                string2axis(args[2]));
+    return new JoinAxisModifier(msg_desc.get_abs(args[0]),
+                                msg_desc.get_abs(args[1]),
+                                msg_desc.get_abs(args[2]));
   }
 }
 
-JoinAxisModifier::JoinAxisModifier(XboxAxis lhs, XboxAxis rhs, XboxAxis out) :
+JoinAxisModifier::JoinAxisModifier(int lhs, int rhs, int out) :
   m_lhs(lhs),
   m_rhs(rhs),
   m_out(out)
@@ -48,18 +49,20 @@ JoinAxisModifier::JoinAxisModifier(XboxAxis lhs, XboxAxis rhs, XboxAxis out) :
 void
 JoinAxisModifier::update(int msec_delta, ControllerMessage& msg)
 {
-  msg.set_axis_float(m_out,
-                     (msg.get_axis_float(m_rhs) - msg.get_axis_float(m_lhs)) / 2.0f);
+  msg.set_abs_float(m_out,
+                     (msg.get_abs_float(m_rhs) - msg.get_abs_float(m_lhs)) / 2.0f);
 }
 
 std::string
 JoinAxisModifier::str() const
 {
   std::ostringstream os;
+  /* BROKEN:
   os << "join-axis:" 
      << axis2string(m_lhs) << ":"
      << axis2string(m_rhs) << ":"
      << axis2string(m_out);
+  */
   return os.str();
 }
 

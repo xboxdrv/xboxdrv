@@ -24,6 +24,8 @@
 #include <boost/function.hpp>
 #include <memory>
 
+#include "controller_message_descriptor.hpp"
+
 extern "C" {
 #include <libudev.h>
 }
@@ -33,7 +35,7 @@ struct ControllerMessage;
 class Controller
 {
 protected:
-  boost::function<void (const ControllerMessage&)> m_msg_cb;
+  boost::function<void (const ControllerMessage&, const ControllerMessageDescriptor&)> m_msg_cb;
   boost::function<void ()> m_disconnect_cb;
   boost::function<void ()> m_activation_cb;
   bool m_is_disconnected;
@@ -44,6 +46,8 @@ protected:
   uint8_t m_rumble_left;
   uint8_t m_rumble_right;
 
+  ControllerMessageDescriptor m_message_descriptor;
+
 public:
   Controller();
   virtual ~Controller();
@@ -52,6 +56,8 @@ public:
 
   uint8_t get_led() const { return m_led_status; }
   void set_led(uint8_t status);
+
+  virtual const ControllerMessageDescriptor& get_message_descriptor() { return m_message_descriptor; }
 
   virtual void set_rumble_real(uint8_t left, uint8_t right) =0;
   virtual void set_led_real(uint8_t status) =0;
@@ -74,12 +80,13 @@ public:
   virtual std::string get_usbid() const   { return "-1:-1"; }
   virtual std::string get_name() const    { return "<not implemented>"; }
 
-  void set_message_cb(const boost::function<void(const ControllerMessage&)>& msg_cb);
+  void set_message_cb(const boost::function<void(const ControllerMessage&, const ControllerMessageDescriptor&)>& msg_cb);
 
   void set_udev_device(udev_device* udev_dev);
   udev_device* get_udev_device() const;
 
-  void submit_msg(const ControllerMessage& msg);
+  void submit_msg(const ControllerMessage& msg, const ControllerMessageDescriptor& msg_desc);
+
 
 private:
   Controller (const Controller&);

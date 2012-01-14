@@ -23,7 +23,8 @@
 #include <math.h>
 
 RotateAxisModifier*
-RotateAxisModifier::from_string(const std::vector<std::string>& args)
+RotateAxisModifier::from_string(const std::vector<std::string>& args,
+                                const ControllerMessageDescriptor& msg_desc)
 {
   if (args.size() != 3 && args.size() != 4)
   {
@@ -31,14 +32,14 @@ RotateAxisModifier::from_string(const std::vector<std::string>& args)
   }
   else
   {
-    return new RotateAxisModifier(string2axis(args[0]),
-                                  string2axis(args[1]),
+    return new RotateAxisModifier(msg_desc.get_abs(args[0]),
+                                  msg_desc.get_abs(args[1]),
                                   boost::lexical_cast<float>(args[2]) * static_cast<float>(M_PI) / 180.0f,
                                   args.size() == 3 ? false : boost::lexical_cast<bool>(args[3]));
   }
 }
 
-RotateAxisModifier::RotateAxisModifier(XboxAxis xaxis, XboxAxis yaxis, float angle, bool mirror) :
+RotateAxisModifier::RotateAxisModifier(int xaxis, int yaxis, float angle, bool mirror) :
   m_xaxis(xaxis),
   m_yaxis(yaxis),
   m_angle(angle),
@@ -49,8 +50,8 @@ RotateAxisModifier::RotateAxisModifier(XboxAxis xaxis, XboxAxis yaxis, float ang
 void
 RotateAxisModifier::update(int msec_delta, ControllerMessage& msg)
 {
-  float x = msg.get_axis_float(m_xaxis);
-  float y = msg.get_axis_float(m_yaxis);
+  float x = msg.get_abs_float(m_xaxis);
+  float y = msg.get_abs_float(m_yaxis);
 
   if (m_mirror)
   {
@@ -60,8 +61,8 @@ RotateAxisModifier::update(int msec_delta, ControllerMessage& msg)
   float length = sqrtf(x*x + y*y);
   float angle = atan2f(y, x) + m_angle;
 
-  msg.set_axis_float(m_xaxis, cosf(angle) * length);
-  msg.set_axis_float(m_yaxis, sinf(angle) * length);
+  msg.set_abs_float(m_xaxis, cosf(angle) * length);
+  msg.set_abs_float(m_yaxis, sinf(angle) * length);
 }
 
 std::string

@@ -24,8 +24,8 @@
 ControllerOptions::ControllerOptions() :
   uinput(),
   modifier(),
-  buttonmap(new ButtonmapModifier),
-  axismap(new AxismapModifier),
+  buttonmap(),
+  axismap(),
   deadzone(0),
   deadzone_trigger(0),
   square_axis(false),

@@ -38,7 +38,6 @@ ControllerSlot::connect(ControllerPtr controller)
 {
   assert(!m_thread);
 
-  std::auto_ptr<MessageProcessor> message_proc;
   m_thread.reset(new ControllerThread(controller, m_config, m_opts));
 }
 

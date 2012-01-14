@@ -27,7 +27,8 @@
 #include "raise_exception.hpp"
 
 StickZoneModifier*
-StickZoneModifier::from_string(const std::vector<std::string>& args)
+StickZoneModifier::from_string(const std::vector<std::string>& args,
+                               const ControllerMessageDescriptor& msg_desc)
 {
   if (args.size() != 5)
   {
@@ -35,15 +36,15 @@ StickZoneModifier::from_string(const std::vector<std::string>& args)
   }
   else
   {
-    return new StickZoneModifier(string2axis(args[0]),
-                                 string2axis(args[1]),
-                                 string2btn(args[2]),
+    return new StickZoneModifier(msg_desc.get_abs(args[0]),
+                                 msg_desc.get_abs(args[1]),
+                                 msg_desc.get_abs(args[2]),
                                  boost::lexical_cast<float>(args[3]),
                                  boost::lexical_cast<float>(args[4]));
   }
 }
 
-StickZoneModifier::StickZoneModifier(XboxAxis x_axis, XboxAxis y_axis, XboxButton button, 
+StickZoneModifier::StickZoneModifier(int x_axis, int y_axis, int button, 
                                      float range_start, float range_end) :
   m_x_axis(x_axis),
   m_y_axis(y_axis),
@@ -56,8 +57,8 @@ StickZoneModifier::StickZoneModifier(XboxAxis x_axis, XboxAxis y_axis, XboxButto
 void
 StickZoneModifier::update(int msec_delta, ControllerMessage& msg)
 {
-  float x = msg.get_axis_float(m_x_axis);
-  float y = msg.get_axis_float(m_y_axis);
+  float x = msg.get_abs_float(m_x_axis);
+  float y = msg.get_abs_float(m_y_axis);
   float r = sqrtf(x*x + y*y);
 
   if (r > 1.0f)
@@ -67,11 +68,11 @@ StickZoneModifier::update(int msec_delta, ControllerMessage& msg)
 
   if (m_range_start <= r && r <= m_range_end)
   {
-    msg.set_button(m_button, true);
+    msg.set_key(m_button, true);
   }
   else
   {
-    msg.set_button(m_button, false);
+    msg.set_key(m_button, false);
   }
 }
 
@@ -79,7 +80,7 @@ std::string
 StickZoneModifier::str() const
 {
   std::ostringstream os;
-  os << "stickzone:" << axis2string(m_x_axis) << ":" << axis2string(m_y_axis) << ":" << btn2string(m_button);
+  //BROKEN:os << "stickzone:" << axis2string(m_x_axis) << ":" << axis2string(m_y_axis) << ":" << btn2string(m_button);
   return os.str();
 }
 

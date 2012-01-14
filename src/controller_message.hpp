@@ -19,7 +19,8 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_MESSAGE_HPP
 #define HEADER_XBOXDRV_CONTROLLER_MESSAGE_HPP
 
-#include <boost/dynamic_bitset.hpp>
+#include <boost/array.hpp>
+#include <bitset>
 #include <linux/input.h>
 
 #include "xboxmsg.hpp"
@@ -27,36 +28,32 @@
 class ControllerMessage
 {
 private:
-  std::vector<int> m_axis_state;
-  std::vector<int> m_rel_state;
-  boost::dynamic_bitset<unsigned long> m_button_state;
+  boost::array<int, 255> m_abs_state;
+  boost::array<int, 255> m_rel_state;
+  std::bitset<255>       m_key_state;
 
 public:
   ControllerMessage();
-  ControllerMessage(int num_keys, int num_axis, int num_rel);
  
   void clear();
 
   bool get_key(int key) const;
   void set_key(int key, bool v);
 
-  bool get_button(XboxButton button) const;
-  void set_button(XboxButton button, bool v);
-
-  int  get_axis(XboxAxis axis) const;
-  void set_axis(XboxAxis axis, int v);
+  int  get_abs(int abs) const;
+  void set_abs(int abs, int v);
 
   int get_rel(int rel) const;
   void set_rel(int rel, int v);
 
-  float get_axis_float(XboxAxis axis) const;
-  void  set_axis_float(XboxAxis axis, float v);
+  float get_abs_float(int abs) const;
+  void  set_abs_float(int abs, float v);
 
-  static int get_axis_min(XboxAxis axis);
-  static int get_axis_max(XboxAxis axis);
+  static int get_abs_min(int abs);
+  static int get_abs_max(int abs);
 
-  void set_axis_min(XboxAxis axis, int value);
-  void set_axis_max(XboxAxis axis, int value);
+  void set_abs_min(int abs, int value);
+  void set_abs_max(int abs, int value);
 };
 
 std::ostream& operator<<(std::ostream& out, const ControllerMessage& msg);

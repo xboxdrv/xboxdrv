@@ -36,7 +36,9 @@ MessageProcessor::~MessageProcessor()
 }
 
 void
-MessageProcessor::send(const ControllerMessage& msg_in, int msec_delta)
+MessageProcessor::send(const ControllerMessage& msg_in, 
+                       const ControllerMessageDescriptor& msg_desc, 
+                       int msec_delta)
 {
   if (m_config && !m_config->empty())
   {
@@ -44,17 +46,17 @@ MessageProcessor::send(const ControllerMessage& msg_in, int msec_delta)
 
     if (m_rumble_test)
     {
-      log_debug("rumble: " << msg.get_axis(XBOX_AXIS_LT) << " " << msg.get_axis(XBOX_AXIS_RT));
+      log_debug("rumble: " << msg.get_abs(XBOX_AXIS_LT) << " " << msg.get_abs(XBOX_AXIS_RT));
 
-      set_rumble(static_cast<uint8_t>(msg.get_axis(XBOX_AXIS_LT)), 
-                 static_cast<uint8_t>(msg.get_axis(XBOX_AXIS_RT)));
+      set_rumble(static_cast<uint8_t>(msg.get_abs(XBOX_AXIS_LT)), 
+                 static_cast<uint8_t>(msg.get_abs(XBOX_AXIS_RT)));
     }
 
     // handling switching of configurations
     if (m_config_toggle_button != XBOX_BTN_UNKNOWN)
     {
-      bool last = m_oldmsg.get_button(m_config_toggle_button);
-      bool cur  = msg.get_button(m_config_toggle_button);
+      bool last = m_oldmsg.get_key(m_config_toggle_button);
+      bool cur  = msg.get_key(m_config_toggle_button);
 
       if (cur && cur != last)
       {

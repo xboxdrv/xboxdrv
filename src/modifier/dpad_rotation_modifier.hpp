@@ -28,8 +28,10 @@ class ControllerMessage;
 class DpadRotationModifier : public Modifier
 {
 public:
-  static DpadRotationModifier* from_string(const std::vector<std::string>& args);
-  static DpadRotationModifier* from_string(const std::string& value);
+  static DpadRotationModifier* from_string(const std::vector<std::string>& args,
+                                           const ControllerMessageDescriptor& msg_desc);
+  static DpadRotationModifier* from_string(const std::string& value,
+                                           const ControllerMessageDescriptor& msg_desc);
 
 private:
   int  m_dpad_rotation;

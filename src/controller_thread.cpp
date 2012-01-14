@@ -22,9 +22,10 @@
 #include <boost/bind.hpp>
 #include <glib.h>
 
+#include "controller.hpp"
+#include "controller_slot_config.hpp"
 #include "helper.hpp"
 #include "log.hpp"
-#include "controller.hpp"
 #include "message_processor.hpp"
 
 extern bool global_exit_xboxdrv;
@@ -62,7 +63,7 @@ ControllerThread::on_timeout()
     int msec_delta = static_cast<int>(g_timer_elapsed(m_timer, NULL) * 1000.0f);
     g_timer_reset(m_timer);
 
-    m_processor->send(m_oldrealmsg, msec_delta);
+    m_processor->send(m_oldrealmsg, m_controller->get_message_descriptor(), msec_delta);
   }
 
   return true; // do not remove the callback
@@ -83,7 +84,7 @@ ControllerThread::on_message(const ControllerMessage& msg)
     
   if (m_processor.get())
   {
-    m_processor->send(msg, msec_delta);
+    m_processor->send(msg, m_controller->get_message_descriptor(), msec_delta);
   }
 }
 

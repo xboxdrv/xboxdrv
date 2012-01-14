@@ -22,7 +22,7 @@
 #include <sstream>
 
 LogModifier*
-LogModifier::from_string(const std::string& value)
+LogModifier::from_string(const std::string& value, const ControllerMessageDescriptor& msg_desc)
 {
   return new LogModifier(value);
 }
@@ -38,7 +38,7 @@ LogModifier::update(int msec_delta, ControllerMessage& msg)
   std::cout << m_prefix << ": ";
   for(int i = 1; i < XBOX_BTN_MAX; ++i)
   {
-    std::cout << msg.get_button(static_cast<XboxButton>(i));
+    std::cout << msg.get_key(i);
     if (i != XBOX_BTN_MAX - 1)
       std::cout << " ";
   }
@@ -47,7 +47,7 @@ LogModifier::update(int msec_delta, ControllerMessage& msg)
 
   for(int i = 1; i < XBOX_AXIS_MAX; ++i)
   {
-    std::cout << msg.get_axis(static_cast<XboxAxis>(i));
+    std::cout << msg.get_abs(i);
     if (i != XBOX_AXIS_MAX - 1)
       std::cout << " ";
   }

@@ -26,7 +26,8 @@
 #include "raise_exception.hpp"
 
 Acc2AxisModifier*
-Acc2AxisModifier::from_string(const std::vector<std::string>& args)
+Acc2AxisModifier::from_string(const std::vector<std::string>& args, 
+                              const ControllerMessageDescriptor& msg_desc)
 {
   if (args.size() != 5)
   {
@@ -34,16 +35,16 @@ Acc2AxisModifier::from_string(const std::vector<std::string>& args)
   }
   else
   {
-    return new Acc2AxisModifier(string2axis(args[0]),
-                                string2axis(args[1]),
-                                string2axis(args[2]),
-                                string2axis(args[3]),
-                                string2axis(args[4]));
+    return new Acc2AxisModifier(msg_desc.get_abs(args[0]),
+                                msg_desc.get_abs(args[1]),
+                                msg_desc.get_abs(args[2]),
+                                msg_desc.get_abs(args[3]),
+                                msg_desc.get_abs(args[4]));
   }
 }
 
-Acc2AxisModifier::Acc2AxisModifier(XboxAxis acc_x, XboxAxis acc_y, XboxAxis acc_z,
-                                   XboxAxis axis_x, XboxAxis axis_y) :
+Acc2AxisModifier::Acc2AxisModifier(int acc_x, int acc_y, int acc_z,
+                                   int axis_x, int axis_y) :
   m_acc_x(acc_x),
   m_acc_y(acc_y),
   m_acc_z(acc_z),
@@ -55,9 +56,9 @@ Acc2AxisModifier::Acc2AxisModifier(XboxAxis acc_x, XboxAxis acc_y, XboxAxis acc_
 void
 Acc2AxisModifier::update(int msec_delta, ControllerMessage& msg)
 {
-  float ax = msg.get_axis_float(m_acc_x);
-  float ay = msg.get_axis_float(m_acc_y);
-  float az = msg.get_axis_float(m_acc_z);
+  float ax = msg.get_abs_float(m_acc_x);
+  float ay = msg.get_abs_float(m_acc_y);
+  float az = msg.get_abs_float(m_acc_z);
 
   float rx = (atan2f(az, ax) - static_cast<float>(M_PI)/2.0f) * -1.0f;
   float ry = (atan2f(az, ay) - static_cast<float>(M_PI)/2.0f) * -1.0f;
@@ -82,8 +83,8 @@ Acc2AxisModifier::update(int msec_delta, ControllerMessage& msg)
 
   //log_tmp("Rot: " /*<< ax << " " << ay << " " << az << " -- " */<< rx << " " << ry);
 
-  msg.set_axis_float(m_axis_x, rx);
-  msg.set_axis_float(m_axis_y, ry);
+  msg.set_abs_float(m_axis_x, rx);
+  msg.set_abs_float(m_axis_y, ry);
 }
 
 std::string

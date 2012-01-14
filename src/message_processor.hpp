@@ -23,6 +23,7 @@
 
 class Options;
 class ControllerOptions;
+class ControllerMessageDescriptor;
 
 class MessageProcessor
 {
@@ -40,7 +41,9 @@ public:
   MessageProcessor(ControllerSlotConfigPtr config, const Options& opts);
   ~MessageProcessor();
 
-  void send(const ControllerMessage& msg, int msec_delta);
+  void send(const ControllerMessage& msg,
+            const ControllerMessageDescriptor& msg_desc,
+            int msec_delta);
   void set_rumble(uint8_t lhs, uint8_t rhs);
   void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
   void set_config(int num);

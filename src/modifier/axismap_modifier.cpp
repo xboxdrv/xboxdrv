@@ -26,7 +26,8 @@
 #include "helper.hpp"
 
 AxisMapping
-AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
+AxisMapping::from_string(const std::string& lhs_, const std::string& rhs,
+                         const ControllerMessageDescriptor& msg_desc)
 {
   std::string lhs = lhs_;
   AxisMapping mapping;
@@ -48,7 +49,7 @@ AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
   {
     switch(idx)
     {
-      case 0:  mapping.lhs = string2axis(*t); break;
+      case 0:  mapping.lhs = msg_desc.get_abs(*t); break;
       default: mapping.filters.push_back(AxisFilter::from_string(*t));
     }
   }
@@ -59,7 +60,7 @@ AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
   }
   else
   {
-    mapping.rhs = string2axis(rhs);
+    mapping.rhs = msg_desc.get_abs(rhs);
   }
 
   if (mapping.lhs == XBOX_AXIS_UNKNOWN ||
@@ -72,14 +73,29 @@ AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
 }
 
 AxismapModifier*
-AxismapModifier::from_string(const std::string& args)
+AxismapModifier::from_string(const std::string& args, 
+                             const ControllerMessageDescriptor& msg_desc)
 {
-  AxismapModifier* modifier = new AxismapModifier;
+  std::auto_ptr<AxismapModifier> modifier(new AxismapModifier);
 
-  process_name_value_string(args, boost::bind(&AxismapModifier::add, modifier, 
-                                              boost::bind(&AxisMapping::from_string, _1, _2)));
+  process_name_value_string(args, boost::bind(&AxismapModifier::add, modifier.get(),
+                                              boost::bind(&AxisMapping::from_string, _1, _2, boost::ref(msg_desc))));
 
-  return modifier;
+  return modifier.release();
+}
+
+AxismapModifier*
+AxismapModifier::from_option(const std::vector<AxisMappingOption>& mappings,
+                             const ControllerMessageDescriptor& msg_desc)
+{
+  std::auto_ptr<AxismapModifier> modifier(new AxismapModifier);
+  
+  for(std::vector<AxisMappingOption>::const_iterator i = mappings.begin(); i != mappings.end(); ++i)
+  {
+    modifier->add(AxisMapping::from_string(i->lhs, i->rhs, msg_desc));
+  }
+
+  return modifier.release();
 }
 
 AxismapModifier::AxismapModifier() :
@@ -104,14 +120,14 @@ AxismapModifier::update(int msec_delta, ControllerMessage& msg)
   // clear all lhs values in the newmsg, keep rhs
   for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
-    newmsg.set_axis_float(i->lhs, 0);
+    newmsg.set_abs_float(i->lhs, 0);
   }
 
   for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
-    int min = msg.get_axis_min(i->lhs);
-    int max = msg.get_axis_max(i->lhs);
-    int value = msg.get_axis(i->lhs);
+    int min = msg.get_abs_min(i->lhs);
+    int max = msg.get_abs_max(i->lhs);
+    int value = msg.get_abs(i->lhs);
 
     if (i->invert)
     {
@@ -128,15 +144,15 @@ AxismapModifier::update(int msec_delta, ControllerMessage& msg)
 
     if (i->lhs == i->rhs)
     {
-      newmsg.set_axis_float(i->rhs, lhs);
+      newmsg.set_abs_float(i->rhs, lhs);
     }
     else
     {
       // FIXME: this primitive merge kind of works for regular axis,
       // but doesn't work for half axis which have their center at
       // -1.0f
-      float rhs = newmsg.get_axis_float(i->rhs);
-      newmsg.set_axis_float(i->rhs, Math::clamp(-1.0f, lhs + rhs, 1.0f));
+      float rhs = newmsg.get_abs_float(i->rhs);
+      newmsg.set_abs_float(i->rhs, Math::clamp(-1.0f, lhs + rhs, 1.0f));
     }
   }
   msg = newmsg;
@@ -149,7 +165,7 @@ AxismapModifier::add(const AxisMapping& mapping)
 }
 
 void
-AxismapModifier::add_filter(XboxAxis axis, AxisFilterPtr filter)
+AxismapModifier::add_filter(int axis, AxisFilterPtr filter)
 {
   for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
@@ -172,6 +188,7 @@ std::string
 AxismapModifier::str() const
 {
   std::ostringstream out;
+  /* BROKEN:
   out << "axismap:\n";
   for(std::vector<AxisMapping>::const_iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
   {
@@ -181,6 +198,7 @@ AxismapModifier::str() const
       out << "    " << (*filter)->str() << std::endl;
     }
   }
+  */
   return out.str();
 }
 

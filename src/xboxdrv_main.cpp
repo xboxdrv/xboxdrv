@@ -27,6 +27,7 @@
 #include <boost/bind.hpp>
 
 #include "controller_factory.hpp"
+#include "controller_slot_config.hpp"
 #include "controller/evdev_controller.hpp"
 #include "controller/wiimote_controller.hpp"
 #include "options.hpp"

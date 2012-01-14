@@ -66,56 +66,56 @@ Playstation3USBController::parse(const uint8_t* data, int len, ControllerMessage
     // unsigned int unknown01 :8; // always 00
 
     // 02
-    msg_out->set_button(XBOX_BTN_BACK,   unpack::bit(data+2, 0));
-    msg_out->set_button(XBOX_BTN_THUMB_L,     unpack::bit(data+2, 1));
-    msg_out->set_button(XBOX_BTN_THUMB_R,     unpack::bit(data+2, 2));
-    msg_out->set_button(XBOX_BTN_START,  unpack::bit(data+2, 3));
+    msg_out->set_key(XBOX_BTN_BACK,   unpack::bit(data+2, 0));
+    msg_out->set_key(XBOX_BTN_THUMB_L,     unpack::bit(data+2, 1));
+    msg_out->set_key(XBOX_BTN_THUMB_R,     unpack::bit(data+2, 2));
+    msg_out->set_key(XBOX_BTN_START,  unpack::bit(data+2, 3));
 
-    msg_out->set_button(XBOX_DPAD_UP,    unpack::bit(data+2, 4));
-    msg_out->set_button(XBOX_DPAD_RIGHT, unpack::bit(data+2, 5));
-    msg_out->set_button(XBOX_DPAD_DOWN,  unpack::bit(data+2, 6));
-    msg_out->set_button(XBOX_DPAD_LEFT,  unpack::bit(data+2, 7));
+    msg_out->set_key(XBOX_DPAD_UP,    unpack::bit(data+2, 4));
+    msg_out->set_key(XBOX_DPAD_RIGHT, unpack::bit(data+2, 5));
+    msg_out->set_key(XBOX_DPAD_DOWN,  unpack::bit(data+2, 6));
+    msg_out->set_key(XBOX_DPAD_LEFT,  unpack::bit(data+2, 7));
 
     // 03
-    msg_out->set_button(XBOX_BTN_LT,  unpack::bit(data+3, 0));
-    msg_out->set_button(XBOX_BTN_RT,  unpack::bit(data+3, 1));
-    msg_out->set_button(XBOX_BTN_LB,  unpack::bit(data+3, 2));
-    msg_out->set_button(XBOX_BTN_RB,  unpack::bit(data+3, 3));
+    msg_out->set_key(XBOX_BTN_LT,  unpack::bit(data+3, 0));
+    msg_out->set_key(XBOX_BTN_RT,  unpack::bit(data+3, 1));
+    msg_out->set_key(XBOX_BTN_LB,  unpack::bit(data+3, 2));
+    msg_out->set_key(XBOX_BTN_RB,  unpack::bit(data+3, 3));
 
-    msg_out->set_button(XBOX_BTN_Y,  unpack::bit(data+3, 4));
-    msg_out->set_button(XBOX_BTN_B,  unpack::bit(data+3, 5));
-    msg_out->set_button(XBOX_BTN_A,  unpack::bit(data+3, 6));
-    msg_out->set_button(XBOX_BTN_X,  unpack::bit(data+3, 7));
+    msg_out->set_key(XBOX_BTN_Y,  unpack::bit(data+3, 4));
+    msg_out->set_key(XBOX_BTN_B,  unpack::bit(data+3, 5));
+    msg_out->set_key(XBOX_BTN_A,  unpack::bit(data+3, 6));
+    msg_out->set_key(XBOX_BTN_X,  unpack::bit(data+3, 7));
 
     // 04
-    msg_out->set_button(XBOX_BTN_GUIDE,  unpack::bit(data+4, 0));
+    msg_out->set_key(XBOX_BTN_GUIDE,  unpack::bit(data+4, 0));
     //unsigned int unknown04   :7;
 
     //unsigned int unknown05 :8; // always 00
-    msg_out->set_axis(XBOX_AXIS_X1, data[6]);
-    msg_out->set_axis(XBOX_AXIS_Y1, data[7]);
-    msg_out->set_axis(XBOX_AXIS_X2, data[8]);
-    msg_out->set_axis(XBOX_AXIS_X2, data[9]);
+    msg_out->set_abs(XBOX_AXIS_X1, data[6]);
+    msg_out->set_abs(XBOX_AXIS_Y1, data[7]);
+    msg_out->set_abs(XBOX_AXIS_X2, data[8]);
+    msg_out->set_abs(XBOX_AXIS_X2, data[9]);
 
     //unsigned int unknown10 :8; // always 00
     //unsigned int unknown11 :8; // always 00
     //unsigned int unknown12 :8; // always 00
     //unsigned int unknown13 :8; // always 00
 
-    // msg_out->set_axis(XBOX_AXIS_DPAD_UP,    data[14]);
-    // msg_out->set_axis(XBOX_AXIS_DPAD_RIGHT, data[15]);
-    // msg_out->set_axis(XBOX_AXIS_DPAD_DOWN,  data[16]);
-    // msg_out->set_axis(XBOX_AXIS_DPAD_LEFT,  data[17]);
+    // msg_out->set_abs(XBOX_AXIS_DPAD_UP,    data[14]);
+    // msg_out->set_abs(XBOX_AXIS_DPAD_RIGHT, data[15]);
+    // msg_out->set_abs(XBOX_AXIS_DPAD_DOWN,  data[16]);
+    // msg_out->set_abs(XBOX_AXIS_DPAD_LEFT,  data[17]);
 
-    // msg_out->set_button(XBOX_AXIS_L2, data[18]);
-    // msg_out->set_button(XBOX_AXIS_R2, data[19]);
-    // msg_out->set_button(XBOX_AXIS_L1, data[20]);
-    // msg_out->set_button(XBOX_AXIS_R1, data[21]);
+    // msg_out->set_key(XBOX_AXIS_L2, data[18]);
+    // msg_out->set_key(XBOX_AXIS_R2, data[19]);
+    // msg_out->set_key(XBOX_AXIS_L1, data[20]);
+    // msg_out->set_key(XBOX_AXIS_R1, data[21]);
 
-    msg_out->set_axis(XBOX_AXIS_Y, data[22]);
-    msg_out->set_axis(XBOX_AXIS_B, data[23]);
-    msg_out->set_axis(XBOX_AXIS_A, data[24]);
-    msg_out->set_axis(XBOX_AXIS_X, data[25]);
+    msg_out->set_abs(XBOX_AXIS_Y, data[22]);
+    msg_out->set_abs(XBOX_AXIS_B, data[23]);
+    msg_out->set_abs(XBOX_AXIS_A, data[24]);
+    msg_out->set_abs(XBOX_AXIS_X, data[25]);
 
     //unsigned int unknown26 :8; // always 00
     //unsigned int unknown27 :8; // always 00

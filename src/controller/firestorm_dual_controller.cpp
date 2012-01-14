@@ -134,44 +134,44 @@ FirestormDualController::parse_vsb(const uint8_t* data_in, int len, ControllerMe
 
     msg.clear();
 
-    msg.set_button(XBOX_BTN_A, unpack::bit(data_in, 0));
-    msg.set_button(XBOX_BTN_B, unpack::bit(data_in, 1));
-    msg.set_button(XBOX_BTN_X, unpack::bit(data_in, 2));
-    msg.set_button(XBOX_BTN_Y, unpack::bit(data_in, 3));
+    msg.set_key(XBOX_BTN_A, unpack::bit(data_in, 0));
+    msg.set_key(XBOX_BTN_B, unpack::bit(data_in, 1));
+    msg.set_key(XBOX_BTN_X, unpack::bit(data_in, 2));
+    msg.set_key(XBOX_BTN_Y, unpack::bit(data_in, 3));
 
-    msg.set_button(XBOX_BTN_LB, unpack::bit(data_in, 4));
-    msg.set_button(XBOX_BTN_LT, unpack::bit(data_in, 5));
+    msg.set_key(XBOX_BTN_LB, unpack::bit(data_in, 4));
+    msg.set_key(XBOX_BTN_LT, unpack::bit(data_in, 5));
 
-    msg.set_button(XBOX_BTN_RB, unpack::bit(data_in, 4));
-    msg.set_button(XBOX_BTN_RT, unpack::bit(data_in, 5));
+    msg.set_key(XBOX_BTN_RB, unpack::bit(data_in, 4));
+    msg.set_key(XBOX_BTN_RT, unpack::bit(data_in, 5));
 
 
-    msg.set_button(XBOX_BTN_START,   unpack::bit(data_in+1, 0));
-    msg.set_button(XBOX_BTN_BACK,    unpack::bit(data_in+1, 1));
-    msg.set_button(XBOX_BTN_THUMB_L, unpack::bit(data_in+1, 2));
-    msg.set_button(XBOX_BTN_THUMB_R, unpack::bit(data_in+1, 3));
+    msg.set_key(XBOX_BTN_START,   unpack::bit(data_in+1, 0));
+    msg.set_key(XBOX_BTN_BACK,    unpack::bit(data_in+1, 1));
+    msg.set_key(XBOX_BTN_THUMB_L, unpack::bit(data_in+1, 2));
+    msg.set_key(XBOX_BTN_THUMB_R, unpack::bit(data_in+1, 3));
 
     // data_in.dpad == 0xf0 -> dpad centered
     // data_in.dpad == 0xe0 -> dpad-only mode is enabled
 
     const uint8_t dpad = static_cast<uint8_t>(data_in[1] >> 4);
     if (dpad == 0x0 || dpad == 0x7 || dpad == 0x1)
-      msg.set_button(XBOX_DPAD_UP, 1);
+      msg.set_key(XBOX_DPAD_UP, 1);
 
     if (dpad == 0x1 || dpad == 0x2 || dpad == 0x3)
-      msg.set_button(XBOX_DPAD_RIGHT, 1);
+      msg.set_key(XBOX_DPAD_RIGHT, 1);
 
     if (dpad == 0x3 || dpad == 0x4 || dpad == 0x5)
-      msg.set_button(XBOX_DPAD_DOWN, 1);
+      msg.set_key(XBOX_DPAD_DOWN, 1);
       
     if (dpad == 0x5 || dpad == 0x6 || dpad == 0x7)
-      msg.set_button(XBOX_DPAD_LEFT, 1);
+      msg.set_key(XBOX_DPAD_LEFT, 1);
 
-    msg.set_axis(XBOX_AXIS_X1, unpack::s8_to_s16(data_in[2]));
-    msg.set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(data_in[3])));
+    msg.set_abs(XBOX_AXIS_X1, unpack::s8_to_s16(data_in[2]));
+    msg.set_abs(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(data_in[3])));
 
-    msg.set_axis(XBOX_AXIS_X2, unpack::s8_to_s16(data_in[4]));
-    msg.set_axis(XBOX_AXIS_Y2, unpack::s16_invert(unpack::s8_to_s16(data_in[5])));
+    msg.set_abs(XBOX_AXIS_X2, unpack::s8_to_s16(data_in[4]));
+    msg.set_abs(XBOX_AXIS_Y2, unpack::s16_invert(unpack::s8_to_s16(data_in[5])));
 
     return true;
   }
@@ -190,43 +190,43 @@ FirestormDualController::parse_default(const uint8_t* data_in, int len, Controll
 
     msg.clear();
 
-    msg.set_button(XBOX_BTN_A, unpack::bit(data_in, 0));
-    msg.set_button(XBOX_BTN_B, unpack::bit(data_in, 1));
-    msg.set_button(XBOX_BTN_X, unpack::bit(data_in, 2));
-    msg.set_button(XBOX_BTN_Y, unpack::bit(data_in, 3));
+    msg.set_key(XBOX_BTN_A, unpack::bit(data_in, 0));
+    msg.set_key(XBOX_BTN_B, unpack::bit(data_in, 1));
+    msg.set_key(XBOX_BTN_X, unpack::bit(data_in, 2));
+    msg.set_key(XBOX_BTN_Y, unpack::bit(data_in, 3));
 
-    msg.set_button(XBOX_BTN_LB, unpack::bit(data_in, 4));
-    msg.set_button(XBOX_BTN_LT, unpack::bit(data_in, 5));
+    msg.set_key(XBOX_BTN_LB, unpack::bit(data_in, 4));
+    msg.set_key(XBOX_BTN_LT, unpack::bit(data_in, 5));
 
-    msg.set_button(XBOX_BTN_RB, unpack::bit(data_in, 4));
-    msg.set_button(XBOX_BTN_RT, unpack::bit(data_in, 5));
+    msg.set_key(XBOX_BTN_RB, unpack::bit(data_in, 4));
+    msg.set_key(XBOX_BTN_RT, unpack::bit(data_in, 5));
 
 
-    msg.set_button(XBOX_BTN_START,   unpack::bit(data_in+1, 0));
-    msg.set_button(XBOX_BTN_BACK,    unpack::bit(data_in+1, 1));
-    msg.set_button(XBOX_BTN_THUMB_L, unpack::bit(data_in+1, 2));
-    msg.set_button(XBOX_BTN_THUMB_R, unpack::bit(data_in+1, 3));
+    msg.set_key(XBOX_BTN_START,   unpack::bit(data_in+1, 0));
+    msg.set_key(XBOX_BTN_BACK,    unpack::bit(data_in+1, 1));
+    msg.set_key(XBOX_BTN_THUMB_L, unpack::bit(data_in+1, 2));
+    msg.set_key(XBOX_BTN_THUMB_R, unpack::bit(data_in+1, 3));
 
     // data_in.dpad == 0xf0 -> dpad centered
     // data_in.dpad == 0xe0 -> dpad-only mode is enabled
 
     if (data_in[2] == 0x00 || data_in[2] == 0x70 || data_in[2] == 0x10)
-      msg.set_button(XBOX_DPAD_UP, 1);
+      msg.set_key(XBOX_DPAD_UP, 1);
 
     if (data_in[2] == 0x10 || data_in[2] == 0x20 || data_in[2] == 0x30)
-      msg.set_button(XBOX_DPAD_RIGHT, 1);
+      msg.set_key(XBOX_DPAD_RIGHT, 1);
 
     if (data_in[2] == 0x30 || data_in[2] == 0x40 || data_in[2] == 0x50)
-      msg.set_button(XBOX_DPAD_DOWN, 1);
+      msg.set_key(XBOX_DPAD_DOWN, 1);
       
     if (data_in[2] == 0x50 || data_in[2] == 0x60 || data_in[2] == 0x70)
-      msg.set_button(XBOX_DPAD_LEFT, 1);
+      msg.set_key(XBOX_DPAD_LEFT, 1);
 
-    msg.set_axis(XBOX_AXIS_X1, unpack::s8_to_s16(data_in[2]));
-    msg.set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(data_in[3])));
+    msg.set_abs(XBOX_AXIS_X1, unpack::s8_to_s16(data_in[2]));
+    msg.set_abs(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(data_in[3])));
 
-    msg.set_axis(XBOX_AXIS_X2, unpack::s8_to_s16(data_in[4]));
-    msg.set_axis(XBOX_AXIS_Y2, unpack::s16_invert(unpack::u8_to_s16(data_in[5])));
+    msg.set_abs(XBOX_AXIS_X2, unpack::s8_to_s16(data_in[4]));
+    msg.set_abs(XBOX_AXIS_Y2, unpack::s16_invert(unpack::u8_to_s16(data_in[5])));
 
     return true;
   }

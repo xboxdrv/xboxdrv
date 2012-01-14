@@ -22,13 +22,13 @@
 #include <boost/function.hpp>
 
 #include "controller_config.hpp"
-#include "controller_slot_options.hpp"
 #include "modifier.hpp"
 #include "options.hpp"
 
 class Options;
 class UInput;
 class ControllerSlotConfig;
+class ControllerSlotOptions;
 
 typedef boost::shared_ptr<ControllerSlotConfig> ControllerSlotConfigPtr;
 

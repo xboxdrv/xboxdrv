@@ -24,7 +24,8 @@
 #include "raise_exception.hpp"
 
 SplitAxisModifier*
-SplitAxisModifier::from_string(const std::vector<std::string>& args)
+SplitAxisModifier::from_string(const std::vector<std::string>& args, 
+                               const ControllerMessageDescriptor& msg_desc)
 {
   if (args.size() != 3)
   {
@@ -32,13 +33,13 @@ SplitAxisModifier::from_string(const std::vector<std::string>& args)
   }
   else
   {
-    return new SplitAxisModifier(string2axis(args[0]),
-                                 string2axis(args[1]),
-                                 string2axis(args[2]));
+    return new SplitAxisModifier(msg_desc.get_abs(args[0]),
+                                 msg_desc.get_abs(args[1]),
+                                 msg_desc.get_abs(args[2]));
   }
 }
 
-SplitAxisModifier::SplitAxisModifier(XboxAxis axis, XboxAxis out_lhs, XboxAxis out_rhs) :
+SplitAxisModifier::SplitAxisModifier(int axis, int out_lhs, int out_rhs) :
   m_axis(axis),
   m_out_lhs(out_lhs),
   m_out_rhs(out_rhs)
@@ -48,21 +49,21 @@ SplitAxisModifier::SplitAxisModifier(XboxAxis axis, XboxAxis out_lhs, XboxAxis o
 void
 SplitAxisModifier::update(int msec_delta, ControllerMessage& msg)
 {
-  float value = msg.get_axis_float(m_axis);
+  float value = msg.get_abs_float(m_axis);
   if (value < 0)
   {
-    msg.set_axis_float(m_out_lhs, -value * 2.0f - 1.0f);
-    msg.set_axis_float(m_out_rhs, -1.0f);
+    msg.set_abs_float(m_out_lhs, -value * 2.0f - 1.0f);
+    msg.set_abs_float(m_out_rhs, -1.0f);
   }
   else if (value > 0)
   {
-    msg.set_axis_float(m_out_lhs, -1.0f);
-    msg.set_axis_float(m_out_rhs, value * 2.0f - 1.0f);
+    msg.set_abs_float(m_out_lhs, -1.0f);
+    msg.set_abs_float(m_out_rhs, value * 2.0f - 1.0f);
   }
   else
   {
-    msg.set_axis_float(m_out_lhs, -1.0f);
-    msg.set_axis_float(m_out_rhs, -1.0f);
+    msg.set_abs_float(m_out_lhs, -1.0f);
+    msg.set_abs_float(m_out_rhs, -1.0f);
   }
 }
 
@@ -70,10 +71,12 @@ std::string
 SplitAxisModifier::str() const
 {
   std::ostringstream os;
+  /* BROKEN:
   os << "split-axis:" 
      << axis2string(m_axis) << ":"
      << axis2string(m_out_lhs) << ":"
      << axis2string(m_out_rhs) << std::endl;
+  */
   return os.str();
 }
 

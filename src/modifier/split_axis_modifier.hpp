@@ -26,15 +26,16 @@
 class SplitAxisModifier : public Modifier
 {
 public: 
-  static SplitAxisModifier* from_string(const std::vector<std::string>& args);
+  static SplitAxisModifier* from_string(const std::vector<std::string>& args,
+                                        const ControllerMessageDescriptor& msg_desc);
 
 private:
-  XboxAxis m_axis;
-  XboxAxis m_out_lhs;
-  XboxAxis m_out_rhs;
+  int m_axis;
+  int m_out_lhs;
+  int m_out_rhs;
 
 public:
-  SplitAxisModifier(XboxAxis axis, XboxAxis out_lhs, XboxAxis out_rhs);
+  SplitAxisModifier(int axis, int out_lhs, int out_rhs);
 
   void update(int msec_delta, ControllerMessage& msg);
 

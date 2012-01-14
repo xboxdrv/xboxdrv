@@ -24,12 +24,25 @@
 #include "button_filter.hpp"
 #include "modifier.hpp"
 
+struct ButtonMappingOption
+{
+  ButtonMappingOption(const std::string& lhs_,
+                      const std::string& rhs_) :
+    lhs(lhs_),
+    rhs(rhs_)
+  {}
+
+  std::string lhs;
+  std::string rhs;
+};
+
 struct ButtonMapping
 {
-  static ButtonMapping from_string(const std::string& lhs, const std::string& rhs);
+  static ButtonMapping from_string(const std::string& lhs, const std::string& rhs,
+                                   const ControllerMessageDescriptor& msg_desc);
 
-  XboxButton lhs;
-  XboxButton rhs;
+  int lhs;
+  int rhs;
   std::vector<ButtonFilterPtr> filters;
 
   ButtonMapping() :
@@ -42,7 +55,11 @@ struct ButtonMapping
 class ButtonmapModifier : public Modifier
 {
 public:
-  static ButtonmapModifier* from_string(const std::string& args);
+  static ButtonmapModifier* from_string(const std::string& args,
+                                        const ControllerMessageDescriptor& msg_desc);
+
+  static ButtonmapModifier* from_option(const std::vector<ButtonMappingOption>& mappings,
+                                        const ControllerMessageDescriptor& msg_desc);
 
 public:
   ButtonmapModifier();
@@ -50,7 +67,7 @@ public:
   void update(int msec_delta, ControllerMessage& msg);
 
   void add(const ButtonMapping& mapping);
-  void add_filter(XboxButton btn, ButtonFilterPtr filter);
+  void add_filter(int btn, ButtonFilterPtr filter);
 
   std::string str() const;
 

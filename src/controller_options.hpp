@@ -25,6 +25,8 @@
 #include "button_filter.hpp"
 #include "controller_message.hpp"
 #include "modifier.hpp"
+#include "modifier/axismap_modifier.hpp"
+#include "modifier/buttonmap_modifier.hpp"
 #include "uinput_options.hpp"
 
 class AxismapModifier;
@@ -36,11 +38,11 @@ public:
   ControllerOptions();
 
   UInputOptions uinput;
-  std::vector<ModifierPtr> modifier;
+  std::vector<ModifierOption> modifier;
 
   // everything below gets later converted into modifier
-  boost::shared_ptr<ButtonmapModifier> buttonmap;
-  boost::shared_ptr<AxismapModifier>   axismap;
+  std::vector<ButtonMappingOption> buttonmap;
+  std::vector<AxisMappingOption> axismap;
 
   int  deadzone;
   int  deadzone_trigger;

@@ -24,6 +24,7 @@
 #include <string>
 
 #include "controller/usb_controller.hpp"
+#include "xbox360_default_names.hpp"
 
 class Chatpad;
 class Headset;
@@ -42,6 +43,8 @@ private:
 
   uint8_t m_rumble_left;
   uint8_t m_rumble_right;
+
+  Xbox360DefaultNames xbox;
 
 public:
   Xbox360Controller(libusb_device* dev, 

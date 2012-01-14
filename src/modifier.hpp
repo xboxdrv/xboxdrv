@@ -22,16 +22,30 @@
 #include <boost/shared_ptr.hpp>
 
 #include "controller_message.hpp"
+#include "controller_message_descriptor.hpp"
 
 class Modifier;
 class Options;
 
 typedef boost::shared_ptr<Modifier> ModifierPtr;
 
+struct ModifierOption
+{
+  ModifierOption(const std::string& lhs_,
+                 const std::string& rhs_) :
+    lhs(lhs_),
+    rhs(rhs_)
+  {}
+
+  std::string lhs;
+  std::string rhs;
+};
+
 class Modifier
 {
 public:
-  static Modifier* from_string(const std::string& name, const std::string& value);
+  static Modifier* from_string(const std::string& name, const std::string& value,
+                               const ControllerMessageDescriptor& msg_desc);
 
 public:
   virtual ~Modifier() {}

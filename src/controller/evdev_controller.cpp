@@ -199,7 +199,7 @@ EvdevController::parse(const struct input_event& ev, ControllerMessage& msg_inou
         KeyMap::const_iterator it = m_keymap.find(ev.code);
         if (it != m_keymap.end())
         {
-          msg_inout.set_button(it->second, ev.value);
+          msg_inout.set_key(it->second, ev.value);
           return true;
         }
         else
@@ -236,7 +236,7 @@ EvdevController::on_read_data(GIOChannel* source, GIOCondition condition)
     {
       if (ev[i].type == EV_SYN)
       {
-        submit_msg(m_msg);
+        submit_msg(m_msg, m_message_descriptor);
       }
       else
       {

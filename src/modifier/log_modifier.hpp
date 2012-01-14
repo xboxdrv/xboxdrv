@@ -24,7 +24,7 @@
 class LogModifier : public Modifier
 {
 public:
-  static LogModifier* from_string(const std::string& value);
+  static LogModifier* from_string(const std::string& value, const ControllerMessageDescriptor& msg_desc);
 
 public:
   LogModifier(const std::string& value);

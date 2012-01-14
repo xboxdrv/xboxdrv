@@ -24,7 +24,8 @@
 #include "raise_exception.hpp"
 
 KeyCopyModifier*
-KeyCopyModifier::from_string(const std::vector<std::string>& args)
+KeyCopyModifier::from_string(const std::vector<std::string>& args, 
+                             const ControllerMessageDescriptor& msg_desc)
 {
   if (args.size() != 2)
   {

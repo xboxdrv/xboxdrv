@@ -24,13 +24,26 @@
 #include "controller_thread.hpp"
 #include "modifier.hpp"
 
+struct AxisMappingOption
+{
+  AxisMappingOption(const std::string& lhs_,
+                    const std::string& rhs_) :
+    lhs(lhs_),
+    rhs(rhs_)
+  {}
+
+  std::string lhs;
+  std::string rhs;
+};
+
 struct AxisMapping
 {
-  static AxisMapping from_string(const std::string& lhs, const std::string& rhs);
+  static AxisMapping from_string(const std::string& lhs, const std::string& rhs,
+                                 const ControllerMessageDescriptor& msg_desc);
 
-  XboxAxis lhs;
-  XboxAxis rhs;
-  bool     invert;
+  int lhs;
+  int rhs;
+  bool invert;
   std::vector<AxisFilterPtr> filters;
 
   AxisMapping() :
@@ -44,7 +57,11 @@ struct AxisMapping
 class AxismapModifier : public Modifier 
 {
 public:
-  static AxismapModifier* from_string(const std::string& args);
+  static AxismapModifier* from_string(const std::string& args, 
+                                      const ControllerMessageDescriptor& msg_desc);
+
+  static AxismapModifier* from_option(const std::vector<AxisMappingOption>& mappings,
+                                      const ControllerMessageDescriptor& msg_desc);
 
 public:
   AxismapModifier();
@@ -52,7 +69,7 @@ public:
   void update(int msec_delta, ControllerMessage& msg);
 
   void add(const AxisMapping& mapping);
-  void add_filter(XboxAxis axis, AxisFilterPtr filter);
+  void add_filter(int axis, AxisFilterPtr filter);
 
   std::string str() const;
 

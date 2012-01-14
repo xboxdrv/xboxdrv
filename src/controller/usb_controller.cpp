@@ -210,7 +210,7 @@ USBController::on_read_data(libusb_transfer* transfer)
   ControllerMessage msg;
   if (parse(transfer->buffer, transfer->actual_length, &msg))
   {
-    submit_msg(msg);
+    submit_msg(msg, m_message_descriptor);
   }
 
   if (false) // cleanup

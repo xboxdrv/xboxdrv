@@ -25,7 +25,8 @@
 #include "helper.hpp"
 
 ButtonMapping 
-ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
+ButtonMapping::from_string(const std::string& lhs, const std::string& rhs, 
+                           const ControllerMessageDescriptor& msg_desc)
 {
   ButtonMapping mapping;
 
@@ -39,7 +40,7 @@ ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
   {
     switch(idx)
     {
-      case 0:  mapping.lhs = string2btn(*t); break;
+      case 0:  mapping.lhs = msg_desc.get_key(*t); break;
       default: mapping.filters.push_back(ButtonFilter::from_string(*t));
     }
   }
@@ -50,21 +51,36 @@ ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
   }
   else
   {
-    mapping.rhs = string2btn(rhs);
+    mapping.rhs = msg_desc.get_key(rhs);
   }
 
   return mapping;
 }
 
 ButtonmapModifier*
-ButtonmapModifier::from_string(const std::string& args)
+ButtonmapModifier::from_string(const std::string& args,
+                               const ControllerMessageDescriptor& msg_desc)
 {
-  ButtonmapModifier* modifier = new ButtonmapModifier;
+  std::auto_ptr<ButtonmapModifier> modifier(new ButtonmapModifier);
 
-  process_name_value_string(args, boost::bind(&ButtonmapModifier::add, modifier, 
-                                              boost::bind(&ButtonMapping::from_string, _1, _2)));
+  process_name_value_string(args, boost::bind(&ButtonmapModifier::add, modifier.get(), 
+                                              boost::bind(&ButtonMapping::from_string, _1, _2, boost::ref(msg_desc))));
 
-  return modifier;
+  return modifier.release();
+}
+
+ButtonmapModifier*
+ButtonmapModifier::from_option(const std::vector<ButtonMappingOption>& mappings,
+                               const ControllerMessageDescriptor& msg_desc)
+{
+  std::auto_ptr<ButtonmapModifier> modifier(new ButtonmapModifier);
+  
+  for(std::vector<ButtonMappingOption>::const_iterator i = mappings.begin(); i != mappings.end(); ++i)
+  {
+    modifier->add(ButtonMapping::from_string(i->lhs, i->rhs, msg_desc));
+  }
+
+  return modifier.release();
 }
 
 ButtonmapModifier::ButtonmapModifier() :
@@ -89,14 +105,14 @@ ButtonmapModifier::update(int msec_delta, ControllerMessage& msg)
   // set all buttons to 0
   for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
-    newmsg.set_button(i->lhs, 0);
+    newmsg.set_key(i->lhs, 0);
   }
 
   for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
     // Take both lhs and rhs into account to allow multiple buttons
     // mapping to the same button
-    bool value = msg.get_button(i->lhs);
+    bool value = msg.get_key(i->lhs);
 
     // apply the button filter
     for(std::vector<ButtonFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
@@ -104,7 +120,7 @@ ButtonmapModifier::update(int msec_delta, ControllerMessage& msg)
       value = (*j)->filter(value);
     }    
 
-    newmsg.set_button(i->rhs, value || newmsg.get_button(i->rhs));
+    newmsg.set_key(i->rhs, value || newmsg.get_key(i->rhs));
   }
 
   msg = newmsg;  
@@ -117,7 +133,7 @@ ButtonmapModifier::add(const ButtonMapping& mapping)
 }
 
 void
-ButtonmapModifier::add_filter(XboxButton btn, ButtonFilterPtr filter)
+ButtonmapModifier::add_filter(int btn, ButtonFilterPtr filter)
 {
   for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
@@ -140,6 +156,7 @@ std::string
 ButtonmapModifier::str() const
 {
   std::ostringstream out;
+  /* BROKEN:
   out << "buttonmap:\n";
   for(std::vector<ButtonMapping>::const_iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
@@ -149,6 +166,7 @@ ButtonmapModifier::str() const
       out << "    " << (*filter)->str() << std::endl;
     }
   }
+  */
   return out.str();
 }
 

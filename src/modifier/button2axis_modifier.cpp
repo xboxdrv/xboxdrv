@@ -24,7 +24,8 @@
 #include "raise_exception.hpp"
 
 Button2AxisModifier*
-Button2AxisModifier::from_string(const std::vector<std::string>& args)
+Button2AxisModifier::from_string(const std::vector<std::string>& args,
+                                 const ControllerMessageDescriptor& msg_desc)
 {
   if (args.size() != 3)
   {
@@ -32,17 +33,17 @@ Button2AxisModifier::from_string(const std::vector<std::string>& args)
   }
   else
   {
-    XboxButton lhs_btn = string2btn(args[0]);
-    XboxButton rhs_btn = string2btn(args[1]);
-    XboxAxis   axis    = string2axis(args[2]);
+    int lhs_btn = msg_desc.get_key(args[0]);
+    int rhs_btn = msg_desc.get_key(args[1]);
+    int   axis    = msg_desc.get_abs(args[2]);
 
     return new Button2AxisModifier(lhs_btn, rhs_btn, axis);
   }
 }
 
-Button2AxisModifier::Button2AxisModifier(XboxButton lhs_btn,
-                                         XboxButton rhs_btn,
-                                         XboxAxis   axis) :
+Button2AxisModifier::Button2AxisModifier(int lhs_btn,
+                                         int rhs_btn,
+                                         int axis) :
   m_lhs_btn(lhs_btn),
   m_rhs_btn(rhs_btn),
   m_axis(axis)
@@ -52,20 +53,20 @@ Button2AxisModifier::Button2AxisModifier(XboxButton lhs_btn,
 void
 Button2AxisModifier::update(int msec_delta, ControllerMessage& msg) 
 {
-  bool lhs = msg.get_button(m_lhs_btn);
-  bool rhs = msg.get_button(m_rhs_btn);
+  bool lhs = msg.get_key(m_lhs_btn);
+  bool rhs = msg.get_key(m_rhs_btn);
 
   if (lhs && !rhs)
   {
-    msg.set_axis(m_axis, msg.get_axis_min(m_axis));
+    msg.set_abs(m_axis, msg.get_abs_min(m_axis));
   }
   else if (!lhs && rhs)
   {
-    msg.set_axis(m_axis, msg.get_axis_max(m_axis));
+    msg.set_abs(m_axis, msg.get_abs_max(m_axis));
   }
   else
   {
-    msg.set_axis(m_axis, 0);
+    msg.set_abs(m_axis, 0);
   }
 }
 

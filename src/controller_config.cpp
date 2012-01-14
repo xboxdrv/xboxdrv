@@ -142,17 +142,20 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
   }
 
   // axismap, buttonmap comes last, as otherwise they would mess up the button and axis names
-  if (!opts.buttonmap->empty())
+  for(std::vector<ButtonMappingOption>::const_iterator i = opts.buttonmap.begin(); i != opts.buttonmap.end(); ++i)
   {
-    m_modifier.push_back(opts.buttonmap);
+    m_modifier.push_back(ModifierPtr(ButtonmapModifier::from_option(opts.buttonmap, ControllerMessageDescriptor()))); // BROKEN
   }
 
-  if (!opts.axismap->empty())
+  for(std::vector<AxisMappingOption>::const_iterator i = opts.axismap.begin(); i != opts.axismap.end(); ++i)
   {
-    m_modifier.push_back(opts.axismap);
+    m_modifier.push_back(ModifierPtr(AxismapModifier::from_option(opts.axismap, ControllerMessageDescriptor()))); // BROKEN
   }
 
-  m_modifier.insert(m_modifier.end(), opts.modifier.begin(), opts.modifier.end());
+  for(std::vector<ModifierOption>::const_iterator i = opts.modifier.begin(); i != opts.modifier.end(); ++i)
+  {
+    m_modifier.push_back(ModifierPtr(Modifier::from_string(i->lhs, i->rhs, ControllerMessageDescriptor()))); // BROKEN
+  }
 }
 
 std::vector<ModifierPtr>&

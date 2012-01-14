@@ -24,13 +24,15 @@
 
 #include "controller_message.hpp"
 #include "controller_ptr.hpp"
-#include "controller_slot_config.hpp"
 #include "controller_slot_ptr.hpp"
 
 class Options;
 class MessageProcessor;
 class ControllerThread;
 
+class ControllerSlotConfig;
+
+typedef boost::shared_ptr<ControllerSlotConfig> ControllerSlotConfigPtr;
 typedef boost::shared_ptr<ControllerThread> ControllerThreadPtr;
 
 /** ControllerThread handles a single Controller, reads it messages

@@ -1041,7 +1041,7 @@ CommandLineParser::print_version() const
 void
 CommandLineParser::set_modifier(const std::string& name, const std::string& value)
 {
-  m_options->get_controller_options().modifier.push_back(ModifierPtr(Modifier::from_string(name, value)));
+  m_options->get_controller_options().modifier.push_back(ModifierOption(name, value));
 }
 
 void
@@ -1144,8 +1144,8 @@ CommandLineParser::set_ui_axismap(AxisMap& axis_map, const std::string& name, co
             {
               if (axis != XBOX_AXIS_UNKNOWN)
               {
-                event->set_axis_range(ControllerMessage::get_axis_min(axis),
-                                      ControllerMessage::get_axis_max(axis));
+                event->set_axis_range(ControllerMessage::get_abs_min(axis),
+                                      ControllerMessage::get_abs_max(axis));
               }
 
               axis_map.bind(shift, axis, event);
@@ -1169,13 +1169,13 @@ CommandLineParser::set_ui_axismap(AxisMap& axis_map, const std::string& name, co
 void
 CommandLineParser::set_axismap(const std::string& name, const std::string& value)
 {
-  m_options->get_controller_options().axismap->add(AxisMapping::from_string(name, value));
+  m_options->get_controller_options().axismap.push_back(AxisMappingOption(name, value));
 }
 
 void
 CommandLineParser::set_buttonmap(const std::string& name, const std::string& value)
 {
-  m_options->get_controller_options().buttonmap->add(ButtonMapping::from_string(name, value));
+  m_options->get_controller_options().buttonmap.push_back(ButtonMappingOption(name, value));
 }
 
 void
@@ -1346,22 +1346,19 @@ CommandLineParser::set_ui_axismap_n(int controller, int config, const std::strin
 void
 CommandLineParser::set_modifier_n(int controller, int config, const std::string& name, const std::string& value)
 {
-  m_options->controller_slots[controller].get_options(config)
-    .modifier.push_back(ModifierPtr(Modifier::from_string(name, value)));
+  m_options->controller_slots[controller].get_options(config).modifier.push_back(ModifierOption(name, value));
 }
 
 void
 CommandLineParser::set_axismap_n(int controller, int config, const std::string& name, const std::string& value)
 {
-  m_options->controller_slots[controller].get_options(config)
-    .axismap->add(AxisMapping::from_string(name, value));
+  m_options->controller_slots[controller].get_options(config).axismap.push_back(AxisMappingOption(name, value));
 }
 
 void
 CommandLineParser::set_buttonmap_n(int controller, int config, const std::string& name, const std::string& value)
 {
-  m_options->controller_slots[controller].get_options(config)
-    .buttonmap->add(ButtonMapping::from_string(name, value));
+  m_options->controller_slots[controller].get_options(config).buttonmap.push_back(ButtonMappingOption(name, value));
 }
 
 void

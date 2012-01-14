@@ -26,15 +26,16 @@
 class Button2AxisModifier : public Modifier
 {
 public:
-  static Button2AxisModifier* from_string(const std::vector<std::string>& args);
+  static Button2AxisModifier* from_string(const std::vector<std::string>& args,
+                                          const ControllerMessageDescriptor& msg_desc);
 
 private:
-  XboxButton m_lhs_btn;
-  XboxButton m_rhs_btn;
-  XboxAxis   m_axis;
+  int m_lhs_btn;
+  int m_rhs_btn;
+  int   m_axis;
 
 public:
-  Button2AxisModifier(XboxButton lhs_btn, XboxButton rhs_btn, XboxAxis   axis);
+  Button2AxisModifier(int lhs_btn, int rhs_btn, int   axis);
 
   void update(int msec_delta, ControllerMessage& msg);
   std::string str() const;

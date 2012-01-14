@@ -22,7 +22,8 @@
 #include <sstream>
 
 FourWayRestrictorModifier*
-FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
+FourWayRestrictorModifier::from_string(const std::vector<std::string>& args,
+                                       const ControllerMessageDescriptor& msg_desc)
 {
   if (args.size() != 2)
   {
@@ -30,12 +31,12 @@ FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
   }
   else
   {
-    return new FourWayRestrictorModifier(string2axis(args[0]),
-                                         string2axis(args[1]));
+    return new FourWayRestrictorModifier(msg_desc.get_abs(args[0]),
+                                         msg_desc.get_abs(args[1]));
   }
 }
 
-FourWayRestrictorModifier::FourWayRestrictorModifier(XboxAxis xaxis, XboxAxis yaxis) :
+FourWayRestrictorModifier::FourWayRestrictorModifier(int xaxis, int yaxis) :
   m_xaxis(xaxis),
   m_yaxis(yaxis)
 {
@@ -44,17 +45,17 @@ FourWayRestrictorModifier::FourWayRestrictorModifier(XboxAxis xaxis, XboxAxis ya
 void
 FourWayRestrictorModifier::update(int msec_delta, ControllerMessage& msg)
 {
-  if (abs(msg.get_axis(m_xaxis)) > abs(msg.get_axis(m_yaxis)))
+  if (abs(msg.get_abs(m_xaxis)) > abs(msg.get_abs(m_yaxis)))
   {
-    msg.set_axis(m_yaxis, 0);
+    msg.set_abs(m_yaxis, 0);
   }
-  else if (abs(msg.get_axis(m_yaxis)) > abs(msg.get_axis(m_xaxis)))
+  else if (abs(msg.get_abs(m_yaxis)) > abs(msg.get_abs(m_xaxis)))
   {
-    msg.set_axis(m_xaxis, 0);
+    msg.set_abs(m_xaxis, 0);
   }
   else
   {
-    msg.set_axis(m_xaxis, 0);
+    msg.set_abs(m_xaxis, 0);
   }
 }
 
@@ -62,7 +63,7 @@ std::string
 FourWayRestrictorModifier::str() const
 {
   std::ostringstream out;
-  out << "4way:" << axis2string(m_xaxis) << ":" << axis2string(m_yaxis);
+  //BROKEN: out << "4way:" << axis2string(m_xaxis) << ":" << axis2string(m_yaxis);
   return out.str();
 }
 

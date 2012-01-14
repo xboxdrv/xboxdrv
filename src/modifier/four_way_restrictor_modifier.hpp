@@ -26,18 +26,19 @@
 class FourWayRestrictorModifier : public Modifier
 {
 public:
-  static FourWayRestrictorModifier* from_string(const std::vector<std::string>& args);
+  static FourWayRestrictorModifier* from_string(const std::vector<std::string>& args,
+                                                const ControllerMessageDescriptor& msg_desc);
 
 public:
-  FourWayRestrictorModifier(XboxAxis xaxis, XboxAxis yaxis);
+  FourWayRestrictorModifier(int xaxis, int yaxis);
 
   void update(int msec_delta, ControllerMessage& msg);
 
   std::string str() const;
 
 private:
-  const XboxAxis m_xaxis;
-  const XboxAxis m_yaxis;
+  const int m_xaxis;
+  const int m_yaxis;
 };
 
 #endif

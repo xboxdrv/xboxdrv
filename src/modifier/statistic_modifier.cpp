@@ -24,7 +24,8 @@
 #include "../xboxmsg.hpp"
 
 StatisticModifier*
-StatisticModifier::from_string(const std::vector<std::string>& args)
+StatisticModifier::from_string(const std::vector<std::string>& args,
+                               const ControllerMessageDescriptor& msg_desc)
 {
   return new StatisticModifier;
 }
@@ -50,9 +51,11 @@ StatisticModifier::print_stats()
   std::cout << "-------------+---------" << std::endl;
   for(int btn = 1; btn < XBOX_BTN_MAX; ++btn)
   {
+    /* BROKEN
     std::cout << boost::format("%12s : %5d") 
-      % btn2string(static_cast<XboxButton>(btn)) % m_press_count[btn]
+      % btn2string(btn) % m_press_count[btn]
               << std::endl;
+    */
   }
 }
 
@@ -61,7 +64,7 @@ StatisticModifier::update(int msec_delta, ControllerMessage& msg)
 {
   for(int btn = 1; btn < static_cast<int>(XBOX_BTN_MAX); ++btn)
   {
-    bool state = msg.get_button(static_cast<XboxButton>(btn));
+    bool state = msg.get_key(btn);
 
     // state changed and button is pressed
     if (state != m_button_state[btn] && state)

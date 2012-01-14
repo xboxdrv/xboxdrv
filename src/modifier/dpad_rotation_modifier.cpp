@@ -24,7 +24,8 @@
 #include "controller_config.hpp"
 
 DpadRotationModifier*
-DpadRotationModifier::from_string(const std::vector<std::string>& args)
+DpadRotationModifier::from_string(const std::vector<std::string>& args,
+                                  const ControllerMessageDescriptor& msg_desc)
 {
   if (args.size() != 1)
   {
@@ -32,12 +33,13 @@ DpadRotationModifier::from_string(const std::vector<std::string>& args)
   }
   else
   {
-    return DpadRotationModifier::from_string(args[0]);
+    return DpadRotationModifier::from_string(args[0], msg_desc);
   }
 }
 
 DpadRotationModifier*
-DpadRotationModifier::from_string(const std::string& value)
+DpadRotationModifier::from_string(const std::string& value, 
+                                  const ControllerMessageDescriptor& msg_desc)
 {
   int degree = boost::lexical_cast<int>(value);
   degree /= 45;
@@ -56,10 +58,10 @@ DpadRotationModifier::DpadRotationModifier(int dpad_rotation) :
 void
 DpadRotationModifier::update(int msec_delta, ControllerMessage& msg)
 {
-  int up    = msg.get_button(XBOX_DPAD_UP);
-  int down  = msg.get_button(XBOX_DPAD_DOWN);
-  int left  = msg.get_button(XBOX_DPAD_LEFT);
-  int right = msg.get_button(XBOX_DPAD_RIGHT);
+  int up    = msg.get_key(XBOX_DPAD_UP);
+  int down  = msg.get_key(XBOX_DPAD_DOWN);
+  int left  = msg.get_key(XBOX_DPAD_LEFT);
+  int right = msg.get_key(XBOX_DPAD_RIGHT);
 
   // -1: not pressed, 0: up, 1: up/right, ...
   int direction = -1;
@@ -104,48 +106,48 @@ DpadRotationModifier::update(int msec_delta, ControllerMessage& msg)
       direction += 8;
 
     // set everything to zero
-    msg.set_button(XBOX_DPAD_UP,    0);
-    msg.set_button(XBOX_DPAD_DOWN,  0);
-    msg.set_button(XBOX_DPAD_LEFT,  0);
-    msg.set_button(XBOX_DPAD_RIGHT, 0);
+    msg.set_key(XBOX_DPAD_UP,    0);
+    msg.set_key(XBOX_DPAD_DOWN,  0);
+    msg.set_key(XBOX_DPAD_LEFT,  0);
+    msg.set_key(XBOX_DPAD_RIGHT, 0);
 
     // apply the given direction
     switch(direction)
     {
       case 0:
-        msg.set_button(XBOX_DPAD_UP, 1);
+        msg.set_key(XBOX_DPAD_UP, 1);
         break;
 
       case 1:
-        msg.set_button(XBOX_DPAD_UP, 1);
-        msg.set_button(XBOX_DPAD_RIGHT, 1);
+        msg.set_key(XBOX_DPAD_UP, 1);
+        msg.set_key(XBOX_DPAD_RIGHT, 1);
         break;
 
       case 2:
-        msg.set_button(XBOX_DPAD_RIGHT, 1);
+        msg.set_key(XBOX_DPAD_RIGHT, 1);
         break;
 
       case 3:
-        msg.set_button(XBOX_DPAD_RIGHT, 1);
-        msg.set_button(XBOX_DPAD_DOWN, 1);
+        msg.set_key(XBOX_DPAD_RIGHT, 1);
+        msg.set_key(XBOX_DPAD_DOWN, 1);
         break;
 
       case 4:
-        msg.set_button(XBOX_DPAD_DOWN, 1);
+        msg.set_key(XBOX_DPAD_DOWN, 1);
         break;
 
       case 5:
-        msg.set_button(XBOX_DPAD_DOWN, 1);
-        msg.set_button(XBOX_DPAD_LEFT, 1);
+        msg.set_key(XBOX_DPAD_DOWN, 1);
+        msg.set_key(XBOX_DPAD_LEFT, 1);
         break;
 
       case 6:
-        msg.set_button(XBOX_DPAD_LEFT, 1);
+        msg.set_key(XBOX_DPAD_LEFT, 1);
         break;
 
       case 7:
-        msg.set_button(XBOX_DPAD_UP, 1);
-        msg.set_button(XBOX_DPAD_LEFT, 1);
+        msg.set_key(XBOX_DPAD_UP, 1);
+        msg.set_key(XBOX_DPAD_LEFT, 1);
         break;
     }
   }

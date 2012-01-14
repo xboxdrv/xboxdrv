@@ -24,7 +24,8 @@
 #include "raise_exception.hpp"
 
 DpadRestrictorModifier*
-DpadRestrictorModifier::from_string(const std::vector<std::string>& args)
+DpadRestrictorModifier::from_string(const std::vector<std::string>& args,
+                                    const ControllerMessageDescriptor& desc)
 {
   if (args.size() != 1)
   {
@@ -63,28 +64,28 @@ DpadRestrictorModifier::update(int msec_delta, ControllerMessage& msg)
   switch(m_mode)
   {
     case kRestrictFourWay:
-      if (msg.get_axis(XBOX_AXIS_DPAD_X) && msg.get_axis(XBOX_AXIS_DPAD_Y))
+      if (msg.get_abs(XBOX_AXIS_DPAD_X) && msg.get_abs(XBOX_AXIS_DPAD_Y))
       { 
         // a diagonal was pressed, thus we reset the axis that wasn't
         // pressed the last time the dpad was touched
-        msg.set_axis(m_last_unpressed_axis, 0);
+        msg.set_abs(m_last_unpressed_axis, 0);
       }
-      else if (msg.get_axis(XBOX_AXIS_DPAD_X))
+      else if (msg.get_abs(XBOX_AXIS_DPAD_X))
       {
         m_last_unpressed_axis = XBOX_AXIS_DPAD_Y;
       }
-      else if (msg.get_axis(XBOX_AXIS_DPAD_Y))
+      else if (msg.get_abs(XBOX_AXIS_DPAD_Y))
       {
         m_last_unpressed_axis = XBOX_AXIS_DPAD_X;
       }
       break;
 
     case kRestrictXAxis:
-      msg.set_axis(XBOX_AXIS_DPAD_Y, 0);
+      msg.set_abs(XBOX_AXIS_DPAD_Y, 0);
       break;
 
     case kRestrictYAxis:
-      msg.set_axis(XBOX_AXIS_DPAD_X, 0);
+      msg.set_abs(XBOX_AXIS_DPAD_X, 0);
       break;
   }
 }

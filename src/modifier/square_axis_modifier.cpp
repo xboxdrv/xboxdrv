@@ -50,7 +50,8 @@ void squarify_axis(int& x_inout, int& y_inout)
 
 
 SquareAxisModifier*
-SquareAxisModifier::from_string(const std::vector<std::string>& args)
+SquareAxisModifier::from_string(const std::vector<std::string>& args,
+                                const ControllerMessageDescriptor& msg_desc)
 {
   if (args.size() != 2)
   {
@@ -58,12 +59,12 @@ SquareAxisModifier::from_string(const std::vector<std::string>& args)
   }
   else
   {
-    return new SquareAxisModifier(string2axis(args[0]),
-                                  string2axis(args[1]));
+    return new SquareAxisModifier(msg_desc.get_abs(args[0]),
+                                  msg_desc.get_abs(args[1]));
   }
 }
 
-SquareAxisModifier::SquareAxisModifier(XboxAxis xaxis, XboxAxis yaxis) :
+SquareAxisModifier::SquareAxisModifier(int xaxis, int yaxis) :
   m_xaxis(xaxis),
   m_yaxis(yaxis)
 {
@@ -72,23 +73,25 @@ SquareAxisModifier::SquareAxisModifier(XboxAxis xaxis, XboxAxis yaxis) :
 void
 SquareAxisModifier::update(int msec_delta, ControllerMessage& msg)
 {
-  int x = msg.get_axis(m_xaxis);
-  int y = msg.get_axis(m_yaxis);
+  int x = msg.get_abs(m_xaxis);
+  int y = msg.get_abs(m_yaxis);
 
   squarify_axis(x, y);
 
-  msg.set_axis(m_xaxis, x);
-  msg.set_axis(m_yaxis, y);
+  msg.set_abs(m_xaxis, x);
+  msg.set_abs(m_yaxis, y);
 }
 
 std::string
 SquareAxisModifier::str() const
 {
   std::ostringstream out;
+  /* BROKEN
   out << "square"
       << axis2string(m_xaxis)
       << ":"
       << axis2string(m_yaxis);
+  */
   return out.str();
 }
 

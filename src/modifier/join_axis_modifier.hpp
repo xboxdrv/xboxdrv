@@ -27,15 +27,16 @@
 class JoinAxisModifier : public Modifier
 {
 public: 
-  static JoinAxisModifier* from_string(const std::vector<std::string>& args);
+  static JoinAxisModifier* from_string(const std::vector<std::string>& args,
+                                       const ControllerMessageDescriptor& msg_desc);
 
 private:
-  XboxAxis m_lhs;
-  XboxAxis m_rhs;
-  XboxAxis m_out;
+  int m_lhs;
+  int m_rhs;
+  int m_out;
 
 public:
-  JoinAxisModifier(XboxAxis lhs, XboxAxis rhs, XboxAxis out);
+  JoinAxisModifier(int lhs, int rhs, int out);
 
   void update(int msec_delta, ControllerMessage& msg);
 

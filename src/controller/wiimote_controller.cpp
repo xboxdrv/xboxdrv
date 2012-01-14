@@ -252,31 +252,31 @@ WiimoteController::on_error(const cwiid_error_mesg& msg)
 void
 WiimoteController::on_button(const cwiid_btn_mesg& msg)
 {
-  m_ctrl_msg.set_button(XBOX_BTN_BACK, msg.buttons & CWIID_BTN_MINUS);
-  m_ctrl_msg.set_button(XBOX_BTN_GUIDE, msg.buttons & CWIID_BTN_HOME);
-  m_ctrl_msg.set_button(XBOX_BTN_START, msg.buttons & CWIID_BTN_PLUS);
+  m_ctrl_msg.set_key(XBOX_BTN_BACK, msg.buttons & CWIID_BTN_MINUS);
+  m_ctrl_msg.set_key(XBOX_BTN_GUIDE, msg.buttons & CWIID_BTN_HOME);
+  m_ctrl_msg.set_key(XBOX_BTN_START, msg.buttons & CWIID_BTN_PLUS);
 
-  m_ctrl_msg.set_button(XBOX_BTN_Y, msg.buttons & CWIID_BTN_2);
-  m_ctrl_msg.set_button(XBOX_BTN_X, msg.buttons & CWIID_BTN_1);
-  m_ctrl_msg.set_button(XBOX_BTN_B, msg.buttons & CWIID_BTN_B);
-  m_ctrl_msg.set_button(XBOX_BTN_A, msg.buttons & CWIID_BTN_A);
+  m_ctrl_msg.set_key(XBOX_BTN_Y, msg.buttons & CWIID_BTN_2);
+  m_ctrl_msg.set_key(XBOX_BTN_X, msg.buttons & CWIID_BTN_1);
+  m_ctrl_msg.set_key(XBOX_BTN_B, msg.buttons & CWIID_BTN_B);
+  m_ctrl_msg.set_key(XBOX_BTN_A, msg.buttons & CWIID_BTN_A);
 
-  m_ctrl_msg.set_button(XBOX_DPAD_LEFT,  msg.buttons & CWIID_BTN_LEFT);
-  m_ctrl_msg.set_button(XBOX_DPAD_RIGHT, msg.buttons & CWIID_BTN_RIGHT);
-  m_ctrl_msg.set_button(XBOX_DPAD_DOWN,  msg.buttons & CWIID_BTN_DOWN);
-  m_ctrl_msg.set_button(XBOX_DPAD_UP,    msg.buttons & CWIID_BTN_UP);
+  m_ctrl_msg.set_key(XBOX_DPAD_LEFT,  msg.buttons & CWIID_BTN_LEFT);
+  m_ctrl_msg.set_key(XBOX_DPAD_RIGHT, msg.buttons & CWIID_BTN_RIGHT);
+  m_ctrl_msg.set_key(XBOX_DPAD_DOWN,  msg.buttons & CWIID_BTN_DOWN);
+  m_ctrl_msg.set_key(XBOX_DPAD_UP,    msg.buttons & CWIID_BTN_UP);
 
-  submit_msg(m_ctrl_msg);
+  submit_msg(m_ctrl_msg, m_message_descriptor);
 }
 
 void
 WiimoteController::on_acc(const cwiid_acc_mesg& msg)
 {
-  m_ctrl_msg.set_axis(WIIMOTE_ACC_X, msg.acc[0]);
-  m_ctrl_msg.set_axis(WIIMOTE_ACC_Y, msg.acc[1]);
-  m_ctrl_msg.set_axis(WIIMOTE_ACC_Z, msg.acc[2]);
+  m_ctrl_msg.set_abs(WIIMOTE_ACC_X, msg.acc[0]);
+  m_ctrl_msg.set_abs(WIIMOTE_ACC_Y, msg.acc[1]);
+  m_ctrl_msg.set_abs(WIIMOTE_ACC_Z, msg.acc[2]);
 
-  submit_msg(m_ctrl_msg);
+  submit_msg(m_ctrl_msg, m_message_descriptor);
 }
 
 void
@@ -298,35 +298,35 @@ WiimoteController::on_ir(const cwiid_ir_mesg& msg)
   // FIXME: encoding 'valid' in size might not be such a good idea, as
   // it overwrites the last valid value
 
-  m_ctrl_msg.set_axis(WIIMOTE_IR_X, msg.src[0].pos[0]);
-  m_ctrl_msg.set_axis(WIIMOTE_IR_Y, msg.src[0].pos[1]);
+  m_ctrl_msg.set_abs(WIIMOTE_IR_X, msg.src[0].pos[0]);
+  m_ctrl_msg.set_abs(WIIMOTE_IR_Y, msg.src[0].pos[1]);
   if (msg.src[0].valid)
-    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE, msg.src[0].size);
+    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE, msg.src[0].size);
   else
-    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE, -1);
+    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE, -1);
 
-  m_ctrl_msg.set_axis(WIIMOTE_IR_X2, msg.src[1].pos[0]);
-  m_ctrl_msg.set_axis(WIIMOTE_IR_Y2, msg.src[1].pos[1]);
+  m_ctrl_msg.set_abs(WIIMOTE_IR_X2, msg.src[1].pos[0]);
+  m_ctrl_msg.set_abs(WIIMOTE_IR_Y2, msg.src[1].pos[1]);
   if (msg.src[1].valid)
-    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE2, msg.src[1].size);
+    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE2, msg.src[1].size);
   else
-    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE2, -1);
+    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE2, -1);
 
-  m_ctrl_msg.set_axis(WIIMOTE_IR_X3, msg.src[2].pos[0]);
-  m_ctrl_msg.set_axis(WIIMOTE_IR_Y3, msg.src[2].pos[1]);
+  m_ctrl_msg.set_abs(WIIMOTE_IR_X3, msg.src[2].pos[0]);
+  m_ctrl_msg.set_abs(WIIMOTE_IR_Y3, msg.src[2].pos[1]);
   if (msg.src[2].valid)
-    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE3, msg.src[2].size);
+    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE3, msg.src[2].size);
   else
-    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE3, -1);
+    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE3, -1);
 
-  m_ctrl_msg.set_axis(WIIMOTE_IR_X4, msg.src[3].pos[0]);
-  m_ctrl_msg.set_axis(WIIMOTE_IR_Y4, msg.src[3].pos[1]);
+  m_ctrl_msg.set_abs(WIIMOTE_IR_X4, msg.src[3].pos[0]);
+  m_ctrl_msg.set_abs(WIIMOTE_IR_Y4, msg.src[3].pos[1]);
   if (msg.src[3].valid)
-    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE4, msg.src[3].size);
+    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE4, msg.src[3].size);
   else
-    m_ctrl_msg.set_axis(WIIMOTE_IR_SIZE4, -1);
+    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE4, -1);
 
-  submit_msg(m_ctrl_msg);
+  submit_msg(m_ctrl_msg, m_message_descriptor);
 }
 
 // FIXME: use proper CalibrationAxisFilter instead of this hack, also CalibrationAxisFilter doesn't handle min/max properly
@@ -352,17 +352,17 @@ int8_t calibrate(int value, const AccCalibration& cal)
 void
 WiimoteController::on_nunchuk(const cwiid_nunchuk_mesg& msg)
 {
-  m_ctrl_msg.set_axis(XBOX_AXIS_X1, unpack::s8_to_s16(calibrate(msg.stick[0], m_nunchuk_x)));
-  m_ctrl_msg.set_axis(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(calibrate(msg.stick[1], m_nunchuk_y))));
+  m_ctrl_msg.set_abs(XBOX_AXIS_X1, unpack::s8_to_s16(calibrate(msg.stick[0], m_nunchuk_x)));
+  m_ctrl_msg.set_abs(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(calibrate(msg.stick[1], m_nunchuk_y))));
 
-  m_ctrl_msg.set_axis(NUNCHUK_ACC_X, msg.acc[0]);
-  m_ctrl_msg.set_axis(NUNCHUK_ACC_Y, msg.acc[1]);
-  m_ctrl_msg.set_axis(NUNCHUK_ACC_Z, msg.acc[2]);
+  m_ctrl_msg.set_abs(NUNCHUK_ACC_X, msg.acc[0]);
+  m_ctrl_msg.set_abs(NUNCHUK_ACC_Y, msg.acc[1]);
+  m_ctrl_msg.set_abs(NUNCHUK_ACC_Z, msg.acc[2]);
 
-  m_ctrl_msg.set_button(XBOX_BTN_LT, msg.buttons & CWIID_NUNCHUK_BTN_Z);
-  m_ctrl_msg.set_button(XBOX_BTN_LB, msg.buttons & CWIID_NUNCHUK_BTN_C);
+  m_ctrl_msg.set_key(XBOX_BTN_LT, msg.buttons & CWIID_NUNCHUK_BTN_Z);
+  m_ctrl_msg.set_key(XBOX_BTN_LB, msg.buttons & CWIID_NUNCHUK_BTN_C);
 
-  submit_msg(m_ctrl_msg);
+  submit_msg(m_ctrl_msg, m_message_descriptor);
 }
 
 void
