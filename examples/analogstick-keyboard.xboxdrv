@@ -2,49 +2,55 @@
 ui-clear=true
 
 [ui-buttonmap]
-a=BTN_A
-b=BTN_B
-x=BTN_X
-y=BTN_Y
+lb=KEY_LEFTSHIFT
+rb=KEY_LEFTCTRL
 
-r0+l0=XK_a
-r0+l1=XK_b
-r0+l2=XK_c
-r0+l3=XK_d
-r0+l4=XK_e
-r0+l5=XK_f
-r0+l6=XK_g
-r0+l7=XK_h
+a=KEY_ENTER
+x=KEY_SPACE
+b=KEY_BACKSPACE
 
-r2+l0=XK_i
-r2+l1=XK_j
-r2+l2=XK_k
-r2+l3=XK_l
-r2+l4=XK_m
-r2+l5=XK_n
-r2+l6=XK_o
-r2+l7=XK_p
+du=KEY_UP
+dr=KEY_RIGHT
+dd=KEY_DOWN
+dl=KEY_LEFT
 
-r4+l0=XK_q
-r4+l1=XK_r
-r4+l2=XK_s
-r4+l3=XK_t
-r4+l4=XK_u
-r4+l5=XK_v
-r4+l6=XK_w
-r4+l7=XK_x
+ll+ru=XK_a
+ll+rr=XK_u
+ll+rd=XK_e
+ll+rl=XK_o
 
-r6+l0=XK_y
-r6+l1=XK_z
-r6+l2=XK_0
-r6+l3=XK_1
-r6+l4=XK_2
-r6+l5=XK_3
-r6+l6=XK_4
-r6+l7=XK_5
+lr+ru=XK_t
+lr+rr=XK_h
+lr+rd=XK_n
+lr+rl=XK_s
+
+lu+ru=XK_i
+lu+rr=XK_l
+lu+rd=XK_r
+lu+rl=XK_d
+
+ld+ru=XK_c
+ld+rr=XK_m
+ld+rd=XK_w
+ld+rl=XK_f
+
+lul+ru=XK_k
+lul+rr=XK_y
+lul+rd=XK_p
+lul+rl=XK_j
+
+lur+ru=XK_b
+lur+rr=XK_x
+lur+rd=XK_g
+lur+rl=XK_v
+
+ldl+ru=XK_q
+ldl+rr=XK_1
+ldl+rd=XK_z
+ldl+rl=XK_2
 
 [modifier]
-sector2button=x1:y1:r0:r1:r2:r3:r4:r5:r6:r7
-sector2button=x2:y2:l0:l1:l2:l3:l4:l5:l6:l7
+sector2button=x1:y1:lu:lur:lr:ldr:ld:ldl:ll:lul
+sector2button=x2:y2:ru:rur:rr:rdr:rd:rdl:rl:rul
 
 # EOF #
