@@ -26,18 +26,21 @@
 class KeyCopyModifier : public Modifier
 {
 public:
-  static KeyCopyModifier* from_string(const std::vector<std::string>& args,
-                                      const ControllerMessageDescriptor& msg_desc);
+  static KeyCopyModifier* from_string(const std::vector<std::string>& args);
 
 public:
-  KeyCopyModifier(int from, int to);
+  KeyCopyModifier(const std::string& from, const std::string& to);
   
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg);
   std::string str() const;
 
 private:
-  int m_from;
-  int m_to;
+  std::string m_from;
+  std::string m_to;
+
+  int m_from_sym;
+  int m_to_sym;
 
 private:
   KeyCopyModifier(const KeyCopyModifier&);

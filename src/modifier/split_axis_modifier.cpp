@@ -24,8 +24,7 @@
 #include "raise_exception.hpp"
 
 SplitAxisModifier*
-SplitAxisModifier::from_string(const std::vector<std::string>& args, 
-                               const ControllerMessageDescriptor& msg_desc)
+SplitAxisModifier::from_string(const std::vector<std::string>& args)
 {
   if (args.size() != 3)
   {
@@ -33,17 +32,26 @@ SplitAxisModifier::from_string(const std::vector<std::string>& args,
   }
   else
   {
-    return new SplitAxisModifier(msg_desc.get_abs(args[0]),
-                                 msg_desc.get_abs(args[1]),
-                                 msg_desc.get_abs(args[2]));
+    return new SplitAxisModifier(args[0], args[1], args[2]);
   }
 }
 
-SplitAxisModifier::SplitAxisModifier(int axis, int out_lhs, int out_rhs) :
-  m_axis(axis),
-  m_out_lhs(out_lhs),
-  m_out_rhs(out_rhs)
+SplitAxisModifier::SplitAxisModifier(const std::string& axis, const std::string& out_lhs, const std::string& out_rhs) :
+  m_axis_str(axis),
+  m_out_lhs_str(out_lhs),
+  m_out_rhs_str(out_rhs),
+  m_axis(-1),
+  m_out_lhs(-1),
+  m_out_rhs(-1)
 {
+}
+
+void
+SplitAxisModifier::init(ControllerMessageDescriptor& desc)
+{
+  m_axis = desc.abs().get(m_axis_str);
+  m_out_lhs = desc.abs().get(m_out_lhs_str);
+  m_out_rhs = desc.abs().get(m_out_rhs_str);
 }
 
 void

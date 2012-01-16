@@ -30,6 +30,7 @@ class MessageProcessor
 private:
   ControllerSlotConfigPtr m_config;
 
+  ControllerMessageDescriptor m_desc;
   ControllerMessage m_oldmsg; /// last data send to uinput
   XboxButton m_config_toggle_button;
 
@@ -41,6 +42,7 @@ public:
   MessageProcessor(ControllerSlotConfigPtr config, const Options& opts);
   ~MessageProcessor();
 
+  void init(const ControllerMessageDescriptor& desc);
   void send(const ControllerMessage& msg,
             const ControllerMessageDescriptor& msg_desc,
             int msec_delta);

@@ -26,10 +26,13 @@
 class StickZoneModifier : public Modifier
 {
 public:
-  static StickZoneModifier* from_string(const std::vector<std::string>& args,
-                                        const ControllerMessageDescriptor& msg_desc);
+  static StickZoneModifier* from_string(const std::vector<std::string>& args);
 
 private:
+  const std::string m_x_axis_str;
+  const std::string m_y_axis_str;
+  const std::string m_button_str;
+
   int m_x_axis;
   int m_y_axis;
   int m_button;
@@ -38,9 +41,10 @@ private:
   float m_range_end;
 
 public:
-  StickZoneModifier(int x_axis, int y_axis, int button,
+  StickZoneModifier(const std::string& x_axis, const std::string& y_axis, const std::string& button,
                     float range_start, float range_end);
 
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg);
 
   std::string str() const;

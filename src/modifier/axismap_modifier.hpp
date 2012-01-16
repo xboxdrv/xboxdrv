@@ -38,34 +38,38 @@ struct AxisMappingOption
 
 struct AxisMapping
 {
-  static AxisMapping from_string(const std::string& lhs, const std::string& rhs,
-                                 const ControllerMessageDescriptor& msg_desc);
+  static AxisMapping from_string(const std::string& lhs, const std::string& rhs);
 
+  std::string lhs_str;
+  std::string rhs_str;
   int lhs;
   int rhs;
   bool invert;
   std::vector<AxisFilterPtr> filters;
 
   AxisMapping() :
-    lhs(XBOX_AXIS_UNKNOWN),
-    rhs(XBOX_AXIS_UNKNOWN),
+    lhs_str(),
+    rhs_str(),
+    lhs(-1),
+    rhs(-1),
     invert(false),
     filters()
   {}
+
+  void init(const ControllerMessageDescriptor& desc);
 };
 
 class AxismapModifier : public Modifier 
 {
 public:
-  static AxismapModifier* from_string(const std::string& args, 
-                                      const ControllerMessageDescriptor& msg_desc);
+  static AxismapModifier* from_string(const std::string& args);
 
-  static AxismapModifier* from_option(const std::vector<AxisMappingOption>& mappings,
-                                      const ControllerMessageDescriptor& msg_desc);
+  static AxismapModifier* from_option(const std::vector<AxisMappingOption>& mappings);
 
 public:
   AxismapModifier();
 
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg);
 
   void add(const AxisMapping& mapping);

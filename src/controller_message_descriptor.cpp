@@ -25,98 +25,11 @@
 ControllerMessageDescriptor::ControllerMessageDescriptor() :
   m_name2rel(),
   m_name2key(),
-  m_name2abs()
+  m_name2abs(),
+  m_abs(),
+  m_key(),
+  m_rel()
 {
-}
-
-int
-ControllerMessageDescriptor::register_key(const std::string& name)
-{
-  std::map<std::string, int>::const_iterator it = m_name2key.find(name);
-  if (it == m_name2key.end())
-  {
-    int id = m_name2key.size();
-    m_name2key[name] = id;
-    return id;
-  }
-  else
-  {
-    return it->second;
-  }
-}
-
-int
-ControllerMessageDescriptor::register_abs(const std::string& name)
-{
-  std::map<std::string, int>::const_iterator it = m_name2abs.find(name);
-  if (it == m_name2abs.end())
-  {
-    int id = m_name2abs.size();
-    m_name2abs[name] = id;
-    return id;
-  }
-  else
-  {
-    return it->second;
-  }
-}
-
-int
-ControllerMessageDescriptor::register_rel(const std::string& name)
-{
-  std::map<std::string, int>::const_iterator it = m_name2rel.find(name);
-  if (it == m_name2rel.end())
-  {
-    int id = m_name2rel.size();
-    m_name2rel[name] = id;
-    return id;
-  }
-  else
-  {
-    return it->second;
-  }
-}
-
-int
-ControllerMessageDescriptor::get_key(const std::string& name) const
-{
-  std::map<std::string, int>::const_iterator it = m_name2key.find(name);
-  if (it == m_name2key.end())
-  {
-    raise_exception(std::runtime_error, "not a valid key name: " << name);
-  }
-  else
-  {
-    return it->second;
-  }
-}
-
-int
-ControllerMessageDescriptor::get_abs(const std::string& name) const
-{
-  std::map<std::string, int>::const_iterator it = m_name2abs.find(name);
-  if (it == m_name2abs.end())
-  {
-    raise_exception(std::runtime_error, "not a valid abs name: " << name);
-  }
-  else
-  {
-    return it->second;
-  }
-}
-
-int
-ControllerMessageDescriptor::get_rel(const std::string& name) const
-{
-  std::map<std::string, int>::const_iterator it = m_name2rel.find(name);
-  if (it == m_name2rel.end())
-  {
-    raise_exception(std::runtime_error, "not a valid rel name: " << name);
-  }
-  else
-  {
-    return it->second;
-  }
 }
 
 /* EOF */

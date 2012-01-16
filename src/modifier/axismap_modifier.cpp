@@ -26,15 +26,14 @@
 #include "helper.hpp"
 
 AxisMapping
-AxisMapping::from_string(const std::string& lhs_, const std::string& rhs,
-                         const ControllerMessageDescriptor& msg_desc)
+AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
 {
   std::string lhs = lhs_;
   AxisMapping mapping;
 
   mapping.invert = false;
-  mapping.lhs = XBOX_AXIS_UNKNOWN;
-  mapping.rhs = XBOX_AXIS_UNKNOWN;
+  mapping.lhs_str.clear();
+  mapping.rhs_str.clear();
 
   if (lhs[0] == '-')
   {
@@ -49,50 +48,55 @@ AxisMapping::from_string(const std::string& lhs_, const std::string& rhs,
   {
     switch(idx)
     {
-      case 0:  mapping.lhs = msg_desc.get_abs(*t); break;
+      case 0:  mapping.lhs_str = *t; break;
       default: mapping.filters.push_back(AxisFilter::from_string(*t));
     }
   }
 
   if (rhs.empty())
   {
-    mapping.rhs = mapping.lhs;
+    mapping.rhs_str = mapping.lhs_str;
   }
   else
   {
-    mapping.rhs = msg_desc.get_abs(rhs);
+    mapping.rhs_str = rhs;
   }
 
-  if (mapping.lhs == XBOX_AXIS_UNKNOWN ||
-      mapping.rhs == XBOX_AXIS_UNKNOWN)
+  if (mapping.lhs_str.empty() || mapping.rhs_str.empty())
   {
     throw std::runtime_error("Couldn't convert string \"" + lhs + "=" + rhs + "\" to axis mapping");
   }
 
   return mapping;
 }
+
+void
+AxisMapping::init(const ControllerMessageDescriptor& desc)
+{
+  lhs = desc.abs().get(lhs_str);
+  rhs = desc.abs().get(rhs_str);
+}
+
 
 AxismapModifier*
-AxismapModifier::from_string(const std::string& args, 
-                             const ControllerMessageDescriptor& msg_desc)
+AxismapModifier::from_string(const std::string& args)
 {
   std::auto_ptr<AxismapModifier> modifier(new AxismapModifier);
 
   process_name_value_string(args, boost::bind(&AxismapModifier::add, modifier.get(),
-                                              boost::bind(&AxisMapping::from_string, _1, _2, boost::ref(msg_desc))));
+                                              boost::bind(&AxisMapping::from_string, _1, _2)));
 
   return modifier.release();
 }
 
 AxismapModifier*
-AxismapModifier::from_option(const std::vector<AxisMappingOption>& mappings,
-                             const ControllerMessageDescriptor& msg_desc)
+AxismapModifier::from_option(const std::vector<AxisMappingOption>& mappings)
 {
   std::auto_ptr<AxismapModifier> modifier(new AxismapModifier);
   
   for(std::vector<AxisMappingOption>::const_iterator i = mappings.begin(); i != mappings.end(); ++i)
   {
-    modifier->add(AxisMapping::from_string(i->lhs, i->rhs, msg_desc));
+    modifier->add(AxisMapping::from_string(i->lhs, i->rhs));
   }
 
   return modifier.release();
@@ -101,6 +105,15 @@ AxismapModifier::from_option(const std::vector<AxisMappingOption>& mappings,
 AxismapModifier::AxismapModifier() :
   m_axismap()
 {
+}
+
+void
+AxismapModifier::init(ControllerMessageDescriptor& desc)
+{
+  for(std::vector<AxisMapping>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
+  {
+    i->init(desc);
+  }
 }
 
 void

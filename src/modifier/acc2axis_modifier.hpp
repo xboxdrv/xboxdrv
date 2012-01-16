@@ -26,10 +26,16 @@
 class Acc2AxisModifier : public Modifier
 {
 public:
-  static Acc2AxisModifier* from_string(const std::vector<std::string>& args,
-                                       const ControllerMessageDescriptor& msg_desc);
+  static Acc2AxisModifier* from_string(const std::vector<std::string>& args);
 
 private:
+  const std::string m_acc_x_str;
+  const std::string m_acc_y_str;
+  const std::string m_acc_z_str;
+
+  const std::string m_axis_x_str;
+  const std::string m_axis_y_str;
+
   int m_acc_x;
   int m_acc_y;
   int m_acc_z;
@@ -38,9 +44,10 @@ private:
   int m_axis_y;
 
 public:
-  Acc2AxisModifier(int acc_x, int acc_y, int acc_z,
-                   int axis_x, int axis_y);
+  Acc2AxisModifier(const std::string& acc_x, const std::string& acc_y, const std::string& acc_z,
+                   const std::string& axis_x, const std::string& axis_y);
 
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg);
   std::string str() const;
 

@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_CONFIG_HPP
 #define HEADER_XBOXDRV_CONTROLLER_CONFIG_HPP
 
-#include "uinput_config.hpp"
+#include "event_emitter.hpp"
 #include "modifier.hpp"
 
 class ControllerOptions;
@@ -30,14 +30,14 @@ class ControllerConfig
 {
 private:
   std::vector<ModifierPtr> m_modifier;
-  UInputConfig m_uinput;
+  EventEmitter m_emitter;
 
 public:
   ControllerConfig(UInput& uinput, int slot, bool extra_devices, 
                    const ControllerOptions& opts);
 
   std::vector<ModifierPtr>& get_modifier();
-  UInputConfig& get_uinput();
+  EventEmitter& get_emitter();
 
 private:
   ControllerConfig(const ControllerConfig&);

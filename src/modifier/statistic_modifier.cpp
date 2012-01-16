@@ -24,8 +24,7 @@
 #include "../xboxmsg.hpp"
 
 StatisticModifier*
-StatisticModifier::from_string(const std::vector<std::string>& args,
-                               const ControllerMessageDescriptor& msg_desc)
+StatisticModifier::from_string(const std::vector<std::string>& args)
 {
   return new StatisticModifier;
 }
@@ -39,6 +38,11 @@ StatisticModifier::StatisticModifier() :
 StatisticModifier::~StatisticModifier()
 {
   print_stats();
+}
+
+void
+StatisticModifier::init(ControllerMessageDescriptor& desc)
+{
 }
 
 void

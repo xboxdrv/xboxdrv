@@ -22,13 +22,18 @@
 #include <sstream>
 
 LogModifier*
-LogModifier::from_string(const std::string& value, const ControllerMessageDescriptor& msg_desc)
+LogModifier::from_string(const std::string& value)
 {
   return new LogModifier(value);
 }
 
 LogModifier::LogModifier(const std::string& prefix) :
   m_prefix(prefix)
+{
+}
+
+void
+LogModifier::init(ControllerMessageDescriptor& desc)
 {
 }
 

@@ -38,36 +38,40 @@ struct ButtonMappingOption
 
 struct ButtonMapping
 {
-  static ButtonMapping from_string(const std::string& lhs, const std::string& rhs,
-                                   const ControllerMessageDescriptor& msg_desc);
-
+  static ButtonMapping from_string(const std::string& lhs, const std::string& rhs);
+  
+  std::string lhs_str;
+  std::string rhs_str;
   int lhs;
   int rhs;
   std::vector<ButtonFilterPtr> filters;
 
   ButtonMapping() :
-    lhs(XBOX_BTN_UNKNOWN),
-    rhs(XBOX_BTN_UNKNOWN),
+    lhs_str(),
+    rhs_str(),
+    lhs(-1),
+    rhs(-1),
     filters()
   {}
+
+  void init(const ControllerMessageDescriptor& desc);
 };
 
 class ButtonmapModifier : public Modifier
 {
 public:
-  static ButtonmapModifier* from_string(const std::string& args,
-                                        const ControllerMessageDescriptor& msg_desc);
+  static ButtonmapModifier* from_string(const std::string& args);
 
-  static ButtonmapModifier* from_option(const std::vector<ButtonMappingOption>& mappings,
-                                        const ControllerMessageDescriptor& msg_desc);
+  static ButtonmapModifier* from_option(const std::vector<ButtonMappingOption>& mappings);
 
 public:
   ButtonmapModifier();
-  
+
+  void init(ControllerMessageDescriptor& desc);  
   void update(int msec_delta, ControllerMessage& msg);
 
   void add(const ButtonMapping& mapping);
-  void add_filter(int btn, ButtonFilterPtr filter);
+  void add_filter(const std::string& btn, ButtonFilterPtr filter);
 
   std::string str() const;
 

@@ -24,8 +24,7 @@
 #include "controller_config.hpp"
 
 DpadRotationModifier*
-DpadRotationModifier::from_string(const std::vector<std::string>& args,
-                                  const ControllerMessageDescriptor& msg_desc)
+DpadRotationModifier::from_string(const std::vector<std::string>& args)
 {
   if (args.size() != 1)
   {
@@ -33,13 +32,12 @@ DpadRotationModifier::from_string(const std::vector<std::string>& args,
   }
   else
   {
-    return DpadRotationModifier::from_string(args[0], msg_desc);
+    return DpadRotationModifier::from_string(args[0]);
   }
 }
 
 DpadRotationModifier*
-DpadRotationModifier::from_string(const std::string& value, 
-                                  const ControllerMessageDescriptor& msg_desc)
+DpadRotationModifier::from_string(const std::string& value)
 {
   int degree = boost::lexical_cast<int>(value);
   degree /= 45;
@@ -52,6 +50,11 @@ DpadRotationModifier::from_string(const std::string& value,
 
 DpadRotationModifier::DpadRotationModifier(int dpad_rotation) :
   m_dpad_rotation(dpad_rotation)
+{
+}
+
+void
+DpadRotationModifier::init(ControllerMessageDescriptor& desc)
 {
 }
 

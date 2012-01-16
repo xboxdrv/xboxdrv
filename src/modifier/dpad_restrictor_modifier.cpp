@@ -24,8 +24,7 @@
 #include "raise_exception.hpp"
 
 DpadRestrictorModifier*
-DpadRestrictorModifier::from_string(const std::vector<std::string>& args,
-                                    const ControllerMessageDescriptor& desc)
+DpadRestrictorModifier::from_string(const std::vector<std::string>& args)
 {
   if (args.size() != 1)
   {
@@ -55,6 +54,11 @@ DpadRestrictorModifier::from_string(const std::vector<std::string>& args,
 DpadRestrictorModifier::DpadRestrictorModifier(Mode mode) :
   m_mode(mode),
   m_last_unpressed_axis(XBOX_AXIS_DPAD_X)
+{
+}
+
+void
+DpadRestrictorModifier::init(ControllerMessageDescriptor& desc)
 {
 }
 

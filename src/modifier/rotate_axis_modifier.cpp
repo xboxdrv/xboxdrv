@@ -23,8 +23,7 @@
 #include <math.h>
 
 RotateAxisModifier*
-RotateAxisModifier::from_string(const std::vector<std::string>& args,
-                                const ControllerMessageDescriptor& msg_desc)
+RotateAxisModifier::from_string(const std::vector<std::string>& args)
 {
   if (args.size() != 3 && args.size() != 4)
   {
@@ -32,19 +31,27 @@ RotateAxisModifier::from_string(const std::vector<std::string>& args,
   }
   else
   {
-    return new RotateAxisModifier(msg_desc.get_abs(args[0]),
-                                  msg_desc.get_abs(args[1]),
+    return new RotateAxisModifier(args[0], args[1],
                                   boost::lexical_cast<float>(args[2]) * static_cast<float>(M_PI) / 180.0f,
                                   args.size() == 3 ? false : boost::lexical_cast<bool>(args[3]));
   }
 }
 
-RotateAxisModifier::RotateAxisModifier(int xaxis, int yaxis, float angle, bool mirror) :
-  m_xaxis(xaxis),
-  m_yaxis(yaxis),
+RotateAxisModifier::RotateAxisModifier(const std::string& xaxis, const std::string& yaxis, float angle, bool mirror) :
+  m_xaxis_str(xaxis),
+  m_yaxis_str(yaxis),
+  m_xaxis(-1),
+  m_yaxis(-1),
   m_angle(angle),
   m_mirror(mirror)
 {
+}
+
+void
+RotateAxisModifier::init(ControllerMessageDescriptor& desc)
+{
+  m_xaxis = desc.abs().get(m_xaxis_str);
+  m_yaxis = desc.abs().get(m_yaxis_str);
 }
 
 void

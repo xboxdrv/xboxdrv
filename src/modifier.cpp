@@ -44,16 +44,15 @@
 #include "raise_exception.hpp"
 
 Modifier*
-Modifier::from_string(const std::string& name, const std::string& value, 
-                      const ControllerMessageDescriptor& msg_desc)
+Modifier::from_string(const std::string& name, const std::string& value)
 {
   if (name == "axismap")
   {
-    return AxismapModifier::from_string(value, msg_desc);
+    return AxismapModifier::from_string(value);
   }
   else if (name == "buttonmap" || name == "btnmap")
   {
-    return ButtonmapModifier::from_string(value, msg_desc);
+    return ButtonmapModifier::from_string(value);
   }
   else
   {
@@ -64,51 +63,51 @@ Modifier::from_string(const std::string& name, const std::string& value,
 
     if (name == "dpad-rotation" || name == "dpad-rotate")
     {
-      return DpadRotationModifier::from_string(args, msg_desc);
+      return DpadRotationModifier::from_string(args);
     }
     else if (name == "4wayrest" || name == "four-way-restrictor")
     {
-      return FourWayRestrictorModifier::from_string(args, msg_desc);
+      return FourWayRestrictorModifier::from_string(args);
     }
     else if (name == "square" || name == "square-axis")
     {
-      return SquareAxisModifier::from_string(args, msg_desc);
+      return SquareAxisModifier::from_string(args);
     }
     else if (name == "rotate")
     {
-      return RotateAxisModifier::from_string(args, msg_desc);
+      return RotateAxisModifier::from_string(args);
     }
     else if (name == "stat" || name == "statistic")
     {
-      return StatisticModifier::from_string(args, msg_desc);
+      return StatisticModifier::from_string(args);
     }
     else if (name == "dpad-restrictor")
     {
-      return DpadRestrictorModifier::from_string(args, msg_desc);
+      return DpadRestrictorModifier::from_string(args);
     }
     else if (name == "btn2axis" || name == "button2axis")
     {
-      return Button2AxisModifier::from_string(args, msg_desc);
+      return Button2AxisModifier::from_string(args);
     }
     else if (name == "acc2axis")
     {
-      return Acc2AxisModifier::from_string(args, msg_desc);
+      return Acc2AxisModifier::from_string(args);
     }
     else if (name == "ir2axis")
     {
-      return IR2AxisModifier::from_string(args, msg_desc);
+      return IR2AxisModifier::from_string(args);
     }
     else if (name == "stickzone")
     {
-      return StickZoneModifier::from_string(args, msg_desc);
+      return StickZoneModifier::from_string(args);
     }
     else if (name == "split-axis" || name == "splitaxis")
     {
-      return SplitAxisModifier::from_string(args, msg_desc);
+      return SplitAxisModifier::from_string(args);
     }
     else if (name == "join-axis" || name == "joinaxis")
     {
-      return JoinAxisModifier::from_string(args, msg_desc);
+      return JoinAxisModifier::from_string(args);
     }
     else if (name == "copy")
     {
@@ -126,7 +125,7 @@ Modifier::from_string(const std::string& name, const std::string& value,
             break;
 
           case EV_KEY:
-            return KeyCopyModifier::from_string(args, msg_desc);
+            return KeyCopyModifier::from_string(args);
 
           default:
             raise_exception(std::runtime_error, "'copy' modifier couldn't guess");
@@ -135,11 +134,11 @@ Modifier::from_string(const std::string& name, const std::string& value,
     }
     else if (name == "key-copy")
     {
-      return KeyCopyModifier::from_string(args, msg_desc);
+      return KeyCopyModifier::from_string(args);
     }
     else if (name == "log")
     {
-      return LogModifier::from_string(value, msg_desc);
+      return LogModifier::from_string(value);
     }
     else
     {

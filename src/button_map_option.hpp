@@ -36,7 +36,7 @@ public:
     m_button(button),
     m_filter(),
     m_event(event),
-    m_directory()
+    m_directory() // BROKEN: needs get_directory_context() or something more clever
   {}
 
   void add_filter(const std::string& filter)
@@ -47,7 +47,7 @@ public:
   const std::string& get_button() const { return m_button; }
   const std::vector<std::string>& get_filter() const { return m_filter; }
   const std::string& get_event() const { return m_event; }
-  const std::string& get_directory() const { return m_directory; } // BROKEN: needs get_directory_context() or something more clever
+  const std::string& get_directory() const { return m_directory; }
 };
 
 typedef std::vector<ButtonMapOption> ButtonMapOptions;

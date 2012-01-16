@@ -26,8 +26,7 @@
 #include "raise_exception.hpp"
 
 Acc2AxisModifier*
-Acc2AxisModifier::from_string(const std::vector<std::string>& args, 
-                              const ControllerMessageDescriptor& msg_desc)
+Acc2AxisModifier::from_string(const std::vector<std::string>& args)
 {
   if (args.size() != 5)
   {
@@ -35,22 +34,35 @@ Acc2AxisModifier::from_string(const std::vector<std::string>& args,
   }
   else
   {
-    return new Acc2AxisModifier(msg_desc.get_abs(args[0]),
-                                msg_desc.get_abs(args[1]),
-                                msg_desc.get_abs(args[2]),
-                                msg_desc.get_abs(args[3]),
-                                msg_desc.get_abs(args[4]));
+    return new Acc2AxisModifier(args[0], args[1], args[2],
+                                args[3], args[4]);
   }
 }
 
-Acc2AxisModifier::Acc2AxisModifier(int acc_x, int acc_y, int acc_z,
-                                   int axis_x, int axis_y) :
-  m_acc_x(acc_x),
-  m_acc_y(acc_y),
-  m_acc_z(acc_z),
-  m_axis_x(axis_x),
-  m_axis_y(axis_y)
+Acc2AxisModifier::Acc2AxisModifier(const std::string& acc_x, const std::string& acc_y, const std::string& acc_z,
+                                   const std::string& axis_x, const std::string& axis_y) :
+  m_acc_x_str(acc_x),
+  m_acc_y_str(acc_y),
+  m_acc_z_str(acc_z),
+  m_axis_x_str(axis_x),
+  m_axis_y_str(axis_y),
+  m_acc_x(-1),
+  m_acc_y(-1),
+  m_acc_z(-1),
+  m_axis_x(-1),
+  m_axis_y(-1)
 {
+}
+
+void
+Acc2AxisModifier::init(ControllerMessageDescriptor& desc)
+{
+  m_acc_x = desc.abs().get(m_acc_x_str);
+  m_acc_y = desc.abs().get(m_acc_y_str);
+  m_acc_z = desc.abs().get(m_acc_z_str);
+
+  m_axis_x = desc.abs().getput(m_axis_x_str);
+  m_axis_y = desc.abs().getput(m_axis_y_str);
 }
 
 void

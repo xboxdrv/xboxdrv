@@ -26,18 +26,22 @@
 class RotateAxisModifier : public Modifier
 {
 public:
-  static RotateAxisModifier* from_string(const std::vector<std::string>& args,
-                                         const ControllerMessageDescriptor& msg_desc);
+  static RotateAxisModifier* from_string(const std::vector<std::string>& args);
   
 public:
-  RotateAxisModifier(int xaxis, int yaxis, float angle, bool mirror);
+  RotateAxisModifier(const std::string& xaxis, const std::string& yaxis, float angle, bool mirror);
 
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg);
   std::string str() const;
 
 private:
+  const std::string m_xaxis_str;
+  const std::string m_yaxis_str;
+
   int m_xaxis;
   int m_yaxis;
+
   float m_angle;
   bool m_mirror;
 };

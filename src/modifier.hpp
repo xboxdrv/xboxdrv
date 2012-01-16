@@ -44,11 +44,12 @@ struct ModifierOption
 class Modifier
 {
 public:
-  static Modifier* from_string(const std::string& name, const std::string& value,
-                               const ControllerMessageDescriptor& msg_desc);
+  static Modifier* from_string(const std::string& name, const std::string& value);
 
 public:
   virtual ~Modifier() {}
+
+  virtual void init(ControllerMessageDescriptor& desc) = 0;
   virtual void update(int msec_delta, ControllerMessage& msg) = 0;
 
   virtual std::string str() const = 0;

@@ -26,13 +26,13 @@
 class StatisticModifier : public Modifier
 {
 public:
-  static StatisticModifier* from_string(const std::vector<std::string>& args,
-                                        const ControllerMessageDescriptor& msg_desc);
+  static StatisticModifier* from_string(const std::vector<std::string>& args);
 
 public:
   StatisticModifier();
   ~StatisticModifier();
 
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg);
   void print_stats();
   std::string str() const;

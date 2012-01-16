@@ -23,6 +23,7 @@
 
 MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config, const Options& opts) :
   m_config(config),
+  m_desc(),
   m_oldmsg(),
   m_config_toggle_button(opts.config_toggle_button),
   m_rumble_gain(opts.rumble_gain),
@@ -33,6 +34,19 @@ MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config, const Options
 
 MessageProcessor::~MessageProcessor()
 {
+}
+
+void
+MessageProcessor::init(const ControllerMessageDescriptor& desc)
+{
+  m_desc = desc;
+
+  for(std::vector<ModifierPtr>::iterator i = m_config->get_config()->get_modifier().begin();
+      i != m_config->get_config()->get_modifier().end();
+      ++i)
+  {
+    (*i)->init(m_desc);
+  }
 }
 
 void
@@ -61,7 +75,7 @@ MessageProcessor::send(const ControllerMessage& msg_in,
       if (cur && cur != last)
       {
         // reset old mapping to zero to not get stuck keys/axis
-        m_config->get_config()->get_uinput().reset_all_outputs();
+        m_config->get_config()->get_emitter().reset_all_outputs();
 
         // switch to the next input mapping
         m_config->next_config();
@@ -78,10 +92,10 @@ MessageProcessor::send(const ControllerMessage& msg_in,
       (*i)->update(msec_delta, msg);
     }
 
-    m_config->get_config()->get_uinput().update(msec_delta);
+    m_config->get_config()->get_emitter().update(msec_delta);
 
     // send current Xbox state to uinput
-    if (memcmp(&msg, &m_oldmsg, sizeof(ControllerMessage)) != 0)
+    if (msg != m_oldmsg)
     {
       // Only send a new event out if something has changed,
       // this is useful since some controllers send events
@@ -89,7 +103,7 @@ MessageProcessor::send(const ControllerMessage& msg_in,
       // too
       m_oldmsg = msg;
 
-      m_config->get_config()->get_uinput().send(msg);
+      m_config->get_config()->get_emitter().send(msg);
     }
   }
 }

@@ -24,8 +24,7 @@
 #include "raise_exception.hpp"
 
 JoinAxisModifier*
-JoinAxisModifier::from_string(const std::vector<std::string>& args,
-                              const ControllerMessageDescriptor& msg_desc)
+JoinAxisModifier::from_string(const std::vector<std::string>& args)
 {
   if (args.size() != 3)
   {
@@ -33,17 +32,26 @@ JoinAxisModifier::from_string(const std::vector<std::string>& args,
   }
   else
   {
-    return new JoinAxisModifier(msg_desc.get_abs(args[0]),
-                                msg_desc.get_abs(args[1]),
-                                msg_desc.get_abs(args[2]));
+    return new JoinAxisModifier(args[0], args[1], args[2]);
   }
 }
 
-JoinAxisModifier::JoinAxisModifier(int lhs, int rhs, int out) :
-  m_lhs(lhs),
-  m_rhs(rhs),
-  m_out(out)
+JoinAxisModifier::JoinAxisModifier(const std::string& lhs, const std::string& rhs, const std::string& out) :
+  m_lhs_str(lhs),
+  m_rhs_str(rhs),
+  m_out_str(out),
+  m_lhs(-1),
+  m_rhs(-1),
+  m_out(-1)
 {
+}
+
+void
+JoinAxisModifier::init(ControllerMessageDescriptor& desc)
+{
+  m_lhs = desc.abs().get(m_lhs_str);
+  m_rhs = desc.abs().get(m_rhs_str);
+  m_out = desc.abs().getput(m_out_str);
 }
 
 void

@@ -24,10 +24,12 @@
 class LogModifier : public Modifier
 {
 public:
-  static LogModifier* from_string(const std::string& value, const ControllerMessageDescriptor& msg_desc);
+  static LogModifier* from_string(const std::string& value);
 
 public:
   LogModifier(const std::string& value);
+
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg);
 
   std::string str() const;

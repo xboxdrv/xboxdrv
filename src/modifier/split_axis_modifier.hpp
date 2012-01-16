@@ -26,17 +26,21 @@
 class SplitAxisModifier : public Modifier
 {
 public: 
-  static SplitAxisModifier* from_string(const std::vector<std::string>& args,
-                                        const ControllerMessageDescriptor& msg_desc);
+  static SplitAxisModifier* from_string(const std::vector<std::string>& args);
 
 private:
+  const std::string m_axis_str;
+  const std::string m_out_lhs_str;
+  const std::string m_out_rhs_str;
+
   int m_axis;
   int m_out_lhs;
   int m_out_rhs;
 
 public:
-  SplitAxisModifier(int axis, int out_lhs, int out_rhs);
+  SplitAxisModifier(const std::string& axis, const std::string& out_lhs, const std::string& out_rhs);
 
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg);
 
   std::string str() const;

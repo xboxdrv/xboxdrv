@@ -25,9 +25,11 @@
 #include <string.h>
 
 #include "helper.hpp"
+#include "controller_message_descriptor.hpp"
 
 ControllerMessage::ControllerMessage() :
-  // BROKEN: should get proper size from ControllerMessageDescriptor
+  // FIXME: should get proper size from ControllerMessageDescriptor
+  // instead of hardcoded defaults
   m_abs_state(),
   m_rel_state(),
   m_key_state()
@@ -343,5 +345,51 @@ std::ostream& format_xbox(std::ostream& out, const ControllerMessage& msg)
 
   return out;
 }
+
+std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+{
+  out << "generic: ";
+  for(int i = 0; i < desc.get_key_count(); ++i)
+  {
+    if (msg.get_key(i))
+    {
+      out << i << " ";
+    }
+  }
+
+  for(int i = 0; i < desc.get_abs_count(); ++i)
+  {
+    if (msg.get_abs(i))
+    {
+      out << i << " ";
+    }
+  }
+
+  for(int i = 0; i < desc.get_rel_count(); ++i)
+  {
+    if (msg.get_rel(i))
+    {
+      out << i << " ";
+    }
+  }
+
+  return out;
+}
+
+bool
+ControllerMessage::operator==(const ControllerMessage& rhs) const
+{
+  return 
+    m_abs_state == rhs.m_abs_state &&
+    m_rel_state == rhs.m_rel_state &&
+    m_key_state == rhs.m_key_state;
+}
+
+bool
+ControllerMessage::operator!=(const ControllerMessage& rhs) const
+{
+  return !((*this) == rhs);
+}
+
 
 /* EOF */

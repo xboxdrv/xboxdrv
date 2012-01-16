@@ -26,17 +26,21 @@
 class Button2AxisModifier : public Modifier
 {
 public:
-  static Button2AxisModifier* from_string(const std::vector<std::string>& args,
-                                          const ControllerMessageDescriptor& msg_desc);
+  static Button2AxisModifier* from_string(const std::vector<std::string>& args);
 
 private:
+  const std::string m_lhs_btn_str;
+  const std::string m_rhs_btn_str;
+  const std::string m_axis_str;
+
   int m_lhs_btn;
   int m_rhs_btn;
-  int   m_axis;
+  int m_axis;
 
 public:
-  Button2AxisModifier(int lhs_btn, int rhs_btn, int   axis);
+  Button2AxisModifier(const std::string& lhs_btn, const std::string& rhs_btn, const std::string& axis);
 
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg);
   std::string str() const;
 

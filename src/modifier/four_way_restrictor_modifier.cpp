@@ -22,8 +22,7 @@
 #include <sstream>
 
 FourWayRestrictorModifier*
-FourWayRestrictorModifier::from_string(const std::vector<std::string>& args,
-                                       const ControllerMessageDescriptor& msg_desc)
+FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
 {
   if (args.size() != 2)
   {
@@ -31,15 +30,23 @@ FourWayRestrictorModifier::from_string(const std::vector<std::string>& args,
   }
   else
   {
-    return new FourWayRestrictorModifier(msg_desc.get_abs(args[0]),
-                                         msg_desc.get_abs(args[1]));
+    return new FourWayRestrictorModifier(args[0], args[1]);
   }
 }
 
-FourWayRestrictorModifier::FourWayRestrictorModifier(int xaxis, int yaxis) :
-  m_xaxis(xaxis),
-  m_yaxis(yaxis)
+FourWayRestrictorModifier::FourWayRestrictorModifier(const std::string& xaxis, const std::string& yaxis) :
+  m_xaxis_str(xaxis),
+  m_yaxis_str(yaxis),
+  m_xaxis(-1),
+  m_yaxis(-1)
 {
+}
+
+void
+FourWayRestrictorModifier::init(ControllerMessageDescriptor& desc)
+{
+  m_xaxis = desc.abs().get(m_xaxis_str);
+  m_yaxis = desc.abs().get(m_yaxis_str);
 }
 
 void

@@ -24,8 +24,7 @@
 #include "raise_exception.hpp"
 
 IR2AxisModifier*
-IR2AxisModifier::from_string(const std::vector<std::string>& args,
-                             const ControllerMessageDescriptor& msg_desc)
+IR2AxisModifier::from_string(const std::vector<std::string>& args)
 {
   if (args.size() != 2)
   {
@@ -33,15 +32,23 @@ IR2AxisModifier::from_string(const std::vector<std::string>& args,
   }
   else
   {
-    return new IR2AxisModifier(msg_desc.get_abs(args[0]),
-                               msg_desc.get_abs(args[1]));
+    return new IR2AxisModifier(args[0], args[1]);
   }
 }
 
-IR2AxisModifier::IR2AxisModifier(int axis_x, int axis_y) :
-  m_axis_x(axis_x),
-  m_axis_y(axis_y)
+IR2AxisModifier::IR2AxisModifier(const std::string& xaxis, const std::string& yaxis) :
+  m_xaxis_str(xaxis),
+  m_yaxis_str(yaxis),
+  m_xaxis(-1),
+  m_yaxis(-1)
 {
+}
+
+void
+IR2AxisModifier::init(ControllerMessageDescriptor& desc)
+{
+  m_xaxis = desc.abs().get(m_xaxis_str);
+  m_yaxis = desc.abs().get(m_yaxis_str);
 }
 
 void
@@ -107,16 +114,16 @@ IR2AxisModifier::update(int msec_delta, ControllerMessage& msg)
   else if (!valid2)
   {
     log_tmp(x1 << " " << y1);
-    msg.set_abs_float(m_axis_x, -x1);
-    msg.set_abs_float(m_axis_y, y1);
+    msg.set_abs_float(m_xaxis, -x1);
+    msg.set_abs_float(m_yaxis, y1);
   }
   else // both valid
   {
     // FIXME: need accelerometer data to find out where is up
     //log_tmp(x1 << " " << y1 << " - " << x2 << " " << y2);
     log_tmp(atan2f(y1 - y2, x1 - x2));
-    msg.set_abs_float(m_axis_x, -((x1+x2)/2.0f));
-    msg.set_abs_float(m_axis_y, (y1+y2)/2.0f);
+    msg.set_abs_float(m_xaxis, -((x1+x2)/2.0f));
+    msg.set_abs_float(m_yaxis, (y1+y2)/2.0f);
   }
 }
 

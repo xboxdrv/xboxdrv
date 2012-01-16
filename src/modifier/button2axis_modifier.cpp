@@ -24,8 +24,7 @@
 #include "raise_exception.hpp"
 
 Button2AxisModifier*
-Button2AxisModifier::from_string(const std::vector<std::string>& args,
-                                 const ControllerMessageDescriptor& msg_desc)
+Button2AxisModifier::from_string(const std::vector<std::string>& args)
 {
   if (args.size() != 3)
   {
@@ -33,21 +32,28 @@ Button2AxisModifier::from_string(const std::vector<std::string>& args,
   }
   else
   {
-    int lhs_btn = msg_desc.get_key(args[0]);
-    int rhs_btn = msg_desc.get_key(args[1]);
-    int   axis    = msg_desc.get_abs(args[2]);
-
-    return new Button2AxisModifier(lhs_btn, rhs_btn, axis);
+    return new Button2AxisModifier(args[0], args[1], args[2]);
   }
 }
 
-Button2AxisModifier::Button2AxisModifier(int lhs_btn,
-                                         int rhs_btn,
-                                         int axis) :
-  m_lhs_btn(lhs_btn),
-  m_rhs_btn(rhs_btn),
-  m_axis(axis)
+Button2AxisModifier::Button2AxisModifier(const std::string& lhs_btn,
+                                         const std::string& rhs_btn,
+                                         const std::string& axis) :
+  m_lhs_btn_str(lhs_btn),
+  m_rhs_btn_str(rhs_btn),
+  m_axis_str(axis),
+  m_lhs_btn(-1),
+  m_rhs_btn(-1),
+  m_axis(-1)
 {  
+}
+
+void
+Button2AxisModifier::init(ControllerMessageDescriptor& desc)
+{
+  m_lhs_btn = desc.key().get(m_lhs_btn_str);
+  m_rhs_btn = desc.key().get(m_rhs_btn_str);
+  m_axis = desc.abs().get(m_axis_str);
 }
 
 void

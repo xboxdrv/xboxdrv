@@ -43,33 +43,33 @@ Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& msg_desc) 
   abs_lt(),
   abs_rt()
 {
-  btn_a = msg_desc.register_key("A");
-  btn_b = msg_desc.register_key("B");
-  btn_x = msg_desc.register_key("X");
-  btn_y = msg_desc.register_key("Y");
+  btn_a = msg_desc.key().put("A");
+  btn_b = msg_desc.key().put("B");
+  btn_x = msg_desc.key().put("X");
+  btn_y = msg_desc.key().put("Y");
 
-  btn_start = msg_desc.register_abs("Start");
-  btn_guide = msg_desc.register_abs("Guide");
-  btn_back  = msg_desc.register_abs("Back");
+  btn_start = msg_desc.key().put("Start");
+  btn_guide = msg_desc.key().put("Guide");
+  btn_back  = msg_desc.key().put("Back");
 
-  btn_lb = msg_desc.register_key("LB");
-  btn_rb = msg_desc.register_key("RB");
+  btn_lb = msg_desc.key().put("LB");
+  btn_rb = msg_desc.key().put("RB");
 
-  btn_thumb_l = msg_desc.register_abs("TL"); //, "ThumbL");
-  btn_thumb_r = msg_desc.register_abs("TR"); //, "ThumbR");
+  btn_thumb_l = msg_desc.key().put("TL"); //, "ThumbL");
+  btn_thumb_r = msg_desc.key().put("TR"); //, "ThumbR");
 
-  dpad_up    = msg_desc.register_abs("DU"); //, "DPAD_Up");
-  dpad_down  = msg_desc.register_abs("DD"); //, "DPAD_Down");
-  dpad_left  = msg_desc.register_abs("DL"); //, "DPAD_Left");
-  dpad_right = msg_desc.register_abs("DR"); //, "DPAD_Right");
+  dpad_up    = msg_desc.key().put("DU"); //, "DPAD_Up");
+  dpad_down  = msg_desc.key().put("DD"); //, "DPAD_Down");
+  dpad_left  = msg_desc.key().put("DL"); //, "DPAD_Left");
+  dpad_right = msg_desc.key().put("DR"); //, "DPAD_Right");
 
-  abs_x1 = msg_desc.register_abs("X1");
-  abs_y1 = msg_desc.register_abs("Y1");
-  abs_x2 = msg_desc.register_abs("X2");
-  abs_y2 = msg_desc.register_abs("Y2");
+  abs_x1 = msg_desc.abs().put("X1");
+  abs_y1 = msg_desc.abs().put("Y1");
+  abs_x2 = msg_desc.abs().put("X2");
+  abs_y2 = msg_desc.abs().put("Y2");
 
-  abs_lt = msg_desc.register_abs("LT");
-  abs_rt = msg_desc.register_abs("RT");
+  abs_lt = msg_desc.abs().put("LT");
+  abs_rt = msg_desc.abs().put("RT");
 }
 
 /* EOF */

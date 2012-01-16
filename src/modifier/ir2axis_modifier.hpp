@@ -28,16 +28,19 @@
 class IR2AxisModifier : public Modifier
 {
 public:
-  static IR2AxisModifier* from_string(const std::vector<std::string>& args,
-                                      const ControllerMessageDescriptor& msg_desc);
+  static IR2AxisModifier* from_string(const std::vector<std::string>& args);
 
 private:
-  int m_axis_x;
-  int m_axis_y;
+  const std::string m_xaxis_str;
+  const std::string m_yaxis_str;
+
+  int m_xaxis;
+  int m_yaxis;
 
 public:
-  IR2AxisModifier(int axis_x, int axis_y);
+  IR2AxisModifier(const std::string& xaxis, const std::string& yaxis);
 
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg);
   std::string str() const;
 

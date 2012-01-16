@@ -34,12 +34,12 @@ private:
   };
 
 public:
-  static DpadRestrictorModifier* from_string(const std::vector<std::string>& args,
-                                             const ControllerMessageDescriptor& msg_desc);
+  static DpadRestrictorModifier* from_string(const std::vector<std::string>& args);
 
 public:
   DpadRestrictorModifier(Mode mode);
 
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg);
   std::string str() const;
 

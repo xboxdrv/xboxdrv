@@ -27,8 +27,7 @@
 #include "raise_exception.hpp"
 
 StickZoneModifier*
-StickZoneModifier::from_string(const std::vector<std::string>& args,
-                               const ControllerMessageDescriptor& msg_desc)
+StickZoneModifier::from_string(const std::vector<std::string>& args)
 {
   if (args.size() != 5)
   {
@@ -36,22 +35,33 @@ StickZoneModifier::from_string(const std::vector<std::string>& args,
   }
   else
   {
-    return new StickZoneModifier(msg_desc.get_abs(args[0]),
-                                 msg_desc.get_abs(args[1]),
-                                 msg_desc.get_abs(args[2]),
+    return new StickZoneModifier(args[0], args[1], args[2],
                                  boost::lexical_cast<float>(args[3]),
                                  boost::lexical_cast<float>(args[4]));
   }
 }
 
-StickZoneModifier::StickZoneModifier(int x_axis, int y_axis, int button, 
+StickZoneModifier::StickZoneModifier(const std::string& x_axis, const std::string& y_axis, 
+                                     const std::string& button, 
                                      float range_start, float range_end) :
-  m_x_axis(x_axis),
-  m_y_axis(y_axis),
-  m_button(button),
+
+  m_x_axis_str(x_axis),
+  m_y_axis_str(y_axis),
+  m_button_str(button),
+  m_x_axis(-1),
+  m_y_axis(-1),
+  m_button(-1),
   m_range_start(range_start),
   m_range_end(range_end)
 {
+}
+
+void
+StickZoneModifier::init(ControllerMessageDescriptor& desc)
+{
+  m_x_axis = desc.abs().get(m_x_axis_str);
+  m_y_axis = desc.abs().get(m_y_axis_str);
+  m_button = desc.key().get(m_button_str);
 }
 
 void

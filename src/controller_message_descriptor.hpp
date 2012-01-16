@@ -22,6 +22,8 @@
 #include <map>
 #include <string>
 
+#include "symbol_table.hpp"
+
 class ControllerMessageDescriptor
 {
 private:
@@ -29,27 +31,24 @@ private:
   std::map<std::string, int> m_name2key;
   std::map<std::string, int> m_name2abs;
 
+  SymbolTable m_abs;
+  SymbolTable m_key;
+  SymbolTable m_rel;
+
 public:
   ControllerMessageDescriptor();
 
-  // registers a name and make it part of the ControllerMessage
-  int register_key(const std::string& name);
-  int register_abs(const std::string& name);
-  int register_rel(const std::string& name);
+  SymbolTable& abs() { return m_abs; }
+  SymbolTable& key() { return m_key; }
+  SymbolTable& rel() { return m_rel; }
 
-  // returns the id associated with the given name, non-existing names
-  // are a failure
-  int get_key(const std::string& name) const;
-  int get_abs(const std::string& name) const;
-  int get_rel(const std::string& name) const;
+  const SymbolTable& abs() const { return m_abs; }
+  const SymbolTable& key() const { return m_key; }
+  const SymbolTable& rel() const { return m_rel; }
 
   int get_key_count() const { return m_name2key.size(); }
   int get_abs_count() const { return m_name2abs.size(); }
   int get_rel_count() const { return m_name2rel.size(); }
-  
-private:
-  ControllerMessageDescriptor(const ControllerMessageDescriptor&);
-  ControllerMessageDescriptor& operator=(const ControllerMessageDescriptor&);
 };
 
 #endif

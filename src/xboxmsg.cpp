@@ -136,6 +136,9 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
     case GAMEPAD_LOGITECH_F310:
       return out << "Logitech F310";
 
+    case GAMEPAD_HAMA_CRUX:
+      return out << "Hama Crux Gaming Keyboard";
+
     case GAMEPAD_UNKNOWN:
       return out << "unknown";
   }

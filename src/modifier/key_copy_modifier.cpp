@@ -24,8 +24,7 @@
 #include "raise_exception.hpp"
 
 KeyCopyModifier*
-KeyCopyModifier::from_string(const std::vector<std::string>& args, 
-                             const ControllerMessageDescriptor& msg_desc)
+KeyCopyModifier::from_string(const std::vector<std::string>& args)
 {
   if (args.size() != 2)
   {
@@ -33,20 +32,29 @@ KeyCopyModifier::from_string(const std::vector<std::string>& args,
   }
   else
   {
-    return new KeyCopyModifier(str2key(args[0]), str2key(args[1]));
+    return new KeyCopyModifier(args[0], args[1]);
   }
 }
 
-KeyCopyModifier::KeyCopyModifier(int from, int to) :
+KeyCopyModifier::KeyCopyModifier(const std::string& from, const std::string& to) :
   m_from(from),
-  m_to(to)
+  m_to(to),
+  m_from_sym(-1),
+  m_to_sym(-1)
 {
+}
+
+void
+KeyCopyModifier::init(ControllerMessageDescriptor& desc)
+{
+  m_from_sym = desc.key().put(m_from);
+  m_to_sym   = desc.key().getput(m_to);
 }
   
 void
 KeyCopyModifier::update(int msec_delta, ControllerMessage& msg)
 {
-  msg.set_key(m_to, msg.get_key(m_from));
+  msg.set_key(m_to_sym, msg.get_key(m_from_sym));
 }
 
 std::string
@@ -54,8 +62,8 @@ KeyCopyModifier::str() const
 {
   std::ostringstream os;
   os << "key-copy:";
-  os << key2str(m_from) << ":";
-  os << key2str(m_to);
+  os << m_from << ":";
+  os << m_to;
   return os.str();
 }
 

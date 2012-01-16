@@ -26,17 +26,20 @@
 class SquareAxisModifier : public Modifier
 {
 public:
-  static SquareAxisModifier* from_string(const std::vector<std::string>& args,
-                                         const ControllerMessageDescriptor& msg_desc);
+  static SquareAxisModifier* from_string(const std::vector<std::string>& args);
 
 public:
-  SquareAxisModifier(int x_axis, int y_axis);
+  SquareAxisModifier(const std::string& x_axis, const std::string& y_axis);
 
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg);
 
   std::string str() const;
 
 private:
+  const std::string m_xaxis_str;
+  const std::string m_yaxis_str;
+
   int m_xaxis;
   int m_yaxis;
 };

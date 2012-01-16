@@ -29,7 +29,7 @@
 
 ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices, const ControllerOptions& opts) :
   m_modifier(),
-  m_uinput(uinput, slot, extra_devices, opts.uinput)
+  m_emitter(uinput, slot, extra_devices, opts.uinput)
 {
   // create modifier
   if (!opts.calibration_map.empty())
@@ -87,8 +87,8 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
 
   if (opts.square_axis)
   {
-    m_modifier.push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
-    m_modifier.push_back(ModifierPtr(new SquareAxisModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
+    m_modifier.push_back(ModifierPtr(new SquareAxisModifier("X1", "Y1")));
+    m_modifier.push_back(ModifierPtr(new SquareAxisModifier("X2", "Y2")));
   }
 
   if (!opts.sensitivity_map.empty())
@@ -106,8 +106,8 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
 
   if (opts.four_way_restrictor)
   {
-    m_modifier.push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X1, XBOX_AXIS_Y1)));
-    m_modifier.push_back(ModifierPtr(new FourWayRestrictorModifier(XBOX_AXIS_X2, XBOX_AXIS_Y2)));
+    m_modifier.push_back(ModifierPtr(new FourWayRestrictorModifier("X1", "Y1")));
+    m_modifier.push_back(ModifierPtr(new FourWayRestrictorModifier("X2", "Y2")));
   }
 
   if (!opts.relative_axis_map.empty())
@@ -128,11 +128,12 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
     m_modifier.push_back(ModifierPtr(new DpadRotationModifier(opts.dpad_rotation)));
   }
 
+#if 0
   if (!opts.autofire_map.empty())
   {
     boost::shared_ptr<ButtonmapModifier> buttonmap(new ButtonmapModifier);
 
-    for(std::map<XboxButton, ButtonFilterPtr>::const_iterator i = opts.autofire_map.begin();
+    for(std::map<std::string, ButtonFilterPtr>::const_iterator i = opts.autofire_map.begin();
         i != opts.autofire_map.end(); ++i)
     {
       buttonmap->add_filter(i->first, i->second); 
@@ -140,21 +141,22 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
 
     m_modifier.push_back(buttonmap);
   }
+#endif
 
   // axismap, buttonmap comes last, as otherwise they would mess up the button and axis names
   for(std::vector<ButtonMappingOption>::const_iterator i = opts.buttonmap.begin(); i != opts.buttonmap.end(); ++i)
   {
-    m_modifier.push_back(ModifierPtr(ButtonmapModifier::from_option(opts.buttonmap, ControllerMessageDescriptor()))); // BROKEN
+    m_modifier.push_back(ModifierPtr(ButtonmapModifier::from_option(opts.buttonmap)));
   }
 
   for(std::vector<AxisMappingOption>::const_iterator i = opts.axismap.begin(); i != opts.axismap.end(); ++i)
   {
-    m_modifier.push_back(ModifierPtr(AxismapModifier::from_option(opts.axismap, ControllerMessageDescriptor()))); // BROKEN
+    m_modifier.push_back(ModifierPtr(AxismapModifier::from_option(opts.axismap)));
   }
 
   for(std::vector<ModifierOption>::const_iterator i = opts.modifier.begin(); i != opts.modifier.end(); ++i)
   {
-    m_modifier.push_back(ModifierPtr(Modifier::from_string(i->lhs, i->rhs, ControllerMessageDescriptor()))); // BROKEN
+    m_modifier.push_back(ModifierPtr(Modifier::from_string(i->lhs, i->rhs)));
   }
 }
 
@@ -164,10 +166,10 @@ ControllerConfig::get_modifier()
   return m_modifier;
 }
 
-UInputConfig&
-ControllerConfig::get_uinput()
+EventEmitter&
+ControllerConfig::get_emitter()
 {
-  return m_uinput;
+  return m_emitter;
 }
 
 /* EOF */
