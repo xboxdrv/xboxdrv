@@ -23,6 +23,7 @@
 #include <string>
 
 #include "controller/usb_controller.hpp"
+#include "xbox360_default_names.hpp"
 
 struct ControllerMessage;
 struct XPadDevice;
@@ -34,6 +35,8 @@ private:
   int  m_interface;
   int  m_battery_status;
   std::string m_serial;
+
+  Xbox360DefaultNames xbox;
 
 public:
   Xbox360WirelessController(libusb_device* dev, int controller_id, bool try_detach);

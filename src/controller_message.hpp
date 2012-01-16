@@ -56,9 +56,6 @@ public:
   static int get_abs_min(int abs);
   static int get_abs_max(int abs);
 
-  void set_abs_min(int abs, int value);
-  void set_abs_max(int abs, int value);
-
   bool operator==(const ControllerMessage& rhs) const;
   bool operator!=(const ControllerMessage& rhs) const;
 };

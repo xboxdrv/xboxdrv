@@ -35,6 +35,7 @@
 #include "modifier/key_copy_modifier.hpp"
 #include "modifier/log_modifier.hpp"
 #include "modifier/rotate_axis_modifier.hpp"
+#include "modifier/sector2button_modifier.hpp"
 #include "modifier/split_axis_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 #include "modifier/statistic_modifier.hpp"
@@ -108,6 +109,10 @@ Modifier::from_string(const std::string& name, const std::string& value)
     else if (name == "join-axis" || name == "joinaxis")
     {
       return JoinAxisModifier::from_string(args);
+    }
+    else if (name == "sector2btn" || name == "sector2button")
+    {
+      return Sector2ButtonModifier::from_string(args);
     }
     else if (name == "copy")
     {

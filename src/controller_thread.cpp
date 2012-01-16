@@ -75,7 +75,7 @@ ControllerThread::on_message(const ControllerMessage& msg)
 {
   if (m_print_messages)
   {
-    format_generic(std::cout, msg, m_controller->get_message_descriptor()) << std::endl;
+    format_generic(std::cout, msg, m_processor->get_message_descriptor()) << std::endl;
   }
 
   m_oldrealmsg = msg;

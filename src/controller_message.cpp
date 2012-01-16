@@ -95,6 +95,7 @@ ControllerMessage::set_rel(int rel, int v)
 int
 ControllerMessage::get_abs_min(int axis)
 {
+#if 0
   switch(axis)
   {
     case XBOX_AXIS_X1: return -32768;
@@ -145,13 +146,15 @@ ControllerMessage::get_abs_min(int axis)
     case XBOX_AXIS_UNKNOWN: return 0;
     case XBOX_AXIS_MAX: return 0;
   }
+#endif
 
-  assert(!"never reached");
+  return -32768; // BROKEN
 }
 
 int
 ControllerMessage::get_abs_max(int abs)
 {
+#if 0
   switch(abs)
   {
     case XBOX_AXIS_X1: return 32767;
@@ -202,18 +205,8 @@ ControllerMessage::get_abs_max(int abs)
     case XBOX_AXIS_UNKNOWN: return 0;
     case XBOX_AXIS_MAX: return 0;
   }
-  
-  assert(!"never reached");
-}
-
-void
-ControllerMessage::set_abs_min(int axis, int value)
-{
-}
-
-void
-ControllerMessage::set_abs_max(int axis, int value)
-{
+#endif  
+  return 32767; // BROKEN
 }
 
 std::ostream& operator<<(std::ostream& out, const ControllerMessage& msg)
@@ -349,20 +342,15 @@ std::ostream& format_xbox(std::ostream& out, const ControllerMessage& msg)
 std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   out << "generic: ";
+  out << desc.get_key_count() << " ";
   for(int i = 0; i < desc.get_key_count(); ++i)
   {
-    if (msg.get_key(i))
-    {
-      out << desc.key().get(i) << " ";
-    }
+    out << desc.key().get(i) << ":" << msg.get_key(i) << " ";
   }
 
   for(int i = 0; i < desc.get_abs_count(); ++i)
   {
-    if (msg.get_abs(i))
-    {
-      out << i << " ";
-    }
+    out << desc.abs().get(i) << ":" << msg.get_abs(i) << " ";
   }
 
   for(int i = 0; i < desc.get_rel_count(); ++i)

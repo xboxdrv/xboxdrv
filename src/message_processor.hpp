@@ -51,6 +51,8 @@ public:
   void set_config(int num);
   ControllerSlotConfigPtr get_config() const { return m_config; }
 
+  const ControllerMessageDescriptor& get_message_descriptor() const { return m_desc; }
+
 private:
   MessageProcessor(const MessageProcessor&);
   MessageProcessor& operator=(const MessageProcessor&);

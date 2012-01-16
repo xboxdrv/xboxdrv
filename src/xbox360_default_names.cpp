@@ -43,33 +43,33 @@ Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& msg_desc) 
   abs_lt(),
   abs_rt()
 {
-  btn_a = msg_desc.key().put("A");
-  btn_b = msg_desc.key().put("B");
-  btn_x = msg_desc.key().put("X");
-  btn_y = msg_desc.key().put("Y");
+  btn_a = msg_desc.key().put("a");
+  btn_b = msg_desc.key().put("b");
+  btn_x = msg_desc.key().put("x");
+  btn_y = msg_desc.key().put("y");
 
-  btn_start = msg_desc.key().put("Start");
-  btn_guide = msg_desc.key().put("Guide");
-  btn_back  = msg_desc.key().put("Back");
+  btn_start = msg_desc.key().put("start");
+  btn_guide = msg_desc.key().put("guide");
+  btn_back  = msg_desc.key().put("back");
 
-  btn_lb = msg_desc.key().put("LB");
-  btn_rb = msg_desc.key().put("RB");
+  btn_lb = msg_desc.key().put("lb");
+  btn_rb = msg_desc.key().put("rb");
 
-  btn_thumb_l = msg_desc.key().put("TL"); //, "ThumbL");
-  btn_thumb_r = msg_desc.key().put("TR"); //, "ThumbR");
+  btn_thumb_l = msg_desc.key().put("tl"); //, "thumbl");
+  btn_thumb_r = msg_desc.key().put("tr"); //, "thumbr");
 
-  dpad_up    = msg_desc.key().put("DU"); //, "DPAD_Up");
-  dpad_down  = msg_desc.key().put("DD"); //, "DPAD_Down");
-  dpad_left  = msg_desc.key().put("DL"); //, "DPAD_Left");
-  dpad_right = msg_desc.key().put("DR"); //, "DPAD_Right");
+  dpad_up    = msg_desc.key().put("du"); //, "dpad_up");
+  dpad_down  = msg_desc.key().put("dd"); //, "dpad_down");
+  dpad_left  = msg_desc.key().put("dl"); //, "dpad_left");
+  dpad_right = msg_desc.key().put("dr"); //, "dpad_right");
 
-  abs_x1 = msg_desc.abs().put("X1");
-  abs_y1 = msg_desc.abs().put("Y1");
-  abs_x2 = msg_desc.abs().put("X2");
-  abs_y2 = msg_desc.abs().put("Y2");
+  abs_x1 = msg_desc.abs().put("x1");
+  abs_y1 = msg_desc.abs().put("y1");
+  abs_x2 = msg_desc.abs().put("x2");
+  abs_y2 = msg_desc.abs().put("y2");
 
-  abs_lt = msg_desc.abs().put("LT");
-  abs_rt = msg_desc.abs().put("RT");
+  abs_lt = msg_desc.abs().put("lt");
+  abs_rt = msg_desc.abs().put("rt");
 }
 
 /* EOF */
