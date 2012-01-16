@@ -29,7 +29,38 @@
 #include "uinput.hpp"
 
 MacroButtonEventHandler*
-MacroButtonEventHandler::from_string(const std::string& filename)
+MacroButtonEventHandler::from_string(const std::string& str)
+{
+  std::vector<MacroEvent> events;
+  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+  {
+    { // push
+      MacroEvent event;
+      event.type  = MacroEvent::kSendOp;
+      event.send.event = UIEvent::from_char(*i);
+      event.send.value = 1;
+      events.push_back(event);
+    }
+    { // wait
+      MacroEvent event;
+      event.type  = MacroEvent::kWaitOp;
+      event.wait.msec = 20;
+      events.push_back(event);
+    }
+    { // release
+      MacroEvent event;
+      event.type  = MacroEvent::kSendOp;
+      event.send.event = UIEvent::from_char(*i);
+      event.send.value = 0;
+      events.push_back(event);
+    }
+  }
+  log_tmp("events: " << events.size());
+  return new MacroButtonEventHandler(events);
+}
+
+MacroButtonEventHandler*
+MacroButtonEventHandler::from_file(const std::string& filename)
 {
   std::vector<MacroEvent> events;
 

@@ -40,6 +40,7 @@ class UIEvent
 public:
   static UIEvent create(uint16_t device_id, int type, int code);
   static UIEvent from_string(const std::string& str);
+  static UIEvent from_char(char c);
   static UIEvent invalid();
 
 public:

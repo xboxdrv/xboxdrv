@@ -49,7 +49,8 @@ private:
   };
 
 public:
-  static MacroButtonEventHandler* from_string(const std::string& filename);
+  static MacroButtonEventHandler* from_file(const std::string& filename);
+  static MacroButtonEventHandler* from_string(const std::string& str);
 
 public:
   MacroButtonEventHandler(const std::vector<MacroEvent>& events);

@@ -117,7 +117,11 @@ ButtonEventFactory::from_string(const std::string& str, const std::string& direc
   }
   else if (token == "macro")
   {
-    return create(MacroButtonEventHandler::from_string(path::join(directory, rest)));
+    return create(MacroButtonEventHandler::from_file(path::join(directory, rest)));
+  }
+  else if (token == "qmacro")
+  {
+    return create(MacroButtonEventHandler::from_string(rest));
   }
   else
   {
