@@ -21,11 +21,12 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 class SymbolTable
 {
 private:
-  std::map<int, std::string> m_int2name;
+  std::vector<std::string> m_int2name;
   std::map<std::string, int> m_name2int;
 
 public:
@@ -48,6 +49,8 @@ public:
 
   /** Returns the id of the given name, throws on lookup failure */
   int get(const std::string& name) const;
+
+  std::string get(int v) const;
 
   int size() const { return m_int2name.size(); }
 };

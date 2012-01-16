@@ -19,6 +19,7 @@
 #include "symbol_table.hpp"
 
 #include <stdexcept>
+#include <iostream>
 
 #include "raise_exception.hpp"
 
@@ -31,8 +32,9 @@ SymbolTable::SymbolTable() :
 int 
 SymbolTable::put(const std::string& name)
 {
+  //std::cout << "SymbolTable::put(" << name << ")" << std::endl;
   int symbol = m_int2name.size();
-  m_int2name[symbol] = name;
+  m_int2name.push_back(name);
   m_name2int[name] = symbol;
   return symbol;
 }
@@ -42,7 +44,7 @@ SymbolTable::put(const std::string& name,
                  const std::string& alias1)
 {
   int symbol = m_int2name.size();
-  m_int2name[symbol] = name;
+  m_int2name.push_back(name);
   m_name2int[name] = symbol;
   m_name2int[alias1] = symbol;
   return symbol;
@@ -54,7 +56,7 @@ SymbolTable::put(const std::string& name,
                  const std::string& alias2)
 {
   int symbol = m_int2name.size();
-  m_int2name[symbol] = name;
+  m_int2name.push_back(name);
   m_name2int[name] = symbol;
   m_name2int[alias1] = symbol;
   m_name2int[alias2] = symbol;
@@ -68,7 +70,7 @@ SymbolTable::put(const std::string& name,
                  const std::string& alias3)
 {
   int symbol = m_int2name.size();
-  m_int2name[symbol] = name;
+  m_int2name.push_back(name);
   m_name2int[name] = symbol;
   m_name2int[alias1] = symbol;
   m_name2int[alias2] = symbol;
@@ -102,6 +104,12 @@ SymbolTable::get(const std::string& name) const
   {
     return it->second;
   }
+}
+
+std::string
+SymbolTable::get(int v) const
+{
+  return m_int2name.at(v);
 }
 
 /* EOF */

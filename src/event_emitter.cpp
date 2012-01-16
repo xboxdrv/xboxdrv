@@ -27,29 +27,34 @@ EventEmitter::EventEmitter(UInput& uinput, int slot, bool extra_devices, const U
   m_uinput(uinput),
   m_btn_map(),
   m_axis_map(opts.get_axis_map()),
+  axis_state(),
   m_button_state(),
   m_last_button_state()
 {
-  std::fill_n(axis_state, static_cast<int>(XBOX_AXIS_MAX), 0);
+  std::fill(axis_state.begin(), axis_state.end(), 0);
   m_axis_map.init(uinput, slot, extra_devices);
   
   m_btn_map.init(opts.get_btn_map(), uinput, slot, extra_devices);
 }
 
 void
+EventEmitter::init(const ControllerMessageDescriptor& desc)
+{
+  std::cout << "EventEmitter::init(const ControllerMessageDescriptor& desc)" << std::endl;
+  m_btn_map.init(desc);
+  m_axis_map.init(desc);
+}
+
+void
 EventEmitter::send(const ControllerMessage& msg)
 {
   m_last_button_state = m_button_state;
- 
-  for(int btn = 1; btn < XBOX_BTN_MAX; ++btn)
-  {
-    m_button_state[btn] = msg.get_key(static_cast<XboxButton>(btn));
-  }
+  m_button_state = msg.get_key_state();
   m_btn_map.send(m_uinput, m_button_state);
 
-  for(int axis = 1; axis < XBOX_AXIS_MAX; ++axis)
+  for(size_t axis = 0; axis < axis_state.size(); ++axis)
   {
-    send_axis(static_cast<XboxAxis>(axis), msg.get_abs(static_cast<XboxAxis>(axis)));
+    send_axis(axis, msg.get_abs(axis));
   }
 
   m_uinput.sync();
@@ -75,14 +80,14 @@ EventEmitter::reset_all_outputs()
   // FIXME: incorrect, due to the effect of filter
   for(int axis = 1; axis < XBOX_AXIS_MAX; ++axis)
   {
-    send_axis(static_cast<XboxAxis>(axis), 0);
+    send_axis(axis, 0);
   }
 
   m_uinput.sync();
 }
 
 void
-EventEmitter::send_axis(XboxAxis code, int32_t value)
+EventEmitter::send_axis(int code, int32_t value)
 {
   AxisEventPtr ev = m_axis_map.lookup(code);
   AxisEventPtr last_ev = ev;
@@ -92,7 +97,7 @@ EventEmitter::send_axis(XboxAxis code, int32_t value)
   {
     if (m_button_state[shift])
     {
-      AxisEventPtr new_ev = m_axis_map.lookup(static_cast<XboxButton>(shift), code);
+      AxisEventPtr new_ev = m_axis_map.lookup(shift, code);
       if (new_ev)
       {
         ev = new_ev;
@@ -106,7 +111,7 @@ EventEmitter::send_axis(XboxAxis code, int32_t value)
   {    
     if (m_last_button_state[shift])
     {
-      AxisEventPtr new_ev = m_axis_map.lookup(static_cast<XboxButton>(shift), code);
+      AxisEventPtr new_ev = m_axis_map.lookup(shift, code);
       if (new_ev)
       {
         last_ev = new_ev;

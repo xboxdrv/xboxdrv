@@ -30,9 +30,9 @@ class ControllerMessageDescriptor;
 class ControllerMessage
 {
 private:
-  boost::array<int, 255> m_abs_state;
-  boost::array<int, 255> m_rel_state;
-  std::bitset<255>       m_key_state;
+  boost::array<int, 256> m_abs_state;
+  boost::array<int, 256> m_rel_state;
+  std::bitset<256>       m_key_state;
 
 public:
   ControllerMessage();
@@ -41,6 +41,8 @@ public:
 
   bool get_key(int key) const;
   void set_key(int key, bool v);
+
+  const std::bitset<256>& get_key_state() const { return m_key_state; }
 
   int  get_abs(int abs) const;
   void set_abs(int abs, int v);

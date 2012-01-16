@@ -23,9 +23,6 @@
 #include "raise_exception.hpp"
 
 ControllerMessageDescriptor::ControllerMessageDescriptor() :
-  m_name2rel(),
-  m_name2key(),
-  m_name2abs(),
   m_abs(),
   m_key(),
   m_rel()

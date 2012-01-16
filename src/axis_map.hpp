@@ -19,22 +19,27 @@
 #ifndef HEADER_XBOXDRV_AXIS_MAP_HPP
 #define HEADER_XBOXDRV_AXIS_MAP_HPP
 
+#include <boost/array.hpp>
+
 #include "axis_event.hpp"
-#include "xboxmsg.hpp"
+
+class ControllerMessageDescriptor;
 
 class AxisMap
 {
 private:
-  AxisEventPtr m_axis_map[XBOX_BTN_MAX][XBOX_AXIS_MAX];
+  boost::array<boost::array<AxisEventPtr, 256>, 256> m_axis_map;
   
 public:
   AxisMap();
 
-  void bind(XboxAxis code, AxisEventPtr event);
-  void bind(XboxButton shift_code, XboxAxis code, AxisEventPtr event);
+  void init(const ControllerMessageDescriptor& desc);
 
-  AxisEventPtr lookup(XboxAxis code) const;
-  AxisEventPtr lookup(XboxButton shift_code, XboxAxis code) const;
+  void bind(int code, AxisEventPtr event);
+  void bind(int shift_code, int code, AxisEventPtr event);
+
+  AxisEventPtr lookup(int code) const;
+  AxisEventPtr lookup(int shift_code, int code) const;
 
   void clear();
 

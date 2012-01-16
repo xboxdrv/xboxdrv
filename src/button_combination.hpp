@@ -25,6 +25,8 @@
 
 #include "xboxmsg.hpp"
 
+class ControllerMessageDescriptor;
+
 class ButtonCombination
 {
 public:
@@ -32,27 +34,33 @@ public:
 
 public:
   ButtonCombination();
-  ButtonCombination(XboxButton button);
-  ButtonCombination(const std::vector<XboxButton>& buttons);
+  ButtonCombination(const std::string& button);
+  ButtonCombination(const std::vector<std::string>& buttons);
 
-  bool has_button(XboxButton button) const;
+  void init(const ControllerMessageDescriptor& desc);
+
+  bool match(const std::bitset<256>& button_state) const;
+
+  void print(std::ostream& os) const;
 
   /** Check if all buttons of \a this are also part of \a rhs. If
       ButtonCombination is empty, always returns false */
   bool is_subset_of(const ButtonCombination& rhs) const;
 
-  int size() const;
-
-  bool match(const std::bitset<XBOX_BTN_MAX>& button_state) const;
-
-  void print(std::ostream& os) const;
-
-  bool empty() const;
   bool operator==(const ButtonCombination&) const;
 
 private:
-  typedef std::vector<XboxButton> Buttons;
-  Buttons m_buttons;
+  bool has_button(const std::string& button) const;
+
+  int size() const;
+
+  bool empty() const;
+
+private:
+  typedef std::vector<std::string> ButtonsStr;
+  typedef std::vector<int> Buttons;
+  ButtonsStr m_buttons_str;
+  Buttons    m_buttons;
 };
 
 std::ostream& operator<<(std::ostream& os, const ButtonCombination& buttons);

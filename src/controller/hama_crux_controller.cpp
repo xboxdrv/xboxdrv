@@ -18,59 +18,61 @@
 
 #include "controller/hama_crux_controller.hpp"
 
+#include <iostream>
+
 #include "log.hpp"
 #include "helper.hpp"
 
 HamaCruxNames::HamaCruxNames(ControllerMessageDescriptor& desc) :
-  crouch(desc.key().put("Crouch")),
-  run(desc.key().put("Run")),
-  talk(desc.key().put("Talk")),
+  crouch(desc.key().put("crouch")),
+  run(desc.key().put("run")),
+  talk(desc.key().put("talk")),
   
-  esc(desc.key().put("Escape")),
-  pause(desc.key().put("Pause")),
-  option(desc.key().put("Option")),
+  esc(desc.key().put("escape")),
+  pause(desc.key().put("pause")),
+  option(desc.key().put("option")),
  
-  quickload(desc.key().put("Quickload")),
-  quicksave(desc.key().put("Quicksave")),
-  print(desc.key().put("Print")),
+  quickload(desc.key().put("quickload")),
+  quicksave(desc.key().put("quicksave")),
+  print(desc.key().put("print")),
 
-  n1(desc.key().put("N1")),
-  n2(desc.key().put("N2")),
-  n3(desc.key().put("N3")),
-  n4(desc.key().put("N4")),
-  n5(desc.key().put("N5")),
-  n6(desc.key().put("N6")),
+  n1(desc.key().put("n1")),
+  n2(desc.key().put("n2")),
+  n3(desc.key().put("n3")),
+  n4(desc.key().put("n4")),
+  n5(desc.key().put("n5")),
+  n6(desc.key().put("n6")),
 
-  n7(desc.key().put("N7")),
-  n8(desc.key().put("N8")),
-  n9(desc.key().put("N9")),
-  n10(desc.key().put("N10")),
-  n11(desc.key().put("N11")),
+  n7(desc.key().put("n7")),
+  n8(desc.key().put("n8")),
+  n9(desc.key().put("n9")),
+  n10(desc.key().put("n10")),
+  n11(desc.key().put("n11")),
 
-  up(desc.key().put("Up")),
-  down(desc.key().put("Down")),
-  left(desc.key().put("Left")),
-  right(desc.key().put("Right")),
-  q(desc.key().put("Q")),
-  e(desc.key().put("E")),
+  up(desc.key().put("up")),
+  down(desc.key().put("down")),
+  left(desc.key().put("left")),
+  right(desc.key().put("right")),
+  q(desc.key().put("q")),
+  e(desc.key().put("e")),
 
-  c1(desc.key().put("C1")),
-  tab(desc.key().put("Tab")),
-  c2(desc.key().put("C2")),
-  c3(desc.key().put("C3")),
-  c4(desc.key().put("C4")),
-  reload(desc.key().put("Reload")),
-  use(desc.key().put("Use")),
-  c8(desc.key().put("C8")),
-  p2(desc.key().put("P2")),
-  n(desc.key().put("N")),
+  c1(desc.key().put("c1")),
+  tab(desc.key().put("tab")),
+  c2(desc.key().put("c2")),
+  c3(desc.key().put("c3")),
+  c4(desc.key().put("c4")),
+  reload(desc.key().put("reload")),
+  use(desc.key().put("use")),
+  c8(desc.key().put("c8")),
+  p2(desc.key().put("p2")),
+  n(desc.key().put("n")),
 
-  c5(desc.key().put("C5")),
-  c6(desc.key().put("C6")),
-  c7(desc.key().put("C7")),
-  p1(desc.key().put("P1")),
-  space(desc.key().put("Space"))
-{  
+  c5(desc.key().put("c5")),
+  c6(desc.key().put("c6")),
+  c7(desc.key().put("c7")),
+  p1(desc.key().put("p1")),
+  space(desc.key().put("space"))
+{
 }
 
 HamaCruxController::HamaCruxController(libusb_device* dev, bool try_detach) :

@@ -47,6 +47,9 @@ MessageProcessor::init(const ControllerMessageDescriptor& desc)
   {
     (*i)->init(m_desc);
   }
+
+  // BROKEN: must do this for config, not just the current one
+  m_config->get_config()->get_emitter().init(desc);
 }
 
 void

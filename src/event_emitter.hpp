@@ -39,20 +39,21 @@ private:
   ButtonMap m_btn_map;
   AxisMap   m_axis_map;
 
-  int  axis_state[XBOX_AXIS_MAX];
-  std::bitset<XBOX_BTN_MAX> m_button_state;
-  std::bitset<XBOX_BTN_MAX> m_last_button_state;
+  boost::array<int, 256> axis_state;
+  std::bitset<256> m_button_state;
+  std::bitset<256> m_last_button_state;
 
 public:
   EventEmitter(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);
 
+  void init(const ControllerMessageDescriptor& desc);
   void send(const ControllerMessage& msg); 
   void update(int msec_delta);
 
   void reset_all_outputs();
 
 private:
-  void send_axis(XboxAxis code, int32_t value);
+  void send_axis(int code, int32_t value);
 
 private:
   EventEmitter(const EventEmitter&);

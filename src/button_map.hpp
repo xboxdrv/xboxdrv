@@ -25,7 +25,6 @@
 
 #include "button_event.hpp"
 #include "button_combination.hpp"
-#include "xboxmsg.hpp"
 #include "button_map_option.hpp"
 
 class ButtonMap
@@ -57,13 +56,15 @@ private:
 public:
   ButtonMap();
 
+  void init(const ControllerMessageDescriptor& desc);
+
   /** Bind a combination of multiple buttons to an event (i.e. "LB+A=KEY_A") */
   void bind(const ButtonCombination& buttons, ButtonEventPtr event);
 
   ButtonEventPtr lookup(const ButtonCombination& buttons) const;
 
   void init(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, const std::bitset<XBOX_BTN_MAX>& button_state);
+  void send(UInput& uinput, const std::bitset<256>& button_state);
   void send_clear(UInput& uinput);
   void update(UInput& uinput, int msec_delta);
 

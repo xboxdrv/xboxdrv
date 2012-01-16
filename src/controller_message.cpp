@@ -353,7 +353,7 @@ std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, co
   {
     if (msg.get_key(i))
     {
-      out << i << " ";
+      out << desc.key().get(i) << " ";
     }
   }
 

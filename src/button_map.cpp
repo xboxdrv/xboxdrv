@@ -18,6 +18,8 @@
 
 #include "button_map.hpp"
 
+#include <iostream>
+
 #include "button_event_factory.hpp"
 
 ButtonMap::ButtonMap() :
@@ -26,12 +28,34 @@ ButtonMap::ButtonMap() :
 }
 
 void
+ButtonMap::init(const ControllerMessageDescriptor& desc)
+{
+  std::cout << "ButtonMap::init(const ControllerMessageDescriptor& desc): " << m_mappings.size() << std::endl;
+  for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
+  {
+    i->m_buttons.init(desc);
+
+    // FIXME: double init is not very pretty
+    for(std::vector<ButtonCombination>::iterator j = i->m_supersets.begin(); j != i->m_supersets.end(); ++j)
+    {
+      j->init(desc);
+    }
+
+    std::cout << "Buttons: ";
+    i->m_buttons.print(std::cout);
+    std::cout << std::endl;
+  }
+}
+
+void
 ButtonMap::bind(const ButtonCombination& buttons, ButtonEventPtr event)
 {
+  buttons.print(std::cout);
+
   // FIXME: binding the same combo twice might lead to problems
   Mapping mapping(buttons, event);
 
-  // find of which already bound combinations the new one is a
+  // find which already bound combinations the new one is a
   // superset of and add it to the list
   for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
   {
@@ -112,12 +136,17 @@ ButtonMap::init(const ButtonMapOptions& opts, UInput& uinput, int slot, bool ext
 }
 
 void
-ButtonMap::send(UInput& uinput, const std::bitset<XBOX_BTN_MAX>& button_state)
+ButtonMap::send(UInput& uinput, const std::bitset<256>& button_state)
 {
+  //std::cout << "ButtonMap::send" << std::endl;
   for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
   {
     if (i->m_buttons.match(button_state))
     {
+      //std::cout << "  match: ";
+      //i->m_buttons.print(std::cout);
+      //std::cout << std::endl;
+
       // check if a superset matches
       bool superset_matches = false;
       for(std::vector<ButtonCombination>::iterator j = i->m_supersets.begin(); j != i->m_supersets.end(); ++j)
@@ -127,8 +156,8 @@ ButtonMap::send(UInput& uinput, const std::bitset<XBOX_BTN_MAX>& button_state)
           superset_matches = true;
           break;
         }
-      }
-      
+      }     
+
       if (superset_matches)
       {
         i->m_event->send(uinput, false);

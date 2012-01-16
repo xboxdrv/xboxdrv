@@ -46,6 +46,7 @@ ControllerThread::ControllerThread(ControllerPtr controller,
   if (m_processor.get())
   {
     m_processor->set_ff_callback(boost::bind(&Controller::set_rumble, m_controller.get(), _1, _2));
+    m_processor->init(m_controller->get_message_descriptor());
   }
 }
 

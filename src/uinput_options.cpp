@@ -179,9 +179,10 @@ UInputOptions::set_defaults()
 void
 UInputOptions::trigger_as_button()
 {
+#if 0
   get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
   get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::invalid());
-#if 0
+
   get_btn_map().bind(XBOX_BTN_LT, ButtonEventFactory::create_key(BTN_TL2));
   get_btn_map().bind(XBOX_BTN_RT, ButtonEventFactory::create_key(BTN_TR2));
 #endif
@@ -190,9 +191,11 @@ UInputOptions::trigger_as_button()
 void
 UInputOptions::trigger_as_zaxis()
 {
+#if 0
   get_axis_map().bind(XBOX_AXIS_TRIGGER, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0));
   get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
   get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::invalid());
+#endif
 }
 
 void
@@ -212,6 +215,7 @@ UInputOptions::dpad_as_button()
 void
 UInputOptions::dpad_only()
 {
+#if 0
   get_axis_map().bind(XBOX_AXIS_X1, AxisEvent::invalid());
   get_axis_map().bind(XBOX_AXIS_Y1, AxisEvent::invalid());
   get_axis_map().bind(XBOX_AXIS_X2, AxisEvent::invalid());
@@ -219,6 +223,7 @@ UInputOptions::dpad_only()
 
   get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -1, 1, 0, 0));
   get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -1, 1, 0, 0));
+#endif
 }
 
 void

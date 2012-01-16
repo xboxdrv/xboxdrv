@@ -27,10 +27,6 @@
 class ControllerMessageDescriptor
 {
 private:
-  std::map<std::string, int> m_name2rel;
-  std::map<std::string, int> m_name2key;
-  std::map<std::string, int> m_name2abs;
-
   SymbolTable m_abs;
   SymbolTable m_key;
   SymbolTable m_rel;
@@ -46,9 +42,9 @@ public:
   const SymbolTable& key() const { return m_key; }
   const SymbolTable& rel() const { return m_rel; }
 
-  int get_key_count() const { return m_name2key.size(); }
-  int get_abs_count() const { return m_name2abs.size(); }
-  int get_rel_count() const { return m_name2rel.size(); }
+  int get_key_count() const { return m_key.size(); }
+  int get_abs_count() const { return m_abs.size(); }
+  int get_rel_count() const { return m_rel.size(); }
 };
 
 #endif
