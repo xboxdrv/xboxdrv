@@ -43,6 +43,7 @@ public:
   void set_key(int key, bool v);
 
   const std::bitset<256>& get_key_state() const { return m_key_state; }
+  const boost::array<int, 256>& get_abs_state() const { return m_abs_state; }
 
   int  get_abs(int abs) const;
   void set_abs(int abs, int v);

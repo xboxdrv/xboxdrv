@@ -34,6 +34,7 @@
 #include "raise_exception.hpp"
 #include "ui_event.hpp"
 
+#include "axis_map_option.hpp"
 #include "button_event_factory.hpp"
 #include "button_map_option.hpp"
 
@@ -1104,63 +1105,31 @@ CommandLineParser::set_ui_axismap(const std::string& name, const std::string& va
 }
 
 void
-CommandLineParser::set_ui_axismap(AxisMap& axis_map, const std::string& name, const std::string& value)
+CommandLineParser::set_ui_axismap(AxisMapOptions& axis_map, const std::string& name, const std::string& value)
 {
-  AxisEventPtr event;
-
-  XboxButton shift = XBOX_BTN_UNKNOWN;
-  XboxAxis   axis  = XBOX_AXIS_UNKNOWN;
-  std::vector<AxisFilterPtr> filters;
-
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  std::vector<std::string> lst(tokens.begin(), tokens.end());
+
+  // boost::tokenizer doesn't return any tokens on an empty string, so
+  // add an empty token to the list to make the interpretation work
+  // properly
+  if (lst.empty())
+  {
+    lst.push_back(std::string());
+  }
+
   int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  for(std::vector<std::string>::iterator t = lst.begin(); t != lst.end(); ++t, ++idx)
   {
     switch(idx)
     { 
       case 0: // shift+key portion
-        {
-          std::string::size_type j = t->find('+');
-          if (j == std::string::npos)
-          {
-            shift = XBOX_BTN_UNKNOWN;
-            axis  = string2axis(*t);
-          }
-          else
-          {
-            shift = string2btn(t->substr(0, j));
-            axis  = string2axis(t->substr(j+1));
-          }
-          
-          if (value.empty())
-          { // if no rhs value is given, add filters to the current binding
-            event = axis_map.lookup(shift, axis);
-          }
-          else
-          {
-            event = AxisEvent::from_string(value);
-            if (event)
-            {
-              if (axis != XBOX_AXIS_UNKNOWN)
-              {
-                event->set_axis_range(ControllerMessage::get_abs_min(axis),
-                                      ControllerMessage::get_abs_max(axis));
-              }
-
-              axis_map.bind(shift, axis, event);
-            }
-          }
-        }
+        axis_map.push_back(AxisMapOption(*t, value));
         break;
 
       default:
-        { // filter
-          if (event)
-          {
-            event->add_filter(AxisFilter::from_string(*t));
-          }
-        }
+        axis_map.back().add_filter(*t);
         break;
     }
   }

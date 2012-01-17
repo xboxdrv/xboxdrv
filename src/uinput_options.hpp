@@ -25,8 +25,8 @@
 class UInputOptions
 {
 private:
-  std::vector<ButtonMapOption> m_btn_map;
-  AxisMap   m_axis_map;
+  ButtonMapOptions m_btn_map;
+  AxisMapOptions   m_axis_map;
   
 public:
   /** \addtogroup creation Creation Functions
@@ -48,11 +48,11 @@ public:
 
   /** \addtogroup access Access Functions
    ** @{*/
-  std::vector<ButtonMapOption>& get_btn_map();
-  AxisMap&   get_axis_map();
+  ButtonMapOptions& get_btn_map();
+  AxisMapOptions&   get_axis_map();
 
-  const std::vector<ButtonMapOption>& get_btn_map() const;
-  const AxisMap&   get_axis_map() const;
+  const ButtonMapOptions& get_btn_map() const;
+  const AxisMapOptions&   get_axis_map() const;
   /** @}*/
 };
 

@@ -22,28 +22,31 @@
 #include <boost/array.hpp>
 
 #include "axis_event.hpp"
+#include "axis_map_option.hpp"
+#include "button_combination_map.hpp"
 
 class ControllerMessageDescriptor;
 
 class AxisMap
 {
 private:
-  boost::array<boost::array<AxisEventPtr, 256>, 256> m_axis_map;
-  
+  typedef boost::array<ButtonCombinationMap<AxisEventPtr>, 256> AxisMapping;
+  AxisMapping m_axis_map;
+
 public:
   AxisMap();
 
+  void init(const AxisMapOptions& opts, UInput& uinput, int slot, bool extra_devices);
   void init(const ControllerMessageDescriptor& desc);
 
-  void bind(int code, AxisEventPtr event);
-  void bind(int shift_code, int code, AxisEventPtr event);
-
-  AxisEventPtr lookup(int code) const;
-  AxisEventPtr lookup(int shift_code, int code) const;
-
-  void clear();
+  void bind(AxisEventPtr event);
+  void bind(const ButtonCombination& combo, AxisEventPtr event);
 
   void init(UInput& uinput, int slot, bool extra_devices) const;
+  void send(UInput& uinput, 
+            const std::bitset<256>& button_state,
+            const boost::array<int, 256>& axis_state);
+  void send_clear(UInput& uinput);
   void update(UInput& uinput, int msec_delta);
 };
 

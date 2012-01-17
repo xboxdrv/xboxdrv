@@ -26,7 +26,7 @@
 EventEmitter::EventEmitter(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
   m_btn_map(),
-  m_axis_map(opts.get_axis_map()),
+  m_axis_map(),
   axis_state(),
   m_button_state(),
   m_last_button_state()
@@ -34,6 +34,7 @@ EventEmitter::EventEmitter(UInput& uinput, int slot, bool extra_devices, const U
   std::fill(axis_state.begin(), axis_state.end(), 0);
   m_axis_map.init(uinput, slot, extra_devices);
   
+  m_axis_map.init(opts.get_axis_map(), uinput, slot, extra_devices);
   m_btn_map.init(opts.get_btn_map(), uinput, slot, extra_devices);
 }
 
@@ -50,12 +51,9 @@ EventEmitter::send(const ControllerMessage& msg)
 {
   m_last_button_state = m_button_state;
   m_button_state = msg.get_key_state();
-  m_btn_map.send(m_uinput, m_button_state);
 
-  for(size_t axis = 0; axis < axis_state.size(); ++axis)
-  {
-    send_axis(axis, msg.get_abs(axis));
-  }
+  m_btn_map.send(m_uinput, m_button_state);
+  m_axis_map.send(m_uinput, m_button_state, msg.get_abs_state());
 
   m_uinput.sync();
 }
@@ -75,68 +73,10 @@ EventEmitter::reset_all_outputs()
   m_last_button_state.reset();
   m_button_state.reset();
 
+  m_axis_map.send_clear(m_uinput);
   m_btn_map.send_clear(m_uinput);
 
-  // FIXME: incorrect, due to the effect of filter
-  for(int axis = 1; axis < XBOX_AXIS_MAX; ++axis)
-  {
-    send_axis(axis, 0);
-  }
-
   m_uinput.sync();
-}
-
-void
-EventEmitter::send_axis(int code, int32_t value)
-{
-  AxisEventPtr ev = m_axis_map.lookup(code);
-  AxisEventPtr last_ev = ev;
-
-  // find the curren AxisEvent bound to current axis code
-  for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
-  {
-    if (m_button_state[shift])
-    {
-      AxisEventPtr new_ev = m_axis_map.lookup(shift, code);
-      if (new_ev)
-      {
-        ev = new_ev;
-        break;
-      }
-    }
-  }
-  
-  // find the last AxisEvent bound to current axis code
-  for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
-  {    
-    if (m_last_button_state[shift])
-    {
-      AxisEventPtr new_ev = m_axis_map.lookup(shift, code);
-      if (new_ev)
-      {
-        last_ev = new_ev;
-      }
-      break;
-    }
-  }
-
-  if (last_ev != ev)
-  {
-    // a shift key was released
-    if (last_ev) last_ev->send(m_uinput, 0);
-    if (ev) ev->send(m_uinput, value);
-  }
-  else
-  {
-    // no shift was touched, so only send events when the value changed
-    if (axis_state[code] != value)
-    {
-      if (ev) ev->send(m_uinput, value);
-    }
-  }
-
-  // save current value
-  axis_state[code] = value;
 }
 
 /* EOF */

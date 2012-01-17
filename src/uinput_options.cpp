@@ -36,7 +36,7 @@ UInputOptions::get_btn_map()
   return m_btn_map;
 }
 
-AxisMap& 
+AxisMapOptions&
 UInputOptions::get_axis_map()
 {
   return m_axis_map;
@@ -48,7 +48,7 @@ UInputOptions::get_btn_map() const
   return m_btn_map;
 }
 
-const AxisMap& 
+const AxisMapOptions& 
 UInputOptions::get_axis_map() const
 {
   return m_axis_map;

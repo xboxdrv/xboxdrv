@@ -18,12 +18,12 @@
 
 #include "axis_map.hpp"
 
+#include "axis_event_factory.hpp"
 #include "controller_message_descriptor.hpp"
 
 AxisMap::AxisMap() :
   m_axis_map()
 {
-  clear();
 }
 
 void
@@ -32,59 +32,66 @@ AxisMap::init(const ControllerMessageDescriptor& desc)
 }
 
 void
-AxisMap::bind(int code, AxisEventPtr event)
+AxisMap::init(const AxisMapOptions& opts, UInput& uinput, int slot, bool extra_devices)
 {
-  //m_axis_map[XBOX_BTN_UNKNOWN][code] = event; BROKEN
+  AxisEventFactory button_event_factory(uinput, slot, extra_devices);
 }
 
 void
-AxisMap::bind(int shift_code, int code, AxisEventPtr event)
+AxisMap::bind(AxisEventPtr event)
 {
-  m_axis_map[shift_code][code] = event;
-}
-
-AxisEventPtr
-AxisMap::lookup(int code) const
-{
-  return AxisEventPtr(); // BROKEN m_axis_map[XBOX_BTN_UNKNOWN][code];
-}
-
-AxisEventPtr
-AxisMap::lookup(int shift_code, int code) const
-{
-  return m_axis_map[shift_code][code];
 }
 
 void
-AxisMap::clear()
+AxisMap::bind(const ButtonCombination& combo, AxisEventPtr event)
 {
-  for(size_t shift_code = 0; shift_code < m_axis_map.size(); ++shift_code)
-  {
-    for(size_t code = 0; code < m_axis_map[shift_code].size(); ++code)
-    {
-      m_axis_map[shift_code][code] = AxisEvent::invalid();
-    }
-  }
 }
 
 void
 AxisMap::init(UInput& uinput, int slot, bool extra_devices) const
 {
-  for(size_t shift_code = 0; shift_code < m_axis_map.size(); ++shift_code)
+  
+}
+
+void
+AxisMap::send_clear(UInput& uinput)
+{
+#if 0
+  for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
   {
-    for(size_t code = 0; code < m_axis_map.size(); ++code)
+    i->m_event->send_clear(uinput);
+  }
+#endif
+}
+
+void
+AxisMap::send(UInput& uinput, 
+              const std::bitset<256>& button_state,
+              const boost::array<int, 256>& axis_state)
+{
+  for(AxisMapping::iterator i = m_axis_map.begin(); i != m_axis_map.end(); ++i)
+  {
+#if 0
+    i->update(button_state);
+    for(auto it = i->begin(); it != i->end(); ++i)
     {
-      if (m_axis_map[shift_code][code])
+      if (i->is_active())
       {
-        m_axis_map[shift_code][code]->init(uinput, slot, extra_devices);
+        i->get_data()->send(axis, axis_state[axis]); 
+      }
+      else
+      {
+        i->get_data()->send(0);
       }
     }
+#endif
   }
 }
 
 void
 AxisMap::update(UInput& uinput, int msec_delta)
 {
+#if 0
   for(size_t shift_code = 0; shift_code < m_axis_map.size(); ++shift_code)
   {
     for(size_t code = 0; code < m_axis_map[shift_code].size(); ++code)
@@ -95,6 +102,7 @@ AxisMap::update(UInput& uinput, int msec_delta)
       }
     }
   }
+#endif
 }
 
 /* EOF */

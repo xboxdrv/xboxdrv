@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "arg_parser.hpp"
+#include "axis_map_option.hpp"
 #include "button_map_option.hpp"
 #include "ini_schema.hpp"
 #include "uinput.hpp"
@@ -54,7 +55,7 @@ private:
 
   void set_ui_buttonmap(ButtonMapOptions& btn_map, const std::string& name, const std::string& value);
   void set_ui_buttonmap(const std::string& name, const std::string& value);
-  void set_ui_axismap(AxisMap& axis_map, const std::string& name, const std::string& value);
+  void set_ui_axismap(AxisMapOptions& axis_map, const std::string& name, const std::string& value);
   void set_ui_axismap(const std::string& name, const std::string& value);
   void set_modifier(const std::string& name, const std::string& value);
 
