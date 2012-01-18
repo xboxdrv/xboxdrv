@@ -37,28 +37,24 @@ JoinAxisModifier::from_string(const std::vector<std::string>& args)
 }
 
 JoinAxisModifier::JoinAxisModifier(const std::string& lhs, const std::string& rhs, const std::string& out) :
-  m_lhs_str(lhs),
-  m_rhs_str(rhs),
-  m_out_str(out),
-  m_lhs(-1),
-  m_rhs(-1),
-  m_out(-1)
+  m_lhs(lhs),
+  m_rhs(rhs),
+  m_out(out)
 {
 }
 
 void
 JoinAxisModifier::init(ControllerMessageDescriptor& desc)
 {
-  m_lhs = desc.abs().get(m_lhs_str);
-  m_rhs = desc.abs().get(m_rhs_str);
-  m_out = desc.abs().getput(m_out_str);
+  m_lhs.init(desc);
+  m_rhs.init(desc);
+  m_out.init(desc);
 }
 
 void
 JoinAxisModifier::update(int msec_delta, ControllerMessage& msg)
 {
-  msg.set_abs_float(m_out,
-                     (msg.get_abs_float(m_rhs) - msg.get_abs_float(m_lhs)) / 2.0f);
+  m_out.set_float(msg, (m_rhs.get_float(msg) - m_lhs.get_float(msg)) / 2.0f);
 }
 
 std::string

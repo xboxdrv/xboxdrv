@@ -22,7 +22,7 @@
 #include <vector>
 
 #include "modifier.hpp"
-#include "xboxmsg.hpp"
+#include "abs_port.hpp"
 
 class JoinAxisModifier : public Modifier
 {
@@ -30,13 +30,9 @@ public:
   static JoinAxisModifier* from_string(const std::vector<std::string>& args);
 
 private:
-  const std::string m_lhs_str;
-  const std::string m_rhs_str;
-  const std::string m_out_str;
-
-  int m_lhs;
-  int m_rhs;
-  int m_out;
+  AbsPortIn  m_lhs;
+  AbsPortIn  m_rhs;
+  AbsPortOut m_out;
 
 public:
   JoinAxisModifier(const std::string& lhs, const std::string& rhs, const std::string& out);
