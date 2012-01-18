@@ -32,8 +32,10 @@ private:
   static std::map<std::string, CycleKeySequencePtr> s_lookup_table;
 
 public:
-  static CycleKeyButtonEventHandler* from_string(const std::string& str, bool wrap_around);
-  static CycleKeyButtonEventHandler* from_string_named(const std::string& str, bool wrap_around);
+  static CycleKeyButtonEventHandler* from_string(UInput& uinput, int slot, bool extra_devices,
+                                                 const std::string& str, bool wrap_around);
+  static CycleKeyButtonEventHandler* from_string_named(UInput& uinput, int slot, bool extra_devices,
+                                                       const std::string& str, bool wrap_around);
 
   /** 
       Syntax: "{direction}:{press}"
@@ -44,7 +46,8 @@ public:
       press: a bool, true if a keypress is send, 
       false when only the current key should change
   */
-  static CycleKeyButtonEventHandler* from_string_ref(const std::string& value);
+  static CycleKeyButtonEventHandler* from_string_ref(UInput& uinput, int slot, bool extra_devices,
+                                                     const std::string& value);
 
 
   static CycleKeySequencePtr lookup(const std::string& name);
@@ -58,12 +61,12 @@ private:
   bool m_send_press;
 
 private:
-  CycleKeyButtonEventHandler(CycleKeySequencePtr sequence, Direction direction, bool send_press);
+  CycleKeyButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+                             CycleKeySequencePtr sequence, Direction direction, bool send_press);
 
 public:
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, bool value);
-  void update(UInput& uinput, int msec_delta);
+  void send(bool value);
+  void update(int msec_delta);
 
   std::string str() const;
 

@@ -69,7 +69,7 @@ UIEventSequence::init(UInput& uinput, int slot, bool extra_devices)
 }
 
 void
-UIEventSequence::send(UInput& uinput, int value)
+UIEventSequence::send(int value)
 {
   if (value)
   {

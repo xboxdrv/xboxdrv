@@ -23,7 +23,8 @@
 #include "raise_exception.hpp"
 
 CycleKeySequencePtr
-CycleKeySequence::from_range(std::vector<std::string>::const_iterator beg,
+CycleKeySequence::from_range(UInput& uinput, int slot, bool extra_devices,
+                             std::vector<std::string>::const_iterator beg,
                              std::vector<std::string>::const_iterator end, 
                              bool wrap_around)
 {
@@ -40,42 +41,37 @@ CycleKeySequence::from_range(std::vector<std::string>::const_iterator beg,
   }
   else
   {
-    return CycleKeySequencePtr(new CycleKeySequence(keys, wrap_around));
+    return CycleKeySequencePtr(new CycleKeySequence(uinput, slot, extra_devices, 
+                                                    keys, wrap_around));
   }
 }
 
-CycleKeySequence::CycleKeySequence(const Keys& keys, bool wrap_around) :
+CycleKeySequence::CycleKeySequence(UInput& uinput, int slot, bool extra_devices,
+                                   const Keys& keys, bool wrap_around) :
   m_keys(keys),
   m_wrap_around(wrap_around),
-  m_inited(false),
   m_current_key(0),
   m_last_key(0)
 {
   assert(!m_keys.empty());
-}
 
-void
-CycleKeySequence::init(UInput& uinput, int slot, bool extra_devices)
-{
-  if (!m_inited)
+  for(Keys::iterator i = m_keys.begin(); i != m_keys.end(); ++i)
   {
-    for(Keys::iterator i = m_keys.begin(); i != m_keys.end(); ++i)
-    {
-      i->init(uinput, slot, extra_devices);
-    }
-    m_inited = true;
+    i->init(uinput, slot, extra_devices);
   }
 }
 
 void
-CycleKeySequence::send(UInput& uinput, bool value)
+CycleKeySequence::send(bool value)
 {
+#if 0
   int send_key = has_current_key() ? m_current_key : m_last_key;
 
   m_keys[send_key].send(uinput, value); 
 
   m_last_key = send_key;
   m_current_key = -1;
+#endif
 }
 
 void

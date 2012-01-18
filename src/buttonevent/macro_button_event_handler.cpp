@@ -29,7 +29,8 @@
 #include "uinput.hpp"
 
 MacroButtonEventHandler*
-MacroButtonEventHandler::from_string(const std::string& str)
+MacroButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+                                     const std::string& str)
 {
   std::vector<MacroEvent> events;
   for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
@@ -56,11 +57,12 @@ MacroButtonEventHandler::from_string(const std::string& str)
     }
   }
   log_tmp("events: " << events.size());
-  return new MacroButtonEventHandler(events);
+  return new MacroButtonEventHandler(uinput, slot, extra_devices, events);
 }
 
 MacroButtonEventHandler*
-MacroButtonEventHandler::from_file(const std::string& filename)
+MacroButtonEventHandler::from_file(UInput& uinput, int slot, bool extra_devices,
+                                   const std::string& filename)
 {
   std::vector<MacroEvent> events;
 
@@ -80,7 +82,7 @@ MacroButtonEventHandler::from_file(const std::string& filename)
         events.push_back(ev);
       }
     }
-    return new MacroButtonEventHandler(events);
+    return new MacroButtonEventHandler(uinput, slot, extra_devices, events);
   }
 }
 
@@ -164,16 +166,12 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
   }
 }
 
-MacroButtonEventHandler::MacroButtonEventHandler(const std::vector<MacroEvent>& events) :
+MacroButtonEventHandler::MacroButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+                                                 const std::vector<MacroEvent>& events) :
   m_events(events),
   m_send_in_progress(false),
   m_countdown(0),
   m_event_counter()
-{
-}
-
-void
-MacroButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 {
   for(std::vector<MacroEvent>::iterator i = m_events.begin(); i != m_events.end(); ++i)
   {
@@ -235,7 +233,7 @@ MacroButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 }
 
 void
-MacroButtonEventHandler::send(UInput& uinput, bool value)
+MacroButtonEventHandler::send(bool value)
 {
   if (value && !m_send_in_progress)
   {
@@ -246,7 +244,7 @@ MacroButtonEventHandler::send(UInput& uinput, bool value)
 }
 
 void
-MacroButtonEventHandler::update(UInput& uinput, int msec_delta)
+MacroButtonEventHandler::update(int msec_delta)
 {
   if (m_send_in_progress)
   {
@@ -261,10 +259,12 @@ MacroButtonEventHandler::update(UInput& uinput, int msec_delta)
             break;
 
           case MacroEvent::kSendOp:
+#if 0
             uinput.send(m_events[m_event_counter].send.event.get_device_id(),
                         m_events[m_event_counter].send.event.type,
                         m_events[m_event_counter].send.event.code,
                         m_events[m_event_counter].send.value);
+#endif
             break;
 
           case MacroEvent::kWaitOp:

@@ -26,6 +26,7 @@
 #include "button_combination_map.hpp"
 
 class ControllerMessageDescriptor;
+class UInput;
 
 class AxisMap
 {
@@ -42,12 +43,10 @@ public:
   void bind(AxisEventPtr event);
   void bind(const ButtonCombination& combo, AxisEventPtr event);
 
-  void init(UInput& uinput, int slot, bool extra_devices) const;
-  void send(UInput& uinput, 
-            const std::bitset<256>& button_state,
+  void send(const std::bitset<256>& button_state,
             const boost::array<int, 256>& axis_state);
-  void send_clear(UInput& uinput);
-  void update(UInput& uinput, int msec_delta);
+  void send_clear();
+  void update(int msec_delta);
 };
 
 #endif

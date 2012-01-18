@@ -48,25 +48,18 @@ AxisMap::bind(const ButtonCombination& combo, AxisEventPtr event)
 }
 
 void
-AxisMap::init(UInput& uinput, int slot, bool extra_devices) const
-{
-  
-}
-
-void
-AxisMap::send_clear(UInput& uinput)
+AxisMap::send_clear()
 {
 #if 0
   for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
   {
-    i->m_event->send_clear(uinput);
+    i->m_event->send_clear();
   }
 #endif
 }
 
 void
-AxisMap::send(UInput& uinput, 
-              const std::bitset<256>& button_state,
+AxisMap::send(const std::bitset<256>& button_state,
               const boost::array<int, 256>& axis_state)
 {
   for(AxisMapping::iterator i = m_axis_map.begin(); i != m_axis_map.end(); ++i)
@@ -89,7 +82,7 @@ AxisMap::send(UInput& uinput,
 }
 
 void
-AxisMap::update(UInput& uinput, int msec_delta)
+AxisMap::update(int msec_delta)
 {
 #if 0
   for(size_t shift_code = 0; shift_code < m_axis_map.size(); ++shift_code)

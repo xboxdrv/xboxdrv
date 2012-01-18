@@ -21,6 +21,8 @@
 
 #include "button_event.hpp"
 
+class UInput;
+
 class ButtonEventFactory
 {
 private:

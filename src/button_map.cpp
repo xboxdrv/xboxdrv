@@ -97,6 +97,7 @@ ButtonMap::init(const ButtonMapOptions& opts, UInput& uinput, int slot, bool ext
 {
   ButtonEventFactory button_event_factory(uinput, slot, extra_devices);
 
+  // BROKEN: Events must not be overriden after creation, as that messes up UInput
   for(ButtonMapOptions::const_iterator it = opts.begin(); it != opts.end(); ++it)
   {
     ButtonCombination buttons = ButtonCombination::from_string(it->get_button());
@@ -127,16 +128,10 @@ ButtonMap::init(const ButtonMapOptions& opts, UInput& uinput, int slot, bool ext
       }
     }
   }
-
-  // init all the binding
-  for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
-  {
-    i->m_event->init(uinput, slot, extra_devices);
-  }
 }
 
 void
-ButtonMap::send(UInput& uinput, const std::bitset<256>& button_state)
+ButtonMap::send(const std::bitset<256>& button_state)
 {
   //std::cout << "ButtonMap::send" << std::endl;
   for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
@@ -160,35 +155,35 @@ ButtonMap::send(UInput& uinput, const std::bitset<256>& button_state)
 
       if (superset_matches)
       {
-        i->m_event->send(uinput, false);
+        i->m_event->send(false);
       }
       else
       {
-        i->m_event->send(uinput, true);
+        i->m_event->send(true);
       }
     }
     else
     {
-      i->m_event->send(uinput, false);
+      i->m_event->send(false);
     }
   }
 }
 
 void
-ButtonMap::send_clear(UInput& uinput)
+ButtonMap::send_clear()
 {
   for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
   {
-    i->m_event->send_clear(uinput);
+    i->m_event->send_clear();
   }
 }
 
 void
-ButtonMap::update(UInput& uinput, int msec_delta)
+ButtonMap::update(int msec_delta)
 {
   for(Mappings::const_iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
   {
-    i->m_event->update(uinput, msec_delta);
+    i->m_event->update(msec_delta);
   }
 }
 

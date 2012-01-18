@@ -24,7 +24,8 @@
 #include "uinput.hpp"
 
 RelButtonEventHandler*
-RelButtonEventHandler::from_string(const std::string& str)
+RelButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+                                   const std::string& str)
 {
   std::auto_ptr<RelButtonEventHandler> ev;
 
@@ -37,7 +38,8 @@ RelButtonEventHandler::from_string(const std::string& str)
     switch(idx)
     {
       case 0:
-        ev.reset(new RelButtonEventHandler(str2rel_event(*i)));
+        ev.reset(new RelButtonEventHandler(uinput, slot, extra_devices, 
+                                           str2rel_event(*i)));
         break;
 
       case 1: 
@@ -53,23 +55,19 @@ RelButtonEventHandler::from_string(const std::string& str)
   return ev.release();
 }
 
-RelButtonEventHandler::RelButtonEventHandler(const UIEvent& code) :
+RelButtonEventHandler::RelButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+                                             const UIEvent& code) :
   m_code(code),
   m_value(3),
   m_repeat(100),
   m_rel_emitter()
-{
-}
-
-void
-RelButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 {
   m_code.resolve_device_id(slot, extra_devices);
   m_rel_emitter = uinput.add_rel(m_code.get_device_id(), m_code.code);
 }
 
 void
-RelButtonEventHandler::send(UInput& uinput, bool value)
+RelButtonEventHandler::send(bool value)
 {
   if (m_repeat == -1)
   {
@@ -82,11 +80,11 @@ RelButtonEventHandler::send(UInput& uinput, bool value)
   {
     if (value)
     {
-      uinput.send_rel_repetitive(m_code, static_cast<float>(m_value), m_repeat);
+      //BROKEN:uinput.send_rel_repetitive(m_code, static_cast<float>(m_value), m_repeat);
     }
     else
     {
-      uinput.send_rel_repetitive(m_code, static_cast<float>(m_value), -1);
+      //BROKEN:uinput.send_rel_repetitive(m_code, static_cast<float>(m_value), -1);
     }
   } 
 }

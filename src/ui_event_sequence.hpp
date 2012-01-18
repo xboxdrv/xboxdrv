@@ -51,7 +51,7 @@ public:
   UIEventSequence(const UIEvent& event);
 
   void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, int value);
+  void send(int value);
 
   void clear();
 

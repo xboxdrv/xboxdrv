@@ -26,7 +26,8 @@
 #include "uinput.hpp"
 
 RelRepeatAxisEventHandler*
-RelRepeatAxisEventHandler::from_string(const std::string& str)
+RelRepeatAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices, 
+                                       const std::string& str)
 {
   // split string at ':'
   boost::tokenizer<boost::char_separator<char> > 
@@ -36,7 +37,8 @@ RelRepeatAxisEventHandler::from_string(const std::string& str)
 
   if (args.size() == 3)
   {
-    return new RelRepeatAxisEventHandler(str2rel_event(args[0]),
+    return new RelRepeatAxisEventHandler(uinput, slot, extra_devices,
+                                         str2rel_event(args[0]),
                                          boost::lexical_cast<int>(args[1]),
                                          boost::lexical_cast<float>(args[2]));
   }
@@ -46,7 +48,8 @@ RelRepeatAxisEventHandler::from_string(const std::string& str)
   }
 }
 
-RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(const UIEvent& code, int value, float repeat) :
+RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
+                                                     const UIEvent& code, int value, float repeat) :
   m_code(code),
   m_value(value),
   m_repeat(repeat),
@@ -54,19 +57,12 @@ RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(const UIEvent& code, int va
   m_timer(0),
   m_rel_emitter()
 {  
-}
-
-void
-RelRepeatAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
-{
-  assert(!m_rel_emitter);
-
   m_code.resolve_device_id(slot, extra_devices);
   m_rel_emitter = uinput.add_rel(m_code.get_device_id(), m_code.code);
 }
 
 void
-RelRepeatAxisEventHandler::send(UInput& uinput, int value)
+RelRepeatAxisEventHandler::send(int value)
 {
   if (value < 0)
   {
@@ -85,7 +81,7 @@ RelRepeatAxisEventHandler::send(UInput& uinput, int value)
 }
 
 void
-RelRepeatAxisEventHandler::update(UInput& uinput, int msec_delta)
+RelRepeatAxisEventHandler::update(int msec_delta)
 {
   // time ticks slower depending on how far the stick is moved
   m_timer += static_cast<float>(msec_delta) * fabsf(m_stick_value);

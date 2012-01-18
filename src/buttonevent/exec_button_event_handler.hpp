@@ -29,9 +29,8 @@ public:
 public:
   ExecButtonEventHandler(const std::vector<std::string>& args);
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, bool value);
-  void update(UInput& uinput, int msec_delta) {}
+  void send(bool value);
+  void update(int msec_delta) {}
 
   std::string str() const;
 

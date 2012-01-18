@@ -25,12 +25,13 @@
 #include "uinput.hpp"
 
 KeyAxisEventHandler*
-KeyAxisEventHandler::from_string(const std::string& str)
+KeyAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+                                 const std::string& str)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
   
-  std::auto_ptr<KeyAxisEventHandler> ev(new KeyAxisEventHandler);
+  std::auto_ptr<KeyAxisEventHandler> ev(new KeyAxisEventHandler(uinput, slot, extra_devices));
 
   int j = 0;
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
@@ -76,31 +77,26 @@ KeyAxisEventHandler::from_string(const std::string& str)
   return ev.release();
 }
 
-KeyAxisEventHandler::KeyAxisEventHandler() :
+KeyAxisEventHandler::KeyAxisEventHandler(UInput& uinput, int slot, bool extra_devices) :
   m_old_value(0),
   m_up_codes(),
   m_down_codes(),
   m_threshold(8000) // BUG: this doesn't work for triggers
-{
-}
-
-void
-KeyAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 {
   m_up_codes.init(uinput, slot, extra_devices);
   m_down_codes.init(uinput, slot, extra_devices);
 }
 
 void
-KeyAxisEventHandler::send_up(UInput& uinput, int value)
+KeyAxisEventHandler::send_up(int value)
 {
-  m_up_codes.send(uinput, value);
+  m_up_codes.send(value);
 }
 
 void
-KeyAxisEventHandler::send_down(UInput& uinput, int value)
+KeyAxisEventHandler::send_down(int value)
 {
-  m_down_codes.send(uinput, value);
+  m_down_codes.send(value);
 }
 
 int
@@ -121,7 +117,7 @@ KeyAxisEventHandler::get_zone(int value) const
 }
 
 void
-KeyAxisEventHandler::send(UInput& uinput, int value)
+KeyAxisEventHandler::send(int value)
 {
   int old_zone = get_zone(m_old_value);
   int zone     = get_zone(value);
@@ -131,21 +127,21 @@ KeyAxisEventHandler::send(UInput& uinput, int value)
     // release the keys of the zone we leave
     if (old_zone == -1)
     {
-      send_up(uinput, false);
+      send_up(false);
     }
     else if (old_zone == +1)
     {
-      send_down(uinput, false);
+      send_down(false);
     }
 
     // press the keys of the zone we enter
     if (zone == +1)
     {
-      send_down(uinput, true);
+      send_down(true);
     }
     else if (zone == -1)
     {
-      send_up(uinput, true);
+      send_up(true);
     }
   }
 
@@ -153,7 +149,7 @@ KeyAxisEventHandler::send(UInput& uinput, int value)
 }
 
 void
-KeyAxisEventHandler::update(UInput& uinput, int msec_delta)
+KeyAxisEventHandler::update(int msec_delta)
 {
 }
 

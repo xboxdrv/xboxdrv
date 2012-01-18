@@ -21,13 +21,15 @@
 #include "uinput.hpp"
 
 AbsButtonEventHandler*
-AbsButtonEventHandler::from_string(const std::string& str)
+AbsButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+                                   const std::string& str)
 {
   // FIXME: Need magic to detect min/max of the axis
   assert(!"not implemented");
 }
 
-AbsButtonEventHandler::AbsButtonEventHandler(int code) :
+AbsButtonEventHandler::AbsButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+                                             int code) :
   m_code(UIEvent::invalid()),
   m_value(),
   m_abs_emitter()
@@ -37,12 +39,7 @@ AbsButtonEventHandler::AbsButtonEventHandler(int code) :
 }
 
 void
-AbsButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
-{
-}
-
-void
-AbsButtonEventHandler::send(UInput& uinput, bool value)
+AbsButtonEventHandler::send(bool value)
 {
   if (value)
   {

@@ -43,7 +43,8 @@ AxisEventFactory::invalid()
 AxisEventPtr
 AxisEventFactory::create_abs(int device_id, int code, int min, int max, int fuzz, int flat)
 {
-  return AxisEventPtr(new AxisEvent(new AbsAxisEventHandler(UIEvent::create(static_cast<uint16_t>(device_id),
+  return AxisEventPtr(new AxisEvent(new AbsAxisEventHandler(m_uinput, m_slot, m_extra_devices,
+                                                            UIEvent::create(static_cast<uint16_t>(device_id),
                                                                             EV_ABS, code),
                                                             min, max, fuzz, flat),
                                     min, max));
@@ -52,7 +53,8 @@ AxisEventFactory::create_abs(int device_id, int code, int min, int max, int fuzz
 AxisEventPtr
 AxisEventFactory::create_rel(int device_id, int code, int repeat, float value)
 {
-  return AxisEventPtr(new AxisEvent(new RelAxisEventHandler(device_id, code, repeat, value)));
+  return AxisEventPtr(new AxisEvent(new RelAxisEventHandler(m_uinput, m_slot, m_extra_devices,
+                                                            device_id, code, repeat, value)));
 }
   
 AxisEventPtr
@@ -69,34 +71,37 @@ AxisEventFactory::from_string(const std::string& str)
 
   if (token == "abs")
   {
-    ev.reset(new AxisEvent(AbsAxisEventHandler::from_string(rest)));
+    ev.reset(new AxisEvent(AbsAxisEventHandler::from_string(m_uinput, m_slot, m_extra_devices, rest)));
   }
   else if (token == "rel")
   {
-    ev.reset(new AxisEvent(RelAxisEventHandler::from_string(rest)));
+    ev.reset(new AxisEvent(RelAxisEventHandler::from_string(m_uinput, m_slot, m_extra_devices, rest)));
   }
   else if (token == "rel-repeat")
   {
-    ev.reset(new AxisEvent(RelRepeatAxisEventHandler::from_string(rest)));
+    ev.reset(new AxisEvent(RelRepeatAxisEventHandler::from_string(m_uinput, m_slot, m_extra_devices, rest)));
   }
   else if (token == "key")
   {
-    ev.reset(new AxisEvent(KeyAxisEventHandler::from_string(rest)));
+    ev.reset(new AxisEvent(KeyAxisEventHandler::from_string(m_uinput, m_slot, m_extra_devices, rest)));
   }
   else
   { // try to guess a type
     switch (get_event_type(str))
     {
       case EV_ABS:
-        ev.reset(new AxisEvent(AbsAxisEventHandler::from_string(str)));
+        ev.reset(new AxisEvent(AbsAxisEventHandler::from_string(m_uinput, m_slot, m_extra_devices,
+                                                                str)));
         break;
 
       case EV_REL:
-        ev.reset(new AxisEvent(RelAxisEventHandler::from_string(str)));
+        ev.reset(new AxisEvent(RelAxisEventHandler::from_string(m_uinput, m_slot, m_extra_devices,
+                                                                str)));
         break;
 
       case EV_KEY:
-        ev.reset(new AxisEvent(KeyAxisEventHandler::from_string(str)));
+        ev.reset(new AxisEvent(KeyAxisEventHandler::from_string(m_uinput, m_slot, m_extra_devices,
+                                                                str)));
         break;
 
       case -1: // void/none

@@ -43,13 +43,7 @@ ExecButtonEventHandler::ExecButtonEventHandler(const std::vector<std::string>& a
 }
 
 void
-ExecButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
-{
-  // nothing to do
-}
-
-void
-ExecButtonEventHandler::send(UInput& uinput, bool value)
+ExecButtonEventHandler::send(bool value)
 {
   if (value)
   {

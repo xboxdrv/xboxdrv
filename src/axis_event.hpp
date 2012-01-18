@@ -24,7 +24,6 @@
 #include "axis_filter.hpp"
 #include "ui_event.hpp"
 
-class UInput;
 class AxisEvent;
 class AxisEventHandler;
 
@@ -38,9 +37,8 @@ public:
 
   void add_filter(AxisFilterPtr filter);
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, int value);
-  void update(UInput& uinput, int msec_delta);
+  void send(int value);
+  void update(int msec_delta);
 
   void set_axis_range(int min, int max);
 
@@ -65,9 +63,8 @@ public:
   AxisEventHandler();
   virtual ~AxisEventHandler() {}
 
-  virtual void init(UInput& uinput, int slot, bool extra_devices) =0;
-  virtual void send(UInput& uinput, int value) =0;
-  virtual void update(UInput& uinput, int msec_delta) =0;
+  virtual void send(int value) =0;
+  virtual void update(int msec_delta) =0;
 
   virtual void set_axis_range(int min, int max);
 

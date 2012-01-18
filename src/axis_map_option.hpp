@@ -26,6 +26,7 @@ class AxisMapOption
 {
 private:
   std::string m_axis;
+  std::vector<std::string> m_buttons;
   std::vector<std::string> m_filter;
   std::string m_event;
   std::string m_directory;
@@ -34,6 +35,7 @@ public:
   AxisMapOption(const std::string& axis,
                 const std::string& event) :
     m_axis(axis),
+    m_buttons(),
     m_filter(),
     m_event(event),
     m_directory() // BROKEN: needs get_directory_context() or something more clever

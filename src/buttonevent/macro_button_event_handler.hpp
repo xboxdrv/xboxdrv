@@ -20,6 +20,8 @@
 #define HEADER_XBOXDRV_BUTTONEVENT_MACRO_BUTTON_EVENT_HANDLER_HPP
 
 #include "button_event.hpp"
+#include "ui_event.hpp"
+#include "uinput.hpp"
 
 class MacroButtonEventHandler : public ButtonEventHandler
 {
@@ -49,15 +51,15 @@ private:
   };
 
 public:
-  static MacroButtonEventHandler* from_file(const std::string& filename);
-  static MacroButtonEventHandler* from_string(const std::string& str);
+  static MacroButtonEventHandler* from_file(UInput& uinput, int slot, bool extra_devices, const std::string& filename);
+  static MacroButtonEventHandler* from_string(UInput& uinput, int slot, bool extra_devices, const std::string& str);
 
 public:
-  MacroButtonEventHandler(const std::vector<MacroEvent>& events);
+  MacroButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+                          const std::vector<MacroEvent>& events);
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, bool value);
-  void update(UInput& uinput, int msec_delta);
+  void send(bool value);
+  void update(int msec_delta);
 
   std::string str() const;
 

@@ -25,7 +25,6 @@
 #include "evdev_helper.hpp"
 #include "log.hpp"
 #include "path.hpp"
-#include "uinput.hpp"
 
 ButtonEvent::ButtonEvent(ButtonEventHandler* handler) :
   m_last_send_state(false),
@@ -48,13 +47,7 @@ ButtonEvent::add_filter(ButtonFilterPtr filter)
 }
 
 void
-ButtonEvent::init(UInput& uinput, int slot, bool extra_devices)
-{
-  return m_handler->init(uinput, slot, extra_devices);
-}
-
-void
-ButtonEvent::send(UInput& uinput, bool raw_state)
+ButtonEvent::send(bool raw_state)
 {
   m_last_raw_state = raw_state;
   bool filtered_state = raw_state;
@@ -72,28 +65,28 @@ ButtonEvent::send(UInput& uinput, bool raw_state)
   else
   {
     m_last_send_state = filtered_state;
-    m_handler->send(uinput, m_last_send_state);
+    m_handler->send(m_last_send_state);
   }
 }
 
 void
-ButtonEvent::send_clear(UInput& uinput)
+ButtonEvent::send_clear()
 {
   m_last_send_state = false;
-  m_handler->send_clear(uinput);
+  m_handler->send_clear();
 }
 
 void
-ButtonEvent::update(UInput& uinput, int msec_delta)
+ButtonEvent::update(int msec_delta)
 {
   for(std::vector<ButtonFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
   {
     (*i)->update(msec_delta);
   }
 
-  m_handler->update(uinput, msec_delta);
+  m_handler->update(msec_delta);
   
-  send(uinput, m_last_raw_state);
+  send(m_last_raw_state);
 }
 
 std::string

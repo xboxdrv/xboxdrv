@@ -52,13 +52,16 @@ direction_from_string(const std::string& value)
 } // namespace
 
 CycleKeyButtonEventHandler*
-CycleKeyButtonEventHandler::from_string(const std::string& value, bool wrap_around)
+CycleKeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+                                        const std::string& value, bool wrap_around)
 {
-  return from_string_named(":" + value, wrap_around);
+  return from_string_named(uinput, slot, extra_devices, 
+                           ":" + value, wrap_around);
 }
 
 CycleKeyButtonEventHandler*
-CycleKeyButtonEventHandler::from_string_named(const std::string& value, bool wrap_around)
+CycleKeyButtonEventHandler::from_string_named(UInput& uinput, int slot, bool extra_devices,
+                                              const std::string& value, bool wrap_around)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
@@ -71,7 +74,8 @@ CycleKeyButtonEventHandler::from_string_named(const std::string& value, bool wra
   else
   {
     std::string name = args[0];
-    CycleKeySequencePtr sequence = CycleKeySequence::from_range(args.begin()+1, args.end(), wrap_around);
+    CycleKeySequencePtr sequence = CycleKeySequence::from_range(uinput, slot, extra_devices,
+                                                                args.begin()+1, args.end(), wrap_around);
 
     // if name is empty, don't put it in the lookup table
     if (!name.empty())
@@ -86,12 +90,14 @@ CycleKeyButtonEventHandler::from_string_named(const std::string& value, bool wra
       }
     }
 
-    return new CycleKeyButtonEventHandler(sequence, kForward, true);
+    return new CycleKeyButtonEventHandler(uinput, slot, extra_devices,
+                                          sequence, kForward, true);
   }
 }
 
 CycleKeyButtonEventHandler*
-CycleKeyButtonEventHandler::from_string_ref(const std::string& value)
+CycleKeyButtonEventHandler::from_string_ref(UInput& uinput, int slot, bool extra_devices,
+                                            const std::string& value)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
@@ -110,7 +116,8 @@ CycleKeyButtonEventHandler::from_string_ref(const std::string& value)
     }
     else
     {
-      return new CycleKeyButtonEventHandler(cycle_sequence, direction, press);
+      return new CycleKeyButtonEventHandler(uinput, slot, extra_devices,
+                                            cycle_sequence, direction, press);
     }
   }
   else
@@ -133,7 +140,8 @@ CycleKeyButtonEventHandler::lookup(const std::string& name)
   }
 }
 
-CycleKeyButtonEventHandler::CycleKeyButtonEventHandler(CycleKeySequencePtr sequence,
+CycleKeyButtonEventHandler::CycleKeyButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+                                                       CycleKeySequencePtr sequence,
                                                        Direction direction, 
                                                        bool send_press) :
   m_sequence(sequence),
@@ -143,20 +151,13 @@ CycleKeyButtonEventHandler::CycleKeyButtonEventHandler(CycleKeySequencePtr seque
 }
 
 void
-CycleKeyButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
-{
-  // CycleKeySequence will make sure that init() is only called once
-  m_sequence->init(uinput, slot, extra_devices);
-}
-
-void
-CycleKeyButtonEventHandler::send(UInput& uinput, bool value)
+CycleKeyButtonEventHandler::send(bool value)
 {
   if (value)
   {
     if (m_send_press && m_sequence->has_current_key())
     {
-      m_sequence->send(uinput, value);
+      m_sequence->send(value);
     }
     else
     {
@@ -176,7 +177,7 @@ CycleKeyButtonEventHandler::send(UInput& uinput, bool value)
 
       if (m_send_press)
       {
-        m_sequence->send(uinput, value);
+        m_sequence->send(value);
       }
     }
   }
@@ -184,13 +185,13 @@ CycleKeyButtonEventHandler::send(UInput& uinput, bool value)
   {
     if (m_send_press)
     {
-      m_sequence->send(uinput, value);
+      m_sequence->send(value);
     }
   }
 }
 
 void
-CycleKeyButtonEventHandler::update(UInput& uinput, int msec_delta)
+CycleKeyButtonEventHandler::update(int msec_delta)
 {
 }
 

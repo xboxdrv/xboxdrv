@@ -26,15 +26,19 @@
 class KeyButtonEventHandler : public ButtonEventHandler
 {
 public:
-  static KeyButtonEventHandler* from_string(const std::string& str);
+  static KeyButtonEventHandler* from_string(UInput& uinput, int slot, bool extra_devices, 
+                                            const std::string& str);
 
 public:
-  KeyButtonEventHandler();
-  KeyButtonEventHandler(int deviceid, int code);
+  KeyButtonEventHandler(UInput& uinput, int slot, bool extra_devices, 
+                        int deviceid, int code);
+  KeyButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+                        const UIEventSequence& codes,
+                        const UIEventSequence& secondary_codes,
+                        int m_hold_threshold);
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, bool value);
-  void update(UInput& uinput, int msec_delta);
+  void send(bool value);
+  void update(int msec_delta);
 
   std::string str() const;
   

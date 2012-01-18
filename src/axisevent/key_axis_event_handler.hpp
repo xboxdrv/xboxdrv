@@ -26,20 +26,20 @@
 class KeyAxisEventHandler : public AxisEventHandler
 {
 public:
-  static KeyAxisEventHandler* from_string(const std::string& str);
+  static KeyAxisEventHandler* from_string(UInput& uinput, int slot, bool extra_devices,
+                                          const std::string& str);
   
 public:
-  KeyAxisEventHandler();
+  KeyAxisEventHandler(UInput& uinput, int slot, bool extra_devices);
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, int value);
-  void update(UInput& uinput, int msec_delta);
+  void send(int value);
+  void update(int msec_delta);
 
   std::string str() const;
 
 private:
-  void send_up(UInput& uinput, int value);
-  void send_down(UInput& uinput, int value);
+  void send_up(int value);
+  void send_down(int value);
   int  get_zone(int value) const;
   
 private:

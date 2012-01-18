@@ -31,7 +31,8 @@ typedef boost::shared_ptr<CycleKeySequence> CycleKeySequencePtr;
 class CycleKeySequence
 {
 public:
-  static CycleKeySequencePtr from_range(std::vector<std::string>::const_iterator beg,
+  static CycleKeySequencePtr from_range(UInput& uinput, int slot, bool extra_devices,
+                                        std::vector<std::string>::const_iterator beg,
                                         std::vector<std::string>::const_iterator end, 
                                         bool wrap_around);
 
@@ -42,8 +43,6 @@ private:
   /** If set the sequence wraps around when at the begin/end */
   bool m_wrap_around;
 
-  bool m_inited;
-
   /** the position of the cursor in the sequence, if -1, it is unset */
   int m_current_key;
 
@@ -51,15 +50,15 @@ private:
   int m_last_key;
 
 public:
-  CycleKeySequence(const Keys& keys, bool wrap_around);
+  CycleKeySequence(UInput& uinput, int slot, bool extra_devices,
+                   const Keys& keys, bool wrap_around);
 
   bool has_current_key() const { return m_current_key != -1; }
 
   void next_key();
   void prev_key();
   
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, bool value);
+  void send(bool value);
 
 private:
   CycleKeySequence(const CycleKeySequence&);

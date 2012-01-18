@@ -27,6 +27,8 @@
 #include "button_combination.hpp"
 #include "button_map_option.hpp"
 
+class UInput;
+
 class ButtonMap
 {
 private:
@@ -64,9 +66,9 @@ public:
   ButtonEventPtr lookup(const ButtonCombination& buttons) const;
 
   void init(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, const std::bitset<256>& button_state);
-  void send_clear(UInput& uinput);
-  void update(UInput& uinput, int msec_delta);
+  void send(const std::bitset<256>& button_state);
+  void send_clear();
+  void update(int msec_delta);
 
   void clear();
 };

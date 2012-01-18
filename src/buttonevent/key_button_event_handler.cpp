@@ -25,11 +25,13 @@
 #include "uinput.hpp"
 
 KeyButtonEventHandler*
-KeyButtonEventHandler::from_string(const std::string& str)
+KeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices, 
+                                   const std::string& str)
 {
   //std::cout << " KeyButtonEventHandler::from_string: " << str << std::endl;
-
-  std::auto_ptr<KeyButtonEventHandler> ev;
+  UIEventSequence codes;
+  UIEventSequence secondary_codes;
+  int hold_threshold = 0;
 
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
@@ -40,21 +42,20 @@ KeyButtonEventHandler::from_string(const std::string& str)
     {
       case 0: 
         {
-          ev.reset(new KeyButtonEventHandler());
-          ev->m_codes = UIEventSequence::from_string(*i);
+          codes = UIEventSequence::from_string(*i);
         }
         break;
 
       case 1:
         {
-          ev->m_secondary_codes = UIEventSequence::from_string(*i);
-          ev->m_hold_threshold = 250;
+          secondary_codes = UIEventSequence::from_string(*i);
+          hold_threshold = 250;
         }
         break;
         
       case 2:
         {
-          ev->m_hold_threshold = boost::lexical_cast<int>(*i);
+          hold_threshold = boost::lexical_cast<int>(*i);
         }
         break;
 
@@ -68,31 +69,37 @@ KeyButtonEventHandler::from_string(const std::string& str)
     }
   }
 
-  return ev.release();
+  return new KeyButtonEventHandler(uinput, slot, extra_devices,
+                                   codes, secondary_codes, hold_threshold);
 }
 
-KeyButtonEventHandler::KeyButtonEventHandler() :
+KeyButtonEventHandler::KeyButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+                                             const UIEventSequence& codes,
+                                             const UIEventSequence& secondary_codes,
+                                             int hold_threshold) :
   m_state(false),
-  m_codes(),
-  m_secondary_codes(),
+  m_codes(codes),
+  m_secondary_codes(secondary_codes),
   m_hold_threshold(0),
-  m_hold_counter(0),
+  m_hold_counter(hold_threshold),
   m_release_scheduled(false)
 {
+  m_codes.init(uinput, slot, extra_devices);
+
+  if (m_hold_threshold)
+  {
+    m_secondary_codes.init(uinput, slot, extra_devices);
+  }
 }
 
-KeyButtonEventHandler::KeyButtonEventHandler(int device_id, int code) :
+KeyButtonEventHandler::KeyButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+                                             int device_id, int code) :
   m_state(false),
   m_codes(UIEvent::create(static_cast<uint16_t>(device_id), EV_KEY, code)),
   m_secondary_codes(),
   m_hold_threshold(0),
   m_hold_counter(0),
   m_release_scheduled(false)
-{
-}
-
-void
-KeyButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 {
   m_codes.init(uinput, slot, extra_devices);
 
@@ -103,7 +110,7 @@ KeyButtonEventHandler::init(UInput& uinput, int slot, bool extra_devices)
 }
 
 void
-KeyButtonEventHandler::send(UInput& uinput, bool value)
+KeyButtonEventHandler::send(bool value)
 {
   if (m_state != value)
   {
@@ -111,7 +118,7 @@ KeyButtonEventHandler::send(UInput& uinput, bool value)
 
     if (m_hold_threshold == 0)
     {
-      m_codes.send(uinput, m_state);
+      m_codes.send(m_state);
     }
     else
     {
@@ -125,7 +132,7 @@ KeyButtonEventHandler::send(UInput& uinput, bool value)
         else
         {
           // send both a press and release event after another, aka a "click"
-          m_codes.send(uinput, true);
+          m_codes.send(true);
           m_release_scheduled = 50;
         }
       }
@@ -137,7 +144,7 @@ KeyButtonEventHandler::send(UInput& uinput, bool value)
         }
         else
         {
-          m_secondary_codes.send(uinput, false);
+          m_secondary_codes.send(false);
         }
       }
 
@@ -150,7 +157,7 @@ KeyButtonEventHandler::send(UInput& uinput, bool value)
 }
 
 void
-KeyButtonEventHandler::update(UInput& uinput, int msec_delta) 
+KeyButtonEventHandler::update(int msec_delta) 
 {
   if (m_release_scheduled)
   {
@@ -158,7 +165,7 @@ KeyButtonEventHandler::update(UInput& uinput, int msec_delta)
 
     if (m_release_scheduled <= 0)
     {
-      m_codes.send(uinput, false);
+      m_codes.send(false);
       m_release_scheduled = 0;
     }
   }
@@ -169,8 +176,8 @@ KeyButtonEventHandler::update(UInput& uinput, int msec_delta)
         m_hold_counter + msec_delta >= m_hold_threshold)
     {
       // start sending the secondary events
-      m_secondary_codes.send(uinput, true);
-      uinput.sync();
+      m_secondary_codes.send(true);
+      //uinput.sync(); BROKEN: must sync
     }
 
     if (m_hold_counter < m_hold_threshold)

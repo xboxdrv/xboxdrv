@@ -24,7 +24,8 @@
 #include "uinput.hpp"
 
 AbsAxisEventHandler*
-AbsAxisEventHandler::from_string(const std::string& str)
+AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+                                 const std::string& str)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
@@ -54,45 +55,33 @@ AbsAxisEventHandler::from_string(const std::string& str)
   }
   else
   {
-    return new AbsAxisEventHandler(code, -1, -1, 0, 0);
+    return new AbsAxisEventHandler(uinput, slot, extra_devices, 
+                                   code, -1, -1, 0, 0);
   }
 }
 
-AbsAxisEventHandler::AbsAxisEventHandler() :
-  m_code(UIEvent::invalid()),
-  m_fuzz(0),
-  m_flat(0),
-  m_abs_emitter()
-{
-}
-
-AbsAxisEventHandler::AbsAxisEventHandler(const UIEvent& code, int min, int max, int fuzz, int flat) :
+AbsAxisEventHandler::AbsAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
+                                         const UIEvent& code, int min, int max, int fuzz, int flat) :
   m_code(code),
   m_fuzz(fuzz),
   m_flat(flat),
   m_abs_emitter()
 {
+  m_code.resolve_device_id(slot, extra_devices);
+  m_abs_emitter = uinput.add_abs(m_code.get_device_id(), m_code.code, 
+                                 m_min, m_max, m_fuzz, m_flat);
+
   set_axis_range(min, max);
 }
 
 void
-AbsAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
-{
-  assert(!m_abs_emitter);
-
-  m_code.resolve_device_id(slot, extra_devices);
-  m_abs_emitter = uinput.add_abs(m_code.get_device_id(), m_code.code, 
-                                 m_min, m_max, m_fuzz, m_flat);
-}
-
-void
-AbsAxisEventHandler::send(UInput& uinput, int value)
+AbsAxisEventHandler::send(int value)
 {
   m_abs_emitter->send(value);
 }
  
 void
-AbsAxisEventHandler::update(UInput& uinput, int msec_delta)
+AbsAxisEventHandler::update(int msec_delta)
 {
 }
 

@@ -44,36 +44,6 @@ ButtonEventFactory::create(ButtonEventHandler* handler)
 }
 
 ButtonEventPtr
-ButtonEventFactory::create_abs(int code)
-{
-  return create(new AbsButtonEventHandler(code));
-}
-
-ButtonEventPtr 
-ButtonEventFactory::create_key(int device_id, int code)
-{
-  return create(new KeyButtonEventHandler(device_id, code));
-}
-
-ButtonEventPtr
-ButtonEventFactory::create_key(int code)
-{
-  return create(new KeyButtonEventHandler(DEVICEID_AUTO, code));
-}
-
-ButtonEventPtr
-ButtonEventFactory::create_key()
-{
-  return create(new KeyButtonEventHandler);
-}
-
-ButtonEventPtr
-ButtonEventFactory::create_rel(int code)
-{
-  return create(new RelButtonEventHandler(UIEvent::create(DEVICEID_AUTO, EV_REL, code)));
-}
-
-ButtonEventPtr
 ButtonEventFactory::from_string(const std::string& str, const std::string& directory)
 {
   std::string::size_type p = str.find(':');
@@ -85,31 +55,31 @@ ButtonEventFactory::from_string(const std::string& str, const std::string& direc
 
   if (token == "abs")
   {
-    return create(AbsButtonEventHandler::from_string(rest));
+    return create(AbsButtonEventHandler::from_string(m_uinput, m_slot, m_extra_devices, rest));
   }
   else if (token == "rel")
   {
-    return create(RelButtonEventHandler::from_string(rest));
+    return create(RelButtonEventHandler::from_string(m_uinput, m_slot, m_extra_devices, rest));
   }
   else if (token == "key")
   {
-    return create(KeyButtonEventHandler::from_string(rest));
+    return create(KeyButtonEventHandler::from_string(m_uinput, m_slot, m_extra_devices, rest));
   }
   else if (token == "cycle-key")
   {
-    return create(CycleKeyButtonEventHandler::from_string(rest, true));
+    return create(CycleKeyButtonEventHandler::from_string(m_uinput, m_slot, m_extra_devices, rest, true));
   }
   else if (token == "cycle-key-named")
   {
-    return create(CycleKeyButtonEventHandler::from_string_named(rest, true));
+    return create(CycleKeyButtonEventHandler::from_string_named(m_uinput, m_slot, m_extra_devices, rest, true));
   }
   else if (token == "sequence-key-named" || token == "seq-key-named")
   {
-    return create(CycleKeyButtonEventHandler::from_string_named(rest, false));
+    return create(CycleKeyButtonEventHandler::from_string_named(m_uinput, m_slot, m_extra_devices, rest, false));
   }
   else if (token == "cycle-key-ref" || token == "seq-key-ref" || token == "sequence-key-ref")
   {
-    return create(CycleKeyButtonEventHandler::from_string_ref(rest));
+    return create(CycleKeyButtonEventHandler::from_string_ref(m_uinput, m_slot, m_extra_devices, rest));
   }
   else if (token == "exec")
   {
@@ -117,20 +87,22 @@ ButtonEventFactory::from_string(const std::string& str, const std::string& direc
   }
   else if (token == "macro")
   {
-    return create(MacroButtonEventHandler::from_file(path::join(directory, rest)));
+    return create(MacroButtonEventHandler::from_file(m_uinput, m_slot, m_extra_devices, 
+                                                     path::join(directory, rest)));
   }
   else if (token == "qmacro")
   {
-    return create(MacroButtonEventHandler::from_string(rest));
+    return create(MacroButtonEventHandler::from_string(m_uinput, m_slot, m_extra_devices, 
+                                                       rest));
   }
   else
   {
     // try to guess the type of event on the type of the first event code
     switch(get_event_type(token))
     {
-      case EV_KEY: return create(KeyButtonEventHandler::from_string(str));
-      case EV_REL: return create(RelButtonEventHandler::from_string(str));
-      case EV_ABS: return create(AbsButtonEventHandler::from_string(str));
+      case EV_KEY: return create(KeyButtonEventHandler::from_string(m_uinput, m_slot, m_extra_devices, str));
+      case EV_REL: return create(RelButtonEventHandler::from_string(m_uinput, m_slot, m_extra_devices, str));
+      case EV_ABS: return create(AbsButtonEventHandler::from_string(m_uinput, m_slot, m_extra_devices, str));
       case     -1: return ButtonEventPtr(); // void
       default: assert(!"unknown type");
     }

@@ -25,7 +25,6 @@
 #include "log.hpp"
 #include "helper.hpp"
 #include "raise_exception.hpp"
-#include "uinput.hpp"
 
 AxisEvent::AxisEvent(AxisEventHandler* handler, int min, int max) :
   m_last_raw_value(0),
@@ -44,13 +43,7 @@ AxisEvent::add_filter(AxisFilterPtr filter)
 }
 
 void
-AxisEvent::init(UInput& uinput, int slot, bool extra_devices)
-{
-  m_handler->init(uinput, slot, extra_devices);
-}
-
-void
-AxisEvent::send(UInput& uinput, int value)
+AxisEvent::send(int value)
 {
   m_last_raw_value = value;
 
@@ -62,21 +55,21 @@ AxisEvent::send(UInput& uinput, int value)
   if (m_last_send_value != value)
   {
     m_last_send_value = value;
-    m_handler->send(uinput, value);
+    m_handler->send(value);
   }
 }
 
 void
-AxisEvent::update(UInput& uinput, int msec_delta)
+AxisEvent::update(int msec_delta)
 {
   for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
   {
     (*i)->update(msec_delta);
   }
 
-  m_handler->update(uinput, msec_delta);
+  m_handler->update(msec_delta);
 
-  send(uinput, m_last_raw_value);
+  send(m_last_raw_value);
 }
 
 void

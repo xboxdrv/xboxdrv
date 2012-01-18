@@ -21,19 +21,21 @@
 
 #include "button_event.hpp"
 
+#include "ui_event.hpp"
 #include "ui_event_emitter.hpp"
 
 class RelButtonEventHandler : public ButtonEventHandler
 {
 public:
-  static RelButtonEventHandler* from_string(const std::string& str);
+  static RelButtonEventHandler* from_string(UInput& uinput, int slot, bool extra_devices, 
+                                            const std::string& str);
 
 public:
-  RelButtonEventHandler(const UIEvent& code);
+  RelButtonEventHandler(UInput& uinput, int slot, bool extra_devices, 
+                        const UIEvent& code);
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, bool value);
-  void update(UInput& uinput, int msec_delta) {}
+  void send(bool value);
+  void update(int msec_delta) {}
 
   std::string str() const;
 

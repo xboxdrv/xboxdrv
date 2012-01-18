@@ -23,9 +23,7 @@
 #include <vector>
 
 #include "button_filter.hpp"
-#include "ui_event.hpp"
 
-class UInput;
 class ButtonEvent;
 class ButtonEventHandler;
 
@@ -36,10 +34,9 @@ class ButtonEvent
 public:
   ButtonEvent(ButtonEventHandler* handler);
 
-  void init(UInput& uinput, int slot, bool extra_devices);
-  void send(UInput& uinput, bool value);
-  void send_clear(UInput& uinput);
-  void update(UInput& uinput, int msec_delta);
+  void send(bool value);
+  void send_clear();
+  void update(int msec_delta);
   std::string str() const;
 
   void add_filters(const std::vector<ButtonFilterPtr>& filters);
@@ -57,10 +54,9 @@ class ButtonEventHandler
 public:
   virtual ~ButtonEventHandler() {}
   
-  virtual void init(UInput& uinput, int slot, bool extra_devices) =0;
-  virtual void send(UInput& uinput, bool value) =0;
-  virtual void send_clear(UInput& uinput) { send(uinput, false); }
-  virtual void update(UInput& uinput, int msec_delta) =0;
+  virtual void send(bool value) =0;
+  virtual void send_clear() { send(false); }
+  virtual void update(int msec_delta) =0;
   virtual std::string str() const =0;
 };
 
