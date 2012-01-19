@@ -80,21 +80,14 @@ ButtonCombination::is_subset_of(const ButtonCombination& rhs) const
   assert(m_buttons_str.size() == m_buttons.size());
   assert(rhs.m_buttons_str.size() == rhs.m_buttons.size());
 
-  if (m_buttons.empty())
+  for(Buttons::const_iterator i = m_buttons.begin(); i != m_buttons.end(); ++i)
   {
-    return false;
-  }
-  else
-  {
-    for(Buttons::const_iterator i = m_buttons.begin(); i != m_buttons.end(); ++i)
+    if (!rhs.has_button(*i))
     {
-      if (!rhs.has_button(*i))
-      {
-        return false;
-      }
+      return false;
     }
-    return true;
   }
+  return true;
 }
 
 int

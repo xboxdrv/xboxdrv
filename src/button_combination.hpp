@@ -43,8 +43,6 @@ public:
 
   void print(std::ostream& os) const;
 
-  /** Check if all buttons of \a this are also part of \a rhs. If
-      \a this is empty, always returns false */
   bool is_subset_of(const ButtonCombination& rhs) const;
 
   bool operator==(const ButtonCombination&) const;
