@@ -44,13 +44,13 @@ public:
   void print(std::ostream& os) const;
 
   /** Check if all buttons of \a this are also part of \a rhs. If
-      ButtonCombination is empty, always returns false */
+      \a this is empty, always returns false */
   bool is_subset_of(const ButtonCombination& rhs) const;
 
   bool operator==(const ButtonCombination&) const;
 
 private:
-  bool has_button(const std::string& button) const;
+  bool has_button(int button) const;
 
   int size() const;
 

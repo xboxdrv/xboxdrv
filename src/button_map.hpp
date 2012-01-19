@@ -23,8 +23,9 @@
 #include <map>
 #include <vector>
 
-#include "button_event.hpp"
 #include "button_combination.hpp"
+#include "button_combination_map.hpp"
+#include "button_event.hpp"
 #include "button_map_option.hpp"
 
 class UInput;
@@ -32,29 +33,8 @@ class UInput;
 class ButtonMap
 {
 private:
-  struct Mapping
-  {
-    ButtonCombination m_buttons;
-    std::vector<ButtonCombination> m_supersets;
-    ButtonEventPtr m_event;
-    
-    Mapping() : 
-      m_buttons(), 
-      m_supersets(),
-      m_event() 
-    {}
-
-    Mapping(const ButtonCombination& buttons,
-            ButtonEventPtr event) : 
-      m_buttons(buttons),
-      m_supersets(),
-      m_event(event)
-    {}
-  };
-
-  typedef std::vector<Mapping> Mappings;
-  Mappings m_mappings;
-  
+  ButtonCombinationMap<ButtonEventPtr> m_map;
+  typedef ButtonCombinationMap<ButtonEventPtr> Map;
 public:
   ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices);
 
@@ -63,13 +43,9 @@ public:
   /** Bind a combination of multiple buttons to an event (i.e. "LB+A=KEY_A") */
   void bind(const ButtonCombination& buttons, ButtonEventPtr event);
 
-  ButtonEventPtr lookup(const ButtonCombination& buttons) const;
-
   void send(const std::bitset<256>& button_state);
   void send_clear();
   void update(int msec_delta);
-
-  void clear();
 };
 
 #endif

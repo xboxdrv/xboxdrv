@@ -35,7 +35,8 @@ private:
     Mapping() :
       m_combo(),
       m_supersets(),
-      m_state()
+      m_state(),
+      m_data()
     {}
   };
 
@@ -49,53 +50,47 @@ public:
 
   void add(const ButtonCombination& combo, const C& data)
   {
-    typename Mappings::iterator it = std::find(m_mappings.begin(), m_mappings.end(), combo);
-    if (it != m_mappings.end())
-    {
-      // override old binding
-      it->data = data;
-    }
-    else
-    {
-      Mapping mapping;
-      mapping.m_combo = combo;
-      mapping.m_state = false;
-      mapping.m_data  = data;
-
-      { 
-        // find which already bound combinations the new one is a
-        // superset of and add it to the list
-        for(typename Mappings::iterator j = m_mappings.begin(); j != m_mappings.end(); ++j)
-        {
-          if (j->m_combo.is_subset_of(combo))
-          {
-            j->m_supersets.push_back(combo);
-          }
-
-          if (combo.is_subset_of(j->m_combo))
-          {
-            mapping.m_supersets.push_back(j->m_combo);
-          }
-        }
-      }
-
-      m_mappings.push_back(mapping);
-    }
+    Mapping mapping;
+    mapping.m_combo = combo;
+    mapping.m_state = false;
+    mapping.m_data  = data;
+    m_mappings.push_back(mapping);
   }
 
   void init(const ControllerMessageDescriptor& desc)
   {
+    // init all bindings and clear obsolete superset mappings
     for(typename Mappings::iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
     {
       it->m_combo.init(desc);
+      it->m_supersets.clear();
+    }
+
+    // BROKEN: need to filter out duplicate bindings
+
+    // regenerate superset mappings
+    for(typename Mappings::iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
+    { 
+      // find which already bound combinations the new one is a
+      // superset of and add it to the list
+      for(typename Mappings::iterator j = m_mappings.begin(); j != m_mappings.end(); ++j)
+      {
+        if (&*it != &*j)
+        {
+          if (it->m_combo.is_subset_of(j->m_combo))
+          {
+            it->m_supersets.push_back(j->m_combo);
+          }
+        }
+      }
     }
   }
 
-  void update(const std::bitset<256>& button_state) const
+  void update(const std::bitset<256>& button_state)
   {
     for(typename Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
     {
-      if (i->m_buttons.match(button_state))
+      if (i->m_combo.match(button_state))
       {
         // check if a superset matches
         bool superset_matches = false;
@@ -106,7 +101,7 @@ public:
             superset_matches = true;
             break;
           }
-        }     
+        }
 
         if (superset_matches)
         {
@@ -119,7 +114,7 @@ public:
       }
       else
       {
-          i->m_state = false;
+        i->m_state = false;
       }
     }   
   }

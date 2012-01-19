@@ -45,17 +45,15 @@ ButtonCombination::ButtonCombination() :
 }
 
 ButtonCombination::ButtonCombination(const std::string& button) :
-  m_buttons_str(),
+  m_buttons_str(1, button),
   m_buttons()
 {
-  m_buttons_str.push_back(button);
 }
 
 ButtonCombination::ButtonCombination(const std::vector<std::string>& buttons) :
   m_buttons_str(buttons),
   m_buttons()
 {
-  std::sort(m_buttons_str.begin(), m_buttons_str.end());
 }
 
 void
@@ -70,21 +68,25 @@ ButtonCombination::init(const ControllerMessageDescriptor& desc)
 }
 
 bool
-ButtonCombination::has_button(const std::string& button) const
+ButtonCombination::has_button(int button) const
 {
-  return std::find(m_buttons_str.begin(), m_buttons_str.end(), button) != m_buttons_str.end();
+  return std::find(m_buttons.begin(), m_buttons.end(), button) != m_buttons.end();
 }
 
 bool
 ButtonCombination::is_subset_of(const ButtonCombination& rhs) const
 {
-  if (m_buttons_str.empty())
+  // check if init() was called
+  assert(m_buttons_str.size() == m_buttons.size());
+  assert(rhs.m_buttons_str.size() == rhs.m_buttons.size());
+
+  if (m_buttons.empty())
   {
     return false;
   }
   else
   {
-    for(ButtonsStr::const_iterator i = m_buttons_str.begin(); i != m_buttons_str.end(); ++i)
+    for(Buttons::const_iterator i = m_buttons.begin(); i != m_buttons.end(); ++i)
     {
       if (!rhs.has_button(*i))
       {
@@ -104,10 +106,11 @@ ButtonCombination::size() const
 bool
 ButtonCombination::match(const std::bitset<256>& button_state) const
 {
-  //std::cout << "ButtonCombination::match: " << m_buttons.size() << std::endl;
+  // check if init() was called
+  assert(m_buttons_str.size() == m_buttons.size());
+
   for(Buttons::const_iterator btn = m_buttons.begin(); btn != m_buttons.end(); ++btn)
   {
-    //std::cout << " ... " << *btn << " " << button_state[*btn] << std::endl;
     if (!button_state[*btn])
     {
       return false;
@@ -125,13 +128,16 @@ ButtonCombination::print(std::ostream& os) const
     if (btn != m_buttons_str.end()-1)
       os << "+";
   }
-  os << " ";
 
-  for(Buttons::const_iterator btn = m_buttons.begin(); btn != m_buttons.end(); ++btn)
+  if (false)
   {
-    os << *btn;
-    if (btn != m_buttons.end()-1)
-      os << "+";
+    os << " ";
+    for(Buttons::const_iterator btn = m_buttons.begin(); btn != m_buttons.end(); ++btn)
+    {
+      os << *btn;
+      if (btn != m_buttons.end()-1)
+        os << "+";
+    }
   }
 }
 
@@ -144,14 +150,18 @@ ButtonCombination::empty() const
 bool
 ButtonCombination::operator==(const ButtonCombination& rhs) const
 {
-  if (m_buttons_str.size() != rhs.m_buttons_str.size())
+  // check if init() was called
+  assert(m_buttons_str.size() == m_buttons.size());
+  assert(rhs.m_buttons_str.size() == rhs.m_buttons.size());
+
+  if (m_buttons.size() != rhs.m_buttons.size())
   {
     return false;
   }
   else
   {
-    return std::equal(m_buttons_str.begin(), m_buttons_str.end(),
-                      rhs.m_buttons_str.begin());
+    return std::equal(m_buttons.begin(), m_buttons.end(),
+                      rhs.m_buttons.begin());
   }
 }
 

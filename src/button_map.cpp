@@ -23,7 +23,7 @@
 #include "button_event_factory.hpp"
 
 ButtonMap::ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices) :
-  m_mappings()
+  m_map()
 {
   ButtonEventFactory button_event_factory(uinput, slot, extra_devices);
 
@@ -35,8 +35,11 @@ ButtonMap::ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, boo
     ButtonEventPtr event;
     if (it->get_event().empty())
     { 
+#if 0
+      // BROKEN
       // if no new event is given, add filters to the current binding
       event = lookup(buttons);
+#endif
     }
     else
     {
@@ -63,122 +66,41 @@ ButtonMap::ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, boo
 void
 ButtonMap::init(const ControllerMessageDescriptor& desc)
 {
-  std::cout << "ButtonMap::init(const ControllerMessageDescriptor& desc): " << m_mappings.size() << std::endl;
-  for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
-  {
-    i->m_buttons.init(desc);
-
-    // FIXME: double init is not very pretty
-    for(std::vector<ButtonCombination>::iterator j = i->m_supersets.begin(); j != i->m_supersets.end(); ++j)
-    {
-      j->init(desc);
-    }
-
-    std::cout << "Buttons: ";
-    i->m_buttons.print(std::cout);
-    std::cout << std::endl;
-  }
+  m_map.init(desc);
 }
 
 void
 ButtonMap::bind(const ButtonCombination& buttons, ButtonEventPtr event)
 {
-  buttons.print(std::cout);
-
-  // FIXME: binding the same combo twice might lead to problems
-  Mapping mapping(buttons, event);
-
-  // find which already bound combinations the new one is a
-  // superset of and add it to the list
-  for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
-  {
-    if (i->m_buttons.is_subset_of(buttons))
-    {
-      i->m_supersets.push_back(buttons);
-    }
-
-    if (buttons.is_subset_of(i->m_buttons))
-    {
-      mapping.m_supersets.push_back(i->m_buttons);
-    }
-  }
-
-  m_mappings.push_back(mapping);
-}
-
-ButtonEventPtr
-ButtonMap::lookup(const ButtonCombination& buttons) const
-{
-  for(Mappings::const_iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
-  {
-    if (i->m_buttons == buttons)
-    {
-      return i->m_event;
-    }
-  }
-  return ButtonEventPtr();
-}
-
-void
-ButtonMap::clear()
-{
-  m_mappings.clear();
+  m_map.add(buttons, event);
 }
 
 void
 ButtonMap::send(const std::bitset<256>& button_state)
 {
-  //std::cout << "ButtonMap::send" << std::endl;
-  for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
+  m_map.update(button_state);
+
+  for(Map::iterator i = m_map.begin(); i != m_map.end(); ++i)
   {
-    if (i->m_buttons.match(button_state))
-    {
-      //std::cout << "  match: ";
-      //i->m_buttons.print(std::cout);
-      //std::cout << std::endl;
-
-      // check if a superset matches
-      bool superset_matches = false;
-      for(std::vector<ButtonCombination>::iterator j = i->m_supersets.begin(); j != i->m_supersets.end(); ++j)
-      {      
-        if (j->match(button_state))
-        {
-          superset_matches = true;
-          break;
-        }
-      }     
-
-      if (superset_matches)
-      {
-        i->m_event->send(false);
-      }
-      else
-      {
-        i->m_event->send(true);
-      }
-    }
-    else
-    {
-      i->m_event->send(false);
-    }
+    i->m_data->send(i->m_state);
   }
 }
 
 void
 ButtonMap::send_clear()
 {
-  for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
+  for(Map::iterator i = m_map.begin(); i != m_map.end(); ++i)
   {
-    i->m_event->send_clear();
+    i->m_data->send_clear();
   }
 }
 
 void
 ButtonMap::update(int msec_delta)
 {
-  for(Mappings::const_iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
+  for(Map::const_iterator i = m_map.begin(); i != m_map.end(); ++i)
   {
-    i->m_event->update(msec_delta);
+    i->m_data->update(msec_delta);
   }
 }
 
