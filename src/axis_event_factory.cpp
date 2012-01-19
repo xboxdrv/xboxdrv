@@ -24,6 +24,7 @@
 
 #include "axisevent/abs_axis_event_handler.hpp"
 #include "axisevent/key_axis_event_handler.hpp"
+#include "axisevent/log_axis_event_handler.hpp"
 #include "axisevent/rel_axis_event_handler.hpp"
 #include "axisevent/rel_repeat_axis_event_handler.hpp"
 
@@ -84,6 +85,10 @@ AxisEventFactory::from_string(const std::string& str)
   else if (token == "key")
   {
     ev.reset(new AxisEvent(KeyAxisEventHandler::from_string(m_uinput, m_slot, m_extra_devices, rest)));
+  }
+  else if (token == "log")
+  {
+    ev.reset(new AxisEvent(new LogAxisEventHandler(rest)));
   }
   else
   { // try to guess a type
