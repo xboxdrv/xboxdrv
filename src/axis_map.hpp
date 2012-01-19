@@ -35,9 +35,8 @@ private:
   AxisMapping m_axis_map;
 
 public:
-  AxisMap();
+  AxisMap(const AxisMapOptions& opts, UInput& uinput, int slot, bool extra_devices);
 
-  void init(const AxisMapOptions& opts, UInput& uinput, int slot, bool extra_devices);
   void init(const ControllerMessageDescriptor& desc);
 
   void bind(AxisEventPtr event);

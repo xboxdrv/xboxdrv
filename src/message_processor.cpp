@@ -21,26 +21,17 @@
 #include "log.hpp"
 #include "uinput.hpp"
 
-MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config, const Options& opts) :
+MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config, 
+                                   const ControllerMessageDescriptor& desc,
+                                   const Options& opts) :
   m_config(config),
-  m_desc(),
+  m_desc(desc),
   m_oldmsg(),
   m_config_toggle_button(opts.config_toggle_button),
   m_rumble_gain(opts.rumble_gain),
   m_rumble_test(opts.rumble),
   m_rumble_callback()
 {
-}
-
-MessageProcessor::~MessageProcessor()
-{
-}
-
-void
-MessageProcessor::init(const ControllerMessageDescriptor& desc)
-{
-  m_desc = desc;
-
   for(std::vector<ModifierPtr>::iterator i = m_config->get_config()->get_modifier().begin();
       i != m_config->get_config()->get_modifier().end();
       ++i)
@@ -48,8 +39,12 @@ MessageProcessor::init(const ControllerMessageDescriptor& desc)
     (*i)->init(m_desc);
   }
 
-  // BROKEN: must do this for config, not just the current one
+  // BROKEN: must do this for all configs, not just the current one
   m_config->get_config()->get_emitter().init(m_desc);
+}
+
+MessageProcessor::~MessageProcessor()
+{
 }
 
 void

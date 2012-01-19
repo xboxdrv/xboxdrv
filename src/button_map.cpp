@@ -22,9 +22,42 @@
 
 #include "button_event_factory.hpp"
 
-ButtonMap::ButtonMap() :
+ButtonMap::ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices) :
   m_mappings()
 {
+  ButtonEventFactory button_event_factory(uinput, slot, extra_devices);
+
+  // BROKEN: Events must not be overriden after creation, as that messes up UInput
+  for(ButtonMapOptions::const_iterator it = opts.begin(); it != opts.end(); ++it)
+  {
+    ButtonCombination buttons = ButtonCombination::from_string(it->get_button());
+
+    ButtonEventPtr event;
+    if (it->get_event().empty())
+    { 
+      // if no new event is given, add filters to the current binding
+      event = lookup(buttons);
+    }
+    else
+    {
+      event = button_event_factory.from_string(it->get_event(), it->get_directory()); 
+      if (event)
+      {
+        bind(buttons, event);
+      }
+    }
+
+    // FIXME: How are unbound events handled?!
+    for(std::vector<std::string>::const_iterator j = it->get_filter().begin(); 
+        j != it->get_filter().end();
+        ++j)
+    {
+      if (event)
+      {
+        event->add_filter(ButtonFilter::from_string(*j));
+      }
+    }
+  }
 }
 
 void
@@ -90,44 +123,6 @@ void
 ButtonMap::clear()
 {
   m_mappings.clear();
-}
-
-void
-ButtonMap::init(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices)
-{
-  ButtonEventFactory button_event_factory(uinput, slot, extra_devices);
-
-  // BROKEN: Events must not be overriden after creation, as that messes up UInput
-  for(ButtonMapOptions::const_iterator it = opts.begin(); it != opts.end(); ++it)
-  {
-    ButtonCombination buttons = ButtonCombination::from_string(it->get_button());
-
-    ButtonEventPtr event;
-    if (it->get_event().empty())
-    { 
-      // if no new event is given, add filters to the current binding
-      event = lookup(buttons);
-    }
-    else
-    {
-      event = button_event_factory.from_string(it->get_event(), it->get_directory()); 
-      if (event)
-      {
-        bind(buttons, event);
-      }
-    }
-
-    // FIXME: How are unbound events handled?!
-    for(std::vector<std::string>::const_iterator j = it->get_filter().begin(); 
-        j != it->get_filter().end();
-        ++j)
-    {
-      if (event)
-      {
-        event->add_filter(ButtonFilter::from_string(*j));
-      }
-    }
-  }
 }
 
 void

@@ -34,7 +34,7 @@ ControllerThread::ControllerThread(ControllerPtr controller,
                                    ControllerSlotConfigPtr config,
                                    const Options& opts) :
   m_controller(controller),
-  m_processor(new MessageProcessor(config, opts)),
+  m_processor(new MessageProcessor(config, m_controller->get_message_descriptor(), opts)),
   m_oldrealmsg(),
   m_timeout(opts.timeout),
   m_print_messages(!opts.silent),
@@ -46,7 +46,6 @@ ControllerThread::ControllerThread(ControllerPtr controller,
   if (m_processor.get())
   {
     m_processor->set_ff_callback(boost::bind(&Controller::set_rumble, m_controller.get(), _1, _2));
-    m_processor->init(m_controller->get_message_descriptor());
   }
 }
 

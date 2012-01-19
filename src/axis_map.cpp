@@ -21,20 +21,15 @@
 #include "axis_event_factory.hpp"
 #include "controller_message_descriptor.hpp"
 
-AxisMap::AxisMap() :
+AxisMap::AxisMap(const AxisMapOptions& opts, UInput& uinput, int slot, bool extra_devices) :
   m_axis_map()
 {
+  AxisEventFactory button_event_factory(uinput, slot, extra_devices);
 }
 
 void
 AxisMap::init(const ControllerMessageDescriptor& desc)
 {
-}
-
-void
-AxisMap::init(const AxisMapOptions& opts, UInput& uinput, int slot, bool extra_devices)
-{
-  AxisEventFactory button_event_factory(uinput, slot, extra_devices);
 }
 
 void

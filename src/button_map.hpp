@@ -56,7 +56,7 @@ private:
   Mappings m_mappings;
   
 public:
-  ButtonMap();
+  ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices);
 
   void init(const ControllerMessageDescriptor& desc);
 
@@ -65,7 +65,6 @@ public:
 
   ButtonEventPtr lookup(const ButtonCombination& buttons) const;
 
-  void init(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices);
   void send(const std::bitset<256>& button_state);
   void send_clear();
   void update(int msec_delta);
