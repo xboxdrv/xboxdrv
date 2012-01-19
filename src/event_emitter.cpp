@@ -25,16 +25,9 @@
 
 EventEmitter::EventEmitter(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
-  m_btn_map(),
-  m_axis_map(),
-  axis_state(),
-  m_button_state(),
-  m_last_button_state()
+  m_btn_map(opts.get_btn_map(), uinput, slot, extra_devices),
+  m_axis_map(opts.get_axis_map(), uinput, slot, extra_devices)
 {
-  std::fill(axis_state.begin(), axis_state.end(), 0);
-  
-  m_axis_map.init(opts.get_axis_map(), uinput, slot, extra_devices);
-  m_btn_map.init(opts.get_btn_map(), uinput, slot, extra_devices);
 }
 
 void
@@ -48,11 +41,8 @@ EventEmitter::init(const ControllerMessageDescriptor& desc)
 void
 EventEmitter::send(const ControllerMessage& msg)
 {
-  m_last_button_state = m_button_state;
-  m_button_state = msg.get_key_state();
-
-  m_btn_map.send(m_button_state);
-  m_axis_map.send(m_button_state, msg.get_abs_state());
+  m_btn_map.send(msg.get_key_state());
+  m_axis_map.send(msg.get_key_state(), msg.get_abs_state());
 
   m_uinput.sync();
 }
@@ -69,9 +59,6 @@ EventEmitter::update(int msec_delta)
 void
 EventEmitter::reset_all_outputs()
 {
-  m_last_button_state.reset();
-  m_button_state.reset();
-
   m_axis_map.send_clear();
   m_btn_map.send_clear();
 

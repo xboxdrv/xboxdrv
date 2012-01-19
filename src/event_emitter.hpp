@@ -39,10 +39,6 @@ private:
   ButtonMap m_btn_map;
   AxisMap   m_axis_map;
 
-  boost::array<int, 256> axis_state;
-  std::bitset<256> m_button_state;
-  std::bitset<256> m_last_button_state;
-
 public:
   EventEmitter(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);
 
