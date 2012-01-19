@@ -30,8 +30,6 @@ public:
                                             const std::string& str);
 
 public:
-  KeyButtonEventHandler(UInput& uinput, int slot, bool extra_devices, 
-                        int deviceid, int code);
   KeyButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
                         const UIEventSequence& codes,
                         const UIEventSequence& secondary_codes,

@@ -92,23 +92,6 @@ KeyButtonEventHandler::KeyButtonEventHandler(UInput& uinput, int slot, bool extr
   }
 }
 
-KeyButtonEventHandler::KeyButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
-                                             int device_id, int code) :
-  m_state(false),
-  m_codes(UIEvent::create(static_cast<uint16_t>(device_id), EV_KEY, code)),
-  m_secondary_codes(),
-  m_hold_threshold(0),
-  m_hold_counter(0),
-  m_release_scheduled(false)
-{
-  m_codes.init(uinput, slot, extra_devices);
-
-  if (m_hold_threshold)
-  {
-    m_secondary_codes.init(uinput, slot, extra_devices);
-  }
-}
-
 void
 KeyButtonEventHandler::send(bool value)
 {
