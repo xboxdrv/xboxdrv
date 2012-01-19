@@ -19,7 +19,11 @@
 #ifndef HEADER_XBOXDRV_BUTTON_COMBINATION_MAP_HPP
 #define HEADER_XBOXDRV_BUTTON_COMBINATION_MAP_HPP
 
+#include <boost/shared_ptr.hpp>
+
 #include "button_combination.hpp"
+
+typedef boost::shared_ptr<ButtonCombination> ButtonCombinationPtr;
 
 template<typename C>
 class ButtonCombinationMap
@@ -27,8 +31,8 @@ class ButtonCombinationMap
 private:
   struct Mapping
   {
-    ButtonCombination m_combo;
-    std::vector<ButtonCombination> m_supersets;
+    ButtonCombinationPtr m_combo;
+    std::vector<ButtonCombinationPtr> m_supersets;
     bool m_state;
     C m_data;
 
@@ -51,7 +55,7 @@ public:
   void add(const ButtonCombination& combo, const C& data)
   {
     Mapping mapping;
-    mapping.m_combo = combo;
+    mapping.m_combo.reset(new ButtonCombination(combo));
     mapping.m_state = false;
     mapping.m_data  = data;
     m_mappings.push_back(mapping);
@@ -62,7 +66,7 @@ public:
     // init all bindings and clear obsolete superset mappings
     for(typename Mappings::iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
     {
-      it->m_combo.init(desc);
+      it->m_combo->init(desc);
       it->m_supersets.clear();
     }
 
@@ -77,7 +81,7 @@ public:
       {
         if (&*it != &*j)
         {
-          if (it->m_combo.is_subset_of(j->m_combo))
+          if (it->m_combo->is_subset_of(*j->m_combo))
           {
             it->m_supersets.push_back(j->m_combo);
           }
@@ -90,13 +94,13 @@ public:
   {
     for(typename Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
     {
-      if (i->m_combo.match(button_state))
+      if (i->m_combo->match(button_state))
       {
         // check if a superset matches
         bool superset_matches = false;
-        for(std::vector<ButtonCombination>::iterator j = i->m_supersets.begin(); j != i->m_supersets.end(); ++j)
+        for(std::vector<ButtonCombinationPtr>::iterator j = i->m_supersets.begin(); j != i->m_supersets.end(); ++j)
         {      
-          if (j->match(button_state))
+          if ((*j)->match(button_state))
           {
             superset_matches = true;
             break;

@@ -20,6 +20,7 @@
 
 #include "axis_event_factory.hpp"
 #include "controller_message_descriptor.hpp"
+#include "log.hpp"
 
 AxisMap::AxisMap(const AxisMapOptions& opts, UInput& uinput, int slot, bool extra_devices) :
   m_mappings(),
@@ -60,6 +61,11 @@ AxisMap::init(const ControllerMessageDescriptor& desc)
   {
     int abs = desc.abs().get(it->axis);
     m_map.at(abs).add(ButtonCombination(it->buttons), it->event);
+  }
+
+  for(int i = 0; i < static_cast<int>(m_map.size()); ++i)
+  {
+    m_map[i].init(desc);
   }
 }
 
