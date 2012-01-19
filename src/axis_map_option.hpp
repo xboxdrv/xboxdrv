@@ -21,6 +21,9 @@
 
 #include <string>
 #include <vector>
+#include <boost/tokenizer.hpp>
+
+#include "raise_exception.hpp"
 
 class AxisMapOption
 {
@@ -32,14 +35,32 @@ private:
   std::string m_directory;
   
 public:
-  AxisMapOption(const std::string& axis,
+  AxisMapOption(const std::string& lhs,
                 const std::string& event) :
-    m_axis(axis),
+    m_axis(),
     m_buttons(),
     m_filter(),
     m_event(event),
     m_directory() // BROKEN: needs get_directory_context() or something more clever
-  {}
+  {
+    boost::tokenizer<boost::char_separator<char> > 
+      tokens(lhs, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
+    
+    std::vector<std::string> args(tokens.begin(), tokens.end());
+    if (args.empty())
+    {
+      raise_exception(std::runtime_error, "no axis given");
+    }
+    else if (args.size() == 1)
+    {
+      m_axis = args[0];
+    }
+    else
+    {
+      m_buttons.insert(m_buttons.end(), args.begin(), args.end()-1);
+      m_axis = args.back();      
+    }
+  }
 
   void add_filter(const std::string& filter)
   {
@@ -47,6 +68,7 @@ public:
   }
 
   const std::string& get_axis() const { return m_axis; }
+  const std::vector<std::string>& get_buttons() const { return m_buttons; }
   const std::vector<std::string>& get_filter() const { return m_filter; }
   const std::string& get_event() const { return m_event; }
   const std::string& get_directory() const { return m_directory; }

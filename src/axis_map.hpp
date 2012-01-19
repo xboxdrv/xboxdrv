@@ -31,16 +31,29 @@ class UInput;
 class AxisMap
 {
 private:
-  typedef boost::array<ButtonCombinationMap<AxisEventPtr>, 256> AxisMapping;
-  AxisMapping m_axis_map;
+  struct Mapping
+  {
+    std::vector<std::string> buttons;
+    std::string  axis;
+    AxisEventPtr event;
+
+    Mapping() :
+      buttons(),
+      axis(),
+      event()
+    {}
+  };
+
+  std::vector<Mapping> m_mappings;
+
+  typedef ButtonCombinationMap<AxisEventPtr> Map;
+  typedef std::vector<Map> AxisMapping;
+  AxisMapping m_map;
 
 public:
   AxisMap(const AxisMapOptions& opts, UInput& uinput, int slot, bool extra_devices);
 
   void init(const ControllerMessageDescriptor& desc);
-
-  void bind(AxisEventPtr event);
-  void bind(const ButtonCombination& combo, AxisEventPtr event);
 
   void send(const std::bitset<256>& button_state,
             const boost::array<int, 256>& axis_state);

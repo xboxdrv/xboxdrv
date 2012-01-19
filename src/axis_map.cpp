@@ -22,75 +22,86 @@
 #include "controller_message_descriptor.hpp"
 
 AxisMap::AxisMap(const AxisMapOptions& opts, UInput& uinput, int slot, bool extra_devices) :
-  m_axis_map()
+  m_mappings(),
+  m_map()
 {
-  AxisEventFactory button_event_factory(uinput, slot, extra_devices);
+  AxisEventFactory factory(uinput, slot, extra_devices);
+
+  for(AxisMapOptions::const_iterator it = opts.begin(); it != opts.end(); ++it)
+  {
+    // create event
+    AxisEventPtr event = factory.from_string(it->get_event());
+
+    // create filter
+    for(std::vector<std::string>::const_iterator j = it->get_filter().begin();
+        j != it->get_filter().end();
+        ++j)
+    {
+      event->add_filter(AxisFilter::from_string(*j));
+    }
+
+    // event is usable at this point, but can't yet store it in its
+    // final place, as the axis strings can't be resolved yet
+    Mapping mapping;
+    mapping.buttons = it->get_buttons();
+    mapping.axis    = it->get_axis();
+    mapping.event   = event;
+    m_mappings.push_back(mapping);
+  }
 }
 
 void
 AxisMap::init(const ControllerMessageDescriptor& desc)
 {
-}
-
-void
-AxisMap::bind(AxisEventPtr event)
-{
-}
-
-void
-AxisMap::bind(const ButtonCombination& combo, AxisEventPtr event)
-{
+  m_map.clear();
+  m_map.resize(desc.get_abs_count());
+  
+  for(std::vector<Mapping>::iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
+  {
+    int abs = desc.abs().get(it->axis);
+    m_map.at(abs).add(ButtonCombination(it->buttons), it->event);
+  }
 }
 
 void
 AxisMap::send_clear()
 {
-#if 0
-  for(Mappings::iterator i = m_mappings.begin(); i != m_mappings.end(); ++i)
+  for(std::vector<Mapping>::iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
   {
-    i->m_event->send_clear();
+    it->event->send(0);
   }
-#endif
 }
 
 void
 AxisMap::send(const std::bitset<256>& button_state,
               const boost::array<int, 256>& axis_state)
 {
-  for(AxisMapping::iterator i = m_axis_map.begin(); i != m_axis_map.end(); ++i)
+  for(int i = 0; i < static_cast<int>(m_map.size()); ++i)
   {
-#if 0
-    i->update(button_state);
-    for(auto it = i->begin(); it != i->end(); ++i)
+    Map& m = m_map[i];
+    m.update(button_state);
+
+    for(Map::iterator j = m.begin(); j != m.end(); ++j)
     {
-      if (i->is_active())
+      if (j->m_state)
       {
-        i->get_data()->send(axis, axis_state[axis]); 
+        j->m_data->send(axis_state[i]); 
       }
       else
       {
-        i->get_data()->send(0);
+        j->m_data->send(0);
       }
     }
-#endif
   }
 }
 
 void
 AxisMap::update(int msec_delta)
 {
-#if 0
-  for(size_t shift_code = 0; shift_code < m_axis_map.size(); ++shift_code)
+  for(std::vector<Mapping>::iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
   {
-    for(size_t code = 0; code < m_axis_map[shift_code].size(); ++code)
-    {
-      if (m_axis_map[shift_code][code])
-      {
-        m_axis_map[shift_code][code]->update(uinput, msec_delta);
-      }
-    }
+    it->event->update(msec_delta);
   }
-#endif
 }
 
 /* EOF */
