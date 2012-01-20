@@ -48,6 +48,9 @@ public:
   int dpad_left;
   int dpad_right;
 
+  int dpad_x;
+  int dpad_y;
+
   // left stick
   int abs_x1;
   int abs_y1;
