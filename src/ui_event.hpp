@@ -54,6 +54,8 @@ public:
   int type;
   int code;
 
+  int get_type() const { return type; }
+  int get_code() const { return code; }
   uint32_t get_device_id() const;
 
 private:

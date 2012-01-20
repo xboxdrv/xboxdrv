@@ -97,6 +97,7 @@ public:
 
   /** Device construction functions
       @{*/
+  UIEventEmitterPtr add(const UIEvent& ev);
   UIEventEmitterPtr add_rel(uint32_t device_id, int ev_code);
   UIEventEmitterPtr add_abs(uint32_t device_id, int ev_code, int min, int max, int fuzz, int flat);
   UIEventEmitterPtr add_key(uint32_t device_id, int ev_code);

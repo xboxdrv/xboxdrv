@@ -39,6 +39,7 @@ MacroButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_device
       MacroEvent event;
       event.type  = MacroEvent::kSendOp;
       event.send.event = UIEvent::from_char(*i);
+      event.send.emitter = 0;
       event.send.value = 1;
       events.push_back(event);
     }
@@ -52,6 +53,7 @@ MacroButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_device
       MacroEvent event;
       event.type  = MacroEvent::kSendOp;
       event.send.event = UIEvent::from_char(*i);
+      event.send.emitter = 0;
       event.send.value = 0;
       events.push_back(event);
     }
@@ -113,6 +115,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
         MacroEvent event;
         event.type = MacroEvent::kInitOp;
         event.init.event = UIEvent::from_string(args[1]);
+        event.init.emitter = 0;
         event.init.minimum = boost::lexical_cast<int>(args[2]);
         event.init.maximum = boost::lexical_cast<int>(args[3]);
         event.init.fuzz = 0;
@@ -134,6 +137,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
         MacroEvent event;
         event.type  = MacroEvent::kSendOp;
         event.send.event = UIEvent::from_string(args[1]);
+        event.send.emitter = 0;
         event.send.value = boost::lexical_cast<int>(args[2]);
         return event;
       }
@@ -171,7 +175,8 @@ MacroButtonEventHandler::MacroButtonEventHandler(UInput& uinput, int slot, bool 
   m_events(events),
   m_send_in_progress(false),
   m_countdown(0),
-  m_event_counter()
+  m_event_counter(),
+  m_emitter()
 {
   for(std::vector<MacroEvent>::iterator i = m_events.begin(); i != m_events.end(); ++i)
   {
@@ -190,13 +195,15 @@ MacroButtonEventHandler::MacroButtonEventHandler(UInput& uinput, int slot, bool 
 
           case EV_ABS:
             i->init.event.resolve_device_id(slot, extra_devices);
-            uinput.add_abs(i->init.event.get_device_id(), i->init.event.code,
-                           i->init.minimum, i->init.maximum, 
-                           i->init.fuzz, i->init.flat);
+            i->init.emitter = new UIEventEmitterPtr(
+              uinput.add_abs(i->init.event.get_device_id(), i->init.event.code,
+                             i->init.minimum, i->init.maximum, 
+                             i->init.fuzz, i->init.flat));
             break;
 
           default:
             assert(!"not implemented");
+            break;
         }
         break;
 
@@ -204,17 +211,18 @@ MacroButtonEventHandler::MacroButtonEventHandler(UInput& uinput, int slot, bool 
         switch(i->send.event.type)
         {
           case EV_REL:
-            i->send.event.resolve_device_id(slot, extra_devices),
-            uinput.add_rel(i->send.event.get_device_id(), i->send.event.code);
+            i->send.event.resolve_device_id(slot, extra_devices);
+            i->send.emitter = new UIEventEmitterPtr(get_emitter(uinput, i->send.event));
             break;
 
           case EV_KEY:
-            i->send.event.resolve_device_id(slot, extra_devices),
-            uinput.add_key(i->send.event.get_device_id(), i->send.event.code);
+            i->send.event.resolve_device_id(slot, extra_devices);
+            i->send.emitter = new UIEventEmitterPtr(get_emitter(uinput, i->send.event));
             break;
 
           case EV_ABS:
             i->send.event.resolve_device_id(slot, extra_devices);
+            // BROKEN: need to get the UIEventEmitterPtr inited earlier
             // not doing a add_abs() here, its the users job to use a
             // init command for that
             break;
@@ -229,6 +237,43 @@ MacroButtonEventHandler::MacroButtonEventHandler(UInput& uinput, int slot, bool 
         // nothing to do
         break;
     }
+  }
+}
+
+MacroButtonEventHandler::~MacroButtonEventHandler()
+{
+  for(std::vector<MacroEvent>::iterator i = m_events.begin(); i != m_events.end(); ++i)
+  {
+    switch(i->type)
+    {
+      case MacroEvent::kInitOp:
+        delete i->init.emitter;
+        break;
+
+      case MacroEvent::kSendOp:
+        delete i->send.emitter;
+        break;
+
+      default:
+        // do nothing
+        break;
+    }
+  }
+}
+
+UIEventEmitterPtr
+MacroButtonEventHandler::get_emitter(UInput& uinput, const UIEvent& ev)
+{
+  Emitter::iterator it = m_emitter.find(ev);
+  if (it != m_emitter.end())
+  {
+    return it->second;
+  }
+  else
+  {
+    UIEventEmitterPtr emitter = uinput.add(ev);
+    m_emitter[ev] = emitter;
+    return emitter;
   }
 }
 
@@ -259,12 +304,8 @@ MacroButtonEventHandler::update(int msec_delta)
             break;
 
           case MacroEvent::kSendOp:
-#if 0
-            uinput.send(m_events[m_event_counter].send.event.get_device_id(),
-                        m_events[m_event_counter].send.event.type,
-                        m_events[m_event_counter].send.event.code,
-                        m_events[m_event_counter].send.value);
-#endif
+            log_tmp("send: " << m_events[m_event_counter].send.value);
+            (*m_events[m_event_counter].send.emitter)->send(m_events[m_event_counter].send.value);
             break;
 
           case MacroEvent::kWaitOp:

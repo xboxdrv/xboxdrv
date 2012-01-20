@@ -130,6 +130,7 @@ UIEvent::invalid()
 bool
 UIEvent::operator<(const UIEvent& rhs)  const
 {
+  // BROKEN: must take all members into account
   if (m_device_id == rhs.m_device_id)
   {
     if (type == rhs.type)

@@ -33,6 +33,7 @@ private:
     union {
       struct {
         UIEvent event;
+        UIEventEmitterPtr* emitter;
 	int minimum;
 	int maximum;
 	int fuzz;
@@ -41,6 +42,7 @@ private:
 
       struct {
         UIEvent event;
+        UIEventEmitterPtr* emitter;
         int     value;
       } send;
 
@@ -57,11 +59,15 @@ public:
 public:
   MacroButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
                           const std::vector<MacroEvent>& events);
+  ~MacroButtonEventHandler();
 
   void send(bool value);
   void update(int msec_delta);
 
   std::string str() const;
+
+private:
+  UIEventEmitterPtr get_emitter(UInput& uinput, const UIEvent& ev);
 
 private:
   static MacroEvent macro_event_from_string(const std::string& str);
@@ -71,6 +77,9 @@ private:
   bool m_send_in_progress;
   int m_countdown;
   std::vector<MacroEvent>::size_type m_event_counter;
+
+  typedef std::map<UIEvent, UIEventEmitterPtr> Emitter;
+  Emitter m_emitter;
 };
 
 #endif

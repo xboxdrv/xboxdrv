@@ -324,6 +324,30 @@ UInput::create_uinput_device(uint32_t device_id)
 }
 
 UIEventEmitterPtr
+UInput::add(const UIEvent& ev)
+{
+  LinuxUinput* dev = create_uinput_device(ev.get_device_id());
+
+  switch(ev.get_type())
+  {
+    case EV_KEY:
+      dev->add_key(static_cast<uint16_t>(ev.get_code()));
+      break;
+
+    case EV_REL:
+      dev->add_rel(static_cast<uint16_t>(ev.get_code()));
+      break;
+
+    case EV_ABS:
+      dev->add_abs(static_cast<uint16_t>(ev.get_code()), 
+                   0, 0, 0, 0 /* min, max, fuzz, flat */); // BROKEN
+      break;
+  }
+  
+  return create_emitter(ev.get_device_id(), ev.get_type(), ev.get_code());
+}
+
+UIEventEmitterPtr
 UInput::add_key(uint32_t device_id, int ev_code)
 {
   LinuxUinput* dev = create_uinput_device(device_id);
