@@ -27,7 +27,7 @@ MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config,
   m_config(config),
   m_desc(desc),
   m_oldmsg(),
-  m_config_toggle_button(opts.config_toggle_button),
+  m_config_toggle_button(desc.key().get(opts.config_toggle_button)),
   m_rumble_gain(opts.rumble_gain),
   m_rumble_test(opts.rumble),
   m_rumble_callback()

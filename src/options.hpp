@@ -88,7 +88,7 @@ public:
   EvdevAbsMap evdev_absmap;
   bool evdev_grab;
   bool evdev_debug;
-  std::map<int, XboxButton> evdev_keymap;
+  std::map<int, std::string> evdev_keymap;
 
   bool wiimote;
 
@@ -124,7 +124,7 @@ public:
 
   uint32_t list_enums;
 
-  XboxButton config_toggle_button;
+  std::string config_toggle_button;
   bool config_toggle_button_is_set;
 
   int controller_slot;

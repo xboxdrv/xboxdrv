@@ -1152,6 +1152,7 @@ CommandLineParser::set_evdev_absmap(const std::string& name, const std::string& 
 {
   if (!name.empty())
   {
+#if 0
     XboxAxis axis = string2axis(value);
 
     switch (*name.rbegin())
@@ -1160,6 +1161,7 @@ CommandLineParser::set_evdev_absmap(const std::string& name, const std::string& 
       case '+': m_options->evdev_absmap.bind_plus ( str2abs(name.substr(0, name.length()-1)), axis ); break;
       default:  m_options->evdev_absmap.bind_both ( str2abs(name), axis ); break;
     }
+#endif
   }
   else
   {
@@ -1170,20 +1172,20 @@ CommandLineParser::set_evdev_absmap(const std::string& name, const std::string& 
 void
 CommandLineParser::set_evdev_keymap(const std::string& name, const std::string& value)
 {
-  m_options->evdev_keymap[str2key(name)] = string2btn(value);
+  m_options->evdev_keymap[str2key(name)] = value;
 }
 
 void
 CommandLineParser::set_relative_axis(const std::string& name, const std::string& value)
 {
-  m_options->get_controller_options().relative_axis_map[string2axis(name)]
+  m_options->get_controller_options().relative_axis_map[name]
     = AxisFilterPtr(new RelativeAxisFilter(boost::lexical_cast<int>(value)));
 }
 
 void
 CommandLineParser::set_autofire(const std::string& name, const std::string& value)
 {
-  m_options->get_controller_options().autofire_map[string2btn(name)]
+  m_options->get_controller_options().autofire_map[name]
     = ButtonFilterPtr(new AutofireButtonFilter(boost::lexical_cast<int>(value), 0));
 }
 
@@ -1200,7 +1202,7 @@ CommandLineParser::set_calibration(const std::string& name, const std::string& v
   }
   else
   {
-    m_options->get_controller_options().calibration_map[string2axis(name)]
+    m_options->get_controller_options().calibration_map[name]
       = AxisFilterPtr(new CalibrationAxisFilter(boost::lexical_cast<int>(args[0]), 
                                                 boost::lexical_cast<int>(args[1]), 
                                                 boost::lexical_cast<int>(args[2])));
@@ -1210,7 +1212,7 @@ CommandLineParser::set_calibration(const std::string& name, const std::string& v
 void
 CommandLineParser::set_axis_sensitivity(const std::string& name, const std::string& value)
 {
-  m_options->get_controller_options().sensitivity_map[string2axis(name)]
+  m_options->get_controller_options().sensitivity_map[name]
     = AxisFilterPtr(new SensitivityAxisFilter(boost::lexical_cast<float>(value)));
 }
 
@@ -1334,14 +1336,14 @@ void
 CommandLineParser::set_relative_axis_n(int controller, int config, const std::string& name, const std::string& value)
 {
   m_options->controller_slots[controller].get_options(config)
-    .relative_axis_map[string2axis(name)] = AxisFilterPtr(new RelativeAxisFilter(boost::lexical_cast<int>(value)));
+    .relative_axis_map[name] = AxisFilterPtr(new RelativeAxisFilter(boost::lexical_cast<int>(value)));
 }
 
 void
 CommandLineParser::set_autofire_n(int controller, int config, const std::string& name, const std::string& value)
 {
   m_options->controller_slots[controller].get_options(config)
-    .autofire_map[string2btn(name)] = ButtonFilterPtr(new AutofireButtonFilter(boost::lexical_cast<int>(value), 0));
+    .autofire_map[name] = ButtonFilterPtr(new AutofireButtonFilter(boost::lexical_cast<int>(value), 0));
 }
 
 void
@@ -1355,7 +1357,7 @@ void
 CommandLineParser::set_axis_sensitivity_n(int controller, int config, const std::string& name, const std::string& value)
 {
   m_options->controller_slots[controller].get_options(config)
-    .sensitivity_map[string2axis(name)] = AxisFilterPtr(new SensitivityAxisFilter(boost::lexical_cast<float>(value)));
+    .sensitivity_map[name] = AxisFilterPtr(new SensitivityAxisFilter(boost::lexical_cast<float>(value)));
 }
 
 void

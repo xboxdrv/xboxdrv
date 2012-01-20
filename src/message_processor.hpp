@@ -32,7 +32,7 @@ private:
 
   ControllerMessageDescriptor m_desc;
   ControllerMessage m_oldmsg; /// last data send to uinput
-  XboxButton m_config_toggle_button;
+  int m_config_toggle_button;
 
   int m_rumble_gain;
   bool m_rumble_test;

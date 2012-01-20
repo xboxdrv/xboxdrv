@@ -36,11 +36,11 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
   {
     boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
-    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.calibration_map.begin();
+    for(std::map<std::string, AxisFilterPtr>::const_iterator i = opts.calibration_map.begin();
         i != opts.calibration_map.end();
         ++i)
     {
-      axismap->add_filter(i->first, i->second); 
+      // BROKEN: axismap->add_filter(i->first, i->second); 
     }
 
     m_modifier.push_back(axismap);
@@ -95,10 +95,10 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
   {
     boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
-    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.sensitivity_map.begin();
+    for(std::map<std::string, AxisFilterPtr>::const_iterator i = opts.sensitivity_map.begin();
         i != opts.sensitivity_map.end(); ++i)
     {
-      axismap->add_filter(i->first, i->second); 
+      // BROKEN: axismap->add_filter(i->first, i->second); 
     }
 
     m_modifier.push_back(axismap);
@@ -114,10 +114,10 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
   {
     boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
-    for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.relative_axis_map.begin();
+    for(std::map<std::string, AxisFilterPtr>::const_iterator i = opts.relative_axis_map.begin();
         i != opts.relative_axis_map.end(); ++i)
     {
-      axismap->add_filter(i->first, i->second); 
+      // BROKEN: axismap->add_filter(i->first, i->second); 
     }
 
     m_modifier.push_back(axismap);

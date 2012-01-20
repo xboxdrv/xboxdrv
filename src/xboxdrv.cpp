@@ -293,6 +293,7 @@ Xboxdrv::run_list_enums(uint32_t enums)
     wrap.newline();
   }
   
+#if 0
   if (enums & Options::LIST_AXIS)
   {
     std::vector<std::string> lst;
@@ -316,6 +317,7 @@ Xboxdrv::run_list_enums(uint32_t enums)
     wrap.para("  ", boost::algorithm::join(lst, ", "));
     wrap.newline();
   }
+#endif
 }
 
 Xboxdrv::Xboxdrv()

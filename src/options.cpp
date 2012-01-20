@@ -103,7 +103,7 @@ Options::Options() :
   on_disconnect(),
   exec(),
   list_enums(0),
-  config_toggle_button(XBOX_BTN_UNKNOWN),
+  config_toggle_button(),
   config_toggle_button_is_set(false),
   controller_slot(0),
   config_slot(0),
@@ -298,7 +298,7 @@ Options::set_toggle_button(const std::string& str)
   }
   else
   {
-    config_toggle_button = string2btn(str);
+    config_toggle_button = str;
     config_toggle_button_is_set = true;
   }
 }

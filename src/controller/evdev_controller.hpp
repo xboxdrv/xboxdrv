@@ -42,7 +42,7 @@ private:
 
   EvdevAbsMap m_absmap;
 
-  typedef std::map<int, XboxButton> KeyMap;
+  typedef std::map<int, std::string> KeyMap;
   KeyMap m_keymap;
 
   std::vector<struct input_absinfo> m_absinfo;
@@ -54,7 +54,7 @@ private:
 public:
   EvdevController(const std::string& filename, 
                   const EvdevAbsMap&  absmap,
-                  const std::map<int, XboxButton>& keyMap,
+                  const std::map<int, std::string>& keyMap,
                   bool grab,
                   bool debug);
   ~EvdevController();

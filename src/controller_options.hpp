@@ -50,10 +50,10 @@ public:
   bool four_way_restrictor;
   int  dpad_rotation;
 
-  std::map<XboxAxis, AxisFilterPtr> calibration_map;
-  std::map<XboxAxis, AxisFilterPtr> sensitivity_map;
-  std::map<XboxAxis, AxisFilterPtr> relative_axis_map;
-  std::map<XboxButton, ButtonFilterPtr> autofire_map;
+  std::map<std::string, AxisFilterPtr> calibration_map;
+  std::map<std::string, AxisFilterPtr> sensitivity_map;
+  std::map<std::string, AxisFilterPtr> relative_axis_map;
+  std::map<std::string, ButtonFilterPtr> autofire_map;
 };
 
 #endif

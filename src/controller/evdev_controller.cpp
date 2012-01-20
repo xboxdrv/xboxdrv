@@ -37,7 +37,7 @@
 
 EvdevController::EvdevController(const std::string& filename,
                                  const EvdevAbsMap& absmap,
-                                 const std::map<int, XboxButton>& keymap,
+                                 const std::map<int, std::string>& keymap,
                                  bool grab,
                                  bool debug) :
   m_fd(-1),
@@ -199,7 +199,7 @@ EvdevController::parse(const struct input_event& ev, ControllerMessage& msg_inou
         KeyMap::const_iterator it = m_keymap.find(ev.code);
         if (it != m_keymap.end())
         {
-          msg_inout.set_key(it->second, ev.value);
+          // BROKEN: msg_inout.set_key(it->second, ev.value);
           return true;
         }
         else
