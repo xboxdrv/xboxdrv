@@ -27,6 +27,7 @@
 #include "buttonevent/cycle_key_button_event_handler.hpp"
 #include "buttonevent/exec_button_event_handler.hpp"
 #include "buttonevent/key_button_event_handler.hpp"
+#include "buttonevent/log_button_event_handler.hpp"
 #include "buttonevent/macro_button_event_handler.hpp"
 #include "buttonevent/rel_button_event_handler.hpp"
 
@@ -84,6 +85,10 @@ ButtonEventFactory::from_string(const std::string& str, const std::string& direc
   else if (token == "exec")
   {
     return create(ExecButtonEventHandler::from_string(rest));
+  }
+  else if (token == "log")
+  {
+    return create(new LogButtonEventHandler(rest));
   }
   else if (token == "macro")
   {

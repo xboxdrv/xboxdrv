@@ -1,0 +1,18 @@
+[xboxdrv]
+ui-clear=true
+
+[ui-axismap]
+x1=log:axis-__
+lb+x1=log:axis-lb
+rb+x1=log:axis-rb
+lb+rb+x1=log:axis-lb+rb
+
+[ui-buttonmap]
+a=log:key-a
+b=log:key-b
+x=log:key-x
+a+x=log:key-a+x
+b+x=log:key-b+x
+a+b=log:key-a+b
+
+# EOF #
