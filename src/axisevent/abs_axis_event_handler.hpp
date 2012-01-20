@@ -40,6 +40,8 @@ public:
 
 private:
   UIEvent m_code;
+  int m_min;
+  int m_max;
   int m_fuzz;
   int m_flat;
 

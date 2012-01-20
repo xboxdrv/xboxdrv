@@ -21,6 +21,7 @@
 #include <boost/tokenizer.hpp>
 
 #include "evdev_helper.hpp"
+#include "raise_exception.hpp"
 #include "uinput.hpp"
 
 AbsAxisEventHandler*
@@ -29,7 +30,12 @@ AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  
+ 
+  int min = -1;
+  int max = -1;
+  int fuzz = 0;
+  int flat = 0;
+ 
   int j = 0;
   UIEvent code = UIEvent::invalid();
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
@@ -40,29 +46,43 @@ AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
         code = str2abs_event(*i);
         break;
 
+      case 1: 
+        min = boost::lexical_cast<int>(*i);
+        break;
+
+      case 2: 
+        max = boost::lexical_cast<int>(*i);
+        break;
+
+      case 3: 
+        fuzz = boost::lexical_cast<int>(*i);
+        break;
+
+      case 4: 
+        flat = boost::lexical_cast<int>(*i);
+        break;
+        
       default: 
-        throw std::runtime_error("AxisEventHandlers::abs_from_string(): to many arguments: " + str);
+        raise_exception(std::runtime_error, "to many arguments: " + str);
     }
   }
 
   if (j == 0)
   {
-    throw std::runtime_error("AxisEventHandler::abs_from_string(): at least one argument required: " + str);
-  }
-  else if (j > 1)
-  {
-    throw std::runtime_error("AxisEventHandler::abs_from_string(): invalid extra arguments in " + str);
+    raise_exception(std::runtime_error, "at least one argument required: " + str);
   }
   else
   {
     return new AbsAxisEventHandler(uinput, slot, extra_devices, 
-                                   code, -1, -1, 0, 0);
+                                   code, min, max, fuzz, flat);
   }
 }
 
 AbsAxisEventHandler::AbsAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
                                          const UIEvent& code, int min, int max, int fuzz, int flat) :
   m_code(code),
+  m_min(min),
+  m_max(max),
   m_fuzz(fuzz),
   m_flat(flat),
   m_abs_emitter()
@@ -71,7 +91,7 @@ AbsAxisEventHandler::AbsAxisEventHandler(UInput& uinput, int slot, bool extra_de
   m_abs_emitter = uinput.add_abs(m_code.get_device_id(), m_code.code, 
                                  m_min, m_max, m_fuzz, m_flat);
 
-  set_axis_range(min, max);
+  set_axis_range(m_min, m_max);
 }
 
 void
