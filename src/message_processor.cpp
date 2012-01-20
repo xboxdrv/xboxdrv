@@ -27,11 +27,16 @@ MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config,
   m_config(config),
   m_desc(desc),
   m_oldmsg(),
-  m_config_toggle_button(desc.key().get(opts.config_toggle_button)),
+  m_config_toggle_button(-1),
   m_rumble_gain(opts.rumble_gain),
   m_rumble_test(opts.rumble),
   m_rumble_callback()
 {
+  if (opts.config_toggle_button_is_set)
+  {
+    m_config_toggle_button = desc.key().get(opts.config_toggle_button);
+  }
+
   for(std::vector<ModifierPtr>::iterator i = m_config->get_config()->get_modifier().begin();
       i != m_config->get_config()->get_modifier().end();
       ++i)
@@ -65,7 +70,7 @@ MessageProcessor::send(const ControllerMessage& msg_in,
     }
 
     // handling switching of configurations
-    if (m_config_toggle_button != XBOX_BTN_UNKNOWN)
+    if (m_config_toggle_button != -1)
     {
       bool last = m_oldmsg.get_key(m_config_toggle_button);
       bool cur  = msg.get_key(m_config_toggle_button);
