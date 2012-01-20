@@ -64,14 +64,12 @@ CycleKeySequence::CycleKeySequence(UInput& uinput, int slot, bool extra_devices,
 void
 CycleKeySequence::send(bool value)
 {
-#if 0
   int send_key = has_current_key() ? m_current_key : m_last_key;
 
-  m_keys[send_key].send(uinput, value); 
+  m_keys[send_key].send(value); 
 
   m_last_key = send_key;
   m_current_key = -1;
-#endif
 }
 
 void
