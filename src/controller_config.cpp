@@ -48,6 +48,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
 
   if (opts.deadzone)
   {
+#if 0
     boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
     XboxAxis axes[] = { XBOX_AXIS_X1,
@@ -65,6 +66,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
     }
 
     m_modifier.push_back(axismap);
+#endif
   }
 
   if (opts.deadzone_trigger)
