@@ -125,7 +125,7 @@ SymbolTable::get(const std::string& name_) const
   std::map<std::string, int>::const_iterator it = m_name2int.find(name);
   if (it == m_name2int.end())
   {
-    raise_exception(std::runtime_error, "lookup failure for: " << name);
+    raise_exception(std::runtime_error, "lookup failure for: '" << name << "'");
   }
   else
   {
