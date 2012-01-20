@@ -61,32 +61,33 @@ UInputOptions::mimic_xpad()
   get_axis_map().clear();
   get_btn_map().clear();
 
-#if 0  
-  get_btn_map().bind(XBOX_BTN_START, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_START));
-  get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_MODE));
-  get_btn_map().bind(XBOX_BTN_BACK,  ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_BACK));
-  
-  get_btn_map().bind(XBOX_BTN_A, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_A));
-  get_btn_map().bind(XBOX_BTN_B, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_B));
-  get_btn_map().bind(XBOX_BTN_X, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_X));
-  get_btn_map().bind(XBOX_BTN_Y, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_Y));
-  
-  get_btn_map().bind(XBOX_BTN_LB, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_TL));
-  get_btn_map().bind(XBOX_BTN_RB, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_TR));
-  
-  get_btn_map().bind(XBOX_BTN_THUMB_L, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_THUMBL));
-  get_btn_map().bind(XBOX_BTN_THUMB_R, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_THUMBR));
+  m_btn_map.push_back(ButtonMapOption("start", "BTN_START"));
+  m_btn_map.push_back(ButtonMapOption("guide", "BTN_MODE"));
+  m_btn_map.push_back(ButtonMapOption("back",  "BTN_SELECT"));
+
+  m_btn_map.push_back(ButtonMapOption("a",    "BTN_A"));
+  m_btn_map.push_back(ButtonMapOption("b",    "BTN_B"));
+  m_btn_map.push_back(ButtonMapOption("x",    "BTN_X"));
+  m_btn_map.push_back(ButtonMapOption("y",    "BTN_Y"));
+
+  m_btn_map.push_back(ButtonMapOption("lb",    "BTN_TL"));
+  m_btn_map.push_back(ButtonMapOption("rb",    "BTN_TR"));
+
+  m_btn_map.push_back(ButtonMapOption("tl",    "BTN_THUMBL"));
+  m_btn_map.push_back(ButtonMapOption("tr",    "BTN_THUMBR"));
+
+
+  m_axis_map.push_back(AxisMapOption("x1", "ABS_X:-32768:32767:16:128"));
+  m_axis_map.push_back(AxisMapOption("y1", "ABS_Y:-32768:32767:16:128"));
+
+  m_axis_map.push_back(AxisMapOption("x2", "ABS_RX:-32768:32767:16:128"));
+  m_axis_map.push_back(AxisMapOption("y2", "ABS_RY:-32768:32767:16:128"));
+
+  m_axis_map.push_back(AxisMapOption("lt", "ABS_Z:0:255:0:0"));
+  m_axis_map.push_back(AxisMapOption("rt", "ABS_RZ:0:255:0:0"));
             
-  // Axis Mapping
-  get_axis_map().bind(XBOX_AXIS_X1,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_X,  -32768, 32767, 16, 128));
-  get_axis_map().bind(XBOX_AXIS_Y1,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_Y,  -32768, 32767, 16, 128));
-  get_axis_map().bind(XBOX_AXIS_X2,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_RX, -32768, 32767, 16, 128));
-  get_axis_map().bind(XBOX_AXIS_Y2,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_RY, -32768, 32767, 16, 128));
-  get_axis_map().bind(XBOX_AXIS_LT,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_Z,  0, 255, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_RT,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_RZ, 0, 255, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_DPAD_X,  AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_HAT0X, -1, 1, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_DPAD_Y,  AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_HAT0Y, -1, 1, 0, 0));
-#endif
+  m_axis_map.push_back(AxisMapOption("dpad_x", "ABS_HAT0X:-1:1:0:0"));
+  m_axis_map.push_back(AxisMapOption("dpad_y", "ABS_HAT0Y:-1:1:0:0"));
 }
 
 void
@@ -96,35 +97,34 @@ UInputOptions::mimic_xpad_wireless()
   get_axis_map().clear();
   get_btn_map().clear();
 
-#if 0  
-  get_btn_map().bind(XBOX_DPAD_UP,    ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_0));
-  get_btn_map().bind(XBOX_DPAD_DOWN,  ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_1));
-  get_btn_map().bind(XBOX_DPAD_LEFT,  ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_LEFT));
-  get_btn_map().bind(XBOX_DPAD_RIGHT, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_RIGHT));
+  m_btn_map.push_back(ButtonMapOption("dpad_up",    "BTN_0"));
+  m_btn_map.push_back(ButtonMapOption("dpad_down",  "BTN_1"));
+  m_btn_map.push_back(ButtonMapOption("dpad_left",  "BTN_LEFT"));
+  m_btn_map.push_back(ButtonMapOption("dpad_right", "BTN_RIGHT"));
 
-  get_btn_map().bind(XBOX_BTN_START, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_START));
-  get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_MODE));
-  get_btn_map().bind(XBOX_BTN_BACK,  ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_BACK));
-  
-  get_btn_map().bind(XBOX_BTN_A, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_A));
-  get_btn_map().bind(XBOX_BTN_B, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_B));
-  get_btn_map().bind(XBOX_BTN_X, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_X));
-  get_btn_map().bind(XBOX_BTN_Y, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_Y));
-  
-  get_btn_map().bind(XBOX_BTN_LB, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_TL));
-  get_btn_map().bind(XBOX_BTN_RB, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_TR));
-  
-  get_btn_map().bind(XBOX_BTN_THUMB_L, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_THUMBL));
-  get_btn_map().bind(XBOX_BTN_THUMB_R, ButtonEventFactory::create_key(DEVICEID_JOYSTICK, BTN_THUMBR));
-            
-  // Axis Mapping
-  get_axis_map().bind(XBOX_AXIS_X1,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_X,  -32768, 32767, 16, 128));
-  get_axis_map().bind(XBOX_AXIS_Y1,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_Y,  -32768, 32767, 16, 128));
-  get_axis_map().bind(XBOX_AXIS_X2,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_RX, -32768, 32767, 16, 128));
-  get_axis_map().bind(XBOX_AXIS_Y2,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_RY, -32768, 32767, 16, 128));
-  get_axis_map().bind(XBOX_AXIS_LT,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_Z,  0, 255, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_RT,      AxisEvent::create_abs(DEVICEID_JOYSTICK, ABS_RZ, 0, 255, 0, 0));
-#endif
+  m_btn_map.push_back(ButtonMapOption("start", "BTN_START"));
+  m_btn_map.push_back(ButtonMapOption("guide", "BTN_MODE"));
+  m_btn_map.push_back(ButtonMapOption("back",  "BTN_SELECT"));
+
+  m_btn_map.push_back(ButtonMapOption("a",    "BTN_A"));
+  m_btn_map.push_back(ButtonMapOption("b",    "BTN_B"));
+  m_btn_map.push_back(ButtonMapOption("x",    "BTN_X"));
+  m_btn_map.push_back(ButtonMapOption("y",    "BTN_Y"));
+
+  m_btn_map.push_back(ButtonMapOption("lb",    "BTN_TL"));
+  m_btn_map.push_back(ButtonMapOption("rb",    "BTN_TR"));
+
+  m_btn_map.push_back(ButtonMapOption("tl",    "BTN_THUMBL"));
+  m_btn_map.push_back(ButtonMapOption("tr",    "BTN_THUMBR"));
+
+  m_axis_map.push_back(AxisMapOption("x1", "ABS_X:-32768:32767:0:0"));
+  m_axis_map.push_back(AxisMapOption("y1", "ABS_Y:-32768:32767:0:0"));
+
+  m_axis_map.push_back(AxisMapOption("x2", "ABS_RX:-32768:32767:0:0"));
+  m_axis_map.push_back(AxisMapOption("y2", "ABS_RY:-32768:32767:0:0"));
+
+  m_axis_map.push_back(AxisMapOption("lt", "ABS_Z:0:255:0:0"));
+  m_axis_map.push_back(AxisMapOption("rt", "ABS_RZ:0:255:0:0"));
 }
 
 void
@@ -133,97 +133,75 @@ UInputOptions::set_defaults()
   get_btn_map().clear();
   get_axis_map().clear();
 
-#if 0
-  // Button Mapping
-  get_btn_map().bind(XBOX_BTN_START, ButtonEventFactory::create_key(BTN_START));
-  get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEventFactory::create_key(BTN_MODE));
-  get_btn_map().bind(XBOX_BTN_BACK, ButtonEventFactory::create_key(BTN_SELECT));
+  m_btn_map.push_back(ButtonMapOption("start", "BTN_START"));
+  m_btn_map.push_back(ButtonMapOption("guide", "BTN_MODE"));
+  m_btn_map.push_back(ButtonMapOption("back", "BTN_SELECT"));
 
-  get_btn_map().bind(XBOX_BTN_A, ButtonEventFactory::create_key(BTN_A));
-  get_btn_map().bind(XBOX_BTN_B, ButtonEventFactory::create_key(BTN_B));
-  get_btn_map().bind(XBOX_BTN_X, ButtonEventFactory::create_key(BTN_X));
-  get_btn_map().bind(XBOX_BTN_Y, ButtonEventFactory::create_key(BTN_Y));
+  m_btn_map.push_back(ButtonMapOption("a",    "BTN_A"));
+  m_btn_map.push_back(ButtonMapOption("b",    "BTN_B"));
+  m_btn_map.push_back(ButtonMapOption("x",    "BTN_X"));
+  m_btn_map.push_back(ButtonMapOption("y",    "BTN_Y"));
 
-  get_btn_map().bind(XBOX_BTN_LB, ButtonEventFactory::create_key(BTN_TL));
-  get_btn_map().bind(XBOX_BTN_RB, ButtonEventFactory::create_key(BTN_TR));
+  m_btn_map.push_back(ButtonMapOption("lb",    "BTN_TL"));
+  m_btn_map.push_back(ButtonMapOption("rb",    "BTN_TR"));
 
-  // by default unmapped:
-  //get_btn_map().bind(XBOX_BTN_LT, ButtonEventFactory::create_key(BTN_TL2));
-  //get_btn_map().bind(XBOX_BTN_RT, ButtonEventFactory::create_key(BTN_TR2));
+  m_btn_map.push_back(ButtonMapOption("tl",    "BTN_THUMBL"));
+  m_btn_map.push_back(ButtonMapOption("tr",    "BTN_THUMBR"));
 
-  get_btn_map().bind(XBOX_BTN_THUMB_L, ButtonEventFactory::create_key(BTN_THUMBL));
-  get_btn_map().bind(XBOX_BTN_THUMB_R, ButtonEventFactory::create_key(BTN_THUMBR));
+  m_axis_map.push_back(AxisMapOption("x1", "ABS_X:-32768:32767:0:0"));
+  m_axis_map.push_back(AxisMapOption("y1", "ABS_Y:-32768:32767:0:0"));
 
-  // by default unmapped
-  //get_btn_map().bind(XBOX_DPAD_UP,    ButtonEventFactory::create_key(BTN_BASE));
-  //get_btn_map().bind(XBOX_DPAD_DOWN,  ButtonEventFactory::create_key(BTN_BASE2));
-  //get_btn_map().bind(XBOX_DPAD_LEFT,  ButtonEventFactory::create_key(BTN_BASE3));
-  //get_btn_map().bind(XBOX_DPAD_RIGHT, ButtonEventFactory::create_key(BTN_BASE4));
+  m_axis_map.push_back(AxisMapOption("x2", "ABS_RX:-32768:32767:0:0"));
+  m_axis_map.push_back(AxisMapOption("y2", "ABS_RY:-32768:32767:0:0"));
 
-  // Axis Mapping
-  get_axis_map().bind(XBOX_AXIS_X1, AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -32768, 32767, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_Y1, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -32768, 32767, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_X2, AxisEvent::create_abs(DEVICEID_AUTO, ABS_RX, -32768, 32767, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_Y2, AxisEvent::create_abs(DEVICEID_AUTO, ABS_RY, -32768, 32767, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::create_abs(DEVICEID_AUTO, ABS_BRAKE, 0, 255, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::create_abs(DEVICEID_AUTO, ABS_GAS, 0, 255, 0, 0)); 
-
-  // by default unmapped:
-  //get_axis_map().bind(XBOX_AXIS_TRIGGER,  AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0));
-  
-  get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0X, -1, 1, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0Y, -1, 1, 0, 0));
-#endif
+  m_axis_map.push_back(AxisMapOption("lt", "ABS_BRAKE:0:255:0:0"));
+  m_axis_map.push_back(AxisMapOption("rt", "ABS_GAS:0:255:0:0"));
+ 
+  m_axis_map.push_back(AxisMapOption("dpad_x", "ABS_HAT0X:-1:1:0:0"));
+  m_axis_map.push_back(AxisMapOption("dpad_y", "ABS_HAT0Y:-1:1:0:0"));
 }
 
 void
 UInputOptions::trigger_as_button()
 {
-#if 0
-  get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
-  get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::invalid());
+  m_axis_map.push_back(AxisMapOption("lt", "void"));
+  m_axis_map.push_back(AxisMapOption("rt", "void"));
 
-  get_btn_map().bind(XBOX_BTN_LT, ButtonEventFactory::create_key(BTN_TL2));
-  get_btn_map().bind(XBOX_BTN_RT, ButtonEventFactory::create_key(BTN_TR2));
-#endif
+  m_btn_map.push_back(ButtonMapOption("lt",    "BTN_TL2"));
+  m_btn_map.push_back(ButtonMapOption("rt",    "BTN_TR2"));
 }
 
 void
 UInputOptions::trigger_as_zaxis()
 {
-#if 0
-  get_axis_map().bind(XBOX_AXIS_TRIGGER, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Z, -255, 255, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_LT, AxisEvent::invalid());
-  get_axis_map().bind(XBOX_AXIS_RT, AxisEvent::invalid());
-#endif
+  m_axis_map.push_back(AxisMapOption("trigger", "ABS_Z:-255:255:0:0"));
+
+  m_axis_map.push_back(AxisMapOption("lt", "void"));
+  m_axis_map.push_back(AxisMapOption("rt", "void"));
 }
 
 void
 UInputOptions::dpad_as_button()
 {
-#if 0
-  get_btn_map().bind(XBOX_DPAD_UP,    ButtonEventFactory::create_key(BTN_BASE));
-  get_btn_map().bind(XBOX_DPAD_DOWN,  ButtonEventFactory::create_key(BTN_BASE2));
-  get_btn_map().bind(XBOX_DPAD_LEFT,  ButtonEventFactory::create_key(BTN_BASE3));
-  get_btn_map().bind(XBOX_DPAD_RIGHT, ButtonEventFactory::create_key(BTN_BASE4));
+  m_btn_map.push_back(ButtonMapOption("dpad_up",    "BTN_BASE"));
+  m_btn_map.push_back(ButtonMapOption("dpad_down",  "BTN_BASE2"));
+  m_btn_map.push_back(ButtonMapOption("dpad_left",  "BTN_BASE3"));
+  m_btn_map.push_back(ButtonMapOption("dpad_right", "BTN_BASE4"));
 
-  get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::invalid());
-  get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::invalid());
-#endif
+  m_axis_map.push_back(AxisMapOption("dpad_x", "void"));
+  m_axis_map.push_back(AxisMapOption("dpad_y", "void"));
 }
 
 void
 UInputOptions::dpad_only()
 {
-#if 0
-  get_axis_map().bind(XBOX_AXIS_X1, AxisEvent::invalid());
-  get_axis_map().bind(XBOX_AXIS_Y1, AxisEvent::invalid());
-  get_axis_map().bind(XBOX_AXIS_X2, AxisEvent::invalid());
-  get_axis_map().bind(XBOX_AXIS_Y2, AxisEvent::invalid());
+  m_axis_map.push_back(AxisMapOption("x1", "void"));
+  m_axis_map.push_back(AxisMapOption("y1", "void"));
+  m_axis_map.push_back(AxisMapOption("x2", "void"));
+  m_axis_map.push_back(AxisMapOption("y2", "void"));
 
-  get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -1, 1, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -1, 1, 0, 0));
-#endif
+  m_axis_map.push_back(AxisMapOption("dpad_x", "ABS_X:-1:1:0:0"));
+  m_axis_map.push_back(AxisMapOption("dpad_y", "ABS_Y:-1:1:0:0"));
 }
 
 void
@@ -232,25 +210,21 @@ UInputOptions::guitar()
   get_btn_map().clear();
   get_axis_map().clear();
 
-#if 0
-  // Button Mapping
-  get_btn_map().bind(XBOX_BTN_START, ButtonEventFactory::create_key(BTN_START));
-  get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEventFactory::create_key(BTN_MODE));
-  get_btn_map().bind(XBOX_BTN_BACK,  ButtonEventFactory::create_key(BTN_SELECT));
+  m_btn_map.push_back(ButtonMapOption("start", "BTN_START"));
+  m_btn_map.push_back(ButtonMapOption("guide", "BTN_MODE"));
+  m_btn_map.push_back(ButtonMapOption("back", "BTN_SELECT"));
 
-  get_btn_map().bind(XBOX_BTN_A,  ButtonEventFactory::create_key(BTN_0)); // green 
-  get_btn_map().bind(XBOX_BTN_B,  ButtonEventFactory::create_key(BTN_1)); // red
-  get_btn_map().bind(XBOX_BTN_Y,  ButtonEventFactory::create_key(BTN_2)); // blue
-  get_btn_map().bind(XBOX_BTN_X,  ButtonEventFactory::create_key(BTN_3)); // yellow
-  get_btn_map().bind(XBOX_BTN_LB, ButtonEventFactory::create_key(BTN_4)); // orange
+  m_btn_map.push_back(ButtonMapOption("a", "BTN_0"));  // green 
+  m_btn_map.push_back(ButtonMapOption("b", "BTN_1"));  // red
+  m_btn_map.push_back(ButtonMapOption("y", "BTN_2"));  // blue
+  m_btn_map.push_back(ButtonMapOption("x", "BTN_3"));  // yellow
+  m_btn_map.push_back(ButtonMapOption("lb", "BTN_4")); // orange
 
-  // Axis Mapping
-  get_axis_map().bind(XBOX_AXIS_X2, AxisEvent::create_abs(DEVICEID_AUTO, ABS_X, -32768, 32767, 0, 0)); // whammy
-  get_axis_map().bind(XBOX_AXIS_Y2, AxisEvent::create_abs(DEVICEID_AUTO, ABS_Y, -32768, 32767, 0, 0)); // tilt
-  
-  get_axis_map().bind(XBOX_AXIS_DPAD_X, AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0X, -1, 1, 0, 0));
-  get_axis_map().bind(XBOX_AXIS_DPAD_Y, AxisEvent::create_abs(DEVICEID_AUTO, ABS_HAT0Y, -1, 1, 0, 0));
-#endif
+  m_axis_map.push_back(AxisMapOption("x2", "ABS_X:-32768:32767:0:0")); // whammy
+  m_axis_map.push_back(AxisMapOption("y2", "ABS_Y:-32768:32767:0:0")); // tilt
+
+  m_axis_map.push_back(AxisMapOption("dpad_x", "ABS_HAT0X:-1:1:0:0"));
+  m_axis_map.push_back(AxisMapOption("dpad_y", "ABS_HAT0Y:-1:1:0:0"));
 }
 
 /* EOF */
