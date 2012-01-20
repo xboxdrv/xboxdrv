@@ -293,7 +293,7 @@ Options::set_toggle_button(const std::string& str)
 {
   if (str == "void")
   {
-    config_toggle_button = XBOX_BTN_UNKNOWN;
+    config_toggle_button.clear();
     config_toggle_button_is_set = true;
   }
   else
@@ -439,7 +439,7 @@ Options::finish()
   if (!config_toggle_button_is_set && 
       controller_slots[controller_slot].get_options().size() > 1)
   {
-    config_toggle_button = XBOX_BTN_GUIDE;
+    config_toggle_button = "guide";
   }
 }
 
