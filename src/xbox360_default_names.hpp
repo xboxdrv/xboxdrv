@@ -43,6 +43,9 @@ public:
   int btn_lb;
   int btn_rb;
 
+  int btn_lt;
+  int btn_rt;
+
   int dpad_up;
   int dpad_down;
   int dpad_left;
@@ -62,6 +65,14 @@ public:
   // trigger
   int abs_lt;
   int abs_rt;
+
+  // analog face button
+  int abs_a;
+  int abs_b;
+  int abs_x;
+  int abs_y;
+  int abs_black;
+  int abs_white;
 
 public:
   Xbox360DefaultNames(ControllerMessageDescriptor& msg_desc);

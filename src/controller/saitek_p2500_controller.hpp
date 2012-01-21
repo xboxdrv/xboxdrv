@@ -21,14 +21,17 @@
 
 #include <libusb.h>
 
-#include "xboxmsg.hpp"
 #include "controller/usb_controller.hpp"
+#include "xboxmsg.hpp"
+#include "xbox360_default_names.hpp"
 
 class SaitekP2500Controller : public USBController
 {
 private: 
   int left_rumble;
   int right_rumble;
+
+  Xbox360DefaultNames xbox;
 
 public:
   SaitekP2500Controller(libusb_device* dev, bool try_detach);

@@ -22,12 +22,15 @@
 #include <libusb.h>
 
 #include "controller/usb_controller.hpp"
+#include "xbox360_default_names.hpp"
 
 class Playstation3USBController : public USBController
 {
 private:
   int endpoint_in;
   int endpoint_out;
+
+  Xbox360DefaultNames xbox;
 
 public:
   Playstation3USBController(libusb_device* dev, bool try_detach);

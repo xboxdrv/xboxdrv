@@ -22,6 +22,7 @@
 #include <libusb.h>
 
 #include "controller/usb_controller.hpp"
+#include "xbox360_default_names.hpp"
 
 struct XPadDevice;
 
@@ -30,6 +31,8 @@ class XboxController : public USBController
 private:
   int m_endpoint_in;
   int m_endpoint_out;
+
+  Xbox360DefaultNames xbox;
   
 public:
   XboxController(libusb_device* dev, bool try_detach);

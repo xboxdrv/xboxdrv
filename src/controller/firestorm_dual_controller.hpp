@@ -23,11 +23,14 @@
 
 #include "xboxmsg.hpp"
 #include "controller/usb_controller.hpp"
+#include "xbox360_default_names.hpp"
 
 class FirestormDualController : public USBController
 {
 private:
   bool is_vsb;
+
+  Xbox360DefaultNames xbox;
 
 public:
   FirestormDualController(libusb_device* dev, bool is_vsb, bool try_detach);

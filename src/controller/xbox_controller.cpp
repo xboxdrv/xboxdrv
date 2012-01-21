@@ -31,7 +31,8 @@
 XboxController::XboxController(libusb_device* dev, bool try_detach) :
   USBController(dev),
   m_endpoint_in(1),
-  m_endpoint_out(2)
+  m_endpoint_out(2),
+  xbox(m_message_descriptor)
 {
   // find endpoints
   m_endpoint_in  = usb_find_ep(LIBUSB_ENDPOINT_IN,  88, 66, 0);
@@ -70,35 +71,35 @@ XboxController::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
     //unsigned int type       :8;
     //unsigned int length     :8;
 
-    msg_out->set_key(XBOX_DPAD_UP,    unpack::bit(data+2, 0));
-    msg_out->set_key(XBOX_DPAD_DOWN,  unpack::bit(data+2, 1));
-    msg_out->set_key(XBOX_DPAD_LEFT,  unpack::bit(data+2, 2));
-    msg_out->set_key(XBOX_DPAD_RIGHT, unpack::bit(data+2, 3));
+    msg_out->set_key(xbox.dpad_up,    unpack::bit(data+2, 0));
+    msg_out->set_key(xbox.dpad_down,  unpack::bit(data+2, 1));
+    msg_out->set_key(xbox.dpad_left,  unpack::bit(data+2, 2));
+    msg_out->set_key(xbox.dpad_right, unpack::bit(data+2, 3));
 
-    msg_out->set_key(XBOX_BTN_START,   unpack::bit(data+2, 4));
-    msg_out->set_key(XBOX_BTN_BACK,    unpack::bit(data+2, 5));
-    msg_out->set_key(XBOX_BTN_THUMB_L, unpack::bit(data+2, 6));
-    msg_out->set_key(XBOX_BTN_THUMB_R, unpack::bit(data+2, 7));
+    msg_out->set_key(xbox.btn_start,   unpack::bit(data+2, 4));
+    msg_out->set_key(xbox.btn_back,    unpack::bit(data+2, 5));
+    msg_out->set_key(xbox.btn_thumb_l, unpack::bit(data+2, 6));
+    msg_out->set_key(xbox.btn_thumb_r, unpack::bit(data+2, 7));
 
     //unsigned int dummy       :8;
 
-    msg_out->set_abs(XBOX_AXIS_A, data[4]);
-    msg_out->set_abs(XBOX_AXIS_B, data[5]);
-    msg_out->set_abs(XBOX_AXIS_X, data[6]);
-    msg_out->set_abs(XBOX_AXIS_Y, data[7]);
+    msg_out->set_abs(xbox.abs_a, data[4]);
+    msg_out->set_abs(xbox.abs_b, data[5]);
+    msg_out->set_abs(xbox.abs_x, data[6]);
+    msg_out->set_abs(xbox.abs_y, data[7]);
 
-    msg_out->set_abs(XBOX_AXIS_BLACK, data[8]);
-    msg_out->set_abs(XBOX_AXIS_WHITE, data[9]);
+    msg_out->set_abs(xbox.abs_black, data[8]);
+    msg_out->set_abs(xbox.abs_white, data[9]);
 
-    msg_out->set_abs(XBOX_AXIS_LT, data[10]);
-    msg_out->set_abs(XBOX_AXIS_RT, data[11]);
+    msg_out->set_abs(xbox.abs_lt, data[10]);
+    msg_out->set_abs(xbox.abs_rt, data[11]);
 
 
-    msg_out->set_abs(XBOX_AXIS_X1, unpack::int16le(data+12));
-    msg_out->set_abs(XBOX_AXIS_Y1, unpack::int16le(data+13));
+    msg_out->set_abs(xbox.abs_x1, unpack::int16le(data+12));
+    msg_out->set_abs(xbox.abs_y1, unpack::int16le(data+13));
 
-    msg_out->set_abs(XBOX_AXIS_X2, unpack::int16le(data+14));
-    msg_out->set_abs(XBOX_AXIS_Y2, unpack::int16le(data+15));
+    msg_out->set_abs(xbox.abs_x2, unpack::int16le(data+14));
+    msg_out->set_abs(xbox.abs_y2, unpack::int16le(data+15));
 
     return true;
   }

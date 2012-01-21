@@ -293,31 +293,19 @@ Xboxdrv::run_list_enums(uint32_t enums)
     wrap.newline();
   }
   
-#if 0
   if (enums & Options::LIST_AXIS)
   {
-    std::vector<std::string> lst;
-    for(int i = 1; i < XBOX_AXIS_MAX; ++i)
-    {
-      lst.push_back(axis2string(static_cast<XboxAxis>(i)));
-    }
     wrap.println("XboxAxis:");
-    wrap.para("  ", boost::algorithm::join(lst, ", "));
+    // BROKEN
     wrap.newline();
   }
   
   if (enums & Options::LIST_BUTTON)
   {
-    std::vector<std::string> lst;
-    for(int i = 1; i < XBOX_BTN_MAX; ++i)
-    {
-      lst.push_back(btn2string(static_cast<XboxButton>(i)));
-    }
     wrap.println("XboxButton:");
-    wrap.para("  ", boost::algorithm::join(lst, ", "));
+    // BROKEN
     wrap.newline();
   }
-#endif
 }
 
 Xboxdrv::Xboxdrv()

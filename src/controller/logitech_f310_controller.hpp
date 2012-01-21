@@ -24,12 +24,15 @@
 
 #include "xboxmsg.hpp"
 #include "controller/usb_controller.hpp"
+#include "xbox360_default_names.hpp"
 
 class LogitechF310Controller : public USBController
 {
 private: 
   int left_rumble;
   int right_rumble;
+
+  Xbox360DefaultNames xbox;
 
 public:
   LogitechF310Controller(libusb_device* dev, bool try_detach);
