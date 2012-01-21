@@ -45,7 +45,7 @@ public:
                     float range_start, float range_end);
 
   void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg);
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
 
   std::string str() const;
 

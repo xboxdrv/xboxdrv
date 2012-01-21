@@ -33,7 +33,7 @@ public:
                         const std::vector<std::string>& out_buttons_str);
 
   void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg);
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
   
   std::string str() const;
 

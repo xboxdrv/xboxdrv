@@ -55,7 +55,7 @@ RotateAxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-RotateAxisModifier::update(int msec_delta, ControllerMessage& msg)
+RotateAxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   float x = msg.get_abs_float(m_xaxis);
   float y = msg.get_abs_float(m_yaxis);

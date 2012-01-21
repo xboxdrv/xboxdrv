@@ -32,7 +32,7 @@ public:
   SquareAxisModifier(const std::string& x_axis, const std::string& y_axis);
 
   void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg);
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
 
   std::string str() const;
 

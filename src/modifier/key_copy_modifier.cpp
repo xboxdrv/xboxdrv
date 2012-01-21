@@ -52,7 +52,7 @@ KeyCopyModifier::init(ControllerMessageDescriptor& desc)
 }
   
 void
-KeyCopyModifier::update(int msec_delta, ControllerMessage& msg)
+KeyCopyModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   msg.set_key(m_to_sym, msg.get_key(m_from_sym));
 }

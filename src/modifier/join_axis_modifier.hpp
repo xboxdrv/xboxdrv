@@ -38,7 +38,7 @@ public:
   JoinAxisModifier(const std::string& lhs, const std::string& rhs, const std::string& out);
 
   void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg);
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
 
   std::string str() const;
 

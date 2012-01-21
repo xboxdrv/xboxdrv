@@ -117,7 +117,7 @@ AxismapModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-AxismapModifier::update(int msec_delta, ControllerMessage& msg)
+AxismapModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   ControllerMessage newmsg = msg;
 

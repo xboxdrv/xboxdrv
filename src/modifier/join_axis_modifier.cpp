@@ -52,7 +52,7 @@ JoinAxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-JoinAxisModifier::update(int msec_delta, ControllerMessage& msg)
+JoinAxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   m_out.set_float(msg, (m_rhs.get_float(msg) - m_lhs.get_float(msg)) / 2.0f);
 }

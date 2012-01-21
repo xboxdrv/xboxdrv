@@ -38,22 +38,22 @@ LogModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-LogModifier::update(int msec_delta, ControllerMessage& msg)
+LogModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   std::cout << m_prefix << ": ";
-  for(int i = 1; i < XBOX_BTN_MAX; ++i)
+  for(int i = 0; i < desc.get_key_count(); ++i)
   {
     std::cout << msg.get_key(i);
-    if (i != XBOX_BTN_MAX - 1)
+    if (i != desc.get_key_count() - 1)
       std::cout << " ";
   }
 
   std::cout << "  ";
 
-  for(int i = 1; i < XBOX_AXIS_MAX; ++i)
+  for(int i = 0; i < desc.get_abs_count(); ++i)
   {
     std::cout << msg.get_abs(i);
-    if (i != XBOX_AXIS_MAX - 1)
+    if (i != desc.get_abs_count() - 1)
       std::cout << " ";
   }
   std::cout << std::endl;

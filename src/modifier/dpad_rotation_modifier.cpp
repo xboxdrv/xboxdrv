@@ -49,22 +49,30 @@ DpadRotationModifier::from_string(const std::string& value)
 }
 
 DpadRotationModifier::DpadRotationModifier(int dpad_rotation) :
-  m_dpad_rotation(dpad_rotation)
+  m_dpad_rotation(dpad_rotation),
+  dpad_up(-1),
+  dpad_down(-1),
+  dpad_left(-1),
+  dpad_right(-1)
 {
 }
 
 void
 DpadRotationModifier::init(ControllerMessageDescriptor& desc)
 {
+  dpad_up    = desc.key().get("dpad_up");
+  dpad_down  = desc.key().get("dpad_down");
+  dpad_left  = desc.key().get("dpad_left");
+  dpad_right = desc.key().get("dpad_right");
 }
 
 void
-DpadRotationModifier::update(int msec_delta, ControllerMessage& msg)
+DpadRotationModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
-  int up    = msg.get_key(XBOX_DPAD_UP);
-  int down  = msg.get_key(XBOX_DPAD_DOWN);
-  int left  = msg.get_key(XBOX_DPAD_LEFT);
-  int right = msg.get_key(XBOX_DPAD_RIGHT);
+  int up   = msg.get_key(dpad_up);
+  int down = msg.get_key(dpad_down);
+  int left = msg.get_key(dpad_left);
+  int right= msg.get_key(dpad_right);
 
   // -1: not pressed, 0: up, 1: up/right, ...
   int direction = -1;
@@ -118,39 +126,39 @@ DpadRotationModifier::update(int msec_delta, ControllerMessage& msg)
     switch(direction)
     {
       case 0:
-        msg.set_key(XBOX_DPAD_UP, 1);
+        msg.set_key(dpad_up, 1);
         break;
 
       case 1:
-        msg.set_key(XBOX_DPAD_UP, 1);
-        msg.set_key(XBOX_DPAD_RIGHT, 1);
+        msg.set_key(dpad_up, 1);
+        msg.set_key(dpad_right, 1);
         break;
 
       case 2:
-        msg.set_key(XBOX_DPAD_RIGHT, 1);
+        msg.set_key(dpad_right, 1);
         break;
 
       case 3:
-        msg.set_key(XBOX_DPAD_RIGHT, 1);
-        msg.set_key(XBOX_DPAD_DOWN, 1);
+        msg.set_key(dpad_right, 1);
+        msg.set_key(dpad_down, 1);
         break;
 
       case 4:
-        msg.set_key(XBOX_DPAD_DOWN, 1);
+        msg.set_key(dpad_down, 1);
         break;
 
       case 5:
-        msg.set_key(XBOX_DPAD_DOWN, 1);
-        msg.set_key(XBOX_DPAD_LEFT, 1);
+        msg.set_key(dpad_down, 1);
+        msg.set_key(dpad_left, 1);
         break;
 
       case 6:
-        msg.set_key(XBOX_DPAD_LEFT, 1);
+        msg.set_key(dpad_left, 1);
         break;
 
       case 7:
-        msg.set_key(XBOX_DPAD_UP, 1);
-        msg.set_key(XBOX_DPAD_LEFT, 1);
+        msg.set_key(dpad_up, 1);
+        msg.set_key(dpad_left, 1);
         break;
     }
   }

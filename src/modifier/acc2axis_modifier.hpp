@@ -48,7 +48,7 @@ public:
                    const std::string& axis_x, const std::string& axis_y);
 
   void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg);
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
   std::string str() const;
 
 private:

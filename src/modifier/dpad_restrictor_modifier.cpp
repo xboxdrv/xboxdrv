@@ -53,17 +53,27 @@ DpadRestrictorModifier::from_string(const std::vector<std::string>& args)
 
 DpadRestrictorModifier::DpadRestrictorModifier(Mode mode) :
   m_mode(mode),
-  m_last_unpressed_axis(XBOX_AXIS_DPAD_X)
+  m_last_unpressed_axis(-1)
+  dpad_up(-1),
+  dpad_down(-1),
+  dpad_left(-1),
+  dpad_right(-1)
 {
 }
 
 void
 DpadRestrictorModifier::init(ControllerMessageDescriptor& desc)
 {
+  dpad_up    = desc.key().get("dpad_up");
+  dpad_down  = desc.key().get("dpad_down");
+  dpad_left  = desc.key().get("dpad_left");
+  dpad_right = desc.key().get("dpad_right");
+
+  m_last_unpressed_axis = dpad_x;
 }
 
 void
-DpadRestrictorModifier::update(int msec_delta, ControllerMessage& msg)
+DpadRestrictorModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   switch(m_mode)
   {

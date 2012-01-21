@@ -40,12 +40,17 @@ public:
   DpadRestrictorModifier(Mode mode);
 
   void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg);
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
   std::string str() const;
 
 private:
   Mode m_mode;
   int m_last_unpressed_axis;
+
+  int dpad_up;
+  int dpad_down;
+  int dpad_left;
+  int dpad_right;
 
 private:
   DpadRestrictorModifier(const DpadRestrictorModifier&);

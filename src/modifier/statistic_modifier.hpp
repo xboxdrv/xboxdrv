@@ -33,7 +33,7 @@ public:
   ~StatisticModifier();
 
   void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg);
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
   void print_stats();
   std::string str() const;
 

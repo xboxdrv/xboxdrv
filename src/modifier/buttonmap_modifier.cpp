@@ -102,7 +102,7 @@ ButtonmapModifier::init(ControllerMessageDescriptor& desc)
 }
   
 void
-ButtonmapModifier::update(int msec_delta, ControllerMessage& msg)
+ButtonmapModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   ControllerMessage newmsg = msg;
 

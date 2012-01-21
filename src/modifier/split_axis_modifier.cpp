@@ -55,7 +55,7 @@ SplitAxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-SplitAxisModifier::update(int msec_delta, ControllerMessage& msg)
+SplitAxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   float value = msg.get_abs_float(m_axis);
   if (value < 0)

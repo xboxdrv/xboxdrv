@@ -57,7 +57,7 @@ Button2AxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-Button2AxisModifier::update(int msec_delta, ControllerMessage& msg) 
+Button2AxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) 
 {
   bool lhs = msg.get_key(m_lhs_btn);
   bool rhs = msg.get_key(m_rhs_btn);

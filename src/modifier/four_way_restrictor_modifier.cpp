@@ -50,7 +50,7 @@ FourWayRestrictorModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-FourWayRestrictorModifier::update(int msec_delta, ControllerMessage& msg)
+FourWayRestrictorModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   if (abs(msg.get_abs(m_xaxis)) > abs(msg.get_abs(m_yaxis)))
   {

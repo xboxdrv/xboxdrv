@@ -66,7 +66,7 @@ Acc2AxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-Acc2AxisModifier::update(int msec_delta, ControllerMessage& msg)
+Acc2AxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   float ax = msg.get_abs_float(m_acc_x);
   float ay = msg.get_abs_float(m_acc_y);

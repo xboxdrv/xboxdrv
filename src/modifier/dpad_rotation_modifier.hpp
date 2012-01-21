@@ -34,11 +34,16 @@ public:
 private:
   int  m_dpad_rotation;
 
+  int dpad_up;
+  int dpad_down;
+  int dpad_left;
+  int dpad_right;
+
 public:
   DpadRotationModifier(int dpad_rotation);
 
   void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg);
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
 
   std::string str() const;
 

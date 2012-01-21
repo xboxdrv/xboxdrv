@@ -41,7 +41,7 @@ public:
   Button2AxisModifier(const std::string& lhs_btn, const std::string& rhs_btn, const std::string& axis);
 
   void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg);
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
   std::string str() const;
 
 private:

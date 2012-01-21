@@ -78,7 +78,7 @@ SquareAxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-SquareAxisModifier::update(int msec_delta, ControllerMessage& msg)
+SquareAxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   int x = msg.get_abs(m_xaxis);
   int y = msg.get_abs(m_yaxis);

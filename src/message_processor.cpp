@@ -61,6 +61,7 @@ MessageProcessor::send(const ControllerMessage& msg_in,
   {
     ControllerMessage msg = msg_in; 
 
+#if 0
     if (m_rumble_test)
     {
       log_debug("rumble: " << msg.get_abs(XBOX_AXIS_LT) << " " << msg.get_abs(XBOX_AXIS_RT));
@@ -68,6 +69,7 @@ MessageProcessor::send(const ControllerMessage& msg_in,
       set_rumble(static_cast<uint8_t>(msg.get_abs(XBOX_AXIS_LT)), 
                  static_cast<uint8_t>(msg.get_abs(XBOX_AXIS_RT)));
     }
+#endif
 
     // handling switching of configurations
     if (m_config_toggle_button != -1)
@@ -92,7 +94,7 @@ MessageProcessor::send(const ControllerMessage& msg_in,
         i != m_config->get_config()->get_modifier().end(); 
         ++i)
     {
-      (*i)->update(msec_delta, msg);
+      (*i)->update(msec_delta, msg, m_desc);
     }
 
     m_config->get_config()->get_emitter().update(msec_delta);

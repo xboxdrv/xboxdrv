@@ -30,8 +30,8 @@ StatisticModifier::from_string(const std::vector<std::string>& args)
 }
 
 StatisticModifier::StatisticModifier() :
-  m_button_state(XBOX_BTN_MAX),
-  m_press_count(XBOX_BTN_MAX)
+  m_button_state(),
+  m_press_count()
 {
 }
 
@@ -43,6 +43,8 @@ StatisticModifier::~StatisticModifier()
 void
 StatisticModifier::init(ControllerMessageDescriptor& desc)
 {
+  m_button_state.resize(desc.get_key_count());
+  m_press_count.resize(desc.get_key_count());
 }
 
 void
@@ -53,20 +55,16 @@ StatisticModifier::print_stats()
   
   std::cout << boost::format("%12s | %5d") % "Name" % "Count" << std::endl;  
   std::cout << "-------------+---------" << std::endl;
-  for(int btn = 1; btn < XBOX_BTN_MAX; ++btn)
+  for(size_t i = 0; i < m_press_count.size(); ++i)
   {
-    /* BROKEN
-    std::cout << boost::format("%12s : %5d") 
-      % btn2string(btn) % m_press_count[btn]
-              << std::endl;
-    */
+    std::cout << boost::format("%12s : %5d\n") % i % m_press_count[i];
   }
 }
 
 void
-StatisticModifier::update(int msec_delta, ControllerMessage& msg)
+StatisticModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
-  for(int btn = 1; btn < static_cast<int>(XBOX_BTN_MAX); ++btn)
+  for(size_t btn = 0; btn < m_press_count.size(); ++btn)
   {
     bool state = msg.get_key(btn);
 

@@ -68,7 +68,7 @@ public:
   ButtonmapModifier();
 
   void init(ControllerMessageDescriptor& desc);  
-  void update(int msec_delta, ControllerMessage& msg);
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
 
   void add(const ButtonMapping& mapping);
   void add_filter(const std::string& btn, ButtonFilterPtr filter);

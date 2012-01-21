@@ -62,7 +62,7 @@ Sector2ButtonModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-Sector2ButtonModifier::update(int msec_delta, ControllerMessage& msg)
+Sector2ButtonModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   float x = msg.get_abs_float(m_xaxis);
   float y = msg.get_abs_float(m_yaxis);

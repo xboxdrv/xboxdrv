@@ -65,7 +65,7 @@ StickZoneModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-StickZoneModifier::update(int msec_delta, ControllerMessage& msg)
+StickZoneModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   float x = msg.get_abs_float(m_x_axis);
   float y = msg.get_abs_float(m_y_axis);
