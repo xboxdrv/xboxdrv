@@ -252,6 +252,7 @@ WiimoteController::on_error(const cwiid_error_mesg& msg)
 void
 WiimoteController::on_button(const cwiid_btn_mesg& msg)
 {
+#if 0
   m_ctrl_msg.set_key(XBOX_BTN_BACK, msg.buttons & CWIID_BTN_MINUS);
   m_ctrl_msg.set_key(XBOX_BTN_GUIDE, msg.buttons & CWIID_BTN_HOME);
   m_ctrl_msg.set_key(XBOX_BTN_START, msg.buttons & CWIID_BTN_PLUS);
@@ -267,21 +268,25 @@ WiimoteController::on_button(const cwiid_btn_mesg& msg)
   m_ctrl_msg.set_key(XBOX_DPAD_UP,    msg.buttons & CWIID_BTN_UP);
 
   submit_msg(m_ctrl_msg, m_message_descriptor);
+#endif
 }
 
 void
 WiimoteController::on_acc(const cwiid_acc_mesg& msg)
 {
+#if 0
   m_ctrl_msg.set_abs(WIIMOTE_ACC_X, msg.acc[0]);
   m_ctrl_msg.set_abs(WIIMOTE_ACC_Y, msg.acc[1]);
   m_ctrl_msg.set_abs(WIIMOTE_ACC_Z, msg.acc[2]);
 
   submit_msg(m_ctrl_msg, m_message_descriptor);
+#endif
 }
 
 void
 WiimoteController::on_ir(const cwiid_ir_mesg& msg)
 {
+#if 0
   // size: 1-7
   // valid 0, 1
   // x 0,1024
@@ -327,6 +332,7 @@ WiimoteController::on_ir(const cwiid_ir_mesg& msg)
     m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE4, -1);
 
   submit_msg(m_ctrl_msg, m_message_descriptor);
+#endif
 }
 
 // FIXME: use proper CalibrationAxisFilter instead of this hack, also CalibrationAxisFilter doesn't handle min/max properly
@@ -352,6 +358,7 @@ int8_t calibrate(int value, const AccCalibration& cal)
 void
 WiimoteController::on_nunchuk(const cwiid_nunchuk_mesg& msg)
 {
+#if 0
   m_ctrl_msg.set_abs(XBOX_AXIS_X1, unpack::s8_to_s16(calibrate(msg.stick[0], m_nunchuk_x)));
   m_ctrl_msg.set_abs(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(calibrate(msg.stick[1], m_nunchuk_y))));
 
@@ -363,6 +370,7 @@ WiimoteController::on_nunchuk(const cwiid_nunchuk_mesg& msg)
   m_ctrl_msg.set_key(XBOX_BTN_LB, msg.buttons & CWIID_NUNCHUK_BTN_C);
 
   submit_msg(m_ctrl_msg, m_message_descriptor);
+#endif
 }
 
 void
