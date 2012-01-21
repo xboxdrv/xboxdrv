@@ -50,6 +50,8 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_debug(debug),
   m_quit_thread(false),
   m_uinput(),
+  m_keymap(),
+  m_state(),
   m_led_state(0),
   m_read_transfer(0)
 {
@@ -59,8 +61,8 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
                              "to <grumbel@gmail.com> and include the output of 'lsusb -v'");
   }
 
-  memset(m_keymap, 0, 256);
-  memset(m_state, 0, 256);
+  std::fill(m_keymap.begin(), m_keymap.end(), 0);
+  std::fill(m_state.begin(), m_state.end(), 0);
 
   m_keymap[CHATPAD_KEY_1] = KEY_1;
   m_keymap[CHATPAD_KEY_2] = KEY_2; 
@@ -455,11 +457,10 @@ void
 Chatpad::process(const ChatpadKeyMsg& msg)
 {
   // save old state
-  bool old_state[256];
-  memcpy(old_state, m_state, 256);
-
+  boost::array<bool, 256> old_state = m_state;
+  
   // generate new state
-  memset(m_state, 0, 256);
+  std::fill(m_state.begin(), m_state.end(), 0);
 
   m_state[CHATPAD_MOD_PEOPLE] = msg.modifier & CHATPAD_MOD_PEOPLE;
   m_state[CHATPAD_MOD_ORANGE] = msg.modifier & CHATPAD_MOD_ORANGE;
@@ -470,7 +471,7 @@ Chatpad::process(const ChatpadKeyMsg& msg)
   if (msg.scancode2) m_state[msg.scancode2] = true;
 
   // check for changes
-  for(int i = 0; i < 256; ++i)
+  for(size_t i = 0; i < m_state.size(); ++i)
   {
     if (m_state[i] != old_state[i])
     {
