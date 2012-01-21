@@ -61,12 +61,10 @@ std::string
 JoinAxisModifier::str() const
 {
   std::ostringstream os;
-  /* BROKEN:
   os << "join-axis:" 
-     << axis2string(m_lhs) << ":"
-     << axis2string(m_rhs) << ":"
-     << axis2string(m_out);
-  */
+     << m_lhs.get_name() << ":"
+     << m_rhs.get_name() << ":"
+     << m_out.get_name();
   return os.str();
 }
 
