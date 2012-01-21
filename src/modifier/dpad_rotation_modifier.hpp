@@ -21,6 +21,7 @@
 
 #include <vector>
 
+#include "key_port.hpp"
 #include "modifier.hpp"
 
 class ControllerMessage;
@@ -34,10 +35,15 @@ public:
 private:
   int  m_dpad_rotation;
 
-  int dpad_up;
-  int dpad_down;
-  int dpad_left;
-  int dpad_right;
+  KeyPortIn m_dpad_up;
+  KeyPortIn m_dpad_down;
+  KeyPortIn m_dpad_left;
+  KeyPortIn m_dpad_right;
+
+  KeyPortOut m_dpad_up_out;
+  KeyPortOut m_dpad_down_out;
+  KeyPortOut m_dpad_left_out;
+  KeyPortOut m_dpad_right_out;
 
 public:
   DpadRotationModifier(int dpad_rotation);

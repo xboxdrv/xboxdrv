@@ -50,29 +50,35 @@ DpadRotationModifier::from_string(const std::string& value)
 
 DpadRotationModifier::DpadRotationModifier(int dpad_rotation) :
   m_dpad_rotation(dpad_rotation),
-  dpad_up(-1),
-  dpad_down(-1),
-  dpad_left(-1),
-  dpad_right(-1)
+
+  m_dpad_up("dpad_up"),
+  m_dpad_down("dpad_down"),
+  m_dpad_left("dpad_left"),
+  m_dpad_right("dpad_right"),
+
+  m_dpad_up_out("dpad_up"),
+  m_dpad_down_out("dpad_down"),
+  m_dpad_left_out("dpad_left"),
+  m_dpad_right_out("dpad_right")
 {
 }
 
 void
 DpadRotationModifier::init(ControllerMessageDescriptor& desc)
 {
-  dpad_up    = desc.key().get("dpad_up");
-  dpad_down  = desc.key().get("dpad_down");
-  dpad_left  = desc.key().get("dpad_left");
-  dpad_right = desc.key().get("dpad_right");
+  m_dpad_up.init(desc);
+  m_dpad_down.init(desc);
+  m_dpad_left.init(desc);
+  m_dpad_right.init(desc);
 }
 
 void
 DpadRotationModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
-  int up   = msg.get_key(dpad_up);
-  int down = msg.get_key(dpad_down);
-  int left = msg.get_key(dpad_left);
-  int right= msg.get_key(dpad_right);
+  int up   = m_dpad_up.get(msg);
+  int down = m_dpad_down.get(msg);
+  int left = m_dpad_left.get(msg);
+  int right= m_dpad_right.get(msg);
 
   // -1: not pressed, 0: up, 1: up/right, ...
   int direction = -1;
@@ -117,48 +123,48 @@ DpadRotationModifier::update(int msec_delta, ControllerMessage& msg, const Contr
       direction += 8;
 
     // set everything to zero
-    msg.set_key(XBOX_DPAD_UP,    0);
-    msg.set_key(XBOX_DPAD_DOWN,  0);
-    msg.set_key(XBOX_DPAD_LEFT,  0);
-    msg.set_key(XBOX_DPAD_RIGHT, 0);
+    m_dpad_up_out.set(msg, 0);
+    m_dpad_down_out.set(msg, 0);
+    m_dpad_left_out.set(msg, 0);
+    m_dpad_right_out.set(msg, 0);
 
     // apply the given direction
     switch(direction)
     {
       case 0:
-        msg.set_key(dpad_up, 1);
+        m_dpad_up_out.set(msg, 1);
         break;
 
       case 1:
-        msg.set_key(dpad_up, 1);
-        msg.set_key(dpad_right, 1);
+        m_dpad_up_out.set(msg, 1);
+        m_dpad_right_out.set(msg, 1);
         break;
 
       case 2:
-        msg.set_key(dpad_right, 1);
+        m_dpad_right_out.set(msg, 1);
         break;
 
       case 3:
-        msg.set_key(dpad_right, 1);
-        msg.set_key(dpad_down, 1);
+        m_dpad_right_out.set(msg, 1);
+        m_dpad_down_out.set(msg, 1);
         break;
 
       case 4:
-        msg.set_key(dpad_down, 1);
+        m_dpad_down_out.set(msg, 1);
         break;
 
       case 5:
-        msg.set_key(dpad_down, 1);
-        msg.set_key(dpad_left, 1);
+        m_dpad_down_out.set(msg, 1);
+        m_dpad_left_out.set(msg, 1);
         break;
 
       case 6:
-        msg.set_key(dpad_left, 1);
+        m_dpad_left_out.set(msg, 1);
         break;
 
       case 7:
-        msg.set_key(dpad_up, 1);
-        msg.set_key(dpad_left, 1);
+        m_dpad_up_out.set(msg, 1);
+        m_dpad_left_out.set(msg, 1);
         break;
     }
   }

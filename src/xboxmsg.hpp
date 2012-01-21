@@ -46,6 +46,7 @@ enum XboxMsgType {
   XBOX_MSG_PS3USB
 };
 
+#if 0
 enum XboxButton {
   XBOX_BTN_UNKNOWN,
   XBOX_BTN_START,
@@ -125,6 +126,7 @@ enum XboxAxis {
 
   XBOX_AXIS_MAX
 };
+#endif
 
 std::ostream& operator<<(std::ostream& out, const GamepadType& type);
 

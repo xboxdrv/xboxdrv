@@ -32,16 +32,16 @@ public:
 
   void process(ControllerMessage& msg, int code, int value, int min, int max) const;
 
-  void bind_plus(int code, XboxAxis axis);
-  void bind_minus(int code, XboxAxis axis);
-  void bind_both(int code, XboxAxis axis);
+  void bind_plus(int code, int axis);
+  void bind_minus(int code, int axis);
+  void bind_both(int code, int axis);
 
   void clear();
 
 private:
-  std::map<int, XboxAxis> m_plus_map;
-  std::map<int, XboxAxis> m_minus_map;
-  std::map<int, XboxAxis> m_both_map;
+  std::map<int, int> m_plus_map;
+  std::map<int, int> m_minus_map;
+  std::map<int, int> m_both_map;
 };
 
 #endif

@@ -54,6 +54,7 @@ IR2AxisModifier::init(ControllerMessageDescriptor& desc)
 void
 IR2AxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
+#if 0
   // find center of two biggest points, return that as axis values
   float x1 = 0.0f;
   float y1 = 0.0f;
@@ -125,6 +126,7 @@ IR2AxisModifier::update(int msec_delta, ControllerMessage& msg, const Controller
     msg.set_abs_float(m_xaxis, -((x1+x2)/2.0f));
     msg.set_abs_float(m_yaxis, (y1+y2)/2.0f);
   }
+#endif
 }
 
 std::string

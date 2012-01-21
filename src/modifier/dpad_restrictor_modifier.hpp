@@ -22,6 +22,7 @@
 #include <vector>
 #include <string>
 
+#include "key_port.hpp"
 #include "modifier.hpp"
 
 class DpadRestrictorModifier : public Modifier
@@ -46,11 +47,16 @@ public:
 private:
   Mode m_mode;
   int m_last_unpressed_axis;
+  
+  KeyPortIn m_dpad_up;
+  KeyPortIn m_dpad_down;
+  KeyPortIn m_dpad_left;
+  KeyPortIn m_dpad_right;
 
-  int dpad_up;
-  int dpad_down;
-  int dpad_left;
-  int dpad_right;
+  KeyPortOut m_dpad_up_out;
+  KeyPortOut m_dpad_down_out;
+  KeyPortOut m_dpad_left_out;
+  KeyPortOut m_dpad_right_out;
 
 private:
   DpadRestrictorModifier(const DpadRestrictorModifier&);

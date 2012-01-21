@@ -29,19 +29,19 @@ EvdevAbsMap::EvdevAbsMap() :
 }
 
 void
-EvdevAbsMap::bind_plus(int code, XboxAxis axis)
+EvdevAbsMap::bind_plus(int code, int axis)
 {
   m_plus_map[code] = axis;
 }
 
 void
-EvdevAbsMap::bind_minus(int code, XboxAxis axis)
+EvdevAbsMap::bind_minus(int code, int axis)
 {
    m_minus_map[code] = axis; 
 }
 
 void
-EvdevAbsMap::bind_both(int code, XboxAxis axis)
+EvdevAbsMap::bind_both(int code, int axis)
 {
   m_both_map[code] = axis; 
 }
@@ -58,7 +58,7 @@ void
 EvdevAbsMap::process(ControllerMessage& msg, int code, int value, int min, int max) const
 {
   { // process plus map
-    std::map<int, XboxAxis>::const_iterator it = m_plus_map.find(code);
+    std::map<int, int>::const_iterator it = m_plus_map.find(code);
     if (it != m_plus_map.end())
     {
       // '+ 1' so that we round up, instead of round down 
@@ -69,7 +69,7 @@ EvdevAbsMap::process(ControllerMessage& msg, int code, int value, int min, int m
   }
 
   { // process minus map
-    std::map<int, XboxAxis>::const_iterator it = m_minus_map.find(code);
+    std::map<int, int>::const_iterator it = m_minus_map.find(code);
     if (it != m_minus_map.end())
     {
       // '+ 1' so that we round up, instead of round down 
@@ -80,7 +80,7 @@ EvdevAbsMap::process(ControllerMessage& msg, int code, int value, int min, int m
   }
 
   { // process both map
-    std::map<int, XboxAxis>::const_iterator it = m_both_map.find(code);
+    std::map<int, int>::const_iterator it = m_both_map.find(code);
     if (it != m_both_map.end())
     {
       const float v = to_float(value, min, max);

@@ -53,28 +53,40 @@ DpadRestrictorModifier::from_string(const std::vector<std::string>& args)
 
 DpadRestrictorModifier::DpadRestrictorModifier(Mode mode) :
   m_mode(mode),
-  m_last_unpressed_axis(-1)
-  dpad_up(-1),
-  dpad_down(-1),
-  dpad_left(-1),
-  dpad_right(-1)
+  m_last_unpressed_axis(-1),
+
+  m_dpad_up("dpad_up"),
+  m_dpad_down("dpad_down"),
+  m_dpad_left("dpad_left"),
+  m_dpad_right("dpad_right"),
+
+  m_dpad_up_out("dpad_up"),
+  m_dpad_down_out("dpad_down"),
+  m_dpad_left_out("dpad_left"),
+  m_dpad_right_out("dpad_right")
 {
 }
 
 void
 DpadRestrictorModifier::init(ControllerMessageDescriptor& desc)
 {
-  dpad_up    = desc.key().get("dpad_up");
-  dpad_down  = desc.key().get("dpad_down");
-  dpad_left  = desc.key().get("dpad_left");
-  dpad_right = desc.key().get("dpad_right");
+  m_dpad_up.init(desc);
+  m_dpad_down.init(desc);
+  m_dpad_left.init(desc);
+  m_dpad_right.init(desc);
 
-  m_last_unpressed_axis = dpad_x;
+  m_dpad_up_out.init(desc);
+  m_dpad_down_out.init(desc);
+  m_dpad_left_out.init(desc);
+  m_dpad_right_out.init(desc);
+
+  // BROKEN: m_last_unpressed_axis = dpad_x;
 }
 
 void
 DpadRestrictorModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
+#if 0
   switch(m_mode)
   {
     case kRestrictFourWay:
@@ -102,6 +114,7 @@ DpadRestrictorModifier::update(int msec_delta, ControllerMessage& msg, const Con
       msg.set_abs(XBOX_AXIS_DPAD_X, 0);
       break;
   }
+#endif
 }
 
 std::string

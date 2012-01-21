@@ -16,73 +16,64 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_ABS_SYMBOL_HPP
-#define HEADER_XBOXDRV_ABS_SYMBOL_HPP
+#ifndef HEADER_XBOXDRV_KEY_SYMBOL_HPP
+#define HEADER_XBOXDRV_KEY_SYMBOL_HPP
 
 #include <string>
 
-class AbsPort
+#include "controller_message.hpp"
+#include "controller_message_descriptor.hpp"
+
+class KeyPort
 {
 protected:
   std::string m_name;
-  int m_abs;
+  int m_key;
   
 public:
-  AbsPort(const std::string& name) :
+  KeyPort(const std::string& name) :
     m_name(name),
-    m_abs(-1)
+    m_key(-1)
   {}
+  virtual ~KeyPort() {}
 
-  virtual ~AbsPort() 
-  {}
-
-  inline std::string get_name() const { return m_name; }
-  inline int get_abs() const { return m_abs; }
+  std::string get_name() const { return m_name; }
+  int get_key() const { return m_key; }
 };
 
-class AbsPortIn : public AbsPort
+class KeyPortIn : public KeyPort
 {
 public:
-  AbsPortIn(const std::string& name) :
-    AbsPort(name)
+  KeyPortIn(const std::string& name) :
+    KeyPort(name)
   {}
- 
+
   void init(const ControllerMessageDescriptor& desc)
   {
-    m_abs = desc.abs().get(get_name());
-  }
-
-  float get_float(const ControllerMessage& msg)
-  {
-    return msg.get_abs_float(get_abs());
+    m_key = desc.key().get(m_name);
   }
 
   int get(const ControllerMessage& msg)
   {
-    return msg.get_abs(get_abs());
+    return msg.get_key(m_key);
   }
 };
 
-class AbsPortOut : public AbsPort
+class KeyPortOut : public KeyPort
 {
 public:
-  AbsPortOut(const std::string& name) :
-    AbsPort(name)
+  KeyPortOut(const std::string& name) :
+    KeyPort(name)
   {}
 
   void init(ControllerMessageDescriptor& desc)
   {
-    m_abs = desc.abs().getput(get_name());
+    m_key = desc.key().put(m_name);
   }
 
   void set(ControllerMessage& msg, int value)
   {
-    msg.set_abs(get_abs(), value);
-  }
-
-  void set_float(ControllerMessage& msg, float value)
-  {
-    msg.set_abs_float(get_abs(), value);
+    msg.set_key(get_key(), value);
   }
 };
 
