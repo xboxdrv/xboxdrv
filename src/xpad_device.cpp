@@ -63,6 +63,8 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x0738, 0x4740, "Mad Catz Beat Pad" },
   { GAMEPAD_XBOX360,          0x0738, 0xb726, "Mad Catz Xbox controller - MW2" },
   { GAMEPAD_XBOX360,          0x0738, 0xf738, "Super SFIV FightStick TE S" },
+  { GAMEPAD_XBOX360,          0x0738, 0x4718, "Mad Catz Street Fighter IV FightStick SE" },
+  { GAMEPAD_XBOX360,          0x0738, 0xbeef, "Mad Catz Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x000a, "Hori Co. DOA4 FightStick" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x000d, "Hori Fighting Stick Ex2" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x0016, "Hori Real Arcade Pro Ex" },
@@ -79,23 +81,28 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x1bad, 0xf028, "Street Fighter IV FightPad" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf901, "Gamestop Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf903, "Tron Xbox 360 controller" },
+  { GAMEPAD_XBOX360,          0x15e4, 0x3f00, "Power A Mini Pro Elite" },
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0291, "Microsoft Xbox 360 Wireless Controller" }, // RF Module from the Xbox360
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0719, "Microsoft Xbox 360 Wireless Controller (PC)" }, // official Wireless Receiver
+  { GAMEPAD_XBOX360,          0x1689, 0xfd00, "Razer Onza" },  
+  { GAMEPAD_XBOX360,          0x12ab, 0x0004, "DDR Universe 2 Mat" }, 
+  { GAMEPAD_XBOX360,          0x15e4, 0x3f0a, "Xbox Airflo wired controller" },
 
   { GAMEPAD_XBOX_MAT,         0x0738, 0x4540, "Mad Catz Beat Pad" },
   { GAMEPAD_XBOX_MAT,         0x0738, 0x6040, "Mad Catz Beat Pad Pro" },
   { GAMEPAD_XBOX_MAT,         0x0c12, 0x8809, "RedOctane Xbox Dance Pad" },
   { GAMEPAD_XBOX_MAT,         0x12ab, 0x8809, "Xbox DDR dancepad" },
   { GAMEPAD_XBOX_MAT,         0x1430, 0x8888, "TX6500+ Dance Pad (first generation)" },
-
-  { GAMEPAD_XBOX360,          0x12ab, 0x0004, "DDR Universe 2 Mat" }, 
-
+   
   { GAMEPAD_FIRESTORM,        0x044f, 0xb304, "ThrustMaster, Inc. Firestorm Dual Power" },
   { GAMEPAD_FIRESTORM_VSB,    0x044f, 0xb312, "ThrustMaster, Inc. Firestorm Dual Power (vs b)" },
 
   { GAMEPAD_SAITEK_P2500,     0x06a3, 0xff0c, "Saitek P2500" },
+  { GAMEPAD_LOGITECH_F310,    0x046d, 0xc21d, "Logitech Gamepad F310" },
 
-  { GAMEPAD_PLAYSTATION3_USB, 0x054c, 0x0268, "PLAYSTATION(R)3 Controller" }
+  { GAMEPAD_PLAYSTATION3_USB, 0x054c, 0x0268, "PLAYSTATION(R)3 Controller" },
+
+  { GAMEPAD_HAMA_CRUX,        0x1038, 0x0310, "Hama cruX Gaming Keyboard" }
 };
 
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
