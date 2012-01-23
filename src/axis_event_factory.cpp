@@ -27,6 +27,7 @@
 #include "axisevent/log_axis_event_handler.hpp"
 #include "axisevent/rel_axis_event_handler.hpp"
 #include "axisevent/rel_repeat_axis_event_handler.hpp"
+#include "axisevent/rumble_axis_event_handler.hpp"
 
 AxisEventFactory::AxisEventFactory(UInput& uinput, int slot, bool extra_devices) :
   m_uinput(uinput),
@@ -89,6 +90,10 @@ AxisEventFactory::from_string(const std::string& str)
   else if (token == "log")
   {
     ev.reset(new AxisEvent(new LogAxisEventHandler(rest)));
+  }
+  else if (token == "rumble")
+  {
+    ev.reset(new AxisEvent(RumbleAxisEventHandler::from_string(rest)));
   }
   else
   { // try to guess a type
