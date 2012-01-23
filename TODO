@@ -75,6 +75,8 @@ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-st
 Target for 0.8.3
 ================
 
+* [BUG] force feedback seems to be on the wrong evdev device!
+
 * --ff-device [auto|joystick|mouse|keyboard|NUM]
 
 * fix get_ff_device() and default to JOYSTICK not 0
@@ -82,8 +84,25 @@ Target for 0.8.3
 * include latest vendor/product id stuff (update NEWS accordingly)
 
 
-Target for 0.8.?
+Target for 0.9.?
 ================
+
+* write a modifier that simulates latency
+
+* use separate In/Out Ports for Modifier, never use InOut ports, make
+  InOut ports a feature of the parser (i.e. two args -> InOut, four
+  args -> 2 In, 2 Out)
+
+* verify that all ButtonEvent and AxisEvent work, write test protocol for all
+
+* document qmacro, Sector2ButtonModifier and analog-keyboard
+
+* need support for blacklisting controllers so that they aren't picked up automatically (could recycle match rules)
+
+* scan for BROKEN and "#if 0"
+
+* do not use hardcoded default configuration, but read most stuff from
+  examples/default.xboxdrv
 
 * support arguments in exec via quoting:
 
@@ -97,8 +116,6 @@ Target for 0.8.?
     -> bad idea, as the " are eaten by bash, thus one would need double quots
 
   --ui-buttonmap 'du=exec:"/usr/bin/script":"Arg1":"Arg2":"Arg3"'
-
-* [BUG] force feedback seems to be on the wrong evdev device!
 
 * print warning or something when people don't use rel with -1
 
