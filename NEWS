@@ -14,6 +14,17 @@ xboxdrv 0.9.0 - (??/Aug/2011)
 * fixed incorrect axis being used in 4wayrest modifier
 
 
+xboxdrv 0.8.3 - (25/Jan/2012)
+=============================
+
+* added --dbus option to switch between system and session bus
+* added sequence-key, same as cycle-key but doesn't wrap around
+* added workaround for libudev older then v150
+* added --ff-device DEV to select force-feedback device
+* fixed force feedback getting on the wrong evdev
+* fixed Xbox360 wireless LED not getting properly set on late plugin
+
+
 xboxdrv 0.8.2 - (07/Aug/2011)
 =============================
 
