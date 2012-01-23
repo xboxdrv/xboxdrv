@@ -139,7 +139,7 @@ UIEvent::resolve_device_id(int slot, bool extra_devices)
     }
     else
     {
-      m_device_id = DEVICEID_GENERIC;
+      m_device_id = DEVICEID_JOYSTICK;
     }
   }
 
