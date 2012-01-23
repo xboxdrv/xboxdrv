@@ -72,18 +72,6 @@ git-buildpackage --git-no-create-orig --git-debian-branch=stable-lts --git-tag -
 sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-stable_0.6.6-1~lucid2.dsc
 
 
-Target for 0.8.3
-================
-
-* [BUG] force feedback seems to be on the wrong evdev device!
-
-* --ff-device [auto|joystick|mouse|keyboard|NUM]
-
-* fix get_ff_device() and default to JOYSTICK not 0
-
-* include latest vendor/product id stuff (update NEWS accordingly)
-
-
 Target for 0.9.?
 ================
 
