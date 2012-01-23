@@ -30,34 +30,34 @@ cd ../debian/xboxdrv
 # Ubuntu 11.04
 # ============
 git checkout master
-git-import-orig -u 0.8.2 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.8.2.tar.bz2 
-dch -v "0.8.2-1" "xboxdrv 0.8.2 release"
-git commit -m "xboxdrv 0.8.2 release" -a
+git-import-orig -u 0.8.3 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.8.3.tar.bz2 
+dch -v "0.8.3-1" "xboxdrv 0.8.3 release"
+git commit -m "xboxdrv 0.8.3 release" -a
 git-buildpackage --git-no-create-orig --git-tag --git-builder="debuild -S"
-sudo pbuilder --build --basetgz /var/cache/pbuilder/base-natty.tgz ../xboxdrv_0.8.2-1.dsc
-dput my-ppa ../xboxdrv_0.8.2-1_source.changes
+sudo pbuilder --build --basetgz /var/cache/pbuilder/base-natty.tgz ../xboxdrv_0.8.3-0ubuntu1.dsc
+dput my-ppa ../xboxdrv_0.8.3-0ubuntu1_source.changes
 
 # Ubuntu 10.10
 # ============
 git checkout master-10.10
 git merge master
 git show master:debian/changelog > debian/changelog 
-dch -b -v "0.8.2-1~maverick1" --distribution maverick "xboxdrv 0.8.2 backport"
-git commit -m "xboxdrv 0.8.2 backport" -a
+dch -b -v "0.8.3-0ubuntu1~maverick1" --distribution maverick "xboxdrv 0.8.3 backport"
+git commit -m "xboxdrv 0.8.3 backport" -a
 git-buildpackage --git-no-create-orig --git-debian-branch=master-10.10 --git-tag --git-builder="debuild -S"
-sudo pbuilder --build --basetgz /var/cache/pbuilder/base-maverick.tgz ../xboxdrv_0.8.2-1~maverick1.dsc
-dput my-ppa ../xboxdrv_0.8.2-1~maverick1_source.changes
+sudo pbuilder --build --basetgz /var/cache/pbuilder/base-maverick.tgz ../xboxdrv_0.8.3-0ubuntu1~maverick1.dsc
+dput my-ppa ../xboxdrv_0.8.3-0ubuntu1~maverick1_source.changes
 
 # Ubuntu 10.04 (LTS)
 # ==================
 git checkout master-lts
 git merge master
 git show master:debian/changelog > debian/changelog 
-dch -b -v "0.8.2-1~lucid1" --distribution lucid "xboxdrv 0.8.2 backport"
-git commit -m "xboxdrv 0.8.2 backport" -a
+dch -b -v "0.8.3-0ubuntu1~lucid1" --distribution lucid "xboxdrv 0.8.3 backport"
+git commit -m "xboxdrv 0.8.3 backport" -a
 git-buildpackage --git-no-create-orig --git-debian-branch=master-lts --git-tag --git-builder="debuild -S"
-sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv_0.8.2-1~lucid1.dsc
-dput my-ppa ../xboxdrv_0.8.2-1~lucid1_source.changes
+sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv_0.8.3-0ubuntu1~lucid1.dsc
+dput my-ppa ../xboxdrv_0.8.3-0ubuntu1~lucid1_source.changes
 
 # Ubuntu 10.10 - xboxdrv-stable
 # =============================
