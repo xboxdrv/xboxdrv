@@ -96,7 +96,7 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       else if (data[1] == 0x80) 
       {
         log_info("connection status: controller connected");
-        set_led(get_led());
+        set_led_real(get_led());
         set_active(true);
       } 
       else if (data[1] == 0x40) 
@@ -106,7 +106,7 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       else if (data[1] == 0xc0) 
       {
         log_info("Connection status: controller and headset connected");
-        set_led(get_led());
+        set_led_real(get_led());
       }
       else
       {
