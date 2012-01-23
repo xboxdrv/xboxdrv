@@ -42,6 +42,11 @@ public:
           const std::string& alias1,
           const std::string& alias2,
           const std::string& alias3);
+  int put(const std::string& name,
+          const std::string& alias1,
+          const std::string& alias2,
+          const std::string& alias3,
+          const std::string& alias4);
 
   /** Returns the id of the given name, on lookup failure the name is
       put into the table */

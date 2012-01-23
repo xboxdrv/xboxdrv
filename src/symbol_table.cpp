@@ -102,6 +102,25 @@ SymbolTable::put(const std::string& name_,
 }
 
 int 
+SymbolTable::put(const std::string& name_,
+                 const std::string& alias1,
+                 const std::string& alias2,
+                 const std::string& alias3,
+                 const std::string& alias4)
+{
+  std::string name = tolower(name_);
+
+  int symbol = m_int2name.size();
+  m_int2name.push_back(name);
+  m_name2int[name] = symbol;
+  m_name2int[tolower(alias1)] = symbol;
+  m_name2int[tolower(alias2)] = symbol;
+  m_name2int[tolower(alias3)] = symbol;
+  m_name2int[tolower(alias4)] = symbol;
+  return symbol;
+}
+
+int 
 SymbolTable::getput(const std::string& name_)
 {
   std::string name = tolower(name_);
