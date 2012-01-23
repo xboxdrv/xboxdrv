@@ -26,7 +26,8 @@ ControllerSlotOptions::ControllerSlotOptions() :
   m_options(),
   m_match_rules(),
   m_force_feedback(false),
-  m_led_status(-1)
+  m_led_status(-1),
+  m_ff_device(DEVICEID_JOYSTICK)
 {
 }
 
@@ -66,6 +67,18 @@ const std::map<int, ControllerOptions>&
 ControllerSlotOptions::get_options() const
 {
   return m_options; 
+}
+
+int
+ControllerSlotOptions::get_ff_device() const
+{
+  return m_ff_device;
+}
+
+void
+ControllerSlotOptions::set_ff_device(const std::string& device)
+{
+  m_ff_device = str2deviceid(device);
 }
 
 /* EOF */

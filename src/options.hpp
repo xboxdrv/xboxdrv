@@ -207,6 +207,7 @@ public:
   void set_dpad_as_button();
   void set_dpad_only();
   void set_force_feedback(const std::string& value);
+  void set_ff_device(const std::string& value);
   void set_mimic_xpad();
   void set_mimic_xpad_wireless();
 
