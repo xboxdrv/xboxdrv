@@ -1,3 +1,20 @@
+# Analog Stick Keyboard
+# =====================
+#
+# The analog stick keyboard works by emitting a letter when both
+# analog sticks are moved into one of the eight directions. For
+# example moving both sticks to the left will give an 'o'.
+#
+# Each analog stick is separated into eight direction, with the most
+# frequent used letters being placed on the four main direction (up,
+# down, left, right).
+#
+# Shoulder buttons are used for Shift and Ctrl, face buttons for
+# backspace, enter,
+#
+# TODO: This configuration is pretty experimental and hasn't really
+# been used in practice, it's also not complete.
+
 [xboxdrv]
 ui-clear=true
 
