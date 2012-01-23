@@ -166,6 +166,7 @@ XboxdrvDaemon::run()
           break;
 
         case Options::kDBusDisabled:
+        default:
           assert(!"should never happen");
           break;
       }
