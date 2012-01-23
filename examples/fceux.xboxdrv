@@ -1,0 +1,46 @@
+# FCEUX configuration from Dustin Wing <dwingrs@gmail.com>
+
+[xboxdrv]
+ui-clear=true
+silent=true
+trigger-as-button=true
+
+[ui-axismap]
+x1=KEY_A:KEY_D
+y1=KEY_W:KEY_S
+
+
+x2^dead:4000 = REL_X:750:-1
+y2^dead:4000 = REL_Y:750:-1
+
+
+[ui-buttonmap]
+lt = KEY_E
+rt = KEY_R
+
+[ui-buttonmap]
+lb = BTN_LEFT
+rb = BTN_RIGHT
+
+[ui-buttonmap]
+tl = KEY_E
+tr = KEY_F3
+
+[ui-buttonmap]
+back  = KEY_I
+guide = KEY_O
+start = KEY_U
+
+[ui-buttonmap]
+x = KEY_R
+y = KEY_C
+a = KEY_E
+b = KEY_V
+
+[ui-buttonmap]
+dl = KEY_A
+dr = KEY_D
+du = KEY_W
+dd = KEY_S
+
+# EOF #

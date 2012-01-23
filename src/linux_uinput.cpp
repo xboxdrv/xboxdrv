@@ -335,8 +335,6 @@ LinuxUinput::update(int msec_delta)
 gboolean
 LinuxUinput::on_read_data(GIOChannel* source, GIOCondition condition)
 {
-  log_error("data available");
-
   struct input_event ev;
   int ret;
 

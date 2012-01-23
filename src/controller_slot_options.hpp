@@ -44,7 +44,8 @@ public:
   void set_force_feedback(bool value) { m_force_feedback = value; }
   bool get_force_feedback() const { return m_force_feedback; }
 
-  int get_ff_device() const { return 0; }
+  void set_ff_device(const std::string& device);
+  int  get_ff_device() const;
 
   int get_led_status() const { return m_led_status; }
   void set_led_status(int v)  { m_led_status = v; }
@@ -54,6 +55,7 @@ private:
   std::vector<ControllerMatchRulePtr> m_match_rules;
   bool m_force_feedback;
   int m_led_status;
+  int m_ff_device;
 };
 
 #endif

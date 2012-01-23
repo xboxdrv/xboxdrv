@@ -27,8 +27,7 @@ enum {
   DEVICEID_KEYBOARD = static_cast<uint16_t>(-4),
   DEVICEID_MOUSE    = static_cast<uint16_t>(-3),
   DEVICEID_JOYSTICK = static_cast<uint16_t>(-2),
-  DEVICEID_AUTO     = static_cast<uint16_t>(-1),
-  DEVICEID_GENERIC  = static_cast<uint16_t>(0)
+  DEVICEID_AUTO     = static_cast<uint16_t>(-1)
 };
 
 enum {

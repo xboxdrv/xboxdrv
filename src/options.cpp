@@ -340,6 +340,12 @@ Options::set_force_feedback(const std::string& value)
 }
 
 void
+Options::set_ff_device(const std::string& value)
+{
+  get_controller_slot().set_ff_device(value);
+}
+
+void
 Options::set_mimic_xpad()
 {
   // BTN_BACK is recognized as mouse button, so we have to disallow
