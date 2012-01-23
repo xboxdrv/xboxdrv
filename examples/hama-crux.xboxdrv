@@ -31,6 +31,9 @@ tab=KEY_LEFTCTRL+XK_t # new tab
 run=KEY_LEFTCTRL
 crouch=KEY_LEFTALT
 
+run+up=KEY_HOME
+run+down=KEY_END
+
 p1=KEY_FORWARD
 p2=KEY_BACK
 
@@ -42,15 +45,19 @@ option=KEY_F11
 c6=KEY_HOME
 c7=KEY_END
 
-n11=KEY_LEFTCTRL+XK_minus
-n6=KEY_LEFTCTRL+XK_equal
+n11=KEY_LEFTCTRL+XK_equal
+n6=KEY_LEFTCTRL+XK_minus
 
-n10=KEY_LEFTCTRL+KEY_LEFTSHIFT+XK_minus
-n5=KEY_LEFTCTRL+KEY_LEFTSHIFT+XK_equal
+n10=KEY_LEFTCTRL+KEY_LEFTSHIFT+XK_equal
+n5=KEY_LEFTCTRL+KEY_LEFTSHIFT+XK_minus
 
 n1=qmacro:www.youtube.com
 n2=qmacro:www.slashdot.com
 n3=qmacro:mail.google.com
 n4=qmacro:www.heise.de
+
+n7=qmacro:www.reddit.com
+n8=qmacro:123
+n9=
 
 # EOF #
