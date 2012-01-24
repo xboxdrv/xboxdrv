@@ -1,4 +1,11 @@
-xboxdrv 0.8.3 - (24/Jan/2012)
+xboxdrv 0.8.4 - (24/Jan/2012)
+=============================
+
+* fixed readded lost man-page
+* added documentation for --dbus and --ff-device
+
+
+xboxdrv 0.8.3 - (23/Jan/2012)
 =============================
 
 * added --dbus option to switch between system and session bus
