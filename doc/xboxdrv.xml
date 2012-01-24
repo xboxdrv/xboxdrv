@@ -433,6 +433,25 @@ start=KEY_ESC
         </varlistentry>
 
         <varlistentry>
+          <term><option>--dbus</option> <replaceable class="parameter">BUS</replaceable></term>
+          <listitem>
+            <para>
+              Set which bus type xboxdrv should connect to. Allowed
+              values for BUS are <constant>session</constant>,
+              <constant>system</constant>,
+              <constant>disabled</constant> and
+              <constant>auto</constant>. The default is
+              <constant>auto</constant>, which will detect the
+              appropriate bus type depending on if xboxdrv is run as
+              root (<constant>system</constant> or as user
+              (<constant>session</constant>). Running with
+              <constant>disabled</constant> will disable D-Bus support
+              completely.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>--on-connect</option> <replaceable class="parameter">EXE</replaceable></term>
           <listitem>
             <para>
@@ -884,6 +903,21 @@ start=KEY_ESC
               When using xboxdrv in daemon mode with multiple
               controller slots you have to enable force feedback for
               each slot separately.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--ff-device</option> <replaceable>DEVICEID</replaceable></term>
+          <listitem>
+            <para>
+              Select to which virtual device the force-feedback
+              callbacks will be connected to, it defaults to
+              <constant>joystick</constant>. Other allowed values are
+              <constant>mouse</constant>,
+              <constant>keyboard</constant> and any integer number.
+              See <option>--ui-buttonmap</option> for further
+              information on how device-ids work.
             </para>
           </listitem>
         </varlistentry>
