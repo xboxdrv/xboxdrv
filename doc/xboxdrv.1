@@ -249,6 +249,19 @@ if \*(T<\fB\-\-daemon\fR\*(T> is given.
 \*(T<\fB\-\-pid\-file\fR\*(T> \fIFILE\fR
 Write the xboxdrv daemon process id to FILE.
 .TP 
+\*(T<\fB\-\-dbus\fR\*(T> \fIBUS\fR
+Set which bus type xboxdrv should connect to. Allowed
+values for BUS are session,
+system,
+disabled and
+auto. The default is
+auto, which will detect the
+appropriate bus type depending on if xboxdrv is run as
+root (system or as user
+(session). Running with
+disabled will disable D-Bus support
+completely.
+.TP 
 \*(T<\fB\-\-on\-connect\fR\*(T> \fIEXE\fR
 Launches \fIEXE\fR
 when a controller gets connected. As arguments
@@ -600,6 +613,15 @@ to get rid of.
 When using xboxdrv in daemon mode with multiple
 controller slots you have to enable force feedback for
 each slot separately.
+.TP 
+\*(T<\fB\-\-ff\-device\fR\*(T> \fIDEVICEID\fR
+Select to which virtual device the force-feedback
+callbacks will be connected to, it defaults to
+joystick. Other allowed values are
+mouse,
+keyboard and any integer number.
+See \*(T<\fB\-\-ui\-buttonmap\fR\*(T> for further
+information on how device-ids work.
 .TP 
 \*(T<\fB\-R\fR\*(T>, \*(T<\fB\-\-test\-rumble\fR\*(T>
 Pressing LT will move the left rumble motor and pressing
