@@ -17,7 +17,7 @@ xboxdrv 0.9.0 - (??/Aug/2011)
 xboxdrv 0.8.4 - (24/Jan/2012)
 =============================
 
-* fixed readded lost man-page
+* readded man-page that had gone missing
 * added documentation for --dbus and --ff-device
 
 
