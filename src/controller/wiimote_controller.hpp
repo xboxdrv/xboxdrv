@@ -27,6 +27,57 @@
 #include "controller.hpp"
 #include "controller_message.hpp"
 
+class ControllerMessageDescriptor;
+
+struct WiiNames
+{
+  int plus;
+  int home;
+  int minus;
+
+  int a;
+  int b;
+  int btn1;
+  int btn2;
+
+  int dpad_up;
+  int dpad_down;
+  int dpad_left;
+  int dpad_right;
+
+  int acc_x;
+  int acc_y;
+  int acc_z;
+
+  int ir1_x;
+  int ir1_y;
+  int ir1_size;
+
+  int ir2_x;
+  int ir2_y;
+  int ir2_size;
+
+  int ir3_x;
+  int ir3_y;
+  int ir3_size;
+
+  int ir4_x;
+  int ir4_y;
+  int ir4_size;
+
+  int nunchuk_x;
+  int nunchuk_y;
+
+  int nunchuk_c;
+  int nunchuk_z;
+
+  int nunchuk_acc_x;
+  int nunchuk_acc_y;
+  int nunchuk_acc_z;
+
+  WiiNames(ControllerMessageDescriptor& desc);
+};
+
 struct AccCalibration
 {
   uint8_t x;
@@ -57,6 +108,8 @@ private:
 
   AccCalibration m_nunchuk_x;
   AccCalibration m_nunchuk_y;
+
+  WiiNames wiimote;
 
 public:
   WiimoteController();

@@ -24,11 +24,101 @@
 #include <iostream>
 
 #include "bluetooth.hpp"
-
-#include "unpack.hpp"
+#include "controller_message_descriptor.hpp"
 #include "log.hpp"
+#include "unpack.hpp"
 
 WiimoteController* WiimoteController::s_wiimote = 0;
+
+WiiNames::WiiNames(ControllerMessageDescriptor& desc) :
+  plus(-1),
+  home(-1),
+  minus(-1),
+
+  a(-1),
+  b(-1),
+  btn1(-1),
+  btn2(-1),
+
+  dpad_up(-1),
+  dpad_down(-1),
+  dpad_left(-1),
+  dpad_right(-1),
+
+  acc_x(-1),
+  acc_y(-1),
+  acc_z(-1),
+
+  ir1_x(-1),
+  ir1_y(-1),
+  ir1_size(-1),
+
+  ir2_x(-1),
+  ir2_y(-1),
+  ir2_size(-1),
+
+  ir3_x(-1),
+  ir3_y(-1),
+  ir3_size(-1),
+
+  ir4_x(-1),
+  ir4_y(-1),
+  ir4_size(-1),
+
+  nunchuk_x(-1),
+  nunchuk_y(-1),
+
+  nunchuk_c(-1),
+  nunchuk_z(-1),
+
+  nunchuk_acc_x(-1),
+  nunchuk_acc_y(-1),
+  nunchuk_acc_z(-1)
+{
+  minus = desc.key().put("minus", "back", "select");
+  home  = desc.key().put("home",  "guide");
+  plus  = desc.key().put("plus",  "start");
+
+  a = desc.key().put("a");
+  b = desc.key().put("a");
+  btn1 = desc.key().put("1");
+  btn2 = desc.key().put("2");
+
+  dpad_up    = desc.key().put("dpad_up", "du");
+  dpad_down  = desc.key().put("dpad_down", "dd");
+  dpad_left  = desc.key().put("dpad_left", "dl");
+  dpad_right = desc.key().put("dpad_right", "dr");
+
+  acc_x = desc.abs().put("acc-x");
+  acc_y = desc.abs().put("acc-y");
+  acc_z = desc.abs().put("acc-z");
+
+  ir1_x = desc.abs().put("ir1-x");
+  ir1_y = desc.abs().put("ir1-y");
+  ir1_size = desc.abs().put("ir1-size");
+
+  ir2_x = desc.abs().put("ir2-x");
+  ir2_y = desc.abs().put("ir2-y");
+  ir2_size = desc.abs().put("ir2-size");
+
+  ir3_x = desc.abs().put("ir3-x");
+  ir3_y = desc.abs().put("ir3-y");
+  ir3_size = desc.abs().put("ir3-size");
+
+  ir4_x = desc.abs().put("ir4-x");
+  ir4_y = desc.abs().put("ir4-y");
+  ir4_size = desc.abs().put("ir4-size");
+
+  nunchuk_x = desc.abs().put("nunchuk-x");
+  nunchuk_y = desc.abs().put("nunchuk-y");
+
+  nunchuk_c = desc.key().put("nunchuk-c");
+  nunchuk_z = desc.key().put("nunchuk-z");
+
+  nunchuk_acc_x = desc.abs().put("nunchuk-acc-x");
+  nunchuk_acc_y = desc.abs().put("nunchuk-acc-x");
+  nunchuk_acc_z = desc.abs().put("nunchuk-acc-y");
+}
 
 WiimoteController::WiimoteController() :
   m_mutex(),
@@ -39,7 +129,8 @@ WiimoteController::WiimoteController() :
   m_nunchuk_zero(),
   m_nunchuk_one(),
   m_nunchuk_x(),
-  m_nunchuk_y()
+  m_nunchuk_y(),
+  wiimote(m_message_descriptor)
 {
   assert(!s_wiimote);
   s_wiimote = this;
@@ -252,41 +343,36 @@ WiimoteController::on_error(const cwiid_error_mesg& msg)
 void
 WiimoteController::on_button(const cwiid_btn_mesg& msg)
 {
-#if 0
-  m_ctrl_msg.set_key(XBOX_BTN_BACK, msg.buttons & CWIID_BTN_MINUS);
-  m_ctrl_msg.set_key(XBOX_BTN_GUIDE, msg.buttons & CWIID_BTN_HOME);
-  m_ctrl_msg.set_key(XBOX_BTN_START, msg.buttons & CWIID_BTN_PLUS);
+  m_ctrl_msg.set_key(wiimote.minus, msg.buttons & CWIID_BTN_MINUS);
+  m_ctrl_msg.set_key(wiimote.home,  msg.buttons & CWIID_BTN_HOME);
+  m_ctrl_msg.set_key(wiimote.plus,  msg.buttons & CWIID_BTN_PLUS);
 
-  m_ctrl_msg.set_key(XBOX_BTN_Y, msg.buttons & CWIID_BTN_2);
-  m_ctrl_msg.set_key(XBOX_BTN_X, msg.buttons & CWIID_BTN_1);
-  m_ctrl_msg.set_key(XBOX_BTN_B, msg.buttons & CWIID_BTN_B);
-  m_ctrl_msg.set_key(XBOX_BTN_A, msg.buttons & CWIID_BTN_A);
+  m_ctrl_msg.set_key(wiimote.btn2, msg.buttons & CWIID_BTN_2);
+  m_ctrl_msg.set_key(wiimote.btn1, msg.buttons & CWIID_BTN_1);
+  m_ctrl_msg.set_key(wiimote.b, msg.buttons & CWIID_BTN_B);
+  m_ctrl_msg.set_key(wiimote.a, msg.buttons & CWIID_BTN_A);
 
-  m_ctrl_msg.set_key(XBOX_DPAD_LEFT,  msg.buttons & CWIID_BTN_LEFT);
-  m_ctrl_msg.set_key(XBOX_DPAD_RIGHT, msg.buttons & CWIID_BTN_RIGHT);
-  m_ctrl_msg.set_key(XBOX_DPAD_DOWN,  msg.buttons & CWIID_BTN_DOWN);
-  m_ctrl_msg.set_key(XBOX_DPAD_UP,    msg.buttons & CWIID_BTN_UP);
+  m_ctrl_msg.set_key(wiimote.dpad_left,  msg.buttons & CWIID_BTN_LEFT);
+  m_ctrl_msg.set_key(wiimote.dpad_right, msg.buttons & CWIID_BTN_RIGHT);
+  m_ctrl_msg.set_key(wiimote.dpad_down,  msg.buttons & CWIID_BTN_DOWN);
+  m_ctrl_msg.set_key(wiimote.dpad_up,    msg.buttons & CWIID_BTN_UP);
 
   submit_msg(m_ctrl_msg, m_message_descriptor);
-#endif
 }
 
 void
 WiimoteController::on_acc(const cwiid_acc_mesg& msg)
 {
-#if 0
-  m_ctrl_msg.set_abs(WIIMOTE_ACC_X, msg.acc[0]);
-  m_ctrl_msg.set_abs(WIIMOTE_ACC_Y, msg.acc[1]);
-  m_ctrl_msg.set_abs(WIIMOTE_ACC_Z, msg.acc[2]);
+  m_ctrl_msg.set_abs(wiimote.acc_x, msg.acc[0]);
+  m_ctrl_msg.set_abs(wiimote.acc_y, msg.acc[1]);
+  m_ctrl_msg.set_abs(wiimote.acc_z, msg.acc[2]);
 
   submit_msg(m_ctrl_msg, m_message_descriptor);
-#endif
 }
 
 void
 WiimoteController::on_ir(const cwiid_ir_mesg& msg)
 {
-#if 0
   // size: 1-7
   // valid 0, 1
   // x 0,1024
@@ -302,37 +388,35 @@ WiimoteController::on_ir(const cwiid_ir_mesg& msg)
 
   // FIXME: encoding 'valid' in size might not be such a good idea, as
   // it overwrites the last valid value
-
-  m_ctrl_msg.set_abs(WIIMOTE_IR_X, msg.src[0].pos[0]);
-  m_ctrl_msg.set_abs(WIIMOTE_IR_Y, msg.src[0].pos[1]);
+  m_ctrl_msg.set_abs(wiimote.ir1_x, msg.src[0].pos[0]);
+  m_ctrl_msg.set_abs(wiimote.ir1_y, msg.src[0].pos[1]);
   if (msg.src[0].valid)
-    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE, msg.src[0].size);
+    m_ctrl_msg.set_abs(wiimote.ir1_size, msg.src[0].size);
   else
-    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE, -1);
+    m_ctrl_msg.set_abs(wiimote.ir1_size, -1);
 
-  m_ctrl_msg.set_abs(WIIMOTE_IR_X2, msg.src[1].pos[0]);
-  m_ctrl_msg.set_abs(WIIMOTE_IR_Y2, msg.src[1].pos[1]);
+  m_ctrl_msg.set_abs(wiimote.ir2_x, msg.src[1].pos[0]);
+  m_ctrl_msg.set_abs(wiimote.ir2_x, msg.src[1].pos[1]);
   if (msg.src[1].valid)
-    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE2, msg.src[1].size);
+    m_ctrl_msg.set_abs(wiimote.ir2_size, msg.src[1].size);
   else
-    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE2, -1);
+    m_ctrl_msg.set_abs(wiimote.ir2_size, -1);
 
-  m_ctrl_msg.set_abs(WIIMOTE_IR_X3, msg.src[2].pos[0]);
-  m_ctrl_msg.set_abs(WIIMOTE_IR_Y3, msg.src[2].pos[1]);
+  m_ctrl_msg.set_abs(wiimote.ir3_x, msg.src[2].pos[0]);
+  m_ctrl_msg.set_abs(wiimote.ir3_y, msg.src[2].pos[1]);
   if (msg.src[2].valid)
-    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE3, msg.src[2].size);
+    m_ctrl_msg.set_abs(wiimote.ir3_size, msg.src[2].size);
   else
-    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE3, -1);
+    m_ctrl_msg.set_abs(wiimote.ir3_size, -1);
 
-  m_ctrl_msg.set_abs(WIIMOTE_IR_X4, msg.src[3].pos[0]);
-  m_ctrl_msg.set_abs(WIIMOTE_IR_Y4, msg.src[3].pos[1]);
+  m_ctrl_msg.set_abs(wiimote.ir4_x, msg.src[3].pos[0]);
+  m_ctrl_msg.set_abs(wiimote.ir4_x, msg.src[3].pos[1]);
   if (msg.src[3].valid)
-    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE4, msg.src[3].size);
+    m_ctrl_msg.set_abs(wiimote.ir4_size, msg.src[3].size);
   else
-    m_ctrl_msg.set_abs(WIIMOTE_IR_SIZE4, -1);
+    m_ctrl_msg.set_abs(wiimote.ir4_size, -1);
 
   submit_msg(m_ctrl_msg, m_message_descriptor);
-#endif
 }
 
 // FIXME: use proper CalibrationAxisFilter instead of this hack, also CalibrationAxisFilter doesn't handle min/max properly
@@ -358,19 +442,17 @@ int8_t calibrate(int value, const AccCalibration& cal)
 void
 WiimoteController::on_nunchuk(const cwiid_nunchuk_mesg& msg)
 {
-#if 0
-  m_ctrl_msg.set_abs(XBOX_AXIS_X1, unpack::s8_to_s16(calibrate(msg.stick[0], m_nunchuk_x)));
-  m_ctrl_msg.set_abs(XBOX_AXIS_Y1, unpack::s16_invert(unpack::s8_to_s16(calibrate(msg.stick[1], m_nunchuk_y))));
+  m_ctrl_msg.set_abs(wiimote.nunchuk_x, unpack::s8_to_s16(calibrate(msg.stick[0], m_nunchuk_x)));
+  m_ctrl_msg.set_abs(wiimote.nunchuk_y, unpack::s16_invert(unpack::s8_to_s16(calibrate(msg.stick[1], m_nunchuk_y))));
 
-  m_ctrl_msg.set_abs(NUNCHUK_ACC_X, msg.acc[0]);
-  m_ctrl_msg.set_abs(NUNCHUK_ACC_Y, msg.acc[1]);
-  m_ctrl_msg.set_abs(NUNCHUK_ACC_Z, msg.acc[2]);
+  m_ctrl_msg.set_abs(wiimote.nunchuk_acc_x, msg.acc[0]);
+  m_ctrl_msg.set_abs(wiimote.nunchuk_acc_y, msg.acc[1]);
+  m_ctrl_msg.set_abs(wiimote.nunchuk_acc_z, msg.acc[2]);
 
-  m_ctrl_msg.set_key(XBOX_BTN_LT, msg.buttons & CWIID_NUNCHUK_BTN_Z);
-  m_ctrl_msg.set_key(XBOX_BTN_LB, msg.buttons & CWIID_NUNCHUK_BTN_C);
+  m_ctrl_msg.set_key(wiimote.nunchuk_z, msg.buttons & CWIID_NUNCHUK_BTN_Z);
+  m_ctrl_msg.set_key(wiimote.nunchuk_c, msg.buttons & CWIID_NUNCHUK_BTN_C);
 
   submit_msg(m_ctrl_msg, m_message_descriptor);
-#endif
 }
 
 void

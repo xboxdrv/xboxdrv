@@ -54,74 +54,8 @@ Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& msg_desc) 
   abs_white(-1)
 {
 #if 0
-  else if (str == "lt" || str == "7" || str == "l2")
-    return XBOX_BTN_LT;
-  else if (str == "rt" || str == "8" || str == "r2")
-    return XBOX_BTN_RT;
-
-
-  else if (str == "dpad_x")
-    return XBOX_AXIS_DPAD_X;
-  else if (str == "dpad_y")
-    return XBOX_AXIS_DPAD_Y;
-
   else if (str == "trigger" || str == "z" || str == "rudder")
     return XBOX_AXIS_TRIGGER;
-
-  else if (str == "acc_x")
-    return WIIMOTE_ACC_X;
-
-  else if (str == "acc_y")
-    return WIIMOTE_ACC_Y;
-
-  else if (str == "acc_z")
-    return WIIMOTE_ACC_Z;
-
-  else if (str == "acc_x2")
-    return NUNCHUK_ACC_X;
-
-  else if (str == "acc_y2")
-    return NUNCHUK_ACC_Y;
-
-  else if (str == "acc_z2")
-    return NUNCHUK_ACC_Z;
-
-  else if (str == "ir_x")
-    return WIIMOTE_IR_X;
-
-  else if (str == "ir_y")
-    return WIIMOTE_IR_Y;
-
-  else if (str == "ir_size")
-    return WIIMOTE_IR_SIZE;
-
-  else if (str == "ir_x2")
-    return WIIMOTE_IR_X2;
-
-  else if (str == "ir_y2")
-    return WIIMOTE_IR_Y2;
-
-  else if (str == "ir_size2")
-    return WIIMOTE_IR_SIZE2;
-
-  else if (str == "ir_x3")
-    return WIIMOTE_IR_X3;
-
-  else if (str == "ir_y3")
-    return WIIMOTE_IR_Y3;
-
-  else if (str == "ir_size3")
-    return WIIMOTE_IR_SIZE3;
-
-  else if (str == "ir_x4")
-    return WIIMOTE_IR_X4;
-
-  else if (str == "ir_y4")
-    return WIIMOTE_IR_Y4;
-
-  else if (str == "ir_size4")
-    return WIIMOTE_IR_SIZE2;
-
 #endif
 
   btn_a = msg_desc.key().put("a", "cross", "1", "green");
@@ -136,8 +70,8 @@ Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& msg_desc) 
   btn_lb = msg_desc.key().put("lb", "white", "l1", "orange", "5");
   btn_rb = msg_desc.key().put("rb", "black", "r1", "6");
 
-  btn_lt = msg_desc.key().put("lt");
-  btn_rt = msg_desc.key().put("rt");
+  btn_lt = msg_desc.key().put("lt", "7", "l2");
+  btn_rt = msg_desc.key().put("rt", "7", "l2");
 
   btn_thumb_l = msg_desc.key().put("tl", "thumbl", "l3");
   btn_thumb_r = msg_desc.key().put("tr", "thumbr", "r3");
@@ -155,8 +89,8 @@ Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& msg_desc) 
   abs_x2 = msg_desc.abs().put("x2", "whammy");
   abs_y2 = msg_desc.abs().put("y2", "tilt");
 
-  abs_lt = msg_desc.abs().put("lt", "l2");
-  abs_rt = msg_desc.abs().put("rt", "r2");
+  abs_lt = msg_desc.abs().put("lt", "7", "l2");
+  abs_rt = msg_desc.abs().put("rt", "8", "r2");
 
   abs_a = msg_desc.abs().put("a", "cross");
   abs_b = msg_desc.abs().put("b", "circle");
