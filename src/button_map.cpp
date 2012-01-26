@@ -82,7 +82,10 @@ ButtonMap::send(const std::bitset<256>& button_state)
 
   for(Map::iterator i = m_map.begin(); i != m_map.end(); ++i)
   {
-    i->m_data->send(i->m_state);
+    if (i->m_data)
+    {
+      i->m_data->send(i->m_state);
+    }
   }
 }
 
@@ -91,7 +94,10 @@ ButtonMap::send_clear()
 {
   for(Map::iterator i = m_map.begin(); i != m_map.end(); ++i)
   {
-    i->m_data->send_clear();
+    if (i->m_data)
+    {
+      i->m_data->send_clear();
+    }
   }
 }
 
@@ -100,7 +106,10 @@ ButtonMap::update(int msec_delta)
 {
   for(Map::const_iterator i = m_map.begin(); i != m_map.end(); ++i)
   {
-    i->m_data->update(msec_delta);
+    if (i->m_data)
+    {
+      i->m_data->update(msec_delta);
+    }
   }
 }
 

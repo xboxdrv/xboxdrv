@@ -74,7 +74,10 @@ AxisMap::send_clear()
 {
   for(std::vector<Mapping>::iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
   {
-    it->event->send(0);
+    if (it->event)
+    {
+      it->event->send(0);
+    }
   }
 }
 
@@ -89,13 +92,16 @@ AxisMap::send(const std::bitset<256>& button_state,
 
     for(Map::iterator j = m.begin(); j != m.end(); ++j)
     {
-      if (j->m_state)
+      if (j->m_data)
       {
-        j->m_data->send(axis_state[i]); 
-      }
-      else
-      {
-        j->m_data->send(0);
+        if (j->m_state)
+        {
+          j->m_data->send(axis_state[i]); 
+        }
+        else
+        {
+          j->m_data->send(0);
+        }
       }
     }
   }
@@ -106,7 +112,10 @@ AxisMap::update(int msec_delta)
 {
   for(std::vector<Mapping>::iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
   {
-    it->event->update(msec_delta);
+    if (it->event)
+    {
+      it->event->update(msec_delta);
+    }
   }
 }
 
