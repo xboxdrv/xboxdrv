@@ -75,9 +75,9 @@ public:
     m_abs = desc.abs().getput(get_name());
   }
 
-  void set(ControllerMessage& msg, int value)
+  void set(ControllerMessage& msg, int value, int min, int max)
   {
-    msg.set_abs(get_abs(), value);
+    msg.set_abs(get_abs(), value, min, max);
   }
 
   void set_float(ControllerMessage& msg, float value)

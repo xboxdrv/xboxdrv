@@ -26,13 +26,13 @@
 
 namespace {
 
-void squarify_axis(int& x_inout, int& y_inout)
+void squarify_axis(float& x_inout, float& y_inout)
 {
   if (x_inout != 0 || y_inout != 0)
   {
     // Convert values to float
-    float x = (x_inout < 0) ? static_cast<float>(x_inout) / 32768.0f : static_cast<float>(x_inout) / 32767.0f;
-    float y = (y_inout < 0) ? static_cast<float>(y_inout) / 32768.0f : static_cast<float>(y_inout) / 32767.0f;
+    float x = x_inout;
+    float y = y_inout;
 
     // Transform values to square range
     float l = sqrtf(x*x + y*y);
@@ -41,8 +41,8 @@ void squarify_axis(int& x_inout, int& y_inout)
     y *= v;
 
     // Convert values to int
-    x_inout = static_cast<int>(Math::clamp(-32768, static_cast<int>((x < 0) ? x * 32768 : x * 32767), 32767));
-    y_inout = static_cast<int>(Math::clamp(-32768, static_cast<int>((y < 0) ? y * 32768 : y * 32767), 32767));
+    x_inout = Math::clamp(-1.0f, x, 1.0f);
+    y_inout = Math::clamp(-1.0f, y, 1.0f);
   }
 }
 
@@ -80,13 +80,13 @@ SquareAxisModifier::init(ControllerMessageDescriptor& desc)
 void
 SquareAxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
-  int x = msg.get_abs(m_xaxis);
-  int y = msg.get_abs(m_yaxis);
+  float x = msg.get_abs_float(m_xaxis);
+  float y = msg.get_abs_float(m_yaxis);
 
   squarify_axis(x, y);
 
-  msg.set_abs(m_xaxis, x);
-  msg.set_abs(m_yaxis, y);
+  msg.set_abs_float(m_xaxis, x);
+  msg.set_abs_float(m_yaxis, y);
 }
 
 std::string

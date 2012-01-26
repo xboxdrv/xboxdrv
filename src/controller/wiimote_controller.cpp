@@ -363,9 +363,9 @@ WiimoteController::on_button(const cwiid_btn_mesg& msg)
 void
 WiimoteController::on_acc(const cwiid_acc_mesg& msg)
 {
-  m_ctrl_msg.set_abs(wiimote.acc_x, msg.acc[0]);
-  m_ctrl_msg.set_abs(wiimote.acc_y, msg.acc[1]);
-  m_ctrl_msg.set_abs(wiimote.acc_z, msg.acc[2]);
+  m_ctrl_msg.set_abs(wiimote.acc_x, msg.acc[0], 0, 255);
+  m_ctrl_msg.set_abs(wiimote.acc_y, msg.acc[1], 0, 255);
+  m_ctrl_msg.set_abs(wiimote.acc_z, msg.acc[2], 0, 255);
 
   submit_msg(m_ctrl_msg, m_message_descriptor);
 }
@@ -388,33 +388,33 @@ WiimoteController::on_ir(const cwiid_ir_mesg& msg)
 
   // FIXME: encoding 'valid' in size might not be such a good idea, as
   // it overwrites the last valid value
-  m_ctrl_msg.set_abs(wiimote.ir1_x, msg.src[0].pos[0]);
-  m_ctrl_msg.set_abs(wiimote.ir1_y, msg.src[0].pos[1]);
+  m_ctrl_msg.set_abs(wiimote.ir1_x, msg.src[0].pos[0], 0, 1024);
+  m_ctrl_msg.set_abs(wiimote.ir1_y, msg.src[0].pos[1], 0, 768);
   if (msg.src[0].valid)
-    m_ctrl_msg.set_abs(wiimote.ir1_size, msg.src[0].size);
+    m_ctrl_msg.set_abs(wiimote.ir1_size, msg.src[0].size, -128, 127);
   else
-    m_ctrl_msg.set_abs(wiimote.ir1_size, -1);
+    m_ctrl_msg.set_abs(wiimote.ir1_size, -1, -128, 127);
 
-  m_ctrl_msg.set_abs(wiimote.ir2_x, msg.src[1].pos[0]);
-  m_ctrl_msg.set_abs(wiimote.ir2_x, msg.src[1].pos[1]);
+  m_ctrl_msg.set_abs(wiimote.ir2_x, msg.src[1].pos[0], 0, 1024);
+  m_ctrl_msg.set_abs(wiimote.ir2_x, msg.src[1].pos[1], 0, 768);
   if (msg.src[1].valid)
-    m_ctrl_msg.set_abs(wiimote.ir2_size, msg.src[1].size);
+    m_ctrl_msg.set_abs(wiimote.ir2_size, msg.src[1].size, -128, 127);
   else
-    m_ctrl_msg.set_abs(wiimote.ir2_size, -1);
+    m_ctrl_msg.set_abs(wiimote.ir2_size, -1, -128, 127);
 
-  m_ctrl_msg.set_abs(wiimote.ir3_x, msg.src[2].pos[0]);
-  m_ctrl_msg.set_abs(wiimote.ir3_y, msg.src[2].pos[1]);
+  m_ctrl_msg.set_abs(wiimote.ir3_x, msg.src[2].pos[0], 0, 1024);
+  m_ctrl_msg.set_abs(wiimote.ir3_y, msg.src[2].pos[1], 0, 768);
   if (msg.src[2].valid)
-    m_ctrl_msg.set_abs(wiimote.ir3_size, msg.src[2].size);
+    m_ctrl_msg.set_abs(wiimote.ir3_size, msg.src[2].size, -128, 127);
   else
-    m_ctrl_msg.set_abs(wiimote.ir3_size, -1);
+    m_ctrl_msg.set_abs(wiimote.ir3_size, -1, -128, 127);
 
-  m_ctrl_msg.set_abs(wiimote.ir4_x, msg.src[3].pos[0]);
-  m_ctrl_msg.set_abs(wiimote.ir4_x, msg.src[3].pos[1]);
+  m_ctrl_msg.set_abs(wiimote.ir4_x, msg.src[3].pos[0], 0, 1024);
+  m_ctrl_msg.set_abs(wiimote.ir4_x, msg.src[3].pos[1], 0, 768);
   if (msg.src[3].valid)
-    m_ctrl_msg.set_abs(wiimote.ir4_size, msg.src[3].size);
+    m_ctrl_msg.set_abs(wiimote.ir4_size, msg.src[3].size, -128, 127);
   else
-    m_ctrl_msg.set_abs(wiimote.ir4_size, -1);
+    m_ctrl_msg.set_abs(wiimote.ir4_size, -1, -128, 127);
 
   submit_msg(m_ctrl_msg, m_message_descriptor);
 }
@@ -442,12 +442,12 @@ int8_t calibrate(int value, const AccCalibration& cal)
 void
 WiimoteController::on_nunchuk(const cwiid_nunchuk_mesg& msg)
 {
-  m_ctrl_msg.set_abs(wiimote.nunchuk_x, unpack::s8_to_s16(calibrate(msg.stick[0], m_nunchuk_x)));
-  m_ctrl_msg.set_abs(wiimote.nunchuk_y, unpack::s16_invert(unpack::s8_to_s16(calibrate(msg.stick[1], m_nunchuk_y))));
+  m_ctrl_msg.set_abs(wiimote.nunchuk_x, unpack::s8_to_s16(calibrate(msg.stick[0], m_nunchuk_x)), -32768, 32767);
+  m_ctrl_msg.set_abs(wiimote.nunchuk_y, unpack::s16_invert(unpack::s8_to_s16(calibrate(msg.stick[1], m_nunchuk_y))), -32768, 32767);
 
-  m_ctrl_msg.set_abs(wiimote.nunchuk_acc_x, msg.acc[0]);
-  m_ctrl_msg.set_abs(wiimote.nunchuk_acc_y, msg.acc[1]);
-  m_ctrl_msg.set_abs(wiimote.nunchuk_acc_z, msg.acc[2]);
+  m_ctrl_msg.set_abs(wiimote.nunchuk_acc_x, msg.acc[0], 0, 255);
+  m_ctrl_msg.set_abs(wiimote.nunchuk_acc_y, msg.acc[1], 0, 255);
+  m_ctrl_msg.set_abs(wiimote.nunchuk_acc_z, msg.acc[2], 0, 255);
 
   m_ctrl_msg.set_key(wiimote.nunchuk_z, msg.buttons & CWIID_NUNCHUK_BTN_Z);
   m_ctrl_msg.set_key(wiimote.nunchuk_c, msg.buttons & CWIID_NUNCHUK_BTN_C);

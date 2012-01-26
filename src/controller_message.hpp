@@ -31,6 +31,8 @@ class ControllerMessage
 {
 private:
   boost::array<int, 256> m_abs_state;
+  boost::array<int, 256> m_abs_min;
+  boost::array<int, 256> m_abs_max;
   boost::array<int, 256> m_rel_state;
   std::bitset<256>       m_key_state;
 
@@ -46,7 +48,7 @@ public:
   const boost::array<int, 256>& get_abs_state() const { return m_abs_state; }
 
   int  get_abs(int abs) const;
-  void set_abs(int abs, int v);
+  void set_abs(int abs, int v, int min, int max);
 
   int get_rel(int rel) const;
   void set_rel(int rel, int v);
@@ -54,8 +56,8 @@ public:
   float get_abs_float(int abs) const;
   void  set_abs_float(int abs, float v);
 
-  static int get_abs_min(int abs);
-  static int get_abs_max(int abs);
+  int get_abs_min(int abs);
+  int get_abs_max(int abs);
 
   bool operator==(const ControllerMessage& rhs) const;
   bool operator!=(const ControllerMessage& rhs) const;

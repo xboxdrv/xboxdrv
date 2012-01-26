@@ -18,8 +18,9 @@
 
 #include "four_way_restrictor_modifier.hpp"
 
-#include <stdexcept>
+#include <math.h>
 #include <sstream>
+#include <stdexcept>
 
 FourWayRestrictorModifier*
 FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
@@ -52,17 +53,17 @@ FourWayRestrictorModifier::init(ControllerMessageDescriptor& desc)
 void
 FourWayRestrictorModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
-  if (abs(msg.get_abs(m_xaxis)) > abs(msg.get_abs(m_yaxis)))
+  if (fabsf(msg.get_abs_float(m_xaxis)) > fabsf(msg.get_abs_float(m_yaxis)))
   {
-    msg.set_abs(m_yaxis, 0);
+    msg.set_abs_float(m_yaxis, 0);
   }
-  else if (abs(msg.get_abs(m_yaxis)) > abs(msg.get_abs(m_xaxis)))
+  else if (fabsf(msg.get_abs_float(m_yaxis)) > fabsf(msg.get_abs_float(m_xaxis)))
   {
-    msg.set_abs(m_xaxis, 0);
+    msg.set_abs_float(m_xaxis, 0);
   }
   else
   {
-    msg.set_abs(m_xaxis, 0);
+    msg.set_abs_float(m_xaxis, 0);
   }
 }
 

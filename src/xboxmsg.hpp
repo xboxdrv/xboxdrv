@@ -46,88 +46,6 @@ enum XboxMsgType {
   XBOX_MSG_PS3USB
 };
 
-#if 0
-enum XboxButton {
-  XBOX_BTN_UNKNOWN,
-  XBOX_BTN_START,
-  XBOX_BTN_GUIDE,
-  XBOX_BTN_BACK,
-
-  XBOX_BTN_A,
-  XBOX_BTN_B,
-  XBOX_BTN_X,
-  XBOX_BTN_Y,
-
-  XBOX_BTN_LB,
-  XBOX_BTN_RB,
-
-  XBOX_BTN_LT,
-  XBOX_BTN_RT,
-
-  XBOX_BTN_THUMB_L,
-  XBOX_BTN_THUMB_R,
-
-  XBOX_DPAD_UP,
-  XBOX_DPAD_DOWN,
-  XBOX_DPAD_LEFT,
-  XBOX_DPAD_RIGHT,
-
-  XBOX_BTN_MAX
-};
-
-enum XboxAxis {
-  XBOX_AXIS_UNKNOWN,
-
-  XBOX_AXIS_X1,
-  XBOX_AXIS_Y1,
-
-  XBOX_AXIS_X2,
-  XBOX_AXIS_Y2,
-
-  XBOX_AXIS_LT,
-  XBOX_AXIS_RT,
-
-  XBOX_AXIS_DPAD_X,
-  XBOX_AXIS_DPAD_Y,
-
-  XBOX_AXIS_TRIGGER,
-
-  // Xbox1 analog button
-  XBOX_AXIS_A,
-  XBOX_AXIS_B,
-  XBOX_AXIS_X,
-  XBOX_AXIS_Y,
-  XBOX_AXIS_BLACK,
-  XBOX_AXIS_WHITE,
-
-  WIIMOTE_ACC_X,
-  WIIMOTE_ACC_Y,
-  WIIMOTE_ACC_Z,
-
-  WIIMOTE_IR_X,
-  WIIMOTE_IR_Y,
-  WIIMOTE_IR_SIZE,
-
-  WIIMOTE_IR_X2,
-  WIIMOTE_IR_Y2,
-  WIIMOTE_IR_SIZE2,
-
-  WIIMOTE_IR_X3,
-  WIIMOTE_IR_Y3,
-  WIIMOTE_IR_SIZE3,
-
-  WIIMOTE_IR_X4,
-  WIIMOTE_IR_Y4,
-  WIIMOTE_IR_SIZE4,
-  
-  NUNCHUK_ACC_X,
-  NUNCHUK_ACC_Y,
-  NUNCHUK_ACC_Z,
-
-  XBOX_AXIS_MAX
-};
-#endif
-
 std::ostream& operator<<(std::ostream& out, const GamepadType& type);
 
 std::string gamepadtype_to_string(const GamepadType& type);

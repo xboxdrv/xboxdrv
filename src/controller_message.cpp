@@ -31,6 +31,8 @@ ControllerMessage::ControllerMessage() :
   // FIXME: should get proper size from ControllerMessageDescriptor
   // instead of hardcoded defaults
   m_abs_state(),
+  m_abs_min(),
+  m_abs_max(),
   m_rel_state(),
   m_key_state()
 {
@@ -40,6 +42,8 @@ void
 ControllerMessage::clear()
 {
   std::fill(m_abs_state.begin(), m_abs_state.end(), 0);
+  std::fill(m_abs_min.begin(), m_abs_min.end(), 0);
+  std::fill(m_abs_max.begin(), m_abs_max.end(), 0);
   std::fill(m_rel_state.begin(), m_rel_state.end(), 0);
   m_key_state.reset();
 }
@@ -63,21 +67,23 @@ ControllerMessage::get_abs(int axis) const
 }
 
 void
-ControllerMessage::set_abs(int abs, int v)
+ControllerMessage::set_abs(int abs, int v, int min, int max)
 {
   m_abs_state[abs] = v;
+  m_abs_min[abs] = min;
+  m_abs_max[abs] = max;
 }
 
 float
 ControllerMessage::get_abs_float(int axis) const
 {
-  return to_float(m_abs_state[axis], get_abs_min(axis), get_abs_max(axis));
+  return to_float(m_abs_state[axis], m_abs_min[axis], m_abs_max[axis]);
 }
 
 void
 ControllerMessage::set_abs_float(int axis, float v)
 {
-  m_abs_state[axis] = from_float(v, get_abs_min(axis), get_abs_max(axis));
+  m_abs_state[axis] = from_float(v, -32768, 32767);
 }
 
 int
@@ -93,7 +99,7 @@ ControllerMessage::set_rel(int rel, int v)
 }
 
 int
-ControllerMessage::get_abs_min(int axis)
+ControllerMessage::get_abs_min(int abs)
 {
 #if 0
   switch(axis)
@@ -147,8 +153,7 @@ ControllerMessage::get_abs_min(int axis)
     case XBOX_AXIS_MAX: return 0;
   }
 #endif
-
-  return -32768; // BROKEN
+  return m_abs_min[abs];
 }
 
 int
@@ -206,7 +211,7 @@ ControllerMessage::get_abs_max(int abs)
     case XBOX_AXIS_MAX: return 0;
   }
 #endif  
-  return 32767; // BROKEN
+  return m_abs_max[abs];
 }
 
 std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, const ControllerMessageDescriptor& desc)

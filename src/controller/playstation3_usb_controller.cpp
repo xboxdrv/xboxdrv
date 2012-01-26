@@ -67,10 +67,10 @@ Playstation3USBController::parse(const uint8_t* data, int len, ControllerMessage
     // unsigned int unknown01 :8; // always 00
 
     // 02
-    msg_out->set_key(xbox.btn_back,   unpack::bit(data+2, 0));
-    msg_out->set_key(xbox.btn_thumb_l,     unpack::bit(data+2, 1));
-    msg_out->set_key(xbox.btn_thumb_r,     unpack::bit(data+2, 2));
-    msg_out->set_key(xbox.btn_start,  unpack::bit(data+2, 3));
+    msg_out->set_key(xbox.btn_back,    unpack::bit(data+2, 0));
+    msg_out->set_key(xbox.btn_thumb_l, unpack::bit(data+2, 1));
+    msg_out->set_key(xbox.btn_thumb_r, unpack::bit(data+2, 2));
+    msg_out->set_key(xbox.btn_start,   unpack::bit(data+2, 3));
 
     msg_out->set_key(xbox.dpad_up,    unpack::bit(data+2, 4));
     msg_out->set_key(xbox.dpad_right, unpack::bit(data+2, 5));
@@ -93,10 +93,10 @@ Playstation3USBController::parse(const uint8_t* data, int len, ControllerMessage
     //unsigned int unknown04   :7;
 
     //unsigned int unknown05 :8; // always 00
-    msg_out->set_abs(xbox.abs_x1, data[6]);
-    msg_out->set_abs(xbox.abs_y1, data[7]);
-    msg_out->set_abs(xbox.abs_x2, data[8]);
-    msg_out->set_abs(xbox.abs_x2, data[9]);
+    msg_out->set_abs(xbox.abs_x1, data[6], 0, 255);
+    msg_out->set_abs(xbox.abs_y1, data[7], 0, 255);
+    msg_out->set_abs(xbox.abs_x2, data[8], 0, 255);
+    msg_out->set_abs(xbox.abs_x2, data[9], 0, 255);
 
     //unsigned int unknown10 :8; // always 00
     //unsigned int unknown11 :8; // always 00
@@ -113,10 +113,10 @@ Playstation3USBController::parse(const uint8_t* data, int len, ControllerMessage
     // msg_out->set_key(xbox.abs_l1, data[20]);
     // msg_out->set_key(xbox.abs_r1, data[21]);
 
-    msg_out->set_abs(xbox.abs_y, data[22]);
-    msg_out->set_abs(xbox.abs_b, data[23]);
-    msg_out->set_abs(xbox.abs_a, data[24]);
-    msg_out->set_abs(xbox.abs_x, data[25]);
+    msg_out->set_abs(xbox.abs_y, data[22], 0, 255);
+    msg_out->set_abs(xbox.abs_b, data[23], 0, 255);
+    msg_out->set_abs(xbox.abs_a, data[24], 0, 255);
+    msg_out->set_abs(xbox.abs_x, data[25], 0, 255);
 
     //unsigned int unknown26 :8; // always 00
     //unsigned int unknown27 :8; // always 00

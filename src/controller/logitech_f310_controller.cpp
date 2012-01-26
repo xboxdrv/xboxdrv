@@ -74,8 +74,8 @@ LogitechF310Controller::parse(const uint8_t* data, int len, ControllerMessage* m
     msg_out->set_key(xbox.btn_start, unpack::bit(data+2, 4));
     msg_out->set_key(xbox.btn_back,  unpack::bit(data+2, 5));
 
-    msg_out->set_abs(xbox.abs_lt, data[4]);
-    msg_out->set_abs(xbox.abs_rt, data[5]);
+    msg_out->set_abs(xbox.abs_lt, data[4], 0, 255);
+    msg_out->set_abs(xbox.abs_rt, data[5], 0, 255);
 
     msg_out->set_key(xbox.dpad_up,    unpack::bit(data+2, 0));
     msg_out->set_key(xbox.dpad_down,  unpack::bit(data+2, 1));
@@ -102,11 +102,11 @@ LogitechF310Controller::parse(const uint8_t* data, int len, ControllerMessage* m
     // of information are availble for each half axis, so the code below
     // makes the most of it.
 
-    msg_out->set_abs(xbox.abs_x1, unpack::u8_to_s16(data[6]));
-    msg_out->set_abs(xbox.abs_y1, unpack::s16_invert(unpack::u8_to_s16(data[8])));
+    msg_out->set_abs(xbox.abs_x1, unpack::u8_to_s16(data[6]), -32768, 32767);
+    msg_out->set_abs(xbox.abs_y1, unpack::s16_invert(unpack::u8_to_s16(data[8])), -32768, 32767);
 
-    msg_out->set_abs(xbox.abs_x2, unpack::u8_to_s16(data[10]));
-    msg_out->set_abs(xbox.abs_y2, unpack::s16_invert(unpack::u8_to_s16(data[12])));
+    msg_out->set_abs(xbox.abs_x2, unpack::u8_to_s16(data[10]), -32768, 32767);
+    msg_out->set_abs(xbox.abs_y2, unpack::s16_invert(unpack::u8_to_s16(data[12])), -32768, 32767);
 
     return true;
   }

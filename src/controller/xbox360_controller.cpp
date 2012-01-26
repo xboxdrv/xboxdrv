@@ -178,14 +178,14 @@ Xbox360Controller::parse(const uint8_t* data, int len, ControllerMessage* msg_ou
     msg_out->set_key(xbox.btn_x, unpack::bit(data+3, 6));
     msg_out->set_key(xbox.btn_y, unpack::bit(data+3, 7));
 
-    msg_out->set_abs(xbox.abs_lt, data[4]);
-    msg_out->set_abs(xbox.abs_rt, data[5]);
+    msg_out->set_abs(xbox.abs_lt, data[4], 0, 255);
+    msg_out->set_abs(xbox.abs_rt, data[5], 0, 255);
 
-    msg_out->set_abs(xbox.abs_x1, unpack::int16le(data+6));
-    msg_out->set_abs(xbox.abs_x1, unpack::s16_invert(unpack::int16le(data+8)));
+    msg_out->set_abs(xbox.abs_x1, unpack::int16le(data+6), -32768, 32767);
+    msg_out->set_abs(xbox.abs_x1, unpack::s16_invert(unpack::int16le(data+8)), -32768, 32767);
 
-    msg_out->set_abs(xbox.abs_x2, unpack::int16le(data+10));
-    msg_out->set_abs(xbox.abs_y2, unpack::s16_invert(unpack::int16le(data+12)));
+    msg_out->set_abs(xbox.abs_x2, unpack::int16le(data+10), -32768, 32767);
+    msg_out->set_abs(xbox.abs_y2, unpack::s16_invert(unpack::int16le(data+12)), -32768, 32767);
 
     //msg.dummy2 = unpack::int32le(data+14);
     //msg.dummy3 = unpack::int16le(data+18);

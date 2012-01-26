@@ -64,15 +64,16 @@ Button2AxisModifier::update(int msec_delta, ControllerMessage& msg, const Contro
 
   if (lhs && !rhs)
   {
-    msg.set_abs(m_axis, msg.get_abs_min(m_axis));
+    msg.set_abs(m_axis, msg.get_abs_min(m_axis), msg.get_abs_min(m_axis), msg.get_abs_max(m_axis));
   }
   else if (!lhs && rhs)
   {
-    msg.set_abs(m_axis, msg.get_abs_max(m_axis));
+    msg.set_abs(m_axis, msg.get_abs_max(m_axis), msg.get_abs_min(m_axis), msg.get_abs_max(m_axis));
   }
   else
   {
-    msg.set_abs(m_axis, 0);
+    msg.set_abs(m_axis, (msg.get_abs_max(m_axis) - msg.get_abs_min(m_axis))/2,
+                msg.get_abs_min(m_axis), msg.get_abs_max(m_axis));
   }
 }
 

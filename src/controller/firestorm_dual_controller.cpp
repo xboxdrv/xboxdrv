@@ -168,11 +168,11 @@ FirestormDualController::parse_vsb(const uint8_t* data_in, int len, ControllerMe
     if (dpad == 0x5 || dpad == 0x6 || dpad == 0x7)
       msg.set_key(xbox.dpad_left, 1);
 
-    msg.set_abs(xbox.abs_x1, unpack::s8_to_s16(data_in[2]));
-    msg.set_abs(xbox.abs_y1, unpack::s16_invert(unpack::s8_to_s16(data_in[3])));
+    msg.set_abs(xbox.abs_x1, unpack::s8_to_s16(data_in[2]), -32768, 32767);
+    msg.set_abs(xbox.abs_y1, unpack::s16_invert(unpack::s8_to_s16(data_in[3])), -32768, 32767);
 
-    msg.set_abs(xbox.abs_x2, unpack::s8_to_s16(data_in[4]));
-    msg.set_abs(xbox.abs_y2, unpack::s16_invert(unpack::s8_to_s16(data_in[5])));
+    msg.set_abs(xbox.abs_x2, unpack::s8_to_s16(data_in[4]), -32768, 32767);
+    msg.set_abs(xbox.abs_y2, unpack::s16_invert(unpack::s8_to_s16(data_in[5])), -32768, 32767);
 
     return true;
   }
@@ -223,11 +223,11 @@ FirestormDualController::parse_default(const uint8_t* data_in, int len, Controll
     if (data_in[2] == 0x50 || data_in[2] == 0x60 || data_in[2] == 0x70)
       msg.set_key(xbox.dpad_left, 1);
 
-    msg.set_abs(xbox.abs_x1, unpack::s8_to_s16(data_in[2]));
-    msg.set_abs(xbox.abs_y1, unpack::s16_invert(unpack::s8_to_s16(data_in[3])));
+    msg.set_abs(xbox.abs_x1, unpack::s8_to_s16(data_in[2]), -32768, 32767);
+    msg.set_abs(xbox.abs_y1, unpack::s16_invert(unpack::s8_to_s16(data_in[3])), -32768, 32767);
 
-    msg.set_abs(xbox.abs_x2, unpack::s8_to_s16(data_in[4]));
-    msg.set_abs(xbox.abs_y2, unpack::s16_invert(unpack::u8_to_s16(data_in[5])));
+    msg.set_abs(xbox.abs_x2, unpack::s8_to_s16(data_in[4]), -32768, 32767);
+    msg.set_abs(xbox.abs_y2, unpack::s16_invert(unpack::u8_to_s16(data_in[5])), -32768, 32767);
 
     return true;
   }

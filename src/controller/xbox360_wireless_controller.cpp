@@ -156,14 +156,14 @@ Xbox360WirelessController::parse(const uint8_t* data, int len, ControllerMessage
         msg_out->set_key(xbox.btn_x, unpack::bit(ptr+3, 6));
         msg_out->set_key(xbox.btn_y, unpack::bit(ptr+3, 7));
 
-        msg_out->set_abs(xbox.abs_lt, ptr[4]);
-        msg_out->set_abs(xbox.abs_rt, ptr[5]);
+        msg_out->set_abs(xbox.abs_lt, ptr[4], 0, 255);
+        msg_out->set_abs(xbox.abs_rt, ptr[5], 0, 255);
 
-        msg_out->set_abs(xbox.abs_x1, unpack::int16le(ptr+6));
-        msg_out->set_abs(xbox.abs_y1, unpack::s16_invert(unpack::int16le(ptr+8)));
+        msg_out->set_abs(xbox.abs_x1, unpack::int16le(ptr+6), -32768, 32767);
+        msg_out->set_abs(xbox.abs_y1, unpack::s16_invert(unpack::int16le(ptr+8)), -32768, 32767);
 
-        msg_out->set_abs(xbox.abs_x2, unpack::int16le(ptr+10));
-        msg_out->set_abs(xbox.abs_y2, unpack::s16_invert(unpack::int16le(ptr+12)));
+        msg_out->set_abs(xbox.abs_x2, unpack::int16le(ptr+10), -32768, 32767);
+        msg_out->set_abs(xbox.abs_y2, unpack::s16_invert(unpack::int16le(ptr+12)), -32768, 32767);
 
         return true;
       }

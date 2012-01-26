@@ -83,23 +83,23 @@ XboxController::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
 
     //unsigned int dummy       :8;
 
-    msg_out->set_abs(xbox.abs_a, data[4]);
-    msg_out->set_abs(xbox.abs_b, data[5]);
-    msg_out->set_abs(xbox.abs_x, data[6]);
-    msg_out->set_abs(xbox.abs_y, data[7]);
+    msg_out->set_abs(xbox.abs_a, data[4], 0, 255);
+    msg_out->set_abs(xbox.abs_b, data[5], 0, 255);
+    msg_out->set_abs(xbox.abs_x, data[6], 0, 255);
+    msg_out->set_abs(xbox.abs_y, data[7], 0, 255);
 
-    msg_out->set_abs(xbox.abs_black, data[8]);
-    msg_out->set_abs(xbox.abs_white, data[9]);
+    msg_out->set_abs(xbox.abs_black, data[8], 0, 255);
+    msg_out->set_abs(xbox.abs_white, data[9], 0, 255);
 
-    msg_out->set_abs(xbox.abs_lt, data[10]);
-    msg_out->set_abs(xbox.abs_rt, data[11]);
+    msg_out->set_abs(xbox.abs_lt, data[10], 0, 255);
+    msg_out->set_abs(xbox.abs_rt, data[11], 0, 255);
 
 
-    msg_out->set_abs(xbox.abs_x1, unpack::int16le(data+12));
-    msg_out->set_abs(xbox.abs_y1, unpack::int16le(data+13));
+    msg_out->set_abs(xbox.abs_x1, unpack::int16le(data+12), -32768, 32767);
+    msg_out->set_abs(xbox.abs_y1, unpack::int16le(data+13), -32768, 32767);
 
-    msg_out->set_abs(xbox.abs_x2, unpack::int16le(data+14));
-    msg_out->set_abs(xbox.abs_y2, unpack::int16le(data+15));
+    msg_out->set_abs(xbox.abs_x2, unpack::int16le(data+14), -32768, 32767);
+    msg_out->set_abs(xbox.abs_y2, unpack::int16le(data+15), -32768, 32767);
 
     return true;
   }

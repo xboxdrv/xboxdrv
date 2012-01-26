@@ -109,11 +109,11 @@ SaitekP2500Controller::parse(const uint8_t* data, int len, ControllerMessage* ms
     msg_out->set_key(xbox.btn_start, unpack::bit(data+6, 2));
     msg_out->set_key(xbox.btn_back,  unpack::bit(data+6, 3));
       
-    msg_out->set_abs(xbox.abs_x1, unpack::s8_to_s16(data[1]));
-    msg_out->set_abs(xbox.abs_y1, unpack::s8_to_s16(data[2]));
+    msg_out->set_abs(xbox.abs_x1, unpack::s8_to_s16(data[1]), -32768, 32767);
+    msg_out->set_abs(xbox.abs_y1, unpack::s8_to_s16(data[2]), -32768, 32767);
 
-    msg_out->set_abs(xbox.abs_x2, unpack::s8_to_s16(data[3]));
-    msg_out->set_abs(xbox.abs_y2, unpack::s8_to_s16(data[4]));
+    msg_out->set_abs(xbox.abs_x2, unpack::s8_to_s16(data[3]), -32768, 32767);
+    msg_out->set_abs(xbox.abs_y2, unpack::s8_to_s16(data[4]), -32768, 32767);
     
     switch(data[6] >> 4)
     {
