@@ -101,117 +101,28 @@ ControllerMessage::set_rel(int rel, int v)
 int
 ControllerMessage::get_abs_min(int abs)
 {
-#if 0
-  switch(axis)
-  {
-    case XBOX_AXIS_X1: return -32768;
-    case XBOX_AXIS_Y1: return -32768;
-    
-    case XBOX_AXIS_X2: return -32768;
-    case XBOX_AXIS_Y2: return -32768;
-
-    case XBOX_AXIS_LT: return 0;
-    case XBOX_AXIS_RT: return 0;
-
-    case XBOX_AXIS_DPAD_X: return -1;
-    case XBOX_AXIS_DPAD_Y: return -1;
-
-    case XBOX_AXIS_TRIGGER: return -255;
-
-    case XBOX_AXIS_A:     return 0;
-    case XBOX_AXIS_B:     return 0;
-    case XBOX_AXIS_X:     return 0;
-    case XBOX_AXIS_Y:     return 0;
-    case XBOX_AXIS_BLACK: return 0;
-    case XBOX_AXIS_WHITE: return 0;
-
-    case WIIMOTE_ACC_X: return 0;
-    case WIIMOTE_ACC_Y: return 0;
-    case WIIMOTE_ACC_Z: return 0;
-
-    case NUNCHUK_ACC_X: return 0;
-    case NUNCHUK_ACC_Y: return 0;
-    case NUNCHUK_ACC_Z: return 0;
-
-    case WIIMOTE_IR_X: return 0;
-    case WIIMOTE_IR_Y: return 0;
-    case WIIMOTE_IR_SIZE: return -128;
-
-    case WIIMOTE_IR_X2: return 0;
-    case WIIMOTE_IR_Y2: return 0;
-    case WIIMOTE_IR_SIZE2: return -128;
-
-    case WIIMOTE_IR_X3: return 0;
-    case WIIMOTE_IR_Y3: return 0;
-    case WIIMOTE_IR_SIZE3: return -128;
-
-    case WIIMOTE_IR_X4: return 0;
-    case WIIMOTE_IR_Y4: return 0;
-    case WIIMOTE_IR_SIZE4: return -128;
-
-    case XBOX_AXIS_UNKNOWN: return 0;
-    case XBOX_AXIS_MAX: return 0;
-  }
-#endif
   return m_abs_min[abs];
 }
 
 int
 ControllerMessage::get_abs_max(int abs)
 {
-#if 0
-  switch(abs)
-  {
-    case XBOX_AXIS_X1: return 32767;
-    case XBOX_AXIS_Y1: return 32767;
-    
-    case XBOX_AXIS_X2: return 32767;
-    case XBOX_AXIS_Y2: return 32767;
-
-    case XBOX_AXIS_LT: return 255;
-    case XBOX_AXIS_RT: return 255;
-
-    case XBOX_AXIS_DPAD_X: return 1;
-    case XBOX_AXIS_DPAD_Y: return 1;
-
-    case XBOX_AXIS_TRIGGER: return 255;
-
-    case XBOX_AXIS_A:     return 255;
-    case XBOX_AXIS_B:     return 255;
-    case XBOX_AXIS_X:     return 255;
-    case XBOX_AXIS_Y:     return 255;
-    case XBOX_AXIS_BLACK: return 255;
-    case XBOX_AXIS_WHITE: return 255;
-
-    case WIIMOTE_ACC_X: return 255;
-    case WIIMOTE_ACC_Y: return 255;
-    case WIIMOTE_ACC_Z: return 255;
-
-    case NUNCHUK_ACC_X: return 255;
-    case NUNCHUK_ACC_Y: return 255;
-    case NUNCHUK_ACC_Z: return 255;  
-
-    case WIIMOTE_IR_X: return 1024;
-    case WIIMOTE_IR_Y: return 768;
-    case WIIMOTE_IR_SIZE: return 127;
-
-    case WIIMOTE_IR_X2: return 1024;
-    case WIIMOTE_IR_Y2: return 768;
-    case WIIMOTE_IR_SIZE2: return 127;
-
-    case WIIMOTE_IR_X3: return 1024;
-    case WIIMOTE_IR_Y3: return 768;
-    case WIIMOTE_IR_SIZE3: return 127;
-
-    case WIIMOTE_IR_X4: return 1024;
-    case WIIMOTE_IR_Y4: return 768;
-    case WIIMOTE_IR_SIZE4: return 127;
-
-    case XBOX_AXIS_UNKNOWN: return 0;
-    case XBOX_AXIS_MAX: return 0;
-  }
-#endif  
   return m_abs_max[abs];
+}
+
+bool
+ControllerMessage::operator==(const ControllerMessage& rhs) const
+{
+  return 
+    m_abs_state == rhs.m_abs_state &&
+    m_rel_state == rhs.m_rel_state &&
+    m_key_state == rhs.m_key_state;
+}
+
+bool
+ControllerMessage::operator!=(const ControllerMessage& rhs) const
+{
+  return !((*this) == rhs);
 }
 
 std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, const ControllerMessageDescriptor& desc)
@@ -237,21 +148,6 @@ std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, co
   }
 
   return out;
-}
-
-bool
-ControllerMessage::operator==(const ControllerMessage& rhs) const
-{
-  return 
-    m_abs_state == rhs.m_abs_state &&
-    m_rel_state == rhs.m_rel_state &&
-    m_key_state == rhs.m_key_state;
-}
-
-bool
-ControllerMessage::operator!=(const ControllerMessage& rhs) const
-{
-  return !((*this) == rhs);
 }
 
 /* EOF */
