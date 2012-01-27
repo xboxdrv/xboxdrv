@@ -38,8 +38,6 @@ Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& msg_desc) 
   dpad_down(-1),
   dpad_left(-1),
   dpad_right(-1),
-  dpad_x(-1),
-  dpad_y(-1),
   abs_x1(-1),
   abs_y1(-1),
   abs_x2(-1),
@@ -80,9 +78,6 @@ Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& msg_desc) 
   dpad_down  = msg_desc.key().put("dd", "dpad_down", "down");
   dpad_left  = msg_desc.key().put("dl", "dpad_left", "left");
   dpad_right = msg_desc.key().put("dr", "dpad_right", "right");
-
-  dpad_x = msg_desc.abs().put("dpad_x");
-  dpad_y = msg_desc.abs().put("dpad_y");
 
   abs_x1 = msg_desc.abs().put("x1");
   abs_y1 = msg_desc.abs().put("y1");
