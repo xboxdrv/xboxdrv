@@ -59,8 +59,15 @@ AxisMap::init(const ControllerMessageDescriptor& desc)
   
   for(std::vector<Mapping>::iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
   {
-    int abs = desc.abs().get(it->axis);
-    m_map.at(abs).add(ButtonCombination(it->buttons), it->event);
+    try 
+    {
+      int abs = desc.abs().get(it->axis);
+      m_map.at(abs).add(ButtonCombination(it->buttons), it->event);
+    }
+    catch(const std::exception& err)
+    {
+      log_warn(err.what() << ": " << it->axis);
+    }
   }
 
   for(int i = 0; i < static_cast<int>(m_map.size()); ++i)
