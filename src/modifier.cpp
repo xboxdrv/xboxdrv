@@ -27,6 +27,7 @@
 #include "modifier/button2axis_modifier.hpp"
 #include "modifier/buttonmap_modifier.hpp"
 #include "modifier/buttonmap_modifier.hpp"
+#include "modifier/compat_modifier.hpp"
 #include "modifier/dpad_restrictor_modifier.hpp"
 #include "modifier/dpad_rotation_modifier.hpp"
 #include "modifier/four_way_restrictor_modifier.hpp"
@@ -149,6 +150,10 @@ Modifier::from_string(const std::string& name, const std::string& value)
     else if (name == "log")
     {
       return LogModifier::from_string(value);
+    }
+    else if (name == "compat")
+    {
+      return new CompatModifier;
     }
     else
     {
