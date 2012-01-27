@@ -56,6 +56,8 @@ public:
   int get(const std::string& name) const;
 
   std::string get(int v) const;
+  
+  bool has(const std::string& name) const;
 
   int size() const { return m_int2name.size(); }
 };

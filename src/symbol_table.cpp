@@ -158,4 +158,11 @@ SymbolTable::get(int v) const
   return m_int2name.at(v);
 }
 
+bool
+SymbolTable::has(const std::string& name_) const
+{
+  std::string name = tolower(name_);
+  return m_name2int.find(name) != m_name2int.end();
+}
+
 /* EOF */
