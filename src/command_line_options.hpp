@@ -53,10 +53,12 @@ private:
   void set_device_name(const std::string& name, const std::string& value);
   void set_device_usbid(const std::string& name, const std::string& value);
 
-  void set_ui_buttonmap(ButtonMapOptions& btn_map, const std::string& name, const std::string& value);
-  void set_ui_buttonmap(const std::string& name, const std::string& value);
-  void set_ui_axismap(AxisMapOptions& axis_map, const std::string& name, const std::string& value);
-  void set_ui_axismap(const std::string& name, const std::string& value);
+  void set_absmap(AxisMapOptions& axis_map, const std::string& name, const std::string& value);
+  void set_absmap(const std::string& name, const std::string& value);
+  void set_keymap(ButtonMapOptions& btn_map, const std::string& name, const std::string& value);
+  void set_keymap(const std::string& name, const std::string& value);
+  void set_relmap(const std::string& name, const std::string& value);
+
   void set_modifier(const std::string& name, const std::string& value);
 
   void set_axismap(const std::string& name, const std::string& value);
@@ -68,8 +70,9 @@ private:
   void set_axis_sensitivity(const std::string& name, const std::string& value);
 
 
-  void set_ui_buttonmap_n(int controller, int config, const std::string& name, const std::string& value);
-  void set_ui_axismap_n(int controller, int config, const std::string& name, const std::string& value);
+  void set_absmap_n(int controller, int config, const std::string& name, const std::string& value);
+  void set_keymap_n(int controller, int config, const std::string& name, const std::string& value);
+  void set_relmap_n(int controller, int config, const std::string& name, const std::string& value);
   void set_modifier_n(int controller, int config, const std::string& name, const std::string& value);
 
   void set_axismap_n(int controller, int config, const std::string& name, const std::string& value);

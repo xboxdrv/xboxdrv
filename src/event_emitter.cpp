@@ -26,7 +26,7 @@
 EventEmitter::EventEmitter(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
   m_btn_map(opts.get_btn_map(), uinput, slot, extra_devices),
-  m_axis_map(opts.get_axis_map(), uinput, slot, extra_devices)
+  m_abs_map(opts.get_axis_map(), uinput, slot, extra_devices)
 {
 }
 
@@ -35,14 +35,14 @@ EventEmitter::init(const ControllerMessageDescriptor& desc)
 {
   std::cout << "EventEmitter::init(const ControllerMessageDescriptor& desc)" << std::endl;
   m_btn_map.init(desc);
-  m_axis_map.init(desc);
+  m_abs_map.init(desc);
 }
 
 void
 EventEmitter::send(const ControllerMessage& msg)
 {
   m_btn_map.send(msg.get_key_state());
-  m_axis_map.send(msg.get_key_state(), msg.get_abs_state());
+  m_abs_map.send(msg.get_key_state(), msg.get_abs_state(), msg.get_abs_min(), msg.get_abs_max());
 
   m_uinput.sync();
 }
@@ -51,7 +51,7 @@ void
 EventEmitter::update(int msec_delta)
 {
   m_btn_map.update(msec_delta);
-  m_axis_map.update(msec_delta);
+  m_abs_map.update(msec_delta);
 
   m_uinput.sync();
 }
@@ -59,7 +59,7 @@ EventEmitter::update(int msec_delta)
 void
 EventEmitter::reset_all_outputs()
 {
-  m_axis_map.send_clear();
+  m_abs_map.send_clear();
   m_btn_map.send_clear();
 
   m_uinput.sync();

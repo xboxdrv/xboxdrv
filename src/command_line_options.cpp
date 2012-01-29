@@ -87,8 +87,9 @@ enum {
   OPTION_CONTROLLER_SLOT,
   OPTION_UI_CLEAR,
   OPTION_TOGGLE,
-  OPTION_UI_AXISMAP,
-  OPTION_UI_BUTTONMAP,
+  OPTION_ABSMAP,
+  OPTION_KEYMAP,
+  OPTION_RELMAP,
   OPTION_ID,
   OPTION_WID,
   OPTION_LED,
@@ -228,6 +229,7 @@ CommandLineParser::init_argp()
 
     .add_text("Wiimote Options: ")
     .add_option(OPTION_WIIMOTE,   0, "wiimote", "", "Use Wiimote as main controller")
+    .add_newline()
 
     .add_text("Status Options: ")
     .add_option(OPTION_LED,     'l', "led",    "STATUS", "set LED status, see --help-led for possible values")
@@ -299,7 +301,7 @@ CommandLineParser::init_argp()
     .add_option(OPTION_MIMIC_XPAD_WIRELESS, 0,  "mimic-xpad-wireless",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver for wireless gamepads")
     .add_newline()
 
-    .add_text("Uinput Configuration Options: ")
+    .add_text("Uinput Options: ")
     .add_option(OPTION_NO_UINPUT,          0, "no-uinput",   "", "do not try to start uinput event dispatching")
     .add_option(OPTION_NO_EXTRA_DEVICES,   0, "no-extra-devices",  "", "Do not create separate virtual keyboard and mouse devices, just use a single virtual device")
     .add_option(OPTION_NO_EXTRA_EVENTS,    0, "no-extra-events",  "", "Do not create dummy events to facilitate device type detection")
@@ -307,9 +309,15 @@ CommandLineParser::init_argp()
     .add_option(OPTION_DEVICE_NAMES,       0, "device-names",    "DEVID=NAME,...", "Changes the descriptive name the given devices")
     .add_option(OPTION_DEVICE_USBID,       0, "device-usbid",     "VENDOR:PRODUCT:VERSION", "Changes the USB Id used for devices in the current slot")
     .add_option(OPTION_DEVICE_USBIDS,      0, "device-usbids",    "DEVID=VENDOR:PRODUCT:VERSION,...", "Changes the USB Id for the given devices")
-    .add_option(OPTION_UI_CLEAR,           0, "ui-clear",         "",     "Removes all existing uinput bindings")
-    .add_option(OPTION_UI_BUTTONMAP,       0, "ui-buttonmap",     "MAP",  "Changes the uinput events send when hitting a button (example: X=BTN_Y,A=KEY_A)")
-    .add_option(OPTION_UI_AXISMAP,         0, "ui-axismap",       "MAP",  "Changes the uinput events send when moving a axis (example: X1=ABS_X2)")
+    .add_newline()
+
+    .add_text("Emitter Options: ")
+    .add_option(OPTION_UI_CLEAR,     0, "ui-clear",         "",     "Removes all existing uinput bindings")
+    .add_option(OPTION_ABSMAP,       0, "absmap", "MAP", "Changes the uinput events send when moving a abs (example: X1=ABS_X2)")
+    .add_option(OPTION_KEYMAP,       0, "keymap", "MAP", "Changes the uinput events send when hitting a key (example: X=BTN_Y,A=KEY_A)")
+    .add_option(OPTION_RELMAP,       0, "relmap", "MAP", "Changes the uinput events send when moving a rel (example: X1=REL_X)")
+    .add_option(OPTION_KEYMAP,       0, "ui-buttonmap",     "MAP", "", false)
+    .add_option(OPTION_ABSMAP,       0, "ui-axismap",       "MAP", "", false)
     .add_newline()
 
     .add_text("Axis Filter:")
@@ -420,8 +428,12 @@ CommandLineParser::init_ini(Options* opts)
     ;
 
   m_ini.section("modifier",     boost::bind(&CommandLineParser::set_modifier,     this, _1, _2));
-  m_ini.section("ui-buttonmap", boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
-  m_ini.section("ui-axismap",   boost::bind(&CommandLineParser::set_ui_axismap,   this, _1, _2));
+  m_ini.section("ui-buttonmap", boost::bind(&CommandLineParser::set_keymap, this, _1, _2)); // backward compatibility
+  m_ini.section("ui-axismap",   boost::bind(&CommandLineParser::set_absmap,   this, _1, _2)); // backward compatibility
+  m_ini.section("absmap",       boost::bind(&CommandLineParser::set_absmap,   this, _1, _2));
+  m_ini.section("keymap",       boost::bind(&CommandLineParser::set_keymap, this, _1, _2));
+  m_ini.section("relmap",       boost::bind(&CommandLineParser::set_absmap,   this, _1, _2));
+
 
   m_ini.section("buttonmap", boost::bind(&CommandLineParser::set_buttonmap, this, _1, _2));
   m_ini.section("axismap",   boost::bind(&CommandLineParser::set_axismap,   this, _1, _2));
@@ -439,10 +451,10 @@ CommandLineParser::init_ini(Options* opts)
     {
       m_ini.section((boost::format("controller%d/config%d/modifier") % controller % config).str(),
                     boost::bind(&CommandLineParser::set_modifier_n, this, controller, config, _1, _2));
-      m_ini.section((boost::format("controller%d/config%d/ui-buttonmap") % controller % config).str(),
-                    boost::bind(&CommandLineParser::set_ui_buttonmap_n, this, controller, config, _1, _2));
-      m_ini.section((boost::format("controller%d/config%d/ui-axismap") % controller % config).str(), 
-                    boost::bind(&CommandLineParser::set_ui_axismap_n, this, controller, config, _1, _2));
+      m_ini.section((boost::format("controller%d/config%d/keymap") % controller % config).str(),
+                    boost::bind(&CommandLineParser::set_keymap_n, this, controller, config, _1, _2));
+      m_ini.section((boost::format("controller%d/config%d/absmap") % controller % config).str(), 
+                    boost::bind(&CommandLineParser::set_absmap_n, this, controller, config, _1, _2));
 
       m_ini.section((boost::format("controller%d/config%d/buttonmap") % controller % config).str(),
                     boost::bind(&CommandLineParser::set_buttonmap_n, this, controller, config, _1, _2));
@@ -751,12 +763,12 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         opts.set_ui_clear();
         break;
 
-      case OPTION_UI_AXISMAP:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_axismap, this, _1, _2));
+      case OPTION_ABSMAP:
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_absmap, this, _1, _2));
         break;
 
-      case OPTION_UI_BUTTONMAP:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
+      case OPTION_KEYMAP:
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_keymap, this, _1, _2));
         break;
 
       case OPTION_MOUSE:
@@ -1074,14 +1086,14 @@ CommandLineParser::set_device_name(const std::string& name, const std::string& v
 }
 
 void
-CommandLineParser::set_ui_buttonmap(const std::string& name, const std::string& value)
+CommandLineParser::set_keymap(const std::string& name, const std::string& value)
 {
-  set_ui_buttonmap(m_options->get_controller_options().uinput.get_btn_map(),
+  set_keymap(m_options->get_controller_options().uinput.get_btn_map(),
                    name, value);
 }
 
 void
-CommandLineParser::set_ui_buttonmap(ButtonMapOptions& btn_map, const std::string& name, const std::string& value)
+CommandLineParser::set_keymap(ButtonMapOptions& btn_map, const std::string& name, const std::string& value)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
@@ -1112,14 +1124,14 @@ CommandLineParser::set_ui_buttonmap(ButtonMapOptions& btn_map, const std::string
 }
 
 void
-CommandLineParser::set_ui_axismap(const std::string& name, const std::string& value)
+CommandLineParser::set_absmap(const std::string& name, const std::string& value)
 {
-  set_ui_axismap(m_options->get_controller_options().uinput.get_axis_map(),
-                 name, value);
+  set_absmap(m_options->get_controller_options().uinput.get_axis_map(),
+             name, value);
 }
 
 void
-CommandLineParser::set_ui_axismap(AxisMapOptions& axis_map, const std::string& name, const std::string& value)
+CommandLineParser::set_absmap(AxisMapOptions& axis_map, const std::string& name, const std::string& value)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
@@ -1305,17 +1317,17 @@ CommandLineParser::read_alt_config_file(const std::string& filename)
 }
 
 void
-CommandLineParser::set_ui_buttonmap_n(int controller, int config, const std::string& name, const std::string& value)
+CommandLineParser::set_keymap_n(int controller, int config, const std::string& name, const std::string& value)
 {
-  set_ui_buttonmap(m_options->controller_slots[controller].get_options(config).uinput.get_btn_map(),
+  set_keymap(m_options->controller_slots[controller].get_options(config).uinput.get_btn_map(),
                    name, value);
 }
 
 void
-CommandLineParser::set_ui_axismap_n(int controller, int config, const std::string& name, const std::string& value)
+CommandLineParser::set_absmap_n(int controller, int config, const std::string& name, const std::string& value)
 {
-  set_ui_axismap(m_options->controller_slots[controller].get_options(config).uinput.get_axis_map(),
-                 name, value);
+  set_absmap(m_options->controller_slots[controller].get_options(config).uinput.get_axis_map(),
+             name, value);
 }
 
 void

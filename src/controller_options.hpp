@@ -42,7 +42,7 @@ public:
 
   // everything below gets later converted into modifier
   std::vector<ButtonMappingOption> buttonmap;
-  std::vector<AxisMappingOption> axismap;
+  std::vector<AxisMappingOption>   axismap;
 
   int  deadzone;
   int  deadzone_trigger;

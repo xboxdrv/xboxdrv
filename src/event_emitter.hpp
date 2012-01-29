@@ -37,7 +37,7 @@ private:
   UInput& m_uinput;
 
   ButtonMap m_btn_map;
-  AxisMap   m_axis_map;
+  AxisMap   m_abs_map;
 
 public:
   EventEmitter(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);
