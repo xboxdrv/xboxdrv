@@ -36,8 +36,9 @@
 #define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
 
 EvdevController::EvdevController(const std::string& filename,
-                                 const EvdevAbsMap& absmap,
+                                 const std::map<int, std::string>& absmap,
                                  const std::map<int, std::string>& keymap,
+                                 const std::map<int, std::string>& relmap,
                                  bool grab,
                                  bool debug) :
   m_fd(-1),
@@ -45,8 +46,9 @@ EvdevController::EvdevController(const std::string& filename,
   m_name(),
   m_grab(grab),
   m_debug(debug),
-  m_absmap(absmap),
-  m_keymap(keymap),
+  m_absmap(),
+  m_keymap(),
+  m_relmap(),
   m_absinfo(ABS_MAX),
   m_event_buffer(),
   m_msg()
@@ -101,6 +103,18 @@ EvdevController::EvdevController(const std::string& filename,
         
         log_debug(boost::format("abs: %-20s min: %6d max: %6d") % abs2str(i) % absinfo.minimum % absinfo.maximum);
         m_absinfo[i] = absinfo;
+
+        std::map<int, std::string>::const_iterator it = absmap.find(i);
+        if (it == absmap.end())
+        {
+          // install default mapping
+          m_absmap[i] = m_message_descriptor.abs().put(abs2str(i));
+        }
+        else
+        {
+          // install custom user supplied mapping
+          m_absmap[i] = m_message_descriptor.abs().put(it->second);
+        }
       }
     }
 
@@ -109,6 +123,18 @@ EvdevController::EvdevController(const std::string& filename,
       if (test_bit(i, rel_bit))
       {
         log_debug("rel: " << rel2str(i));
+
+        std::map<int, std::string>::const_iterator it = relmap.find(i);
+        if (it == relmap.end())
+        {
+          // install default mapping
+          m_relmap[i] = m_message_descriptor.rel().put(rel2str(i));
+        }
+        else
+        {
+          // install custom user supplied mapping
+          m_relmap[i] = m_message_descriptor.rel().put(it->second);
+        }
       }
     }
 
@@ -117,6 +143,18 @@ EvdevController::EvdevController(const std::string& filename,
       if (test_bit(i, key_bit))
       {
         log_debug("key: " << key2str(i));
+
+        std::map<int, std::string>::const_iterator it = keymap.find(i);
+        if (it == keymap.end())
+        {
+          // install default mapping
+          m_keymap[i] = m_message_descriptor.key().put(key2str(i));
+        }
+        else
+        {
+          // install custom user supplied mapping
+          m_keymap[i] = m_message_descriptor.key().put(it->second);
+        }
       }
     }
   }
@@ -196,10 +234,10 @@ EvdevController::parse(const struct input_event& ev, ControllerMessage& msg_inou
   {
     case EV_KEY:
       {
-        KeyMap::const_iterator it = m_keymap.find(ev.code);
+        EvMap::const_iterator it = m_keymap.find(ev.code);
         if (it != m_keymap.end())
         {
-          // BROKEN: msg_inout.set_key(it->second, ev.value);
+          msg_inout.set_key(it->second, static_cast<bool>(ev.value));
           return true;
         }
         else
@@ -211,11 +249,34 @@ EvdevController::parse(const struct input_event& ev, ControllerMessage& msg_inou
 
     case EV_ABS:
       {
-        const struct input_absinfo& absinfo = m_absinfo[ev.code];
-        m_absmap.process(msg_inout, ev.code, ev.value, absinfo.minimum, absinfo.maximum);
-        return true; // FIXME: wrong
+        EvMap::const_iterator it = m_absmap.find(ev.code);
+        if (it != m_absmap.end())
+        {
+          const struct input_absinfo& absinfo = m_absinfo[ev.code];
+          msg_inout.set_abs(it->second, ev.value, absinfo.minimum, absinfo.maximum);
+          return true;
+        }
+        else
+        {
+          return false;
+        }
         break;
       }
+
+    case EV_REL:
+      {
+        EvMap::const_iterator it = m_relmap.find(ev.code);
+        if (it != m_relmap.end())
+        {
+          msg_inout.set_rel(it->second, ev.value);
+          return true;
+        }
+        else
+        {
+          return false;
+        }
+      }      
+      break;
 
     default:
       // not supported event

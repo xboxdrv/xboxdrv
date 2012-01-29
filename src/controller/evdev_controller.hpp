@@ -26,9 +26,6 @@
 
 #include "controller.hpp"
 #include "controller_message.hpp"
-#include "evdev_absmap.hpp"
-
-class EvdevAbsMap;
 
 class EvdevController : public Controller
 {
@@ -40,10 +37,10 @@ private:
   bool m_grab;
   bool m_debug;
 
-  EvdevAbsMap m_absmap;
-
-  typedef std::map<int, std::string> KeyMap;
-  KeyMap m_keymap;
+  typedef std::map<int, int> EvMap;
+  EvMap m_absmap;
+  EvMap m_keymap;
+  EvMap m_relmap;
 
   std::vector<struct input_absinfo> m_absinfo;
   typedef std::queue<struct input_event> EventBuffer;
@@ -53,8 +50,9 @@ private:
 
 public:
   EvdevController(const std::string& filename, 
-                  const EvdevAbsMap&  absmap,
-                  const std::map<int, std::string>& keyMap,
+                  const std::map<int, std::string>& absmap,
+                  const std::map<int, std::string>& keymap,
+                  const std::map<int, std::string>& relmap,
                   bool grab,
                   bool debug);
   ~EvdevController();

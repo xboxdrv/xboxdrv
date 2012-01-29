@@ -79,6 +79,7 @@ XboxdrvMain::create_controller()
     return ControllerPtr(new EvdevController(m_opts.evdev_device, 
                                              m_opts.evdev_absmap, 
                                              m_opts.evdev_keymap,
+                                             m_opts.evdev_relmap,
                                              m_opts.evdev_grab,
                                              m_opts.evdev_debug));
 

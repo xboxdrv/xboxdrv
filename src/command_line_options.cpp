@@ -119,6 +119,7 @@ enum {
   OPTION_EVDEV_DEBUG,
   OPTION_EVDEV_ABSMAP,
   OPTION_EVDEV_KEYMAP,
+  OPTION_EVDEV_RELMAP,
   OPTION_WIIMOTE,
   OPTION_CHATPAD,
   OPTION_CHATPAD_NO_INIT,
@@ -220,8 +221,9 @@ CommandLineParser::init_argp()
     .add_option(OPTION_EVDEV,          0, "evdev",   "DEVICE", "Read events from a evdev device, instead of USB")
     .add_option(OPTION_EVDEV_DEBUG,    0, "evdev-debug", "", "Print out all events received from evdev")
     .add_option(OPTION_EVDEV_NO_GRAB,  0, "evdev-no-grab", "", "Do not grab the event device, allow other apps to receive events")
-    .add_option(OPTION_EVDEV_ABSMAP,   0, "evdev-absmap", "MAP", "Map evdev key events to Xbox360 button events")
-    .add_option(OPTION_EVDEV_KEYMAP,   0, "evdev-keymap", "MAP", "Map evdev abs events to Xbox360 axis events")
+    .add_option(OPTION_EVDEV_ABSMAP,   0, "evdev-absmap", "MAP", "Set how evdev abs names are mapped to xboxdrv names")
+    .add_option(OPTION_EVDEV_KEYMAP,   0, "evdev-keymap", "MAP", "Set how evdev abs names are mapped to xboxdrv names")
+    .add_option(OPTION_EVDEV_RELMAP,   0, "evdev-relmap", "MAP", "Set how evdev abs names are mapped to xboxdrv names")
     .add_newline()
 
     .add_text("Wiimote Options: ")
@@ -460,6 +462,7 @@ CommandLineParser::init_ini(Options* opts)
 
   m_ini.section("evdev-absmap", boost::bind(&CommandLineParser::set_evdev_absmap, this, _1, _2));
   m_ini.section("evdev-keymap", boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
+  m_ini.section("evdev-relmap", boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
 }
 
 void
@@ -786,6 +789,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
       case OPTION_EVDEV_KEYMAP:
         process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
+        break;
+
+      case OPTION_EVDEV_RELMAP:
+        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_evdev_relmap, this, _1, _2));
         break;
 
       case OPTION_WIIMOTE:
@@ -1157,29 +1164,19 @@ CommandLineParser::set_buttonmap(const std::string& name, const std::string& val
 void
 CommandLineParser::set_evdev_absmap(const std::string& name, const std::string& value)
 {
-  if (!name.empty())
-  {
-#if 0
-    XboxAxis axis = string2axis(value);
-
-    switch (*name.rbegin())
-    {
-      case '-': m_options->evdev_absmap.bind_minus( str2abs(name.substr(0, name.length()-1)), axis ); break;
-      case '+': m_options->evdev_absmap.bind_plus ( str2abs(name.substr(0, name.length()-1)), axis ); break;
-      default:  m_options->evdev_absmap.bind_both ( str2abs(name), axis ); break;
-    }
-#endif
-  }
-  else
-  {
-    throw std::runtime_error("invalid evdev-absmap argument: " + name + "=" + value);
-  }
+  m_options->evdev_absmap[str2abs(name)] = value;
 }
 
 void
 CommandLineParser::set_evdev_keymap(const std::string& name, const std::string& value)
 {
   m_options->evdev_keymap[str2key(name)] = value;
+}
+
+void
+CommandLineParser::set_evdev_relmap(const std::string& name, const std::string& value)
+{
+  m_options->evdev_relmap[str2rel(name)] = value;
 }
 
 void

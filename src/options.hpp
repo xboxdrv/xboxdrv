@@ -26,7 +26,6 @@
 
 #include "controller_options.hpp"
 #include "controller_slot_options.hpp"
-#include "evdev_absmap.hpp"
 #include "uinput_options.hpp"
 #include "xpad_device.hpp"
 
@@ -85,10 +84,11 @@ public:
   int product_id;
 
   std::string evdev_device;
-  EvdevAbsMap evdev_absmap;
   bool evdev_grab;
   bool evdev_debug;
+  std::map<int, std::string> evdev_absmap;
   std::map<int, std::string> evdev_keymap;
+  std::map<int, std::string> evdev_relmap;
 
   bool wiimote;
 

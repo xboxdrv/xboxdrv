@@ -89,6 +89,7 @@ private:
 
   void set_evdev_absmap(const std::string& name, const std::string& value);
   void set_evdev_keymap(const std::string& name, const std::string& value);
+  void set_evdev_relmap(const std::string& name, const std::string& value);
 
   void read_buildin_config_file(const std::string& filename, 
                                 const char* data, unsigned int data_len);
