@@ -48,8 +48,7 @@ AxisEventFactory::create_abs(int device_id, int code, int min, int max, int fuzz
   return AxisEventPtr(new AxisEvent(new AbsAxisEventHandler(m_uinput, m_slot, m_extra_devices,
                                                             UIEvent::create(static_cast<uint16_t>(device_id),
                                                                             EV_ABS, code),
-                                                            min, max, fuzz, flat),
-                                    min, max));
+                                                            min, max, fuzz, flat)));
 }
 
 AxisEventPtr

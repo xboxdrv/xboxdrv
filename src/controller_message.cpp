@@ -61,9 +61,9 @@ ControllerMessage::set_key(int key, bool v)
 }
 
 int
-ControllerMessage::get_abs(int axis) const
+ControllerMessage::get_abs(int abs) const
 {
-  return m_abs_state[axis];
+  return m_abs_state[abs];
 }
 
 void
@@ -75,15 +75,17 @@ ControllerMessage::set_abs(int abs, int v, int min, int max)
 }
 
 float
-ControllerMessage::get_abs_float(int axis) const
+ControllerMessage::get_abs_float(int abs) const
 {
-  return to_float(m_abs_state[axis], m_abs_min[axis], m_abs_max[axis]);
+  return to_float(m_abs_state[abs], m_abs_min[abs], m_abs_max[abs]);
 }
 
 void
-ControllerMessage::set_abs_float(int axis, float v)
+ControllerMessage::set_abs_float(int abs, float v)
 {
-  m_abs_state[axis] = from_float(v, -32768, 32767);
+  m_abs_state[abs] = from_float(v, -32768, 32767);
+  m_abs_min[abs] = -32768;
+  m_abs_max[abs] = 32767;
 }
 
 int

@@ -30,17 +30,18 @@ public:
                                           const std::string& str);
   
 public:
-  KeyAxisEventHandler(UInput& uinput, int slot, bool extra_devices);
+  KeyAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
+                      UIEventSequence up_codes,
+                      UIEventSequence down_codes,
+                      float threshold);
 
-  void send(int value);
+  void send(int value, int min, int max);
   void update(int msec_delta);
 
   std::string str() const;
 
 private:
-  void send_up(int value);
-  void send_down(int value);
-  int  get_zone(int value) const;
+  int  get_zone(float value) const;
   
 private:
   int m_old_value;
@@ -48,7 +49,7 @@ private:
   // Array is terminated by -1
   UIEventSequence m_up_codes;
   UIEventSequence m_down_codes;
-  int m_threshold;
+  float m_threshold;
 };
 
 #endif

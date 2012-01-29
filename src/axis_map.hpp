@@ -56,7 +56,9 @@ public:
   void init(const ControllerMessageDescriptor& desc);
 
   void send(const std::bitset<256>& button_state,
-            const boost::array<int, 256>& axis_state);
+            const boost::array<int, 256>& axis_state,
+            const boost::array<int, 256>& axis_min,
+            const boost::array<int, 256>& axis_max);
   void send_clear();
   void update(int msec_delta);
 };

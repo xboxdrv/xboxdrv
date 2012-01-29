@@ -32,41 +32,33 @@ typedef boost::shared_ptr<AxisEvent> AxisEventPtr;
 class AxisEvent
 {
 public:
-  AxisEvent(AxisEventHandler* handler, int min = 0, int max = 0);
+  AxisEvent(AxisEventHandler* handler);
   ~AxisEvent() {}
 
   void add_filter(AxisFilterPtr filter);
 
-  void send(int value);
+  void send(int value, int min, int max);
   void update(int msec_delta);
-
-  void set_axis_range(int min, int max);
 
   std::string str() const;
 
 private:
   int  m_last_raw_value;
   int  m_last_send_value;
-  int  m_min;
-  int  m_max;
+  int  m_last_min;
+  int  m_last_max;
   boost::scoped_ptr<AxisEventHandler> m_handler;
   std::vector<AxisFilterPtr> m_filters;
 };
 
 class AxisEventHandler
 {
-protected:
-  int m_min;
-  int m_max;
-
 public:
   AxisEventHandler();
   virtual ~AxisEventHandler() {}
 
-  virtual void send(int value) =0;
+  virtual void send(int value, int min, int max) =0;
   virtual void update(int msec_delta) =0;
-
-  virtual void set_axis_range(int min, int max);
 
   virtual std::string str() const =0;
 };

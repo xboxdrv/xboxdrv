@@ -33,7 +33,7 @@ public:
   RelRepeatAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
                             const UIEvent& code, int value, float repeat);
 
-  void send(int value);
+  void send(int value, int min, int max);
   void update(int msec_delta);
 
   std::string str() const;

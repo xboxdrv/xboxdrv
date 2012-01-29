@@ -83,14 +83,16 @@ AxisMap::send_clear()
   {
     if (it->event)
     {
-      it->event->send(0);
+      it->event->send(0, -1, +1);
     }
   }
 }
 
 void
 AxisMap::send(const std::bitset<256>& button_state,
-              const boost::array<int, 256>& axis_state)
+              const boost::array<int, 256>& axis_state,
+              const boost::array<int, 256>& axis_min,
+              const boost::array<int, 256>& axis_max)
 {
   for(int i = 0; i < static_cast<int>(m_map.size()); ++i)
   {
@@ -103,11 +105,12 @@ AxisMap::send(const std::bitset<256>& button_state,
       {
         if (j->m_state)
         {
-          j->m_data->send(axis_state[i]); 
+          j->m_data->send(axis_state[i], axis_min[i], axis_max[i]);
         }
         else
         {
-          j->m_data->send(0);
+          j->m_data->send((axis_max[i] - axis_min[i])/2 + axis_min[i], 
+                          axis_min[i], axis_max[i]);
         }
       }
     }

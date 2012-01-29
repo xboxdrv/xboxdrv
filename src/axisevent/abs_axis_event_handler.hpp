@@ -33,7 +33,7 @@ public:
   AbsAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
                       const UIEvent& code, int min, int max, int fuzz, int flat);
 
-  void send(int value);
+  void send(int value, int min, int max);
   void update(int msec_delta);
 
   std::string str() const;

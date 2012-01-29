@@ -62,15 +62,15 @@ RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(UInput& uinput, int slot, b
 }
 
 void
-RelRepeatAxisEventHandler::send(int value)
+RelRepeatAxisEventHandler::send(int value, int min, int max)
 {
   if (value < 0)
   {
-    m_stick_value = static_cast<float>(value) / static_cast<float>(-m_min);
+    m_stick_value = static_cast<float>(value) / static_cast<float>(-min);
   }
   else
   {
-    m_stick_value = static_cast<float>(value) / static_cast<float>(m_max);
+    m_stick_value = static_cast<float>(value) / static_cast<float>(max);
   }
 
   // reset timer when in center position

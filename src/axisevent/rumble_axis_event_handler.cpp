@@ -31,7 +31,7 @@ RumbleAxisEventHandler::RumbleAxisEventHandler()
 }
 
 void
-RumbleAxisEventHandler::send(int value)
+RumbleAxisEventHandler::send(int value, int min, int max)
 {
   std::cout << "rumble: " << value << std::endl;
 }

@@ -26,11 +26,11 @@
 #include "helper.hpp"
 #include "raise_exception.hpp"
 
-AxisEvent::AxisEvent(AxisEventHandler* handler, int min, int max) :
+AxisEvent::AxisEvent(AxisEventHandler* handler) :
   m_last_raw_value(0),
   m_last_send_value(0),
-  m_min(min),
-  m_max(max),
+  m_last_min(-1),
+  m_last_max(+1),
   m_handler(handler),
   m_filters()
 {
@@ -43,19 +43,19 @@ AxisEvent::add_filter(AxisFilterPtr filter)
 }
 
 void
-AxisEvent::send(int value)
+AxisEvent::send(int value, int min, int max)
 {
   m_last_raw_value = value;
 
   for(std::vector<AxisFilterPtr>::const_iterator i = m_filters.begin(); i != m_filters.end(); ++i)
   {
-    value = (*i)->filter(value, m_min, m_max);
+    value = (*i)->filter(value, min, max);
   }
 
   if (m_last_send_value != value)
   {
     m_last_send_value = value;
-    m_handler->send(value);
+    m_handler->send(value, min, max);
   }
 }
 
@@ -69,15 +69,7 @@ AxisEvent::update(int msec_delta)
 
   m_handler->update(msec_delta);
 
-  send(m_last_raw_value);
-}
-
-void
-AxisEvent::set_axis_range(int min, int max)
-{
-  m_min = min;
-  m_max = max;
-  m_handler->set_axis_range(min, max);
+  send(m_last_raw_value, m_last_min, m_last_max);
 }
 
 std::string
@@ -86,17 +78,8 @@ AxisEvent::str() const
   return m_handler->str();
 }
 
-AxisEventHandler::AxisEventHandler() :
-  m_min(-1),
-  m_max(+1)
+AxisEventHandler::AxisEventHandler()
 {
-}
-
-void
-AxisEventHandler::set_axis_range(int min, int max)
-{
-  m_min = min;
-  m_max = max;
 }
 
 /* EOF */

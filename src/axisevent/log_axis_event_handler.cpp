@@ -26,9 +26,9 @@ LogAxisEventHandler::LogAxisEventHandler(const std::string& format) :
 }
 
 void
-LogAxisEventHandler::send(int value)
+LogAxisEventHandler::send(int value, int min, int max)
 {
-  std::cout << m_format << ": " << value << std::endl;
+  std::cout << m_format << ": " << value << ":" << min << ":" << max << std::endl;
 }
 
 void

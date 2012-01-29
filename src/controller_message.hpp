@@ -46,6 +46,8 @@ public:
 
   const std::bitset<256>& get_key_state() const { return m_key_state; }
   const boost::array<int, 256>& get_abs_state() const { return m_abs_state; }
+  const boost::array<int, 256>& get_abs_min() const { return m_abs_min; }
+  const boost::array<int, 256>& get_abs_max() const { return m_abs_max; }
 
   int  get_abs(int abs) const;
   void set_abs(int abs, int v, int min, int max);

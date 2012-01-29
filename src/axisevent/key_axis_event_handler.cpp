@@ -31,7 +31,9 @@ KeyAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
   
-  std::auto_ptr<KeyAxisEventHandler> ev(new KeyAxisEventHandler(uinput, slot, extra_devices));
+  UIEventSequence up_codes;
+  UIEventSequence down_codes;
+  float threshold = 0.25f;
 
   int j = 0;
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
@@ -40,7 +42,7 @@ KeyAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
     {
       case 0:
         {
-          ev->m_up_codes = UIEventSequence::from_string(*i);
+          up_codes = UIEventSequence::from_string(*i);
         }
         break;
 
@@ -49,19 +51,19 @@ KeyAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
           if (is_number(*i))
           {
             // bit of hackery to handle simplified syntax for trigger button that don't need up/down events
-            ev->m_threshold = boost::lexical_cast<int>(*i);
-            ev->m_down_codes = ev->m_up_codes;
-            ev->m_up_codes.clear();
+            threshold = boost::lexical_cast<float>(*i);
+            down_codes = up_codes;
+            up_codes.clear();
           }
           else
           {
-            ev->m_down_codes = UIEventSequence::from_string(*i);
+            down_codes = UIEventSequence::from_string(*i);
           }
         }
         break;
         
       case 2:
-        ev->m_threshold = boost::lexical_cast<int>(*i);
+        threshold = boost::lexical_cast<float>(*i);
         break;
         
       default: 
@@ -74,33 +76,26 @@ KeyAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
     throw std::runtime_error("AxisEvent::key_from_string(): at least one argument required: " + str);
   }
 
-  return ev.release();
+  return new KeyAxisEventHandler(uinput, slot, extra_devices,
+                                 up_codes, down_codes, threshold);
+
 }
 
-KeyAxisEventHandler::KeyAxisEventHandler(UInput& uinput, int slot, bool extra_devices) :
+KeyAxisEventHandler::KeyAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
+                                         UIEventSequence up_codes,
+                                         UIEventSequence down_codes,
+                                         float threshold) :
   m_old_value(0),
-  m_up_codes(),
-  m_down_codes(),
-  m_threshold(8000) // BUG: this doesn't work for triggers
+  m_up_codes(up_codes),
+  m_down_codes(down_codes),
+  m_threshold(threshold)
 {
   m_up_codes.init(uinput, slot, extra_devices);
   m_down_codes.init(uinput, slot, extra_devices);
 }
 
-void
-KeyAxisEventHandler::send_up(int value)
-{
-  m_up_codes.send(value);
-}
-
-void
-KeyAxisEventHandler::send_down(int value)
-{
-  m_down_codes.send(value);
-}
-
 int
-KeyAxisEventHandler::get_zone(int value) const
+KeyAxisEventHandler::get_zone(float value) const
 {
   if (value >= m_threshold)
   {
@@ -117,31 +112,31 @@ KeyAxisEventHandler::get_zone(int value) const
 }
 
 void
-KeyAxisEventHandler::send(int value)
+KeyAxisEventHandler::send(int value, int min, int max)
 {
-  int old_zone = get_zone(m_old_value);
-  int zone     = get_zone(value);
+  int old_zone = get_zone(to_float(m_old_value, min, max));
+  int zone     = get_zone(to_float(value, min, max));
 
   if (old_zone != zone)
   {
     // release the keys of the zone we leave
     if (old_zone == -1)
     {
-      send_up(false);
+      m_up_codes.send(false);
     }
     else if (old_zone == +1)
     {
-      send_down(false);
+      m_down_codes.send(false);
     }
 
     // press the keys of the zone we enter
     if (zone == +1)
     {
-      send_down(true);
+      m_down_codes.send(true);
     }
     else if (zone == -1)
     {
-      send_up(true);
+      m_up_codes.send(true);
     }
   }
 

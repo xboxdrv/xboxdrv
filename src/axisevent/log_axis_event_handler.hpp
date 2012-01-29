@@ -29,7 +29,7 @@ private:
 public:
   LogAxisEventHandler(const std::string& format);
 
-  void send(int value);
+  void send(int value, int min, int max);
   void update(int msec_delta);
 
   std::string str() const;

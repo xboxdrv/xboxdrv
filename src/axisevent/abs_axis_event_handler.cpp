@@ -90,12 +90,10 @@ AbsAxisEventHandler::AbsAxisEventHandler(UInput& uinput, int slot, bool extra_de
   m_code.resolve_device_id(slot, extra_devices);
   m_abs_emitter = uinput.add_abs(m_code.get_device_id(), m_code.code, 
                                  m_min, m_max, m_fuzz, m_flat);
-
-  set_axis_range(m_min, m_max);
 }
 
 void
-AbsAxisEventHandler::send(int value)
+AbsAxisEventHandler::send(int value, int min, int max)
 {
   m_abs_emitter->send(value);
 }

@@ -33,7 +33,7 @@ public:
   RelAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
                       int device_id, int code, int repeat = 10, float value = 5);
 
-  void send(int value);
+  void send(int value, int min, int max);
   void update(int msec_delta);
 
   std::string str() const;

@@ -81,12 +81,12 @@ RelAxisEventHandler::RelAxisEventHandler(UInput& uinput, int slot, bool extra_de
 }
 
 void
-RelAxisEventHandler::send(int value)
+RelAxisEventHandler::send(int value, int min, int max)
 {
   if (value < 0)
-    m_stick_value = static_cast<float>(value) / static_cast<float>(-m_min);
+    m_stick_value = static_cast<float>(value) / static_cast<float>(-min);
   else
-    m_stick_value = static_cast<float>(value) / static_cast<float>(m_max);
+    m_stick_value = static_cast<float>(value) / static_cast<float>(max);
 
   if (m_repeat != -1)
   { 
