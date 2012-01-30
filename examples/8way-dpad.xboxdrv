@@ -1,0 +1,25 @@
+# 8-button D-Pad
+# ==============
+#
+# Simple example on how to bind eight actions to the D-Pad. Each of
+# the diagonals is handled via a button combination. A delay filter is
+# used to ensure that when trying to press a diagonal only the
+# diagonal action is triggered, not the left/right or up/down actions
+# which one will inevitably hit when moving the D-Pad into the
+# diagonal position. A delay of 200msec is used, shorter delays are
+# possible, depending on the quality of the dpad.
+
+[xboxdrv]
+ui-clear=true
+
+[keymap]
+du^delay:200=log:Up
+dd^delay:200=log:Down
+dl^delay:200=log:Left
+dr^delay:200=log:Right
+dl+du^delay:200=log:Up-Left
+dl+dd^delay:200=log:Down-Left
+dr+du^delay:200=log:Up-Right
+dr+dd^delay:200=log:Down-Right
+
+# EOF #
