@@ -33,7 +33,6 @@ EventEmitter::EventEmitter(UInput& uinput, int slot, bool extra_devices, const U
 void
 EventEmitter::init(const ControllerMessageDescriptor& desc)
 {
-  std::cout << "EventEmitter::init(const ControllerMessageDescriptor& desc)" << std::endl;
   m_btn_map.init(desc);
   m_abs_map.init(desc);
 }
