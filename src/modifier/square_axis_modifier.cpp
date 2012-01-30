@@ -52,53 +52,60 @@ void squarify_axis(float& x_inout, float& y_inout)
 SquareAxisModifier*
 SquareAxisModifier::from_string(const std::vector<std::string>& args)
 {
-  if (args.size() != 2)
+  if (args.size() == 2)
   {
-    throw std::runtime_error("SquareAxisModifier requires two arguments");
+    return new SquareAxisModifier(args[0], args[1], args[0], args[1]);
+  }
+  else if (args.size() == 4)
+  {
+    return new SquareAxisModifier(args[0], args[1], args[2], args[3]);
   }
   else
   {
-    return new SquareAxisModifier(args[0], args[1]);
+    throw std::runtime_error("SquareAxisModifier requires two or four arguments");
   }
 }
 
-SquareAxisModifier::SquareAxisModifier(const std::string& xaxis, const std::string& yaxis) :
-  m_xaxis_str(xaxis),
-  m_yaxis_str(yaxis),
-  m_xaxis(-1),
-  m_yaxis(-1)
+SquareAxisModifier::SquareAxisModifier(const std::string& x_axis_in,  const std::string& y_axis_in,
+                                       const std::string& x_axis_out, const std::string& y_axis_out) :
+  m_xaxis_in(x_axis_in),
+  m_yaxis_in(y_axis_in),
+  m_xaxis_out(x_axis_out),
+  m_yaxis_out(y_axis_out)
 {
 }
 
 void
 SquareAxisModifier::init(ControllerMessageDescriptor& desc)
 {
-  m_xaxis = desc.abs().get(m_xaxis_str);
-  m_yaxis = desc.abs().get(m_yaxis_str);
+  m_xaxis_in.init(desc);
+  m_yaxis_in.init(desc);
+
+  m_xaxis_out.init(desc);
+  m_yaxis_out.init(desc);
 }
 
 void
 SquareAxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
-  float x = msg.get_abs_float(m_xaxis);
-  float y = msg.get_abs_float(m_yaxis);
+  float x = m_xaxis_in.get_float(msg);
+  float y = m_yaxis_in.get_float(msg);
 
   squarify_axis(x, y);
 
-  msg.set_abs_float(m_xaxis, x);
-  msg.set_abs_float(m_yaxis, y);
+  m_xaxis_out.set_float(msg, x);
+  m_yaxis_out.set_float(msg, y);
 }
 
 std::string
 SquareAxisModifier::str() const
 {
   std::ostringstream out;
-  /* BROKEN
-  out << "square"
-      << axis2string(m_xaxis)
-      << ":"
-      << axis2string(m_yaxis);
-  */
+  out << "square:" 
+      << m_xaxis_in.str() << ":"
+      << m_yaxis_in.str() << ":"
+      << m_xaxis_out.str() << ":"
+      << m_yaxis_out.str();
   return out.str();
 }
 

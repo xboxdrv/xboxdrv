@@ -21,6 +21,7 @@
 
 #include <vector>
 
+#include "abs_port.hpp"
 #include "modifier.hpp"
 
 class SquareAxisModifier : public Modifier
@@ -29,7 +30,8 @@ public:
   static SquareAxisModifier* from_string(const std::vector<std::string>& args);
 
 public:
-  SquareAxisModifier(const std::string& x_axis, const std::string& y_axis);
+  SquareAxisModifier(const std::string& x_axis_in,  const std::string& y_axis_in,
+                     const std::string& x_axis_out, const std::string& y_axis_out);
 
   void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
@@ -37,11 +39,11 @@ public:
   std::string str() const;
 
 private:
-  const std::string m_xaxis_str;
-  const std::string m_yaxis_str;
+  AbsPortIn m_xaxis_in;
+  AbsPortIn m_yaxis_in;
 
-  int m_xaxis;
-  int m_yaxis;
+  AbsPortOut m_xaxis_out;
+  AbsPortOut m_yaxis_out;
 };
 
 #endif

@@ -91,8 +91,8 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
 
   if (opts.square_axis)
   {
-    m_modifier.push_back(ModifierPtr(new SquareAxisModifier("X1", "Y1")));
-    m_modifier.push_back(ModifierPtr(new SquareAxisModifier("X2", "Y2")));
+    m_modifier.push_back(ModifierPtr(new SquareAxisModifier("X1", "Y1", "X1", "Y1")));
+    m_modifier.push_back(ModifierPtr(new SquareAxisModifier("X2", "Y2", "X2", "Y2")));
   }
 
   if (!opts.sensitivity_map.empty())
