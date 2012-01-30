@@ -21,6 +21,9 @@
 
 #include <string>
 
+#include "controller_message.hpp"
+#include "controller_message_descriptor.hpp"
+
 class AbsPort
 {
 protected:
@@ -37,6 +40,7 @@ public:
   {}
 
   inline std::string get_name() const { return m_name; }
+  inline std::string str() const { return m_name; }
   inline int get_abs() const { return m_abs; }
 };
 

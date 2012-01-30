@@ -37,8 +37,9 @@ public:
   {}
   virtual ~KeyPort() {}
 
-  std::string get_name() const { return m_name; }
-  int get_key() const { return m_key; }
+  inline std::string get_name() const { return m_name; }
+  inline int get_key() const { return m_key; }
+  inline std::string str() const { return m_name; }
 };
 
 class KeyPortIn : public KeyPort
