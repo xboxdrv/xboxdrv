@@ -25,45 +25,50 @@
 FourWayRestrictorModifier*
 FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
 {
-  if (args.size() != 2)
+  if (args.size() == 2)
   {
-    throw std::runtime_error("FourWayRestrictorModifier requires two arguments");
+    return new FourWayRestrictorModifier(args[0], args[1], args[0], args[1]);
+  }
+  else if (args.size() == 4)
+  {
+    return new FourWayRestrictorModifier(args[0], args[1], args[2], args[3]);    
   }
   else
   {
-    return new FourWayRestrictorModifier(args[0], args[1]);
+    throw std::runtime_error("FourWayRestrictorModifier requires two or four arguments");
   }
 }
 
-FourWayRestrictorModifier::FourWayRestrictorModifier(const std::string& xaxis, const std::string& yaxis) :
-  m_xaxis_str(xaxis),
-  m_yaxis_str(yaxis),
-  m_xaxis(-1),
-  m_yaxis(-1)
+FourWayRestrictorModifier::FourWayRestrictorModifier(const std::string& xaxis_in, const std::string& yaxis_in,
+                                                     const std::string& xaxis_out, const std::string& yaxis_out) :
+  m_xaxis_in(xaxis_in),
+  m_yaxis_in(yaxis_in),
+  m_xaxis_out(xaxis_out),
+  m_yaxis_out(yaxis_out)
 {
 }
 
 void
 FourWayRestrictorModifier::init(ControllerMessageDescriptor& desc)
 {
-  m_xaxis = desc.abs().get(m_xaxis_str);
-  m_yaxis = desc.abs().get(m_yaxis_str);
+  m_xaxis_in.init(desc);
+  m_yaxis_in.init(desc);
+  m_xaxis_out.init(desc);
+  m_yaxis_out.init(desc);
 }
 
 void
 FourWayRestrictorModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
-  if (fabsf(msg.get_abs_float(m_xaxis)) > fabsf(msg.get_abs_float(m_yaxis)))
+  if (fabsf(m_xaxis_in.get_float(msg)) > fabsf(m_yaxis_in.get_float(msg)))
   {
-    msg.set_abs_float(m_yaxis, 0);
-  }
-  else if (fabsf(msg.get_abs_float(m_yaxis)) > fabsf(msg.get_abs_float(m_xaxis)))
-  {
-    msg.set_abs_float(m_xaxis, 0);
+    m_xaxis_out.set_float(msg, m_xaxis_in.get_float(msg));
+    m_yaxis_out.set_float(msg, 0);
   }
   else
   {
-    msg.set_abs_float(m_xaxis, 0);
+    m_xaxis_out.set_float(msg, 0);
+    m_yaxis_out.set_float(msg, m_yaxis_in.get_float(msg));
   }
 }
 
@@ -71,7 +76,9 @@ std::string
 FourWayRestrictorModifier::str() const
 {
   std::ostringstream out;
-  //BROKEN: out << "4way:" << axis2string(m_xaxis) << ":" << axis2string(m_yaxis);
+  out << "4way:" 
+      << m_xaxis_in.str()  << ":" << m_yaxis_in.str() << ":" 
+      << m_xaxis_out.str() << ":" << m_yaxis_out.str();    
   return out.str();
 }
 

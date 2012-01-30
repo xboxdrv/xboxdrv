@@ -21,6 +21,7 @@
 
 #include <vector>
 
+#include "abs_port.hpp"
 #include "modifier.hpp"
 
 class FourWayRestrictorModifier : public Modifier
@@ -29,7 +30,8 @@ public:
   static FourWayRestrictorModifier* from_string(const std::vector<std::string>& args);
 
 public:
-  FourWayRestrictorModifier(const std::string& xaxis, const std::string& yaxis);
+  FourWayRestrictorModifier(const std::string& xaxis_in, const std::string& yaxis_in,
+                            const std::string& xaxis_out, const std::string& yaxis_out);
 
   void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
@@ -37,11 +39,11 @@ public:
   std::string str() const;
 
 private:
-  const std::string m_xaxis_str;
-  const std::string m_yaxis_str;
+  AbsPortIn m_xaxis_in;
+  AbsPortIn m_yaxis_in;
 
-  int m_xaxis;
-  int m_yaxis;
+  AbsPortOut m_xaxis_out;
+  AbsPortOut m_yaxis_out;
 };
 
 #endif

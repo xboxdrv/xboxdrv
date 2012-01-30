@@ -110,8 +110,8 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
 
   if (opts.four_way_restrictor)
   {
-    m_modifier.push_back(ModifierPtr(new FourWayRestrictorModifier("X1", "Y1")));
-    m_modifier.push_back(ModifierPtr(new FourWayRestrictorModifier("X2", "Y2")));
+    m_modifier.push_back(ModifierPtr(new FourWayRestrictorModifier("X1", "Y1", "X1", "Y1")));
+    m_modifier.push_back(ModifierPtr(new FourWayRestrictorModifier("X2", "Y2", "X2", "Y2")));
   }
 
   if (!opts.relative_axis_map.empty())
