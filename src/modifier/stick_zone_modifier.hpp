@@ -21,6 +21,8 @@
 
 #include <vector>
 
+#include "abs_port.hpp"
+#include "key_port.hpp"
 #include "modifier.hpp"
 
 class StickZoneModifier : public Modifier
@@ -29,13 +31,9 @@ public:
   static StickZoneModifier* from_string(const std::vector<std::string>& args);
 
 private:
-  const std::string m_x_axis_str;
-  const std::string m_y_axis_str;
-  const std::string m_button_str;
-
-  int m_x_axis;
-  int m_y_axis;
-  int m_button;
+  AbsPortIn m_x_axis;
+  AbsPortIn m_y_axis;
+  KeyPortOut m_button;
 
   float m_range_start;
   float m_range_end;

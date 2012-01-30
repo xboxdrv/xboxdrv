@@ -45,12 +45,9 @@ StickZoneModifier::StickZoneModifier(const std::string& x_axis, const std::strin
                                      const std::string& button, 
                                      float range_start, float range_end) :
 
-  m_x_axis_str(x_axis),
-  m_y_axis_str(y_axis),
-  m_button_str(button),
-  m_x_axis(-1),
-  m_y_axis(-1),
-  m_button(-1),
+  m_x_axis(x_axis),
+  m_y_axis(y_axis),
+  m_button(button),
   m_range_start(range_start),
   m_range_end(range_end)
 {
@@ -59,16 +56,16 @@ StickZoneModifier::StickZoneModifier(const std::string& x_axis, const std::strin
 void
 StickZoneModifier::init(ControllerMessageDescriptor& desc)
 {
-  m_x_axis = desc.abs().get(m_x_axis_str);
-  m_y_axis = desc.abs().get(m_y_axis_str);
-  m_button = desc.key().get(m_button_str);
+  m_x_axis.init(desc);
+  m_y_axis.init(desc);
+  m_button.init(desc);
 }
 
 void
 StickZoneModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
-  float x = msg.get_abs_float(m_x_axis);
-  float y = msg.get_abs_float(m_y_axis);
+  float x = m_x_axis.get_float(msg);
+  float y = m_y_axis.get_float(msg);
   float r = sqrtf(x*x + y*y);
 
   if (r > 1.0f)
@@ -78,11 +75,11 @@ StickZoneModifier::update(int msec_delta, ControllerMessage& msg, const Controll
 
   if (m_range_start <= r && r <= m_range_end)
   {
-    msg.set_key(m_button, true);
+    m_button.set(msg, true);
   }
   else
   {
-    msg.set_key(m_button, false);
+    m_button.set(msg, false);
   }
 }
 
@@ -90,7 +87,7 @@ std::string
 StickZoneModifier::str() const
 {
   std::ostringstream os;
-  //BROKEN:os << "stickzone:" << axis2string(m_x_axis) << ":" << axis2string(m_y_axis) << ":" << btn2string(m_button);
+  os << "stickzone:" << m_x_axis.str() << ":" << m_y_axis.str() << ":" << m_button.str();
   return os.str();
 }
 
