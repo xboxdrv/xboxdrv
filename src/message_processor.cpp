@@ -44,8 +44,10 @@ MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config,
     (*i)->init(m_desc);
   }
 
-  // BROKEN: must do this for all configs, not just the current one
-  m_config->get_config()->get_emitter().init(m_desc);
+  for(int i = 0; i < m_config->config_count(); ++i)
+  {
+    m_config->get_config(i)->get_emitter().init(m_desc);
+  }
 }
 
 MessageProcessor::~MessageProcessor()
@@ -130,7 +132,7 @@ MessageProcessor::set_config(int num)
 {
   if (m_config)
   {
-  m_config->set_current_config(num);
+    m_config->set_current_config(num);
   }
 }
 
