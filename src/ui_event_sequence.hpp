@@ -38,6 +38,7 @@ public:
       "KEY_LEFTSHIFT+KEY_B" 
   */
   static UIEventSequence from_string(const std::string& value);
+  static UIEventSequence from_char(char c);
 
 private:
   typedef std::vector<UIEvent> UIEvents;
