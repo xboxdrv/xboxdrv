@@ -44,6 +44,7 @@ public:
   bool get_key(int key) const;
   void set_key(int key, bool v);
 
+  void set_key_state(const std::bitset<256>& state) { m_key_state = state; }
   const std::bitset<256>& get_key_state() const { return m_key_state; }
   const boost::array<int, 256>& get_abs_state() const { return m_abs_state; }
   const boost::array<int, 256>& get_abs_min() const { return m_abs_min; }
