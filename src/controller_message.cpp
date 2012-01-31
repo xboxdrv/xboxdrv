@@ -129,8 +129,6 @@ ControllerMessage::operator!=(const ControllerMessage& rhs) const
 
 std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
-  out << "generic: ";
-  out << desc.get_key_count() << " ";
   for(int i = 0; i < desc.get_key_count(); ++i)
   {
     out << desc.key().get(i) << ":" << msg.get_key(i) << " ";
