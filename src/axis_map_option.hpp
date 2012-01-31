@@ -36,12 +36,13 @@ private:
   
 public:
   AxisMapOption(const std::string& lhs,
-                const std::string& event) :
+                const std::string& event,
+                const std::string& directory = std::string()) :
     m_axis(),
     m_buttons(),
     m_filter(),
     m_event(event),
-    m_directory() // BROKEN: needs get_directory_context() or something more clever
+    m_directory(directory)
   {
     boost::tokenizer<boost::char_separator<char> > 
       tokens(lhs, boost::char_separator<char>("+", "", boost::keep_empty_tokens));

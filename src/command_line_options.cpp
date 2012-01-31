@@ -1113,7 +1113,7 @@ CommandLineParser::set_keymap(ButtonMapOptions& btn_map, const std::string& name
     switch(idx)
     { 
       case 0: // shift+key portion
-        btn_map.push_back(ButtonMapOption(*t, value));
+        btn_map.push_back(ButtonMapOption(*t, value, get_directory_context()));
         break;
 
       default:
@@ -1151,7 +1151,7 @@ CommandLineParser::set_absmap(AxisMapOptions& axis_map, const std::string& name,
     switch(idx)
     { 
       case 0: // shift+key portion
-        axis_map.push_back(AxisMapOption(*t, value));
+        axis_map.push_back(AxisMapOption(*t, value, get_directory_context()));
         break;
 
       default:

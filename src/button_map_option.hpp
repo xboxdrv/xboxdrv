@@ -32,11 +32,12 @@ private:
   
 public:
   ButtonMapOption(const std::string& button,
-                  const std::string& event) :
+                  const std::string& event,
+                  const std::string& directory = std::string()) :
     m_button(button),
     m_filter(),
     m_event(event),
-    m_directory() // BROKEN: needs get_directory_context() or something more clever
+    m_directory(directory)
   {}
 
   void add_filter(const std::string& filter)
