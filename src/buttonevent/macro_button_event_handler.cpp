@@ -58,7 +58,7 @@ MacroButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_device
       events.push_back(event);
     }
   }
-  log_tmp("events: " << events.size());
+
   return new MacroButtonEventHandler(uinput, slot, extra_devices, events);
 }
 
@@ -304,7 +304,6 @@ MacroButtonEventHandler::update(int msec_delta)
             break;
 
           case MacroEvent::kSendOp:
-            log_tmp("send: " << m_events[m_event_counter].send.value);
             (*m_events[m_event_counter].send.emitter)->send(m_events[m_event_counter].send.value);
             break;
 
