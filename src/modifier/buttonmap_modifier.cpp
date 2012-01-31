@@ -23,44 +23,67 @@
 #include <sstream>
 
 #include "helper.hpp"
+#include "key_port.hpp"
+#include "raise_exception.hpp"
 
-ButtonMapping 
+class ButtonMapping
+{
+public:
+  static ButtonMappingPtr from_string(const std::string& lhs, const std::string& rhs);
+
+public:  
+  ButtonMapping(const std::string& lhs_str, const std::string& rhs_str) :
+    lhs(lhs_str),
+    rhs(rhs_str),
+    filters()
+  {}
+
+  void init(ControllerMessageDescriptor& desc);
+
+  KeyPortIn  lhs;
+  KeyPortOut rhs;
+
+  std::vector<ButtonFilterPtr> filters;
+};
+
+ButtonMappingPtr
 ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
 {
-  ButtonMapping mapping;
-
-  mapping.lhs_str.clear();
-  mapping.rhs_str.clear();
-
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(lhs, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
-  int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
-  {
-    switch(idx)
-    {
-      case 0:  mapping.lhs_str = *t; break;
-      default: mapping.filters.push_back(ButtonFilter::from_string(*t));
-    }
-  }
+  std::vector<std::string> args(tokens.begin(), tokens.end());
 
-  if (rhs.empty())
+  if (args.empty())
   {
-    mapping.rhs_str = mapping.lhs_str;
+    raise_exception(std::runtime_error, "empty left hand side");
   }
   else
   {
-    mapping.rhs_str = rhs;
-  }
+    ButtonMappingPtr mapping;
+  
+    if (rhs.empty())
+    {
+      mapping.reset(new ButtonMapping(args[0], args[0]));
+    }
+    else
+    {
+      mapping.reset(new ButtonMapping(args[0], rhs));
+    }
 
-  return mapping;
+    for(std::vector<std::string>::size_type i = 1; i < args.size(); ++i)
+    {
+      mapping->filters.push_back(ButtonFilter::from_string(args[i]));
+    }
+
+    return mapping;
+  }
 }
 
 void
-ButtonMapping::init(const ControllerMessageDescriptor& desc)
+ButtonMapping::init(ControllerMessageDescriptor& desc)
 {
-  lhs = desc.key().get(lhs_str);
-  rhs = desc.key().get(rhs_str);
+  lhs.init(desc);
+  rhs.init(desc);
 }
 
 ButtonmapModifier*
@@ -95,52 +118,45 @@ ButtonmapModifier::ButtonmapModifier() :
 void
 ButtonmapModifier::init(ControllerMessageDescriptor& desc)
 {
-  for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
+  for(std::vector<ButtonMappingPtr>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
-    i->init(desc);
+    (*i)->init(desc);
   }
 }
   
 void
 ButtonmapModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
-  ControllerMessage newmsg = msg;
-
   // update all filters in all mappings
-  for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
+  for(std::vector<ButtonMappingPtr>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
-    for(std::vector<ButtonFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
+    for(std::vector<ButtonFilterPtr>::iterator j = (*i)->filters.begin(); j != (*i)->filters.end(); ++j)
     {
       (*j)->update(msec_delta);
     }
   }
 
-  // set all buttons to 0
-  for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
-  {
-    newmsg.set_key(i->lhs, 0);
-  }
+  std::bitset<256> state = msg.get_key_state();
 
-  for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
+  for(std::vector<ButtonMappingPtr>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
-    // Take both lhs and rhs into account to allow multiple buttons
-    // mapping to the same button
-    bool value = msg.get_key(i->lhs);
+    int key_out = (*i)->rhs.get_key();
+    bool value  = (*i)->lhs.get(msg);
 
     // apply the button filter
-    for(std::vector<ButtonFilterPtr>::iterator j = i->filters.begin(); j != i->filters.end(); ++j)
+    for(std::vector<ButtonFilterPtr>::iterator j = (*i)->filters.begin(); j != (*i)->filters.end(); ++j)
     {
       value = (*j)->filter(value);
     }    
 
-    newmsg.set_key(i->rhs, value || newmsg.get_key(i->rhs));
+    state[key_out] = value || state[key_out];
   }
 
-  msg = newmsg;  
+  msg.set_key_state(state);
 }
 
 void
-ButtonmapModifier::add(const ButtonMapping& mapping)
+ButtonmapModifier::add(ButtonMappingPtr mapping)
 {
   m_buttonmap.push_back(mapping);
 }
@@ -148,20 +164,18 @@ ButtonmapModifier::add(const ButtonMapping& mapping)
 void
 ButtonmapModifier::add_filter(const std::string& btn, ButtonFilterPtr filter)
 {
-  for(std::vector<ButtonMapping>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
+  for(std::vector<ButtonMappingPtr>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
-    if (i->lhs_str == btn)
+    if ((*i)->lhs.str() == btn)
     {
-      i->filters.push_back(filter);
+      (*i)->filters.push_back(filter);
       break;
     }
   }
 
   // button not already in the map, so add it
-  ButtonMapping mapping;
-  mapping.lhs_str = btn;
-  mapping.rhs_str = btn;
-  mapping.filters.push_back(filter);
+  ButtonMappingPtr mapping = ButtonMapping::from_string(btn, btn);
+  mapping->filters.push_back(filter);
   add(mapping);
 }
 
@@ -169,17 +183,16 @@ std::string
 ButtonmapModifier::str() const
 {
   std::ostringstream out;
-  /* BROKEN:
   out << "buttonmap:\n";
-  for(std::vector<ButtonMapping>::const_iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
+  for(std::vector<ButtonMappingPtr>::const_iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
-    out << "  " << btn2string(i->lhs) << "=" << btn2string(i->rhs) << std::endl;
-    for(std::vector<ButtonFilterPtr>::const_iterator filter = i->filters.begin(); filter != i->filters.end(); ++filter)
+    out << "  " << (*i)->lhs.str() << "=" << (*i)->rhs.str() << std::endl;
+    for(std::vector<ButtonFilterPtr>::const_iterator filter = (*i)->filters.begin(); 
+        filter != (*i)->filters.end(); ++filter)
     {
       out << "    " << (*filter)->str() << std::endl;
     }
   }
-  */
   return out.str();
 }
 

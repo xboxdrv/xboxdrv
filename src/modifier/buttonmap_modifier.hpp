@@ -36,26 +36,8 @@ struct ButtonMappingOption
   std::string rhs;
 };
 
-struct ButtonMapping
-{
-  static ButtonMapping from_string(const std::string& lhs, const std::string& rhs);
-  
-  std::string lhs_str;
-  std::string rhs_str;
-  int lhs;
-  int rhs;
-  std::vector<ButtonFilterPtr> filters;
-
-  ButtonMapping() :
-    lhs_str(),
-    rhs_str(),
-    lhs(-1),
-    rhs(-1),
-    filters()
-  {}
-
-  void init(const ControllerMessageDescriptor& desc);
-};
+class ButtonMapping;
+typedef boost::shared_ptr<ButtonMapping> ButtonMappingPtr;
 
 class ButtonmapModifier : public Modifier
 {
@@ -70,7 +52,7 @@ public:
   void init(ControllerMessageDescriptor& desc);  
   void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
 
-  void add(const ButtonMapping& mapping);
+  void add(ButtonMappingPtr mapping);
   void add_filter(const std::string& btn, ButtonFilterPtr filter);
 
   std::string str() const;
@@ -78,7 +60,7 @@ public:
   bool empty() const { return m_buttonmap.empty(); }
 
 public:
-  std::vector<ButtonMapping> m_buttonmap;
+  std::vector<ButtonMappingPtr> m_buttonmap;
 };
 
 #endif
