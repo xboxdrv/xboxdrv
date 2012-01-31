@@ -69,7 +69,7 @@ public:
 
   void init(ControllerMessageDescriptor& desc)
   {
-    m_key = desc.key().put(m_name);
+    m_key = desc.key().getput(m_name);
   }
 
   void set(ControllerMessage& msg, int value)
