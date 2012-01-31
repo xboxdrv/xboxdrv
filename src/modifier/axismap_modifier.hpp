@@ -19,6 +19,7 @@
 #ifndef HEADER_XBOXDRV_MODIFIER_AXISMAP_MODIFIER_HPP
 #define HEADER_XBOXDRV_MODIFIER_AXISMAP_MODIFIER_HPP
 
+#include "abs_port.hpp"
 #include "axis_filter.hpp"
 #include "controller_message.hpp"
 #include "controller_thread.hpp"
@@ -36,27 +37,26 @@ struct AxisMappingOption
   std::string rhs;
 };
 
+struct AxisMapping;
+typedef boost::shared_ptr<AxisMapping> AxisMappingPtr;
+
 struct AxisMapping
 {
-  static AxisMapping from_string(const std::string& lhs, const std::string& rhs);
+  static AxisMappingPtr from_string(const std::string& lhs, const std::string& rhs);
 
-  std::string lhs_str;
-  std::string rhs_str;
-  int lhs;
-  int rhs;
+  AbsPortIn  lhs;
+  AbsPortOut rhs;
   bool invert;
   std::vector<AxisFilterPtr> filters;
 
-  AxisMapping() :
-    lhs_str(),
-    rhs_str(),
-    lhs(-1),
-    rhs(-1),
-    invert(false),
+  AxisMapping(const std::string& lhs_, const std::string& rhs_, bool invert_) :
+    lhs(lhs_),
+    rhs(rhs_),
+    invert(invert_),
     filters()
   {}
 
-  void init(const ControllerMessageDescriptor& desc);
+  void init(ControllerMessageDescriptor& desc);
 };
 
 class AxismapModifier : public Modifier 
@@ -72,15 +72,14 @@ public:
   void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
 
-  void add(const AxisMapping& mapping);
-  void add_filter(int axis, AxisFilterPtr filter);
+  void add(AxisMappingPtr mapping);
 
   std::string str() const;
 
   bool empty() const { return m_axismap.empty(); }
 
 public:
-  std::vector<AxisMapping> m_axismap;
+  std::vector<AxisMappingPtr> m_axismap;
 };
 
 #endif
