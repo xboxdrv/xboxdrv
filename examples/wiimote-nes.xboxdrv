@@ -12,17 +12,17 @@ ui-clear=true
 [modifier]
 dpad-rotate=270
 
-[ui-axismap]
+[absmap]
 dpad_x=ABS_X
 dpad_y=ABS_Y
 
-[ui-buttonmap]
-X=BTN_A
-Y=BTN_B
-A=BTN_X
-B=BTN_Y
-start=BTN_START
-guide=BTN_MODE
-back=BTN_SELECT
+[keymap]
+a=BTN_A
+b=BTN_B
+1=BTN_X
+2=BTN_Y
+plus=BTN_START
+home=BTN_MODE
+minus=BTN_SELECT
 
 # EOF #

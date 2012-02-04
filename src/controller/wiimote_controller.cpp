@@ -80,7 +80,7 @@ WiiNames::WiiNames(ControllerMessageDescriptor& desc) :
   plus  = desc.key().put("plus",  "start");
 
   a = desc.key().put("a");
-  b = desc.key().put("a");
+  b = desc.key().put("b");
   btn1 = desc.key().put("1");
   btn2 = desc.key().put("2");
 
