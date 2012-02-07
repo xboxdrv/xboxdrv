@@ -69,6 +69,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x0f0d, 0x000d, "Hori Fighting Stick Ex2" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x0016, "Hori Real Arcade Pro Ex" },
   { GAMEPAD_XBOX360,          0x162e, 0xbeef, "Joytech Neo-Se Take2" },
+  { GAMEPAD_XBOX360,          0x046d, 0xc21e, "Logitech F510" },
   { GAMEPAD_XBOX360,          0x046d, 0xc242, "Logitech ChillStream" },
   { GAMEPAD_XBOX360,          0x0738, 0xcb03, "Saitek P3200 Rumble Pad - PC/Xbox 360" },
   { GAMEPAD_XBOX360,          0x0738, 0xcb02, "Saitek Cyborg Rumble Pad - PC/Xbox 360" },
