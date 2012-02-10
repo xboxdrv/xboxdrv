@@ -1,0 +1,17 @@
+---
+## Guitar
+- name: "guitar"
+  keys:
+    - name: 'guitar.yellow'
+      provides: ['xbox.y']
+
+    - name: 'guitar.blue'
+      provides: ['xbox.x']
+
+    - name: 'guitar.red'
+      provides: ['xbox.b']
+
+    - name: 'guitar.green'
+      provides: ['xbox.a']
+
+...

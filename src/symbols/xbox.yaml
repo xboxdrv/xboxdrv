@@ -1,0 +1,53 @@
+---
+- name: "xbox"
+  aliases: ["xbox360", "xb"]
+  abs:
+    - name: 'x1'
+      provides: ['gamepad.x1']
+
+    - name: 'y1'
+      provides: ['gamepad.y1']
+
+    - name: 'x2'
+      provides: ['gamepad.x2']
+
+    - name: 'y2'
+      provides: ['gamepad.y2']
+
+    - name: 'lt'
+      provides: ['gamepad.lt']
+
+    - name: 'rt'
+      provides: ['gamepad.rt']
+
+  key:
+    - name: 'a'
+      provides: ['gamepad.a']
+
+    - name: 'y'
+      provides: ['gamepad.y']
+
+    - name: 'x'
+      provides: ['gamepad.x']
+
+    - name: 'b'
+      provides: ['gamepad.b']
+
+    - name: 'lb'
+      provides: ['gamepad.lb']
+
+    - name: 'rb'
+      provides: ['gamepad.rb']
+
+    - name: 'thumb_l'
+      provides: ['gamepad.thumb_l']
+
+    - name: 'thumb_r'
+      provides: ['gamepad.thumb_r']
+
+    - name: 'start'
+      provides: ['gamepad.start']
+
+    - name: 'back'
+      provides: ['gamepad.select']
+...

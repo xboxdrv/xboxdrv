@@ -1,0 +1,87 @@
+---
+## Sony Playstation
+- name: "playstation"
+  aliases: [ "ps", "psx", "ps2", "ps3", "playstation2", "playstation3" ]
+  abs:
+    # analog sticks
+    - name: 'x1'
+      provides: ['gamepad.x1']
+
+    - name: 'y1'
+      provides: ['gamepad.y1']
+
+    - name: 'x2'
+      provides: ['gamepad.x2']
+
+    - name: 'y2'
+      provides: ['gamepad.y2']
+      
+    # analog face buttons
+    - name: 'cross'
+      provides: ['gamepad.a']
+
+    - name: 'triangle'
+      provides: ['gamepad.y']
+
+    - name: 'square'
+      provides: ['gamepad.x']
+
+    - name: 'circle'
+      provides: ['gamepad.b']
+
+    - name: 'l1'
+      provides: ['gamepad.l1']
+
+    - name: 'r1'
+      provides: ['gamepad.r1']
+
+    - name: 'l2'
+      provides: ['gamepad.l2']
+
+    - name: 'r2'
+      provides: ['gamepad.r2']
+
+    - name: 'acc_x'
+
+    - name: 'acc_y'
+
+    - name: 'acc_z'
+
+  keys:
+    - name: 'cross'
+      provides: ['gamepad.a']
+
+    - name: 'triangle'
+      provides: ['gamepad.y']
+
+    - name: 'square'
+      provides: ['gamepad.x']
+
+    - name: 'circle'
+      provides: ['gamepad.b']
+
+    - name: 'l1'
+      provides: ['gamepad.l1']
+
+    - name: 'r1'
+      provides: ['gamepad.r1']
+
+    - name: 'l2'
+      provides: ['gamepad.l2']
+
+    - name: 'r2'
+      provides: ['gamepad.r2']
+
+    - name: 'l3'
+      provides: ['gamepad.thumb_l']
+
+    - name: 'r3'
+      provides: ['gamepad.thumb_r']
+
+    - name: 'start'
+      provides: ['gamepad.start']
+
+    - name: 'select'
+      provides: ['gamepad.select']
+
+...

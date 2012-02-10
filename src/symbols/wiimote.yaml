@@ -1,0 +1,45 @@
+---
+## Nintendo
+- name: "wiimote"
+  aliases: ["wii"]
+  abs:
+    - name:    'acc_x'
+
+    - name:    'acc_y'
+
+    - name:    'acc_z'
+
+  key:
+    - name:    'a'
+      provides: ['gamepad.a']
+
+    - name:    'b'
+      provides: ['gamepad.b']
+
+    - name:    '1'
+      provides: ['gamepad.x']
+
+    - name:    '2'
+      provides: ['gamepad.y']
+
+    - name:    'minus'
+      provides: ['gamepad.select']
+
+    - name:    'home'
+      provides: ['gamepad.guide']
+
+    - name:    'plus'
+      provides: ['gamepad.start']
+
+    - name:    'dpad_up'
+      provides: ['gamepad.dpad_up']
+
+    - name:    'dpad_down'
+      provides: ['gamepad.dpad_down']
+
+    - name:    'dpad_left'
+      provides: ['gamepad.dpad_left']
+
+    - name:    'dpad_right'
+      provides: ['gamepad.dpad_right']
+...
