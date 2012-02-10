@@ -47,7 +47,7 @@
 
     - name: 'acc_z'
 
-  keys:
+  key:
     - name: 'cross'
       provides: ['gamepad.a']
 

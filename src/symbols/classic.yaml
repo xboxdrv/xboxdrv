@@ -1,31 +1,31 @@
 ---
 
-- name: "classic"
-  aliases: ["nintendo"]
+- name: 'classic'
+  aliases: ['nintendo']
   abs:
-    - name: "x1"
+    - name: 'x1'
       provides: ['gamepad.x1']
       
-    - name: "y1"
+    - name: 'y1'
       provides: ['gamepad.y1']
         
-    - name: "x2"
+    - name: 'x2'
       provides: ['gamepad.x2']
 
-    - name: "y2"
+    - name: 'y2'
       provides: ['gamepad.y2']
 
   key:
-    - name:     "a"
+    - name:     'a'
       provides: ['gamepad.b']
 
-    - name:     "b"
+    - name:     'b'
       provides: ['gamepad.a']
 
-    - name:     "x"
+    - name:     'x'
       provides: ['gamepad.y']
 
-    - name:     "y"
+    - name:     'y'
       provides: ['gamepad.x']
 
     - name:    'minus'

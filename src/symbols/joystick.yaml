@@ -1,0 +1,53 @@
+---
+- name: 'joystick'
+  aliases: ['js', 'joy']
+  abs:
+     - name: 'x1'
+       aliases: ['x']
+
+     - name: 'y1'
+       aliases: ['y']
+
+     - name: 'z1'
+       aliases: ['z']
+
+     - name: 'x2'
+
+     - name: 'y2'
+
+     - name: 'z2'
+
+     - name: 'rudder'
+
+     - name: 'throttle'
+
+     - name: 'gas'
+
+     - name: 'break'
+
+  key:
+    - name: 'trigger'
+
+    - name: 'thumb'
+
+    - name: 'top'
+      aliases: ['top1']
+
+    - name: 'top2'
+
+    - name: 'pinkie'
+
+    - name: 'base'
+      aliases: ['base1']
+
+    - name: 'base2'
+
+    - name: 'base3'
+
+    - name: 'base4'
+
+    - name: 'base5'
+
+    - name: 'base6'
+
+...

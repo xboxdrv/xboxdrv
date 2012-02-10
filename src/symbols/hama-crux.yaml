@@ -1,55 +1,74 @@
 ---
-
-- name: "hama-crux"
-  aliases: ["crux", "zfang"]
+- name: 'hama-crux'
+  aliases: ['crux', 'zfang']
   key:
-    - name: "crouch"
-    - name: "run"
-    - name: "talk"
+    - name: 'crouch'
+    - name: 'run'
+    - name: 'talk'
   
-    - name: "escape"
-    - name: "pause"
-    - name: "option"
+    - name: 'escape'
+    - name: 'pause'
+    - name: 'option'
  
-    - name: "quickload"
-    - name: "quicksave"
-    - name: "print"
+    - name: 'quickload'
+    - name: 'quicksave'
+    - name: 'print'
 
-    - name: "n1"
-    - name: "n2"
-    - name: "n3"
-    - name: "n4"
-    - name: "n5"
-    - name: "n6"
+    - name: 'n1'
+    - name: 'n2'
+    - name: 'n3'
+    - name: 'n4'
+    - name: 'n5'
+    - name: 'n6'
 
-    - name: "n7"
-    - name: "n8"
-    - name: "n9"
-    - name: "n10"
-    - name: "n11"
+    - name: 'n7'
+    - name: 'n8'
+    - name: 'n9'
+    - name: 'n10'
+    - name: 'n11'
 
-    - name: "up"
-    - name: "down"
-    - name: "left"
-    - name: "right"
-    - name: "q"
-    - name: "e"
+    - name: 'up'
+    - name: 'down'
+    - name: 'left'
+    - name: 'right'
+    - name: 'q'
+    - name: 'e'
 
-    - name: "c1"
-    - name: "tab"
-    - name: "c2"
-    - name: "c3"
-    - name: "c4"
-    - name: "reload"
-    - name: "use"
-    - name: "c8"
-    - name: "p2"
-    - name: "n"
+    # -------------
+    - name: 'tab'
 
-    - name: "c5"
-    - name: "c6"
-    - name: "c7"
-    - name: "p1"
-    - name: "space"
+    - name: 'c1'
 
+    - name: 'c2'
+
+    - name: 'c3'
+
+    - name: 'c4'
+      aliases: ['g']
+
+    - name: 'reload'
+      aliases: ['r']
+
+    - name: 'use'
+      aliases: ['f']
+    # -------------
+    - name: 'c8'
+      aliases: ['y']
+
+    - name: 'p2'
+
+    - name: 'n'
+
+    - name: 'c5'
+
+    - name: 'c6'
+      aliases: ['b']
+
+    - name: 'c7'
+
+    - name: 'p1'
+
+    - name: 'jump'
+      aliases: ['space']
+    # -------------
 ...
