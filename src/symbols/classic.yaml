@@ -37,4 +37,15 @@
     - name:    'plus'
       provides: ['gamepad.start']
 
+    - name:    'zl'
+      provides: ['gamepad.r1']
+
+    - name:    'zr'
+      provides: ['gamepad.r1']
+
+    - name:    'l'
+      provides: ['gamepad.l2']
+
+    - name:    'r'
+      provides: ['gamepad.r2']
 ...

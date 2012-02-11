@@ -2,16 +2,16 @@
 ## Guitar
 - name: "guitar"
   key:
-    - name: 'guitar.yellow'
+    - name: 'yellow'
       provides: ['xbox.y']
 
-    - name: 'guitar.blue'
+    - name: 'blue'
       provides: ['xbox.x']
 
-    - name: 'guitar.red'
+    - name: 'red'
       provides: ['xbox.b']
 
-    - name: 'guitar.green'
+    - name: 'green'
       provides: ['xbox.a']
 
 ...

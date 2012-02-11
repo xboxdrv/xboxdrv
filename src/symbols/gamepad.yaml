@@ -46,20 +46,18 @@
     
     - name:    'l2'
       evdev:   'BTN_TL2'
-      aliases: ['xbox.lt', 'nintendo.l']
     
     - name:    'r2'
       evdev:   'BTN_TR2'
-      aliases: ['xbox.rt', 'playstation.l3', 'nintendo.r']
     
     # thumb sticks
     - name:    'thumb_l'
       evdev:   'BTN_THUMBL'
-      aliases: ['tl', 'xbox.tl', 'playstation.l3']
+      aliases: ['tl']
     
     - name:    'thumb_r'
       evdev:   'BTN_THUMBR'
-      aliases: ['tr', 'xbox.tr', 'playstation.r3']
+      aliases: ['tr']
     
     # dpad
     - name:    'dpad_up'

@@ -39,6 +39,12 @@
     - name: 'rb'
       provides: ['gamepad.rb']
 
+    - name: 'lt'
+      provides: ['gamepad.lt']
+
+    - name: 'rt'
+      provides: ['gamepad.rt']
+
     - name: 'thumb_l'
       provides: ['gamepad.thumb_l']
 
