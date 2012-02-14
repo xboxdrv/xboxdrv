@@ -14,6 +14,11 @@ def yaml2code(fout, data, ev_type)
   data.each do |namespace|
     fout.puts "  {"
     fout.puts "    NamespacePtr ns = env->add_namespace(\"#{namespace['name']}\");"
+    
+    namespace['aliases'].each do |sym|
+      fout.puts "    env->add_namespace_alias(\"#{sym}\", ns);"
+    end if namespace.has_key?('aliases')
+    
     namespace[ev_type].each do |sym|
       fout.puts "    {"
       fout.puts "      SymbolPtr sym = ns->add_symbol(\"#{sym['name']}\");"

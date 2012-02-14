@@ -8,6 +8,12 @@ void init_environment_abs(EnvironmentPtr env)
 {
   {
     NamespacePtr ns = env->add_namespace("playstation");
+    env->add_namespace_alias("ps", ns);
+    env->add_namespace_alias("psx", ns);
+    env->add_namespace_alias("ps2", ns);
+    env->add_namespace_alias("ps3", ns);
+    env->add_namespace_alias("playstation2", ns);
+    env->add_namespace_alias("playstation3", ns);
     {
       SymbolPtr sym = ns->add_symbol("x1");
     }
@@ -56,6 +62,8 @@ void init_environment_abs(EnvironmentPtr env)
   }
   {
     NamespacePtr ns = env->add_namespace("xbox");
+    env->add_namespace_alias("xbox360", ns);
+    env->add_namespace_alias("xb", ns);
     {
       SymbolPtr sym = ns->add_symbol("x1");
     }
@@ -107,6 +115,7 @@ void init_environment_abs(EnvironmentPtr env)
   }
   {
     NamespacePtr ns = env->add_namespace("wiimote");
+    env->add_namespace_alias("wii", ns);
     {
       SymbolPtr sym = ns->add_symbol("acc_x");
     }
@@ -119,6 +128,8 @@ void init_environment_abs(EnvironmentPtr env)
   }
   {
     NamespacePtr ns = env->add_namespace("joystick");
+    env->add_namespace_alias("js", ns);
+    env->add_namespace_alias("joy", ns);
     {
       SymbolPtr sym = ns->add_symbol("x1");
       ns->add_alias("x", sym);
@@ -155,9 +166,13 @@ void init_environment_abs(EnvironmentPtr env)
   }
   {
     NamespacePtr ns = env->add_namespace("hama-crux");
+    env->add_namespace_alias("crux", ns);
+    env->add_namespace_alias("zfang", ns);
   }
   {
     NamespacePtr ns = env->add_namespace("classic");
+    env->add_namespace_alias("nintendo", ns);
+    env->add_namespace_alias("snes", ns);
     {
       SymbolPtr sym = ns->add_symbol("x1");
     }
@@ -173,6 +188,7 @@ void init_environment_abs(EnvironmentPtr env)
   }
   {
     NamespacePtr ns = env->add_namespace("gamepad");
+    env->add_namespace_alias("gp", ns);
     {
       SymbolPtr sym = ns->add_symbol("x1");
     }
