@@ -100,7 +100,7 @@ Help(opts.GenerateHelpText(env))
 # End: Option handling
 
 if 'BUILD' in env and env['BUILD'] == 'development':
-    env.Append(CXXFLAGS = [ "-O3",
+    env.Append(CXXFLAGS = [ "-O0",
                             "-g3",
                             "-ansi",
                             "-pedantic",
@@ -179,7 +179,8 @@ libxboxdrv = env.StaticLibrary('xboxdrv',
                                Glob('src/buttonevent/*.cpp') +
                                Glob('src/buttonfilter/*.cpp') +
                                Glob('src/controller/*.cpp') +
-                               Glob('src/modifier/*.cpp'))
+                               Glob('src/modifier/*.cpp') +
+                               Glob('src/symbols/*.cpp'))
 env.Prepend(LIBS = libxboxdrv)
 
 for file in Glob('test/*_test.cpp', strings=True):
