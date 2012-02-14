@@ -35,54 +35,13 @@ private:
   Symbols m_symbols;
   
 public:
-  Namespace(const std::string& name) :
-    m_name(name),
-    m_symbols()
-  {
-  }
+  Namespace(const std::string& name);
 
   std::string get_name() const { return m_name; }
 
-  SymbolPtr lookup(const std::string& name)
-  {
-    Symbols::iterator it = m_symbols.find(name);
-    if (it == m_symbols.end())
-    {
-      return SymbolPtr();
-    }
-    else
-    {
-      return it->second;
-    }
-  }
-
-  SymbolPtr add_symbol(const std::string& name)
-  {
-    Symbols::iterator it = m_symbols.find(name);
-    if (it != m_symbols.end())
-    {
-      raise_exception(std::runtime_error, "name conflict for symbol: " << name);
-    }
-    else
-    {
-      SymbolPtr sym(new Symbol(*this, name));
-      m_symbols[name] = sym;
-      return sym;
-    }
-  }
-
-  void add_alias(const std::string& name, SymbolPtr sym)
-  {
-    Symbols::iterator it = m_symbols.find(name);    
-    if (it != m_symbols.end())
-    {
-      raise_exception(std::runtime_error, "name conflict for symbol: " << name);
-    }
-    else
-    {
-      m_symbols[name] = sym;
-    }
-  }
+  SymbolPtr lookup(const std::string& name);
+  SymbolPtr add_symbol(const std::string& name);
+  void add_alias(const std::string& name, SymbolPtr sym);
 
 private:
   Namespace(const Namespace&);

@@ -1,7 +1,7 @@
 ---
 
 - name: 'classic'
-  aliases: ['nintendo']
+  aliases: ['nintendo', 'snes']
   abs:
     - name: 'x1'
       provides: ['gamepad.x1']

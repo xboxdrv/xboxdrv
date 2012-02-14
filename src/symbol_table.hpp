@@ -19,45 +19,74 @@
 #ifndef HEADER_XBOXDRV_SYMBOL_TABLE_HPP
 #define HEADER_XBOXDRV_SYMBOL_TABLE_HPP
 
+#include <ctype.h>
+#include <iostream>
 #include <map>
-#include <string>
+#include <stdexcept>
 #include <vector>
 
+#include "raise_exception.hpp"
+
+template<typename T>
 class SymbolTable
 {
 private:
-  std::vector<std::string> m_int2name;
-  std::map<std::string, int> m_name2int;
+  typename std::vector<T> m_int2name;
+  typename std::map<T, int> m_name2int;
 
 public:
-  SymbolTable();
+  SymbolTable() :
+    m_int2name(),
+    m_name2int()
+  {
+  }
 
-  int put(const std::string& name);
-  int put(const std::string& name, 
-          const std::string& alias1);
-  int put(const std::string& name,
-          const std::string& alias1,
-          const std::string& alias2);
-  int put(const std::string& name,
-          const std::string& alias1,
-          const std::string& alias2,
-          const std::string& alias3);
-  int put(const std::string& name,
-          const std::string& alias1,
-          const std::string& alias2,
-          const std::string& alias3,
-          const std::string& alias4);
+  int put(const T& name)
+  {
+    int symbol = m_int2name.size();
+    m_int2name.push_back(name);
+    m_name2int[name] = symbol;
+    return symbol;
+  }
 
   /** Returns the id of the given name, on lookup failure the name is
       put into the table */
-  int getput(const std::string& name);
+  int getput(const T& name)
+  {
+    typename std::map<T, int>::const_iterator it = m_name2int.find(name);
+    if (it == m_name2int.end())
+    {
+      return put(name);
+    }
+    else
+    {
+      return it->second;
+    }
+  }
 
   /** Returns the id of the given name, throws on lookup failure */
-  int get(const std::string& name) const;
+  int get(const T& name) const
+  {
+    typename std::map<T, int>::const_iterator it = m_name2int.find(name);
+    if (it == m_name2int.end())
+    {
+      raise_exception(std::runtime_error, "lookup failure for: '" << name << "'");
+    }
+    else
+    {
+      return it->second;
+    }
+  }
 
-  std::string get(int v) const;
-  
-  bool has(const std::string& name) const;
+  T get(int v) const
+  {
+    return m_int2name.at(v);
+  }
+
+  bool has(const T& name) const
+  {
+    return m_name2int.find(name) != m_name2int.end();
+  }
 
   int size() const { return m_int2name.size(); }
 };

@@ -61,33 +61,33 @@ UInputOptions::mimic_xpad()
   get_axis_map().clear();
   get_btn_map().clear();
 
-  m_btn_map.push_back(ButtonMapOption("start", "BTN_START"));
-  m_btn_map.push_back(ButtonMapOption("guide", "BTN_MODE"));
-  m_btn_map.push_back(ButtonMapOption("back",  "BTN_SELECT"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.start", "BTN_START"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.guide", "BTN_MODE"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.back",  "BTN_SELECT"));
 
-  m_btn_map.push_back(ButtonMapOption("a",    "BTN_A"));
-  m_btn_map.push_back(ButtonMapOption("b",    "BTN_B"));
-  m_btn_map.push_back(ButtonMapOption("x",    "BTN_X"));
-  m_btn_map.push_back(ButtonMapOption("y",    "BTN_Y"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.a",    "BTN_A"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.b",    "BTN_B"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.x",    "BTN_X"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.y",    "BTN_Y"));
 
-  m_btn_map.push_back(ButtonMapOption("lb",    "BTN_TL"));
-  m_btn_map.push_back(ButtonMapOption("rb",    "BTN_TR"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.lb",    "BTN_TL"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.rb",    "BTN_TR"));
 
-  m_btn_map.push_back(ButtonMapOption("tl",    "BTN_THUMBL"));
-  m_btn_map.push_back(ButtonMapOption("tr",    "BTN_THUMBR"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.tl",    "BTN_THUMBL"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.tr",    "BTN_THUMBR"));
 
 
-  m_axis_map.push_back(AxisMapOption("x1", "ABS_X:-32768:32767:16:128"));
-  m_axis_map.push_back(AxisMapOption("y1", "ABS_Y:-32768:32767:16:128"));
+  m_axis_map.push_back(AxisMapOption("gamepad.x1", "ABS_X:-32768:32767:16:128"));
+  m_axis_map.push_back(AxisMapOption("gamepad.y1", "ABS_Y:-32768:32767:16:128"));
 
-  m_axis_map.push_back(AxisMapOption("x2", "ABS_RX:-32768:32767:16:128"));
-  m_axis_map.push_back(AxisMapOption("y2", "ABS_RY:-32768:32767:16:128"));
+  m_axis_map.push_back(AxisMapOption("gamepad.x2", "ABS_RX:-32768:32767:16:128"));
+  m_axis_map.push_back(AxisMapOption("gamepad.y2", "ABS_RY:-32768:32767:16:128"));
 
-  m_axis_map.push_back(AxisMapOption("lt", "ABS_Z:0:255:0:0"));
-  m_axis_map.push_back(AxisMapOption("rt", "ABS_RZ:0:255:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.lt", "ABS_Z:0:255:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.rt", "ABS_RZ:0:255:0:0"));
             
-  m_axis_map.push_back(AxisMapOption("dpad_x", "ABS_HAT0X:-1:1:0:0"));
-  m_axis_map.push_back(AxisMapOption("dpad_y", "ABS_HAT0Y:-1:1:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.dpad_x", "ABS_HAT0X:-1:1:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.dpad_y", "ABS_HAT0Y:-1:1:0:0"));
 }
 
 void
@@ -97,34 +97,34 @@ UInputOptions::mimic_xpad_wireless()
   get_axis_map().clear();
   get_btn_map().clear();
 
-  m_btn_map.push_back(ButtonMapOption("dpad_up",    "BTN_0"));
-  m_btn_map.push_back(ButtonMapOption("dpad_down",  "BTN_1"));
-  m_btn_map.push_back(ButtonMapOption("dpad_left",  "BTN_LEFT"));
-  m_btn_map.push_back(ButtonMapOption("dpad_right", "BTN_RIGHT"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_up",    "BTN_0"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_down",  "BTN_1"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_left",  "BTN_LEFT"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_right", "BTN_RIGHT"));
 
-  m_btn_map.push_back(ButtonMapOption("start", "BTN_START"));
-  m_btn_map.push_back(ButtonMapOption("guide", "BTN_MODE"));
-  m_btn_map.push_back(ButtonMapOption("back",  "BTN_SELECT"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.start", "BTN_START"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.guide", "BTN_MODE"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.back",  "BTN_SELECT"));
 
-  m_btn_map.push_back(ButtonMapOption("a",    "BTN_A"));
-  m_btn_map.push_back(ButtonMapOption("b",    "BTN_B"));
-  m_btn_map.push_back(ButtonMapOption("x",    "BTN_X"));
-  m_btn_map.push_back(ButtonMapOption("y",    "BTN_Y"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.a",    "BTN_A"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.b",    "BTN_B"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.x",    "BTN_X"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.y",    "BTN_Y"));
 
-  m_btn_map.push_back(ButtonMapOption("lb",    "BTN_TL"));
-  m_btn_map.push_back(ButtonMapOption("rb",    "BTN_TR"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.lb",    "BTN_TL"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.rb",    "BTN_TR"));
 
-  m_btn_map.push_back(ButtonMapOption("tl",    "BTN_THUMBL"));
-  m_btn_map.push_back(ButtonMapOption("tr",    "BTN_THUMBR"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.tl",    "BTN_THUMBL"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.tr",    "BTN_THUMBR"));
 
-  m_axis_map.push_back(AxisMapOption("x1", "ABS_X:-32768:32767:0:0"));
-  m_axis_map.push_back(AxisMapOption("y1", "ABS_Y:-32768:32767:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.x1", "ABS_X:-32768:32767:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.y1", "ABS_Y:-32768:32767:0:0"));
 
-  m_axis_map.push_back(AxisMapOption("x2", "ABS_RX:-32768:32767:0:0"));
-  m_axis_map.push_back(AxisMapOption("y2", "ABS_RY:-32768:32767:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.x2", "ABS_RX:-32768:32767:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.y2", "ABS_RY:-32768:32767:0:0"));
 
-  m_axis_map.push_back(AxisMapOption("lt", "ABS_Z:0:255:0:0"));
-  m_axis_map.push_back(AxisMapOption("rt", "ABS_RZ:0:255:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.lt", "ABS_Z:0:255:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.rt", "ABS_RZ:0:255:0:0"));
 }
 
 void
@@ -133,75 +133,75 @@ UInputOptions::set_defaults()
   get_btn_map().clear();
   get_axis_map().clear();
 
-  m_btn_map.push_back(ButtonMapOption("start", "BTN_START"));
-  m_btn_map.push_back(ButtonMapOption("guide", "BTN_MODE"));
-  m_btn_map.push_back(ButtonMapOption("back", "BTN_SELECT"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.start", "BTN_START"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.guide", "BTN_MODE"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.back", "BTN_SELECT"));
 
-  m_btn_map.push_back(ButtonMapOption("a",    "BTN_A"));
-  m_btn_map.push_back(ButtonMapOption("b",    "BTN_B"));
-  m_btn_map.push_back(ButtonMapOption("x",    "BTN_X"));
-  m_btn_map.push_back(ButtonMapOption("y",    "BTN_Y"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.a",    "BTN_A"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.b",    "BTN_B"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.x",    "BTN_X"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.y",    "BTN_Y"));
 
-  m_btn_map.push_back(ButtonMapOption("lb",    "BTN_TL"));
-  m_btn_map.push_back(ButtonMapOption("rb",    "BTN_TR"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.lb",    "BTN_TL"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.rb",    "BTN_TR"));
 
-  m_btn_map.push_back(ButtonMapOption("tl",    "BTN_THUMBL"));
-  m_btn_map.push_back(ButtonMapOption("tr",    "BTN_THUMBR"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.tl",    "BTN_THUMBL"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.tr",    "BTN_THUMBR"));
 
-  m_axis_map.push_back(AxisMapOption("x1", "ABS_X:-32768:32767:0:0"));
-  m_axis_map.push_back(AxisMapOption("y1", "ABS_Y:-32768:32767:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.x1", "ABS_X:-32768:32767:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.y1", "ABS_Y:-32768:32767:0:0"));
 
-  m_axis_map.push_back(AxisMapOption("x2", "ABS_RX:-32768:32767:0:0"));
-  m_axis_map.push_back(AxisMapOption("y2", "ABS_RY:-32768:32767:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.x2", "ABS_RX:-32768:32767:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.y2", "ABS_RY:-32768:32767:0:0"));
 
-  m_axis_map.push_back(AxisMapOption("lt", "ABS_BRAKE:0:255:0:0"));
-  m_axis_map.push_back(AxisMapOption("rt", "ABS_GAS:0:255:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.lt", "ABS_BRAKE:0:255:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.rt", "ABS_GAS:0:255:0:0"));
  
-  m_axis_map.push_back(AxisMapOption("dpad_x", "ABS_HAT0X:-1:1:0:0"));
-  m_axis_map.push_back(AxisMapOption("dpad_y", "ABS_HAT0Y:-1:1:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.dpad_x", "ABS_HAT0X:-1:1:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.dpad_y", "ABS_HAT0Y:-1:1:0:0"));
 }
 
 void
 UInputOptions::trigger_as_button()
 {
-  m_axis_map.push_back(AxisMapOption("lt", "void"));
-  m_axis_map.push_back(AxisMapOption("rt", "void"));
+  m_axis_map.push_back(AxisMapOption("gamepad.lt", "void"));
+  m_axis_map.push_back(AxisMapOption("gamepad.rt", "void"));
 
-  m_btn_map.push_back(ButtonMapOption("lt",    "BTN_TL2"));
-  m_btn_map.push_back(ButtonMapOption("rt",    "BTN_TR2"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.lt",    "BTN_TL2"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.rt",    "BTN_TR2"));
 }
 
 void
 UInputOptions::trigger_as_zaxis()
 {
-  m_axis_map.push_back(AxisMapOption("trigger", "ABS_Z:-255:255:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.trigger", "ABS_Z:-255:255:0:0"));
 
-  m_axis_map.push_back(AxisMapOption("lt", "void"));
-  m_axis_map.push_back(AxisMapOption("rt", "void"));
+  m_axis_map.push_back(AxisMapOption("gamepad.lt", "void"));
+  m_axis_map.push_back(AxisMapOption("gamepad.rt", "void"));
 }
 
 void
 UInputOptions::dpad_as_button()
 {
-  m_btn_map.push_back(ButtonMapOption("dpad_up",    "BTN_BASE"));
-  m_btn_map.push_back(ButtonMapOption("dpad_down",  "BTN_BASE2"));
-  m_btn_map.push_back(ButtonMapOption("dpad_left",  "BTN_BASE3"));
-  m_btn_map.push_back(ButtonMapOption("dpad_right", "BTN_BASE4"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_up",    "BTN_BASE"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_down",  "BTN_BASE2"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_left",  "BTN_BASE3"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_right", "BTN_BASE4"));
 
-  m_axis_map.push_back(AxisMapOption("dpad_x", "void"));
-  m_axis_map.push_back(AxisMapOption("dpad_y", "void"));
+  m_axis_map.push_back(AxisMapOption("gamepad.dpad_x", "void"));
+  m_axis_map.push_back(AxisMapOption("gamepad.dpad_y", "void"));
 }
 
 void
 UInputOptions::dpad_only()
 {
-  m_axis_map.push_back(AxisMapOption("x1", "void"));
-  m_axis_map.push_back(AxisMapOption("y1", "void"));
-  m_axis_map.push_back(AxisMapOption("x2", "void"));
-  m_axis_map.push_back(AxisMapOption("y2", "void"));
+  m_axis_map.push_back(AxisMapOption("gamepad.x1", "void"));
+  m_axis_map.push_back(AxisMapOption("gamepad.y1", "void"));
+  m_axis_map.push_back(AxisMapOption("gamepad.x2", "void"));
+  m_axis_map.push_back(AxisMapOption("gamepad.y2", "void"));
 
-  m_axis_map.push_back(AxisMapOption("dpad_x", "ABS_X:-1:1:0:0"));
-  m_axis_map.push_back(AxisMapOption("dpad_y", "ABS_Y:-1:1:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.dpad_x", "ABS_X:-1:1:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.dpad_y", "ABS_Y:-1:1:0:0"));
 }
 
 void
@@ -210,21 +210,21 @@ UInputOptions::guitar()
   get_btn_map().clear();
   get_axis_map().clear();
 
-  m_btn_map.push_back(ButtonMapOption("start", "BTN_START"));
-  m_btn_map.push_back(ButtonMapOption("guide", "BTN_MODE"));
-  m_btn_map.push_back(ButtonMapOption("back", "BTN_SELECT"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.start", "BTN_START"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.guide", "BTN_MODE"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.back", "BTN_SELECT"));
 
-  m_btn_map.push_back(ButtonMapOption("a", "BTN_0"));  // green 
-  m_btn_map.push_back(ButtonMapOption("b", "BTN_1"));  // red
-  m_btn_map.push_back(ButtonMapOption("y", "BTN_2"));  // blue
-  m_btn_map.push_back(ButtonMapOption("x", "BTN_3"));  // yellow
-  m_btn_map.push_back(ButtonMapOption("lb", "BTN_4")); // orange
+  m_btn_map.push_back(ButtonMapOption("gamepad.a", "BTN_0"));  // green 
+  m_btn_map.push_back(ButtonMapOption("gamepad.b", "BTN_1"));  // red
+  m_btn_map.push_back(ButtonMapOption("gamepad.y", "BTN_2"));  // blue
+  m_btn_map.push_back(ButtonMapOption("gamepad.x", "BTN_3"));  // yellow
+  m_btn_map.push_back(ButtonMapOption("gamepad.lb", "BTN_4")); // orange
 
-  m_axis_map.push_back(AxisMapOption("x2", "ABS_X:-32768:32767:0:0")); // whammy
-  m_axis_map.push_back(AxisMapOption("y2", "ABS_Y:-32768:32767:0:0")); // tilt
+  m_axis_map.push_back(AxisMapOption("gamepad.x2", "ABS_X:-32768:32767:0:0")); // whammy
+  m_axis_map.push_back(AxisMapOption("gamepad.y2", "ABS_Y:-32768:32767:0:0")); // tilt
 
-  m_axis_map.push_back(AxisMapOption("dpad_x", "ABS_HAT0X:-1:1:0:0"));
-  m_axis_map.push_back(AxisMapOption("dpad_y", "ABS_HAT0Y:-1:1:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.dpad_x", "ABS_HAT0X:-1:1:0:0"));
+  m_axis_map.push_back(AxisMapOption("gamepad.dpad_y", "ABS_HAT0Y:-1:1:0:0"));
 }
 
 /* EOF */

@@ -160,6 +160,8 @@ Modifier::from_string(const std::string& name, const std::string& value)
       throw std::runtime_error("unknown modifier: " + name);
     }
   }
+
+  throw std::runtime_error("unknown modifier: " + name);
 }
 
   /* EOF */

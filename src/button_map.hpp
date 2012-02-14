@@ -33,19 +33,21 @@ class UInput;
 class ButtonMap
 {
 private:
-  ButtonCombinationMap<ButtonEventPtr> m_map;
   typedef ButtonCombinationMap<ButtonEventPtr> Map;
+  Map m_map;
+
 public:
   ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices);
 
   void init(const ControllerMessageDescriptor& desc);
 
-  /** Bind a combination of multiple buttons to an event (i.e. "LB+A=KEY_A") */
-  void bind(const ButtonCombination& buttons, ButtonEventPtr event);
-
   void send(const std::bitset<256>& button_state);
   void send_clear();
   void update(int msec_delta);
+
+private:
+  /** Bind a combination of multiple buttons to an event (i.e. "LB+A=KEY_A") */
+  void bind(const ButtonCombination& buttons, ButtonEventPtr event);
 };
 
 #endif

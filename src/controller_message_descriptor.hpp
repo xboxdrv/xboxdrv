@@ -23,24 +23,25 @@
 #include <string>
 
 #include "symbol_table.hpp"
+#include "symbols/name.hpp"
 
 class ControllerMessageDescriptor
 {
 private:
-  SymbolTable m_abs;
-  SymbolTable m_key;
-  SymbolTable m_rel;
+  SymbolTable<AbsName> m_abs;
+  SymbolTable<KeyName> m_key;
+  SymbolTable<RelName> m_rel;
 
 public:
   ControllerMessageDescriptor();
 
-  SymbolTable& abs() { return m_abs; }
-  SymbolTable& key() { return m_key; }
-  SymbolTable& rel() { return m_rel; }
+  SymbolTable<AbsName>& abs() { return m_abs; }
+  SymbolTable<KeyName>& key() { return m_key; }
+  SymbolTable<RelName>& rel() { return m_rel; }
 
-  const SymbolTable& abs() const { return m_abs; }
-  const SymbolTable& key() const { return m_key; }
-  const SymbolTable& rel() const { return m_rel; }
+  const SymbolTable<AbsName>& abs() const { return m_abs; }
+  const SymbolTable<KeyName>& key() const { return m_key; }
+  const SymbolTable<RelName>& rel() const { return m_rel; }
 
   int get_key_count() const { return m_key.size(); }
   int get_abs_count() const { return m_abs.size(); }

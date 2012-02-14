@@ -1,6 +1,33 @@
 ---
 - name: 'gamepad'
   aliases: ['gp']
+  abs:
+    - name: 'x1'
+
+    - name: 'y1'
+
+    - name: 'x2'
+
+    - name: 'y2'
+
+    - name: 'lt'
+
+    - name: 'rt'
+
+    - name: 'a'
+
+    - name: 'y'
+
+    - name: 'x'
+
+    - name: 'b'
+
+    - name: 'lb'
+      aliases: ['white']
+
+    - name: 'rb'
+      aliases: ['black']
+    
   key:
     - name:  'a'
       evdev: 'BTN_A'
@@ -25,29 +52,28 @@
     # menu button
     - name:    'start'
       evdev:   'BTN_START'
-      aliases: ['xbox.start', 'playstation.start', 'nintendo.start']
     
     - name:    'select'
       evdev:   'BTN_SELECT'
-      aliases: ['xbox.back', 'playstation.select', 'nintendo.select']
     
     - name:    'guide'
       evdev:   'BTN_MODE'
-      aliases: ['xbox.guide', 'playstation.ps']
     
     # shoulder buttons
     - name:    'l1'
+      aliases: ['lb']
       evdev:   'BTN_TL'
-      aliases: ['xbox.lb', 'xbox.white', 'playstation.l1', 'nintendo.zl']
     
     - name:    'r1'
-      evdev:   'BTN_TL'
-      aliases: ['xbox.rb', 'xbox.black', 'nintendo.zr']
+      aliases: ['rb']
+      evdev:   'BTN_TR'
     
     - name:    'l2'
+      aliases: ['lt']
       evdev:   'BTN_TL2'
     
     - name:    'r2'
+      aliases: ['rt']
       evdev:   'BTN_TR2'
     
     # thumb sticks

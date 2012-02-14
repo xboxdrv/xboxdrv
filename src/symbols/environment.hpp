@@ -31,64 +31,12 @@ private:
   Namespaces m_namespaces;
 
 public:
-  Environment() :
-    m_namespaces()
-  {
-  }
+  Environment();
 
-  NamespacePtr lookup_namespace(const std::string& ns)
-  {
-    Namespaces::iterator it = m_namespaces.find(ns);
-    if (it == m_namespaces.end())
-    {
-      return NamespacePtr();
-    }    
-    else
-    {
-      return it->second;
-    }
-  }
-
-  SymbolPtr lookup_symbol(const std::string& ns, const std::string& symbol)
-  {
-    Namespaces::iterator it = m_namespaces.find(ns);
-    if (it == m_namespaces.end())
-    {
-      return SymbolPtr();
-    }
-    else
-    {
-      return it->second->lookup(symbol);
-    }
-  }
-
-  NamespacePtr add_namespace(const std::string& name)
-  {
-    Namespaces::iterator it = m_namespaces.find(name);
-    if (it != m_namespaces.end())
-    {
-      raise_exception(std::runtime_error, "name conflict for symbol: " << name);
-    }
-    else
-    {
-      NamespacePtr ns(new Namespace(name));
-      m_namespaces[name] = ns;
-      return ns;
-    }
-  }
-
-  void add_namespace_alias(const std::string& name, NamespacePtr ns)
-  {
-    Namespaces::iterator it = m_namespaces.find(name);
-    if (it != m_namespaces.end())
-    {
-      raise_exception(std::runtime_error, "name conflict for symbol: " << name);
-    }
-    else
-    {
-      m_namespaces[name] = ns;
-    }
-  }
+  NamespacePtr lookup_namespace(const std::string& ns);
+  SymbolPtr lookup_symbol(const std::string& ns, const std::string& symbol);
+  NamespacePtr add_namespace(const std::string& name);
+  void add_namespace_alias(const std::string& name, NamespacePtr ns);
 
 private:
   Environment(const Environment&);

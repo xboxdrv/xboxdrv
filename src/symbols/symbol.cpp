@@ -21,13 +21,37 @@
 
 Symbol::Symbol(Namespace& ns, const std::string& name) :
   m_namespace(ns),
-  m_name(name)
+  m_name(name),
+  m_provides()
 {}
+
+bool
+Symbol::match(SymbolPtr sym) const
+{
+  if (this == sym.get())
+  {
+    return true;
+  }
+  else
+  {
+    for(std::vector<Symbol*>::const_iterator it = m_provides.begin();
+        it != m_provides.end();
+        ++it)
+    {
+      if (*it == sym.get())
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+}
 
 void
 Symbol::add_provides(SymbolPtr sym)
 {
-  // FIXME: implement me
+  m_provides.push_back(sym.get());
 }
 
 std::string

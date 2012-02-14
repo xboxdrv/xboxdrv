@@ -20,7 +20,7 @@
 
 #include "controller_message_descriptor.hpp"
 
-Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& msg_desc) :
+Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& desc) :
   btn_a(-1),
   btn_b(-1),
   btn_x(-1),
@@ -56,43 +56,44 @@ Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& msg_desc) 
     return XBOX_AXIS_TRIGGER;
 #endif
 
-  btn_a = msg_desc.key().put("a", "cross", "1", "green");
-  btn_b = msg_desc.key().put("b", "circle", "2", "red");
-  btn_x = msg_desc.key().put("x", "square", "3", "blue");
-  btn_y = msg_desc.key().put("y", "triangle", "4", "yellow");
+  btn_a = desc.key().put(KeyName("xbox.a"));
+  btn_b = desc.key().put(KeyName("xbox.b"));
+  btn_x = desc.key().put(KeyName("xbox.x"));
+  btn_y = desc.key().put(KeyName("xbox.y"));
 
-  btn_start = msg_desc.key().put("start");
-  btn_guide = msg_desc.key().put("guide", "ps");
-  btn_back  = msg_desc.key().put("back", "select");
+  btn_start = desc.key().put(KeyName("xbox.start"));
+  btn_guide = desc.key().put(KeyName("xbox.guide"));
+  btn_back  = desc.key().put(KeyName("xbox.back"));
 
-  btn_lb = msg_desc.key().put("lb", "white", "l1", "orange", "5");
-  btn_rb = msg_desc.key().put("rb", "black", "r1", "6");
+  btn_lb = desc.key().put(KeyName("xbox.lb"));
+  btn_rb = desc.key().put(KeyName("xbox.rb"));
 
-  btn_lt = msg_desc.key().put("lt", "7", "l2");
-  btn_rt = msg_desc.key().put("rt", "7", "l2");
+  btn_lt = desc.key().put(KeyName("xbox.lt"));
+  btn_rt = desc.key().put(KeyName("xbox.rt"));
 
-  btn_thumb_l = msg_desc.key().put("tl", "thumbl", "l3");
-  btn_thumb_r = msg_desc.key().put("tr", "thumbr", "r3");
+  btn_thumb_l = desc.key().put(KeyName("xbox.thumb_l"));
+  btn_thumb_r = desc.key().put(KeyName("xbox.thumb_r"));
 
-  dpad_up    = msg_desc.key().put("du", "dpad_up", "up");
-  dpad_down  = msg_desc.key().put("dd", "dpad_down", "down");
-  dpad_left  = msg_desc.key().put("dl", "dpad_left", "left");
-  dpad_right = msg_desc.key().put("dr", "dpad_right", "right");
+  dpad_up    = desc.key().put(KeyName("xbox.dpad_up"));
+  dpad_down  = desc.key().put(KeyName("xbox.dpad_down"));
+  dpad_left  = desc.key().put(KeyName("xbox.dpad_left"));
+  dpad_right = desc.key().put(KeyName("xbox.dpad_right"));
 
-  abs_x1 = msg_desc.abs().put("x1");
-  abs_y1 = msg_desc.abs().put("y1");
-  abs_x2 = msg_desc.abs().put("x2", "whammy");
-  abs_y2 = msg_desc.abs().put("y2", "tilt");
+  abs_x1 = desc.abs().put(AbsName("xbox.x1"));
+  abs_y1 = desc.abs().put(AbsName("xbox.y1"));
+  abs_x2 = desc.abs().put(AbsName("xbox.x2"));
+  abs_y2 = desc.abs().put(AbsName("xbox.y2"));
 
-  abs_lt = msg_desc.abs().put("lt", "7", "l2");
-  abs_rt = msg_desc.abs().put("rt", "8", "r2");
+  abs_lt = desc.abs().put(AbsName("xbox.lt"));
+  abs_rt = desc.abs().put(AbsName("xbox.rt"));
 
-  abs_a = msg_desc.abs().put("a", "cross");
-  abs_b = msg_desc.abs().put("b", "circle");
-  abs_x = msg_desc.abs().put("x", "square");
-  abs_y = msg_desc.abs().put("y", "triangle");
-  abs_black = msg_desc.abs().put("black");
-  abs_white = msg_desc.abs().put("white");
+  abs_a = desc.abs().put(AbsName("xbox.a"));
+  abs_b = desc.abs().put(AbsName("xbox.b"));
+  abs_x = desc.abs().put(AbsName("xbox.x"));
+  abs_y = desc.abs().put(AbsName("xbox.y"));
+
+  abs_black = desc.abs().put(AbsName("xbox.black"));
+  abs_white = desc.abs().put(AbsName("xbox.white"));
 }
 
 /* EOF */

@@ -25,16 +25,16 @@
 class ButtonMapOption
 {
 private:
-  std::string m_button;
+  std::string m_combo;
   std::vector<std::string> m_filter;
   std::string m_event;
   std::string m_directory;
   
 public:
-  ButtonMapOption(const std::string& button,
+  ButtonMapOption(const std::string& combo,
                   const std::string& event,
                   const std::string& directory = std::string()) :
-    m_button(button),
+    m_combo(combo),
     m_filter(),
     m_event(event),
     m_directory(directory)
@@ -45,7 +45,7 @@ public:
     m_filter.push_back(filter);
   }
 
-  const std::string& get_button() const { return m_button; }
+  const std::string& get_combo() const { return m_combo; }
   const std::vector<std::string>& get_filter() const { return m_filter; }
   const std::string& get_event() const { return m_event; }
   const std::string& get_directory() const { return m_directory; }

@@ -26,7 +26,7 @@
 ButtonCombination
 ButtonCombination::from_string(const std::string& str)
 {
-  if (str == "void")
+  if (str.empty() || str == "void")
   {
     return ButtonCombination();
   }

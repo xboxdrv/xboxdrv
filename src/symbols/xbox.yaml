@@ -20,6 +20,24 @@
     - name: 'rt'
       provides: ['gamepad.rt']
 
+    - name: 'a'
+      provides: ['gamepad.a']
+
+    - name: 'y'
+      provides: ['gamepad.y']
+
+    - name: 'x'
+      provides: ['gamepad.x']
+
+    - name: 'b'
+      provides: ['gamepad.b']
+
+    - name: 'white'
+      provides: ['gamepad.lb']
+
+    - name: 'black'
+      provides: ['gamepad.rb']
+
   key:
     - name: 'a'
       provides: ['gamepad.a']
@@ -34,9 +52,11 @@
       provides: ['gamepad.b']
 
     - name: 'lb'
+      aliases:  ['white']
       provides: ['gamepad.lb']
 
     - name: 'rb'
+      aliases:  ['black']
       provides: ['gamepad.rb']
 
     - name: 'lt'
@@ -46,9 +66,11 @@
       provides: ['gamepad.rt']
 
     - name: 'thumb_l'
+      aliases: 'tl'
       provides: ['gamepad.thumb_l']
 
     - name: 'thumb_r'
+      aliases: 'tr'
       provides: ['gamepad.thumb_r']
 
     - name: 'start'
@@ -56,4 +78,19 @@
 
     - name: 'back'
       provides: ['gamepad.select']
+
+    - name: 'guide'
+      provides: ['gamepad.guide']
+
+    - name:    'dpad_up'
+      aliases: ['du']
+    
+    - name:    'dpad_down'
+      aliases: ['dd']
+    
+    - name:    'dpad_left'
+      aliases: ['dl']
+    
+    - name:    'dpad_right'
+      aliases: ['dr']
 ...

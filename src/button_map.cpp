@@ -25,12 +25,44 @@
 ButtonMap::ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices) :
   m_map()
 {
+#if 0
+  // sort the ButtonMapOption
+  std::vector<ButtonMapOption> unbound;
+  std::map<ButtonCombination, ButtonMapOption> bound;
+  for(ButtonMapOptions::const_iterator it = opts.begin(); it != opts.end(); ++it)
+  {
+    ButtonCombination combo(it->get_combo());
+    if (combo.empty())
+    {
+      // unbound emitter
+      unbound.push_back(*it);
+    }
+    else
+    {
+      if (it->get_event().empty())
+      {
+        // empty right hand side, thus add filter to existing binding
+        bound[combo] = *it;
+      }
+      else if (it->get_event() == "void")
+      {
+        // clear existing binding
+        bound.erase(combo);
+      }
+      else
+      {
+        bound[combo] = *it;
+      }
+    }
+  }
+#endif
+
   ButtonEventFactory button_event_factory(uinput, slot, extra_devices);
 
   // BROKEN: Events must not be overriden after creation, as that messes up UInput
   for(ButtonMapOptions::const_iterator it = opts.begin(); it != opts.end(); ++it)
   {
-    ButtonCombination buttons = ButtonCombination::from_string(it->get_button());
+    ButtonCombination buttons = ButtonCombination::from_string(it->get_combo());
 
     ButtonEventPtr event;
     if (it->get_event().empty())

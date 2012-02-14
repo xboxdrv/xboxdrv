@@ -47,12 +47,12 @@ public:
 
   bool operator==(const ButtonCombination&) const;
 
-private:
-  bool has_button(int button) const;
-
   int size() const;
 
   bool empty() const;
+
+private:
+  bool has_button(int button) const;
 
 private:
   typedef std::vector<std::string> ButtonsStr;

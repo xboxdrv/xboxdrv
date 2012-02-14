@@ -74,6 +74,7 @@ ControllerThread::on_message(const ControllerMessage& msg)
 {
   if (m_print_messages)
   {
+    std::cout << "msg: ";
     format_generic(std::cout, msg, m_controller->get_message_descriptor()) << std::endl;
   }
 

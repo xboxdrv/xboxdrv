@@ -21,6 +21,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <sstream>
+#include <vector>
 
 class Namespace;
 class Symbol;
@@ -32,10 +33,12 @@ class Symbol
 private:
   Namespace& m_namespace;
   std::string m_name;
+  std::vector<Symbol*> m_provides;
 
 public:
   Symbol(Namespace& ns, const std::string& name);
 
+  bool match(SymbolPtr sym) const;
   void add_provides(SymbolPtr sym);
 
   std::string get_namespace() const;
