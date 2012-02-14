@@ -152,4 +152,8 @@
   add(ABS_MT_PRESSURE, "ABS_MT_PRESSURE");
 #endif
 
+#ifdef ABS_MT_DISTANCE
+  add(ABS_MT_DISTANCE, "ABS_MT_DISTANCE");
+#endif
+
 /* EOF */
