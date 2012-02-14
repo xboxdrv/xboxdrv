@@ -5,59 +5,59 @@
 ui-clear=true
 
 [ui-buttonmap]
-up=KEY_UP
-left=KEY_LEFT
-right=KEY_RIGHT
-down=KEY_DOWN 
-q=KEY_PAGEUP
-e=KEY_PAGEDOWN
+crux.up=KEY_UP
+crux.left=KEY_LEFT
+crux.right=KEY_RIGHT
+crux.down=KEY_DOWN 
+crux.q=KEY_PAGEUP
+crux.e=KEY_PAGEDOWN
 
-# n1=KEY_1
-# n2=KEY_2
-# n3=KEY_3
-# n4=KEY_4
-# n5=KEY_5
-# n6=KEY_6
-# n7=KEY_7
-# n8=KEY_8
-# n9=KEY_9
+# crux.n1=KEY_1
+# crux.n2=KEY_2
+# crux.n3=KEY_3
+# crux.n4=KEY_4
+# crux.n5=KEY_5
+# crux.n6=KEY_6
+# crux.n7=KEY_7
+# crux.n8=KEY_8
+# crux.n9=KEY_9
 
-escape=KEY_LEFTCTRL+XK_w # close tab
-reload=KEY_F5
-use=KEY_ENTER
-c3=KEY_LEFTCTRL+XK_k # search bar
-c4=KEY_LEFTCTRL+XK_l # location bar
-tab=KEY_LEFTCTRL+XK_t # new tab
-run=KEY_LEFTCTRL
-crouch=KEY_LEFTALT
+crux.escape=KEY_LEFTCTRL+XK_w # close tab
+crux.reload=KEY_F5 # reload
+crux.use=KEY_ENTER
+crux.c3=KEY_LEFTCTRL+XK_k # search bar
+crux.c4=KEY_LEFTCTRL+XK_l # location bar
+crux.tab=KEY_LEFTCTRL+XK_t # new tab
+crux.run=KEY_LEFTCTRL
+crux.crouch=KEY_LEFTALT
 
-run+up=KEY_HOME
-run+down=KEY_END
+crux.run+crux.up=KEY_HOME
+crux.run+crux.down=KEY_END
 
-p1=KEY_FORWARD
-p2=KEY_BACK
+crux.p1=KEY_FORWARD
+crux.p2=KEY_BACK
 
-space=KEY_BACK
-n=KEY_FORWARD
+crux.space=KEY_BACK
+crux.n=KEY_FORWARD
 
-option=KEY_F11
+crux.option=KEY_F11
 
-c6=KEY_HOME
-c7=KEY_END
+crux.c6=KEY_HOME
+crux.c7=KEY_END
 
-n11=KEY_LEFTCTRL+XK_equal
-n6=KEY_LEFTCTRL+XK_minus
+crux.n11=KEY_LEFTCTRL+XK_equal
+crux.n6=KEY_LEFTCTRL+XK_minus
 
-n10=KEY_LEFTCTRL+KEY_LEFTSHIFT+XK_equal
-n5=KEY_LEFTCTRL+KEY_LEFTSHIFT+XK_minus
+crux.n10=KEY_LEFTCTRL+KEY_LEFTSHIFT+XK_equal
+crux.n5=KEY_LEFTCTRL+KEY_LEFTSHIFT+XK_minus
 
-n1=qmacro:www.youtube.com
-n2=qmacro:www.slashdot.com
-n3=qmacro:mail.google.com
-n4=qmacro:www.heise.de
+crux.n1=qmacro:www.youtube.com
+crux.n2=qmacro:www.slashdot.com
+crux.n3=qmacro:mail.google.com
+crux.n4=qmacro:www.heise.de
 
-n7=qmacro:www.reddit.com
-n8=qmacro:123
-n9=
+crux.n7=qmacro:www.reddit.com
+crux.n8=qmacro:123
+crux.n9=
 
 # EOF #
