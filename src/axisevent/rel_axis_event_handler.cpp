@@ -63,13 +63,12 @@ RelAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
   }
 
   return new RelAxisEventHandler(uinput, slot, extra_devices, 
-                                 code.get_device_id(), code.code,
-                                 repeat, value);
+                                 code, repeat, value);
 }
 
 RelAxisEventHandler::RelAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
-                                         int device_id, int code, int repeat, float value) :
-  m_code(UIEvent::create(static_cast<uint16_t>(device_id), EV_REL, code)),
+                                         const UIEvent& code, int repeat, float value) :
+  m_code(code),
   m_value(value),
   m_repeat(repeat),
   m_stick_value(0.0f),
