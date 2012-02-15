@@ -292,20 +292,6 @@ Xboxdrv::run_list_enums(uint32_t enums)
     wrap.para("  ", boost::algorithm::join(lst, ", "));
     wrap.newline();
   }
-  
-  if (enums & Options::LIST_AXIS)
-  {
-    wrap.println("XboxAxis:");
-    // BROKEN
-    wrap.newline();
-  }
-  
-  if (enums & Options::LIST_BUTTON)
-  {
-    wrap.println("XboxButton:");
-    // BROKEN
-    wrap.newline();
-  }
 }
 
 Xboxdrv::Xboxdrv()

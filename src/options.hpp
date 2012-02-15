@@ -49,9 +49,7 @@ public:
     LIST_ABS       = (1<<0),
     LIST_REL       = (1<<1),
     LIST_KEY       = (1<<2),
-    LIST_X11KEYSYM = (1<<3),
-    LIST_AXIS      = (1<<4),
-    LIST_BUTTON    = (1<<5)
+    LIST_X11KEYSYM = (1<<3)
   };
 
   enum Priority {

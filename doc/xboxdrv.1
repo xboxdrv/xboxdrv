@@ -5,7 +5,7 @@
 \\$2 \(la\\$1\(ra\\$3
 ..
 .if \n(.g .mso www.tmac
-.TH "xboxdrv " 1 "23 August 2011" 0.9.0 "User Commands"
+.TH "xboxdrv " 1 "15 February 2012" 0.9.0 "User Commands"
 .SH NAME
 xboxdrv
 \- A Xbox/Xbox360 gamepad driver that works in userspace 
@@ -113,22 +113,14 @@ List all allowed EV_KEY symbols.
 \*(T<\fB\-\-help\-x11keysym\fR\*(T>
 List all allowed X11 Keysym symbols.
 .TP 
-\*(T<\fB\-\-help\-axis\fR\*(T>
-List all allowed XboxAxis symbols.
-.TP 
-\*(T<\fB\-\-help\-button\fR\*(T>
-List all allowed XboxButton symbols.
-.TP 
 \*(T<\fB\-\-help\-all\fR\*(T>
 List all symbols that can be used
 in \*(T<\fB\-\-ui\-buttonmap\fR\*(T>, \*(T<\fB\-\-ui\-axismap\fR\*(T>, \*(T<\fB\-\-buttonmap\fR\*(T>
 and \*(T<\fB\-\-axismap\fR\*(T>. This option is the same as
 \*(T<\fB\-\-help\-abs\fR\*(T>,
 \*(T<\fB\-\-help\-rel\fR\*(T>,
-\*(T<\fB\-\-help\-key\fR\*(T>,
-\*(T<\fB\-\-help\-x11keysym\fR\*(T>,
-\*(T<\fB\-\-help\-axis\fR\*(T> and
-\*(T<\fB\-\-help\-button\fR\*(T>.
+\*(T<\fB\-\-help\-key\fR\*(T> and
+\*(T<\fB\-\-help\-x11keysym\fR\*(T>.
 .SS "CONFIG FILE OPTIONS"
 .TP 
 \*(T<\fB\-c\fR\*(T>, \*(T<\fB\-\-config\fR\*(T> \fIFILE\fR
@@ -248,6 +240,19 @@ if \*(T<\fB\-\-daemon\fR\*(T> is given.
 .TP 
 \*(T<\fB\-\-pid\-file\fR\*(T> \fIFILE\fR
 Write the xboxdrv daemon process id to FILE.
+.TP 
+\*(T<\fB\-\-dbus\fR\*(T> \fIBUS\fR
+Set which bus type xboxdrv should connect to. Allowed
+values for BUS are session,
+system,
+disabled and
+auto. The default is
+auto, which will detect the
+appropriate bus type depending on if xboxdrv is run as
+root (system or as user
+(session). Running with
+disabled will disable D-Bus support
+completely.
 .TP 
 \*(T<\fB\-\-on\-connect\fR\*(T> \fIEXE\fR
 Launches \fIEXE\fR
@@ -600,6 +605,15 @@ to get rid of.
 When using xboxdrv in daemon mode with multiple
 controller slots you have to enable force feedback for
 each slot separately.
+.TP 
+\*(T<\fB\-\-ff\-device\fR\*(T> \fIDEVICEID\fR
+Select to which virtual device the force-feedback
+callbacks will be connected to, it defaults to
+joystick. Other allowed values are
+mouse,
+keyboard and any integer number.
+See \*(T<\fB\-\-ui\-buttonmap\fR\*(T> for further
+information on how device-ids work.
 .TP 
 \*(T<\fB\-R\fR\*(T>, \*(T<\fB\-\-test\-rumble\fR\*(T>
 Pressing LT will move the left rumble motor and pressing

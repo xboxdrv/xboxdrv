@@ -142,8 +142,6 @@ enum {
   OPTION_LIST_REL,
   OPTION_LIST_KEY,
   OPTION_LIST_X11KEYSYM,
-  OPTION_LIST_AXIS,
-  OPTION_LIST_BUTTON,
   OPTION_DAEMON_ON_CONNECT,
   OPTION_DAEMON_ON_DISCONNECT
 };
@@ -185,8 +183,6 @@ CommandLineParser::init_argp()
     .add_option(OPTION_LIST_REL,       0, "help-rel",       "", "list all possible EV_REL names")
     .add_option(OPTION_LIST_KEY,       0, "help-key",       "", "list all possible EV_KEY names")
     .add_option(OPTION_LIST_X11KEYSYM, 0, "help-x11keysym", "", "list all possible X11KeySym")
-    .add_option(OPTION_LIST_AXIS,      0, "help-axis",      "", "list all possible XboxAxis")
-    .add_option(OPTION_LIST_BUTTON,    0, "help-button",    "", "list all possible XboxButton")
     .add_option(OPTION_LIST_ALL,       0, "help-all",       "", "list all symbols above")
     .add_newline()
 
@@ -998,16 +994,6 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
       case OPTION_LIST_X11KEYSYM:
         opts.mode = Options::PRINT_ENUMS;
         opts.list_enums |= Options::LIST_X11KEYSYM;
-        break;
-
-      case OPTION_LIST_AXIS:
-        opts.mode = Options::PRINT_ENUMS;
-        opts.list_enums |= Options::LIST_AXIS;
-        break;
-
-      case OPTION_LIST_BUTTON:
-        opts.mode = Options::PRINT_ENUMS;
-        opts.list_enums |= Options::LIST_BUTTON;
         break;
 
       case ArgParser::REST_ARG:

@@ -228,24 +228,6 @@
         </varlistentry>
 
         <varlistentry>
-          <term><option>--help-axis</option></term>
-          <listitem>
-            <para>
-              List all allowed XboxAxis symbols.
-            </para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
-          <term><option>--help-button</option></term>
-          <listitem>
-            <para>
-              List all allowed XboxButton symbols.
-            </para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry>
           <term><option>--help-all</option></term>
           <listitem>
             <para>
@@ -254,10 +236,8 @@
               and <option>--axismap</option>. This option is the same as
               <option>--help-abs</option>,
               <option>--help-rel</option>,
-              <option>--help-key</option>,
-              <option>--help-x11keysym</option>,
-              <option>--help-axis</option> and
-              <option>--help-button</option>.
+              <option>--help-key</option> and
+              <option>--help-x11keysym</option>.
             </para>
           </listitem>
         </varlistentry>
