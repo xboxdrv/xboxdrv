@@ -41,22 +41,6 @@ AxisEventFactory::invalid()
 { 
   return AxisEventPtr();
 }
-
-AxisEventPtr
-AxisEventFactory::create_abs(int device_id, int code, int min, int max, int fuzz, int flat)
-{
-  return AxisEventPtr(new AxisEvent(new AbsAxisEventHandler(m_uinput, m_slot, m_extra_devices,
-                                                            UIEvent::create(static_cast<uint16_t>(device_id),
-                                                                            EV_ABS, code),
-                                                            min, max, fuzz, flat)));
-}
-
-AxisEventPtr
-AxisEventFactory::create_rel(int device_id, int code, int repeat, float value)
-{
-  return AxisEventPtr(new AxisEvent(new RelAxisEventHandler(m_uinput, m_slot, m_extra_devices,
-                                                            device_id, code, repeat, value)));
-}
   
 AxisEventPtr
 AxisEventFactory::from_string(const std::string& str)
