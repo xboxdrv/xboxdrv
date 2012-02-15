@@ -1,0 +1,24 @@
+# Space Navigator Mouse Emulation
+# ===============================
+
+[xboxdrv]
+evdev = /dev/input/by-id/usb-3Dconnexion_SpaceNavigator-event-joystick
+ui-clear = true
+
+[keymap]
+evdev.BTN_0^delay:100=key:BTN_RIGHT
+evdev.BTN_1^delay:100=key:BTN_LEFT
+evdev.BTN_0+evdev.BTN_1=key:BTN_MIDDLE
+
+[absmap]
+# mouse via rotation
+# evdev.ABS_RY=rel:REL_X:-2000:-1
+# evdev.ABS_RX=rel:REL_Y:2000:-1
+
+# mouse via translation
+evdev.ABS_X=rel:REL_X:2000:-1
+evdev.ABS_Y=rel:REL_Y:2000:-1
+
+# evdev.ABS_Z=key:BTN_LEFT:0.2
+
+# EOF #
