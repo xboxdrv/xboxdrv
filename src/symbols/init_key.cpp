@@ -52,6 +52,2022 @@ void init_environment_key(EnvironmentPtr env)
     }
   }
   {
+    NamespacePtr ns = env->add_namespace("evdev");
+    env->add_namespace_alias("ev", ns);
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY38");
+      ns->add_alias("KEY_#741", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FRAMEFORWARD");
+      ns->add_alias("KEY_#437", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PAUSECD");
+      ns->add_alias("KEY_#201", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY39");
+      ns->add_alias("KEY_#742", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CLEAR");
+      ns->add_alias("KEY_#355", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_LEFTSHIFT");
+      ns->add_alias("KEY_#42", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SCREEN");
+      ns->add_alias("KEY_#375", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_GAMES");
+      ns->add_alias("KEY_#417", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_LEFTALT");
+      ns->add_alias("KEY_#56", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_MIDDLE");
+      ns->add_alias("KEY_#274", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FRONT");
+      ns->add_alias("KEY_#132", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_BACK");
+      ns->add_alias("KEY_#278", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MHP");
+      ns->add_alias("KEY_#367", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_HOME");
+      ns->add_alias("KEY_#102", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DOCUMENTS");
+      ns->add_alias("KEY_#235", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SLOW");
+      ns->add_alias("KEY_#409", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SAT2");
+      ns->add_alias("KEY_#382", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MP3");
+      ns->add_alias("KEY_#391", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SENDFILE");
+      ns->add_alias("KEY_#145", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRL_DOT1");
+      ns->add_alias("KEY_#497", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_S");
+      ns->add_alias("KEY_#483", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_WLAN");
+      ns->add_alias("KEY_#238", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CALC");
+      ns->add_alias("KEY_#140", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_LEFT");
+      ns->add_alias("KEY_#105", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_EURO");
+      ns->add_alias("KEY_#435", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DIRECTORY");
+      ns->add_alias("KEY_#394", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRL_DOT2");
+      ns->add_alias("KEY_#498", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DELETE");
+      ns->add_alias("KEY_#111", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PAUSE");
+      ns->add_alias("KEY_#119", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PASTE");
+      ns->add_alias("KEY_#135", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TASK");
+      ns->add_alias("KEY_#279", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DOWN");
+      ns->add_alias("KEY_#108", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRL_DOT3");
+      ns->add_alias("KEY_#499", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRL_DOT4");
+      ns->add_alias("KEY_#500", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PLAYCD");
+      ns->add_alias("KEY_#200", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MEDIA_REPEAT");
+      ns->add_alias("KEY_#439", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRL_DOT5");
+      ns->add_alias("KEY_#501", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NEXTSONG");
+      ns->add_alias("KEY_#163", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PLAY");
+      ns->add_alias("KEY_#207", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BOOKMARKS");
+      ns->add_alias("KEY_#156", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRIGHTNESS_ZERO");
+      ns->add_alias("KEY_#244", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CAMERA_UP");
+      ns->add_alias("KEY_#535", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRL_DOT6");
+      ns->add_alias("KEY_#502", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_VENDOR");
+      ns->add_alias("KEY_#360", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRL_DOT7");
+      ns->add_alias("KEY_#503", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRL_DOT8");
+      ns->add_alias("KEY_#504", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRL_DOT9");
+      ns->add_alias("KEY_#505", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SELECT");
+      ns->add_alias("KEY_#353", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_ZOOM");
+      ns->add_alias("KEY_#372", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_WHEEL");
+      ns->add_alias("KEY_#336", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SEARCH");
+      ns->add_alias("KEY_#217", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_LIST");
+      ns->add_alias("KEY_#395", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KBDILLUMDOWN");
+      ns->add_alias("KEY_#229", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_APOSTROPHE");
+      ns->add_alias("KEY_#40", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_VOICEMAIL");
+      ns->add_alias("KEY_#428", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_WWW");
+      ns->add_alias("KEY_#150", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PROGRAM");
+      ns->add_alias("KEY_#362", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TL2");
+      ns->add_alias("KEY_#312", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MODE");
+      ns->add_alias("KEY_#373", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_EJECTCD");
+      ns->add_alias("KEY_#161", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY10");
+      ns->add_alias("KEY_#713", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_PEN");
+      ns->add_alias("KEY_#320", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY11");
+      ns->add_alias("KEY_#714", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SHUFFLE");
+      ns->add_alias("KEY_#410", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DIGITS");
+      ns->add_alias("KEY_#413", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_ZOOMOUT");
+      ns->add_alias("KEY_#419", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_REFRESH");
+      ns->add_alias("KEY_#173", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY12");
+      ns->add_alias("KEY_#715", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_VIDEOPHONE");
+      ns->add_alias("KEY_#416", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DASHBOARD");
+      ns->add_alias("KEY_#204", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SCROLLLOCK");
+      ns->add_alias("KEY_#70", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_TRIPLETAP");
+      ns->add_alias("KEY_#334", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY13");
+      ns->add_alias("KEY_#716", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TUNER");
+      ns->add_alias("KEY_#386", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SHOP");
+      ns->add_alias("KEY_#221", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FORWARD");
+      ns->add_alias("KEY_#159", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PREVIOUSSONG");
+      ns->add_alias("KEY_#165", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_WAKEUP");
+      ns->add_alias("KEY_#143", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_X");
+      ns->add_alias("KEY_#307", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_THUMB");
+      ns->add_alias("KEY_#289", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY14");
+      ns->add_alias("KEY_#717", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_ZOOMRESET");
+      ns->add_alias("KEY_#420", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_POWER");
+      ns->add_alias("KEY_#116", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_ENTER");
+      ns->add_alias("KEY_#28", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_Y");
+      ns->add_alias("KEY_#308", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_QUESTION");
+      ns->add_alias("KEY_#214", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SLASH");
+      ns->add_alias("KEY_#53", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY15");
+      ns->add_alias("KEY_#718", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_Z");
+      ns->add_alias("KEY_#309", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY16");
+      ns->add_alias("KEY_#719", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_YEN");
+      ns->add_alias("KEY_#124", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RED");
+      ns->add_alias("KEY_#398", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY17");
+      ns->add_alias("KEY_#720", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_REPLY");
+      ns->add_alias("KEY_#232", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY18");
+      ns->add_alias("KEY_#721", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_EXTRA");
+      ns->add_alias("KEY_#276", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TAPE");
+      ns->add_alias("KEY_#384", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_PENCIL");
+      ns->add_alias("KEY_#323", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CONFIG");
+      ns->add_alias("KEY_#171", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY19");
+      ns->add_alias("KEY_#722", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SCROLLUP");
+      ns->add_alias("KEY_#177", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_UNKNOWN");
+      ns->add_alias("KEY_#240", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BACKSPACE");
+      ns->add_alias("KEY_#14", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_MISC");
+      ns->add_alias("KEY_#256", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_INFO");
+      ns->add_alias("KEY_#358", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CLOSE");
+      ns->add_alias("KEY_#206", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMERIC_POUND");
+      ns->add_alias("KEY_#523", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_ALTERASE");
+      ns->add_alias("KEY_#222", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KBDILLUMUP");
+      ns->add_alias("KEY_#230", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CALENDAR");
+      ns->add_alias("KEY_#397", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_AGAIN");
+      ns->add_alias("KEY_#129", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PROPS");
+      ns->add_alias("KEY_#130", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_PINKIE");
+      ns->add_alias("KEY_#293", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_EJECTCLOSECD");
+      ns->add_alias("KEY_#162", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SYSRQ");
+      ns->add_alias("KEY_#99", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_LEFTCTRL");
+      ns->add_alias("KEY_#29", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_ZOOMIN");
+      ns->add_alias("KEY_#418", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MENU");
+      ns->add_alias("KEY_#139", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DVD");
+      ns->add_alias("KEY_#389", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_WORDPROCESSOR");
+      ns->add_alias("KEY_#421", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TWEN");
+      ns->add_alias("KEY_#415", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RESTART");
+      ns->add_alias("KEY_#408", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DATABASE");
+      ns->add_alias("KEY_#426", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_10CHANNELSUP");
+      ns->add_alias("KEY_#440", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_STOPCD");
+      ns->add_alias("KEY_#166", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY1");
+      ns->add_alias("KEY_#704", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CHANNELUP");
+      ns->add_alias("KEY_#402", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PRINT");
+      ns->add_alias("KEY_#210", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_WIMAX");
+      ns->add_alias("KEY_#246", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_OK");
+      ns->add_alias("KEY_#352", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY2");
+      ns->add_alias("KEY_#705", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PREVIOUS");
+      ns->add_alias("KEY_#412", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_VCR");
+      ns->add_alias("KEY_#379", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CUT");
+      ns->add_alias("KEY_#137", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY3");
+      ns->add_alias("KEY_#706", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRIGHTNESS_CYCLE");
+      ns->add_alias("KEY_#243", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_0");
+      ns->add_alias("KEY_#11", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RIGHT");
+      ns->add_alias("KEY_#106", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY4");
+      ns->add_alias("KEY_#707", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_1");
+      ns->add_alias("KEY_#2", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY5");
+      ns->add_alias("KEY_#708", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DEL_EOL");
+      ns->add_alias("KEY_#448", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_2");
+      ns->add_alias("KEY_#3", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TITLE");
+      ns->add_alias("KEY_#369", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KEYBOARD");
+      ns->add_alias("KEY_#374", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FIRST");
+      ns->add_alias("KEY_#404", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TV2");
+      ns->add_alias("KEY_#378", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F10");
+      ns->add_alias("KEY_#475", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_3");
+      ns->add_alias("KEY_#4", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY6");
+      ns->add_alias("KEY_#709", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TOUCHPAD_OFF");
+      ns->add_alias("KEY_#532", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F11");
+      ns->add_alias("KEY_#476", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_4");
+      ns->add_alias("KEY_#5", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SETUP");
+      ns->add_alias("KEY_#141", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY7");
+      ns->add_alias("KEY_#710", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CAMERA_FOCUS");
+      ns->add_alias("KEY_#528", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F12");
+      ns->add_alias("KEY_#477", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_5");
+      ns->add_alias("KEY_#6", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PROG1");
+      ns->add_alias("KEY_#148", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY40");
+      ns->add_alias("KEY_#743", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY8");
+      ns->add_alias("KEY_#711", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_UNDO");
+      ns->add_alias("KEY_#131", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_6");
+      ns->add_alias("KEY_#7", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PROG2");
+      ns->add_alias("KEY_#149", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_REWIND");
+      ns->add_alias("KEY_#168", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY9");
+      ns->add_alias("KEY_#712", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CAMERA_RIGHT");
+      ns->add_alias("KEY_#538", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TEXT");
+      ns->add_alias("KEY_#388", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_7");
+      ns->add_alias("KEY_#8", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PROG3");
+      ns->add_alias("KEY_#202", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_8");
+      ns->add_alias("KEY_#9", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PROG4");
+      ns->add_alias("KEY_#203", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MAIL");
+      ns->add_alias("KEY_#155", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DEL_EOS");
+      ns->add_alias("KEY_#449", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_MODE");
+      ns->add_alias("KEY_#316", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_HENKAN");
+      ns->add_alias("KEY_#92", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_9");
+      ns->add_alias("KEY_#10", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_YELLOW");
+      ns->add_alias("KEY_#400", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_THUMB2");
+      ns->add_alias("KEY_#290", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOUCH");
+      ns->add_alias("KEY_#330", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MIN_INTERESTING");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_STYLUS");
+      ns->add_alias("KEY_#331", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CHANNELDOWN");
+      ns->add_alias("KEY_#403", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SLEEP");
+      ns->add_alias("KEY_#142", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TOUCHPAD_TOGGLE");
+      ns->add_alias("KEY_#530", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CD");
+      ns->add_alias("KEY_#383", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SAT");
+      ns->add_alias("KEY_#381", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DISPLAYTOGGLE");
+      ns->add_alias("KEY_#431", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TV");
+      ns->add_alias("KEY_#377", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MOVE");
+      ns->add_alias("KEY_#175", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CONTEXT_MENU");
+      ns->add_alias("KEY_#438", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BASSBOOST");
+      ns->add_alias("KEY_#209", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER");
+      ns->add_alias("KEY_#288", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SCROLLDOWN");
+      ns->add_alias("KEY_#178", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RIGHTSHIFT");
+      ns->add_alias("KEY_#54", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_POWER2");
+      ns->add_alias("KEY_#356", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RFKILL");
+      ns->add_alias("KEY_#247", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_HOMEPAGE");
+      ns->add_alias("KEY_#172", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TOUCHPAD_ON");
+      ns->add_alias("KEY_#531", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_A");
+      ns->add_alias("KEY_#30", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_START");
+      ns->add_alias("KEY_#315", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RIGHTBRACE");
+      ns->add_alias("KEY_#27", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_B");
+      ns->add_alias("KEY_#48", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_BASE");
+      ns->add_alias("KEY_#294", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F1");
+      ns->add_alias("KEY_#59", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_C");
+      ns->add_alias("KEY_#46", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F2");
+      ns->add_alias("KEY_#60", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_XFER");
+      ns->add_alias("KEY_#147", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BLUETOOTH");
+      ns->add_alias("KEY_#237", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_D");
+      ns->add_alias("KEY_#32", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F3");
+      ns->add_alias("KEY_#61", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MUHENKAN");
+      ns->add_alias("KEY_#94", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RIGHTALT");
+      ns->add_alias("KEY_#100", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_E");
+      ns->add_alias("KEY_#18", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_INSERT");
+      ns->add_alias("KEY_#110", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F4");
+      ns->add_alias("KEY_#62", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CHANNEL");
+      ns->add_alias("KEY_#363", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PLAYPAUSE");
+      ns->add_alias("KEY_#164", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F");
+      ns->add_alias("KEY_#33", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOP2");
+      ns->add_alias("KEY_#292", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F5");
+      ns->add_alias("KEY_#63", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FORWARDMAIL");
+      ns->add_alias("KEY_#233", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_INS_LINE");
+      ns->add_alias("KEY_#450", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_G");
+      ns->add_alias("KEY_#34", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F6");
+      ns->add_alias("KEY_#64", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KPENTER");
+      ns->add_alias("KEY_#96", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KPSLASH");
+      ns->add_alias("KEY_#98", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_LAST");
+      ns->add_alias("KEY_#405", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_LENS");
+      ns->add_alias("KEY_#327", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F7");
+      ns->add_alias("KEY_#65", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CONNECT");
+      ns->add_alias("KEY_#218", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_H");
+      ns->add_alias("KEY_#35", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FINANCE");
+      ns->add_alias("KEY_#219", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F8");
+      ns->add_alias("KEY_#66", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_HP");
+      ns->add_alias("KEY_#211", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_EDIT");
+      ns->add_alias("KEY_#176", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_GEAR_UP");
+      ns->add_alias("KEY_#337", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_I");
+      ns->add_alias("KEY_#23", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RECORD");
+      ns->add_alias("KEY_#167", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F9");
+      ns->add_alias("KEY_#67", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_EQUAL");
+      ns->add_alias("KEY_#13", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KPPLUSMINUS");
+      ns->add_alias("KEY_#118", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_J");
+      ns->add_alias("KEY_#36", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_ESC");
+      ns->add_alias("KEY_#465", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_K");
+      ns->add_alias("KEY_#37", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CAMERA_ZOOMOUT");
+      ns->add_alias("KEY_#534", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_AIRBRUSH");
+      ns->add_alias("KEY_#324", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RADIO");
+      ns->add_alias("KEY_#385", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_COMPOSE");
+      ns->add_alias("KEY_#127", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DIRECTION");
+      ns->add_alias("KEY_#153", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_MOUSE");
+      ns->add_alias("KEY_#272", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_L");
+      ns->add_alias("KEY_#38", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RO");
+      ns->add_alias("KEY_#89", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_M");
+      ns->add_alias("KEY_#50", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY20");
+      ns->add_alias("KEY_#723", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_FORWARD");
+      ns->add_alias("KEY_#277", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_HANGUEL");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FIND");
+      ns->add_alias("KEY_#136", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_N");
+      ns->add_alias("KEY_#49", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY21");
+      ns->add_alias("KEY_#724", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_EXIT");
+      ns->add_alias("KEY_#174", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_O");
+      ns->add_alias("KEY_#24", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY22");
+      ns->add_alias("KEY_#725", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SEND");
+      ns->add_alias("KEY_#231", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MINUS");
+      ns->add_alias("KEY_#12", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_HANJA");
+      ns->add_alias("KEY_#123", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_UWB");
+      ns->add_alias("KEY_#239", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_P");
+      ns->add_alias("KEY_#25", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TR2");
+      ns->add_alias("KEY_#313", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY23");
+      ns->add_alias("KEY_#726", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F10");
+      ns->add_alias("KEY_#68", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_AB");
+      ns->add_alias("KEY_#406", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PAGEDOWN");
+      ns->add_alias("KEY_#109", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_SELECT");
+      ns->add_alias("KEY_#314", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_Q");
+      ns->add_alias("KEY_#16", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY24");
+      ns->add_alias("KEY_#727", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DOT");
+      ns->add_alias("KEY_#52", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_EPG");
+      ns->add_alias("KEY_#365", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_R");
+      ns->add_alias("KEY_#19", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_MOUSE");
+      ns->add_alias("KEY_#326", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F11");
+      ns->add_alias("KEY_#87", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY25");
+      ns->add_alias("KEY_#728", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOP");
+      ns->add_alias("KEY_#291", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_THUMBL");
+      ns->add_alias("KEY_#317", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SCREENLOCK");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NEWS");
+      ns->add_alias("KEY_#427", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NEW");
+      ns->add_alias("KEY_#181", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_S");
+      ns->add_alias("KEY_#31", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SOUND");
+      ns->add_alias("KEY_#213", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F12");
+      ns->add_alias("KEY_#88", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY26");
+      ns->add_alias("KEY_#729", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_T");
+      ns->add_alias("KEY_#20", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F13");
+      ns->add_alias("KEY_#183", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY27");
+      ns->add_alias("KEY_#730", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_EMAIL");
+      ns->add_alias("KEY_#215", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_102ND");
+      ns->add_alias("KEY_#86", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_DEAD");
+      ns->add_alias("KEY_#303", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_STOP");
+      ns->add_alias("KEY_#128", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_U");
+      ns->add_alias("KEY_#22", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F14");
+      ns->add_alias("KEY_#184", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY28");
+      ns->add_alias("KEY_#731", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_COMMA");
+      ns->add_alias("KEY_#51", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TIME");
+      ns->add_alias("KEY_#359", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SWITCHVIDEOMODE");
+      ns->add_alias("KEY_#227", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_V");
+      ns->add_alias("KEY_#47", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F15");
+      ns->add_alias("KEY_#185", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY29");
+      ns->add_alias("KEY_#732", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PAGEUP");
+      ns->add_alias("KEY_#104", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_REDO");
+      ns->add_alias("KEY_#182", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_W");
+      ns->add_alias("KEY_#17", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F16");
+      ns->add_alias("KEY_#186", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KP0");
+      ns->add_alias("KEY_#82", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_AUDIO");
+      ns->add_alias("KEY_#392", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_X");
+      ns->add_alias("KEY_#45", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F17");
+      ns->add_alias("KEY_#187", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SEMICOLON");
+      ns->add_alias("KEY_#39", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KP1");
+      ns->add_alias("KEY_#79", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MSDOS");
+      ns->add_alias("KEY_#151", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TEEN");
+      ns->add_alias("KEY_#414", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_THUMBR");
+      ns->add_alias("KEY_#318", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_OPEN");
+      ns->add_alias("KEY_#134", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_Y");
+      ns->add_alias("KEY_#21", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F18");
+      ns->add_alias("KEY_#188", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KP2");
+      ns->add_alias("KEY_#80", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_EDITOR");
+      ns->add_alias("KEY_#422", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PC");
+      ns->add_alias("KEY_#376", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TL");
+      ns->add_alias("KEY_#310", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_Z");
+      ns->add_alias("KEY_#44", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F19");
+      ns->add_alias("KEY_#189", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KP3");
+      ns->add_alias("KEY_#81", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_LEFT");
+      ns->add_alias("KEY_#272", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KP4");
+      ns->add_alias("KEY_#75", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CHAT");
+      ns->add_alias("KEY_#216", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_DOUBLETAP");
+      ns->add_alias("KEY_#333", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CLOSECD");
+      ns->add_alias("KEY_#160", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_VOLUMEUP");
+      ns->add_alias("KEY_#115", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KP5");
+      ns->add_alias("KEY_#76", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F1");
+      ns->add_alias("KEY_#466", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KP6");
+      ns->add_alias("KEY_#77", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KBDILLUMTOGGLE");
+      ns->add_alias("KEY_#228", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F2");
+      ns->add_alias("KEY_#467", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_ISO");
+      ns->add_alias("KEY_#170", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KP7");
+      ns->add_alias("KEY_#71", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRIGHTNESSDOWN");
+      ns->add_alias("KEY_#224", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F3");
+      ns->add_alias("KEY_#468", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_COPY");
+      ns->add_alias("KEY_#133", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_OPTION");
+      ns->add_alias("KEY_#357", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KP8");
+      ns->add_alias("KEY_#72", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F4");
+      ns->add_alias("KEY_#469", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN");
+      ns->add_alias("KEY_#464", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CAPSLOCK");
+      ns->add_alias("KEY_#58", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KP9");
+      ns->add_alias("KEY_#73", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMERIC_0");
+      ns->add_alias("KEY_#512", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F5");
+      ns->add_alias("KEY_#470", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DEL_LINE");
+      ns->add_alias("KEY_#451", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TR");
+      ns->add_alias("KEY_#311", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KPRIGHTPAREN");
+      ns->add_alias("KEY_#180", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_QUADTAP");
+      ns->add_alias("KEY_#335", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMERIC_1");
+      ns->add_alias("KEY_#513", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F6");
+      ns->add_alias("KEY_#471", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_IMAGES");
+      ns->add_alias("KEY_#442", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_BRUSH");
+      ns->add_alias("KEY_#322", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_HELP");
+      ns->add_alias("KEY_#138", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_LEFTBRACE");
+      ns->add_alias("KEY_#26", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RIGHTMETA");
+      ns->add_alias("KEY_#126", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F7");
+      ns->add_alias("KEY_#472", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MESSENGER");
+      ns->add_alias("KEY_#430", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KATAKANAHIRAGANA");
+      ns->add_alias("KEY_#93", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMERIC_2");
+      ns->add_alias("KEY_#514", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F8");
+      ns->add_alias("KEY_#473", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BACKSLASH");
+      ns->add_alias("KEY_#43", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BREAK");
+      ns->add_alias("KEY_#411", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMERIC_3");
+      ns->add_alias("KEY_#515", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F9");
+      ns->add_alias("KEY_#474", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CYCLEWINDOWS");
+      ns->add_alias("KEY_#154", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_COFFEE");
+      ns->add_alias("KEY_#152KEY_SCREENLOCK", sym);
+      ns->add_alias("KEY_#152KEY_SCREENLOCK", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_FINGER");
+      ns->add_alias("KEY_#325", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SPELLCHECK");
+      ns->add_alias("KEY_#432", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMERIC_4");
+      ns->add_alias("KEY_#516", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_ZENKAKUHANKAKU");
+      ns->add_alias("KEY_#85", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_LINEFEED");
+      ns->add_alias("KEY_#101", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SUBTITLE");
+      ns->add_alias("KEY_#370", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMERIC_5");
+      ns->add_alias("KEY_#517", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DELETEFILE");
+      ns->add_alias("KEY_#146", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMERIC_6");
+      ns->add_alias("KEY_#518", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_END");
+      ns->add_alias("KEY_#107", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BLUE");
+      ns->add_alias("KEY_#401", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FILE");
+      ns->add_alias("KEY_#144", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PRESENTATION");
+      ns->add_alias("KEY_#425", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MACRO");
+      ns->add_alias("KEY_#112", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_VCR2");
+      ns->add_alias("KEY_#380", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CAMERA_DOWN");
+      ns->add_alias("KEY_#536", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMERIC_7");
+      ns->add_alias("KEY_#519", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMERIC_8");
+      ns->add_alias("KEY_#520", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BATTERY");
+      ns->add_alias("KEY_#236", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_GRAPHICSEDITOR");
+      ns->add_alias("KEY_#424", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_UP");
+      ns->add_alias("KEY_#103", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_ESC");
+      ns->add_alias("KEY_#1", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CAMERA_ZOOMIN");
+      ns->add_alias("KEY_#533", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMERIC_9");
+      ns->add_alias("KEY_#521", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_SIDE");
+      ns->add_alias("KEY_#275", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_HANGEUL");
+      ns->add_alias("KEY_#122KEY_HANGUEL", sym);
+      ns->add_alias("KEY_#122KEY_HANGUEL", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_1");
+      ns->add_alias("KEY_#478", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_LOGOFF");
+      ns->add_alias("KEY_#433", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SPACE");
+      ns->add_alias("KEY_#57", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FASTFORWARD");
+      ns->add_alias("KEY_#208", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRL_DOT10");
+      ns->add_alias("KEY_#506", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_2");
+      ns->add_alias("KEY_#479", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SCALE");
+      ns->add_alias("KEY_#120", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BACK");
+      ns->add_alias("KEY_#158", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FRAMEBACK");
+      ns->add_alias("KEY_#436", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SPORT");
+      ns->add_alias("KEY_#220", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MEDIA");
+      ns->add_alias("KEY_#226", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CAMERA_LEFT");
+      ns->add_alias("KEY_#537", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_ANGLE");
+      ns->add_alias("KEY_#371", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MUTE");
+      ns->add_alias("KEY_#113KEY_MIN_INTERESTING", sym);
+      ns->add_alias("KEY_#113KEY_MIN_INTERESTING", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_STYLUS2");
+      ns->add_alias("KEY_#332", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DOLLAR");
+      ns->add_alias("KEY_#434", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PVR");
+      ns->add_alias("KEY_#366", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MEMO");
+      ns->add_alias("KEY_#396", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_COMPUTER");
+      ns->add_alias("KEY_#157", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KPEQUAL");
+      ns->add_alias("KEY_#117", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_BASE2");
+      ns->add_alias("KEY_#295", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RESERVED");
+      ns->add_alias("KEY_#0", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_BASE3");
+      ns->add_alias("KEY_#296", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_0");
+      ns->add_alias("KEY_#256", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMERIC_STAR");
+      ns->add_alias("KEY_#522", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_10CHANNELSDOWN");
+      ns->add_alias("KEY_#441", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_1");
+      ns->add_alias("KEY_#257", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_RIGHT");
+      ns->add_alias("KEY_#273", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KATAKANA");
+      ns->add_alias("KEY_#90", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_WPS_BUTTON");
+      ns->add_alias("KEY_#529", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_VIDEO_NEXT");
+      ns->add_alias("KEY_#241", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_BASE4");
+      ns->add_alias("KEY_#297", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_2");
+      ns->add_alias("KEY_#258", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_LANGUAGE");
+      ns->add_alias("KEY_#368", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_BRIGHTNESSUP");
+      ns->add_alias("KEY_#225", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_BASE5");
+      ns->add_alias("KEY_#298", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_3");
+      ns->add_alias("KEY_#259", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_HIRAGANA");
+      ns->add_alias("KEY_#91", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_DIGI");
+      ns->add_alias("KEY_#320", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PHONE");
+      ns->add_alias("KEY_#169", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_BASE6");
+      ns->add_alias("KEY_#299", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_4");
+      ns->add_alias("KEY_#260", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_VOLUMEDOWN");
+      ns->add_alias("KEY_#114", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KPMINUS");
+      ns->add_alias("KEY_#74", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_5");
+      ns->add_alias("KEY_#261", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SPREADSHEET");
+      ns->add_alias("KEY_#423", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NUMLOCK");
+      ns->add_alias("KEY_#69", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_6");
+      ns->add_alias("KEY_#262", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KPLEFTPAREN");
+      ns->add_alias("KEY_#179", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY");
+      ns->add_alias("KEY_#704", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_7");
+      ns->add_alias("KEY_#263", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_VIDEO");
+      ns->add_alias("KEY_#393", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_8");
+      ns->add_alias("KEY_#264", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CAMERA");
+      ns->add_alias("KEY_#212", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_B");
+      ns->add_alias("KEY_#484", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_GRAVE");
+      ns->add_alias("KEY_#41", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_9");
+      ns->add_alias("KEY_#265", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_GAMEPAD");
+      ns->add_alias("KEY_#304", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SUSPEND");
+      ns->add_alias("KEY_#205", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_GREEN");
+      ns->add_alias("KEY_#399", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_AUX");
+      ns->add_alias("KEY_#390", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_DISPLAY_OFF");
+      ns->add_alias("KEY_#245", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_D");
+      ns->add_alias("KEY_#480", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_ARCHIVE");
+      ns->add_alias("KEY_#361", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_RUBBER");
+      ns->add_alias("KEY_#321", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_E");
+      ns->add_alias("KEY_#481", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KPASTERISK");
+      ns->add_alias("KEY_#55", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KPPLUS");
+      ns->add_alias("KEY_#78", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY30");
+      ns->add_alias("KEY_#733", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FN_F");
+      ns->add_alias("KEY_#482", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KPDOT");
+      ns->add_alias("KEY_#83", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_VIDEO_PREV");
+      ns->add_alias("KEY_#242", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY31");
+      ns->add_alias("KEY_#734", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_JOYSTICK");
+      ns->add_alias("KEY_#288", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_FAVORITES");
+      ns->add_alias("KEY_#364", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_TAB");
+      ns->add_alias("KEY_#15", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY32");
+      ns->add_alias("KEY_#735", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_LEFTMETA");
+      ns->add_alias("KEY_#125", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_CANCEL");
+      ns->add_alias("KEY_#223", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_GOTO");
+      ns->add_alias("KEY_#354", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KPJPCOMMA");
+      ns->add_alias("KEY_#95", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY33");
+      ns->add_alias("KEY_#736", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F20");
+      ns->add_alias("KEY_#190", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY34");
+      ns->add_alias("KEY_#737", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_A");
+      ns->add_alias("KEY_#304", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F21");
+      ns->add_alias("KEY_#191", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_GEAR_DOWN");
+      ns->add_alias("KEY_#336", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_KPCOMMA");
+      ns->add_alias("KEY_#121", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY35");
+      ns->add_alias("KEY_#738", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_B");
+      ns->add_alias("KEY_#305", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F22");
+      ns->add_alias("KEY_#192", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_SAVE");
+      ns->add_alias("KEY_#234", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY36");
+      ns->add_alias("KEY_#739", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_NEXT");
+      ns->add_alias("KEY_#407", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_PLAYER");
+      ns->add_alias("KEY_#387", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F23");
+      ns->add_alias("KEY_#193", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_RIGHTCTRL");
+      ns->add_alias("KEY_#97", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TRIGGER_HAPPY37");
+      ns->add_alias("KEY_#740", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_C");
+      ns->add_alias("KEY_#306", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_F24");
+      ns->add_alias("KEY_#194", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_ADDRESSBOOK");
+      ns->add_alias("KEY_#429", sym);
+    }
+  }
+  {
     NamespacePtr ns = env->add_namespace("xbox");
     env->add_namespace_alias("xbox360", ns);
     env->add_namespace_alias("xb", ns);
@@ -521,6 +2537,9 @@ void init_environment_key(EnvironmentPtr env)
       assert(sym);
       sym->add_provides(env->lookup_symbol("gamepad", "select"));
     }
+  }
+  {
+    NamespacePtr ns = env->lookup_namespace("evdev");
   }
   {
     NamespacePtr ns = env->lookup_namespace("xbox");

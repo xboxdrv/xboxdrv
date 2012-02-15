@@ -16,6 +16,50 @@ void init_environment_rel(EnvironmentPtr env)
     env->add_namespace_alias("playstation3", ns);
   }
   {
+    NamespacePtr ns = env->add_namespace("evdev");
+    env->add_namespace_alias("ev", ns);
+    {
+      SymbolPtr sym = ns->add_symbol("REL_MISC");
+      ns->add_alias("KEY_#9", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("REL_Z");
+      ns->add_alias("KEY_#2", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("REL_WHEEL");
+      ns->add_alias("KEY_#8", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("REL_DIAL");
+      ns->add_alias("KEY_#7", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("REL_HWHEEL");
+      ns->add_alias("KEY_#6", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("REL_RX");
+      ns->add_alias("KEY_#3", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("REL_RY");
+      ns->add_alias("KEY_#4", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("REL_RZ");
+      ns->add_alias("KEY_#5", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("REL_X");
+      ns->add_alias("KEY_#0", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("REL_Y");
+      ns->add_alias("KEY_#1", sym);
+    }
+  }
+  {
     NamespacePtr ns = env->add_namespace("xbox");
     env->add_namespace_alias("xbox360", ns);
     env->add_namespace_alias("xb", ns);
@@ -51,6 +95,9 @@ void init_environment_rel(EnvironmentPtr env)
   }
   {
     NamespacePtr ns = env->lookup_namespace("playstation");
+  }
+  {
+    NamespacePtr ns = env->lookup_namespace("evdev");
   }
   {
     NamespacePtr ns = env->lookup_namespace("xbox");
