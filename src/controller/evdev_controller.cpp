@@ -108,12 +108,12 @@ EvdevController::EvdevController(const std::string& filename,
         if (it == absmap.end())
         {
           // install default mapping
-          m_absmap[i] = m_message_descriptor.abs().put(abs2str(i));
+          m_absmap[i] = m_message_descriptor.abs().put("evdev." + abs2str(i));
         }
         else
         {
           // install custom user supplied mapping
-          m_absmap[i] = m_message_descriptor.abs().put(it->second);
+          m_absmap[i] = m_message_descriptor.abs().put("evdev." + it->second);
         }
       }
     }
@@ -128,12 +128,12 @@ EvdevController::EvdevController(const std::string& filename,
         if (it == relmap.end())
         {
           // install default mapping
-          m_relmap[i] = m_message_descriptor.rel().put(rel2str(i));
+          m_relmap[i] = m_message_descriptor.rel().put("evdev." + rel2str(i));
         }
         else
         {
           // install custom user supplied mapping
-          m_relmap[i] = m_message_descriptor.rel().put(it->second);
+          m_relmap[i] = m_message_descriptor.rel().put("evdev." + it->second);
         }
       }
     }
@@ -148,12 +148,12 @@ EvdevController::EvdevController(const std::string& filename,
         if (it == keymap.end())
         {
           // install default mapping
-          m_keymap[i] = m_message_descriptor.key().put(key2str(i));
+          m_keymap[i] = m_message_descriptor.key().put("evdev." + key2str(i));
         }
         else
         {
           // install custom user supplied mapping
-          m_keymap[i] = m_message_descriptor.key().put(it->second);
+          m_keymap[i] = m_message_descriptor.key().put("evdev." + it->second);
         }
       }
     }

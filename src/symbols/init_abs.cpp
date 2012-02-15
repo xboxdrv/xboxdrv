@@ -64,24 +64,32 @@ void init_environment_abs(EnvironmentPtr env)
     NamespacePtr ns = env->add_namespace("evdev");
     env->add_namespace_alias("ev", ns);
     {
+      SymbolPtr sym = ns->add_symbol("ABS_MT_TOUCH_MINOR");
+      ns->add_alias("KEY_#49", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_TILT_Y");
+      ns->add_alias("KEY_#27", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_HAT0X");
+      ns->add_alias("KEY_#16", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_RZ");
+      ns->add_alias("KEY_#5", sym);
+    }
+    {
       SymbolPtr sym = ns->add_symbol("ABS_MT_TOOL_TYPE");
       ns->add_alias("KEY_#55", sym);
     }
     {
-      SymbolPtr sym = ns->add_symbol("ABS_HAT3Y");
-      ns->add_alias("KEY_#23", sym);
+      SymbolPtr sym = ns->add_symbol("ABS_HAT3X");
+      ns->add_alias("KEY_#22", sym);
     }
     {
-      SymbolPtr sym = ns->add_symbol("ABS_HAT2X");
-      ns->add_alias("KEY_#20", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_RUDDER");
-      ns->add_alias("KEY_#7", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_RY");
-      ns->add_alias("KEY_#4", sym);
+      SymbolPtr sym = ns->add_symbol("ABS_X");
+      ns->add_alias("KEY_#0", sym);
     }
     {
       SymbolPtr sym = ns->add_symbol("ABS_MT_WIDTH_MAJOR");
@@ -92,64 +100,48 @@ void init_environment_abs(EnvironmentPtr env)
       ns->add_alias("KEY_#28", sym);
     }
     {
-      SymbolPtr sym = ns->add_symbol("ABS_HAT2Y");
-      ns->add_alias("KEY_#21", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_HAT1X");
-      ns->add_alias("KEY_#18", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_BRAKE");
-      ns->add_alias("KEY_#10", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_RZ");
-      ns->add_alias("KEY_#5", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_MT_DISTANCE");
-      ns->add_alias("KEY_#59", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_MT_SLOT");
-      ns->add_alias("KEY_#47", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_HAT1Y");
-      ns->add_alias("KEY_#19", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_HAT0X");
-      ns->add_alias("KEY_#16", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_X");
-      ns->add_alias("KEY_#0", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_MT_TOUCH_MINOR");
-      ns->add_alias("KEY_#49", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_MISC");
-      ns->add_alias("KEY_#40", sym);
-    }
-    {
       SymbolPtr sym = ns->add_symbol("ABS_HAT0Y");
       ns->add_alias("KEY_#17", sym);
     }
     {
-      SymbolPtr sym = ns->add_symbol("ABS_GAS");
-      ns->add_alias("KEY_#9", sym);
+      SymbolPtr sym = ns->add_symbol("ABS_THROTTLE");
+      ns->add_alias("KEY_#6", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_MT_BLOB_ID");
+      ns->add_alias("KEY_#56", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_HAT3Y");
+      ns->add_alias("KEY_#23", sym);
     }
     {
       SymbolPtr sym = ns->add_symbol("ABS_Y");
       ns->add_alias("KEY_#1", sym);
     }
     {
-      SymbolPtr sym = ns->add_symbol("ABS_DISTANCE");
-      ns->add_alias("KEY_#25", sym);
+      SymbolPtr sym = ns->add_symbol("ABS_MT_WIDTH_MINOR");
+      ns->add_alias("KEY_#51", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_MISC");
+      ns->add_alias("KEY_#40", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_HAT1X");
+      ns->add_alias("KEY_#18", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_RUDDER");
+      ns->add_alias("KEY_#7", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_MT_TRACKING_ID");
+      ns->add_alias("KEY_#57", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_PRESSURE");
+      ns->add_alias("KEY_#24", sym);
     }
     {
       SymbolPtr sym = ns->add_symbol("ABS_Z");
@@ -160,6 +152,46 @@ void init_environment_abs(EnvironmentPtr env)
       ns->add_alias("KEY_#52", sym);
     }
     {
+      SymbolPtr sym = ns->add_symbol("ABS_HAT1Y");
+      ns->add_alias("KEY_#19", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_WHEEL");
+      ns->add_alias("KEY_#8", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_MT_PRESSURE");
+      ns->add_alias("KEY_#58", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_MT_SLOT");
+      ns->add_alias("KEY_#47", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_DISTANCE");
+      ns->add_alias("KEY_#25", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_RX");
+      ns->add_alias("KEY_#3", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_MT_POSITION_X");
+      ns->add_alias("KEY_#53", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_HAT2X");
+      ns->add_alias("KEY_#20", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_GAS");
+      ns->add_alias("KEY_#9", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_MT_DISTANCE");
+      ns->add_alias("KEY_#59", sym);
+    }
+    {
       SymbolPtr sym = ns->add_symbol("ABS_MT_TOUCH_MAJOR");
       ns->add_alias("KEY_#48", sym);
     }
@@ -168,32 +200,8 @@ void init_environment_abs(EnvironmentPtr env)
       ns->add_alias("KEY_#26", sym);
     }
     {
-      SymbolPtr sym = ns->add_symbol("ABS_WHEEL");
-      ns->add_alias("KEY_#8", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_THROTTLE");
-      ns->add_alias("KEY_#6", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_MT_TRACKING_ID");
-      ns->add_alias("KEY_#57", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_MT_POSITION_X");
-      ns->add_alias("KEY_#53", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_TILT_Y");
-      ns->add_alias("KEY_#27", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_MT_PRESSURE");
-      ns->add_alias("KEY_#58", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_MT_BLOB_ID");
-      ns->add_alias("KEY_#56", sym);
+      SymbolPtr sym = ns->add_symbol("ABS_RY");
+      ns->add_alias("KEY_#4", sym);
     }
     {
       SymbolPtr sym = ns->add_symbol("ABS_MT_POSITION_Y");
@@ -204,20 +212,12 @@ void init_environment_abs(EnvironmentPtr env)
       ns->add_alias("KEY_#32", sym);
     }
     {
-      SymbolPtr sym = ns->add_symbol("ABS_MT_WIDTH_MINOR");
-      ns->add_alias("KEY_#51", sym);
+      SymbolPtr sym = ns->add_symbol("ABS_HAT2Y");
+      ns->add_alias("KEY_#21", sym);
     }
     {
-      SymbolPtr sym = ns->add_symbol("ABS_PRESSURE");
-      ns->add_alias("KEY_#24", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_HAT3X");
-      ns->add_alias("KEY_#22", sym);
-    }
-    {
-      SymbolPtr sym = ns->add_symbol("ABS_RX");
-      ns->add_alias("KEY_#3", sym);
+      SymbolPtr sym = ns->add_symbol("ABS_BRAKE");
+      ns->add_alias("KEY_#10", sym);
     }
   }
   {

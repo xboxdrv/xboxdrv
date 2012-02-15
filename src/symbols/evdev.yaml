@@ -3,20 +3,26 @@
 - name: 'evdev'
   aliases: ['ev']
   abs:
+  - name: 'ABS_MT_TOUCH_MINOR'
+    aliases: ['KEY_#49']
+
+  - name: 'ABS_TILT_Y'
+    aliases: ['KEY_#27']
+
+  - name: 'ABS_HAT0X'
+    aliases: ['KEY_#16']
+
+  - name: 'ABS_RZ'
+    aliases: ['KEY_#5']
+
   - name: 'ABS_MT_TOOL_TYPE'
     aliases: ['KEY_#55']
 
-  - name: 'ABS_HAT3Y'
-    aliases: ['KEY_#23']
+  - name: 'ABS_HAT3X'
+    aliases: ['KEY_#22']
 
-  - name: 'ABS_HAT2X'
-    aliases: ['KEY_#20']
-
-  - name: 'ABS_RUDDER'
-    aliases: ['KEY_#7']
-
-  - name: 'ABS_RY'
-    aliases: ['KEY_#4']
+  - name: 'ABS_X'
+    aliases: ['KEY_#0']
 
   - name: 'ABS_MT_WIDTH_MAJOR'
     aliases: ['KEY_#50']
@@ -24,50 +30,38 @@
   - name: 'ABS_TOOL_WIDTH'
     aliases: ['KEY_#28']
 
-  - name: 'ABS_HAT2Y'
-    aliases: ['KEY_#21']
-
-  - name: 'ABS_HAT1X'
-    aliases: ['KEY_#18']
-
-  - name: 'ABS_BRAKE'
-    aliases: ['KEY_#10']
-
-  - name: 'ABS_RZ'
-    aliases: ['KEY_#5']
-
-  - name: 'ABS_MT_DISTANCE'
-    aliases: ['KEY_#59']
-
-  - name: 'ABS_MT_SLOT'
-    aliases: ['KEY_#47']
-
-  - name: 'ABS_HAT1Y'
-    aliases: ['KEY_#19']
-
-  - name: 'ABS_HAT0X'
-    aliases: ['KEY_#16']
-
-  - name: 'ABS_X'
-    aliases: ['KEY_#0']
-
-  - name: 'ABS_MT_TOUCH_MINOR'
-    aliases: ['KEY_#49']
-
-  - name: 'ABS_MISC'
-    aliases: ['KEY_#40']
-
   - name: 'ABS_HAT0Y'
     aliases: ['KEY_#17']
 
-  - name: 'ABS_GAS'
-    aliases: ['KEY_#9']
+  - name: 'ABS_THROTTLE'
+    aliases: ['KEY_#6']
+
+  - name: 'ABS_MT_BLOB_ID'
+    aliases: ['KEY_#56']
+
+  - name: 'ABS_HAT3Y'
+    aliases: ['KEY_#23']
 
   - name: 'ABS_Y'
     aliases: ['KEY_#1']
 
-  - name: 'ABS_DISTANCE'
-    aliases: ['KEY_#25']
+  - name: 'ABS_MT_WIDTH_MINOR'
+    aliases: ['KEY_#51']
+
+  - name: 'ABS_MISC'
+    aliases: ['KEY_#40']
+
+  - name: 'ABS_HAT1X'
+    aliases: ['KEY_#18']
+
+  - name: 'ABS_RUDDER'
+    aliases: ['KEY_#7']
+
+  - name: 'ABS_MT_TRACKING_ID'
+    aliases: ['KEY_#57']
+
+  - name: 'ABS_PRESSURE'
+    aliases: ['KEY_#24']
 
   - name: 'ABS_Z'
     aliases: ['KEY_#2']
@@ -75,32 +69,44 @@
   - name: 'ABS_MT_ORIENTATION'
     aliases: ['KEY_#52']
 
+  - name: 'ABS_HAT1Y'
+    aliases: ['KEY_#19']
+
+  - name: 'ABS_WHEEL'
+    aliases: ['KEY_#8']
+
+  - name: 'ABS_MT_PRESSURE'
+    aliases: ['KEY_#58']
+
+  - name: 'ABS_MT_SLOT'
+    aliases: ['KEY_#47']
+
+  - name: 'ABS_DISTANCE'
+    aliases: ['KEY_#25']
+
+  - name: 'ABS_RX'
+    aliases: ['KEY_#3']
+
+  - name: 'ABS_MT_POSITION_X'
+    aliases: ['KEY_#53']
+
+  - name: 'ABS_HAT2X'
+    aliases: ['KEY_#20']
+
+  - name: 'ABS_GAS'
+    aliases: ['KEY_#9']
+
+  - name: 'ABS_MT_DISTANCE'
+    aliases: ['KEY_#59']
+
   - name: 'ABS_MT_TOUCH_MAJOR'
     aliases: ['KEY_#48']
 
   - name: 'ABS_TILT_X'
     aliases: ['KEY_#26']
 
-  - name: 'ABS_WHEEL'
-    aliases: ['KEY_#8']
-
-  - name: 'ABS_THROTTLE'
-    aliases: ['KEY_#6']
-
-  - name: 'ABS_MT_TRACKING_ID'
-    aliases: ['KEY_#57']
-
-  - name: 'ABS_MT_POSITION_X'
-    aliases: ['KEY_#53']
-
-  - name: 'ABS_TILT_Y'
-    aliases: ['KEY_#27']
-
-  - name: 'ABS_MT_PRESSURE'
-    aliases: ['KEY_#58']
-
-  - name: 'ABS_MT_BLOB_ID'
-    aliases: ['KEY_#56']
+  - name: 'ABS_RY'
+    aliases: ['KEY_#4']
 
   - name: 'ABS_MT_POSITION_Y'
     aliases: ['KEY_#54']
@@ -108,1458 +114,645 @@
   - name: 'ABS_VOLUME'
     aliases: ['KEY_#32']
 
-  - name: 'ABS_MT_WIDTH_MINOR'
-    aliases: ['KEY_#51']
+  - name: 'ABS_HAT2Y'
+    aliases: ['KEY_#21']
 
-  - name: 'ABS_PRESSURE'
-    aliases: ['KEY_#24']
-
-  - name: 'ABS_HAT3X'
-    aliases: ['KEY_#22']
-
-  - name: 'ABS_RX'
-    aliases: ['KEY_#3']
-
-  key:
-  - name: 'BTN_TRIGGER_HAPPY38'
-    aliases: ['KEY_#741']
-
-  - name: 'KEY_FRAMEFORWARD'
-    aliases: ['KEY_#437']
-
-  - name: 'KEY_PAUSECD'
-    aliases: ['KEY_#201']
-
-  - name: 'BTN_TRIGGER_HAPPY39'
-    aliases: ['KEY_#742']
-
-  - name: 'KEY_CLEAR'
-    aliases: ['KEY_#355']
-
-  - name: 'KEY_LEFTSHIFT'
-    aliases: ['KEY_#42']
-
-  - name: 'KEY_SCREEN'
-    aliases: ['KEY_#375']
-
-  - name: 'KEY_GAMES'
-    aliases: ['KEY_#417']
-
-  - name: 'KEY_LEFTALT'
-    aliases: ['KEY_#56']
-
-  - name: 'BTN_MIDDLE'
-    aliases: ['KEY_#274']
-
-  - name: 'KEY_FRONT'
-    aliases: ['KEY_#132']
-
-  - name: 'BTN_BACK'
-    aliases: ['KEY_#278']
-
-  - name: 'KEY_MHP'
-    aliases: ['KEY_#367']
-
-  - name: 'KEY_HOME'
-    aliases: ['KEY_#102']
-
-  - name: 'KEY_DOCUMENTS'
-    aliases: ['KEY_#235']
-
-  - name: 'KEY_SLOW'
-    aliases: ['KEY_#409']
-
-  - name: 'KEY_SAT2'
-    aliases: ['KEY_#382']
-
-  - name: 'KEY_MP3'
-    aliases: ['KEY_#391']
-
-  - name: 'KEY_SENDFILE'
-    aliases: ['KEY_#145']
-
-  - name: 'KEY_BRL_DOT1'
-    aliases: ['KEY_#497']
-
-  - name: 'KEY_FN_S'
-    aliases: ['KEY_#483']
-
-  - name: 'KEY_WLAN'
-    aliases: ['KEY_#238']
-
-  - name: 'KEY_CALC'
-    aliases: ['KEY_#140']
-
-  - name: 'KEY_LEFT'
-    aliases: ['KEY_#105']
-
-  - name: 'KEY_EURO'
-    aliases: ['KEY_#435']
-
-  - name: 'KEY_DIRECTORY'
-    aliases: ['KEY_#394']
-
-  - name: 'KEY_BRL_DOT2'
-    aliases: ['KEY_#498']
-
-  - name: 'KEY_DELETE'
-    aliases: ['KEY_#111']
-
-  - name: 'KEY_PAUSE'
-    aliases: ['KEY_#119']
-
-  - name: 'KEY_PASTE'
-    aliases: ['KEY_#135']
-
-  - name: 'BTN_TASK'
-    aliases: ['KEY_#279']
-
-  - name: 'KEY_DOWN'
-    aliases: ['KEY_#108']
-
-  - name: 'KEY_BRL_DOT3'
-    aliases: ['KEY_#499']
-
-  - name: 'KEY_BRL_DOT4'
-    aliases: ['KEY_#500']
-
-  - name: 'KEY_PLAYCD'
-    aliases: ['KEY_#200']
-
-  - name: 'KEY_MEDIA_REPEAT'
-    aliases: ['KEY_#439']
-
-  - name: 'KEY_BRL_DOT5'
-    aliases: ['KEY_#501']
-
-  - name: 'KEY_NEXTSONG'
-    aliases: ['KEY_#163']
-
-  - name: 'KEY_PLAY'
-    aliases: ['KEY_#207']
-
-  - name: 'KEY_BOOKMARKS'
-    aliases: ['KEY_#156']
-
-  - name: 'KEY_BRIGHTNESS_ZERO'
-    aliases: ['KEY_#244']
-
-  - name: 'KEY_CAMERA_UP'
-    aliases: ['KEY_#535']
-
-  - name: 'KEY_BRL_DOT6'
-    aliases: ['KEY_#502']
-
-  - name: 'KEY_VENDOR'
-    aliases: ['KEY_#360']
-
-  - name: 'KEY_BRL_DOT7'
-    aliases: ['KEY_#503']
-
-  - name: 'KEY_BRL_DOT8'
-    aliases: ['KEY_#504']
-
-  - name: 'KEY_BRL_DOT9'
-    aliases: ['KEY_#505']
-
-  - name: 'KEY_SELECT'
-    aliases: ['KEY_#353']
-
-  - name: 'KEY_ZOOM'
-    aliases: ['KEY_#372']
-
-  - name: 'BTN_WHEEL'
-    aliases: ['KEY_#336']
-
-  - name: 'KEY_SEARCH'
-    aliases: ['KEY_#217']
-
-  - name: 'KEY_LIST'
-    aliases: ['KEY_#395']
-
-  - name: 'KEY_KBDILLUMDOWN'
-    aliases: ['KEY_#229']
-
-  - name: 'KEY_APOSTROPHE'
-    aliases: ['KEY_#40']
-
-  - name: 'KEY_VOICEMAIL'
-    aliases: ['KEY_#428']
-
-  - name: 'KEY_WWW'
-    aliases: ['KEY_#150']
-
-  - name: 'KEY_PROGRAM'
-    aliases: ['KEY_#362']
-
-  - name: 'BTN_TL2'
-    aliases: ['KEY_#312']
-
-  - name: 'KEY_MODE'
-    aliases: ['KEY_#373']
-
-  - name: 'KEY_EJECTCD'
-    aliases: ['KEY_#161']
-
-  - name: 'BTN_TRIGGER_HAPPY10'
-    aliases: ['KEY_#713']
-
-  - name: 'BTN_TOOL_PEN'
-    aliases: ['KEY_#320']
-
-  - name: 'BTN_TRIGGER_HAPPY11'
-    aliases: ['KEY_#714']
-
-  - name: 'KEY_SHUFFLE'
-    aliases: ['KEY_#410']
-
-  - name: 'KEY_DIGITS'
-    aliases: ['KEY_#413']
-
-  - name: 'KEY_ZOOMOUT'
-    aliases: ['KEY_#419']
-
-  - name: 'KEY_REFRESH'
-    aliases: ['KEY_#173']
-
-  - name: 'BTN_TRIGGER_HAPPY12'
-    aliases: ['KEY_#715']
-
-  - name: 'KEY_VIDEOPHONE'
-    aliases: ['KEY_#416']
-
-  - name: 'KEY_DASHBOARD'
-    aliases: ['KEY_#204']
-
-  - name: 'KEY_SCROLLLOCK'
-    aliases: ['KEY_#70']
-
-  - name: 'BTN_TOOL_TRIPLETAP'
-    aliases: ['KEY_#334']
-
-  - name: 'BTN_TRIGGER_HAPPY13'
-    aliases: ['KEY_#716']
-
-  - name: 'KEY_TUNER'
-    aliases: ['KEY_#386']
-
-  - name: 'KEY_SHOP'
-    aliases: ['KEY_#221']
-
-  - name: 'KEY_FORWARD'
-    aliases: ['KEY_#159']
-
-  - name: 'KEY_PREVIOUSSONG'
-    aliases: ['KEY_#165']
-
-  - name: 'KEY_WAKEUP'
-    aliases: ['KEY_#143']
-
-  - name: 'BTN_X'
-    aliases: ['KEY_#307']
-
-  - name: 'BTN_THUMB'
-    aliases: ['KEY_#289']
-
-  - name: 'BTN_TRIGGER_HAPPY14'
-    aliases: ['KEY_#717']
-
-  - name: 'KEY_ZOOMRESET'
-    aliases: ['KEY_#420']
-
-  - name: 'KEY_POWER'
-    aliases: ['KEY_#116']
-
-  - name: 'KEY_ENTER'
-    aliases: ['KEY_#28']
-
-  - name: 'BTN_Y'
-    aliases: ['KEY_#308']
-
-  - name: 'KEY_QUESTION'
-    aliases: ['KEY_#214']
-
-  - name: 'KEY_SLASH'
-    aliases: ['KEY_#53']
-
-  - name: 'BTN_TRIGGER_HAPPY15'
-    aliases: ['KEY_#718']
-
-  - name: 'BTN_Z'
-    aliases: ['KEY_#309']
-
-  - name: 'BTN_TRIGGER_HAPPY16'
-    aliases: ['KEY_#719']
-
-  - name: 'KEY_YEN'
-    aliases: ['KEY_#124']
-
-  - name: 'KEY_RED'
-    aliases: ['KEY_#398']
-
-  - name: 'BTN_TRIGGER_HAPPY17'
-    aliases: ['KEY_#720']
-
-  - name: 'KEY_REPLY'
-    aliases: ['KEY_#232']
-
-  - name: 'BTN_TRIGGER_HAPPY18'
-    aliases: ['KEY_#721']
-
-  - name: 'BTN_EXTRA'
-    aliases: ['KEY_#276']
-
-  - name: 'KEY_TAPE'
-    aliases: ['KEY_#384']
-
-  - name: 'BTN_TOOL_PENCIL'
-    aliases: ['KEY_#323']
-
-  - name: 'KEY_CONFIG'
-    aliases: ['KEY_#171']
-
-  - name: 'BTN_TRIGGER_HAPPY19'
-    aliases: ['KEY_#722']
-
-  - name: 'KEY_SCROLLUP'
-    aliases: ['KEY_#177']
-
-  - name: 'KEY_UNKNOWN'
-    aliases: ['KEY_#240']
-
-  - name: 'KEY_BACKSPACE'
-    aliases: ['KEY_#14']
-
-  - name: 'BTN_MISC'
-    aliases: ['KEY_#256']
-
-  - name: 'KEY_INFO'
-    aliases: ['KEY_#358']
-
-  - name: 'KEY_CLOSE'
-    aliases: ['KEY_#206']
-
-  - name: 'KEY_NUMERIC_POUND'
-    aliases: ['KEY_#523']
-
-  - name: 'KEY_ALTERASE'
-    aliases: ['KEY_#222']
-
-  - name: 'KEY_KBDILLUMUP'
-    aliases: ['KEY_#230']
-
-  - name: 'KEY_CALENDAR'
-    aliases: ['KEY_#397']
-
-  - name: 'KEY_AGAIN'
-    aliases: ['KEY_#129']
-
-  - name: 'KEY_PROPS'
-    aliases: ['KEY_#130']
-
-  - name: 'BTN_PINKIE'
-    aliases: ['KEY_#293']
-
-  - name: 'KEY_EJECTCLOSECD'
-    aliases: ['KEY_#162']
-
-  - name: 'KEY_SYSRQ'
-    aliases: ['KEY_#99']
-
-  - name: 'KEY_LEFTCTRL'
-    aliases: ['KEY_#29']
-
-  - name: 'KEY_ZOOMIN'
-    aliases: ['KEY_#418']
-
-  - name: 'KEY_MENU'
-    aliases: ['KEY_#139']
-
-  - name: 'KEY_DVD'
-    aliases: ['KEY_#389']
-
-  - name: 'KEY_WORDPROCESSOR'
-    aliases: ['KEY_#421']
-
-  - name: 'KEY_TWEN'
-    aliases: ['KEY_#415']
-
-  - name: 'KEY_RESTART'
-    aliases: ['KEY_#408']
-
-  - name: 'KEY_DATABASE'
-    aliases: ['KEY_#426']
-
-  - name: 'KEY_10CHANNELSUP'
-    aliases: ['KEY_#440']
-
-  - name: 'KEY_STOPCD'
-    aliases: ['KEY_#166']
-
-  - name: 'BTN_TRIGGER_HAPPY1'
-    aliases: ['KEY_#704']
-
-  - name: 'KEY_CHANNELUP'
-    aliases: ['KEY_#402']
-
-  - name: 'KEY_PRINT'
-    aliases: ['KEY_#210']
-
-  - name: 'KEY_WIMAX'
-    aliases: ['KEY_#246']
-
-  - name: 'KEY_OK'
-    aliases: ['KEY_#352']
-
-  - name: 'BTN_TRIGGER_HAPPY2'
-    aliases: ['KEY_#705']
-
-  - name: 'KEY_PREVIOUS'
-    aliases: ['KEY_#412']
-
-  - name: 'KEY_VCR'
-    aliases: ['KEY_#379']
-
-  - name: 'KEY_CUT'
-    aliases: ['KEY_#137']
-
-  - name: 'BTN_TRIGGER_HAPPY3'
-    aliases: ['KEY_#706']
-
-  - name: 'KEY_BRIGHTNESS_CYCLE'
-    aliases: ['KEY_#243']
-
-  - name: 'KEY_0'
-    aliases: ['KEY_#11']
-
-  - name: 'KEY_RIGHT'
-    aliases: ['KEY_#106']
-
-  - name: 'BTN_TRIGGER_HAPPY4'
-    aliases: ['KEY_#707']
-
-  - name: 'KEY_1'
-    aliases: ['KEY_#2']
-
-  - name: 'BTN_TRIGGER_HAPPY5'
-    aliases: ['KEY_#708']
-
-  - name: 'KEY_DEL_EOL'
-    aliases: ['KEY_#448']
-
-  - name: 'KEY_2'
-    aliases: ['KEY_#3']
-
-  - name: 'KEY_TITLE'
-    aliases: ['KEY_#369']
-
-  - name: 'KEY_KEYBOARD'
-    aliases: ['KEY_#374']
-
-  - name: 'KEY_FIRST'
-    aliases: ['KEY_#404']
-
-  - name: 'KEY_TV2'
-    aliases: ['KEY_#378']
-
-  - name: 'KEY_FN_F10'
-    aliases: ['KEY_#475']
-
-  - name: 'KEY_3'
-    aliases: ['KEY_#4']
-
-  - name: 'BTN_TRIGGER_HAPPY6'
-    aliases: ['KEY_#709']
-
-  - name: 'KEY_TOUCHPAD_OFF'
-    aliases: ['KEY_#532']
-
-  - name: 'KEY_FN_F11'
-    aliases: ['KEY_#476']
-
-  - name: 'KEY_4'
-    aliases: ['KEY_#5']
-
-  - name: 'KEY_SETUP'
-    aliases: ['KEY_#141']
-
-  - name: 'BTN_TRIGGER_HAPPY7'
-    aliases: ['KEY_#710']
-
-  - name: 'KEY_CAMERA_FOCUS'
-    aliases: ['KEY_#528']
-
-  - name: 'KEY_FN_F12'
-    aliases: ['KEY_#477']
-
-  - name: 'KEY_5'
-    aliases: ['KEY_#6']
-
-  - name: 'KEY_PROG1'
-    aliases: ['KEY_#148']
-
-  - name: 'BTN_TRIGGER_HAPPY40'
-    aliases: ['KEY_#743']
-
-  - name: 'BTN_TRIGGER_HAPPY8'
-    aliases: ['KEY_#711']
-
-  - name: 'KEY_UNDO'
-    aliases: ['KEY_#131']
-
-  - name: 'KEY_6'
-    aliases: ['KEY_#7']
-
-  - name: 'KEY_PROG2'
-    aliases: ['KEY_#149']
-
-  - name: 'KEY_REWIND'
-    aliases: ['KEY_#168']
-
-  - name: 'BTN_TRIGGER_HAPPY9'
-    aliases: ['KEY_#712']
-
-  - name: 'KEY_CAMERA_RIGHT'
-    aliases: ['KEY_#538']
-
-  - name: 'KEY_TEXT'
-    aliases: ['KEY_#388']
-
-  - name: 'KEY_7'
-    aliases: ['KEY_#8']
-
-  - name: 'KEY_PROG3'
-    aliases: ['KEY_#202']
-
-  - name: 'KEY_8'
-    aliases: ['KEY_#9']
-
-  - name: 'KEY_PROG4'
-    aliases: ['KEY_#203']
-
-  - name: 'KEY_MAIL'
-    aliases: ['KEY_#155']
-
-  - name: 'KEY_DEL_EOS'
-    aliases: ['KEY_#449']
-
-  - name: 'BTN_MODE'
-    aliases: ['KEY_#316']
-
-  - name: 'KEY_HENKAN'
-    aliases: ['KEY_#92']
-
-  - name: 'KEY_9'
+  - name: 'ABS_BRAKE'
     aliases: ['KEY_#10']
 
-  - name: 'KEY_YELLOW'
-    aliases: ['KEY_#400']
-
-  - name: 'BTN_THUMB2'
-    aliases: ['KEY_#290']
-
-  - name: 'BTN_TOUCH'
-    aliases: ['KEY_#330']
-
-  - name: 'KEY_MIN_INTERESTING'
-
-  - name: 'BTN_STYLUS'
-    aliases: ['KEY_#331']
-
-  - name: 'KEY_CHANNELDOWN'
-    aliases: ['KEY_#403']
-
-  - name: 'KEY_SLEEP'
-    aliases: ['KEY_#142']
-
-  - name: 'KEY_TOUCHPAD_TOGGLE'
-    aliases: ['KEY_#530']
-
-  - name: 'KEY_CD'
-    aliases: ['KEY_#383']
-
-  - name: 'KEY_SAT'
-    aliases: ['KEY_#381']
-
-  - name: 'KEY_DISPLAYTOGGLE'
-    aliases: ['KEY_#431']
-
-  - name: 'KEY_TV'
-    aliases: ['KEY_#377']
-
-  - name: 'KEY_MOVE'
-    aliases: ['KEY_#175']
-
-  - name: 'KEY_CONTEXT_MENU'
-    aliases: ['KEY_#438']
-
-  - name: 'KEY_BASSBOOST'
-    aliases: ['KEY_#209']
-
-  - name: 'BTN_TRIGGER'
-    aliases: ['KEY_#288']
-
-  - name: 'KEY_SCROLLDOWN'
-    aliases: ['KEY_#178']
-
-  - name: 'KEY_RIGHTSHIFT'
-    aliases: ['KEY_#54']
-
-  - name: 'KEY_POWER2'
-    aliases: ['KEY_#356']
-
-  - name: 'KEY_RFKILL'
-    aliases: ['KEY_#247']
-
-  - name: 'KEY_HOMEPAGE'
-    aliases: ['KEY_#172']
-
-  - name: 'KEY_TOUCHPAD_ON'
-    aliases: ['KEY_#531']
-
-  - name: 'KEY_A'
-    aliases: ['KEY_#30']
-
-  - name: 'BTN_START'
-    aliases: ['KEY_#315']
-
-  - name: 'KEY_RIGHTBRACE'
-    aliases: ['KEY_#27']
-
-  - name: 'KEY_B'
-    aliases: ['KEY_#48']
-
-  - name: 'BTN_BASE'
-    aliases: ['KEY_#294']
-
-  - name: 'KEY_F1'
-    aliases: ['KEY_#59']
-
-  - name: 'KEY_C'
-    aliases: ['KEY_#46']
-
-  - name: 'KEY_F2'
-    aliases: ['KEY_#60']
-
-  - name: 'KEY_XFER'
-    aliases: ['KEY_#147']
-
-  - name: 'KEY_BLUETOOTH'
-    aliases: ['KEY_#237']
-
-  - name: 'KEY_D'
-    aliases: ['KEY_#32']
-
-  - name: 'KEY_F3'
-    aliases: ['KEY_#61']
-
-  - name: 'KEY_MUHENKAN'
-    aliases: ['KEY_#94']
-
-  - name: 'KEY_RIGHTALT'
-    aliases: ['KEY_#100']
-
-  - name: 'KEY_E'
-    aliases: ['KEY_#18']
-
-  - name: 'KEY_INSERT'
-    aliases: ['KEY_#110']
-
-  - name: 'KEY_F4'
-    aliases: ['KEY_#62']
-
-  - name: 'KEY_CHANNEL'
-    aliases: ['KEY_#363']
-
-  - name: 'KEY_PLAYPAUSE'
-    aliases: ['KEY_#164']
-
-  - name: 'KEY_F'
-    aliases: ['KEY_#33']
-
-  - name: 'BTN_TOP2'
-    aliases: ['KEY_#292']
-
-  - name: 'KEY_F5'
-    aliases: ['KEY_#63']
-
-  - name: 'KEY_FORWARDMAIL'
-    aliases: ['KEY_#233']
-
-  - name: 'KEY_INS_LINE'
-    aliases: ['KEY_#450']
-
-  - name: 'KEY_G'
-    aliases: ['KEY_#34']
-
-  - name: 'KEY_F6'
-    aliases: ['KEY_#64']
-
-  - name: 'KEY_KPENTER'
-    aliases: ['KEY_#96']
-
-  - name: 'KEY_KPSLASH'
-    aliases: ['KEY_#98']
-
-  - name: 'KEY_LAST'
-    aliases: ['KEY_#405']
-
-  - name: 'BTN_TOOL_LENS'
-    aliases: ['KEY_#327']
+  key:
+  - name: 'BTN_TRIGGER_HAPPY17'
+    aliases: ['KEY_#720']
 
   - name: 'KEY_F7'
     aliases: ['KEY_#65']
 
-  - name: 'KEY_CONNECT'
-    aliases: ['KEY_#218']
-
-  - name: 'KEY_H'
-    aliases: ['KEY_#35']
-
-  - name: 'KEY_FINANCE'
-    aliases: ['KEY_#219']
-
-  - name: 'KEY_F8'
-    aliases: ['KEY_#66']
-
-  - name: 'KEY_HP'
-    aliases: ['KEY_#211']
-
-  - name: 'KEY_EDIT'
-    aliases: ['KEY_#176']
-
-  - name: 'BTN_GEAR_UP'
-    aliases: ['KEY_#337']
-
-  - name: 'KEY_I'
-    aliases: ['KEY_#23']
-
-  - name: 'KEY_RECORD'
-    aliases: ['KEY_#167']
-
-  - name: 'KEY_F9'
-    aliases: ['KEY_#67']
-
-  - name: 'KEY_EQUAL'
-    aliases: ['KEY_#13']
-
-  - name: 'KEY_KPPLUSMINUS'
-    aliases: ['KEY_#118']
-
-  - name: 'KEY_J'
-    aliases: ['KEY_#36']
-
-  - name: 'KEY_FN_ESC'
-    aliases: ['KEY_#465']
-
-  - name: 'KEY_K'
-    aliases: ['KEY_#37']
-
-  - name: 'KEY_CAMERA_ZOOMOUT'
-    aliases: ['KEY_#534']
-
-  - name: 'BTN_TOOL_AIRBRUSH'
-    aliases: ['KEY_#324']
-
-  - name: 'KEY_RADIO'
-    aliases: ['KEY_#385']
-
-  - name: 'KEY_COMPOSE'
-    aliases: ['KEY_#127']
-
-  - name: 'KEY_DIRECTION'
-    aliases: ['KEY_#153']
-
-  - name: 'BTN_MOUSE'
-    aliases: ['KEY_#272']
-
-  - name: 'KEY_L'
-    aliases: ['KEY_#38']
-
-  - name: 'KEY_RO'
-    aliases: ['KEY_#89']
-
-  - name: 'KEY_M'
-    aliases: ['KEY_#50']
-
-  - name: 'BTN_TRIGGER_HAPPY20'
-    aliases: ['KEY_#723']
-
-  - name: 'BTN_FORWARD'
-    aliases: ['KEY_#277']
-
-  - name: 'KEY_HANGUEL'
-
-  - name: 'KEY_FIND'
-    aliases: ['KEY_#136']
-
-  - name: 'KEY_N'
-    aliases: ['KEY_#49']
-
-  - name: 'BTN_TRIGGER_HAPPY21'
-    aliases: ['KEY_#724']
-
-  - name: 'KEY_EXIT'
-    aliases: ['KEY_#174']
-
-  - name: 'KEY_O'
-    aliases: ['KEY_#24']
-
-  - name: 'BTN_TRIGGER_HAPPY22'
-    aliases: ['KEY_#725']
-
-  - name: 'KEY_SEND'
-    aliases: ['KEY_#231']
-
-  - name: 'KEY_MINUS'
-    aliases: ['KEY_#12']
-
-  - name: 'KEY_HANJA'
-    aliases: ['KEY_#123']
-
-  - name: 'KEY_UWB'
-    aliases: ['KEY_#239']
-
-  - name: 'KEY_P'
-    aliases: ['KEY_#25']
-
-  - name: 'BTN_TR2'
-    aliases: ['KEY_#313']
-
-  - name: 'BTN_TRIGGER_HAPPY23'
-    aliases: ['KEY_#726']
-
-  - name: 'KEY_F10'
-    aliases: ['KEY_#68']
-
-  - name: 'KEY_AB'
-    aliases: ['KEY_#406']
-
-  - name: 'KEY_PAGEDOWN'
-    aliases: ['KEY_#109']
-
-  - name: 'BTN_SELECT'
-    aliases: ['KEY_#314']
-
-  - name: 'KEY_Q'
-    aliases: ['KEY_#16']
-
-  - name: 'BTN_TRIGGER_HAPPY24'
-    aliases: ['KEY_#727']
-
-  - name: 'KEY_DOT'
-    aliases: ['KEY_#52']
-
-  - name: 'KEY_EPG'
-    aliases: ['KEY_#365']
-
-  - name: 'KEY_R'
-    aliases: ['KEY_#19']
-
-  - name: 'BTN_TOOL_MOUSE'
-    aliases: ['KEY_#326']
-
-  - name: 'KEY_F11'
-    aliases: ['KEY_#87']
-
-  - name: 'BTN_TRIGGER_HAPPY25'
-    aliases: ['KEY_#728']
-
-  - name: 'BTN_TOP'
-    aliases: ['KEY_#291']
-
-  - name: 'BTN_THUMBL'
-    aliases: ['KEY_#317']
-
-  - name: 'KEY_SCREENLOCK'
-
-  - name: 'KEY_NEWS'
-    aliases: ['KEY_#427']
-
-  - name: 'KEY_NEW'
-    aliases: ['KEY_#181']
-
-  - name: 'KEY_S'
-    aliases: ['KEY_#31']
-
-  - name: 'KEY_SOUND'
-    aliases: ['KEY_#213']
-
-  - name: 'KEY_F12'
-    aliases: ['KEY_#88']
-
-  - name: 'BTN_TRIGGER_HAPPY26'
-    aliases: ['KEY_#729']
-
-  - name: 'KEY_T'
-    aliases: ['KEY_#20']
-
-  - name: 'KEY_F13'
-    aliases: ['KEY_#183']
-
-  - name: 'BTN_TRIGGER_HAPPY27'
-    aliases: ['KEY_#730']
-
-  - name: 'KEY_EMAIL'
-    aliases: ['KEY_#215']
-
-  - name: 'KEY_102ND'
-    aliases: ['KEY_#86']
-
-  - name: 'BTN_DEAD'
-    aliases: ['KEY_#303']
-
-  - name: 'KEY_STOP'
-    aliases: ['KEY_#128']
-
-  - name: 'KEY_U'
-    aliases: ['KEY_#22']
-
-  - name: 'KEY_F14'
-    aliases: ['KEY_#184']
-
-  - name: 'BTN_TRIGGER_HAPPY28'
-    aliases: ['KEY_#731']
-
-  - name: 'KEY_COMMA'
-    aliases: ['KEY_#51']
-
-  - name: 'KEY_TIME'
-    aliases: ['KEY_#359']
-
-  - name: 'KEY_SWITCHVIDEOMODE'
-    aliases: ['KEY_#227']
-
-  - name: 'KEY_V'
-    aliases: ['KEY_#47']
-
-  - name: 'KEY_F15'
-    aliases: ['KEY_#185']
-
-  - name: 'BTN_TRIGGER_HAPPY29'
-    aliases: ['KEY_#732']
-
-  - name: 'KEY_PAGEUP'
-    aliases: ['KEY_#104']
-
-  - name: 'KEY_REDO'
-    aliases: ['KEY_#182']
-
-  - name: 'KEY_W'
-    aliases: ['KEY_#17']
-
-  - name: 'KEY_F16'
-    aliases: ['KEY_#186']
-
-  - name: 'KEY_KP0'
-    aliases: ['KEY_#82']
-
-  - name: 'KEY_AUDIO'
-    aliases: ['KEY_#392']
-
-  - name: 'KEY_X'
-    aliases: ['KEY_#45']
-
-  - name: 'KEY_F17'
-    aliases: ['KEY_#187']
-
-  - name: 'KEY_SEMICOLON'
-    aliases: ['KEY_#39']
-
-  - name: 'KEY_KP1'
-    aliases: ['KEY_#79']
-
-  - name: 'KEY_MSDOS'
-    aliases: ['KEY_#151']
-
-  - name: 'KEY_TEEN'
-    aliases: ['KEY_#414']
-
-  - name: 'BTN_THUMBR'
-    aliases: ['KEY_#318']
-
-  - name: 'KEY_OPEN'
-    aliases: ['KEY_#134']
-
-  - name: 'KEY_Y'
-    aliases: ['KEY_#21']
-
-  - name: 'KEY_F18'
-    aliases: ['KEY_#188']
-
-  - name: 'KEY_KP2'
-    aliases: ['KEY_#80']
-
-  - name: 'KEY_EDITOR'
-    aliases: ['KEY_#422']
-
-  - name: 'KEY_PC'
-    aliases: ['KEY_#376']
-
-  - name: 'BTN_TL'
-    aliases: ['KEY_#310']
-
-  - name: 'KEY_Z'
-    aliases: ['KEY_#44']
-
-  - name: 'KEY_F19'
-    aliases: ['KEY_#189']
-
-  - name: 'KEY_KP3'
-    aliases: ['KEY_#81']
-
-  - name: 'BTN_LEFT'
-    aliases: ['KEY_#272']
-
-  - name: 'KEY_KP4'
-    aliases: ['KEY_#75']
-
-  - name: 'KEY_CHAT'
-    aliases: ['KEY_#216']
-
-  - name: 'BTN_TOOL_DOUBLETAP'
-    aliases: ['KEY_#333']
-
-  - name: 'KEY_CLOSECD'
-    aliases: ['KEY_#160']
-
-  - name: 'KEY_VOLUMEUP'
-    aliases: ['KEY_#115']
-
-  - name: 'KEY_KP5'
-    aliases: ['KEY_#76']
-
-  - name: 'KEY_FN_F1'
-    aliases: ['KEY_#466']
-
-  - name: 'KEY_KP6'
-    aliases: ['KEY_#77']
-
-  - name: 'KEY_KBDILLUMTOGGLE'
-    aliases: ['KEY_#228']
-
-  - name: 'KEY_FN_F2'
-    aliases: ['KEY_#467']
-
-  - name: 'KEY_ISO'
-    aliases: ['KEY_#170']
-
-  - name: 'KEY_KP7'
-    aliases: ['KEY_#71']
-
-  - name: 'KEY_BRIGHTNESSDOWN'
-    aliases: ['KEY_#224']
-
-  - name: 'KEY_FN_F3'
-    aliases: ['KEY_#468']
-
-  - name: 'KEY_COPY'
-    aliases: ['KEY_#133']
-
-  - name: 'KEY_OPTION'
-    aliases: ['KEY_#357']
-
-  - name: 'KEY_KP8'
-    aliases: ['KEY_#72']
-
-  - name: 'KEY_FN_F4'
-    aliases: ['KEY_#469']
-
-  - name: 'KEY_FN'
-    aliases: ['KEY_#464']
-
-  - name: 'KEY_CAPSLOCK'
-    aliases: ['KEY_#58']
-
-  - name: 'KEY_KP9'
-    aliases: ['KEY_#73']
-
-  - name: 'KEY_NUMERIC_0'
-    aliases: ['KEY_#512']
-
-  - name: 'KEY_FN_F5'
-    aliases: ['KEY_#470']
-
-  - name: 'KEY_DEL_LINE'
-    aliases: ['KEY_#451']
-
-  - name: 'BTN_TR'
-    aliases: ['KEY_#311']
-
-  - name: 'KEY_KPRIGHTPAREN'
-    aliases: ['KEY_#180']
-
-  - name: 'BTN_TOOL_QUADTAP'
-    aliases: ['KEY_#335']
-
-  - name: 'KEY_NUMERIC_1'
-    aliases: ['KEY_#513']
-
-  - name: 'KEY_FN_F6'
-    aliases: ['KEY_#471']
-
-  - name: 'KEY_IMAGES'
-    aliases: ['KEY_#442']
-
-  - name: 'BTN_TOOL_BRUSH'
-    aliases: ['KEY_#322']
-
-  - name: 'KEY_HELP'
-    aliases: ['KEY_#138']
-
-  - name: 'KEY_LEFTBRACE'
-    aliases: ['KEY_#26']
-
-  - name: 'KEY_RIGHTMETA'
-    aliases: ['KEY_#126']
-
-  - name: 'KEY_FN_F7'
-    aliases: ['KEY_#472']
-
-  - name: 'KEY_MESSENGER'
-    aliases: ['KEY_#430']
-
-  - name: 'KEY_KATAKANAHIRAGANA'
-    aliases: ['KEY_#93']
-
-  - name: 'KEY_NUMERIC_2'
-    aliases: ['KEY_#514']
-
-  - name: 'KEY_FN_F8'
-    aliases: ['KEY_#473']
-
-  - name: 'KEY_BACKSLASH'
-    aliases: ['KEY_#43']
-
-  - name: 'KEY_BREAK'
-    aliases: ['KEY_#411']
-
-  - name: 'KEY_NUMERIC_3'
-    aliases: ['KEY_#515']
-
-  - name: 'KEY_FN_F9'
-    aliases: ['KEY_#474']
-
-  - name: 'KEY_CYCLEWINDOWS'
-    aliases: ['KEY_#154']
-
-  - name: 'KEY_COFFEE'
-    aliases: ['KEY_#152KEY_SCREENLOCK', 'KEY_#152KEY_SCREENLOCK']
-    aliases: ['KEY_#152KEY_SCREENLOCK', 'KEY_#152KEY_SCREENLOCK']
-
-  - name: 'BTN_TOOL_FINGER'
-    aliases: ['KEY_#325']
-
-  - name: 'KEY_SPELLCHECK'
-    aliases: ['KEY_#432']
-
-  - name: 'KEY_NUMERIC_4'
-    aliases: ['KEY_#516']
-
-  - name: 'KEY_ZENKAKUHANKAKU'
-    aliases: ['KEY_#85']
-
-  - name: 'KEY_LINEFEED'
-    aliases: ['KEY_#101']
-
-  - name: 'KEY_SUBTITLE'
-    aliases: ['KEY_#370']
-
-  - name: 'KEY_NUMERIC_5'
-    aliases: ['KEY_#517']
-
-  - name: 'KEY_DELETEFILE'
-    aliases: ['KEY_#146']
-
-  - name: 'KEY_NUMERIC_6'
-    aliases: ['KEY_#518']
-
-  - name: 'KEY_END'
-    aliases: ['KEY_#107']
-
-  - name: 'KEY_BLUE'
-    aliases: ['KEY_#401']
-
-  - name: 'KEY_FILE'
-    aliases: ['KEY_#144']
-
-  - name: 'KEY_PRESENTATION'
-    aliases: ['KEY_#425']
-
-  - name: 'KEY_MACRO'
-    aliases: ['KEY_#112']
-
-  - name: 'KEY_VCR2'
-    aliases: ['KEY_#380']
-
-  - name: 'KEY_CAMERA_DOWN'
-    aliases: ['KEY_#536']
-
-  - name: 'KEY_NUMERIC_7'
-    aliases: ['KEY_#519']
-
-  - name: 'KEY_NUMERIC_8'
-    aliases: ['KEY_#520']
-
-  - name: 'KEY_BATTERY'
-    aliases: ['KEY_#236']
-
-  - name: 'KEY_GRAPHICSEDITOR'
-    aliases: ['KEY_#424']
-
-  - name: 'KEY_UP'
-    aliases: ['KEY_#103']
-
-  - name: 'KEY_ESC'
-    aliases: ['KEY_#1']
-
-  - name: 'KEY_CAMERA_ZOOMIN'
-    aliases: ['KEY_#533']
-
-  - name: 'KEY_NUMERIC_9'
-    aliases: ['KEY_#521']
-
-  - name: 'BTN_SIDE'
-    aliases: ['KEY_#275']
-
-  - name: 'KEY_HANGEUL'
-    aliases: ['KEY_#122KEY_HANGUEL', 'KEY_#122KEY_HANGUEL']
-    aliases: ['KEY_#122KEY_HANGUEL', 'KEY_#122KEY_HANGUEL']
-
-  - name: 'KEY_FN_1'
-    aliases: ['KEY_#478']
-
-  - name: 'KEY_LOGOFF'
-    aliases: ['KEY_#433']
-
-  - name: 'KEY_SPACE'
-    aliases: ['KEY_#57']
-
-  - name: 'KEY_FASTFORWARD'
-    aliases: ['KEY_#208']
-
-  - name: 'KEY_BRL_DOT10'
-    aliases: ['KEY_#506']
-
-  - name: 'KEY_FN_2'
-    aliases: ['KEY_#479']
-
-  - name: 'KEY_SCALE'
-    aliases: ['KEY_#120']
-
-  - name: 'KEY_BACK'
-    aliases: ['KEY_#158']
-
-  - name: 'KEY_FRAMEBACK'
-    aliases: ['KEY_#436']
-
-  - name: 'KEY_SPORT'
-    aliases: ['KEY_#220']
-
-  - name: 'KEY_MEDIA'
-    aliases: ['KEY_#226']
-
-  - name: 'KEY_CAMERA_LEFT'
-    aliases: ['KEY_#537']
-
-  - name: 'KEY_ANGLE'
-    aliases: ['KEY_#371']
-
-  - name: 'KEY_MUTE'
-    aliases: ['KEY_#113KEY_MIN_INTERESTING', 'KEY_#113KEY_MIN_INTERESTING']
-    aliases: ['KEY_#113KEY_MIN_INTERESTING', 'KEY_#113KEY_MIN_INTERESTING']
-
-  - name: 'BTN_STYLUS2'
-    aliases: ['KEY_#332']
-
-  - name: 'KEY_DOLLAR'
-    aliases: ['KEY_#434']
-
-  - name: 'KEY_PVR'
-    aliases: ['KEY_#366']
-
-  - name: 'KEY_MEMO'
-    aliases: ['KEY_#396']
-
-  - name: 'KEY_COMPUTER'
-    aliases: ['KEY_#157']
-
-  - name: 'KEY_KPEQUAL'
-    aliases: ['KEY_#117']
-
-  - name: 'BTN_BASE2'
-    aliases: ['KEY_#295']
-
-  - name: 'KEY_RESERVED'
-    aliases: ['KEY_#0']
-
-  - name: 'BTN_BASE3'
-    aliases: ['KEY_#296']
-
-  - name: 'BTN_0'
-    aliases: ['KEY_#256']
-
-  - name: 'KEY_NUMERIC_STAR'
-    aliases: ['KEY_#522']
-
-  - name: 'KEY_10CHANNELSDOWN'
-    aliases: ['KEY_#441']
-
-  - name: 'BTN_1'
-    aliases: ['KEY_#257']
-
-  - name: 'BTN_RIGHT'
-    aliases: ['KEY_#273']
-
-  - name: 'KEY_KATAKANA'
-    aliases: ['KEY_#90']
-
-  - name: 'KEY_WPS_BUTTON'
-    aliases: ['KEY_#529']
-
-  - name: 'KEY_VIDEO_NEXT'
-    aliases: ['KEY_#241']
-
-  - name: 'BTN_BASE4'
-    aliases: ['KEY_#297']
-
-  - name: 'BTN_2'
-    aliases: ['KEY_#258']
-
-  - name: 'KEY_LANGUAGE'
-    aliases: ['KEY_#368']
-
-  - name: 'KEY_BRIGHTNESSUP'
-    aliases: ['KEY_#225']
-
-  - name: 'BTN_BASE5'
-    aliases: ['KEY_#298']
-
-  - name: 'BTN_3'
-    aliases: ['KEY_#259']
-
-  - name: 'KEY_HIRAGANA'
-    aliases: ['KEY_#91']
-
-  - name: 'BTN_DIGI'
-    aliases: ['KEY_#320']
-
-  - name: 'KEY_PHONE'
-    aliases: ['KEY_#169']
-
-  - name: 'BTN_BASE6'
-    aliases: ['KEY_#299']
-
-  - name: 'BTN_4'
-    aliases: ['KEY_#260']
-
-  - name: 'KEY_VOLUMEDOWN'
-    aliases: ['KEY_#114']
-
-  - name: 'KEY_KPMINUS'
-    aliases: ['KEY_#74']
-
-  - name: 'BTN_5'
-    aliases: ['KEY_#261']
-
-  - name: 'KEY_SPREADSHEET'
-    aliases: ['KEY_#423']
-
-  - name: 'KEY_NUMLOCK'
-    aliases: ['KEY_#69']
+  - name: 'BTN_TOOL_LENS'
+    aliases: ['KEY_#327']
+
+  - name: 'KEY_UNDO'
+    aliases: ['KEY_#131']
 
   - name: 'BTN_6'
     aliases: ['KEY_#262']
 
-  - name: 'KEY_KPLEFTPAREN'
-    aliases: ['KEY_#179']
+  - name: 'KEY_VIDEO'
+    aliases: ['KEY_#393']
 
-  - name: 'BTN_TRIGGER_HAPPY'
-    aliases: ['KEY_#704']
+  - name: 'KEY_RESERVED'
+    aliases: ['KEY_#0']
+
+  - name: 'BTN_TRIGGER_HAPPY18'
+    aliases: ['KEY_#721']
+
+  - name: 'KEY_F8'
+    aliases: ['KEY_#66']
+
+  - name: 'KEY_FRONT'
+    aliases: ['KEY_#132']
 
   - name: 'BTN_7'
     aliases: ['KEY_#263']
 
-  - name: 'KEY_VIDEO'
-    aliases: ['KEY_#393']
+  - name: 'KEY_DIRECTORY'
+    aliases: ['KEY_#394']
+
+  - name: 'KEY_ESC'
+    aliases: ['KEY_#1']
+
+  - name: 'BTN_TRIGGER_HAPPY19'
+    aliases: ['KEY_#722']
+
+  - name: 'KEY_F9'
+    aliases: ['KEY_#67']
+
+  - name: 'KEY_COPY'
+    aliases: ['KEY_#133']
 
   - name: 'BTN_8'
     aliases: ['KEY_#264']
 
-  - name: 'KEY_CAMERA'
-    aliases: ['KEY_#212']
+  - name: 'KEY_LIST'
+    aliases: ['KEY_#395']
 
-  - name: 'KEY_FN_B'
-    aliases: ['KEY_#484']
+  - name: 'KEY_1'
+    aliases: ['KEY_#2']
 
-  - name: 'KEY_GRAVE'
-    aliases: ['KEY_#41']
+  - name: 'BTN_TRIGGER_HAPPY20'
+    aliases: ['KEY_#723']
+
+  - name: 'BTN_TOUCH'
+    aliases: ['KEY_#330']
+
+  - name: 'KEY_F10'
+    aliases: ['KEY_#68']
 
   - name: 'BTN_9'
     aliases: ['KEY_#265']
 
-  - name: 'BTN_GAMEPAD'
-    aliases: ['KEY_#304']
+  - name: 'KEY_MEMO'
+    aliases: ['KEY_#396']
 
-  - name: 'KEY_SUSPEND'
-    aliases: ['KEY_#205']
+  - name: 'KEY_2'
+    aliases: ['KEY_#3']
+
+  - name: 'KEY_OPEN'
+    aliases: ['KEY_#134']
+
+  - name: 'BTN_TRIGGER_HAPPY21'
+    aliases: ['KEY_#724']
+
+  - name: 'KEY_PLAYCD'
+    aliases: ['KEY_#200']
+
+  - name: 'BTN_STYLUS'
+    aliases: ['KEY_#331']
+
+  - name: 'KEY_NUMLOCK'
+    aliases: ['KEY_#69']
+
+  - name: 'KEY_CAMERA_FOCUS'
+    aliases: ['KEY_#528']
+
+  - name: 'KEY_CALENDAR'
+    aliases: ['KEY_#397']
+
+  - name: 'KEY_3'
+    aliases: ['KEY_#4']
+
+  - name: 'KEY_PASTE'
+    aliases: ['KEY_#135']
+
+  - name: 'BTN_TRIGGER_HAPPY22'
+    aliases: ['KEY_#725']
+
+  - name: 'BTN_STYLUS2'
+    aliases: ['KEY_#332']
+
+  - name: 'KEY_SCROLLLOCK'
+    aliases: ['KEY_#70']
+
+  - name: 'KEY_PAUSECD'
+    aliases: ['KEY_#201']
+
+  - name: 'KEY_WPS_BUTTON'
+    aliases: ['KEY_#529']
+
+  - name: 'KEY_RED'
+    aliases: ['KEY_#398']
+
+  - name: 'KEY_4'
+    aliases: ['KEY_#5']
+
+  - name: 'KEY_FIND'
+    aliases: ['KEY_#136']
+
+  - name: 'BTN_TRIGGER_HAPPY23'
+    aliases: ['KEY_#726']
+
+  - name: 'BTN_TOOL_DOUBLETAP'
+    aliases: ['KEY_#333']
+
+  - name: 'KEY_FN'
+    aliases: ['KEY_#464']
+
+  - name: 'KEY_KP7'
+    aliases: ['KEY_#71']
+
+  - name: 'KEY_PROG3'
+    aliases: ['KEY_#202']
+
+  - name: 'KEY_TOUCHPAD_TOGGLE'
+    aliases: ['KEY_#530']
 
   - name: 'KEY_GREEN'
     aliases: ['KEY_#399']
 
-  - name: 'KEY_AUX'
-    aliases: ['KEY_#390']
+  - name: 'KEY_5'
+    aliases: ['KEY_#6']
 
-  - name: 'KEY_DISPLAY_OFF'
-    aliases: ['KEY_#245']
+  - name: 'KEY_CUT'
+    aliases: ['KEY_#137']
 
-  - name: 'KEY_FN_D'
-    aliases: ['KEY_#480']
+  - name: 'BTN_TRIGGER_HAPPY24'
+    aliases: ['KEY_#727']
 
-  - name: 'KEY_ARCHIVE'
-    aliases: ['KEY_#361']
+  - name: 'BTN_TOOL_TRIPLETAP'
+    aliases: ['KEY_#334']
 
-  - name: 'BTN_TOOL_RUBBER'
-    aliases: ['KEY_#321']
+  - name: 'KEY_FN_ESC'
+    aliases: ['KEY_#465']
 
-  - name: 'KEY_FN_E'
-    aliases: ['KEY_#481']
+  - name: 'KEY_KP8'
+    aliases: ['KEY_#72']
 
-  - name: 'KEY_KPASTERISK'
-    aliases: ['KEY_#55']
+  - name: 'KEY_PROG4'
+    aliases: ['KEY_#203']
 
-  - name: 'KEY_KPPLUS'
-    aliases: ['KEY_#78']
+  - name: 'KEY_TOUCHPAD_ON'
+    aliases: ['KEY_#531']
+
+  - name: 'KEY_YELLOW'
+    aliases: ['KEY_#400']
+
+  - name: 'KEY_6'
+    aliases: ['KEY_#7']
+
+  - name: 'KEY_HELP'
+    aliases: ['KEY_#138']
+
+  - name: 'BTN_TRIGGER_HAPPY25'
+    aliases: ['KEY_#728']
+
+  - name: 'KEY_FN_F1'
+    aliases: ['KEY_#466']
+
+  - name: 'KEY_KP9'
+    aliases: ['KEY_#73']
+
+  - name: 'KEY_DASHBOARD'
+    aliases: ['KEY_#204']
+
+  - name: 'BTN_TOOL_QUADTAP'
+    aliases: ['KEY_#335']
+
+  - name: 'KEY_TOUCHPAD_OFF'
+    aliases: ['KEY_#532']
+
+  - name: 'KEY_BLUE'
+    aliases: ['KEY_#401']
+
+  - name: 'KEY_7'
+    aliases: ['KEY_#8']
+
+  - name: 'KEY_MENU'
+    aliases: ['KEY_#139']
+
+  - name: 'BTN_TRIGGER_HAPPY26'
+    aliases: ['KEY_#729']
+
+  - name: 'KEY_FN_F2'
+    aliases: ['KEY_#467']
+
+  - name: 'KEY_KPMINUS'
+    aliases: ['KEY_#74']
+
+  - name: 'KEY_SUSPEND'
+    aliases: ['KEY_#205']
+
+  - name: 'BTN_WHEEL'
+    aliases: ['KEY_#336', 'BTN_GEAR_DOWN']
+
+  - name: 'KEY_CAMERA_ZOOMIN'
+    aliases: ['KEY_#533']
+
+  - name: 'KEY_8'
+    aliases: ['KEY_#9']
+
+  - name: 'KEY_CALC'
+    aliases: ['KEY_#140']
+
+  - name: 'KEY_CHANNELUP'
+    aliases: ['KEY_#402']
+
+  - name: 'BTN_TRIGGER_HAPPY27'
+    aliases: ['KEY_#730']
+
+  - name: 'KEY_FN_F3'
+    aliases: ['KEY_#468']
+
+  - name: 'KEY_KP4'
+    aliases: ['KEY_#75']
+
+  - name: 'KEY_CLOSE'
+    aliases: ['KEY_#206']
+
+  - name: 'BTN_GEAR_UP'
+    aliases: ['KEY_#337']
+
+  - name: 'KEY_CAMERA_ZOOMOUT'
+    aliases: ['KEY_#534']
+
+  - name: 'KEY_9'
+    aliases: ['KEY_#10']
+
+  - name: 'KEY_SETUP'
+    aliases: ['KEY_#141']
+
+  - name: 'BTN_MOUSE'
+    aliases: ['KEY_#272', 'BTN_LEFT']
+
+  - name: 'KEY_CHANNELDOWN'
+    aliases: ['KEY_#403']
+
+  - name: 'BTN_TRIGGER_HAPPY28'
+    aliases: ['KEY_#731']
+
+  - name: 'KEY_FN_F4'
+    aliases: ['KEY_#469']
+
+  - name: 'KEY_KP5'
+    aliases: ['KEY_#76']
+
+  - name: 'KEY_PLAY'
+    aliases: ['KEY_#207']
+
+  - name: 'KEY_CAMERA_UP'
+    aliases: ['KEY_#535']
+
+  - name: 'KEY_0'
+    aliases: ['KEY_#11']
+
+  - name: 'KEY_SLEEP'
+    aliases: ['KEY_#142']
+
+  - name: 'BTN_RIGHT'
+    aliases: ['KEY_#273']
+
+  - name: 'KEY_FIRST'
+    aliases: ['KEY_#404']
+
+  - name: 'BTN_TRIGGER_HAPPY29'
+    aliases: ['KEY_#732']
+
+  - name: 'KEY_FN_F5'
+    aliases: ['KEY_#470']
+
+  - name: 'KEY_KP6'
+    aliases: ['KEY_#77']
+
+  - name: 'KEY_FASTFORWARD'
+    aliases: ['KEY_#208']
+
+  - name: 'KEY_CAMERA_DOWN'
+    aliases: ['KEY_#536']
+
+  - name: 'KEY_MINUS'
+    aliases: ['KEY_#12']
+
+  - name: 'KEY_WAKEUP'
+    aliases: ['KEY_#143']
+
+  - name: 'BTN_MIDDLE'
+    aliases: ['KEY_#274']
+
+  - name: 'KEY_LAST'
+    aliases: ['KEY_#405']
 
   - name: 'BTN_TRIGGER_HAPPY30'
     aliases: ['KEY_#733']
 
-  - name: 'KEY_FN_F'
-    aliases: ['KEY_#482']
+  - name: 'KEY_FN_F6'
+    aliases: ['KEY_#471']
 
-  - name: 'KEY_KPDOT'
-    aliases: ['KEY_#83']
+  - name: 'KEY_KPPLUS'
+    aliases: ['KEY_#78']
 
-  - name: 'KEY_VIDEO_PREV'
-    aliases: ['KEY_#242']
+  - name: 'KEY_BASSBOOST'
+    aliases: ['KEY_#209']
+
+  - name: 'KEY_CAMERA_LEFT'
+    aliases: ['KEY_#537']
+
+  - name: 'KEY_EQUAL'
+    aliases: ['KEY_#13']
+
+  - name: 'KEY_FILE'
+    aliases: ['KEY_#144']
+
+  - name: 'BTN_SIDE'
+    aliases: ['KEY_#275']
+
+  - name: 'KEY_AB'
+    aliases: ['KEY_#406']
 
   - name: 'BTN_TRIGGER_HAPPY31'
     aliases: ['KEY_#734']
 
-  - name: 'BTN_JOYSTICK'
-    aliases: ['KEY_#288']
+  - name: 'KEY_FN_F7'
+    aliases: ['KEY_#472']
 
-  - name: 'KEY_FAVORITES'
-    aliases: ['KEY_#364']
+  - name: 'KEY_KP1'
+    aliases: ['KEY_#79']
 
-  - name: 'KEY_TAB'
-    aliases: ['KEY_#15']
+  - name: 'KEY_PRINT'
+    aliases: ['KEY_#210']
+
+  - name: 'KEY_CAMERA_RIGHT'
+    aliases: ['KEY_#538']
+
+  - name: 'KEY_BACKSPACE'
+    aliases: ['KEY_#14']
+
+  - name: 'KEY_SENDFILE'
+    aliases: ['KEY_#145']
+
+  - name: 'BTN_EXTRA'
+    aliases: ['KEY_#276']
+
+  - name: 'KEY_NEXT'
+    aliases: ['KEY_#407']
 
   - name: 'BTN_TRIGGER_HAPPY32'
     aliases: ['KEY_#735']
 
-  - name: 'KEY_LEFTMETA'
-    aliases: ['KEY_#125']
+  - name: 'KEY_FN_F8'
+    aliases: ['KEY_#473']
+
+  - name: 'KEY_KP2'
+    aliases: ['KEY_#80']
+
+  - name: 'KEY_HP'
+    aliases: ['KEY_#211']
+
+  - name: 'KEY_TAB'
+    aliases: ['KEY_#15']
+
+  - name: 'KEY_DELETEFILE'
+    aliases: ['KEY_#146']
+
+  - name: 'BTN_FORWARD'
+    aliases: ['KEY_#277']
+
+  - name: 'KEY_RESTART'
+    aliases: ['KEY_#408']
+
+  - name: 'BTN_TRIGGER_HAPPY33'
+    aliases: ['KEY_#736']
+
+  - name: 'KEY_FN_F9'
+    aliases: ['KEY_#474']
+
+  - name: 'KEY_KP3'
+    aliases: ['KEY_#81']
+
+  - name: 'KEY_CAMERA'
+    aliases: ['KEY_#212']
+
+  - name: 'KEY_Q'
+    aliases: ['KEY_#16']
+
+  - name: 'KEY_XFER'
+    aliases: ['KEY_#147']
+
+  - name: 'BTN_BACK'
+    aliases: ['KEY_#278']
+
+  - name: 'KEY_SLOW'
+    aliases: ['KEY_#409']
+
+  - name: 'BTN_TRIGGER_HAPPY34'
+    aliases: ['KEY_#737']
+
+  - name: 'KEY_FN_F10'
+    aliases: ['KEY_#475']
+
+  - name: 'KEY_KP0'
+    aliases: ['KEY_#82']
+
+  - name: 'KEY_SOUND'
+    aliases: ['KEY_#213']
+
+  - name: 'KEY_W'
+    aliases: ['KEY_#17']
+
+  - name: 'KEY_PROG1'
+    aliases: ['KEY_#148']
+
+  - name: 'BTN_TASK'
+    aliases: ['KEY_#279']
+
+  - name: 'KEY_SHUFFLE'
+    aliases: ['KEY_#410']
+
+  - name: 'BTN_TRIGGER_HAPPY35'
+    aliases: ['KEY_#738']
+
+  - name: 'KEY_FN_F11'
+    aliases: ['KEY_#476']
+
+  - name: 'KEY_KPDOT'
+    aliases: ['KEY_#83']
+
+  - name: 'KEY_QUESTION'
+    aliases: ['KEY_#214']
+
+  - name: 'KEY_E'
+    aliases: ['KEY_#18']
+
+  - name: 'KEY_PROG2'
+    aliases: ['KEY_#149']
+
+  - name: 'KEY_BREAK'
+    aliases: ['KEY_#411']
+
+  - name: 'BTN_TRIGGER_HAPPY36'
+    aliases: ['KEY_#739']
+
+  - name: 'KEY_FN_F12'
+    aliases: ['KEY_#477']
+
+  - name: 'KEY_EMAIL'
+    aliases: ['KEY_#215']
+
+  - name: 'KEY_R'
+    aliases: ['KEY_#19']
+
+  - name: 'KEY_WWW'
+    aliases: ['KEY_#150']
+
+  - name: 'KEY_PREVIOUS'
+    aliases: ['KEY_#412']
+
+  - name: 'BTN_TRIGGER_HAPPY37'
+    aliases: ['KEY_#740']
+
+  - name: 'KEY_FN_1'
+    aliases: ['KEY_#478']
+
+  - name: 'KEY_ZENKAKUHANKAKU'
+    aliases: ['KEY_#85']
+
+  - name: 'KEY_CHAT'
+    aliases: ['KEY_#216']
+
+  - name: 'KEY_T'
+    aliases: ['KEY_#20']
+
+  - name: 'KEY_MSDOS'
+    aliases: ['KEY_#151']
+
+  - name: 'KEY_DIGITS'
+    aliases: ['KEY_#413']
+
+  - name: 'BTN_TRIGGER_HAPPY38'
+    aliases: ['KEY_#741']
+
+  - name: 'KEY_FN_2'
+    aliases: ['KEY_#479']
+
+  - name: 'KEY_102ND'
+    aliases: ['KEY_#86']
+
+  - name: 'KEY_SEARCH'
+    aliases: ['KEY_#217']
+
+  - name: 'KEY_Y'
+    aliases: ['KEY_#21']
+
+  - name: 'KEY_COFFEE'
+    aliases: ['KEY_#152', 'KEY_SCREENLOCK']
+
+  - name: 'KEY_TEEN'
+    aliases: ['KEY_#414']
+
+  - name: 'BTN_TRIGGER_HAPPY39'
+    aliases: ['KEY_#742']
+
+  - name: 'KEY_FN_D'
+    aliases: ['KEY_#480']
+
+  - name: 'KEY_F11'
+    aliases: ['KEY_#87']
+
+  - name: 'KEY_CONNECT'
+    aliases: ['KEY_#218']
+
+  - name: 'KEY_U'
+    aliases: ['KEY_#22']
+
+  - name: 'KEY_DIRECTION'
+    aliases: ['KEY_#153']
+
+  - name: 'KEY_TWEN'
+    aliases: ['KEY_#415']
+
+  - name: 'BTN_TRIGGER_HAPPY40'
+    aliases: ['KEY_#743']
+
+  - name: 'KEY_FN_E'
+    aliases: ['KEY_#481']
+
+  - name: 'KEY_F12'
+    aliases: ['KEY_#88']
+
+  - name: 'KEY_FINANCE'
+    aliases: ['KEY_#219']
+
+  - name: 'KEY_I'
+    aliases: ['KEY_#23']
+
+  - name: 'KEY_CYCLEWINDOWS'
+    aliases: ['KEY_#154']
+
+  - name: 'KEY_VIDEOPHONE'
+    aliases: ['KEY_#416']
+
+  - name: 'KEY_FN_F'
+    aliases: ['KEY_#482']
+
+  - name: 'KEY_RO'
+    aliases: ['KEY_#89']
+
+  - name: 'KEY_SPORT'
+    aliases: ['KEY_#220']
+
+  - name: 'KEY_O'
+    aliases: ['KEY_#24']
+
+  - name: 'KEY_MAIL'
+    aliases: ['KEY_#155']
+
+  - name: 'KEY_GAMES'
+    aliases: ['KEY_#417']
+
+  - name: 'KEY_FN_S'
+    aliases: ['KEY_#483']
+
+  - name: 'KEY_KATAKANA'
+    aliases: ['KEY_#90']
+
+  - name: 'KEY_SHOP'
+    aliases: ['KEY_#221']
+
+  - name: 'KEY_OK'
+    aliases: ['KEY_#352']
+
+  - name: 'KEY_P'
+    aliases: ['KEY_#25']
+
+  - name: 'KEY_BOOKMARKS'
+    aliases: ['KEY_#156']
+
+  - name: 'KEY_ZOOMIN'
+    aliases: ['KEY_#418']
+
+  - name: 'KEY_FN_B'
+    aliases: ['KEY_#484']
+
+  - name: 'KEY_HIRAGANA'
+    aliases: ['KEY_#91']
+
+  - name: 'KEY_ALTERASE'
+    aliases: ['KEY_#222']
+
+  - name: 'KEY_SELECT'
+    aliases: ['KEY_#353']
+
+  - name: 'KEY_LEFTBRACE'
+    aliases: ['KEY_#26']
+
+  - name: 'KEY_COMPUTER'
+    aliases: ['KEY_#157']
+
+  - name: 'BTN_JOYSTICK'
+    aliases: ['KEY_#288', 'BTN_TRIGGER']
+
+  - name: 'KEY_ZOOMOUT'
+    aliases: ['KEY_#419']
+
+  - name: 'KEY_HENKAN'
+    aliases: ['KEY_#92']
 
   - name: 'KEY_CANCEL'
     aliases: ['KEY_#223']
@@ -1567,72 +760,861 @@
   - name: 'KEY_GOTO'
     aliases: ['KEY_#354']
 
+  - name: 'KEY_RIGHTBRACE'
+    aliases: ['KEY_#27']
+
+  - name: 'KEY_BACK'
+    aliases: ['KEY_#158']
+
+  - name: 'BTN_THUMB'
+    aliases: ['KEY_#289']
+
+  - name: 'KEY_ZOOMRESET'
+    aliases: ['KEY_#420']
+
+  - name: 'KEY_KATAKANAHIRAGANA'
+    aliases: ['KEY_#93']
+
+  - name: 'KEY_BRIGHTNESSDOWN'
+    aliases: ['KEY_#224']
+
+  - name: 'KEY_CLEAR'
+    aliases: ['KEY_#355']
+
+  - name: 'KEY_ENTER'
+    aliases: ['KEY_#28']
+
+  - name: 'KEY_FORWARD'
+    aliases: ['KEY_#159']
+
+  - name: 'BTN_THUMB2'
+    aliases: ['KEY_#290']
+
+  - name: 'KEY_WORDPROCESSOR'
+    aliases: ['KEY_#421']
+
+  - name: 'KEY_MUHENKAN'
+    aliases: ['KEY_#94']
+
+  - name: 'KEY_BRIGHTNESSUP'
+    aliases: ['KEY_#225']
+
+  - name: 'KEY_POWER2'
+    aliases: ['KEY_#356']
+
+  - name: 'KEY_LEFTCTRL'
+    aliases: ['KEY_#29']
+
+  - name: 'KEY_CLOSECD'
+    aliases: ['KEY_#160']
+
+  - name: 'BTN_TOP'
+    aliases: ['KEY_#291']
+
+  - name: 'KEY_EDITOR'
+    aliases: ['KEY_#422']
+
   - name: 'KEY_KPJPCOMMA'
     aliases: ['KEY_#95']
 
-  - name: 'BTN_TRIGGER_HAPPY33'
-    aliases: ['KEY_#736']
+  - name: 'KEY_MEDIA'
+    aliases: ['KEY_#226']
 
-  - name: 'KEY_F20'
-    aliases: ['KEY_#190']
+  - name: 'KEY_OPTION'
+    aliases: ['KEY_#357']
 
-  - name: 'BTN_TRIGGER_HAPPY34'
-    aliases: ['KEY_#737']
+  - name: 'KEY_A'
+    aliases: ['KEY_#30']
 
-  - name: 'BTN_A'
-    aliases: ['KEY_#304']
+  - name: 'KEY_EJECTCD'
+    aliases: ['KEY_#161']
 
-  - name: 'KEY_F21'
-    aliases: ['KEY_#191']
+  - name: 'BTN_TOP2'
+    aliases: ['KEY_#292']
 
-  - name: 'BTN_GEAR_DOWN'
-    aliases: ['KEY_#336']
+  - name: 'KEY_SPREADSHEET'
+    aliases: ['KEY_#423']
 
-  - name: 'KEY_KPCOMMA'
-    aliases: ['KEY_#121']
+  - name: 'KEY_KPENTER'
+    aliases: ['KEY_#96']
 
-  - name: 'BTN_TRIGGER_HAPPY35'
-    aliases: ['KEY_#738']
+  - name: 'KEY_SWITCHVIDEOMODE'
+    aliases: ['KEY_#227']
 
-  - name: 'BTN_B'
-    aliases: ['KEY_#305']
+  - name: 'KEY_INFO'
+    aliases: ['KEY_#358']
 
-  - name: 'KEY_F22'
-    aliases: ['KEY_#192']
+  - name: 'KEY_S'
+    aliases: ['KEY_#31']
 
-  - name: 'KEY_SAVE'
-    aliases: ['KEY_#234']
+  - name: 'KEY_EJECTCLOSECD'
+    aliases: ['KEY_#162']
 
-  - name: 'BTN_TRIGGER_HAPPY36'
-    aliases: ['KEY_#739']
+  - name: 'BTN_PINKIE'
+    aliases: ['KEY_#293']
 
-  - name: 'KEY_NEXT'
-    aliases: ['KEY_#407']
-
-  - name: 'KEY_PLAYER'
-    aliases: ['KEY_#387']
-
-  - name: 'KEY_F23'
-    aliases: ['KEY_#193']
+  - name: 'KEY_GRAPHICSEDITOR'
+    aliases: ['KEY_#424']
 
   - name: 'KEY_RIGHTCTRL'
     aliases: ['KEY_#97']
 
-  - name: 'BTN_TRIGGER_HAPPY37'
-    aliases: ['KEY_#740']
+  - name: 'KEY_KBDILLUMTOGGLE'
+    aliases: ['KEY_#228']
 
-  - name: 'BTN_C'
-    aliases: ['KEY_#306']
+  - name: 'KEY_TIME'
+    aliases: ['KEY_#359']
 
-  - name: 'KEY_F24'
-    aliases: ['KEY_#194']
+  - name: 'KEY_D'
+    aliases: ['KEY_#32']
+
+  - name: 'KEY_NEXTSONG'
+    aliases: ['KEY_#163']
+
+  - name: 'BTN_BASE'
+    aliases: ['KEY_#294']
+
+  - name: 'KEY_PRESENTATION'
+    aliases: ['KEY_#425']
+
+  - name: 'KEY_KPSLASH'
+    aliases: ['KEY_#98']
+
+  - name: 'KEY_KBDILLUMDOWN'
+    aliases: ['KEY_#229']
+
+  - name: 'KEY_VENDOR'
+    aliases: ['KEY_#360']
+
+  - name: 'KEY_PLAYPAUSE'
+    aliases: ['KEY_#164']
+
+  - name: 'BTN_BASE2'
+    aliases: ['KEY_#295']
+
+  - name: 'KEY_DATABASE'
+    aliases: ['KEY_#426']
+
+  - name: 'KEY_F'
+    aliases: ['KEY_#33']
+
+  - name: 'KEY_SYSRQ'
+    aliases: ['KEY_#99']
+
+  - name: 'KEY_KBDILLUMUP'
+    aliases: ['KEY_#230']
+
+  - name: 'KEY_ARCHIVE'
+    aliases: ['KEY_#361']
+
+  - name: 'KEY_PREVIOUSSONG'
+    aliases: ['KEY_#165']
+
+  - name: 'BTN_BASE3'
+    aliases: ['KEY_#296']
+
+  - name: 'KEY_NEWS'
+    aliases: ['KEY_#427']
+
+  - name: 'KEY_G'
+    aliases: ['KEY_#34']
+
+  - name: 'KEY_SEND'
+    aliases: ['KEY_#231']
+
+  - name: 'KEY_PROGRAM'
+    aliases: ['KEY_#362']
+
+  - name: 'KEY_RIGHTALT'
+    aliases: ['KEY_#100']
+
+  - name: 'KEY_STOPCD'
+    aliases: ['KEY_#166']
+
+  - name: 'BTN_BASE4'
+    aliases: ['KEY_#297']
+
+  - name: 'KEY_VOICEMAIL'
+    aliases: ['KEY_#428']
+
+  - name: 'KEY_H'
+    aliases: ['KEY_#35']
+
+  - name: 'KEY_REPLY'
+    aliases: ['KEY_#232']
+
+  - name: 'KEY_CHANNEL'
+    aliases: ['KEY_#363']
+
+  - name: 'KEY_LINEFEED'
+    aliases: ['KEY_#101']
+
+  - name: 'BTN_BASE5'
+    aliases: ['KEY_#298']
 
   - name: 'KEY_ADDRESSBOOK'
     aliases: ['KEY_#429']
 
+  - name: 'KEY_J'
+    aliases: ['KEY_#36']
+
+  - name: 'KEY_RECORD'
+    aliases: ['KEY_#167']
+
+  - name: 'KEY_FORWARDMAIL'
+    aliases: ['KEY_#233']
+
+  - name: 'KEY_FAVORITES'
+    aliases: ['KEY_#364']
+
+  - name: 'KEY_HOME'
+    aliases: ['KEY_#102']
+
+  - name: 'BTN_BASE6'
+    aliases: ['KEY_#299']
+
+  - name: 'KEY_MESSENGER'
+    aliases: ['KEY_#430']
+
+  - name: 'KEY_K'
+    aliases: ['KEY_#37']
+
+  - name: 'KEY_REWIND'
+    aliases: ['KEY_#168']
+
+  - name: 'KEY_EPG'
+    aliases: ['KEY_#365']
+
+  - name: 'KEY_UP'
+    aliases: ['KEY_#103']
+
+  - name: 'KEY_SAVE'
+    aliases: ['KEY_#234']
+
+  - name: 'KEY_DISPLAYTOGGLE'
+    aliases: ['KEY_#431']
+
+  - name: 'KEY_L'
+    aliases: ['KEY_#38']
+
+  - name: 'KEY_PHONE'
+    aliases: ['KEY_#169']
+
+  - name: 'KEY_BRL_DOT1'
+    aliases: ['KEY_#497']
+
+  - name: 'KEY_PVR'
+    aliases: ['KEY_#366']
+
+  - name: 'KEY_PAGEUP'
+    aliases: ['KEY_#104']
+
+  - name: 'KEY_DOCUMENTS'
+    aliases: ['KEY_#235']
+
+  - name: 'KEY_SPELLCHECK'
+    aliases: ['KEY_#432']
+
+  - name: 'KEY_SEMICOLON'
+    aliases: ['KEY_#39']
+
+  - name: 'KEY_ISO'
+    aliases: ['KEY_#170']
+
+  - name: 'KEY_BRL_DOT2'
+    aliases: ['KEY_#498']
+
+  - name: 'KEY_MHP'
+    aliases: ['KEY_#367']
+
+  - name: 'KEY_LEFT'
+    aliases: ['KEY_#105']
+
+  - name: 'KEY_BATTERY'
+    aliases: ['KEY_#236']
+
+  - name: 'KEY_LOGOFF'
+    aliases: ['KEY_#433']
+
+  - name: 'KEY_APOSTROPHE'
+    aliases: ['KEY_#40']
+
+  - name: 'KEY_CONFIG'
+    aliases: ['KEY_#171']
+
+  - name: 'KEY_BRL_DOT3'
+    aliases: ['KEY_#499']
+
+  - name: 'KEY_RIGHT'
+    aliases: ['KEY_#106']
+
+  - name: 'KEY_BLUETOOTH'
+    aliases: ['KEY_#237']
+
+  - name: 'KEY_LANGUAGE'
+    aliases: ['KEY_#368']
+
+  - name: 'KEY_DOLLAR'
+    aliases: ['KEY_#434']
+
+  - name: 'KEY_GRAVE'
+    aliases: ['KEY_#41']
+
+  - name: 'KEY_HOMEPAGE'
+    aliases: ['KEY_#172']
+
+  - name: 'BTN_DEAD'
+    aliases: ['KEY_#303']
+
+  - name: 'KEY_BRL_DOT4'
+    aliases: ['KEY_#500']
+
+  - name: 'KEY_END'
+    aliases: ['KEY_#107']
+
+  - name: 'KEY_WLAN'
+    aliases: ['KEY_#238']
+
+  - name: 'KEY_TITLE'
+    aliases: ['KEY_#369']
+
+  - name: 'KEY_LEFTSHIFT'
+    aliases: ['KEY_#42']
+
+  - name: 'KEY_REFRESH'
+    aliases: ['KEY_#173']
+
+  - name: 'BTN_GAMEPAD'
+    aliases: ['KEY_#304', 'BTN_A']
+
+  - name: 'KEY_EURO'
+    aliases: ['KEY_#435']
+
+  - name: 'KEY_BRL_DOT5'
+    aliases: ['KEY_#501']
+
+  - name: 'KEY_DOWN'
+    aliases: ['KEY_#108']
+
+  - name: 'KEY_UWB'
+    aliases: ['KEY_#239']
+
+  - name: 'KEY_SUBTITLE'
+    aliases: ['KEY_#370']
+
+  - name: 'KEY_BACKSLASH'
+    aliases: ['KEY_#43']
+
+  - name: 'KEY_EXIT'
+    aliases: ['KEY_#174']
+
+  - name: 'BTN_B'
+    aliases: ['KEY_#305']
+
+  - name: 'KEY_FRAMEBACK'
+    aliases: ['KEY_#436']
+
+  - name: 'KEY_BRL_DOT6'
+    aliases: ['KEY_#502']
+
+  - name: 'KEY_PAGEDOWN'
+    aliases: ['KEY_#109']
+
+  - name: 'KEY_UNKNOWN'
+    aliases: ['KEY_#240']
+
+  - name: 'KEY_ANGLE'
+    aliases: ['KEY_#371']
+
+  - name: 'KEY_Z'
+    aliases: ['KEY_#44']
+
+  - name: 'KEY_MOVE'
+    aliases: ['KEY_#175']
+
+  - name: 'BTN_C'
+    aliases: ['KEY_#306']
+
+  - name: 'KEY_FRAMEFORWARD'
+    aliases: ['KEY_#437']
+
+  - name: 'KEY_BRL_DOT7'
+    aliases: ['KEY_#503']
+
+  - name: 'KEY_INSERT'
+    aliases: ['KEY_#110']
+
+  - name: 'KEY_VIDEO_NEXT'
+    aliases: ['KEY_#241']
+
+  - name: 'KEY_ZOOM'
+    aliases: ['KEY_#372']
+
+  - name: 'KEY_X'
+    aliases: ['KEY_#45']
+
+  - name: 'KEY_EDIT'
+    aliases: ['KEY_#176']
+
+  - name: 'BTN_X'
+    aliases: ['KEY_#307']
+
+  - name: 'KEY_CONTEXT_MENU'
+    aliases: ['KEY_#438']
+
+  - name: 'KEY_BRL_DOT8'
+    aliases: ['KEY_#504']
+
+  - name: 'KEY_DELETE'
+    aliases: ['KEY_#111']
+
+  - name: 'KEY_VIDEO_PREV'
+    aliases: ['KEY_#242']
+
+  - name: 'KEY_MODE'
+    aliases: ['KEY_#373']
+
+  - name: 'KEY_C'
+    aliases: ['KEY_#46']
+
+  - name: 'KEY_SCROLLUP'
+    aliases: ['KEY_#177']
+
+  - name: 'BTN_Y'
+    aliases: ['KEY_#308']
+
+  - name: 'KEY_MEDIA_REPEAT'
+    aliases: ['KEY_#439']
+
+  - name: 'KEY_BRL_DOT9'
+    aliases: ['KEY_#505']
+
+  - name: 'KEY_MACRO'
+    aliases: ['KEY_#112']
+
+  - name: 'KEY_BRIGHTNESS_CYCLE'
+    aliases: ['KEY_#243']
+
+  - name: 'KEY_KEYBOARD'
+    aliases: ['KEY_#374']
+
+  - name: 'KEY_V'
+    aliases: ['KEY_#47']
+
+  - name: 'KEY_SCROLLDOWN'
+    aliases: ['KEY_#178']
+
+  - name: 'BTN_Z'
+    aliases: ['KEY_#309']
+
+  - name: 'KEY_10CHANNELSUP'
+    aliases: ['KEY_#440']
+
+  - name: 'KEY_BRL_DOT10'
+    aliases: ['KEY_#506']
+
+  - name: 'KEY_MUTE'
+    aliases: ['KEY_#113', 'KEY_MIN_INTERESTING']
+
+  - name: 'KEY_BRIGHTNESS_ZERO'
+    aliases: ['KEY_#244']
+
+  - name: 'KEY_SCREEN'
+    aliases: ['KEY_#375']
+
+  - name: 'KEY_B'
+    aliases: ['KEY_#48']
+
+  - name: 'KEY_KPLEFTPAREN'
+    aliases: ['KEY_#179']
+
+  - name: 'BTN_TL'
+    aliases: ['KEY_#310']
+
+  - name: 'KEY_10CHANNELSDOWN'
+    aliases: ['KEY_#441']
+
+  - name: 'KEY_VOLUMEDOWN'
+    aliases: ['KEY_#114']
+
+  - name: 'KEY_DISPLAY_OFF'
+    aliases: ['KEY_#245']
+
+  - name: 'KEY_PC'
+    aliases: ['KEY_#376']
+
+  - name: 'BTN_TRIGGER_HAPPY'
+    aliases: ['KEY_#704', 'BTN_TRIGGER_HAPPY1']
+
+  - name: 'KEY_N'
+    aliases: ['KEY_#49']
+
+  - name: 'KEY_KPRIGHTPAREN'
+    aliases: ['KEY_#180']
+
+  - name: 'BTN_TR'
+    aliases: ['KEY_#311']
+
+  - name: 'KEY_IMAGES'
+    aliases: ['KEY_#442']
+
+  - name: 'KEY_VOLUMEUP'
+    aliases: ['KEY_#115']
+
+  - name: 'KEY_WIMAX'
+    aliases: ['KEY_#246']
+
+  - name: 'KEY_TV'
+    aliases: ['KEY_#377']
+
+  - name: 'BTN_TRIGGER_HAPPY2'
+    aliases: ['KEY_#705']
+
+  - name: 'KEY_M'
+    aliases: ['KEY_#50']
+
+  - name: 'KEY_NEW'
+    aliases: ['KEY_#181']
+
+  - name: 'BTN_TL2'
+    aliases: ['KEY_#312']
+
+  - name: 'KEY_POWER'
+    aliases: ['KEY_#116']
+
+  - name: 'KEY_RFKILL'
+    aliases: ['KEY_#247']
+
+  - name: 'KEY_TV2'
+    aliases: ['KEY_#378']
+
+  - name: 'BTN_TRIGGER_HAPPY3'
+    aliases: ['KEY_#706']
+
+  - name: 'KEY_COMMA'
+    aliases: ['KEY_#51']
+
+  - name: 'KEY_REDO'
+    aliases: ['KEY_#182']
+
+  - name: 'BTN_TR2'
+    aliases: ['KEY_#313']
+
+  - name: 'KEY_KPEQUAL'
+    aliases: ['KEY_#117']
+
+  - name: 'KEY_VCR'
+    aliases: ['KEY_#379']
+
+  - name: 'BTN_TRIGGER_HAPPY4'
+    aliases: ['KEY_#707']
+
+  - name: 'KEY_DOT'
+    aliases: ['KEY_#52']
+
+  - name: 'KEY_F13'
+    aliases: ['KEY_#183']
+
+  - name: 'BTN_SELECT'
+    aliases: ['KEY_#314']
+
+  - name: 'KEY_KPPLUSMINUS'
+    aliases: ['KEY_#118']
+
+  - name: 'KEY_VCR2'
+    aliases: ['KEY_#380']
+
+  - name: 'BTN_TRIGGER_HAPPY5'
+    aliases: ['KEY_#708']
+
+  - name: 'KEY_SLASH'
+    aliases: ['KEY_#53']
+
+  - name: 'KEY_F14'
+    aliases: ['KEY_#184']
+
+  - name: 'BTN_START'
+    aliases: ['KEY_#315']
+
+  - name: 'KEY_NUMERIC_0'
+    aliases: ['KEY_#512']
+
+  - name: 'KEY_PAUSE'
+    aliases: ['KEY_#119']
+
+  - name: 'KEY_SAT'
+    aliases: ['KEY_#381']
+
+  - name: 'BTN_TRIGGER_HAPPY6'
+    aliases: ['KEY_#709']
+
+  - name: 'KEY_RIGHTSHIFT'
+    aliases: ['KEY_#54']
+
+  - name: 'KEY_F15'
+    aliases: ['KEY_#185']
+
+  - name: 'BTN_MODE'
+    aliases: ['KEY_#316']
+
+  - name: 'KEY_NUMERIC_1'
+    aliases: ['KEY_#513']
+
+  - name: 'KEY_SCALE'
+    aliases: ['KEY_#120']
+
+  - name: 'KEY_SAT2'
+    aliases: ['KEY_#382']
+
+  - name: 'BTN_TRIGGER_HAPPY7'
+    aliases: ['KEY_#710']
+
+  - name: 'KEY_KPASTERISK'
+    aliases: ['KEY_#55']
+
+  - name: 'KEY_F16'
+    aliases: ['KEY_#186']
+
+  - name: 'BTN_THUMBL'
+    aliases: ['KEY_#317']
+
+  - name: 'KEY_DEL_EOL'
+    aliases: ['KEY_#448']
+
+  - name: 'KEY_NUMERIC_2'
+    aliases: ['KEY_#514']
+
+  - name: 'KEY_KPCOMMA'
+    aliases: ['KEY_#121']
+
+  - name: 'KEY_CD'
+    aliases: ['KEY_#383']
+
+  - name: 'BTN_TRIGGER_HAPPY8'
+    aliases: ['KEY_#711']
+
+  - name: 'KEY_LEFTALT'
+    aliases: ['KEY_#56']
+
+  - name: 'KEY_F17'
+    aliases: ['KEY_#187']
+
+  - name: 'BTN_THUMBR'
+    aliases: ['KEY_#318']
+
+  - name: 'KEY_DEL_EOS'
+    aliases: ['KEY_#449']
+
+  - name: 'KEY_NUMERIC_3'
+    aliases: ['KEY_#515']
+
+  - name: 'KEY_HANGEUL'
+    aliases: ['KEY_#122', 'KEY_HANGUEL']
+
+  - name: 'KEY_TAPE'
+    aliases: ['KEY_#384']
+
+  - name: 'BTN_TRIGGER_HAPPY9'
+    aliases: ['KEY_#712']
+
+  - name: 'KEY_SPACE'
+    aliases: ['KEY_#57']
+
+  - name: 'KEY_F18'
+    aliases: ['KEY_#188']
+
+  - name: 'KEY_INS_LINE'
+    aliases: ['KEY_#450']
+
+  - name: 'KEY_NUMERIC_4'
+    aliases: ['KEY_#516']
+
+  - name: 'KEY_HANJA'
+    aliases: ['KEY_#123']
+
+  - name: 'KEY_RADIO'
+    aliases: ['KEY_#385']
+
+  - name: 'BTN_TRIGGER_HAPPY10'
+    aliases: ['KEY_#713']
+
+  - name: 'KEY_CAPSLOCK'
+    aliases: ['KEY_#58']
+
+  - name: 'KEY_F19'
+    aliases: ['KEY_#189']
+
+  - name: 'BTN_DIGI'
+    aliases: ['KEY_#320', 'BTN_TOOL_PEN']
+
+  - name: 'KEY_DEL_LINE'
+    aliases: ['KEY_#451']
+
+  - name: 'KEY_NUMERIC_5'
+    aliases: ['KEY_#517']
+
+  - name: 'KEY_YEN'
+    aliases: ['KEY_#124']
+
+  - name: 'KEY_TUNER'
+    aliases: ['KEY_#386']
+
+  - name: 'BTN_TRIGGER_HAPPY11'
+    aliases: ['KEY_#714']
+
+  - name: 'KEY_F1'
+    aliases: ['KEY_#59']
+
+  - name: 'KEY_F20'
+    aliases: ['KEY_#190']
+
+  - name: 'BTN_TOOL_RUBBER'
+    aliases: ['KEY_#321']
+
+  - name: 'KEY_NUMERIC_6'
+    aliases: ['KEY_#518']
+
+  - name: 'KEY_LEFTMETA'
+    aliases: ['KEY_#125']
+
+  - name: 'BTN_MISC'
+    aliases: ['KEY_#256', 'BTN_0']
+
+  - name: 'KEY_PLAYER'
+    aliases: ['KEY_#387']
+
+  - name: 'BTN_TRIGGER_HAPPY12'
+    aliases: ['KEY_#715']
+
+  - name: 'KEY_F2'
+    aliases: ['KEY_#60']
+
+  - name: 'KEY_F21'
+    aliases: ['KEY_#191']
+
+  - name: 'BTN_TOOL_BRUSH'
+    aliases: ['KEY_#322']
+
+  - name: 'KEY_NUMERIC_7'
+    aliases: ['KEY_#519']
+
+  - name: 'KEY_RIGHTMETA'
+    aliases: ['KEY_#126']
+
+  - name: 'BTN_1'
+    aliases: ['KEY_#257']
+
+  - name: 'KEY_TEXT'
+    aliases: ['KEY_#388']
+
+  - name: 'BTN_TRIGGER_HAPPY13'
+    aliases: ['KEY_#716']
+
+  - name: 'KEY_F3'
+    aliases: ['KEY_#61']
+
+  - name: 'KEY_F22'
+    aliases: ['KEY_#192']
+
+  - name: 'BTN_TOOL_PENCIL'
+    aliases: ['KEY_#323']
+
+  - name: 'KEY_NUMERIC_8'
+    aliases: ['KEY_#520']
+
+  - name: 'KEY_COMPOSE'
+    aliases: ['KEY_#127']
+
+  - name: 'BTN_2'
+    aliases: ['KEY_#258']
+
+  - name: 'KEY_DVD'
+    aliases: ['KEY_#389']
+
+  - name: 'BTN_TRIGGER_HAPPY14'
+    aliases: ['KEY_#717']
+
+  - name: 'KEY_F4'
+    aliases: ['KEY_#62']
+
+  - name: 'KEY_F23'
+    aliases: ['KEY_#193']
+
+  - name: 'BTN_TOOL_AIRBRUSH'
+    aliases: ['KEY_#324']
+
+  - name: 'KEY_NUMERIC_9'
+    aliases: ['KEY_#521']
+
+  - name: 'KEY_STOP'
+    aliases: ['KEY_#128']
+
+  - name: 'BTN_3'
+    aliases: ['KEY_#259']
+
+  - name: 'KEY_AUX'
+    aliases: ['KEY_#390']
+
+  - name: 'BTN_TRIGGER_HAPPY15'
+    aliases: ['KEY_#718']
+
+  - name: 'KEY_F5'
+    aliases: ['KEY_#63']
+
+  - name: 'KEY_F24'
+    aliases: ['KEY_#194']
+
+  - name: 'BTN_TOOL_FINGER'
+    aliases: ['KEY_#325']
+
+  - name: 'KEY_NUMERIC_STAR'
+    aliases: ['KEY_#522']
+
+  - name: 'KEY_AGAIN'
+    aliases: ['KEY_#129']
+
+  - name: 'BTN_4'
+    aliases: ['KEY_#260']
+
+  - name: 'KEY_MP3'
+    aliases: ['KEY_#391']
+
+  - name: 'BTN_TRIGGER_HAPPY16'
+    aliases: ['KEY_#719']
+
+  - name: 'KEY_F6'
+    aliases: ['KEY_#64']
+
+  - name: 'BTN_TOOL_MOUSE'
+    aliases: ['KEY_#326']
+
+  - name: 'KEY_NUMERIC_POUND'
+    aliases: ['KEY_#523']
+
+  - name: 'KEY_PROPS'
+    aliases: ['KEY_#130']
+
+  - name: 'BTN_5'
+    aliases: ['KEY_#261']
+
+  - name: 'KEY_AUDIO'
+    aliases: ['KEY_#392']
+
   rel:
-  - name: 'REL_MISC'
-    aliases: ['KEY_#9']
+  - name: 'REL_RZ'
+    aliases: ['KEY_#5']
+
+  - name: 'REL_X'
+    aliases: ['KEY_#0']
+
+  - name: 'REL_HWHEEL'
+    aliases: ['KEY_#6']
+
+  - name: 'REL_Y'
+    aliases: ['KEY_#1']
+
+  - name: 'REL_DIAL'
+    aliases: ['KEY_#7']
 
   - name: 'REL_Z'
     aliases: ['KEY_#2']
@@ -1640,25 +1622,13 @@
   - name: 'REL_WHEEL'
     aliases: ['KEY_#8']
 
-  - name: 'REL_DIAL'
-    aliases: ['KEY_#7']
-
-  - name: 'REL_HWHEEL'
-    aliases: ['KEY_#6']
-
   - name: 'REL_RX'
     aliases: ['KEY_#3']
 
+  - name: 'REL_MISC'
+    aliases: ['KEY_#9']
+
   - name: 'REL_RY'
     aliases: ['KEY_#4']
-
-  - name: 'REL_RZ'
-    aliases: ['KEY_#5']
-
-  - name: 'REL_X'
-    aliases: ['KEY_#0']
-
-  - name: 'REL_Y'
-    aliases: ['KEY_#1']
 
 ...

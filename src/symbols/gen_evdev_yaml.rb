@@ -6,12 +6,20 @@ def gen_event_list(regex, prefix)
   File.new("/usr/include/linux/input.h").grep(regex).each do |i|
     name, value = i.split[1..2]
     if not name =~ /_MAX$/ and not name =~ /_CNT$/ 
-      begin 
-        ret[name] = [] if not ret.has_key?(name)
-        ret[name].push("#{prefix}#{Integer(value)}")
+      begin
+        int_val = Integer(value)
+        ret[int_val] = [] if not ret.has_key?(int_val)
+        ret[int_val].push(name)
+        ret[int_val].push("#{prefix}#{int_val}")
       rescue Exception => e  
         # assume we have an alias
-        ret[value].push(name)
+
+        # get the value of the alias
+        k, v = ret.find{|el| 
+          # puts "#{el[1].inspect}  #{name}  #{el[1].member?(value)}"
+          el[1].member?(value)
+        }
+        ret[k].push(name)
       end
     end
   end
@@ -25,10 +33,9 @@ abs = gen_event_list(/^#define ABS/, "KEY_#")
 
 def print_name(fout, syms)
   syms.each do |k,v|
-    fout.puts "  - name: '#{k}'"
-    v.each do |a|
-      fout.puts "    aliases: [#{v.map{|l| "'#{v}'"}.join(', ')}]"
-    end if not v.empty?
+    fout.puts "  - name: '#{v[0]}'"
+    aliases = v[1..-1].uniq
+    fout.puts "    aliases: [#{aliases.map{|l| "'#{l}'"}.join(', ')}]" if not aliases.empty?
     fout.puts 
   end
 end
