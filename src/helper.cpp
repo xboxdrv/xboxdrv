@@ -167,6 +167,14 @@ bool is_number(const std::string& str)
       return false;
   return true;
 }
+
+bool is_float(const std::string& str)
+{
+  for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
+    if (!isdigit(*i) && *i != '.')
+      return false;
+  return true;
+}
 
 int to_number(int range, const std::string& str)
 {
