@@ -10,15 +10,10 @@ evdev = "/dev/input/by-id/usb-Microsoft_Natural®_Ergonomic_Keyboard_4000-if01-e
 evdev-grab = false
 ui-clear = true
 
-[evdev-keymap]
-# translate zoom events to dpad up/down
-"KEY_#418" = DU
-"KEY_#419" = DD
-
 [ui-buttonmap]
 # as we lose the auto-repeat in the translation to dpad events, we add
 # some autofire back
-DU^auto:75:125 = REL_WHEEL:1:-1
-DD^auto:75:125 = REL_WHEEL:-1:-1
+evdev.KEY_ZOOMIN^auto:75:125 = REL_WHEEL:1:-1
+evdev.KEY_ZOOMOUT^auto:75:125 = REL_WHEEL:-1:-1
 
 # EOF #
