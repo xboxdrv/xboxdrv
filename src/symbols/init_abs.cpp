@@ -265,9 +265,20 @@ void init_environment_abs(EnvironmentPtr env)
     NamespacePtr ns = env->add_namespace("nunchuk");
     {
       SymbolPtr sym = ns->add_symbol("x1");
+      ns->add_alias("x", sym);
     }
     {
       SymbolPtr sym = ns->add_symbol("y1");
+      ns->add_alias("y", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("acc_x");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("acc_y");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("acc_z");
     }
   }
   {
@@ -284,6 +295,42 @@ void init_environment_abs(EnvironmentPtr env)
     }
     {
       SymbolPtr sym = ns->add_symbol("acc_z");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ir1_x");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ir1_y");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ir1_size");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ir2_x");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ir2_y");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ir2_size");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ir3_x");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ir3_y");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ir3_size");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ir4_x");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ir4_y");
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ir4_size");
     }
   }
   {

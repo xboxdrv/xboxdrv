@@ -1,0 +1,26 @@
+# Wiimote
+# =======
+
+[xboxdrv]
+ui-clear=true
+
+[keymap]
+wiimote.du=KEY_UP
+wiimote.dd=KEY_DOWN
+wiimote.dl=KEY_LEFT
+wiimote.dr=KEY_DOWN
+
+wiimote.b+wiimote.du=KEY_PAGEUP
+wiimote.b+wiimote.dd=KEY_PAGEDOWN
+
+wiimote.1=KEY_HOME
+wiimote.2=KEY_END
+
+wiimote.minus=KEY_BACK
+wiimote.plus=KEY_FORWARD
+
+wiimote.home=KEY_ESC
+
+wiimote.a=KEY_SPACE
+
+# EOF #

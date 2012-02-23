@@ -3,10 +3,16 @@
 - name: 'nunchuk'
   abs:
     - name:    'x1'
+      aliases: 'x'
       provides: ['gamepad.x1']
 
     - name:    'y1'
+      aliases: 'y'
       provides: ['gamepad.y1']
+
+    - name:    'acc_x'
+    - name:    'acc_y'
+    - name:    'acc_z'    
 
   key:
     - name:    'c'

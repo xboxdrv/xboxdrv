@@ -9,6 +9,22 @@
 
     - name:    'acc_z'
 
+    - name:    'ir1_x'
+    - name:    'ir1_y'
+    - name:    'ir1_size'
+
+    - name:    'ir2_x'
+    - name:    'ir2_y'
+    - name:    'ir2_size'
+
+    - name:    'ir3_x'
+    - name:    'ir3_y'
+    - name:    'ir3_size'
+
+    - name:    'ir4_x'
+    - name:    'ir4_y'
+    - name:    'ir4_size'
+
   key:
     - name:    'a'
       provides: ['gamepad.a']
@@ -31,15 +47,19 @@
     - name:    'plus'
       provides: ['gamepad.start']
 
-    - name:    'dpad_up'
+    - name:     'dpad_up'
+      aliases:  'du'
       provides: ['gamepad.dpad_up']
 
-    - name:    'dpad_down'
+    - name:     'dpad_down'
+      aliases:  'dd'    
       provides: ['gamepad.dpad_down']
 
-    - name:    'dpad_left'
+    - name:     'dpad_left'
+      aliases:  'dl'
       provides: ['gamepad.dpad_left']
 
-    - name:    'dpad_right'
+    - name:     'dpad_right'
+      aliases:  'dr'
       provides: ['gamepad.dpad_right']
 ...

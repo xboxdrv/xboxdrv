@@ -2151,15 +2151,19 @@ void init_environment_key(EnvironmentPtr env)
     }
     {
       SymbolPtr sym = ns->add_symbol("dpad_up");
+      ns->add_alias("du", sym);
     }
     {
       SymbolPtr sym = ns->add_symbol("dpad_down");
+      ns->add_alias("dd", sym);
     }
     {
       SymbolPtr sym = ns->add_symbol("dpad_left");
+      ns->add_alias("dl", sym);
     }
     {
       SymbolPtr sym = ns->add_symbol("dpad_right");
+      ns->add_alias("dr", sym);
     }
   }
   {
