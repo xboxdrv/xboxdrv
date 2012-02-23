@@ -37,11 +37,6 @@ public:
 
 private:
   ButtonEventPtr create(ButtonEventHandler* handler);
-  ButtonEventPtr create_key(int code);
-  ButtonEventPtr create_key(int device_id, int code);
-  ButtonEventPtr create_key();
-  ButtonEventPtr create_abs(int code);
-  ButtonEventPtr create_rel(int code);
 
 private:
   ButtonEventFactory(const ButtonEventFactory&);
