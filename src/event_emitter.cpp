@@ -18,6 +18,8 @@
 
 #include "event_emitter.hpp"
 
+#include <iostream>
+
 #include "controller_message.hpp"
 #include "helper.hpp"
 #include "uinput.hpp"
