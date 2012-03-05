@@ -41,16 +41,92 @@ Playstation3USBController::~Playstation3USBController()
   usb_release_interface(0);
 }
 
+#define HID_GET_REPORT      0x01
+#define HID_GET_IDLE        0x02
+#define HID_GET_PROTOCOL    0x03
+#define HID_SET_REPORT      0x09
+#define HID_SET_IDLE        0x0A
+#define HID_SET_PROTOCOL    0x0B
+
+#define HID_REPORT_TYPE_INPUT   0x01
+#define HID_REPORT_TYPE_OUTPUT  0x02
+#define HID_REPORT_TYPE_FEATURE 0x03
+
 void
 Playstation3USBController::set_rumble_real(uint8_t left, uint8_t right)
 {
-  // not implemented
+  //log_tmp("Rumble: " << static_cast<int>(left) << " " << static_cast<int>(right));
+  uint8_t cmd[] = { 
+    // FIXME: 254 isn't quite right and the right motor seems to be on/off only
+    0x00, 254, right, 254, left,  // rumble values
+    0x00, 0x00, 0x00, 0x00, 0x03,   // 0x10=LED1 .. 0x02=LED4
+    0xff, 0x27, 0x10, 0x00, 0x32,   // LED 4
+    0xff, 0x27, 0x10, 0x00, 0x32,   // LED 3
+    0xff, 0x27, 0x10, 0x00, 0x32,   // LED 2
+    0xff, 0x27, 0x10, 0x00, 0x32,   // LED 1
+    0x00, 0x00, 0x00, 0x00, 0x00
+  };
+  
+  usb_control(LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_INTERFACE, // RequestType
+              HID_SET_REPORT,   // Request
+              (HID_REPORT_TYPE_OUTPUT << 8) | 0x01, // Value
+              0,   // Index
+              cmd, sizeof(cmd));
 }
 
 void
 Playstation3USBController::set_led_real(uint8_t status)
 {
-  // not implemented
+  //log_tmp("LEDset: " << static_cast<int>(status));
+
+  // convert Xbox360 LED status value to PS3
+  uint8_t ps3_status = 0;
+  switch(status)
+  {
+    case 1:
+      ps3_status = 0xf<<1;
+      break;
+
+    case 2:
+    case 6:
+      ps3_status = 0x1<<1;
+      break;
+
+    case 3:
+    case 7:
+      ps3_status = 0x1<<2;
+      break;
+
+    case 4:
+    case 8:
+      ps3_status = 0x1<<3;
+      break;
+
+    case 5:
+    case 9:
+      ps3_status = 0x1<<4;
+      break;
+
+    default:
+      ps3_status = 0x0;
+      break;
+  }
+
+  uint8_t cmd[] = { 
+    0x00, 0x00, 0x00, 0x00, 0x00,   // rumble values
+    0x00, 0x00, 0x00, 0x00, ps3_status, // 0x10=LED1 .. 0x02=LED4
+    0xff, 0x27, 0x10, 0x00, 0x32,   // LED 4
+    0xff, 0x27, 0x10, 0x00, 0x32,   // LED 3
+    0xff, 0x27, 0x10, 0x00, 0x32,   // LED 2
+    0xff, 0x27, 0x10, 0x00, 0x32,   // LED 1
+    0x00, 0x00, 0x00, 0x00, 0x00
+  };
+  
+  usb_control(LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_INTERFACE, // RequestType
+              HID_SET_REPORT,   // Request
+              (HID_REPORT_TYPE_OUTPUT << 8) | 0x01, // Value
+              0,   // Index
+              cmd, sizeof(cmd));
 }
 
 #define bitswap(x) x = ((x & 0x00ff) << 8) | ((x & 0xff00) >> 8)
