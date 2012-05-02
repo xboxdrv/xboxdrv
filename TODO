@@ -75,7 +75,20 @@ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-st
 Target for 0.9.?
 ================
 
-* write a modifier that simulates latency
+* in ini parser, allow options in global namespace, so that [xboxdrv]
+  isn't required
+
+* http://dbus.freedesktop.org/doc/dbus-daemon.1.html
+
+* update documentation on how to run as non-root (i.e. add user to 'root' group)
+
+* maybe do something with setuid() to drop permissions of the program that gets exec'd
+
+* macros could need locking, so that the next one isn't run before the first one executed
+
+* add NullButtonEvent, useful to kill unwanted keybindings 
+
+* Wiimote must try to reconnect after connection got lost 
 
 * use separate In/Out Ports for Modifier, never use InOut ports, make
   InOut ports a feature of the parser (i.e. two args -> InOut, four
