@@ -102,7 +102,7 @@ Help(opts.GenerateHelpText(env))
 if 'BUILD' in env and env['BUILD'] == 'development':
     env.Append(CXXFLAGS = [ "-O0",
                             "-g3",
-                            "-ansi",
+                            # "-ansi", # disabled due to GNU extension being used in bluetooth.h
                             "-pedantic",
                             "-Wall",
                             "-Wextra",
