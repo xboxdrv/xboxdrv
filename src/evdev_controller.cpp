@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include "evdev_helper.hpp"
+#include "helper.hpp"
 #include "log.hpp"
 
 #define BITS_PER_LONG (sizeof(long) * 8)
@@ -214,7 +215,11 @@ EvdevController::parse(const struct input_event& ev, XboxGenericMsg& msg_inout) 
     case EV_ABS:
       {
         const struct input_absinfo& absinfo = m_absinfo[ev.code];
-        m_absmap.process(msg_inout, ev.code, ev.value, absinfo.minimum, absinfo.maximum);
+        m_absmap.process(msg_inout, ev.code, 
+                         // some buggy USB devices report values
+                         // outside the given range, so we clamp it
+                         Math::clamp(absinfo.minimum, ev.value, absinfo.maximum), 
+                         absinfo.minimum, absinfo.maximum);
         return true; // FIXME: wrong
         break;
       }
