@@ -75,12 +75,15 @@ sudo pbuilder --build --basetgz /var/cache/pbuilder/base-lucid.tgz ../xboxdrv-st
 Target for 0.9.?
 ================
 
+* allow ini-parser to handle \n\r style line endings better (i.e. handle \r properly as whitespace)
+
 * in ini parser, allow options in global namespace, so that [xboxdrv]
   isn't required
 
 * http://dbus.freedesktop.org/doc/dbus-daemon.1.html
 
-* update documentation on how to run as non-root (i.e. add user to 'root' group)
+* update documentation on how to run as non-root (i.e. add user to
+  'root' group, see mail from james.c@videotron.ca)
 
 * maybe do something with setuid() to drop permissions of the program that gets exec'd
 
