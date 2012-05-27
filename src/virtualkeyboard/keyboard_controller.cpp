@@ -65,10 +65,9 @@ KeyboardController::KeyboardController(VirtualKeyboard& keyboard, UInput& uinput
   }
   g_io_channel_set_buffered(m_io_channel, false);
     
-  guint source_id;
-  source_id = g_io_add_watch(m_io_channel, 
-                             static_cast<GIOCondition>(G_IO_IN | G_IO_ERR | G_IO_HUP),
-                             &KeyboardController::on_read_data_wrap, this);
+  g_io_add_watch(m_io_channel, 
+                 static_cast<GIOCondition>(G_IO_IN | G_IO_ERR | G_IO_HUP),
+                 &KeyboardController::on_read_data_wrap, this);
 
   m_backspace_key = m_uinput.add_key(0, KEY_BACKSPACE);
   m_shift_key     = m_uinput.add_key(0, KEY_LEFTSHIFT);
