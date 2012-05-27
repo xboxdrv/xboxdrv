@@ -182,12 +182,13 @@ libxboxdrv = env.StaticLibrary('xboxdrv',
                                Glob('src/modifier/*.cpp') +
                                Glob('src/symbols/*.cpp'))
 env.Prepend(LIBS = libxboxdrv)
+gtk_env.Prepend(LIBS = libxboxdrv)
 
 for file in Glob('test/*_test.cpp', strings=True):
     Alias('tests', env.Program(file[:-4], file))
 
 if gtk_env['BUILD_VIRTUALKEYBOARD']:
-    gtk_env.Program("virtualkeyboard", Glob("src/virtualkeyboard/*.cpp"))
+    Default(gtk_env.Program("virtualkeyboard", Glob("src/virtualkeyboard/*.cpp")))
 
 Default(env.Program('xboxdrv', Glob('src/main/main.cpp')))
 
