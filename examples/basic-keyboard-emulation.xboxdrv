@@ -1,0 +1,28 @@
+# Basic Keyboard Emulation
+# ========================
+#
+# This is an example of basic keyboard emulation, useful for Flash
+# games, Web games or games such as Super Meet Boy or Braid. You might
+# need to change the keybindings to suit your games needs.
+
+[xboxdrv]
+ui-clear=true
+
+[ui-buttonmap]
+DU=KEY_UP
+DD=KEY_DOWN
+DL=KEY_LEFT
+DR=KEY_RIGHT
+
+A=KEY_ENTER
+B=KEY_SPACE
+X=KEY_A
+Y=KEY_Z
+
+START=KEY_ESC
+
+[ui-axismap]
+X1=KEY_LEFT:KEY_RIGHT:12000
+Y1=KEY_UP:KEY_DOWN:12000
+
+# EOF #
