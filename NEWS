@@ -12,6 +12,7 @@ xboxdrv 0.9.0 - (??/Aug/2011)
 * added Wing Commander configuration
 * added Duke Nukem 3D configuration
 * fixed incorrect axis being used in 4wayrest modifier
+* added Hori Real Arcade Pro VX-SA support
 
 
 xboxdrv 0.8.4 - (24/Jan/2012)
