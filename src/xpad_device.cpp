@@ -88,6 +88,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0291, "Microsoft Xbox 360 Wireless Controller" }, // RF Module from the Xbox360
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0719, "Microsoft Xbox 360 Wireless Controller (PC)" }, // official Wireless Receiver
   { GAMEPAD_XBOX360,          0x1689, 0xfd00, "Razer Onza" },  
+  { GAMEPAD_XBOX360,          0x1689, 0xfd01, "Razer Onza Tournament Edition" },  
   { GAMEPAD_XBOX360,          0x12ab, 0x0004, "DDR Universe 2 Mat" }, 
   { GAMEPAD_XBOX360,          0x15e4, 0x3f0a, "Xbox Airflo wired controller" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5300, "Power A Mini Pro Elite Glow" },
