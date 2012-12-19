@@ -1,5 +1,6 @@
 # -*- python -*-
-
+
+import os
 import subprocess
 import string
 import re
@@ -67,7 +68,7 @@ def build_bin2h(target, source, env):
         fout.write("/* EOF */\n")
                 
 
-env = Environment(BUILDERS = {
+env = Environment(ENV=os.environ, BUILDERS = {
     'DBusGlue' : Builder(action = build_dbus_glue),
     'Bin2H'    : Builder(action = build_bin2h)
     })
