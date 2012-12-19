@@ -38,8 +38,6 @@ LogitechF310Controller::LogitechF310Controller(libusb_device* dev, bool try_deta
 
 LogitechF310Controller::~LogitechF310Controller()
 {
-  usb_cancel_read();
-  usb_release_interface(0);
 }
 
 void

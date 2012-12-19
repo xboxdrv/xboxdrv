@@ -22,6 +22,7 @@
 #include <libusb.h>
 #include <string>
 #include <memory>
+#include <set>
 
 #include "controller.hpp"
 
@@ -31,7 +32,8 @@ protected:
   libusb_device* m_dev;
   libusb_device_handle* m_handle;
 
-  libusb_transfer* m_read_transfer;
+  std::set<libusb_transfer*> m_transfers;
+  std::set<int> m_interfaces;
 
   std::string m_usbpath;
   std::string m_usbid;
@@ -50,10 +52,8 @@ public:
   int  usb_find_ep(int direction, uint8_t if_class, uint8_t if_subclass, uint8_t if_protocol);
 
   void usb_claim_interface(int ifnum, bool try_detach);
-  void usb_release_interface(int ifnum);
 
   void usb_submit_read(int endpoint, int len);
-  void usb_cancel_read();
 
   void usb_write(int endpoint, uint8_t* data, int len);
   void usb_control(uint8_t bmRequestType, uint8_t  bRequest,

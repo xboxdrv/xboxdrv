@@ -1,5 +1,6 @@
 # -*- python -*-
-
+
+import os
 import subprocess
 import string
 import re
@@ -73,6 +74,7 @@ def CheckPKGConfig(context, name):
     return ret
 
 env = Environment(
+    ENV = os.environ,
     CPPPATH = ["src/"],
     BUILDERS = {
     'DBusGlue' : Builder(action = build_dbus_glue),

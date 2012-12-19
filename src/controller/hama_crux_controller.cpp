@@ -87,8 +87,6 @@ HamaCruxController::HamaCruxController(libusb_device* dev, bool try_detach) :
 
 HamaCruxController::~HamaCruxController()
 {
-  usb_cancel_read();
-  usb_release_interface(m_interface);
 }
 
 void

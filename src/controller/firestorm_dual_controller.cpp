@@ -102,8 +102,6 @@ FirestormDualController::FirestormDualController(libusb_device* dev, bool is_vsb
 
 FirestormDualController::~FirestormDualController()
 {
-  usb_cancel_read();
-  usb_release_interface(0);
 }
 
 void
