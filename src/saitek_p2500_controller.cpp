@@ -66,8 +66,6 @@ SaitekP2500Controller::SaitekP2500Controller(libusb_device* dev, bool try_detach
 
 SaitekP2500Controller::~SaitekP2500Controller()
 {
-  usb_cancel_read();
-  usb_release_interface(0);
 }
 
 void

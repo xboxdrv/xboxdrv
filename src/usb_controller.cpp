@@ -28,7 +28,8 @@
 USBController::USBController(libusb_device* dev) :
   m_dev(dev),
   m_handle(0),
-  m_read_transfer(),
+  m_transfers(),
+  m_interfaces(),
   m_usbpath(),
   m_usbid(),
   m_name()  
@@ -78,7 +79,29 @@ USBController::USBController(libusb_device* dev) :
 
 USBController::~USBController()
 {
-  //log_tmp("~USBController");
+  // cancel all transfers
+  for(std::set<libusb_transfer*>::iterator it = m_transfers.begin(); it != m_transfers.end(); ++it)
+  {
+    libusb_cancel_transfer(*it);
+  }
+
+  // wait for cancel to succeed
+  while (!m_transfers.empty()) 
+  {
+    int ret = libusb_handle_events(NULL);
+    if (ret != 0)
+    {
+      log_error("libusb_handle_events() failure: " << ret);
+    }
+  }
+
+  // release all claimed interfaces
+  for(std::set<int>::iterator it = m_interfaces.begin(); it != m_interfaces.end(); ++it)
+  {
+    libusb_release_interface(m_handle, *it);
+  }
+
+  // read and write transfers might still be going on and might need to be canceled
   libusb_close(m_handle);
 }
 
@@ -103,22 +126,25 @@ USBController::get_name() const
 void
 USBController::usb_submit_read(int endpoint, int len)
 {
-  assert(!m_read_transfer);
-
-  m_read_transfer = libusb_alloc_transfer(0);
+  libusb_transfer* transfer = libusb_alloc_transfer(0);
 
   uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
-  m_read_transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
-  libusb_fill_interrupt_transfer(m_read_transfer, m_handle,
+  transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
+  libusb_fill_interrupt_transfer(transfer, m_handle,
                                  endpoint | LIBUSB_ENDPOINT_IN,
                                  data, len,
                                  &USBController::on_read_data_wrap, this,
                                  0); // timeout
   int ret;
-  ret = libusb_submit_transfer(m_read_transfer);
+  ret = libusb_submit_transfer(transfer);
   if (ret != LIBUSB_SUCCESS)
   {
+    libusb_free_transfer(transfer);
     raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+  }
+  else
+  {
+    m_transfers.insert(transfer);
   }
 }
 
@@ -127,7 +153,6 @@ USBController::usb_write(int endpoint, uint8_t* data_in, int len)
 {
   libusb_transfer* transfer = libusb_alloc_transfer(0);
   transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
-  transfer->flags |= LIBUSB_TRANSFER_FREE_TRANSFER;
 
   // copy data into a newly allocated buffer
   uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
@@ -143,7 +168,12 @@ USBController::usb_write(int endpoint, uint8_t* data_in, int len)
   ret = libusb_submit_transfer(transfer);
   if (ret != LIBUSB_SUCCESS)
   {
+    libusb_free_transfer(transfer);
     raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+  }
+  else
+  {
+    m_transfers.insert(transfer);
   }
 }
 
@@ -154,7 +184,6 @@ USBController::usb_control(uint8_t  bmRequestType, uint8_t  bRequest,
 {
   libusb_transfer* transfer = libusb_alloc_transfer(0);
   transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
-  transfer->flags |= LIBUSB_TRANSFER_FREE_TRANSFER;
 
   // create and fill control buffer
   uint8_t* data = static_cast<uint8_t*>(malloc(wLength + 8));
@@ -168,7 +197,12 @@ USBController::usb_control(uint8_t  bmRequestType, uint8_t  bRequest,
   ret = libusb_submit_transfer(transfer);
   if (ret != LIBUSB_SUCCESS)
   {
+    libusb_free_transfer(transfer);
     raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+  }
+  else
+  {
+    m_transfers.insert(transfer);
   }
 }
 
@@ -176,6 +210,9 @@ void
 USBController::on_control(libusb_transfer* transfer)
 {
   log_debug("control transfer");
+
+  m_transfers.erase(transfer);
+  libusb_free_transfer(transfer);
 }
 
 void
@@ -183,19 +220,12 @@ USBController::on_write_data(libusb_transfer* transfer)
 {
   if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
   {
-    log_error("USB write failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
+    if (transfer->status != LIBUSB_TRANSFER_CANCELLED)
+      log_error("USB write failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
   }
-}
 
-void
-USBController::usb_cancel_read()
-{
-  if (m_read_transfer)
-  {
-    libusb_cancel_transfer(m_read_transfer);
-    libusb_free_transfer(m_read_transfer);
-    m_read_transfer = 0;
-  }
+  m_transfers.erase(transfer);
+  libusb_free_transfer(transfer);
 }
 
 void
@@ -203,31 +233,30 @@ USBController::on_read_data(libusb_transfer* transfer)
 {
   assert(transfer);
 
-  // FIXME: check for LIBUSB_TRANSFER_COMPLETED
-
-  // process data
-  XboxGenericMsg msg;
-  if (parse(transfer->buffer, transfer->actual_length, &msg))
+  if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
   {
-    submit_msg(msg);
-  }
+    if (transfer->status != LIBUSB_TRANSFER_CANCELLED)
+      log_error("USB read failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
 
-  if (false) // cleanup
-  {
+    m_transfers.erase(transfer);
     libusb_free_transfer(transfer);
   }
-  else // resubmit
-  {   
+  else
+  {
+    // process data
+    XboxGenericMsg msg;
+    if (parse(transfer->buffer, transfer->actual_length, &msg))
+    {
+      submit_msg(msg);
+    }
+
     int ret;
     ret = libusb_submit_transfer(transfer);
     if (ret != LIBUSB_SUCCESS) // could also check for LIBUSB_ERROR_NO_DEVICE
     {
       log_error("failed to resubmit USB transfer: " << usb_strerror(ret));
 
-      assert(m_read_transfer == transfer);
-
       libusb_free_transfer(transfer);
-      m_read_transfer = 0;
 
       send_disconnect();
     }
@@ -237,6 +266,11 @@ USBController::on_read_data(libusb_transfer* transfer)
 void
 USBController::usb_claim_interface(int ifnum, bool try_detach)
 {
+  // keep track of all claimed interfaces so they can be released in
+  // the destructor
+  assert(m_interfaces.find(ifnum) == m_interfaces.end());
+  m_interfaces.insert(ifnum);
+
   int err = usb_claim_n_detach_interface(m_handle, ifnum, try_detach);
   if (err != 0) 
   {
@@ -245,13 +279,6 @@ USBController::usb_claim_interface(int ifnum, bool try_detach)
         << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
     throw std::runtime_error(out.str());
   }
-}
-
-void
-USBController::usb_release_interface(int ifnum)
-{
-  // should be called before closing the device handle
-  libusb_release_interface(m_handle, ifnum); 
 }
 
 int

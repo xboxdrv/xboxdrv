@@ -62,8 +62,6 @@ GenericUSBController::GenericUSBController(libusb_device* dev,
 
 GenericUSBController::~GenericUSBController()
 {
-  usb_cancel_read();
-  usb_release_interface(m_interface);
 }
 
 void

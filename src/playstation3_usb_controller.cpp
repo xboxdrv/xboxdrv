@@ -37,8 +37,6 @@ Playstation3USBController::Playstation3USBController(libusb_device* dev, bool tr
 
 Playstation3USBController::~Playstation3USBController()
 {
-  usb_cancel_read();
-  usb_release_interface(0);
 }
 
 #define HID_GET_REPORT      0x01

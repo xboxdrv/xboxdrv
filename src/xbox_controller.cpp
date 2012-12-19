@@ -41,8 +41,6 @@ XboxController::XboxController(libusb_device* dev, bool try_detach) :
 
 XboxController::~XboxController()
 {
-  usb_cancel_read();
-  usb_release_interface(0);
 }
 
 void

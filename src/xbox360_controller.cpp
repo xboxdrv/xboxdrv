@@ -86,8 +86,6 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
 
 Xbox360Controller::~Xbox360Controller()
 {
-  usb_cancel_read();
-  usb_release_interface(0);
 }
 
 void

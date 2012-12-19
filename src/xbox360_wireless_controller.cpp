@@ -50,8 +50,6 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
 
 Xbox360WirelessController::~Xbox360WirelessController()
 {
-  usb_cancel_read();
-  usb_release_interface(m_interface);
 }
 
 void
