@@ -395,6 +395,31 @@ Rumble: { 0x00, 0x01, 0x0f, 0xc0, 0x00, large, small, 0x00, 0x00, 0x00, 0x00, 0x
                  +--------- seems the same as in Event Data
 LED:    { 0x00, 0x00, 0x08, 0x40 + (mode % 0x0e), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
 
+To turn device 1 off, send: { 00 00 08 C0 00 00 00 00 00 00 00 00 } to endpoint 1
+To enable wireless controller chatpad events, send: 00 00 0C 1B 00 00 00 00 00 00 00 00
+You will have to send alternating 1E/1F keep-alive packets (every second or so, I guess) to keep the chatpad events flowing:
+
+send 1  00 00 0C 1B 00 00 00 00 00 00 00 00
+send 1  00 00 08 C0 00 00 00 00 00 00 00 00
+send 1  00 00 0C 1F 00 00 00 00 00 00 00 00
+send 1  00 00 0C 1E 00 00 00 00 00 00 00 00
+send 1  00 00 0C 0c 00 00 00 00 00 00 00 00
+send 1  00 00 0C 17 00 00 00 00 00 00 00 00
+
+00 00 0C  8 00 00 00 00 00 00 00 00 capslock
+00 00 0C  9 00 00 00 00 00 00 00 00 square
+00 00 0C  a 00 00 00 00 00 00 00 00 circle
+00 00 0C  b 00 00 00 00 00 00 00 00 people
+00 00 0C  c 00 00 00 00 00 00 00 00 backlight
+00 00 0C 11 00 00 00 00 00 00 00 00 capslock
+00 00 0C 12 00 00 00 00 00 00 00 00 square
+00 00 0C 13 00 00 00 00 00 00 00 00 square and capslock
+00 00 0C 14 00 00 00 00 00 00 00 00 circle
+00 00 0C 15 00 00 00 00 00 00 00 00 capslock and circle
+00 00 0C 16 00 00 00 00 00 00 00 00 circle, square
+00 00 0C 17 00 00 00 00 00 00 00 00 circle, square, capslock
+00 00 0C 1b 00 00 00 00 00 00 00 00 makes backlight led go on on keypress
+
 Wireless Headset LED: ???
 
 // Start (LED Status Messages)
