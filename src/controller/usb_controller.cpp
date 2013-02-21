@@ -227,6 +227,9 @@ USBController::on_write_data(libusb_transfer* transfer)
 
   m_transfers.erase(transfer);
   libusb_free_transfer(transfer);
+
+  if (transfer->status == LIBUSB_TRANSFER_NO_DEVICE)
+    send_disconnect();
 }
 
 void
@@ -241,6 +244,9 @@ USBController::on_read_data(libusb_transfer* transfer)
 
     m_transfers.erase(transfer);
     libusb_free_transfer(transfer);
+
+    if (transfer->status == LIBUSB_TRANSFER_NO_DEVICE)
+      send_disconnect();
   }
   else
   {
