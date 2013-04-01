@@ -92,14 +92,14 @@ UInputOptions::mimic_xpad_wireless()
   get_axis_map().clear();
   get_btn_map().clear();
   
-  get_btn_map().bind(XBOX_DPAD_UP,    ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_0));
-  get_btn_map().bind(XBOX_DPAD_DOWN,  ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_1));
-  get_btn_map().bind(XBOX_DPAD_LEFT,  ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_LEFT));
-  get_btn_map().bind(XBOX_DPAD_RIGHT, ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_RIGHT));
+  get_btn_map().bind(XBOX_DPAD_UP,    ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_TRIGGER_HAPPY3));
+  get_btn_map().bind(XBOX_DPAD_DOWN,  ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_TRIGGER_HAPPY4));
+  get_btn_map().bind(XBOX_DPAD_LEFT,  ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_TRIGGER_HAPPY1));
+  get_btn_map().bind(XBOX_DPAD_RIGHT, ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_TRIGGER_HAPPY2));
 
   get_btn_map().bind(XBOX_BTN_START, ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_START));
   get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_MODE));
-  get_btn_map().bind(XBOX_BTN_BACK,  ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_BACK));
+  get_btn_map().bind(XBOX_BTN_BACK,  ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_SELECT));
   
   get_btn_map().bind(XBOX_BTN_A, ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_A));
   get_btn_map().bind(XBOX_BTN_B, ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_B));
