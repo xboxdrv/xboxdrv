@@ -97,10 +97,10 @@ UInputOptions::mimic_xpad_wireless()
   get_axis_map().clear();
   get_btn_map().clear();
 
-  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_up",    "BTN_0"));
-  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_down",  "BTN_1"));
-  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_left",  "BTN_LEFT"));
-  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_right", "BTN_RIGHT"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_up",    "BTN_TRIGGER_HAPPY3"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_down",  "BTN_TRIGGER_HAPPY4"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_left",  "BTN_TRIGGER_HAPPY1"));
+  m_btn_map.push_back(ButtonMapOption("gamepad.dpad_right", "BTN_TRIGGER_HAPPY2"));
 
   m_btn_map.push_back(ButtonMapOption("gamepad.start", "BTN_START"));
   m_btn_map.push_back(ButtonMapOption("gamepad.guide", "BTN_MODE"));
