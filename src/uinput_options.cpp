@@ -61,7 +61,7 @@ UInputOptions::mimic_xpad()
   
   get_btn_map().bind(XBOX_BTN_START, ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_START));
   get_btn_map().bind(XBOX_BTN_GUIDE, ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_MODE));
-  get_btn_map().bind(XBOX_BTN_BACK,  ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_BACK));
+  get_btn_map().bind(XBOX_BTN_BACK,  ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_SELECT));
   
   get_btn_map().bind(XBOX_BTN_A, ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_A));
   get_btn_map().bind(XBOX_BTN_B, ButtonEvent::create_key(DEVICEID_JOYSTICK, BTN_B));
