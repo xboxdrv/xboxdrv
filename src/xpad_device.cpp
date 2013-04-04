@@ -70,6 +70,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x0f0d, 0x0016, "Hori Real Arcade Pro Ex" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5501, "Hori Real Arcade Pro VX-SA" },
   { GAMEPAD_XBOX360,          0x162e, 0xbeef, "Joytech Neo-Se Take2" },
+  { GAMEPAD_XBOX360,          0x046d, 0xc21d, "Logitech F310" },
   { GAMEPAD_XBOX360,          0x046d, 0xc21e, "Logitech F510" },
   { GAMEPAD_XBOX360,          0x046d, 0xc21f, "Logitech F710" },
   { GAMEPAD_XBOX360,          0x046d, 0xc242, "Logitech ChillStream" },
