@@ -64,6 +64,10 @@ void init_environment_abs(EnvironmentPtr env)
     NamespacePtr ns = env->add_namespace("evdev");
     env->add_namespace_alias("ev", ns);
     {
+      SymbolPtr sym = ns->add_symbol("ABS_MT_TOOL_X");
+      ns->add_alias("KEY_#60", sym);
+    }
+    {
       SymbolPtr sym = ns->add_symbol("ABS_MT_TOUCH_MINOR");
       ns->add_alias("KEY_#49", sym);
     }
@@ -90,6 +94,10 @@ void init_environment_abs(EnvironmentPtr env)
     {
       SymbolPtr sym = ns->add_symbol("ABS_X");
       ns->add_alias("KEY_#0", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("ABS_MT_TOOL_Y");
+      ns->add_alias("KEY_#61", sym);
     }
     {
       SymbolPtr sym = ns->add_symbol("ABS_MT_WIDTH_MAJOR");

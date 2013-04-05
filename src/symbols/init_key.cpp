@@ -91,6 +91,10 @@ void init_environment_key(EnvironmentPtr env)
       ns->add_alias("KEY_#66", sym);
     }
     {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_QUINTTAP");
+      ns->add_alias("KEY_#328", sym);
+    }
+    {
       SymbolPtr sym = ns->add_symbol("KEY_FRONT");
       ns->add_alias("KEY_#132", sym);
     }
@@ -263,12 +267,12 @@ void init_environment_key(EnvironmentPtr env)
       ns->add_alias("KEY_#727", sym);
     }
     {
-      SymbolPtr sym = ns->add_symbol("BTN_TOOL_TRIPLETAP");
-      ns->add_alias("KEY_#334", sym);
-    }
-    {
       SymbolPtr sym = ns->add_symbol("KEY_FN_ESC");
       ns->add_alias("KEY_#465", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("BTN_TOOL_TRIPLETAP");
+      ns->add_alias("KEY_#334", sym);
     }
     {
       SymbolPtr sym = ns->add_symbol("KEY_KP8");
@@ -1636,6 +1640,10 @@ void init_environment_key(EnvironmentPtr env)
     {
       SymbolPtr sym = ns->add_symbol("KEY_KPEQUAL");
       ns->add_alias("KEY_#117", sym);
+    }
+    {
+      SymbolPtr sym = ns->add_symbol("KEY_MICMUTE");
+      ns->add_alias("KEY_#248", sym);
     }
     {
       SymbolPtr sym = ns->add_symbol("KEY_VCR");

@@ -3,6 +3,9 @@
 - name: 'evdev'
   aliases: ['ev']
   abs:
+  - name: 'ABS_MT_TOOL_X'
+    aliases: ['KEY_#60']
+
   - name: 'ABS_MT_TOUCH_MINOR'
     aliases: ['KEY_#49']
 
@@ -23,6 +26,9 @@
 
   - name: 'ABS_X'
     aliases: ['KEY_#0']
+
+  - name: 'ABS_MT_TOOL_Y'
+    aliases: ['KEY_#61']
 
   - name: 'ABS_MT_WIDTH_MAJOR'
     aliases: ['KEY_#50']
@@ -147,6 +153,9 @@
 
   - name: 'KEY_F8'
     aliases: ['KEY_#66']
+
+  - name: 'BTN_TOOL_QUINTTAP'
+    aliases: ['KEY_#328']
 
   - name: 'KEY_FRONT'
     aliases: ['KEY_#132']
@@ -277,11 +286,11 @@
   - name: 'BTN_TRIGGER_HAPPY24'
     aliases: ['KEY_#727']
 
-  - name: 'BTN_TOOL_TRIPLETAP'
-    aliases: ['KEY_#334']
-
   - name: 'KEY_FN_ESC'
     aliases: ['KEY_#465']
+
+  - name: 'BTN_TOOL_TRIPLETAP'
+    aliases: ['KEY_#334']
 
   - name: 'KEY_KP8'
     aliases: ['KEY_#72']
@@ -1302,6 +1311,9 @@
 
   - name: 'KEY_KPEQUAL'
     aliases: ['KEY_#117']
+
+  - name: 'KEY_MICMUTE'
+    aliases: ['KEY_#248']
 
   - name: 'KEY_VCR'
     aliases: ['KEY_#379']
