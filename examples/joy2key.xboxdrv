@@ -1,0 +1,27 @@
+# joy2key
+# =======
+#
+# Converts events from a regular joystick, not directly supported by
+# xboxdrv, into cursor key presses. The joystick needs to be supported
+# by Linux and available via evdev (almost all USB joysticks are).
+
+[xboxdrv]
+ui-clear=true
+evdev=/dev/input/by-id/usb-MOSIC_USB_2A4K_GamePad-event-joystick
+
+[keymap]
+# BTN_A=KEY_SPACE # left
+BTN_C=KEY_PAGEDOWN # left-small
+BTN_B=KEY_ENTER # right
+BTN_X=KEY_PAGEUP # right-small
+
+[absmap]
+ABS_X=KEY_LEFT:KEY_RIGHT:0.25
+ABS_Y=KEY_UP:KEY_DOWN:0.25
+BTN_A+ABS_X=KEY_HOME:KEY_END:0.25
+BTN_A+ABS_Y=KEY_PAGEUP:KEY_PAGEDOWN:0.25
+
+# ABS_Y=log:ONE
+# BTN_A+ABS_Y=log:TWO
+
+# EOF #

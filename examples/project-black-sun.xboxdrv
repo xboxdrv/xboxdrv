@@ -1,0 +1,33 @@
+# Project Black Sun
+# =================
+
+[xboxdrv]
+ui-clear = true
+extra-events=true 
+
+[ui-axismap]
+X1 = KEY_LEFT:KEY_RIGHT:10000
+Y1 = KEY_UP:KEY_DOWN:10000
+
+[ui-buttonmap]
+A = XK_s # jump
+B = XK_w # grenade
+X = XK_a # shoot
+Y = XK_d # reload
+
+LB = KEY_LEFT+KEY_DOWN+XK_s
+RB = KEY_RIGHT+KEY_DOWN+XK_s
+
+LT = KEY_LEFT+KEY_DOWN+XK_a
+RT = KEY_RIGHT+KEY_DOWN+XK_a
+
+START = KEY_ENTER
+BACK  = KEY_ESC
+# GUIDE = KEY_P:KEY_ESC:500 
+
+DU = KEY_UP  
+DD = KEY_DOWN   
+DL = KEY_LEFT  
+DR = KEY_RIGHT 
+
+# EOF #

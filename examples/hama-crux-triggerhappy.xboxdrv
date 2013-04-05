@@ -1,0 +1,63 @@
+# Example configuration for Hama Crux 
+# Tuned for webbrowsing with Firefox
+
+[xboxdrv]
+ui-clear=true
+
+[ui-buttonmap]
+crux.up=KEY_UP
+crux.left=KEY_LEFT
+crux.right=KEY_RIGHT
+crux.down=KEY_DOWN 
+crux.q=KEY_PAGEUP
+crux.e=KEY_PAGEDOWN
+
+# crux.n1=KEY_1
+# crux.n2=KEY_2
+# crux.n3=KEY_3
+# crux.n4=KEY_4
+# crux.n5=KEY_5
+# crux.n6=KEY_6
+# crux.n7=KEY_7
+# crux.n8=KEY_8
+# crux.n9=KEY_9
+
+crux.escape=KEY_LEFTCTRL+XK_w # close tab
+crux.reload=KEY_F5 # reload
+crux.use=KEY_ENTER
+crux.c3=KEY_LEFTCTRL+XK_k # search bar
+crux.c4=KEY_LEFTCTRL+XK_l # location bar
+crux.tab=KEY_LEFTCTRL+XK_t # new tab
+crux.run=KEY_LEFTCTRL
+crux.crouch=KEY_LEFTALT
+
+crux.run+crux.up=KEY_HOME
+crux.run+crux.down=KEY_END
+
+crux.p1=KEY_FORWARD
+crux.p2=KEY_BACK
+
+crux.space=KEY_BACK
+crux.n=KEY_FORWARD
+
+crux.option=KEY_F11
+
+crux.c6=KEY_HOME
+crux.c7=KEY_END
+
+crux.n11=KEY_LEFTCTRL+XK_equal
+crux.n6=KEY_LEFTCTRL+XK_minus
+
+crux.n10=KEY_LEFTCTRL+KEY_LEFTSHIFT+XK_equal
+crux.n5=KEY_LEFTCTRL+KEY_LEFTSHIFT+XK_minus
+
+crux.n1=qmacro:www.youtube.com
+crux.n2=qmacro:www.slashdot.com
+crux.n3=qmacro:mail.google.com
+crux.n4=qmacro:www.heise.de
+
+crux.n7=qmacro:www.reddit.com
+crux.n8=qmacro:123
+crux.n9=
+
+# EOF #
