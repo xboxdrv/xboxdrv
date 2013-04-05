@@ -85,7 +85,8 @@ Target for 0.9.?
 * update documentation on how to run as non-root (i.e. add user to
   'root' group, see mail from james.c@videotron.ca)
 
-* maybe do something with setuid() to drop permissions of the program that gets exec'd
+* maybe do something with setuid() to drop permissions of the program
+  that gets exec'd, see mail by Jasen Betts <jasen.betts@gmail.com>
 
 * macros could need locking, so that the next one isn't run before the first one executed
 
