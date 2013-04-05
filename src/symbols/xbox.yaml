@@ -77,7 +77,7 @@
       provides: ['gamepad.start']
 
     - name: 'back'
-      provides: ['gamepad.select']
+      provides: ['gamepad.back']
 
     - name: 'guide'
       provides: ['gamepad.guide']

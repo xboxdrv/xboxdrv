@@ -53,7 +53,7 @@
     - name:    'start'
       evdev:   'BTN_START'
     
-    - name:    'select'
+    - name:    'back'
       evdev:   'BTN_SELECT'
     
     - name:    'guide'

@@ -2411,7 +2411,7 @@ void init_environment_key(EnvironmentPtr env)
       SymbolPtr sym = ns->add_symbol("start");
     }
     {
-      SymbolPtr sym = ns->add_symbol("select");
+      SymbolPtr sym = ns->add_symbol("back");
     }
     {
       SymbolPtr sym = ns->add_symbol("guide");
