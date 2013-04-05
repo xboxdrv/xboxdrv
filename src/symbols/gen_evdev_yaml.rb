@@ -1,4 +1,4 @@
-#!/usr/bin/ruby -w
+#!/usr/bin/ruby1.8 -w
 
 def gen_event_list(regex, prefix)
   ret = {}
