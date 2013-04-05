@@ -1,3 +1,25 @@
+xboxdrv 0.8.5 - (??/Apr/2013)
+=============================
+
+* fixed errors on shutdown related to libusbx
+* updated button mapping for --mimic-xpad-wireless and --mimic-xpad
+* workaround for evdev values that don't fall into the given min/max
+* added some support for Playstation 3 LED and rumble
+* added support for Batarang Xbox 360 controller
+* added support for Elite Glow
+* added support for Hori Real Arcade Pro VX-SA
+* added support for Hori SOULCALIBUR V Stick
+* added support for Hori XBOX 360 EX 2 with Turbo
+* added support for Logic3 Controller
+* added support for Logitech F310
+* added support for Logitech F510
+* added support for Logitech F710
+* added support for Razer Onza Tournament Edition
+* added support for Street Fighter IV FightStick TE
+* added support for Thrustmaster, Inc. GPX Controller
+* added support for Xbox Airflo wired controller
+
+
 xboxdrv 0.8.4 - (24/Jan/2012)
 =============================
 
