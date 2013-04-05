@@ -41,7 +41,8 @@
 
 XboxdrvMain* XboxdrvMain::s_current = 0;
 
-XboxdrvMain::XboxdrvMain(const Options& opts) :
+XboxdrvMain::XboxdrvMain(USBSubsystem& usb_subsystem, const Options& opts) :
+  m_usb_subsystem(usb_subsystem),
   m_opts(opts),
   m_gmain(),
   m_usb_gsource(),
@@ -153,8 +154,6 @@ XboxdrvMain::on_controller_disconnect()
 void
 XboxdrvMain::run()
 {
-  USBSubsystem usb_subsystem;
-
   m_controller = create_controller();
   m_controller->set_disconnect_cb(boost::bind(&XboxdrvMain::on_controller_disconnect, this));
   init_controller(m_controller);

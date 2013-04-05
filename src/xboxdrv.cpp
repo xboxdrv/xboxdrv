@@ -29,16 +29,17 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "controller_thread.hpp"
 #include "command_line_options.hpp"
 #include "controller/evdev_controller.hpp"
+#include "controller_factory.hpp"
+#include "controller_thread.hpp"
 #include "evdev_helper.hpp"
 #include "helper.hpp"
 #include "raise_exception.hpp"
-#include "usb_helper.hpp"
 #include "usb_gsource.hpp"
+#include "usb_helper.hpp"
+#include "usb_subsystem.hpp"
 #include "word_wrap.hpp"
-#include "controller_factory.hpp"
 #include "xboxdrv_daemon.hpp"
 #include "xboxdrv_main.hpp"
 
@@ -194,7 +195,8 @@ Xboxdrv::run_main(const Options& opts)
     print_copyright();
   }
 
-  XboxdrvMain xboxdrv_main(opts);
+  USBSubsystem usb_subsystem;
+  XboxdrvMain xboxdrv_main(usb_subsystem, opts);
   xboxdrv_main.run();
 }
 
@@ -211,9 +213,10 @@ Xboxdrv::run_daemon(const Options& opts)
     libusb_set_debug(NULL, 3);
   }
 
+  USBSubsystem usb_subsystem;
   if (!opts.detach)
   {
-    XboxdrvDaemon daemon(opts);
+    XboxdrvDaemon daemon(usb_subsystem, opts);
     daemon.run();
   }
   else
@@ -244,7 +247,7 @@ Xboxdrv::run_daemon(const Options& opts)
         }
         else
         {
-          XboxdrvDaemon daemon(opts);
+          XboxdrvDaemon daemon(usb_subsystem, opts);
           daemon.run();
         }
       }

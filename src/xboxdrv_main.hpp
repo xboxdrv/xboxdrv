@@ -30,6 +30,7 @@
 class Options;
 class UInput;
 class USBGSource;
+class USBSubsystem;
 
 class XboxdrvMain
 {
@@ -40,6 +41,7 @@ public:
   static XboxdrvMain* current() { return s_current; }
   
 private:
+  USBSubsystem& m_usb_subsystem;
   const Options& m_opts;
   GMainLoop* m_gmain;
   boost::scoped_ptr<USBGSource> m_usb_gsource;
@@ -55,7 +57,7 @@ private:
   ControllerPtr m_controller;
 
 public:
-  XboxdrvMain(const Options& opts);
+  XboxdrvMain(USBSubsystem& usb_subsystem, const Options& opts);
   ~XboxdrvMain();
 
   void run();

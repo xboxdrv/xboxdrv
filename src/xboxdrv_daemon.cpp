@@ -97,7 +97,8 @@ bool get_usb_path(udev_device* device, int* bus, int* dev)
 
 } // namespace
 
-XboxdrvDaemon::XboxdrvDaemon(const Options& opts) :
+XboxdrvDaemon::XboxdrvDaemon(USBSubsystem& usb_subsystem, const Options& opts) :
+  m_usb_subsystem(usb_subsystem),
   m_opts(opts),
   m_gmain(),
   m_controller_slots(),
@@ -136,8 +137,6 @@ XboxdrvDaemon::run()
     create_pid_file();
 
     init_uinput();
-
-    USBSubsystem usb_subsystem;
 
     UdevSubsystem udev_subsystem;
     udev_subsystem.set_device_callback(boost::bind(&XboxdrvDaemon::process_match, this, _1));

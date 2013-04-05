@@ -32,6 +32,7 @@ extern "C" {
 class Options;
 class UInput;
 class USBGSource;
+class USBSubsystem;
 struct XPadDevice;
 
 class XboxdrvDaemon
@@ -40,6 +41,7 @@ private:
   static XboxdrvDaemon* s_current;
 
 private:
+  USBSubsystem& m_usb_subsystem;
   const Options& m_opts;
   GMainLoop* m_gmain;
 
@@ -56,7 +58,7 @@ private:
   static XboxdrvDaemon* current() { return s_current; }
 
 public:
-  XboxdrvDaemon(const Options& opts);
+  XboxdrvDaemon(USBSubsystem& usb_subsystem, const Options& opts);
   ~XboxdrvDaemon();
 
   void run();
