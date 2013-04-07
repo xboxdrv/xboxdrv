@@ -107,7 +107,10 @@ XboxdrvDaemon::XboxdrvDaemon(const Options& opts) :
   assert(!s_current);
   s_current = this;
 
+#if !GLIB_CHECK_VERSION(2,35,0)
   g_type_init();
+#endif
+
   m_gmain = g_main_loop_new(NULL, false);
 
   signal(SIGINT,  &XboxdrvDaemon::on_sigint);
