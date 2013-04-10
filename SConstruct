@@ -121,7 +121,8 @@ if 'BUILD' in env and env['BUILD'] == 'development':
 elif 'BUILD' in env and env['BUILD'] == 'custom':
     pass
 else:
-    env.Append(CPPFLAGS = ['-g', '-O3', '-Wall', '-ansi', '-pedantic'])
+    # -ansi removed for now, see above
+    env.Append(CPPFLAGS = ['-g', '-O3', '-Wall', '-pedantic'])
 
 env.ParseConfig("pkg-config --cflags --libs dbus-glib-1 | sed 's/-I/-isystem/g'")
 env.ParseConfig("pkg-config --cflags --libs glib-2.0 | sed 's/-I/-isystem/g'")
