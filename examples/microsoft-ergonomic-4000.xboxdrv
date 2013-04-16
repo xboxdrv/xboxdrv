@@ -5,7 +5,8 @@
 # Ergonomic 4000 keyboard to scroll wheel events.
 
 [xboxdrv]
-evdev = "/dev/input/by-id/usb-Microsoft_Natural®_Ergonomic_Keyboard_4000-event-kbd"
+# evdev = "/dev/input/by-id/usb-Microsoft_Natural®_Ergonomic_Keyboard_4000-event-kbd"
+evdev = "/dev/input/by-id/usb-Microsoft_Natural®_Ergonomic_Keyboard_4000-if01-event-kbd"
 evdev-grab = false
 ui-clear = true
 
