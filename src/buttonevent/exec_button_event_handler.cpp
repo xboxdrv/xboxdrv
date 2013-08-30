@@ -21,6 +21,7 @@
 #include <boost/tokenizer.hpp>
 #include <errno.h>
 #include <string.h>
+#include <sys/wait.h>
 
 #include "log.hpp"
 
@@ -45,9 +46,17 @@ ExecButtonEventHandler::ExecButtonEventHandler(const std::vector<std::string>& a
 void
 ExecButtonEventHandler::send(bool value)
 {
-  if (value)
+  if (!value)
   {
+    return;
+  }
+
+  pid_t tmp_pid = fork();
+  if (tmp_pid == 0)
+  {
+    // Double fork to reap the child and disown the execed process
     pid_t pid = fork();
+
     if (pid == 0)
     {
       char** argv = static_cast<char**>(malloc(sizeof(char*) * (m_args.size() + 1)));
@@ -63,7 +72,11 @@ ExecButtonEventHandler::send(bool value)
         _exit(EXIT_FAILURE);
       }
     }
+
+    _exit(EXIT_SUCCESS);
   }
+
+  waitpid(tmp_pid, NULL, 0);
 }
 
 std::string
