@@ -3118,7 +3118,7 @@ $ export SDL_JOYSTICK_DEVICE]]></programlisting>
 
     <itemizedlist>
       <listitem>
-        <para><ulink url="ftp://ptah.lnf.kth.se/pub/misc/sdl-env-vars">ftp://ptah.lnf.kth.se/pub/misc/sdl-env-vars</ulink></para>
+        <para><ulink url="http://sdl.beuc.net/sdl.wiki/SDL_envvars">http://sdl.beuc.net/sdl.wiki/SDL_envvars</ulink></para>
       </listitem>
     </itemizedlist>
 
