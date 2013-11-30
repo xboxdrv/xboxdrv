@@ -40,7 +40,12 @@ BTN_C  = B
 BTN_Y = LB
 BTN_Z = RB
 
+BTN_SELECT  = TL
+BTN_START   = TR
+
 BTN_TR2 = start
-BTN_TL2   = back
+BTN_TL2 = back
+
+BTN_MODE = guide
 
 # EOF #
