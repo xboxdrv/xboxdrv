@@ -1,0 +1,51 @@
+# Playstation 4 Controller with Bluetooth
+# ========================================
+
+[xboxdrv]
+# This displays events received from the controller, if you are
+# working on a configuration you want to set this to true:
+evdev-debug = false
+
+# Grabbing the device prevents other applications from accessing it,
+# this is needed most of the time te prevent applications from
+# receiving events twice.
+evdev-grab = true
+
+[evdev-absmap]
+ABS_HAT0X = dpad_x
+ABS_HAT0Y = dpad_y
+
+ABS_X = X1
+ABS_Y = Y1
+
+ABS_Z  = X2
+ABS_RZ = Y2
+
+ABS_RX = LT
+ABS_RY = RT
+
+[evdev-keymap]
+BTN_TL = LT
+BTN_TR = RT
+BTN_A  = X
+BTN_X  = Y
+BTN_B  = A
+BTN_C  = B
+
+BTN_Y = LB
+BTN_Z = RB
+
+BTN_SELECT = TL
+BTN_START  = TR
+
+BTN_TR2 = start
+BTN_TL2 = back
+
+BTN_MODE = guide
+
+[axismap]
+-Y1 = Y1
+-Y2 = Y2
+
+# EOF #
+
