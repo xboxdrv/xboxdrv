@@ -19,13 +19,13 @@
 
 #include "xeox_controller.hpp"
 
-#include "chatpad.hpp"
-#include "headset.hpp"
 #include "helper.hpp"
 #include "options.hpp"
 #include "raise_exception.hpp"
 #include "unpack.hpp"
 #include "usb_helper.hpp"
+#include <memory>
+#include <string>
 
 XeoxController::XeoxController(libusb_device* dev, bool try_detach) :
   USBController(dev),

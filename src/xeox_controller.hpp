@@ -20,8 +20,6 @@
 #define HEADER_XEOX_CONTROLLER_HPP
 
 #include <libusb.h>
-#include <memory>
-#include <string>
 
 #include "usb_controller.hpp"
 
@@ -50,6 +48,6 @@ private:
   XeoxController& operator= (const XeoxController&);
 };
 
-#endif
+#endif // HEADER_XEOX_CONTROLLER_HPP
 
 /* EOF */

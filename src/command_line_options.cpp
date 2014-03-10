@@ -202,7 +202,7 @@ CommandLineParser::init_argp()
     .add_option(OPTION_WID,          'w', "wid",     "N", "use wireless controller with wid N (default: 0)")
     .add_option(OPTION_DEVICE_BY_PATH, 0, "device-by-path", "BUS:DEV", "Use device BUS:DEV, do not do any scanning")
     .add_option(OPTION_DEVICE_BY_ID,   0, "device-by-id",   "VENDOR:PRODUCT", "Use device that matches VENDOR:PRODUCT (as returned by lsusb)")
-    .add_option(OPTION_TYPE,           0, "type",    "TYPE", "Ignore autodetection and enforce controller type (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)")
+    .add_option(OPTION_TYPE,           0, "type",    "TYPE", "Ignore autodetection and enforce controller type (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar, xeox)")
     .add_option(OPTION_DETACH_KERNEL_DRIVER, 'd', "detach-kernel-driver", "", "Detaches the kernel driver currently associated with the device")
     .add_option(OPTION_GENERIC_USB_SPEC, 0, "generic-usb-spec", "SPEC", "Specification for generic USB device")
     .add_newline()
@@ -626,6 +626,10 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         else if (opt.argument == "generic-usb")
         {
           opts.gamepad_type = GAMEPAD_GENERIC_USB;
+        }
+        else if (opt.argument == "xeox")
+        {
+          opts.gamepad_type = GAMEPAD_XEOX;
         }
         else
         {

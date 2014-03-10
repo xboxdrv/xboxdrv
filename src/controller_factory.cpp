@@ -27,6 +27,7 @@
 #include "xbox360_controller.hpp"
 #include "xbox360_wireless_controller.hpp"
 #include "xbox_controller.hpp"
+#include "xeox_controller.hpp"
 
 ControllerPtr
 ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const Options& opts)
@@ -77,6 +78,9 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
         return ControllerPtr(new GenericUSBController(dev, spec.m_interface, spec.m_endpoint, 
                                                       opts.detach_kernel_driver));
       }
+
+    case GAMEPAD_XEOX:
+      return ControllerPtr(new XeoxController(dev, opts.detach_kernel_driver));
 
     default:
       assert(!"unknown gamepad type");
@@ -144,6 +148,9 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
                                                              opts.detach_kernel_driver)));
       }
       break;
+
+    case GAMEPAD_XEOX:
+      lst.push_back(ControllerPtr(new XeoxController(dev, opts.detach_kernel_driver)));
 
     default:
       assert(!"unknown gamepad type");
