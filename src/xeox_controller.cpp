@@ -34,10 +34,8 @@ XeoxController::XeoxController(libusb_device* dev, bool try_detach) :
   endpoint_out(2)
 {
   // find endpoints
-  //endpoint_in  = usb_find_ep(LIBUSB_ENDPOINT_IN,  LIBUSB_CLASS_VENDOR_SPEC, 93, 1);
-  //endpoint_out = usb_find_ep(LIBUSB_ENDPOINT_OUT, LIBUSB_CLASS_VENDOR_SPEC, 93, 1);
-  endpoint_in = 1;
-  endpoint_out = 2;
+  endpoint_in  = usb_find_ep(LIBUSB_ENDPOINT_IN,  LIBUSB_CLASS_HID, 0, 0);
+  endpoint_out = usb_find_ep(LIBUSB_ENDPOINT_OUT, LIBUSB_CLASS_HID, 0, 0);
 
   log_debug("EP(IN):  " << endpoint_in);
   log_debug("EP(OUT): " << endpoint_out);
