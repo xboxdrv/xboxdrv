@@ -51,7 +51,8 @@ XeoxController::~XeoxController()
 void
 XeoxController::set_rumble_real(uint8_t left, uint8_t right)
 {
-  // not implemented
+  uint8_t rumblecmd[] = { left, right };
+  usb_write(endpoint_out, rumblecmd, sizeof(rumblecmd));
 }
 
 void
