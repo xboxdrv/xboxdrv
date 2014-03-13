@@ -70,10 +70,10 @@ XeoxController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
     Xbox360Msg& msg = msg_out->xbox360;
 
     msg.x1 = scale_8to16(data[0] - 0x80);
-    msg.y1 = scale_8to16(data[1] - 0x80);
+    msg.y1 = s16_invert(scale_8to16(data[1] - 0x80));
 
     msg.x2 = scale_8to16(data[3] - 0x80);
-    msg.y2 = scale_8to16(data[2] - 0x80);
+    msg.y2 = s16_invert(scale_8to16(data[2] - 0x80));
 
     msg.dpad_up    = data[1] == 0    || data[5] == 7 || data[5] == 0 || data[5] == 1;
     msg.dpad_down  = data[1] == 0xFF || data[5] == 3 || data[5] == 4 || data[5] == 5;
