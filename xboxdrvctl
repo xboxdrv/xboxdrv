@@ -26,12 +26,9 @@ parser = OptionParser("Usage: %prog [OPTIONS]\n"
 
 group = OptionGroup(parser, "D-Bus Options")
 group.add_option("-b", "--bus", metavar="BUS",
-                  dest="connection", default="org.seul.Xboxdrv",
-                  help="connect to D-Bus bus BUS")
+                  dest="bus", default="auto",
+                  help="connect to D-Bus bus BUS (auto, session, system)")
 
-group.add_option("-o", "--object", metavar="OBJ",
-                  dest="object", default="connect List all resource files",
-                  help="use D-Bus object OBJ")
 parser.add_option_group(group)
 
 group = OptionGroup(parser, "Xboxdrv Options")
@@ -63,7 +60,19 @@ parser.add_option_group(group)
 
 (options, args) = parser.parse_args()
 
-bus = dbus.SessionBus()
+if options.bus == "session":
+    bus = dbus.SessionBus()
+elif options.bus == "system":
+    bus = dbus.SystemBus()
+elif options.bus == "auto":
+    bus = dbus.SessionBus()
+    try:
+        bus.get_object("org.seul.Xboxdrv", '/org/seul/Xboxdrv/Daemon')
+    except dbus.exceptions.DBusException:
+				bus = dbus.SystemBus()
+else:
+    print "Error: invalid argument to --bus. Must be 'auto', 'session, or 'system'"
+    exit()
 
 if options.status:
     daemon = bus.get_object("org.seul.Xboxdrv", '/org/seul/Xboxdrv/Daemon')
