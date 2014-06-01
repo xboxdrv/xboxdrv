@@ -137,8 +137,6 @@ XboxdrvDaemon::run()
 
     init_uinput();
 
-    USBSubsystem usb_subsystem;
-
     UdevSubsystem udev_subsystem;
     udev_subsystem.set_device_callback(boost::bind(&XboxdrvDaemon::process_match, this, _1));
 
