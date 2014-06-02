@@ -132,7 +132,12 @@ MessageProcessor::set_config(int num)
 {
   if (m_config)
   {
+    // reset old mapping to zero to not get stuck keys/axis
+    m_config->get_config()->get_emitter().reset_all_outputs();
+
     m_config->set_current_config(num);
+
+    log_info("switched to config: " << m_config->get_current_config());
   }
 }
 
