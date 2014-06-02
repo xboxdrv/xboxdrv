@@ -79,6 +79,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x0738, 0xcb03, "Saitek P3200 Rumble Pad - PC/Xbox 360" },
   { GAMEPAD_XBOX360,          0x0738, 0xcb02, "Saitek Cyborg Rumble Pad - PC/Xbox 360" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x0201, "Pelican TSZ360 Pad" },
+  { GAMEPAD_XBOX360,          0x0e6f, 0x0113, "Afterglow AX.1 Gamepad for Xbox 360" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x0213, "Afterglow Gamepad for Xbox 360" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x0401, "Logic3 Controller" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x0301, "Logic3 Controller" },
