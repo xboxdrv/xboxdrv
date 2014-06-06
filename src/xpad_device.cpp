@@ -92,6 +92,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x1bad, 0xf023, "MLG Pro Circuit Controller (Xbox)" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf028, "Street Fighter IV FightPad" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf038, "Street Fighter IV FightStick TE" },
+  { GAMEPAD_XBOX360,          0x1bad, 0xf900, "Harmonix Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf901, "Gamestop Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf903, "Tron Xbox 360 controller" },
   { GAMEPAD_XBOX360,          0x15e4, 0x3f00, "Power A Mini Pro Elite" },
