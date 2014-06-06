@@ -98,6 +98,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x15e4, 0x3f10, "Batarang Xbox 360 controller" },
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0291, "Microsoft Xbox 360 Wireless Controller" }, // RF Module from the Xbox360
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0719, "Microsoft Xbox 360 Wireless Controller (PC)" }, // official Wireless Receiver
+  { GAMEPAD_XBOX360,          0x24c6, 0x5000, "Razer Atrox Arcade Stick" },
   { GAMEPAD_XBOX360,          0x1689, 0xfd00, "Razer Onza" },  
   { GAMEPAD_XBOX360,          0x1689, 0xfd01, "Razer Onza Tournament Edition" },  
   { GAMEPAD_XBOX360,          0x1532, 0x0037, "Razer Sabertooth" },
