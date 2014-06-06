@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -99,10 +99,10 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0291, "Microsoft Xbox 360 Wireless Controller" }, // RF Module from the Xbox360
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0719, "Microsoft Xbox 360 Wireless Controller (PC)" }, // official Wireless Receiver
   { GAMEPAD_XBOX360,          0x24c6, 0x5000, "Razer Atrox Arcade Stick" },
-  { GAMEPAD_XBOX360,          0x1689, 0xfd00, "Razer Onza" },  
-  { GAMEPAD_XBOX360,          0x1689, 0xfd01, "Razer Onza Tournament Edition" },  
+  { GAMEPAD_XBOX360,          0x1689, 0xfd00, "Razer Onza" },
+  { GAMEPAD_XBOX360,          0x1689, 0xfd01, "Razer Onza Tournament Edition" },
   { GAMEPAD_XBOX360,          0x1532, 0x0037, "Razer Sabertooth" },
-  { GAMEPAD_XBOX360,          0x12ab, 0x0004, "DDR Universe 2 Mat" }, 
+  { GAMEPAD_XBOX360,          0x12ab, 0x0004, "DDR Universe 2 Mat" },
   { GAMEPAD_XBOX360,          0x15e4, 0x3f0a, "Xbox Airflo wired controller" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5300, "Power A Mini Pro Elite Glow" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5500, "Hori XBOX 360 EX 2 with Turbo" },
@@ -115,7 +115,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX_MAT,         0x0c12, 0x8809, "RedOctane Xbox Dance Pad" },
   { GAMEPAD_XBOX_MAT,         0x12ab, 0x8809, "Xbox DDR dancepad" },
   // { GAMEPAD_XBOX_MAT,         0x1430, 0x8888, "TX6500+ Dance Pad (first generation)" }, // just a HID device, not Xbox1
-   
+
   { GAMEPAD_FIRESTORM,        0x044f, 0xb304, "ThrustMaster, Inc. Firestorm Dual Power" },
   { GAMEPAD_FIRESTORM_VSB,    0x044f, 0xb312, "ThrustMaster, Inc. Firestorm Dual Power (vs b)" },
 
