@@ -7,6 +7,8 @@ support for Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless
 gamepads. The Xbox360 guitar and some Xbox1 dancemats might work too.
 The Xbox 360 racing wheel is not supported, but shouldn't be to hard
 to add if somebody is interested.
+Controllers for the Xbox One (third generation console) are not
+supported.
 
 Some basic support for the Xbox360 Chatpad on USB controller is
 provided, Chatpad on wireless ones is not supported. The headset is
