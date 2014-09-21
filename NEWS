@@ -1,3 +1,9 @@
+xboxdrv 0.8.6 - (??/???/2014)
+=============================
+
+* fixed segfault due to incorrect shutdown of USB subsystem
+
+
 xboxdrv 0.8.5 - (07/Apr/2013)
 =============================
 

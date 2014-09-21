@@ -143,8 +143,6 @@ XboxdrvMain::on_controller_disconnect()
 void
 XboxdrvMain::run()
 {
-  USBSubsystem usb_subsystem;
-
   m_controller = create_controller();
   m_controller->set_disconnect_cb(boost::bind(&XboxdrvMain::on_controller_disconnect, this));
   std::auto_ptr<MessageProcessor> message_proc;

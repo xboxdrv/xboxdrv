@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -64,6 +64,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x0738, 0xb726, "Mad Catz Xbox controller - MW2" },
   { GAMEPAD_XBOX360,          0x0738, 0xf738, "Super SFIV FightStick TE S" },
   { GAMEPAD_XBOX360,          0x0738, 0x4718, "Mad Catz Street Fighter IV FightStick SE" },
+  { GAMEPAD_XBOX360,          0x0738, 0x4738, "Mad Catz Street Fighter IV FightStick TE" },
   { GAMEPAD_XBOX360,          0x0738, 0xbeef, "Mad Catz Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x000a, "Hori Co. DOA4 FightStick" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x000d, "Hori Fighting Stick Ex2" },
@@ -79,36 +80,43 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x0738, 0xcb03, "Saitek P3200 Rumble Pad - PC/Xbox 360" },
   { GAMEPAD_XBOX360,          0x0738, 0xcb02, "Saitek Cyborg Rumble Pad - PC/Xbox 360" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x0201, "Pelican TSZ360 Pad" },
+  { GAMEPAD_XBOX360,          0x0e6f, 0x0113, "Afterglow AX.1 Gamepad for Xbox 360" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x0213, "Afterglow Gamepad for Xbox 360" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x0401, "Logic3 Controller" },
+  { GAMEPAD_XBOX360,          0x0e6f, 0x0301, "Logic3 Controller" },
   { GAMEPAD_XBOX360,          0x12ab, 0x0301, "PDP AFTERGLOW AX.1" },
   { GAMEPAD_XBOX360_GUITAR,   0x1430, 0x4748, "RedOctane Guitar Hero X-plorer" },
   { GAMEPAD_XBOX360_GUITAR,   0x1bad, 0x0002, "Harmonix Guitar for Xbox 360" },
   { GAMEPAD_XBOX360_GUITAR,   0x1bad, 0x0003, "Harmonix Drum Kit for Xbox 360" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf016, "Mad Catz Xbox 360 Controller" },
+  { GAMEPAD_XBOX360,          0x1bad, 0xf023, "MLG Pro Circuit Controller (Xbox)" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf028, "Street Fighter IV FightPad" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf038, "Street Fighter IV FightStick TE" },
+  { GAMEPAD_XBOX360,          0x1bad, 0xf900, "Harmonix Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf901, "Gamestop Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf903, "Tron Xbox 360 controller" },
   { GAMEPAD_XBOX360,          0x15e4, 0x3f00, "Power A Mini Pro Elite" },
   { GAMEPAD_XBOX360,          0x15e4, 0x3f10, "Batarang Xbox 360 controller" },
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0291, "Microsoft Xbox 360 Wireless Controller" }, // RF Module from the Xbox360
   { GAMEPAD_XBOX360_WIRELESS, 0x045e, 0x0719, "Microsoft Xbox 360 Wireless Controller (PC)" }, // official Wireless Receiver
-  { GAMEPAD_XBOX360,          0x1689, 0xfd00, "Razer Onza" },  
-  { GAMEPAD_XBOX360,          0x1689, 0xfd01, "Razer Onza Tournament Edition" },  
-  { GAMEPAD_XBOX360,          0x12ab, 0x0004, "DDR Universe 2 Mat" }, 
+  { GAMEPAD_XBOX360,          0x24c6, 0x5000, "Razer Atrox Arcade Stick" },
+  { GAMEPAD_XBOX360,          0x1689, 0xfd00, "Razer Onza" },
+  { GAMEPAD_XBOX360,          0x1689, 0xfd01, "Razer Onza Tournament Edition" },
+  { GAMEPAD_XBOX360,          0x1532, 0x0037, "Razer Sabertooth" },
+  { GAMEPAD_XBOX360,          0x12ab, 0x0004, "DDR Universe 2 Mat" },
   { GAMEPAD_XBOX360,          0x15e4, 0x3f0a, "Xbox Airflo wired controller" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5300, "Power A Mini Pro Elite Glow" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5500, "Hori XBOX 360 EX 2 with Turbo" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5506, "Hori SOULCALIBUR V Stick" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5b02, "Thrustmaster, Inc. GPX Controller" },
+  { GAMEPAD_XBOX360,          0x0e6f, 0x021f, "Rock Candy Gamepad for Xbox 360" },
 
   { GAMEPAD_XBOX_MAT,         0x0738, 0x4540, "Mad Catz Beat Pad" },
   { GAMEPAD_XBOX_MAT,         0x0738, 0x6040, "Mad Catz Beat Pad Pro" },
   { GAMEPAD_XBOX_MAT,         0x0c12, 0x8809, "RedOctane Xbox Dance Pad" },
   { GAMEPAD_XBOX_MAT,         0x12ab, 0x8809, "Xbox DDR dancepad" },
   // { GAMEPAD_XBOX_MAT,         0x1430, 0x8888, "TX6500+ Dance Pad (first generation)" }, // just a HID device, not Xbox1
-   
+
   { GAMEPAD_FIRESTORM,        0x044f, 0xb304, "ThrustMaster, Inc. Firestorm Dual Power" },
   { GAMEPAD_FIRESTORM_VSB,    0x044f, 0xb312, "ThrustMaster, Inc. Firestorm Dual Power (vs b)" },
 
