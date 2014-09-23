@@ -49,8 +49,12 @@ EvdevController::EvdevController(const std::string& filename,
   m_keymap(keymap),
   m_absinfo(ABS_MAX),
   m_event_buffer(),
-  m_msgs()
+  m_msg()
 {
+  XboxGenericMsg msg;
+  memset(&msg, 0, sizeof(XboxGenericMsg));
+  msg.type = XBOX_MSG_XBOX360;
+
   m_fd = open(filename.c_str(), O_RDONLY | O_NONBLOCK);
 
   if (m_fd == -1)
@@ -240,19 +244,11 @@ EvdevController::on_read_data(GIOChannel* source, GIOCondition condition)
     {
       if (ev[i].type == EV_SYN)
       {
-        while (!m_msgs.empty()) {
-            submit_msg(m_msgs.front());
-            m_msgs.pop();
-        }
+        submit_msg(m_msg);
       }
       else
       {
-          XboxGenericMsg msg;
-          memset(&msg, 0, sizeof(XboxGenericMsg));
-          msg.type = XBOX_MSG_XBOX360;
-
-          parse(ev[i], msg);
-          m_msgs.push(msg);
+        parse(ev[i], m_msg);
       }
     }
   }

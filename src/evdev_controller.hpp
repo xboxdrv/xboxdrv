@@ -30,8 +30,6 @@
 
 class EvdevAbsMap;
 
-typedef std::queue<XboxGenericMsg> MessageBuffer;
-
 class EvdevController : public Controller
 {
 private:
@@ -51,7 +49,7 @@ private:
   typedef std::queue<struct input_event> EventBuffer;
   EventBuffer m_event_buffer; // unused?
 
-  MessageBuffer m_msgs; // queue of messages for disptching
+  XboxGenericMsg m_msg;
 
 public:
   EvdevController(const std::string& filename, 
