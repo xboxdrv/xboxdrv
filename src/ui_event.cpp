@@ -297,7 +297,6 @@ void UIAction::parse(XboxGenericMsg &msg, const struct input_event& ev) {
             } else {
                 value = a.zero_value;
             }
-            std::cout << ev.value << " " << a.rezero << " " << a.set_value << " " << a.zero_value << " = " << value << std::endl;
             set_axis(msg, a.axis, value);
         }
     }
