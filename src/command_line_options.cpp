@@ -1213,7 +1213,7 @@ CommandLineParser::set_evdev_absmap(const std::string& name, const std::string& 
 void
 CommandLineParser::set_evdev_keymap(const std::string& name, const std::string& value)
 {
-  m_options->evdev_keymap[str2key(name)] = string2btn(value);
+  m_options->evdev_keymap[str2key(name)] = UIAction::from_string(value);
 }
 
 void

@@ -16,8 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui_event.hpp"
+#include <boost/tokenizer.hpp>
 
+#include "raise_exception.hpp"
+#include "ui_event.hpp"
 #include "evdev_helper.hpp"
 #include "uinput.hpp"
 
@@ -217,6 +219,50 @@ void split_event_name(const std::string& str, std::string* event_str, int* slot_
       *device_id = str2deviceid(device.substr(0, p));
     }
   }
+}
+
+UIAction::UIAction(const ButtonList buttons) :
+    btns(buttons)
+{
+}
+
+UIActionPtr UIAction::from_string(const std::string &value) {
+    ButtonList buttons;
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    tokenizer ev_tokens(value, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
+    std::cout << "NEW" << std::endl;
+    for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m)
+    {
+        std::string event_name;
+        std::string token = *m;
+        switch(get_event_type(token))
+        {
+          case EV_KEY: {
+            event_name = token.substr(token.find('_') + 1, std::string::npos);
+            buttons.push_back(string2btn(event_name));
+            break;
+          }
+          case EV_REL: {
+            raise_exception(std::runtime_error, "Relative events not supported.");
+            break;
+          }
+          case EV_ABS: {
+            raise_exception(std::runtime_error, "Absolute events not supported.");
+            break;
+          }
+          default: {
+            raise_exception(std::runtime_error, "Unsupported event \"" + token + "\".");
+          }
+        }
+    }
+    return UIActionPtr(new UIAction(buttons));
+}
+
+void UIAction::parse(XboxGenericMsg &msg, const struct input_event& ev) {
+    // here you may iterate in reverse on release
+    for (ButtonList::iterator it = btns.begin(); it != btns.end(); ++it) {
+        set_button(msg, *it, ev.value);
+    }
 }
 
 /* EOF */

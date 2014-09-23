@@ -37,7 +37,7 @@
 
 EvdevController::EvdevController(const std::string& filename,
                                  const EvdevAbsMap& absmap,
-                                 const std::map<int, XboxButton>& keymap,
+                                 const std::map<int, UIActionPtr>& keymap,
                                  bool grab,
                                  bool debug) :
   m_fd(-1),
@@ -49,11 +49,8 @@ EvdevController::EvdevController(const std::string& filename,
   m_keymap(keymap),
   m_absinfo(ABS_MAX),
   m_event_buffer(),
-  m_msg()
+  m_msgs()
 {
-  memset(&m_msg, 0, sizeof(m_msg));
-  m_msg.type = XBOX_MSG_XBOX360;
-
   m_fd = open(filename.c_str(), O_RDONLY | O_NONBLOCK);
 
   if (m_fd == -1)
@@ -162,7 +159,7 @@ EvdevController::set_led_real(uint8_t status)
 }
 
 bool
-EvdevController::parse(const struct input_event& ev, XboxGenericMsg& msg_inout) const
+EvdevController::parse(const struct input_event& ev, XboxGenericMsg &msg_inout) const
 {
   if (m_debug)
   {
@@ -202,7 +199,7 @@ EvdevController::parse(const struct input_event& ev, XboxGenericMsg& msg_inout) 
         KeyMap::const_iterator it = m_keymap.find(ev.code);
         if (it != m_keymap.end())
         {
-          set_button(msg_inout, it->second, ev.value);
+          it->second->parse(msg_inout, ev);
           return true;
         }
         else
@@ -215,7 +212,7 @@ EvdevController::parse(const struct input_event& ev, XboxGenericMsg& msg_inout) 
     case EV_ABS:
       {
         const struct input_absinfo& absinfo = m_absinfo[ev.code];
-        m_absmap.process(msg_inout, ev.code, 
+        m_absmap.process(msg_inout, ev.code,
                          // some buggy USB devices report values
                          // outside the given range, so we clamp it
                          Math::clamp(absinfo.minimum, ev.value, absinfo.maximum), 
@@ -243,11 +240,19 @@ EvdevController::on_read_data(GIOChannel* source, GIOCondition condition)
     {
       if (ev[i].type == EV_SYN)
       {
-        submit_msg(m_msg);
+        while (!m_msgs.empty()) {
+            submit_msg(m_msgs.front());
+            m_msgs.pop();
+        }
       }
       else
       {
-        parse(ev[i], m_msg);
+          XboxGenericMsg msg;
+          memset(&msg, 0, sizeof(XboxGenericMsg));
+          msg.type = XBOX_MSG_XBOX360;
+
+          parse(ev[i], msg);
+          m_msgs.push(msg);
       }
     }
   }

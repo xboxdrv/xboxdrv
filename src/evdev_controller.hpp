@@ -26,8 +26,14 @@
 
 #include "evdev_absmap.hpp"
 #include "controller.hpp"
+#include "ui_event.hpp"
 
 class EvdevAbsMap;
+
+class UIAction;
+typedef boost::shared_ptr<UIAction> UIActionPtr; // ugly forward declaration
+
+typedef std::queue<XboxGenericMsg> MessageBuffer;
 
 class EvdevController : public Controller
 {
@@ -41,19 +47,19 @@ private:
 
   EvdevAbsMap m_absmap;
 
-  typedef std::map<int, XboxButton> KeyMap;
+  typedef std::map<int, UIActionPtr> KeyMap;
   KeyMap m_keymap;
 
   std::vector<struct input_absinfo> m_absinfo;
   typedef std::queue<struct input_event> EventBuffer;
-  EventBuffer m_event_buffer;
+  EventBuffer m_event_buffer; // unused?
 
-  XboxGenericMsg m_msg;
+  MessageBuffer m_msgs; // queue of messages for disptching
 
 public:
   EvdevController(const std::string& filename, 
                   const EvdevAbsMap&  absmap,
-                  const std::map<int, XboxButton>& keyMap,
+                  const std::map<int, UIActionPtr>& keyMap,
                   bool grab,
                   bool debug);
   ~EvdevController();
@@ -65,7 +71,7 @@ public:
   bool read(XboxGenericMsg& msg, int timeout);
 
 private:
-  bool parse(const struct input_event& ev, XboxGenericMsg& msg_inout) const;
+  bool parse(const struct input_event& ev, XboxGenericMsg &msg_inout) const;
   void read_data_to_buffer();
 
   gboolean on_read_data(GIOChannel* source,
