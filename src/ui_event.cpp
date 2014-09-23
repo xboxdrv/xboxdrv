@@ -221,16 +221,41 @@ void split_event_name(const std::string& str, std::string* event_str, int* slot_
   }
 }
 
-UIAction::UIAction(const ButtonList buttons) :
-    btns(buttons)
+UIAction::AxisAction UIAction::string2axis_action(const std::string &str) {
+    AxisAction a;
+    a.rezero = FALSE;
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    tokenizer ev_tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+    int i = 0;
+    for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, i++) {
+        if (i == 0) {
+            a.axis = string2axis(*m);
+        } else if (i == 1) {
+            a.set_value = boost::lexical_cast<int>(*m);
+        } else if (i == 2) {
+            a.zero_value = boost::lexical_cast<int>(*m);
+            a.rezero = TRUE;
+        } else {
+            raise_exception(std::runtime_error, "Can't parse string: too many items: \"" + str + "\"");
+        }
+    }
+    if (i < 2) {
+        raise_exception(std::runtime_error, "Not enough arguments: \"" + str + "\"");
+    }
+    return a;
+}
+
+UIAction::UIAction(const ButtonList buttons, const AxesList axes) :
+    btns(buttons),
+    axes(axes)
 {
 }
 
 UIActionPtr UIAction::from_string(const std::string &value) {
     ButtonList buttons;
+    AxesList axs;
     typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
     tokenizer ev_tokens(value, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
-    std::cout << "NEW" << std::endl;
     for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m)
     {
         std::string event_name;
@@ -247,7 +272,8 @@ UIActionPtr UIAction::from_string(const std::string &value) {
             break;
           }
           case EV_ABS: {
-            raise_exception(std::runtime_error, "Absolute events not supported.");
+            event_name = token.substr(token.find('_') + 1, std::string::npos);
+            axs.push_back(string2axis_action(event_name));
             break;
           }
           default: {
@@ -255,13 +281,25 @@ UIActionPtr UIAction::from_string(const std::string &value) {
           }
         }
     }
-    return UIActionPtr(new UIAction(buttons));
+    return UIActionPtr(new UIAction(buttons, axs));
 }
 
 void UIAction::parse(XboxGenericMsg &msg, const struct input_event& ev) {
-    // here you may iterate in reverse on release
     for (ButtonList::iterator it = btns.begin(); it != btns.end(); ++it) {
         set_button(msg, *it, ev.value);
+    }
+    for (AxesList::iterator it = axes.begin(); it != axes.end(); ++it) {
+        AxisAction a = *it;
+        if (ev.value || a.rezero) {
+            int value;
+            if (ev.value) {
+                value = a.set_value;
+            } else {
+                value = a.zero_value;
+            }
+            std::cout << ev.value << " " << a.rezero << " " << a.set_value << " " << a.zero_value << " = " << value << std::endl;
+            set_axis(msg, a.axis, value);
+        }
     }
 }
 

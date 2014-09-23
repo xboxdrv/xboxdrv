@@ -80,9 +80,23 @@ typedef boost::shared_ptr<UIAction> UIActionPtr;
 class UIAction
 {
 private:
+    typedef struct {
+        XboxAxis axis;
+        int set_value;
+        bool rezero;
+        int zero_value;
+    } AxisAction;
+
+
     typedef std::vector<XboxButton> ButtonList;
     ButtonList btns;
-    UIAction(const ButtonList buttons);
+
+    typedef std::vector<AxisAction> AxesList;
+    AxesList axes;
+
+    UIAction(const ButtonList buttons, const AxesList axes);
+
+    static AxisAction string2axis_action(const std::string &str_);
 public:
     static UIActionPtr from_string(const std::string& value);
 
