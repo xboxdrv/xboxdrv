@@ -30,9 +30,6 @@
 
 class EvdevAbsMap;
 
-class UIAction;
-typedef boost::shared_ptr<UIAction> UIActionPtr; // ugly forward declaration
-
 typedef std::queue<XboxGenericMsg> MessageBuffer;
 
 class EvdevController : public Controller

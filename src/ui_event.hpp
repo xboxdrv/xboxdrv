@@ -23,7 +23,6 @@
 #include <stdint.h>
 #include <linux/input.h>
 #include "xboxmsg.hpp"
-#include "evdev_controller.hpp"
 
 enum {
   DEVICEID_INVALID  = static_cast<uint16_t>(-5),
