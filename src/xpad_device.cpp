@@ -110,7 +110,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x24c6, 0x5506, "Hori SOULCALIBUR V Stick" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5b02, "Thrustmaster, Inc. GPX Controller" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x021f, "Rock Candy Gamepad for Xbox 360" },
-
+  { GAMEPAD_XBOX360,          0x0e6f, 0x011f, "Rock Candy Gamepad for Xbox 360" },
   { GAMEPAD_XBOX_MAT,         0x0738, 0x4540, "Mad Catz Beat Pad" },
   { GAMEPAD_XBOX_MAT,         0x0738, 0x6040, "Mad Catz Beat Pad Pro" },
   { GAMEPAD_XBOX_MAT,         0x0c12, 0x8809, "RedOctane Xbox Dance Pad" },
