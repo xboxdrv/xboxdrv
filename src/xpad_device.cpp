@@ -55,6 +55,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX,             0x102c, 0xff0c, "Joytech Wireless Advanced Controller" },
   { GAMEPAD_XBOX,             0x044f, 0x0f07, "Thrustmaster, Inc. Controller" },
   { GAMEPAD_XBOX,             0x0e8f, 0x3008, "Generic xbox control (dealextreme)" },
+  { GAMEPAD_XBOX,             0x0c12, 0x880a, "Pelican Eclipse PL-2023" },
   { GAMEPAD_XBOX360,          0x045e, 0x028e, "Microsoft Xbox 360 Controller" },
   { GAMEPAD_XBOX360_PLAY_N_CHARGE, 0x045e, 0x028f, "Microsoft Xbox 360 Play&Charge Kit" },
   { GAMEPAD_XBOX360,          0x0738, 0x4716, "Mad Catz Xbox 360 Controller" },
@@ -103,6 +104,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x1689, 0xfd00, "Razer Onza" },
   { GAMEPAD_XBOX360,          0x1689, 0xfd01, "Razer Onza Tournament Edition" },
   { GAMEPAD_XBOX360,          0x1532, 0x0037, "Razer Sabertooth" },
+  { GAMEPAD_XBOX360,          0x24c6, 0x5d04, "Razer Sabertooth" },
   { GAMEPAD_XBOX360,          0x12ab, 0x0004, "DDR Universe 2 Mat" },
   { GAMEPAD_XBOX360,          0x15e4, 0x3f0a, "Xbox Airflo wired controller" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5300, "Power A Mini Pro Elite Glow" },
@@ -110,11 +112,14 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x24c6, 0x5506, "Hori SOULCALIBUR V Stick" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5b02, "Thrustmaster, Inc. GPX Controller" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x021f, "Rock Candy Gamepad for Xbox 360" },
+  { GAMEPAD_XBOX360,          0x146b, 0x0601, "BigBen Interactive XBOX 360 Controller" },
+  { GAMEPAD_XBOX360,          0x24c6, 0x5b03, "Thrustmaster Ferrari 458 Racing Wheel" },
 
   { GAMEPAD_XBOX_MAT,         0x0738, 0x4540, "Mad Catz Beat Pad" },
   { GAMEPAD_XBOX_MAT,         0x0738, 0x6040, "Mad Catz Beat Pad Pro" },
   { GAMEPAD_XBOX_MAT,         0x0c12, 0x8809, "RedOctane Xbox Dance Pad" },
   { GAMEPAD_XBOX_MAT,         0x12ab, 0x8809, "Xbox DDR dancepad" },
+  { GAMEPAD_XBOX_MAT,         0x0d2f, 0x0002, "Andamiro Pump It Up pad" },
   // { GAMEPAD_XBOX_MAT,         0x1430, 0x8888, "TX6500+ Dance Pad (first generation)" }, // just a HID device, not Xbox1
 
   { GAMEPAD_FIRESTORM,        0x044f, 0xb304, "ThrustMaster, Inc. Firestorm Dual Power" },
