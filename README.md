@@ -1,5 +1,5 @@
-[[ Xbox/Xbox360 USB Gamepad Driver for Userspace ]]
-===================================================
+Xbox/Xbox360 USB Gamepad Driver for Userspace
+=============================================
 
 Xboxdrv is a Xbox/Xbox360 gamepad driver for Linux that works in
 userspace. It is an alternative to the xpad kernel driver and has
@@ -16,86 +16,83 @@ This driver is only of interest if the xpad kernel driver doesn't work
 for you or if you want more configurabity. If the xpad kernel driver
 works for you there is no need to try this driver.
 
-Newest version of the driver can be found at:
+The drivers homepage can be found at:
 
- * http://pingus.seul.org/~grumbel/xboxdrv/
+* http://pingus.seul.org/~grumbel/xboxdrv/
 
-The development version can be optained via:
+The source code is hosted on GitHub:
 
- * git clone http://pingus.seul.org/~grumbel/xboxdrv.git
+* https://github.com/Grumbel/xboxdrv
 
-
-[[ Compilation ]]
------------------
+
+Compilation
+-----------
 
 Required libraries and tools:
 
- * g++ - GNU C++ Compiler
- * libusb-1.0
- * pkg-config
- * libudev
- * boost
- * scons
- * uinput (userspace input kernel module)
- * git (only to download the development version)
- * X11
- * libdbus
- * glib
- * Gtk+ (optional, for VirtualKeyboard)
- * CWiid (optional, for Wiimote support)
+* g++ - GNU C++ Compiler
+* libusb-1.0
+* pkg-config
+* libudev
+* boost
+* scons
+* uinput (userspace input kernel module)
+* git (only to download the development version)
+* X11
+* libdbus
+* glib
+* Gtk+ (optional, for VirtualKeyboard)
+* CWiid (optional, for Wiimote support)
 
 Once everything installed, you can compile by typing:
 
- $ scons
+    $ scons
 
-On Ubuntu 11.04 you can install all the required libraries via:
+On Ubuntu 15.04 you can install all the required libraries via:
 
- $ sudo apt-get install \
-     g++ \
-     libboost1.42-dev \
-     scons \
-     pkg-config \
-     libusb-1.0-0-dev \
-     git-core \
-     libx11-dev \
-     libudev-dev \
-     x11proto-core-dev \
-     libdbus-glib-1-dev \
-     libgtk2.0-dev \
-     libcwiid-dev
+    $ sudo apt-get install \
+        g++ \
+        libboost-dev \
+        scons \
+        pkg-config \
+        libusb-1.0-0-dev \
+        git-core \
+        libx11-dev \
+        libudev-dev \
+        x11proto-core-dev \
+        libdbus-glib-1-dev \
+        libgtk2.0-dev \
+        libcwiid-dev
 
 To load the uinput kernel module automatically on boot add it
-/etc/modules, to load it manually type:
+`/etc/modules`, to load it manually type:
 
- $ sudo modprobe uinput
+    $ sudo modprobe uinput
 
 On other distributions exact install instructions might be
 slightly different.
 
-
-[[ Installation ]]
-------------------
+
+Installation
+------------
 
 Once the compilation process is complete you can install xboxdrv with:
 
- $ make install
+    $ make install
 
 You can also change the install PREFIX and DESTDIR as usual with:
 
- $ make install PREFIX=/usr DESTDIR=/tmp
+    $ make install PREFIX=/usr DESTDIR=/tmp
 
 Note that there is no need to install xboxdrv, you can run it directly
 from the source directory if you prefer.
 
-
-[[ Running ]]
--------------
+
+Running
+-------
 
 Extensive documentation on running xboxdrv can be found in the RUNNING
 XBOXDRV section of the xboxdrv manpage. When you haven't installed
 xboxdrv the man page can be found in doc/xboxdrv.1 and be read with:
 
- $ man -l doc/xboxdrv.1
-
-
-# EOF #
+    $ man -l doc/xboxdrv.1
