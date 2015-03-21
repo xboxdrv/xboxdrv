@@ -2,12 +2,18 @@
 *~
 .sconf_temp/
 .sconsign.dblite
+/build/
+/doc/doxygen/
+/tools/usbcat
+/tools/wiimote
+/virtualkeyboard
 cache/
 config.log
 custom.py
 doc/xboxdrv-daemon.html/
 doc/xboxdrv.ent
 doc/xboxdrv.html/
+incoming/
 libxboxdrv.a
 old
 src/xboxdrv_controller_glue.hpp
@@ -16,8 +22,3 @@ src/xboxdrv_dbus_glue.hpp
 src/xboxdrv_vfs.hpp
 test/*_test
 xboxdrv
-/virtualkeyboard
-incoming/
-/tools/usbcat
-/tools/wiimote
-/doc/doxygen/
