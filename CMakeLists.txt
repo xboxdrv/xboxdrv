@@ -17,16 +17,25 @@
 cmake_minimum_required(VERSION 3.0)
 project(xboxdrv)
 
-include(FindPkgConfig)
+set(BUILD_TESTS 0 CACHE BOOL "Build tests")
+set(WARNINGS 0 CACHE BOOL "Switch on extra warnings")
 
-pkg_search_module(DBUSGLIB REQUIRED dbus-glib-1)
-pkg_search_module(GLIB REQUIRED glib-2.0)
-pkg_search_module(GTHREAD REQUIRED gthread-2.0)
+if(WARNINGS)
+  set(WARNINGS_CXX_FLAGS
+    -pedantic -Wall -Wextra -Wno-c++0x-compat -Wnon-virtual-dtor -Weffc++
+    -Wconversion -Werror -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter)
+  # -Winline -Wfloat-equal -Wunreachable-code
+endif()
+
+find_package(X11)
+find_package(GTK2 COMPONENTS gtk)
+
+find_package(PkgConfig)
 pkg_search_module(USB REQUIRED libusb-1.0)
 pkg_search_module(UDEV REQUIRED libudev)
-pkg_search_module(X11 REQUIRED x11)
-pkg_search_module(GTK REQUIRED gtk+-2.0)
-pkg_search_module(CAIRO REQUIRED cairo)
+pkg_search_module(DBUSGLIB REQUIRED dbus-glib-1)
+pkg_search_module(CWIID OPTIONAL cwiid)
+# FIXME: define -DHAVE_CWIID when found
 
 include_directories(src/)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/)
@@ -86,17 +95,18 @@ target_include_directories(libxboxdrv SYSTEM PUBLIC
   ${GTHREAD_INCLUDE_DIRS}
   ${USB_INCLUDE_DIRS}
   ${UDEV_INCLUDE_DIRS}
-  ${X11_INCLUDE_DIRS})
+  ${X11_INCLUDE_DIR})
 
-add_executable(xboxdrv src/main/main.cpp)
-target_link_libraries(xboxdrv libxboxdrv)
-target_link_libraries(xboxdrv
+target_link_libraries(libxboxdrv PUBLIC
   ${DBUSGLIB_LIBRARIES}
   ${GLIB_LIBRARIES}
   ${GTHREAD_LIBRARIES}
   ${USB_LIBRARIES}
   ${UDEV_LIBRARIES}
   ${X11_LIBRARIES})
+
+add_executable(xboxdrv src/main/main.cpp)
+target_link_libraries(xboxdrv libxboxdrv)
 
 file(GLOB VIRTUALKEYBOARD_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/virtualkeyboard/*.cpp)
@@ -108,7 +118,7 @@ target_include_directories(virtualkeyboard SYSTEM PUBLIC
   ${GLIB_INCLUDE_DIRS}
   ${GLIB_INCLUDE_DIRS}
   ${GTHREAD_INCLUDE_DIRS}
-  ${GTK_INCLUDE_DIRS}
+  ${GTK2_INCLUDE_DIRS}
   ${UDEV_INCLUDE_DIRS}
   ${USB_INCLUDE_DIRS}
   ${X11_INCLUDE_DIRS})
@@ -119,9 +129,19 @@ target_link_libraries(virtualkeyboard
   ${GLIB_LIBRARIES}
   ${GLIB_LIBRARIES}
   ${GTHREAD_LIBRARIES}
-  ${GTK_LIBRARIES}
+  ${GTK2_LIBRARIES}
   ${UDEV_LIBRARIES}
   ${USB_LIBRARIES}
   ${X11_LIBRARIES})
+
+if(BUILD_TESTS)
+  file(GLOB TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    test/*_test.cpp)
+  foreach(SOURCE ${TEST_SOURCES})
+    get_filename_component(SOURCE_BASENAME ${SOURCE} NAME_WE)
+    add_executable(${SOURCE_BASENAME} ${SOURCE})
+    target_link_libraries(${SOURCE_BASENAME} libxboxdrv)
+  endforeach(SOURCE)
+endif()
 
 # EOF #
