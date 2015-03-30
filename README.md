@@ -35,7 +35,7 @@ Required libraries and tools:
 * pkg-config
 * libudev
 * boost
-* scons
+* cmake
 * uinput (userspace input kernel module)
 * git (only to download the development version)
 * X11
@@ -46,14 +46,17 @@ Required libraries and tools:
 
 Once everything installed, you can compile by typing:
 
-    $ scons
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make
 
 On Ubuntu 15.04 you can install all the required libraries via:
 
     $ sudo apt-get install \
         g++ \
         libboost-dev \
-        scons \
+        cmake \
         pkg-config \
         libusb-1.0-0-dev \
         git-core \
@@ -78,11 +81,13 @@ Installation
 
 Once the compilation process is complete you can install xboxdrv with:
 
+    $ cd build
     $ make install
 
 You can also change the install PREFIX and DESTDIR as usual with:
 
-    $ make install PREFIX=/usr DESTDIR=/tmp
+    $ cmake .. -DCMAKE_INSTALL_PREFIX:PATH=...
+    $ make install DESTDIR=/tmp
 
 Note that there is no need to install xboxdrv, you can run it directly
 from the source directory if you prefer.
