@@ -61,30 +61,31 @@ set(XBOXDRV_SOURCES_CXX
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src)
 
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_vfs.hpp
-  COMMAND ./bin2h.py
-  -o ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_vfs.hpp
-  --namespace=xboxdrv_vfs
-  examples/mouse.xboxdrv examples/xpad-wireless.xboxdrv
-  DEPENDS examples/mouse.xboxdrv examples/xpad-wireless.xboxdrv
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+set(DBUS_GLUE ${CMAKE_CURRENT_SOURCE_DIR}/dbus_glue.py)
+set(BIN2H ${CMAKE_CURRENT_SOURCE_DIR}/bin2h.py)
 
+set(TARGET ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_vfs.hpp)
+set(SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/examples/mouse.xboxdrv
+  ${CMAKE_CURRENT_SOURCE_DIR}/examples/xpad-wireless.xboxdrv)
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_controller_glue.hpp
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/dbus_glue.py
-  -o ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_controller_glue.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/xboxdrv_controller.xml --dbus-prefix=xboxdrv_controller
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/xboxdrv_controller.xml
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  OUTPUT ${TARGET}
+  DEPENDS ${SOURCES}
+  COMMAND ${BIN2H} -o ${TARGET} --namespace=xboxdrv_vfs ${SOURCES})
 
+set(TARGET ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_controller_glue.hpp)
+set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/xboxdrv_controller.xml)
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_daemon_glue.hpp
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/dbus_glue.py
-  -o ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_daemon_glue.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/xboxdrv_daemon.xml --dbus-prefix=xboxdrv_daemon
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/xboxdrv_daemon.xml
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  OUTPUT ${TARGET}
+  DEPENDS ${SOURCE}
+  COMMAND ${DBUS_GLUE} -o ${TARGET} ${SOURCE} --dbus-prefix=xboxdrv_controller)
+
+set(TARGET ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_daemon_glue.hpp)
+set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/xboxdrv_daemon.xml)
+add_custom_command(
+  OUTPUT ${TARGET}
+  DEPENDS ${SOURCE}
+  COMMAND ${DBUS_GLUE} -o ${TARGET} ${SOURCE} --dbus-prefix=xboxdrv_daemon)
 
 add_library(libxboxdrv STATIC ${XBOXDRV_SOURCES_CXX})
 set_target_properties(libxboxdrv PROPERTIES OUTPUT_NAME xboxdrv)
