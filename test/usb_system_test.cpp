@@ -21,7 +21,6 @@
 #include <stdexcept>
 
 #include "controller_message.hpp"
-#include "dummy_message_processor.hpp"
 #include "log.hpp"
 #include "raise_exception.hpp"
 #include "usb_gsource.hpp"
@@ -62,7 +61,7 @@ libusb_device* get_controller_dev()
 
 void process_msg(const ControllerMessage& msg)
 {
-  log_debug(msg);
+  // FIXME: log_debug(msg);
 }
 
 int main()

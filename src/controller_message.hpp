@@ -66,11 +66,6 @@ public:
   bool operator!=(const ControllerMessage& rhs) const;
 };
 
-std::ostream& operator<<(std::ostream& out, const ControllerMessage& msg);
-
-std::ostream& format_playstation3(std::ostream& out, const ControllerMessage& msg);
-std::ostream& format_xbox360(std::ostream& out, const ControllerMessage& msg);
-std::ostream& format_xbox(std::ostream& out, const ControllerMessage& msg);
 std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, const ControllerMessageDescriptor& desc);
 
 #endif
