@@ -27,6 +27,9 @@ if(WARNINGS)
   # -Winline -Wfloat-equal -Wunreachable-code
 endif()
 
+set(XBOXDRV_BINDIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Install location for executables")
+set(XBOXDRV_MANDIR "${CMAKE_INSTALL_PREFIX}/share/man" CACHE PATH "Install location for datafiles")
+
 find_package(X11)
 find_package(GTK2 COMPONENTS gtk)
 
@@ -110,7 +113,6 @@ target_link_libraries(xboxdrv libxboxdrv)
 
 file(GLOB VIRTUALKEYBOARD_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/virtualkeyboard/*.cpp)
-
 add_executable(virtualkeyboard ${VIRTUALKEYBOARD_SOURCES_CXX})
 target_include_directories(virtualkeyboard SYSTEM PUBLIC
   ${CAIRO_INCLUDE_DIRS}
@@ -143,5 +145,18 @@ if(BUILD_TESTS)
     target_link_libraries(${SOURCE_BASENAME} libxboxdrv)
   endforeach(SOURCE)
 endif()
+
+install(
+  TARGETS xboxdrv
+  RUNTIME DESTINATION ${XBOXDRV_BINDIR})
+install(
+  TARGETS virtualkeyboard
+  RUNTIME DESTINATION ${XBOXDRV_BINDIR})
+install(
+  FILES ${CMAKE_CURRENT_SOURCE_DIR}/xboxdrvctl
+  DESTINATION ${XBOXDRV_BINDIR})
+install(
+  FILES doc/xboxdrv.1 doc/virtualkeyboard.1
+  DESTINATION ${XBOXDRV_MANDIR}/man1)
 
 # EOF #
