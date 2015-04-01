@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -132,12 +132,12 @@ struct Playstation3USBMsg
   unsigned int unknown01 :8; // always 00
 
   // 02
-  unsigned int select  :1; 
+  unsigned int select  :1;
   unsigned int l3      :1;
   unsigned int r3      :1;
   unsigned int start   :1;
 
-  unsigned int dpad_up    :1; 
+  unsigned int dpad_up    :1;
   unsigned int dpad_right :1;
   unsigned int dpad_down  :1;
   unsigned int dpad_left  :1;

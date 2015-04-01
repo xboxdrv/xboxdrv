@@ -27,12 +27,12 @@ class UInputOptions
 private:
   ButtonMap m_btn_map;
   AxisMap   m_axis_map;
-  
+
 public:
   /** \addtogroup creation Creation Functions
    ** @{*/
   UInputOptions();
-    
+
   /** Sets a button/axis mapping that is equal to the xpad kernel driver */
   void mimic_xpad();
   void mimic_xpad_wireless();

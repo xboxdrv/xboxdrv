@@ -24,7 +24,7 @@
 
 CycleKeySequencePtr
 CycleKeySequence::from_range(std::vector<std::string>::const_iterator beg,
-                             std::vector<std::string>::const_iterator end, 
+                             std::vector<std::string>::const_iterator end,
                              bool wrap_around)
 {
   Keys keys;
@@ -72,7 +72,7 @@ CycleKeySequence::send(UInput& uinput, bool value)
 {
   int send_key = has_current_key() ? m_current_key : m_last_key;
 
-  m_keys[send_key].send(uinput, value); 
+  m_keys[send_key].send(uinput, value);
 
   m_last_key = send_key;
   m_current_key = -1;

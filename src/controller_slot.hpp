@@ -32,7 +32,7 @@ private:
   std::vector<ControllerMatchRulePtr> m_rules;
   int m_led_status;
   ControllerThreadPtr m_thread;
-  
+
   const Options& m_opts;
   UInput* m_uinput;
 
@@ -52,7 +52,7 @@ public:
   int get_led_status() const { return m_led_status; }
   int get_id() const { return m_id; }
   ControllerSlotConfigPtr get_config() const { return m_config; }
- 
+
   ControllerThreadPtr get_thread() const { return m_thread; }
   ControllerPtr get_controller() const { return m_thread ? m_thread->get_controller() : ControllerPtr(); }
 

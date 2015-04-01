@@ -52,7 +52,7 @@ ButtonEvent::create_abs(int code)
   return ButtonEvent::create(new AbsButtonEventHandler(code));
 }
 
-ButtonEventPtr 
+ButtonEventPtr
 ButtonEvent::create_key(int device_id, int code)
 {
   return ButtonEvent::create(new KeyButtonEventHandler(device_id, code));
@@ -83,7 +83,7 @@ ButtonEvent::from_string(const std::string& str, const std::string& directory)
   const std::string& token = str.substr(0, p);
   std::string rest;
 
-  if (p != std::string::npos) 
+  if (p != std::string::npos)
     rest = str.substr(p+1);
 
   if (token == "abs")
@@ -194,7 +194,7 @@ ButtonEvent::update(UInput& uinput, int msec_delta)
   }
 
   m_handler->update(uinput, msec_delta);
-  
+
   send(uinput, m_last_raw_state);
 }
 

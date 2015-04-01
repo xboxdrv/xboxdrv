@@ -28,7 +28,7 @@ AbsAxisEventHandler::from_string(const std::string& str)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  
+
   int j = 0;
   UIEvent code = UIEvent::invalid();
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
@@ -39,7 +39,7 @@ AbsAxisEventHandler::from_string(const std::string& str)
         code = str2abs_event(*i);
         break;
 
-      default: 
+      default:
         throw std::runtime_error("AxisEventHandlers::abs_from_string(): to many arguments: " + str);
     }
   }
@@ -81,7 +81,7 @@ AbsAxisEventHandler::init(UInput& uinput, int slot, bool extra_devices)
   assert(!m_abs_emitter);
 
   m_code.resolve_device_id(slot, extra_devices);
-  m_abs_emitter = uinput.add_abs(m_code.get_device_id(), m_code.code, 
+  m_abs_emitter = uinput.add_abs(m_code.get_device_id(), m_code.code,
                                  m_min, m_max, m_fuzz, m_flat);
 }
 
@@ -90,7 +90,7 @@ AbsAxisEventHandler::send(UInput& uinput, int value)
 {
   m_abs_emitter->send(value);
 }
- 
+
 void
 AbsAxisEventHandler::update(UInput& uinput, int msec_delta)
 {
@@ -100,8 +100,8 @@ std::string
 AbsAxisEventHandler::str() const
 {
   std::ostringstream out;
-  out << m_code.get_device_id() << "-" << m_code.code << ":" 
-      << m_min << ":" << m_max << ":" 
+  out << m_code.get_device_id() << "-" << m_code.code << ":"
+      << m_min << ":" << m_max << ":"
       << m_fuzz << ":" << m_flat;
   return out.str();
 }

@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -27,7 +27,7 @@
 #include "usb_helper.hpp"
 #include "xboxmsg.hpp"
 
-Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int controller_id, 
+Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int controller_id,
                                                      bool try_detach) :
   USBController(dev),
   m_endpoint(),
@@ -39,7 +39,7 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   m_is_active = false;
 
   assert(controller_id >= 0 && controller_id < 4);
-  
+
   // FIXME: Is hardcoding those ok?
   m_endpoint  = controller_id*2 + 1;
   m_interface = controller_id*2;
@@ -81,7 +81,7 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
   {
     if (len == 2 && data[0] == 0x08)
     { // Connection Status Message
-      if (data[1] == 0x00) 
+      if (data[1] == 0x00)
       {
         log_info("connection status: nothing");
 
@@ -91,17 +91,17 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
 
         return true;
       }
-      else if (data[1] == 0x80) 
+      else if (data[1] == 0x80)
       {
         log_info("connection status: controller connected");
         set_led_real(get_led());
         set_active(true);
-      } 
-      else if (data[1] == 0x40) 
+      }
+      else if (data[1] == 0x40)
       {
         log_info("Connection status: headset connected");
       }
-      else if (data[1] == 0xc0) 
+      else if (data[1] == 0xc0)
       {
         log_info("Connection status: controller and headset connected");
         set_led_real(get_led());
@@ -194,7 +194,7 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
     }
   }
 
-  return false; 
+  return false;
 }
 
 /* EOF */

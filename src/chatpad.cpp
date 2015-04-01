@@ -23,7 +23,7 @@
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
 
-struct USBControlMsg 
+struct USBControlMsg
 {
   uint8_t bmRequestType;
   uint8_t bRequest;
@@ -38,8 +38,8 @@ struct USBControlMsg
   ==================
   bInterfaceNumber        2
   bInterfaceClass       255 Vendor Specific Class
-  bInterfaceSubClass     93 
-  bInterfaceProtocol      2 
+  bInterfaceSubClass     93
+  bInterfaceProtocol      2
 */
 Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
                  bool no_init, bool debug) :
@@ -63,56 +63,56 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   memset(m_state, 0, 256);
 
   m_keymap[CHATPAD_KEY_1] = KEY_1;
-  m_keymap[CHATPAD_KEY_2] = KEY_2; 
-  m_keymap[CHATPAD_KEY_3] = KEY_3; 
-  m_keymap[CHATPAD_KEY_4] = KEY_4; 
-  m_keymap[CHATPAD_KEY_5] = KEY_5; 
-  m_keymap[CHATPAD_KEY_6] = KEY_6; 
-  m_keymap[CHATPAD_KEY_7] = KEY_7; 
-  m_keymap[CHATPAD_KEY_8] = KEY_8; 
-  m_keymap[CHATPAD_KEY_9] = KEY_9; 
-  m_keymap[CHATPAD_KEY_0] = KEY_0; 
-  m_keymap[CHATPAD_KEY_Q] = KEY_Q; 
-  m_keymap[CHATPAD_KEY_W] = KEY_W; 
-  m_keymap[CHATPAD_KEY_E] = KEY_E; 
-  m_keymap[CHATPAD_KEY_R] = KEY_R; 
-  m_keymap[CHATPAD_KEY_T] = KEY_T; 
-  m_keymap[CHATPAD_KEY_Y] = KEY_Y; 
-  m_keymap[CHATPAD_KEY_U] = KEY_U; 
-  m_keymap[CHATPAD_KEY_I] = KEY_I; 
-  m_keymap[CHATPAD_KEY_O] = KEY_O; 
-  m_keymap[CHATPAD_KEY_P] = KEY_P; 
-  m_keymap[CHATPAD_KEY_A] = KEY_A; 
-  m_keymap[CHATPAD_KEY_S] = KEY_S; 
-  m_keymap[CHATPAD_KEY_D] = KEY_D; 
-  m_keymap[CHATPAD_KEY_F] = KEY_F; 
-  m_keymap[CHATPAD_KEY_G] = KEY_G; 
-  m_keymap[CHATPAD_KEY_H] = KEY_H; 
-  m_keymap[CHATPAD_KEY_J] = KEY_J; 
-  m_keymap[CHATPAD_KEY_K] = KEY_K; 
-  m_keymap[CHATPAD_KEY_L] = KEY_L; 
-  m_keymap[CHATPAD_KEY_COMMA] = KEY_COMMA; 
-  m_keymap[CHATPAD_KEY_Z] = KEY_Z; 
-  m_keymap[CHATPAD_KEY_X] = KEY_X; 
-  m_keymap[CHATPAD_KEY_C] = KEY_C; 
-  m_keymap[CHATPAD_KEY_V] = KEY_V; 
-  m_keymap[CHATPAD_KEY_B] = KEY_B; 
-  m_keymap[CHATPAD_KEY_N] = KEY_N; 
-  m_keymap[CHATPAD_KEY_M] = KEY_M; 
+  m_keymap[CHATPAD_KEY_2] = KEY_2;
+  m_keymap[CHATPAD_KEY_3] = KEY_3;
+  m_keymap[CHATPAD_KEY_4] = KEY_4;
+  m_keymap[CHATPAD_KEY_5] = KEY_5;
+  m_keymap[CHATPAD_KEY_6] = KEY_6;
+  m_keymap[CHATPAD_KEY_7] = KEY_7;
+  m_keymap[CHATPAD_KEY_8] = KEY_8;
+  m_keymap[CHATPAD_KEY_9] = KEY_9;
+  m_keymap[CHATPAD_KEY_0] = KEY_0;
+  m_keymap[CHATPAD_KEY_Q] = KEY_Q;
+  m_keymap[CHATPAD_KEY_W] = KEY_W;
+  m_keymap[CHATPAD_KEY_E] = KEY_E;
+  m_keymap[CHATPAD_KEY_R] = KEY_R;
+  m_keymap[CHATPAD_KEY_T] = KEY_T;
+  m_keymap[CHATPAD_KEY_Y] = KEY_Y;
+  m_keymap[CHATPAD_KEY_U] = KEY_U;
+  m_keymap[CHATPAD_KEY_I] = KEY_I;
+  m_keymap[CHATPAD_KEY_O] = KEY_O;
+  m_keymap[CHATPAD_KEY_P] = KEY_P;
+  m_keymap[CHATPAD_KEY_A] = KEY_A;
+  m_keymap[CHATPAD_KEY_S] = KEY_S;
+  m_keymap[CHATPAD_KEY_D] = KEY_D;
+  m_keymap[CHATPAD_KEY_F] = KEY_F;
+  m_keymap[CHATPAD_KEY_G] = KEY_G;
+  m_keymap[CHATPAD_KEY_H] = KEY_H;
+  m_keymap[CHATPAD_KEY_J] = KEY_J;
+  m_keymap[CHATPAD_KEY_K] = KEY_K;
+  m_keymap[CHATPAD_KEY_L] = KEY_L;
+  m_keymap[CHATPAD_KEY_COMMA] = KEY_COMMA;
+  m_keymap[CHATPAD_KEY_Z] = KEY_Z;
+  m_keymap[CHATPAD_KEY_X] = KEY_X;
+  m_keymap[CHATPAD_KEY_C] = KEY_C;
+  m_keymap[CHATPAD_KEY_V] = KEY_V;
+  m_keymap[CHATPAD_KEY_B] = KEY_B;
+  m_keymap[CHATPAD_KEY_N] = KEY_N;
+  m_keymap[CHATPAD_KEY_M] = KEY_M;
   m_keymap[CHATPAD_KEY_PERIOD] = KEY_DOT;
-  m_keymap[CHATPAD_KEY_ENTER] = KEY_ENTER;     
-  m_keymap[CHATPAD_KEY_BACKSPACE] = KEY_BACKSPACE; 
-  m_keymap[CHATPAD_KEY_LEFT] = KEY_LEFT; 
-  m_keymap[CHATPAD_KEY_SPACEBAR] = KEY_SPACE;  
+  m_keymap[CHATPAD_KEY_ENTER] = KEY_ENTER;
+  m_keymap[CHATPAD_KEY_BACKSPACE] = KEY_BACKSPACE;
+  m_keymap[CHATPAD_KEY_LEFT] = KEY_LEFT;
+  m_keymap[CHATPAD_KEY_SPACEBAR] = KEY_SPACE;
   m_keymap[CHATPAD_KEY_RIGHT] = KEY_RIGHT;
 
   m_keymap[CHATPAD_MOD_SHIFT]  = KEY_LEFTSHIFT;
   m_keymap[CHATPAD_MOD_GREEN]  = KEY_LEFTALT;
   m_keymap[CHATPAD_MOD_ORANGE] = KEY_LEFTCTRL;
   m_keymap[CHATPAD_MOD_PEOPLE] = KEY_LEFTMETA;
-  
+
   init_uinput();
-  
+
   if (no_init)
   {
     m_init_state = kStateKeepAlive_1e;
@@ -196,7 +196,7 @@ Chatpad::on_read_data(libusb_transfer* transfer)
   {
     //log_tmp("chatpad data: " << usb_transfer_strerror(transfer->status) << " "
     //        << raw2str(transfer->buffer, transfer->actual_length));
-    
+
     if (transfer->actual_length == 5 && transfer->buffer[0] == 0x00)
     {
       struct ChatpadKeyMsg msg;
@@ -219,7 +219,7 @@ Chatpad::send_timeout(int msec)
 {
   // FIMXE: must keep track of sources and destroy them in ~Chatpad()
   //assert(m_timeout_id == -1);
-  //m_timeout_id = 
+  //m_timeout_id =
   g_timeout_add(1000, &Chatpad::on_timeout_wrap, this);
 }
 
@@ -370,7 +370,7 @@ Chatpad::on_timeout()
 
 void
 Chatpad::send_ctrl(uint8_t request_type, uint8_t request, uint16_t value, uint16_t index,
-                   uint8_t* data_in, uint16_t length, 
+                   uint8_t* data_in, uint16_t length,
                    libusb_transfer_cb_fn callback, void* userdata)
 {
   libusb_transfer* transfer = libusb_alloc_transfer(0);
@@ -382,7 +382,7 @@ Chatpad::send_ctrl(uint8_t request_type, uint8_t request, uint16_t value, uint16
   libusb_fill_control_setup(data, request_type, request, value, index, length);
   memcpy(data + 8, data_in, length);
   libusb_fill_control_transfer(transfer, m_handle, data,
-                               callback, userdata, 
+                               callback, userdata,
                                0);
 
   int ret;
@@ -505,7 +505,7 @@ Chatpad::process(const ChatpadKeyMsg& msg)
 void
 Chatpad::read_thread()
 {
-  try 
+  try
   {
     uint8_t data[5];
     while(!m_quit_thread)
@@ -523,7 +523,7 @@ Chatpad::read_thread()
         {
           log_debug("read: " << len << "/5: data: " << raw2str(data, len));
         }
-        
+
         if (data[0] == 0x00)
         {
           struct ChatpadKeyMsg msg;
@@ -550,7 +550,7 @@ Chatpad::keep_alive_thread()
       send_ctrl(0x41, 0x0, 0x1f, 0x02, NULL, 0);
       log_debug("0x1f");
       sleep(1);
-       
+
       send_ctrl(0x41, 0x0, 0x1e, 0x02, NULL, 0);
       log_debug("0x1e");
       sleep(1);
@@ -608,7 +608,7 @@ Chatpad::send_init()
 
       ret = libusb_control_transfer(m_handle, 0x40, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (send 2 bytes, data must be 0x09 0x00)
       log_debug("ret: " << usb_strerror(ret));
- 
+
       ret = libusb_control_transfer(m_handle, 0xc0, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (read 2 bytes, this should return the NEW mode)
       log_debug("ret: " << usb_strerror(ret) << " " << static_cast<int>(buf[0]) << " " << static_cast<int>(buf[1]));
 
@@ -626,7 +626,7 @@ Chatpad::send_init()
   libusb_control_transfer(m_handle, 0x41, 0x0, 0x1f, 0x02, 0, 0, 0);
   log_debug("0x1f");
   sleep(1);
-       
+
   libusb_control_transfer(m_handle, 0x41, 0x0, 0x1e, 0x02, 0, 0, 0);
   log_debug("0x1e");
 

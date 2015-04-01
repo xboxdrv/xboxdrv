@@ -134,7 +134,7 @@ Options::get_controller_slot() const
   else
   {
     return it->second;
-  }  
+  }
 }
 
 ControllerOptions&
@@ -255,7 +255,7 @@ Options::set_dbus_mode(const std::string& value)
       }
       else
       {
-        dbus = kDBusDisabled;        
+        dbus = kDBusDisabled;
       }
     }
     catch(const std::exception& err)
@@ -422,7 +422,7 @@ Options::find_generic_usb_spec(int vendor_id_, int product_id_) const
 {
   for(std::vector<GenericUSBSpec>::const_iterator i = m_generic_usb_specs.begin(); i != m_generic_usb_specs.end(); ++i)
   {
-    //log_tmp(i->m_vendor_id  << " - " << vendor_id_ << " " 
+    //log_tmp(i->m_vendor_id  << " - " << vendor_id_ << " "
     //        << i->m_product_id << " - " << product_id_);
 
     if (i->m_vendor_id  == vendor_id_ &&
@@ -432,7 +432,7 @@ Options::find_generic_usb_spec(int vendor_id_, int product_id_) const
     }
   }
 
-  raise_exception(std::runtime_error, "no matching GenericUSBSpec found for " 
+  raise_exception(std::runtime_error, "no matching GenericUSBSpec found for "
                   << boost::format("%04x:%04x") % static_cast<int>(vendor_id_) % static_cast<int>(product_id_));
 }
 
@@ -441,7 +441,7 @@ Options::finish()
 {
   // if we have multiple configurations and the toggle button isn't
   // set, set it to the guide button
-  if (!config_toggle_button_is_set && 
+  if (!config_toggle_button_is_set &&
       controller_slots[controller_slot].get_options().size() > 1)
   {
     config_toggle_button = XBOX_BTN_GUIDE;

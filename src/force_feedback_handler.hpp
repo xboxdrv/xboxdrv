@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -41,9 +41,9 @@ public:
   // Rumble motor strength
   int end_strong_magnitude;
   int end_weak_magnitude;
- 
+
   // Envelope
-  struct Envelope 
+  struct Envelope
   {
     Envelope()
       : attack_length(0),
@@ -52,7 +52,7 @@ public:
         fade_level(0)
     {}
 
-    Envelope(const struct ff_envelope& e) 
+    Envelope(const struct ff_envelope& e)
       : attack_length(e.attack_length),
         attack_level(e.attack_level),
         fade_length(e.fade_length),
@@ -100,7 +100,7 @@ public:
 
   void upload(const struct ff_effect& effect);
   void erase(int id);
-  
+
   void play(int id);
   void stop(int id);
 

@@ -27,7 +27,7 @@ class RotateAxisModifier : public Modifier
 {
 public:
   static RotateAxisModifier* from_string(const std::vector<std::string>& args);
-  
+
 public:
   RotateAxisModifier(XboxAxis xaxis, XboxAxis yaxis, float angle, bool mirror);
 

@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -26,7 +26,7 @@
 #include "force_feedback_handler.hpp"
 #include "raise_exception.hpp"
 
-LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_, 
+LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_,
                          const struct input_id& usbid_) :
   m_device_type(device_type),
   name(name_),
@@ -115,7 +115,7 @@ LinuxUinput::add_abs(uint16_t code, int min, int max, int fuzz, int flat)
     ioctl(m_fd, UI_SET_ABSBIT, code);
 
     user_dev.absmin[code] = min;
-    user_dev.absmax[code] = max; 
+    user_dev.absmax[code] = max;
     user_dev.absfuzz[code] = fuzz;
     user_dev.absflat[code] = flat;
   }
@@ -175,7 +175,7 @@ LinuxUinput::add_ff(uint16_t code)
     }
 
     ioctl(m_fd, UI_SET_FFBIT, code);
-  }  
+  }
 }
 
 void
@@ -277,7 +277,7 @@ LinuxUinput::finish()
 
     g_io_channel_set_buffered(m_io_channel, false);
 
-    m_source_id = g_io_add_watch(m_io_channel, 
+    m_source_id = g_io_add_watch(m_io_channel,
                                  static_cast<GIOCondition>(G_IO_IN | G_IO_ERR | G_IO_HUP),
                                  &LinuxUinput::on_read_data_wrap, this);
   }
@@ -288,7 +288,7 @@ LinuxUinput::send(uint16_t type, uint16_t code, int32_t value)
 {
   needs_sync = true;
 
-  struct input_event ev;      
+  struct input_event ev;
   memset(&ev, 0, sizeof(ev));
 
   gettimeofday(&ev.time, NULL);
@@ -300,7 +300,7 @@ LinuxUinput::send(uint16_t type, uint16_t code, int32_t value)
     ev.value = value;
 
   if (write(m_fd, &ev, sizeof(ev)) < 0)
-    throw std::runtime_error(std::string("uinput:send_button: ") + strerror(errno)); 
+    throw std::runtime_error(std::string("uinput:send_button: ") + strerror(errno));
 }
 
 void
@@ -381,7 +381,7 @@ LinuxUinput::on_read_data(GIOChannel* source, GIOCondition condition)
               ioctl(m_fd, UI_BEGIN_FF_UPLOAD, &upload);
               m_ff_handler->upload(upload.effect);
               upload.retval = 0;
-                            
+
               ioctl(m_fd, UI_END_FF_UPLOAD, &upload);
             }
             break;
@@ -399,12 +399,12 @@ LinuxUinput::on_read_data(GIOChannel* source, GIOCondition condition)
               ioctl(m_fd, UI_BEGIN_FF_ERASE, &erase);
               m_ff_handler->erase(erase.effect_id);
               erase.retval = 0;
-                            
+
               ioctl(m_fd, UI_END_FF_ERASE, &erase);
             }
             break;
 
-          default: 
+          default:
             log_warn("unhandled event code read");
             break;
         }
@@ -431,7 +431,7 @@ LinuxUinput::on_read_data(GIOChannel* source, GIOCondition condition)
   {
     log_error("short read: " << ret);
   }
-  
+
   return TRUE;
 }
 

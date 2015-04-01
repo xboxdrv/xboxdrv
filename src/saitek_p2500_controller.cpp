@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2009 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -47,12 +47,12 @@ struct SaitekP2500Msg
   // data[6];
   unsigned int thumb_l :1;
   unsigned int thumb_r :1;
- 
+
   unsigned int start :1;
   unsigned int back  :1; // not supported
- 
-  unsigned int dpad :4; 
-    
+
+  unsigned int dpad :4;
+
 } __attribute__((__packed__));
 
 SaitekP2500Controller::SaitekP2500Controller(libusb_device* dev, bool try_detach) :
@@ -107,7 +107,7 @@ SaitekP2500Controller::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
 
     msg_out->xbox360.thumb_l = msg_in.thumb_l;
     msg_out->xbox360.thumb_r = msg_in.thumb_r;
-      
+
     msg_out->xbox360.x1 = scale_8to16(msg_in.x1);
     msg_out->xbox360.y1 = scale_8to16(msg_in.y1);
 

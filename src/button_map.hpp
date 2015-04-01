@@ -26,7 +26,7 @@ class ButtonMap
 {
 private:
   ButtonEventPtr btn_map[XBOX_BTN_MAX][XBOX_BTN_MAX];
-  
+
 public:
   ButtonMap();
 

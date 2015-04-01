@@ -29,7 +29,7 @@ SensitivityAxisFilter::from_string(const std::string& str)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  
+
   float sensitivity = 0.0f;
 
   int j = 0;
@@ -47,7 +47,7 @@ SensitivityAxisFilter::from_string(const std::string& str)
 
 SensitivityAxisFilter::SensitivityAxisFilter(float sensitivity) :
   m_sensitivity(sensitivity)
-{  
+{
 }
 
 int

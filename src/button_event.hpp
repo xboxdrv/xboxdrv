@@ -46,7 +46,7 @@ public:
 protected:
   ButtonEvent(ButtonEventHandler* handler);
 
-public: 
+public:
   void init(UInput& uinput, int slot, bool extra_devices);
   void send(UInput& uinput, bool value);
   void update(UInput& uinput, int msec_delta);
@@ -66,7 +66,7 @@ class ButtonEventHandler
 {
 public:
   virtual ~ButtonEventHandler() {}
-  
+
   virtual void init(UInput& uinput, int slot, bool extra_devices) =0;
   virtual void send(UInput& uinput, bool value) =0;
   virtual void update(UInput& uinput, int msec_delta) =0;

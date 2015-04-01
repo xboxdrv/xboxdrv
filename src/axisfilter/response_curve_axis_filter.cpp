@@ -59,11 +59,11 @@ ResponseCurveAxisFilter::filter(int value, int min, int max)
     // that the edge conditions are meet
     int   bucket_count = m_samples.size() - 1;
     float bucket_size  = (max - min) / static_cast<float>(bucket_count);
-      
+
     int bucket_index = int((value - min) / bucket_size);
 
     float t = ((value - min) - (static_cast<float>(bucket_index) * bucket_size)) / bucket_size;
-      
+
     return ((1.0f - t) * m_samples[bucket_index]) + (t * m_samples[bucket_index + 1]);
   }
 }

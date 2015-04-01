@@ -39,18 +39,18 @@ DeadzoneAxisFilter::from_string(const std::string& str)
         max_deadzone = boost::lexical_cast<int>(*t);
         min_deadzone = -max_deadzone;
         break;
-        
+
       case 1:
         min_deadzone = -min_deadzone;
-        max_deadzone = boost::lexical_cast<int>(*t); 
+        max_deadzone = boost::lexical_cast<int>(*t);
         break;
 
       case 2:
-        smooth = boost::lexical_cast<bool>(*t); 
+        smooth = boost::lexical_cast<bool>(*t);
         break;
 
       default:
-        throw std::runtime_error("to many arguments"); 
+        throw std::runtime_error("to many arguments");
         break;
     }
   }
@@ -85,11 +85,11 @@ DeadzoneAxisFilter::filter(int value, int min, int max)
     {
       return min * (value - m_min_deadzone) / (min - m_min_deadzone);
     }
-    else if (value > m_max_deadzone) 
+    else if (value > m_max_deadzone)
     {
       return max * (value - m_max_deadzone) / (max - m_max_deadzone);
     }
-    else 
+    else
     {
       return 0;
     }

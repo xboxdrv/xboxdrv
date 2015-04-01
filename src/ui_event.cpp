@@ -34,7 +34,7 @@ UIEvent::is_keyboard_button(int ev_code)
 }
 
 UIEvent
-UIEvent::create(int device_id, int type, int code) 
+UIEvent::create(int device_id, int type, int code)
 {
   UIEvent ev;
   ev.m_slot_id = SLOTID_AUTO;
@@ -66,7 +66,7 @@ UIEvent::invalid()
   ev.m_device_id_resolved = false;
   ev.type      = -1;
   ev.code      = -1;
-  return ev;    
+  return ev;
 }
 
 bool
@@ -203,9 +203,9 @@ void split_event_name(const std::string& str, std::string* event_str, int* slot_
   {
     *event_str = str.substr(0, p);
     std::string device = str.substr(p+1);
-    
+
     p = device.find(".");
-    
+
     if (p == std::string::npos)
     {
       *slot_id   = SLOTID_AUTO;

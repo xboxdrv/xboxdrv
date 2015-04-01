@@ -66,7 +66,7 @@ ControllerSlotOptions::get_match_rules() const
 const std::map<int, ControllerOptions>&
 ControllerSlotOptions::get_options() const
 {
-  return m_options; 
+  return m_options;
 }
 
 int

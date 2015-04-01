@@ -51,7 +51,7 @@ WordWrap::para(const std::string& prefix, const std::string& str) const
   tokenizer tokens(str, boost::char_separator<char>(" ", "", boost::drop_empty_tokens));
 
   int len = prefix.size();
-  std::cout << prefix; 
+  std::cout << prefix;
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i)
   {
     if (len + static_cast<int>(i->size()) + 1 >= m_terminal_width)

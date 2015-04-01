@@ -26,16 +26,16 @@
 
 class UInput;
 
-/** 
+/**
     A sequence of UIEvents (only key events allowed right now)
-    
+
     FIXME: class name is kind of wrong
  */
 class UIEventSequence
 {
 public:
-  /** 
-      "KEY_LEFTSHIFT+KEY_B" 
+  /**
+      "KEY_LEFTSHIFT+KEY_B"
   */
   static UIEventSequence from_string(const std::string& value);
 

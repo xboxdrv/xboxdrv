@@ -38,7 +38,7 @@ public:
   static AxisEventPtr create_abs(int device_id, int code, int min, int max, int fuzz, int flat);
   static AxisEventPtr create_rel(int device_id, int code, int repeat = 10, float value = 5);
 
-  /** If an AxisEvent gets created the user has to set min/max with set_axis_range() */ 
+  /** If an AxisEvent gets created the user has to set min/max with set_axis_range() */
   static AxisEventPtr from_string(const std::string& str);
 
 public:

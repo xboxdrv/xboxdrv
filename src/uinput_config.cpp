@@ -40,7 +40,7 @@ int16_t u8_to_s16(uint8_t value)
 
 UInputConfig::UInputConfig(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
-  m_btn_map(opts.get_btn_map()), 
+  m_btn_map(opts.get_btn_map()),
   m_axis_map(opts.get_axis_map())
 {
   std::fill_n(axis_state,   static_cast<int>(XBOX_AXIS_MAX), 0);
@@ -69,7 +69,7 @@ UInputConfig::send(XboxGenericMsg& msg)
     case XBOX_MSG_PS3USB:
       send(msg.ps3usb);
       break;
-        
+
     default:
       assert(!"never reached");
   }
@@ -118,7 +118,7 @@ UInputConfig::send(Xbox360Msg& msg)
   // analog sticks
   send_axis(XBOX_AXIS_X1,  msg.x1);
   send_axis(XBOX_AXIS_Y1,  s16_invert(msg.y1));
-  
+
   send_axis(XBOX_AXIS_X2,  msg.x2);
   send_axis(XBOX_AXIS_Y2,  s16_invert(msg.y2));
 
@@ -230,7 +230,7 @@ UInputConfig::send(Playstation3USBMsg& msg)
   // analog sticks
   send_axis(XBOX_AXIS_X1, u8_to_s16(msg.x1));
   send_axis(XBOX_AXIS_Y1, u8_to_s16(msg.y1));
-  
+
   send_axis(XBOX_AXIS_X2, u8_to_s16(msg.x2));
   send_axis(XBOX_AXIS_Y2, u8_to_s16(msg.y2));
 
@@ -278,8 +278,8 @@ UInputConfig::send_button(XboxButton code, bool value)
         {
           for(int j = 0; j < XBOX_BTN_MAX; ++j) // iterate over all shift buttons
           {
-            m_btn_map.send(m_uinput, 
-                           static_cast<XboxButton>(j), static_cast<XboxButton>(i), 
+            m_btn_map.send(m_uinput,
+                           static_cast<XboxButton>(j), static_cast<XboxButton>(i),
                            false);
           }
         }
@@ -333,10 +333,10 @@ UInputConfig::send_axis(XboxAxis code, int32_t value)
       }
     }
   }
-  
+
   // find the last AxisEvent bound to current axis code
   for(int shift = 1; shift < XBOX_BTN_MAX; ++shift)
-  {    
+  {
     if (last_button_state[shift])
     {
       AxisEventPtr new_ev = m_axis_map.lookup(static_cast<XboxButton>(shift), code);

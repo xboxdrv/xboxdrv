@@ -38,7 +38,7 @@ typedef struct _XboxdrvGControllerClass   XboxdrvGControllerClass;
 struct _XboxdrvGController
 {
   GObject parent_instance;
-  
+
   ControllerSlot* controller;
 };
 

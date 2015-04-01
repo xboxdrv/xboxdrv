@@ -107,7 +107,7 @@ ButtonMap::update(UInput& uinput, int msec_delta)
         btn_map[shift_code][code]->update(uinput, msec_delta);
       }
     }
-  }  
+  }
 }
 
 /* EOF */

@@ -77,8 +77,8 @@ XboxdrvMain::create_controller()
 {
   if (!m_opts.evdev_device.empty())
   { // normal PC joystick via evdev
-    return ControllerPtr(new EvdevController(m_opts.evdev_device, 
-                                             m_opts.evdev_absmap, 
+    return ControllerPtr(new EvdevController(m_opts.evdev_device,
+                                             m_opts.evdev_absmap,
                                              m_opts.evdev_keymap,
                                              m_opts.evdev_grab,
                                              m_opts.evdev_debug));
@@ -90,18 +90,18 @@ XboxdrvMain::create_controller()
     m_dev_type.name = "Evdev device";
   }
   else
-  { // regular USB Xbox360 controller    
+  { // regular USB Xbox360 controller
 
     // FIXME: this must be libusb_unref_device()'ed, child code must not keep a copy around
     libusb_device* dev = 0;
-  
+
     USBSubsystem::find_controller(&dev, m_dev_type, m_opts);
 
     if (!dev)
     {
       throw std::runtime_error("no suitable USB device found, abort");
     }
-    else 
+    else
     {
       if (!m_opts.quiet)
       {
@@ -147,13 +147,13 @@ XboxdrvMain::run()
   m_controller->set_disconnect_cb(boost::bind(&XboxdrvMain::on_controller_disconnect, this));
   std::auto_ptr<MessageProcessor> message_proc;
   init_controller(m_controller);
-     
+
   if (m_opts.instant_exit)
   {
     usleep(1000);
   }
   else
-  {          
+  {
     if (m_opts.no_uinput)
     {
       if (!m_opts.quiet)
@@ -171,15 +171,15 @@ XboxdrvMain::run()
       m_uinput->set_device_usbids(m_opts.uinput_device_usbids);
 
       log_debug("creating ControllerSlotConfig");
-      ControllerSlotConfigPtr config_set = ControllerSlotConfig::create(*m_uinput, 
+      ControllerSlotConfigPtr config_set = ControllerSlotConfig::create(*m_uinput,
                                                                         0, m_opts.extra_devices,
                                                                         m_opts.get_controller_slot());
-      
+
       // After all the ControllerConfig registered their events, finish up
       // the device creation
       log_debug("finish UInput creation");
       m_uinput->finish();
-      
+
       message_proc.reset(new UInputMessageProcessor(*m_uinput, config_set, m_opts));
     }
 
@@ -202,7 +202,7 @@ XboxdrvMain::run()
     {
       ControllerThread thread(m_controller, message_proc, m_opts);
       log_debug("launching thread");
-      
+
       pid_t pid = 0;
       if (!m_opts.exec.empty())
       {

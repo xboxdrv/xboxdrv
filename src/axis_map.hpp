@@ -26,7 +26,7 @@ class AxisMap
 {
 private:
   AxisEventPtr m_axis_map[XBOX_BTN_MAX][XBOX_AXIS_MAX];
-  
+
 public:
   AxisMap();
 

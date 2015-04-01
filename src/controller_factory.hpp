@@ -27,11 +27,11 @@
 class ControllerFactory
 {
 public:
-  static ControllerPtr create(const XPadDevice& dev_type, 
-                              libusb_device* dev, 
+  static ControllerPtr create(const XPadDevice& dev_type,
+                              libusb_device* dev,
                               const Options& opts);
 
-  static std::vector<ControllerPtr> create_multiple(const XPadDevice& dev_type, 
+  static std::vector<ControllerPtr> create_multiple(const XPadDevice& dev_type,
                                                     libusb_device* dev, const Options& opts);
 
 private:

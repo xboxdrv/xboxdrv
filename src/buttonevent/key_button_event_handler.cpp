@@ -38,7 +38,7 @@ KeyButtonEventHandler::from_string(const std::string& str)
   {
     switch(idx)
     {
-      case 0: 
+      case 0:
         {
           ev.reset(new KeyButtonEventHandler());
           ev->m_codes = UIEventSequence::from_string(*i);
@@ -51,7 +51,7 @@ KeyButtonEventHandler::from_string(const std::string& str)
           ev->m_hold_threshold = 250;
         }
         break;
-        
+
       case 2:
         {
           ev->m_hold_threshold = boost::lexical_cast<int>(*i);
@@ -148,7 +148,7 @@ KeyButtonEventHandler::send(UInput& uinput, bool value)
 }
 
 void
-KeyButtonEventHandler::update(UInput& uinput, int msec_delta) 
+KeyButtonEventHandler::update(UInput& uinput, int msec_delta)
 {
   if (m_state && m_hold_threshold)
   {

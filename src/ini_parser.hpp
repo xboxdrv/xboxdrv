@@ -35,7 +35,7 @@ private:
 
 public:
   INIParser(std::istream& in, INIBuilder& builder, const std::string& context);
-  
+
   void run();
 
 private:
@@ -46,14 +46,14 @@ private:
   void expect(char c);
   std::string get_string();
   std::string get_value();
-  std::string get_ident(); 
+  std::string get_ident();
   std::string get_value_or_string();
-  std::string get_ident_or_string(); 
+  std::string get_ident_or_string();
   void newline();
   void eat_rest_of_line();
   std::string get_section();
   void whitespace();
-  int  getchar();  
+  int  getchar();
 
 private:
   INIParser(const INIParser&);

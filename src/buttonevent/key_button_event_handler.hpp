@@ -37,7 +37,7 @@ public:
   void update(UInput& uinput, int msec_delta);
 
   std::string str() const;
-  
+
 private:
   bool m_state;
   UIEventSequence m_codes;

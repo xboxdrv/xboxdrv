@@ -82,7 +82,7 @@ UIEventSequence::send(UInput& uinput, int value)
   {
     // on release, send events in reverse order
     for(UIEventEmitters::reverse_iterator i = m_emitters.rbegin(); i != m_emitters.rend(); ++i)
-    { 
+    {
       (*i)->send(value);
     }
   }

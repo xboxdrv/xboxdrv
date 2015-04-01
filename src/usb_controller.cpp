@@ -32,7 +32,7 @@ USBController::USBController(libusb_device* dev) :
   m_interfaces(),
   m_usbpath(),
   m_usbid(),
-  m_name()  
+  m_name()
 {
   int ret = libusb_open(dev, &m_handle);
   if (ret != LIBUSB_SUCCESS)
@@ -40,9 +40,9 @@ USBController::USBController(libusb_device* dev) :
     raise_exception(std::runtime_error, "libusb_open() failed: " << usb_strerror(ret));
   }
   else
-  { 
+  {
     // get usbpath, usbid and name
-    m_usbpath = (boost::format("%03d:%03d") 
+    m_usbpath = (boost::format("%03d:%03d")
                  % static_cast<int>(libusb_get_bus_number(dev))
                  % static_cast<int>(libusb_get_device_address(dev))).str();
 
@@ -50,10 +50,10 @@ USBController::USBController(libusb_device* dev) :
     ret = libusb_get_device_descriptor(dev, &desc);
     if (ret == LIBUSB_SUCCESS)
     {
-      m_usbid = (boost::format("%04x:%04x") 
-                 % static_cast<int>(desc.idVendor) 
+      m_usbid = (boost::format("%04x:%04x")
+                 % static_cast<int>(desc.idVendor)
                  % static_cast<int>(desc.idProduct)).str();
-  
+
       char buf[1024];
       int len;
       if (false)
@@ -67,7 +67,7 @@ USBController::USBController(libusb_device* dev) :
         }
       }
 
-      len = libusb_get_string_descriptor_ascii(m_handle, desc.iProduct, 
+      len = libusb_get_string_descriptor_ascii(m_handle, desc.iProduct,
                                                reinterpret_cast<unsigned char*>(buf), sizeof(buf));
       if (len > 0)
       {
@@ -86,7 +86,7 @@ USBController::~USBController()
   }
 
   // wait for cancel to succeed
-  while (!m_transfers.empty()) 
+  while (!m_transfers.empty())
   {
     int ret = libusb_handle_events(NULL);
     if (ret != 0)
@@ -190,7 +190,7 @@ USBController::usb_control(uint8_t  bmRequestType, uint8_t  bRequest,
   libusb_fill_control_setup(data, bmRequestType, bRequest, wValue, wIndex, wLength);
   memcpy(data + 8, data_in, wLength);
   libusb_fill_control_transfer(transfer, m_handle, data,
-                               &USBController::on_control_wrap, this, 
+                               &USBController::on_control_wrap, this,
                                0);
 
   int ret;
@@ -272,7 +272,7 @@ USBController::usb_claim_interface(int ifnum, bool try_detach)
   m_interfaces.insert(ifnum);
 
   int err = usb_claim_n_detach_interface(m_handle, ifnum, try_detach);
-  if (err != 0) 
+  if (err != 0)
   {
     std::ostringstream out;
     out << " Error couldn't claim the USB interface: " << usb_strerror(err) << std::endl
@@ -305,9 +305,9 @@ USBController::usb_find_ep(int direction, uint8_t if_class, uint8_t if_subclass,
           ++altsetting)
       {
         log_debug("Interface: " << static_cast<int>(altsetting->bInterfaceNumber));
-          
-        for(const libusb_endpoint_descriptor* endpoint = altsetting->endpoint; 
-            endpoint != altsetting->endpoint + altsetting->bNumEndpoints; 
+
+        for(const libusb_endpoint_descriptor* endpoint = altsetting->endpoint;
+            endpoint != altsetting->endpoint + altsetting->bNumEndpoints;
             ++endpoint)
         {
           log_debug("    Endpoint: " << int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK) <<

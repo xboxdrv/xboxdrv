@@ -33,7 +33,7 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
 {
   switch (dev_type.type)
   {
-    case GAMEPAD_XBOX360_PLAY_N_CHARGE: 
+    case GAMEPAD_XBOX360_PLAY_N_CHARGE:
       // FIXME: only trigger this error message in single-instance mode, not in daemon mode
       throw std::runtime_error("The Xbox360 Play&Charge cable is for recharging only, it does not transmit data, "
                                "thus xboxdrv can't support it. You have to get a wireless receiver:\n"
@@ -47,10 +47,10 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
 
     case GAMEPAD_XBOX360:
     case GAMEPAD_XBOX360_GUITAR:
-      return ControllerPtr(new Xbox360Controller(dev, 
+      return ControllerPtr(new Xbox360Controller(dev,
                                                  opts.chatpad, opts.chatpad_no_init, opts.chatpad_debug,
-                                                 opts.headset, 
-                                                 opts.headset_debug, 
+                                                 opts.headset,
+                                                 opts.headset_debug,
                                                  opts.headset_dump,
                                                  opts.headset_play,
                                                  opts.detach_kernel_driver));
@@ -74,7 +74,7 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
     case GAMEPAD_GENERIC_USB:
       {
         Options::GenericUSBSpec spec = opts.find_generic_usb_spec(dev_type.idVendor, dev_type.idProduct);
-        return ControllerPtr(new GenericUSBController(dev, spec.m_interface, spec.m_endpoint, 
+        return ControllerPtr(new GenericUSBController(dev, spec.m_interface, spec.m_endpoint,
                                                       opts.detach_kernel_driver));
       }
 
@@ -90,7 +90,7 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
 
   switch (dev_type.type)
   {
-    case GAMEPAD_XBOX360_PLAY_N_CHARGE: 
+    case GAMEPAD_XBOX360_PLAY_N_CHARGE:
       // FIXME: only trigger this error message in single-instance mode, not in daemon mode
       throw std::runtime_error("The Xbox360 Play&Charge cable is for recharging only, it does not transmit data, "
                                "thus xboxdrv can't support it. You have to get a wireless receiver:\n"
@@ -105,10 +105,10 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
 
     case GAMEPAD_XBOX360:
     case GAMEPAD_XBOX360_GUITAR:
-      lst.push_back(ControllerPtr(new Xbox360Controller(dev, 
+      lst.push_back(ControllerPtr(new Xbox360Controller(dev,
                                                         opts.chatpad, opts.chatpad_no_init, opts.chatpad_debug,
-                                                        opts.headset, 
-                                                        opts.headset_debug, 
+                                                        opts.headset,
+                                                        opts.headset_debug,
                                                         opts.headset_dump,
                                                         opts.headset_play,
                                                         opts.detach_kernel_driver)));
@@ -140,7 +140,7 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
     case GAMEPAD_GENERIC_USB:
       {
         Options::GenericUSBSpec spec = opts.find_generic_usb_spec(dev_type.idVendor, dev_type.idProduct);
-        lst.push_back(ControllerPtr(new GenericUSBController(dev, spec.m_interface, spec.m_endpoint, 
+        lst.push_back(ControllerPtr(new GenericUSBController(dev, spec.m_interface, spec.m_endpoint,
                                                              opts.detach_kernel_driver)));
       }
       break;

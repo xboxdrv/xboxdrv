@@ -44,7 +44,7 @@ private:
 public:
   UInputConfig(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);
 
-  void send(XboxGenericMsg& msg); 
+  void send(XboxGenericMsg& msg);
   void update(int msec_delta);
 
   void reset_all_outputs();

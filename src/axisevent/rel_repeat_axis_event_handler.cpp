@@ -29,7 +29,7 @@ RelRepeatAxisEventHandler*
 RelRepeatAxisEventHandler::from_string(const std::string& str)
 {
   // split string at ':'
-  boost::tokenizer<boost::char_separator<char> > 
+  boost::tokenizer<boost::char_separator<char> >
     tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
   std::vector<std::string> args;
   std::copy(tokens.begin(), tokens.end(), std::back_inserter(args));
@@ -53,7 +53,7 @@ RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(const UIEvent& code, int va
   m_stick_value(0),
   m_timer(0),
   m_rel_emitter()
-{  
+{
 }
 
 void
@@ -100,7 +100,7 @@ RelRepeatAxisEventHandler::update(UInput& uinput, int msec_delta)
     {
       m_rel_emitter->send(m_value);
     }
-    
+
     m_timer -= m_repeat;
   }
 }

@@ -40,10 +40,10 @@ protected:
     m_string2enum()
   {
   }
-  
+
   virtual ~EnumBox() {}
 
-  void add(Enum i, const std::string& name) 
+  void add(Enum i, const std::string& name)
   {
     m_enum2string[i] = name;
     m_string2enum[name] = i;
@@ -52,14 +52,14 @@ protected:
 public:
   typedef typename std::map<Enum, std::string>::iterator iterator;
   typedef typename std::map<Enum, std::string>::const_iterator const_iterator;
-  
+
   const_iterator begin() const { return m_enum2string.begin(); }
   const_iterator end()   const { return m_enum2string.end();   }
 
   iterator begin() { return m_enum2string.begin(); }
   iterator end()   { return m_enum2string.end();   }
 
-  Enum operator[](const std::string& str) const 
+  Enum operator[](const std::string& str) const
   {
     typename std::map<std::string, Enum>::const_iterator i = m_string2enum.find(str);
     if (i == m_string2enum.end())

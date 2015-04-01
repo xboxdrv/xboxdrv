@@ -50,7 +50,7 @@ Logger::incr_log_level(LogLevel level)
 {
   if (get_log_level() < level)
   {
-    set_log_level(level);    
+    set_log_level(level);
   }
 }
 
@@ -77,12 +77,12 @@ Logger::append_unchecked(LogLevel level, const std::string& str)
     case kDebug:   std::cout << "[DEBUG] "; break;
     case kTemp:    std::cout << "[TEMP]  "; break;
   }
-    
+
   std::cout << str << std::endl;
 }
 
 void
-Logger::append(LogLevel level, const std::string& str) 
+Logger::append(LogLevel level, const std::string& str)
 {
   if (m_log_level >= level)
   {

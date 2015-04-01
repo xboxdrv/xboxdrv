@@ -7,12 +7,12 @@
 class INIParserTestBuilder : public INIBuilder
 {
 public:
-  void send_section(const std::string& section) 
+  void send_section(const std::string& section)
   {
     std::cout << "[" << section << "]" << std::endl;
   }
 
-  void send_pair(const std::string& name, const std::string& value) 
+  void send_pair(const std::string& name, const std::string& value)
   {
     std::cout << "\"" << name << "\" = \"" << value << "\"" << std::endl;
   }

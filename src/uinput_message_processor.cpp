@@ -21,8 +21,8 @@
 #include "log.hpp"
 #include "uinput.hpp"
 
-UInputMessageProcessor::UInputMessageProcessor(UInput& uinput, 
-                                               ControllerSlotConfigPtr config, 
+UInputMessageProcessor::UInputMessageProcessor(UInput& uinput,
+                                               ControllerSlotConfigPtr config,
                                                const Options& opts) :
   m_uinput(uinput),
   m_config(config),
@@ -44,13 +44,13 @@ UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
 {
   if (!m_config->empty())
   {
-    XboxGenericMsg msg = msg_in; 
+    XboxGenericMsg msg = msg_in;
 
     if (m_rumble_test)
     {
       log_debug("rumble: " << get_axis(msg, XBOX_AXIS_LT) << " " << get_axis(msg, XBOX_AXIS_RT));
 
-      set_rumble(get_axis(msg, XBOX_AXIS_LT), 
+      set_rumble(get_axis(msg, XBOX_AXIS_LT),
                  get_axis(msg, XBOX_AXIS_RT));
     }
 
@@ -74,7 +74,7 @@ UInputMessageProcessor::send(const XboxGenericMsg& msg_in, int msec_delta)
 
     // run the controller message through all modifier
     for(std::vector<ModifierPtr>::iterator i = m_config->get_config()->get_modifier().begin();
-        i != m_config->get_config()->get_modifier().end(); 
+        i != m_config->get_config()->get_modifier().end();
         ++i)
     {
       (*i)->update(msec_delta, msg);
@@ -103,7 +103,7 @@ UInputMessageProcessor::set_rumble(uint8_t lhs, uint8_t rhs)
   {
     lhs = std::min(lhs * m_rumble_gain / 255, 255);
     rhs = std::min(rhs * m_rumble_gain / 255, 255);
-  
+
     m_rumble_callback(lhs, rhs);
   }
 }

@@ -65,17 +65,17 @@ DBusSubsystem::request_name(const std::string& name)
                                   name.c_str(),
                                   DBUS_NAME_FLAG_REPLACE_EXISTING,
                                   &error);
-  
+
   if (dbus_error_is_set(&error))
-  { 
+  {
     std::ostringstream out;
     out << "failed to get unique dbus name: " <<  error.message;
     dbus_error_free(&error);
     throw std::runtime_error(out.str());
   }
 
-  if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER) 
-  { 
+  if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER)
+  {
     raise_exception(std::runtime_error, "failed to become primary owner of dbus name");
   }
 }
@@ -96,7 +96,7 @@ DBusSubsystem::register_controller_slots(const std::vector<ControllerSlotPtr>& s
   {
     XboxdrvGController* controller = xboxdrv_g_controller_new(i->get());
     dbus_g_object_type_install_info(XBOXDRV_TYPE_G_CONTROLLER, &dbus_glib_xboxdrv_controller_object_info);
-    dbus_g_connection_register_g_object(m_connection, 
+    dbus_g_connection_register_g_object(m_connection,
                                         (boost::format("/org/seul/Xboxdrv/ControllerSlots/%d")
                                          % (i - slots.begin())).str().c_str(),
                                         G_OBJECT(controller));

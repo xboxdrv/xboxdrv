@@ -45,12 +45,12 @@ private:
 
   typedef std::vector<ControllerSlotPtr> ControllerSlots;
   ControllerSlots m_controller_slots;
-  
+
   typedef std::vector<ControllerPtr> Controllers;
   Controllers m_inactive_controllers;
 
   std::auto_ptr<UInput> m_uinput;
-  
+
 private:
   static void on_sigint(int);
   static XboxdrvDaemon* current() { return s_current; }
@@ -73,10 +73,10 @@ private:
   void process_match(struct udev_device* device);
   void print_info(struct udev_device* device);
   void launch_controller_thread(udev_device* dev,
-                                const XPadDevice& dev_type, 
+                                const XPadDevice& dev_type,
                                 uint8_t busnum, uint8_t devnum);
   int get_free_slot_count() const;
-  
+
   void connect(ControllerSlotPtr slot, ControllerPtr controller);
   ControllerPtr disconnect(ControllerSlotPtr slot);
 

@@ -33,8 +33,8 @@
 #include "axisevent/rel_repeat_axis_event_handler.hpp"
 
 AxisEventPtr
-AxisEvent::invalid() 
-{ 
+AxisEvent::invalid()
+{
   return AxisEventPtr();
 }
 
@@ -51,7 +51,7 @@ AxisEvent::create_rel(int device_id, int code, int repeat, float value)
 {
   return AxisEventPtr(new AxisEvent(new RelAxisEventHandler(device_id, code, repeat, value)));
 }
-  
+
 AxisEventPtr
 AxisEvent::from_string(const std::string& str)
 {
@@ -61,7 +61,7 @@ AxisEvent::from_string(const std::string& str)
   const std::string& token = str.substr(0, p);
   std::string rest;
 
-  if (p != std::string::npos) 
+  if (p != std::string::npos)
     rest = str.substr(p+1);
 
   if (token == "abs")

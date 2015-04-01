@@ -42,14 +42,14 @@ RelAxisEventHandler::from_string(const std::string& str)
         break;
 
       case 1:
-        ev->m_value = boost::lexical_cast<float>(*i); 
+        ev->m_value = boost::lexical_cast<float>(*i);
         break;
 
       case 2:
-        ev->m_repeat = boost::lexical_cast<int>(*i); 
+        ev->m_repeat = boost::lexical_cast<int>(*i);
         break;
 
-      default: 
+      default:
         throw std::runtime_error("AxisEvent::rel_from_string(): to many arguments: " + str);
     }
   }
@@ -98,7 +98,7 @@ RelAxisEventHandler::send(UInput& uinput, int value)
     m_stick_value = value / static_cast<float>(m_max);
 
   if (m_repeat != -1)
-  { 
+  {
     // regular old style sending of REL events
     float v = m_value * m_stick_value;
 

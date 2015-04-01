@@ -41,7 +41,7 @@ LogAxisFilter::filter(int value, int min, int max)
   }
   else
   {
-    std::cout << m_name << ": " << value << std::endl;    
+    std::cout << m_name << ": " << value << std::endl;
   }
 
   return value;

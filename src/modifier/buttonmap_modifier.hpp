@@ -43,7 +43,7 @@ class ButtonmapModifier : public Modifier
 {
 public:
   ButtonmapModifier();
-  
+
   void update(int msec_delta, XboxGenericMsg& msg);
 
   void add(const ButtonMapping& mapping);

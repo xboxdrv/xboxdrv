@@ -79,11 +79,11 @@ USBSubsystem::find_controller(libusb_device** dev, XPadDevice& dev_type, const O
     {
       throw std::runtime_error("--device-by-id VENDOR:PRODUCT option must be used in combination with --type TYPE option");
     }
-    else 
+    else
     {
       if (!find_controller_by_id(opts.controller_id, opts.vendor_id, opts.product_id, dev))
       {
-        raise_exception(std::runtime_error, "couldn't find device with " 
+        raise_exception(std::runtime_error, "couldn't find device with "
                         << (boost::format("%04x:%04x") % opts.vendor_id % opts.product_id));
       }
       else
@@ -105,7 +105,7 @@ USBSubsystem::find_controller(libusb_device** dev, XPadDevice& dev_type, const O
 }
 
 bool
-USBSubsystem::find_controller_by_path(const std::string& busid_str, const std::string& devid_str, 
+USBSubsystem::find_controller_by_path(const std::string& busid_str, const std::string& devid_str,
                                  libusb_device** xbox_device)
 {
   int busid = boost::lexical_cast<int>(busid_str);

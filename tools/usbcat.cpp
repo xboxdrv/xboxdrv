@@ -1,4 +1,4 @@
-/* 
+/*
 **  XBox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -33,19 +33,19 @@ std::ostream& operator<<(std::ostream& out, struct usb_device* dev)
       struct usb_dev_handle* handle = usb_open(dev);
       if (handle)
         {
-          if (dev->descriptor.iProduct) 
+          if (dev->descriptor.iProduct)
             usb_get_string_simple(handle, dev->descriptor.iProduct, iProduct_buf, sizeof(iProduct_buf));
           usb_close(handle);
         }
-      
-      return out << boost::format("idVendor: 0x%04hx  idProduct: 0x%04hx  iProduct: %s") 
+
+      return out << boost::format("idVendor: 0x%04hx  idProduct: 0x%04hx  iProduct: %s")
         % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct)
         % iProduct_buf;
     }
   else
     {
       return out << "(usb_device: null)";
-    }  
+    }
 }
 
 struct usb_device*
@@ -55,7 +55,7 @@ find_usb_device(uint16_t idVendor, uint16_t idProduct)
 
   for (struct usb_bus* bus = busses; bus; bus = bus->next)
     {
-      for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+      for (struct usb_device* dev = bus->devices; dev; dev = dev->next)
         {
           if (dev->descriptor.idVendor  == idVendor &&
               dev->descriptor.idProduct == idProduct)
@@ -83,7 +83,7 @@ write_usb_device(struct usb_device* dev, int interface, int endpoint)
           if (usb_detach_kernel_driver_np(handle, interface) < 0)
             {
               std::cout << "Failure to kick kernel driver: " << usb_strerror() << std::endl;
-              exit(EXIT_FAILURE);              
+              exit(EXIT_FAILURE);
             }
 
           if (usb_claim_interface(handle, interface) != 0)
@@ -98,7 +98,7 @@ write_usb_device(struct usb_device* dev, int interface, int endpoint)
       while(!quit)
         {
           uint8_t data[32];
-          
+
           if (1)
             {
               int ret = fread(data, sizeof(char), sizeof(data), stdin);
@@ -120,7 +120,7 @@ write_usb_device(struct usb_device* dev, int interface, int endpoint)
 
             }
         }
-    }   
+    }
 }
 
 void
@@ -139,7 +139,7 @@ read_usb_device(struct usb_device* dev, int interface, int endpoint)
           if (usb_detach_kernel_driver_np(handle, interface) < 0)
             {
               std::cout << "Failure to kick kernel driver: " << usb_strerror() << std::endl;
-              exit(EXIT_FAILURE);              
+              exit(EXIT_FAILURE);
             }
 
           if (usb_claim_interface(handle, interface) != 0)
@@ -164,7 +164,7 @@ read_usb_device(struct usb_device* dev, int interface, int endpoint)
 
           fwrite(data, sizeof(char), ret, stdout);
         }
-    }  
+    }
 }
 
 void
@@ -186,7 +186,7 @@ cat_usb_device(struct usb_device* dev, int interface, int endpoint)
           if (usb_detach_kernel_driver_np(handle, interface) < 0)
             {
               std::cout << "Failure to kick kernel driver: " << usb_strerror() << std::endl;
-              exit(EXIT_FAILURE);              
+              exit(EXIT_FAILURE);
             }
 
           if (usb_claim_interface(handle, interface) != 0)
@@ -211,9 +211,9 @@ cat_usb_device(struct usb_device* dev, int interface, int endpoint)
             }
           else
             {
-              std::cout << "len: " << ret 
+              std::cout << "len: " << ret
                         << " data: ";
-                      
+
               for(int j = 0; j < ret; ++j)
                 {
                   std::cout << boost::format("0x%02x ") % int(data[j]);
@@ -229,7 +229,7 @@ cat_usb_device(struct usb_device* dev, int interface, int endpoint)
           int ret2 = usb_interrupt_write(handle, 4, (char*)data, ret, 0);
           printf("Ret2: %d\n", ret2);
             }
-          
+
           if (0)
             {
               char arr[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128, 255 };
@@ -240,7 +240,7 @@ cat_usb_device(struct usb_device* dev, int interface, int endpoint)
                     {
                       for (size_t i = 0; i < sizeof(arr); ++i)
                         {
-                          char ledcmd[] = { front, len, arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i] }; 
+                          char ledcmd[] = { front, len, arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i], arr[i] };
                           printf("%d %d %d\n", len, front, arr[i]);
                           usb_interrupt_write(handle, 5, ledcmd, len, 0);
 
@@ -248,7 +248,7 @@ cat_usb_device(struct usb_device* dev, int interface, int endpoint)
                           int ret = usb_interrupt_read(handle, endpoint, (char*)data, sizeof(data), 10);
                           if (ret == -110)
                             {
-                              
+
                             }
                           else if (ret < 0)
                             {
@@ -258,9 +258,9 @@ cat_usb_device(struct usb_device* dev, int interface, int endpoint)
                             }
                           else
                             {
-                              std::cout << "len: " << ret 
+                              std::cout << "len: " << ret
                                         << " data: ";
-                      
+
                               for(int j = 0; j < ret; ++j)
                                 {
                                   std::cout << boost::format("0x%02x ") % int(data[j]);
@@ -303,7 +303,7 @@ list_usb_devices()
   int bus_idx = 0;
   for (struct usb_bus* bus = busses; bus; bus = bus->next)
     {
-      for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+      for (struct usb_device* dev = bus->devices; dev; dev = dev->next)
         {
           std::cout << boost::format("Bus %s Device %s ") % bus->dirname % dev->filename
                     << " " << dev << std::endl;
@@ -324,7 +324,7 @@ int main(int argc, char** argv)
 
       list_usb_devices();
     }
-  else if ((argc == 4 || argc == 5 || argc == 6) && 
+  else if ((argc == 4 || argc == 5 || argc == 6) &&
            (strcmp("cat", argv[1]) == 0 ||
             strcmp("read", argv[1]) == 0 ||
             strcmp("write", argv[1]) == 0))
@@ -339,7 +339,7 @@ int main(int argc, char** argv)
         {
           if (argc >= 5)
             interface = atoi(argv[4]);
-          
+
           if (argc == 6)
             endpoint  = atoi(argv[5]);
 
@@ -350,14 +350,14 @@ int main(int argc, char** argv)
           struct usb_device* dev = find_usb_device(idVendor, idProduct);
           if (!dev)
             {
-              std::cout << "Error: Device (" << boost::format("idVendor: 0x%04hx, idProduct: 0x%04hx") 
+              std::cout << "Error: Device (" << boost::format("idVendor: 0x%04hx, idProduct: 0x%04hx")
                 % idVendor % idProduct << ") not found" << std::endl;
             }
           else
             {
               if (strcmp("cat", argv[1]) == 0)
                 {
-                  std::cout << "Reading data from: " << dev << " Interface: " << interface << " Endpoint: " << endpoint << std::endl; 
+                  std::cout << "Reading data from: " << dev << " Interface: " << interface << " Endpoint: " << endpoint << std::endl;
                   cat_usb_device(dev, interface, endpoint);
                 }
               else if (strcmp("read", argv[1]) == 0)

@@ -39,7 +39,7 @@ private:
 
 public:
   static XboxdrvMain* current() { return s_current; }
-  
+
 private:
   const Options& m_opts;
   GMainLoop* m_gmain;
@@ -64,7 +64,7 @@ public:
 
 private:
   ControllerPtr create_controller();
-  
+
   void init_controller(const ControllerPtr& controller);
 
   void print_info(libusb_device* dev,

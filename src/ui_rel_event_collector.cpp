@@ -41,7 +41,7 @@ UIRelEventCollector::send(int value)
 }
 
 void
-UIRelEventCollector::sync() 
+UIRelEventCollector::sync()
 {
 }
 

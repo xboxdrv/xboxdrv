@@ -34,7 +34,7 @@ enum {
   SLOTID_AUTO = static_cast<uint16_t>(-1)
 };
 
-class UIEvent 
+class UIEvent
 {
 public:
   static UIEvent create(int device_id, int type, int code);
@@ -60,10 +60,10 @@ private:
   bool m_device_id_resolved;
 };
 
-/** in: "BTN_A@2" 
+/** in: "BTN_A@2"
     out: "BTN_A", SLOTID_AUTO, 2
 
-    in: "BTN_A@mouse.2" 
+    in: "BTN_A@mouse.2"
     out: "BTN_A", 3, DEVICEID_MOUSE
  */
 void split_event_name(const std::string& str, std::string* event_str, int* slot_id, int* device_id);

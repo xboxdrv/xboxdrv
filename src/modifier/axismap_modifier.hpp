@@ -39,7 +39,7 @@ struct AxisMapping
   {}
 };
 
-class AxismapModifier : public Modifier 
+class AxismapModifier : public Modifier
 {
 public:
   AxismapModifier();

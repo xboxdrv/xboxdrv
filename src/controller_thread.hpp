@@ -48,7 +48,7 @@ private:
   GTimer* m_timer;
 
 public:
-  ControllerThread(ControllerPtr controller, std::auto_ptr<MessageProcessor> processor, 
+  ControllerThread(ControllerPtr controller, std::auto_ptr<MessageProcessor> processor,
                    const Options& opts);
   ~ControllerThread();
 

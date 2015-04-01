@@ -110,7 +110,7 @@ ControllerMatchRule::match(udev_device* device) const
     case kMatchEvdevPath:
       assert(!"not implemented");
       return false;
-      
+
     default:
       assert(!"never reached");
       return false;
@@ -135,10 +135,10 @@ ControllerMatchRule::from_string(const std::string& lhs,
     else
     {
       boost::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
-                                                    
+
       group->add_rule(ControllerMatchRulePtr(new ControllerMatchRuleProperty("ID_VENDOR_ID", args[0])));
       group->add_rule(ControllerMatchRulePtr(new ControllerMatchRuleProperty("ID_MODEL_ID", args[1])));
-      
+
       return group;
     }
   }
@@ -184,10 +184,10 @@ ControllerMatchRule::from_string(const std::string& lhs,
     else
     {
       boost::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
-                                                    
+
       group->add_rule(ControllerMatchRulePtr(new ControllerMatchRuleProperty("BUSNUM", args[0])));
       group->add_rule(ControllerMatchRulePtr(new ControllerMatchRuleProperty("DEVNUM", args[1])));
-      
+
       return group;
     }
   }

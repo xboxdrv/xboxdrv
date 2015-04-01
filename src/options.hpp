@@ -34,7 +34,7 @@ class Options
 {
 public:
   enum { RUN_DEFAULT,
-         RUN_DAEMON, 
+         RUN_DAEMON,
          RUN_LIST_CONTROLLER,
          RUN_LIST_SUPPORTED_DEVICES,
          RUN_LIST_SUPPORTED_DEVICES_XPAD,
@@ -76,7 +76,7 @@ public:
   Priority priority;
 
   GamepadType gamepad_type;
-  
+
   // device options
   std::string busid;
   std::string devid;
@@ -106,7 +106,7 @@ public:
   std::string headset_play;
 
   // daemon options
-  bool detach; 
+  bool detach;
   enum DBusSubsystemMode {
     kDBusDisabled, /// disable dbus
     kDBusAuto,     /// choice system or session bus on uid
@@ -164,7 +164,7 @@ public:
       m_endpoint(endpoint),
       m_packetsize(packetsize)
     {}
-    
+
     int m_vendor_id;
     int m_product_id;
     int m_interface;
@@ -179,7 +179,7 @@ public:
 
   ControllerSlotOptions& get_controller_slot();
   const ControllerSlotOptions& get_controller_slot() const;
-  
+
   /** Returns the currently active configuration */
   ControllerOptions& get_controller_options();
   const ControllerOptions& get_controller_options() const;
@@ -213,7 +213,7 @@ public:
 
   void set_daemon();
   void set_daemon_detach(bool value);
-  
+
   void add_match(const std::string& lhs, const std::string& rhs);
   void set_match(const std::string& str);
   void set_match_group(const std::string& str);

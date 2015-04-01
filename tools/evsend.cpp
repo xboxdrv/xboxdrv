@@ -27,7 +27,7 @@ int main(int argc, char** argv)
       event.value = atoi(argv[4]);
 
       int fd = open(filename, O_RDWR);
-      if (fd < 0)        
+      if (fd < 0)
         {
           std::cout << argv[0] << ": couldn't access: " << filename << ": " << strerror(errno) << std::endl;
         }

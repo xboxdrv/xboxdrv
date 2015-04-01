@@ -27,7 +27,7 @@ class KeyAxisEventHandler : public AxisEventHandler
 {
 public:
   static KeyAxisEventHandler* from_string(const std::string& str);
-  
+
 public:
   KeyAxisEventHandler();
 
@@ -41,7 +41,7 @@ private:
   void send_up(UInput& uinput, int value);
   void send_down(UInput& uinput, int value);
   int  get_zone(int value) const;
-  
+
 private:
   int m_old_value;
 

@@ -38,7 +38,7 @@ public:
   ~Headset();
 
   void play_file(const std::string& play_filename);
-  void record_file(const std::string& dump_filename);  
+  void record_file(const std::string& dump_filename);
 
 private:
   bool send_data(libusb_transfer* transfer);

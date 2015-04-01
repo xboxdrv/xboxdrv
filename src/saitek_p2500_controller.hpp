@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2009 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -25,7 +25,7 @@
 
 class SaitekP2500Controller : public USBController
 {
-private: 
+private:
   int left_rumble;
   int right_rumble;
 

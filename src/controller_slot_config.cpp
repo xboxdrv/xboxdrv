@@ -31,7 +31,7 @@
 
 ControllerSlotConfigPtr
 ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const ControllerSlotOptions& opts)
-{  
+{
   ControllerSlotConfigPtr m_config(new ControllerSlotConfig);
 
   for(ControllerSlotOptions::Options::const_iterator i = opts.get_options().begin();
@@ -46,8 +46,8 @@ ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const
 #ifdef FIXME
     // introspection of the config
     std::cout << "==[[ Active Modifier ]]==" << std::endl;
-    for(std::vector<ModifierPtr>::iterator mod = config->get_modifier().begin(); 
-        mod != config->get_modifier().end(); 
+    for(std::vector<ModifierPtr>::iterator mod = config->get_modifier().begin();
+        mod != config->get_modifier().end();
         ++mod)
     {
       std::cout << (*mod)->str() << std::endl;
@@ -72,7 +72,7 @@ ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const
     // |- FF_SAW_UP
     // |- FF_SAW_DOWN
     // '- FF_CUSTOM
-    
+
     // FIXME: this should go through the regular resolution process
     uint32_t ff_device = UInput::create_device_id(slot, opts.get_ff_device());
 
@@ -116,7 +116,7 @@ ControllerSlotConfig::create_modifier(const ControllerOptions& opts, std::vector
         i != opts.calibration_map.end();
         ++i)
     {
-      axismap->add_filter(i->first, i->second); 
+      axismap->add_filter(i->first, i->second);
     }
 
     modifier->push_back(axismap);
@@ -128,7 +128,7 @@ ControllerSlotConfig::create_modifier(const ControllerOptions& opts, std::vector
 
     XboxAxis axes[] = { XBOX_AXIS_X1,
                         XBOX_AXIS_Y1,
-                      
+
                         XBOX_AXIS_X2,
                         XBOX_AXIS_Y2 };
 
@@ -174,7 +174,7 @@ ControllerSlotConfig::create_modifier(const ControllerOptions& opts, std::vector
     for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.sensitivity_map.begin();
         i != opts.sensitivity_map.end(); ++i)
     {
-      axismap->add_filter(i->first, i->second); 
+      axismap->add_filter(i->first, i->second);
     }
 
     modifier->push_back(axismap);
@@ -193,7 +193,7 @@ ControllerSlotConfig::create_modifier(const ControllerOptions& opts, std::vector
     for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.relative_axis_map.begin();
         i != opts.relative_axis_map.end(); ++i)
     {
-      axismap->add_filter(i->first, i->second); 
+      axismap->add_filter(i->first, i->second);
     }
 
     modifier->push_back(axismap);
@@ -211,7 +211,7 @@ ControllerSlotConfig::create_modifier(const ControllerOptions& opts, std::vector
     for(std::map<XboxButton, ButtonFilterPtr>::const_iterator i = opts.autofire_map.begin();
         i != opts.autofire_map.end(); ++i)
     {
-      buttonmap->add_filter(i->first, i->second); 
+      buttonmap->add_filter(i->first, i->second);
     }
 
     modifier->push_back(buttonmap);
@@ -253,7 +253,7 @@ void
 ControllerSlotConfig::prev_config()
 {
   m_current_config -= 1;
-  
+
   if (m_current_config < 0)
   {
     m_current_config = static_cast<int>(m_config.size()) - 1;
@@ -279,7 +279,7 @@ void
 ControllerSlotConfig::set_current_config(int num)
 {
   if (num >= 0 && num < static_cast<int>(m_config.size()))
-  {  
+  {
     m_current_config = num;
   }
   else
