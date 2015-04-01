@@ -32,7 +32,7 @@ public:
 
   void send(int value, int min, int max);
   void update(int msec_delta);
-  
+
   std::string str() const;
 
 private:

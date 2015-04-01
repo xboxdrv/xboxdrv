@@ -1,4 +1,4 @@
-/* 
+/*
 **  Logitech Gamepad F310 driver for xboxdrv
 **  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **  Contributed by Doug Morse <dm@dougmorse.org>
@@ -83,19 +83,19 @@ LogitechF310Controller::parse(const uint8_t* data, int len, ControllerMessage* m
     // the logitech gamepad f310 reports its two joysticks in a rather
     // odd manner: only 8 bits are used with one bit -- the most significant
     // bit (MSB) -- reserved to indicate direction.  this makes all four of
-    // these axes asymmetrical.  for example, the raw data for x1 ranges 
-    // from 0-127 for far left to almost centered, 128 for centered, and 
+    // these axes asymmetrical.  for example, the raw data for x1 ranges
+    // from 0-127 for far left to almost centered, 128 for centered, and
     // 1-127 for almost centered to far right.  thus, to obtain constant
     // linear scaling, different scaling factors are used on each half axis
     // because of this asymmetry.
 
-    // it is worth noting that the information at byte offset 7 is 
+    // it is worth noting that the information at byte offset 7 is
     // *completely* redundant with that of byte offset of 6.  the same holds
     // for bytes offsets 9, 11, and 13 in regards to byte offsets 8, 10,
     // and 12, respectively.  this might make it seem like one could just
-    // use all 16 bits and use helper functions like s16_invert and 
-    // and unpack::int16le in order to define the axes.  doing so is 
-    // problematic, however, because of the way that logitech manipulates 
+    // use all 16 bits and use helper functions like s16_invert and
+    // and unpack::int16le in order to define the axes.  doing so is
+    // problematic, however, because of the way that logitech manipulates
     // the MSB for each byte of the byte pair.  ultimately, only 7 bits
     // of information are availble for each half axis, so the code below
     // makes the most of it.

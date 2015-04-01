@@ -29,7 +29,7 @@ class KeyPort
 protected:
   std::string m_name;
   int m_key;
-  
+
 public:
   KeyPort(const std::string& name) :
     m_name(name),

@@ -91,7 +91,7 @@ DpadRestrictorModifier::update(int msec_delta, ControllerMessage& msg, const Con
   {
     case kRestrictFourWay:
       if (msg.get_abs(XBOX_AXIS_DPAD_X) && msg.get_abs(XBOX_AXIS_DPAD_Y))
-      { 
+      {
         // a diagonal was pressed, thus we reset the axis that wasn't
         // pressed the last time the dpad was touched
         msg.set_abs(m_last_unpressed_axis, 0);

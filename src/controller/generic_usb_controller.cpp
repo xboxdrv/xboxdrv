@@ -23,7 +23,7 @@
 #include "helper.hpp"
 #include "raise_exception.hpp"
 
-GenericUSBController::GenericUSBController(libusb_device* dev, 
+GenericUSBController::GenericUSBController(libusb_device* dev,
                                            int interface, int endpoint,
                                            bool try_detach) :
   USBController(dev),
@@ -38,23 +38,23 @@ GenericUSBController::GenericUSBController(libusb_device* dev,
   else
   {
     print(config, std::cout);
-    
+
     if (config->bNumInterfaces <= m_interface)
     {
       raise_exception(std::runtime_error, "interface " << m_interface << " not available");
     }
-    
+
     if (config->interface[m_interface].num_altsetting == 0)
     {
       raise_exception(std::runtime_error, "no interface descriptors available");
     }
-   
+
     // search for the given endpoint
     const libusb_endpoint_descriptor* ep = 0;
     for(int i = 0; i < config->interface[m_interface].altsetting[0].bNumEndpoints; ++i)
     {
       ep = &(config->interface[m_interface].altsetting[0].endpoint[i]);
-      
+
       if ((ep->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK) == m_endpoint)
       {
         break;
@@ -96,7 +96,7 @@ GenericUSBController::print(libusb_config_descriptor* cfg, std::ostream& out) co
       for(int k = 0; k < cfg->interface[i].altsetting[j].bNumEndpoints; ++k)
       {
         const libusb_endpoint_descriptor& ep = cfg->interface[i].altsetting[j].endpoint[k];
-        std::cout << "    Endpoint " << k << " " 
+        std::cout << "    Endpoint " << k << " "
                   << static_cast<int>(ep.bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK)
                   << ((ep.bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? " IN" : " OUT")
                   << std::endl;

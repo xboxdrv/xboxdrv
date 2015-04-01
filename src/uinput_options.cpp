@@ -48,7 +48,7 @@ UInputOptions::get_btn_map() const
   return m_btn_map;
 }
 
-const AxisMapOptions& 
+const AxisMapOptions&
 UInputOptions::get_axis_map() const
 {
   return m_axis_map;
@@ -85,7 +85,7 @@ UInputOptions::mimic_xpad()
 
   m_axis_map.push_back(AxisMapOption("gamepad.lt", "ABS_Z:0:255:0:0"));
   m_axis_map.push_back(AxisMapOption("gamepad.rt", "ABS_RZ:0:255:0:0"));
-            
+
   m_axis_map.push_back(AxisMapOption("gamepad.dpad_x", "ABS_HAT0X:-1:1:0:0"));
   m_axis_map.push_back(AxisMapOption("gamepad.dpad_y", "ABS_HAT0Y:-1:1:0:0"));
 }
@@ -156,7 +156,7 @@ UInputOptions::set_defaults()
 
   m_axis_map.push_back(AxisMapOption("gamepad.lt", "ABS_BRAKE:0:255:0:0"));
   m_axis_map.push_back(AxisMapOption("gamepad.rt", "ABS_GAS:0:255:0:0"));
- 
+
   m_axis_map.push_back(AxisMapOption("gamepad.dpad_x", "ABS_HAT0X:-1:1:0:0"));
   m_axis_map.push_back(AxisMapOption("gamepad.dpad_y", "ABS_HAT0Y:-1:1:0:0"));
 }
@@ -214,7 +214,7 @@ UInputOptions::guitar()
   m_btn_map.push_back(ButtonMapOption("gamepad.guide", "BTN_MODE"));
   m_btn_map.push_back(ButtonMapOption("gamepad.back", "BTN_SELECT"));
 
-  m_btn_map.push_back(ButtonMapOption("gamepad.a", "BTN_0"));  // green 
+  m_btn_map.push_back(ButtonMapOption("gamepad.a", "BTN_0"));  // green
   m_btn_map.push_back(ButtonMapOption("gamepad.b", "BTN_1"));  // red
   m_btn_map.push_back(ButtonMapOption("gamepad.y", "BTN_2"));  // blue
   m_btn_map.push_back(ButtonMapOption("gamepad.x", "BTN_3"));  // yellow

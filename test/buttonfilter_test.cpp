@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     {
       values.push_back(boost::lexical_cast<int>(line));
     }
-    
+
     int time_step = duration / values.size();
 
     for(std::vector<int>::const_iterator i = values.begin(); i != values.end(); ++i)

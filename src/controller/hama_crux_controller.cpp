@@ -27,11 +27,11 @@ HamaCruxNames::HamaCruxNames(ControllerMessageDescriptor& desc) :
   crouch(desc.key().put(KeyName("hama-crux.crouch"))),
   run(desc.key().put(KeyName("hama-crux.run"))),
   talk(desc.key().put(KeyName("hama-crux.talk"))),
-  
+
   esc(desc.key().put(KeyName("hama-crux.escape"))),
   pause(desc.key().put(KeyName("hama-crux.pause"))),
   option(desc.key().put(KeyName("hama-crux.option"))),
- 
+
   quickload(desc.key().put(KeyName("hama-crux.quickload"))),
   quicksave(desc.key().put(KeyName("hama-crux.quicksave"))),
   print(desc.key().put(KeyName("hama-crux.print"))),
@@ -80,7 +80,7 @@ HamaCruxController::HamaCruxController(libusb_device* dev, bool try_detach) :
   m_interface(0),
   m_endpoint(1),
   m_names(m_message_descriptor)
-{  
+{
   usb_claim_interface(m_interface, try_detach);
   usb_submit_read(m_endpoint, 8);
 }
@@ -114,7 +114,7 @@ HamaCruxController::parse(const uint8_t* data, int len, ControllerMessage* msg)
     msg->set_key(m_names.crouch,  data[0] & 0x01);
     msg->set_key(m_names.run, data[0] & 0x02);
     msg->set_key(m_names.talk,   data[0] & 0x04);
-      
+
     for(int i = 2; i < len; ++i)
     {
       uint8_t scancode = data[i];
@@ -170,7 +170,7 @@ HamaCruxController::parse(const uint8_t* data, int len, ControllerMessage* msg)
         case 0x38: msg->set_key(m_names.c8, 1); break;
         case 0x4c: msg->set_key(m_names.p2, 1); break;
         case 0x50: msg->set_key(m_names.n, 1); break;
-          
+
           // right bottom
         case 0x19: msg->set_key(m_names.c5, 1); break;
         case 0x05: msg->set_key(m_names.c6, 1); break;

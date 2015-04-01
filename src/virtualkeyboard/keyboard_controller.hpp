@@ -46,7 +46,7 @@ private:
 
   int m_timer_x;
   int m_timer_y;
-  
+
   enum {
     kSendButton = BTN_A,
     kHoldButton = BTN_Y,
@@ -60,7 +60,7 @@ private:
   UIEventEmitterPtr m_backspace_key;
   UIEventEmitterPtr m_shift_key;
   UIEventEmitterPtr m_ctrl_key;
-  
+
 public:
   KeyboardController(VirtualKeyboard& keyboard, UInput& uinput, const std::string& device);
   ~KeyboardController();

@@ -40,7 +40,7 @@ void
 RumbleAxisEventHandler::update(int msec_delta)
 {
 }
-  
+
 std::string
 RumbleAxisEventHandler::str() const
 {

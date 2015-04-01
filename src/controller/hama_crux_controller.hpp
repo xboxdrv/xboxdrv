@@ -30,7 +30,7 @@ class ControllerMessageDescriptor;
 struct HamaCruxNames
 {
   int crouch, run, talk;
-  int esc, pause, option; 
+  int esc, pause, option;
   int quickload, quicksave, print;
   int n1, n2, n3, n4, n5, n6;
   int n7, n8, n9, n10, n11;

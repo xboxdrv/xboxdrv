@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -44,7 +44,7 @@ UInput::parse_input_id(const std::string& str)
   usbid.version = 0;
 
   // split string at ':'
-  boost::tokenizer<boost::char_separator<char> > 
+  boost::tokenizer<boost::char_separator<char> >
     tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
   std::vector<std::string> args;
   std::copy(tokens.begin(), tokens.end(), std::back_inserter(args));
@@ -59,7 +59,7 @@ UInput::parse_input_id(const std::string& str)
     usbid.vendor  = hexstr2uint16(args[0]);
     usbid.product = hexstr2uint16(args[1]);
     usbid.version = hexstr2uint16(args[2]);
-  } 
+  }
   else if (args.size() == 4)
   { // VENDOR:PRODUCT:VERSION:BUS
     usbid.vendor  = hexstr2uint16(args[0]);
@@ -197,15 +197,15 @@ UInput::get_device_name(uint32_t device_id) const
         case 0:
         case DEVICEID_JOYSTICK:
           break;
-          
+
         case DEVICEID_MOUSE:
           str << " - Mouse Emulation";
           break;
-       
+
         case DEVICEID_KEYBOARD:
           str << " - Keyboard Emulation";
           break;
- 
+
         default:
           str << " - " << device_id+1;
           break;
@@ -215,14 +215,14 @@ UInput::get_device_name(uint32_t device_id) const
     else
     {
       it = m_device_names.find(create_device_id(SLOTID_AUTO, type_id));
-                                                
+
       if (it != m_device_names.end())
       {
         // found match for the type, build name and return it
         std::ostringstream str;
         str << it->second;
         if (slot_id > 0)
-        { 
+        {
           str << " #" << (slot_id+1);
         }
         return str.str();
@@ -246,15 +246,15 @@ UInput::get_device_name(uint32_t device_id) const
         {
           case DEVICEID_JOYSTICK:
             break;
-          
+
           case DEVICEID_MOUSE:
             str << " - Mouse Emulation";
             break;
-       
+
           case DEVICEID_KEYBOARD:
             str << " - Keyboard Emulation";
             break;
- 
+
           default:
             str << " - " << device_id+1;
             break;
@@ -263,7 +263,7 @@ UInput::get_device_name(uint32_t device_id) const
         {
           str << " #" << (slot_id+1);
         }
-        return str.str();      
+        return str.str();
       }
     }
   }
@@ -271,7 +271,7 @@ UInput::get_device_name(uint32_t device_id) const
 
 LinuxUinput*
 UInput::create_uinput_device(uint32_t device_id)
-{ 
+{
   // DEVICEID_AUTO should not happen at this point as the user should
   // have called resolve_device_id()
   assert(device_id != DEVICEID_AUTO);
@@ -302,7 +302,7 @@ UInput::create_uinput_device(uint32_t device_id)
         case DEVICEID_MOUSE:
           device_type = LinuxUinput::kMouseDevice;
           break;
-      
+
         case DEVICEID_KEYBOARD:
           device_type = LinuxUinput::kKeyboardDevice;
           break;
@@ -339,11 +339,11 @@ UInput::add(const UIEvent& ev)
       break;
 
     case EV_ABS:
-      dev->add_abs(static_cast<uint16_t>(ev.get_code()), 
+      dev->add_abs(static_cast<uint16_t>(ev.get_code()),
                    0, 0, 0, 0 /* min, max, fuzz, flat */); // BROKEN
       break;
   }
-  
+
   return create_emitter(ev.get_device_id(), ev.get_type(), ev.get_code());
 }
 
@@ -387,8 +387,8 @@ UInput::create_emitter(int device_id, int type, int code)
   // search for an already existing emitter
   for(Collectors::iterator i = m_collectors.begin(); i != m_collectors.end(); ++i)
   {
-    if (static_cast<int>((*i)->get_device_id()) == device_id && 
-        (*i)->get_type() == type && 
+    if (static_cast<int>((*i)->get_device_id()) == device_id &&
+        (*i)->get_type() == type &&
         (*i)->get_code() == code)
     {
       return (*i)->create_emitter();
@@ -504,14 +504,14 @@ UInput::send_rel_repetitive(const UIEvent& code, float value, int repeat_interva
       rel_rep.time_count = 0;
       rel_rep.repeat_interval = repeat_interval;
       m_rel_repeat_lst.insert(std::pair<UIEvent, RelRepeat>(code, rel_rep));
-    
+
       // Send the event once
       get_uinput(code.get_device_id())->send(EV_REL, static_cast<uint16_t>(code.code), static_cast<int32_t>(value));
     }
     else
     {
       // FIXME: send old value, store new value for rest
-      
+
       it->second.code  = code;
       it->second.value = value;
       // it->second.time_count = do not touch this

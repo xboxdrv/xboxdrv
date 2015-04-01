@@ -40,7 +40,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
         i != opts.calibration_map.end();
         ++i)
     {
-      // BROKEN: axismap->add_filter(i->first, i->second); 
+      // BROKEN: axismap->add_filter(i->first, i->second);
     }
 
     m_modifier.push_back(axismap);
@@ -53,7 +53,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
 
     XboxAxis axes[] = { XBOX_AXIS_X1,
                         XBOX_AXIS_Y1,
-                      
+
                         XBOX_AXIS_X2,
                         XBOX_AXIS_Y2 };
 
@@ -102,7 +102,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
     for(std::map<std::string, AxisFilterPtr>::const_iterator i = opts.sensitivity_map.begin();
         i != opts.sensitivity_map.end(); ++i)
     {
-      // BROKEN: axismap->add_filter(i->first, i->second); 
+      // BROKEN: axismap->add_filter(i->first, i->second);
     }
 
     m_modifier.push_back(axismap);
@@ -121,7 +121,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
     for(std::map<std::string, AxisFilterPtr>::const_iterator i = opts.relative_axis_map.begin();
         i != opts.relative_axis_map.end(); ++i)
     {
-      // BROKEN: axismap->add_filter(i->first, i->second); 
+      // BROKEN: axismap->add_filter(i->first, i->second);
     }
 
     m_modifier.push_back(axismap);
@@ -140,7 +140,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
     for(std::map<std::string, ButtonFilterPtr>::const_iterator i = opts.autofire_map.begin();
         i != opts.autofire_map.end(); ++i)
     {
-      buttonmap->add_filter(i->first, i->second); 
+      buttonmap->add_filter(i->first, i->second);
     }
 
     m_modifier.push_back(buttonmap);

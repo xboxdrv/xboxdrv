@@ -49,7 +49,7 @@ public:
 public:
   ButtonmapModifier();
 
-  void init(ControllerMessageDescriptor& desc);  
+  void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
 
   void add(ButtonMappingPtr mapping);

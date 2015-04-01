@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -34,7 +34,7 @@ class Xbox360Controller : public USBController
 {
 private:
   XPadDevice*        dev_type;
-  
+
   int endpoint_in;
   int endpoint_out;
 
@@ -47,10 +47,10 @@ private:
   Xbox360DefaultNames xbox;
 
 public:
-  Xbox360Controller(libusb_device* dev, 
-                    bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
-                    bool headset, 
-                    bool headset_debug, 
+  Xbox360Controller(libusb_device* dev,
+                    bool chatpad, bool chatpad_no_init, bool chatpad_debug,
+                    bool headset,
+                    bool headset_debug,
                     const std::string& headset_dump,
                     const std::string& headset_play,
                     bool try_detach);

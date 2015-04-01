@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -23,7 +23,7 @@
 
 #include "xboxmsg.hpp"
 
-struct XPadDevice 
+struct XPadDevice
 {
   GamepadType type;
   uint16_t    idVendor;

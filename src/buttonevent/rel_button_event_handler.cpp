@@ -38,16 +38,16 @@ RelButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
     switch(idx)
     {
       case 0:
-        ev.reset(new RelButtonEventHandler(uinput, slot, extra_devices, 
+        ev.reset(new RelButtonEventHandler(uinput, slot, extra_devices,
                                            str2rel_event(*i)));
         break;
 
-      case 1: 
+      case 1:
         ev->m_value  = boost::lexical_cast<int>(*i);
         break;
-        
-      case 2: 
-        ev->m_repeat = boost::lexical_cast<int>(*i); 
+
+      case 2:
+        ev->m_repeat = boost::lexical_cast<int>(*i);
         break;
     }
   }
@@ -86,7 +86,7 @@ RelButtonEventHandler::send(bool value)
     {
       //BROKEN:uinput.send_rel_repetitive(m_code, static_cast<float>(m_value), -1);
     }
-  } 
+  }
 }
 
 std::string

@@ -26,7 +26,7 @@
 class KeyButtonEventHandler : public ButtonEventHandler
 {
 public:
-  static KeyButtonEventHandler* from_string(UInput& uinput, int slot, bool extra_devices, 
+  static KeyButtonEventHandler* from_string(UInput& uinput, int slot, bool extra_devices,
                                             const std::string& str);
 
 public:
@@ -39,7 +39,7 @@ public:
   void update(int msec_delta);
 
   std::string str() const;
-  
+
 private:
   bool m_state;
   UIEventSequence m_codes;

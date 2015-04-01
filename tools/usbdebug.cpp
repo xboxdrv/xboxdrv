@@ -23,7 +23,7 @@ find_usb_device(uint16_t idVendor, uint16_t idProduct)
 
   for (struct usb_bus* bus = busses; bus; bus = bus->next)
     {
-      for (struct usb_device* dev = bus->devices; dev; dev = dev->next) 
+      for (struct usb_device* dev = bus->devices; dev; dev = dev->next)
         {
           if (dev->descriptor.idVendor  == idVendor &&
               dev->descriptor.idProduct == idProduct)
@@ -47,7 +47,7 @@ private:
   struct usb_dev_handle* handle;
 
   std::vector<EndpointListenerThread*> threads;
-public: 
+public:
   USBDevice(struct usb_device* dev_)
     : dev(dev_)
   {
@@ -70,7 +70,7 @@ public:
     if (usb_clear_halt(handle, ep) != 0)
       {
         std::cout << "Failure to reset_ep: " << ep << std::endl;
-      }    
+      }
   }
 
   void reset()
@@ -148,17 +148,17 @@ public:
      uint16_t index;
      uint16_t length;
    */
-  int ctrl_msg(int requesttype, int request, 
+  int ctrl_msg(int requesttype, int request,
                int value, int index,
-               uint8_t* data, int size) 
+               uint8_t* data, int size)
   {
-    return usb_control_msg(handle, 
-                           requesttype,  request, 
+    return usb_control_msg(handle,
+                           requesttype,  request,
                            value,  index,
-                           (char*)data, size, 
+                           (char*)data, size,
                            0 /* timeout */);
   }
-  
+
   void print_info()
   {
     for(int i = 0; i < dev->descriptor.bNumConfigurations; ++i)
@@ -171,7 +171,7 @@ public:
               {
                 for(int l = 0; l < dev->config[i].interface[j].altsetting[k].bNumEndpoints; ++l)
                   {
-                    std::cout << "    Endpoint: " 
+                    std::cout << "    Endpoint: "
                               << int(dev->config[i].interface[j].altsetting[k].endpoint[l].bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK)
                               << ((dev->config[i].interface[j].altsetting[k].endpoint[l].bEndpointAddress & USB_ENDPOINT_DIR_MASK) ? " (IN)" : " (OUT)")
                               << std::endl;
@@ -201,7 +201,7 @@ public:
 
   ~EndpointListenerThread()
   {
-    
+
   }
 
   void start()
@@ -241,7 +241,7 @@ public:
   }
 };
 
-void 
+void
 USBDevice::launch_listener_thread(int endpoint)
 {
   try {
@@ -270,10 +270,10 @@ bool readline(const std::string& prompt,
   return ret;
 }
 
-std::vector<std::string> 
+std::vector<std::string>
 tokenize(const std::string& str, const std::string& delimiters = " ")
 {
-  std::vector<std::string> tokens;  
+  std::vector<std::string> tokens;
 
   // Skip delimiters at beginning.
   std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
@@ -295,9 +295,9 @@ tokenize(const std::string& str, const std::string& delimiters = " ")
 
 void print_raw_data(std::ostream& out, uint8_t* data, int len)
 {
-  std::cout << "[" << len 
+  std::cout << "[" << len
             << "] { ";
-      
+
   for(int i = 0; i < len; ++i)
     {
       std::cout << boost::format("0x%02x") % int(data[i]);
@@ -398,7 +398,7 @@ void console_info_cmd(const std::vector<std::string>& args)
   USBDevice::current()->print_info();
 }
 
-class Sequence 
+class Sequence
 {
 private:
   int   start;
@@ -406,7 +406,7 @@ private:
   int   idx;
 
 public:
-  Sequence(int start_, int end_) 
+  Sequence(int start_, int end_)
     : start(start_), end(end_), idx(start_)
   {}
 
@@ -430,7 +430,7 @@ public:
           idx -= 1;
       }
   }
-    
+
   bool eol() {
     if (start <= end)
       return idx > end;
@@ -474,11 +474,11 @@ public:
         int start, end;
         if (sscanf(i->c_str(), "%x-%x", &start, &end) == 2)
           {
-            sequences.push_back(Sequence(start, end)); 
+            sequences.push_back(Sequence(start, end));
           }
         else if (sscanf(i->c_str(), "%x", &start) == 1)
           {
-            sequences.push_back(Sequence(start));      
+            sequences.push_back(Sequence(start));
           }
         else
           {
@@ -492,7 +492,7 @@ public:
   bool eol() {
     return (idx == sequences.size());
   }
-  
+
   void reset() {
     for(std::vector<Sequence>::iterator i = sequences.begin(); i != sequences.end(); ++i)
       i->reset();
@@ -514,15 +514,15 @@ public:
             ++idx;
             if (idx < sequences.size())
               sequences[idx].next();
-          } 
-        else 
+          }
+        else
           {
             return sequences[idx].next();
           }
       }
   }
 
-  std::string to_string() const 
+  std::string to_string() const
   {
     std::ostringstream str;
     std::vector<Sequence>::const_iterator i = sequences.begin();
@@ -531,7 +531,7 @@ public:
     while (i != sequences.end())
       {
         const Sequence& seq = *i;
-        
+
         str << seq.to_string();
 
         ++i;
@@ -539,7 +539,7 @@ public:
           str << ", ";
       }
     str << " }";
-    
+
     return str.str();
   }
 };
@@ -603,15 +603,15 @@ void console_probe_cmd(const std::vector<std::string>& args)
         {
           for(int i = 0; i < int(sequences.size()); ++i)
             data[i] = sequences[i].get();
-          
+
           std::cout << "Data Ep: " << endpoint << ": ";
           print_raw_data(std::cout, &*data.begin(), data.size());
           int ret = USBDevice::current()->write(endpoint, &*data.begin(), data.size());
           std::cout << " -> " << ret;
           std::cout << std::endl;
-          
+
           next(sequences);
-          
+
           //usleep(100 * 1000);
           usleep(10 * 1000);
         }
@@ -678,7 +678,7 @@ void console_ctrlreq_cmd(const std::vector<std::string>& args)
 
       uint8_t* data = (len == 0) ? NULL : new uint8_t[len];
       memset(data, 0, len*sizeof(uint8_t));
-      
+
       int ret = USBDevice::current()->ctrl_msg(requesttype, request,
                                                value, index,
                                                data,
@@ -689,7 +689,7 @@ void console_ctrlreq_cmd(const std::vector<std::string>& args)
         std::cout << "no data";
       else
         print_raw_data(std::cout, data, len);
-      
+
       std::cout << std::endl;
 
       delete[] data;
@@ -763,7 +763,7 @@ void console_ctrl_cmd(const std::vector<std::string>& args)
         std::cout << "no data";
       else
         print_raw_data(std::cout, &*data.begin(), data.size());
-      
+
       int ret = USBDevice::current()->ctrl_msg(requesttype, request,
                                                value, index,
                                                data.empty() ? NULL : &*data.begin(),
@@ -894,7 +894,7 @@ void eval_console_cmd(const std::string& line_)
 void run_console()
 {
   std::cout << "Type 'help' to list all available commands" << std::endl;
-  
+
   std::string line;
 
   while (!quit && readline("\033[32musb\033[0m> ", line))
@@ -904,7 +904,7 @@ void run_console()
         eval_console_cmd(*i);
       global_interrupt = false;
     }
-  std::cout << std::endl; 
+  std::cout << std::endl;
 }
 
 
@@ -939,7 +939,7 @@ int main(int argc, char** argv)
       if (sscanf(argv[1], "%hx:%hx", &idVendor, &idProduct) == 2)
         {
           struct usb_device* dev = find_usb_device(idVendor, idProduct);
-            
+
           if (dev)
             {
               std::cout << boost::format("Opening device with idVendor: 0x%h04x, idProduct: 0x%h04x") % idVendor % idProduct << std::endl;

@@ -103,7 +103,7 @@ IR2AxisModifier::update(int msec_delta, ControllerMessage& msg, const Controller
       {
         x2 = x;
         y2 = y;
-        size2 = size;       
+        size2 = size;
       }
     }
   }

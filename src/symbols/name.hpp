@@ -46,7 +46,7 @@ public:
       s_env.reset(new Environment);
       init_environment(s_env);
     }
-  
+
     std::string::size_type p = name.find('.');
     if (p == std::string::npos)
     {
@@ -63,7 +63,7 @@ public:
       }
     }
   }
-  
+
   operator void*() const
   {
     return m_symbol.get();

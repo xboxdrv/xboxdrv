@@ -34,7 +34,7 @@ public:
 class INISchemaSection
 {
 private:
-  typedef std::map<std::string, INIPairSchema*> Schema; 
+  typedef std::map<std::string, INIPairSchema*> Schema;
   Schema m_schema;
 
 public:
@@ -49,7 +49,7 @@ public:
   INISchemaSection& operator()(const std::string& name, float* value);
   INISchemaSection& operator()(const std::string& name, std::string* value);
   INISchemaSection& operator()(const std::string& name, boost::function<void (const std::string&)> callback);
-  INISchemaSection& operator()(const std::string& name, 
+  INISchemaSection& operator()(const std::string& name,
                                boost::function<void ()> true_callback,
                                boost::function<void ()> false_callback);
 
@@ -77,8 +77,8 @@ public:
 
   void clear();
 
-  INISchemaSection& section(const std::string& name, 
-                            boost::function<void (const std::string&, const std::string&)> callback 
+  INISchemaSection& section(const std::string& name,
+                            boost::function<void (const std::string&, const std::string&)> callback
                             = boost::function<void (const std::string&, const std::string&)>());
 
   INISchemaSection* get_section(const std::string& name) const;

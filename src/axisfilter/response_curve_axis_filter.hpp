@@ -23,7 +23,7 @@
 
 class ResponseCurveAxisFilter : public AxisFilter
 {
-public: 
+public:
   static ResponseCurveAxisFilter* from_string(const std::string& str);
 
 public:

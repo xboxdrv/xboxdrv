@@ -30,7 +30,7 @@ KeyAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  
+
   UIEventSequence up_codes;
   UIEventSequence down_codes;
   float threshold = 0.25f;
@@ -61,12 +61,12 @@ KeyAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
           }
         }
         break;
-        
+
       case 2:
         threshold = boost::lexical_cast<float>(*i);
         break;
-        
-      default: 
+
+      default:
         throw std::runtime_error("AxisEvent::key_from_string(): to many arguments: " + str);
     }
   }

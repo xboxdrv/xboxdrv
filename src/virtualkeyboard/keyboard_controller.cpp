@@ -29,7 +29,7 @@
 #include "uinput.hpp"
 #include "virtualkeyboard/virtual_keyboard.hpp"
 
-KeyboardController::KeyboardController(VirtualKeyboard& keyboard, UInput& uinput, 
+KeyboardController::KeyboardController(VirtualKeyboard& keyboard, UInput& uinput,
                                        const std::string& device) :
   m_keyboard(keyboard),
   m_uinput(uinput),
@@ -64,8 +64,8 @@ KeyboardController::KeyboardController(VirtualKeyboard& keyboard, UInput& uinput
     g_error_free(error);
   }
   g_io_channel_set_buffered(m_io_channel, false);
-    
-  g_io_add_watch(m_io_channel, 
+
+  g_io_add_watch(m_io_channel,
                  static_cast<GIOCondition>(G_IO_IN | G_IO_ERR | G_IO_HUP),
                  &KeyboardController::on_read_data_wrap, this);
 
@@ -243,7 +243,7 @@ KeyboardController::on_read_data(GIOChannel* source, GIOCondition condition)
       parse(ev[i]);
     }
   }
-  
+
   sync();
 
   return TRUE;
@@ -257,7 +257,7 @@ KeyboardController::on_timeout()
 
     m_timer_x += static_cast<int>(static_cast<float>(25) * fabsf(m_stick_x));
     m_timer_y += static_cast<int>(static_cast<float>(25) * fabsf(m_stick_y));
-    
+
     // FIXME: should reset m_timer when direction changes
     while(m_timer_x > m_repeat)
     {
@@ -269,7 +269,7 @@ KeyboardController::on_timeout()
       {
         m_keyboard.cursor_right();
       }
-    
+
       m_timer_x -= m_repeat;
     }
 
@@ -283,7 +283,7 @@ KeyboardController::on_timeout()
       {
         m_keyboard.cursor_down();
       }
-    
+
       m_timer_y -= m_repeat;
     }
   }

@@ -115,7 +115,7 @@ ControllerMessage::get_abs_max(int abs)
 bool
 ControllerMessage::operator==(const ControllerMessage& rhs) const
 {
-  return 
+  return
     m_abs_state == rhs.m_abs_state &&
     m_rel_state == rhs.m_rel_state &&
     m_key_state == rhs.m_key_state;

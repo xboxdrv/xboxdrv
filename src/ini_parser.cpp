@@ -28,7 +28,7 @@ INIParser::INIParser(std::istream& in, INIBuilder& builder, const std::string& c
   m_context(context),
   m_line(1),
   m_column(0),
-  m_current_char(-1)  
+  m_current_char(-1)
 {}
 
 void
@@ -37,7 +37,7 @@ INIParser::run()
   // read the first char
   next();
 
-  while(peek() != -1) 
+  while(peek() != -1)
   {
     if (accept('['))
     {
@@ -64,7 +64,7 @@ INIParser::run()
 
       name = get_ident_or_string();
       whitespace();
-      
+
       if (accept(';') || accept('#'))
       { // "name"
         eat_rest_of_line();
@@ -80,9 +80,9 @@ INIParser::run()
         }
         else
         { // "name = value"
-          value = get_value_or_string();     
+          value = get_value_or_string();
           whitespace();
-        
+
           if (accept(';') || accept('#'))
           { // "name = value # comment"
             eat_rest_of_line();
@@ -94,7 +94,7 @@ INIParser::run()
           }
         }
       }
-      
+
       m_builder.send_pair(name, value);
     }
   }
@@ -329,7 +329,7 @@ INIParser::get_section()
   std::ostringstream str;
   while(peek() != ']')
   {
-    str << static_cast<char>(peek()); 
+    str << static_cast<char>(peek());
     next();
   }
   return str.str();

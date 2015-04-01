@@ -40,7 +40,7 @@ AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
     lhs = lhs.substr(1);
   }
 
-  boost::tokenizer<boost::char_separator<char> > 
+  boost::tokenizer<boost::char_separator<char> >
     tokens(lhs, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
   std::vector<std::string> tks(tokens.begin(), tokens.end());
 
@@ -94,7 +94,7 @@ AxismapModifier*
 AxismapModifier::from_option(const std::vector<AxisMappingOption>& mappings)
 {
   std::auto_ptr<AxismapModifier> modifier(new AxismapModifier);
-  
+
   for(std::vector<AxisMappingOption>::const_iterator i = mappings.begin(); i != mappings.end(); ++i)
   {
     modifier->add(AxisMapping::from_string(i->lhs, i->rhs));

@@ -29,7 +29,7 @@ private:
   std::vector<std::string> m_filter;
   std::string m_event;
   std::string m_directory;
-  
+
 public:
   ButtonMapOption(const std::string& combo,
                   const std::string& event,

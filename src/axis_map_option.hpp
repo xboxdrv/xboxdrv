@@ -33,7 +33,7 @@ private:
   std::vector<std::string> m_filter;
   std::string m_event;
   std::string m_directory;
-  
+
 public:
   AxisMapOption(const std::string& lhs,
                 const std::string& event,
@@ -44,9 +44,9 @@ public:
     m_event(event),
     m_directory(directory)
   {
-    boost::tokenizer<boost::char_separator<char> > 
+    boost::tokenizer<boost::char_separator<char> >
       tokens(lhs, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
-    
+
     std::vector<std::string> args(tokens.begin(), tokens.end());
     if (args.empty())
     {
@@ -59,7 +59,7 @@ public:
     else
     {
       m_buttons.insert(m_buttons.end(), args.begin(), args.end()-1);
-      m_axis = args.back();      
+      m_axis = args.back();
     }
   }
 

@@ -25,7 +25,7 @@ Playstation3BluetoothController::Playstation3BluetoothController()
 Playstation3BluetoothController::~Playstation3BluetoothController()
 {
 }
-  
+
 void
 Playstation3BluetoothController::set_rumble_real(uint8_t left, uint8_t right)
 {

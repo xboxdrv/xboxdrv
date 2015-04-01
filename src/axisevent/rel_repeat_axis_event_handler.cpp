@@ -26,11 +26,11 @@
 #include "uinput.hpp"
 
 RelRepeatAxisEventHandler*
-RelRepeatAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices, 
+RelRepeatAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
                                        const std::string& str)
 {
   // split string at ':'
-  boost::tokenizer<boost::char_separator<char> > 
+  boost::tokenizer<boost::char_separator<char> >
     tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
   std::vector<std::string> args;
   std::copy(tokens.begin(), tokens.end(), std::back_inserter(args));
@@ -56,7 +56,7 @@ RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(UInput& uinput, int slot, b
   m_stick_value(0),
   m_timer(0),
   m_rel_emitter()
-{  
+{
   m_code.resolve_device_id(slot, extra_devices);
   m_rel_emitter = uinput.add_rel(m_code.get_device_id(), m_code.code);
 }
@@ -96,7 +96,7 @@ RelRepeatAxisEventHandler::update(int msec_delta)
     {
       m_rel_emitter->send(m_value);
     }
-    
+
     m_timer -= m_repeat;
   }
 }

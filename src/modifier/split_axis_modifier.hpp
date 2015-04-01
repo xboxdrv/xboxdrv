@@ -26,7 +26,7 @@
 
 class SplitAxisModifier : public Modifier
 {
-public: 
+public:
   static SplitAxisModifier* from_string(const std::vector<std::string>& args);
 
 private:

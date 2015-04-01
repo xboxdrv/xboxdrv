@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     int dev_id;
 
     dev_id = hci_get_route(NULL);
-    if (dev_id < 0) 
+    if (dev_id < 0)
     {
       perror("Device is not available");
       exit(1);
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
       exit(1);
     }
 
-    if (hci_authenticate_link(dd, htobs(cr->conn_info->handle), 25000) < 0) 
+    if (hci_authenticate_link(dd, htobs(cr->conn_info->handle), 25000) < 0)
     {
       perror("HCI authentication request failed");
       exit(1);

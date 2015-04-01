@@ -28,8 +28,8 @@ class MacroButtonEventHandler : public ButtonEventHandler
 public:
 private:
   struct MacroEvent {
-    enum { kInitOp, kSendOp, kWaitOp, kNull } type; 
-    
+    enum { kInitOp, kSendOp, kWaitOp, kNull } type;
+
     union {
       struct {
         UIEvent event;

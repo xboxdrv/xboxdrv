@@ -51,7 +51,7 @@ ButtonEventFactory::from_string(const std::string& str, const std::string& direc
   const std::string& token = str.substr(0, p);
   std::string rest;
 
-  if (p != std::string::npos) 
+  if (p != std::string::npos)
     rest = str.substr(p+1);
 
   if (token == "abs")
@@ -92,12 +92,12 @@ ButtonEventFactory::from_string(const std::string& str, const std::string& direc
   }
   else if (token == "macro")
   {
-    return create(MacroButtonEventHandler::from_file(m_uinput, m_slot, m_extra_devices, 
+    return create(MacroButtonEventHandler::from_file(m_uinput, m_slot, m_extra_devices,
                                                      path::join(directory, rest)));
   }
   else if (token == "qmacro")
   {
-    return create(MacroButtonEventHandler::from_string(m_uinput, m_slot, m_extra_devices, 
+    return create(MacroButtonEventHandler::from_string(m_uinput, m_slot, m_extra_devices,
                                                        rest));
   }
   else

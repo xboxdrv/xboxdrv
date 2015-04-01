@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -84,7 +84,7 @@ Xboxdrv::run_list_controller()
                 % wid
                 % int(xpad_devices[i].idVendor)
                 % int(xpad_devices[i].idProduct)
-                % xpad_devices[i].name 
+                % xpad_devices[i].name
                 % wid
                         << std::endl;
             }
@@ -96,7 +96,7 @@ Xboxdrv::run_list_controller()
               % 0
               % int(xpad_devices[i].idVendor)
               % int(xpad_devices[i].idProduct)
-              % xpad_devices[i].name 
+              % xpad_devices[i].name
                       << std::endl;
           }
           id += 1;
@@ -107,7 +107,7 @@ Xboxdrv::run_list_controller()
   }
 
   if (id == 0)
-    std::cout << "\nno controller detected" << std::endl; 
+    std::cout << "\nno controller detected" << std::endl;
 
   libusb_free_device_list(list, 1 /* unref_devices */);
 }
@@ -122,7 +122,7 @@ Xboxdrv::run_list_supported_devices()
       % int(xpad_devices[i].idVendor)
       % int(xpad_devices[i].idProduct)
       % xpad_devices[i].name;
-  }    
+  }
 }
 
 bool xpad_device_sorter(const XPadDevice& lhs, const XPadDevice& rhs)
@@ -156,7 +156,7 @@ Xboxdrv::run_list_supported_devices_xpad()
       % int(sorted_devices[i].idProduct)
       % sorted_devices[i].name
       % gamepadtype_to_macro_string(sorted_devices[i].type);
-  }    
+  }
 }
 
 void
@@ -169,9 +169,9 @@ Xboxdrv::run_help_devices()
     std::cout << boost::format("   0x%04x |    0x%04x | %s")
       % int(xpad_devices[i].idVendor)
       % int(xpad_devices[i].idProduct)
-      % xpad_devices[i].name 
+      % xpad_devices[i].name
               << std::endl;
-  }           
+  }
 }
 
 void
@@ -223,11 +223,11 @@ Xboxdrv::run_daemon(const Options& opts)
   {
     pid_t pid = fork();
 
-    if (pid < 0) 
+    if (pid < 0)
     { // fork error
       raise_exception(std::runtime_error, "failed to fork(): " << strerror(errno));
     }
-    else if (pid > 0) 
+    else if (pid > 0)
     { // parent, just exit
       _exit(EXIT_SUCCESS);
     }
@@ -268,24 +268,24 @@ Xboxdrv::run_list_enums(uint32_t enums)
     wrap.para("  ", boost::algorithm::join(evdev_abs_names.get_names(), ", "));
     wrap.newline();
   }
-  
+
   if (enums & Options::LIST_REL)
   {
     wrap.println("EV_REL:");
     wrap.para("  ", boost::algorithm::join(evdev_rel_names.get_names(), ", "));
     wrap.newline();
   }
-  
+
   if (enums & Options::LIST_KEY)
   {
     wrap.println("EV_KEY:");
     wrap.para("  ", boost::algorithm::join(evdev_key_names.get_names(), ", "));
     wrap.newline();
   }
-  
+
   if (enums & Options::LIST_X11KEYSYM)
   {
-    std::vector<std::string> lst;  
+    std::vector<std::string> lst;
     for(X11KeysymEnum::const_iterator i = get_x11keysym_names().begin();
         i != get_x11keysym_names().end(); ++i)
     {
@@ -315,7 +315,7 @@ Xboxdrv::set_scheduling(const Options& opts)
     log_info("enabling realtime priority scheduling");
 
     int policy = SCHED_RR;
-    
+
     struct sched_param param;
     memset(&param, 0, sizeof(struct sched_param));
     param.sched_priority = sched_get_priority_max(policy);
@@ -325,7 +325,7 @@ Xboxdrv::set_scheduling(const Options& opts)
 
     int ret;
     if ((ret = sched_setscheduler(getpid(), policy, &param)) != 0)
-    {          
+    {
       raise_exception(std::runtime_error, "sched_setschedparam() failed: " << strerror(errno));
     }
   }
@@ -334,7 +334,7 @@ Xboxdrv::set_scheduling(const Options& opts)
 int
 Xboxdrv::main(int argc, char** argv)
 {
-  try 
+  try
   {
     Options opts;
 

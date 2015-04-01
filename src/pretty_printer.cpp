@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -31,7 +31,7 @@ PrettyPrinter::print(const std::string& str)
   print("", "", str);
 }
 
-void 
+void
 PrettyPrinter::print(const std::string& indent_str, const std::string& left, const std::string& str)
 {
   const int width = terminal_width - indent_str.size() - 1;
@@ -54,7 +54,7 @@ PrettyPrinter::print(const std::string& indent_str, const std::string& left, con
 
   // skip leading space
   std::string::size_type start = str.find_first_not_of(' ', 0);
-  
+
   std::string::size_type word_begin = 0;
   int word_begin_column = 0;
   enum { SPACE, WORD } state = isspace(str[0]) ? SPACE : WORD;
@@ -66,12 +66,12 @@ PrettyPrinter::print(const std::string& indent_str, const std::string& left, con
     { // flush a word or a space sequence to stdout when a state change occurs
       switch(state)
       {
-        case SPACE:            
+        case SPACE:
           if (!isspace(str[i]))
           { // flush
             state = WORD;
 
-            if (word_begin_column == 0) 
+            if (word_begin_column == 0)
             {
               // ignore space at the start of a new line
 
@@ -105,7 +105,7 @@ PrettyPrinter::print(const std::string& indent_str, const std::string& left, con
       }
     }
 
-    { // process the current character           
+    { // process the current character
       if (str[i] == '\n')
       {
         std::cout << '\n' << indent_str;

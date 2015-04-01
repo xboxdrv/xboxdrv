@@ -42,7 +42,7 @@ CompatModifier::init(ControllerMessageDescriptor& desc)
 
 #if 0
   // have a dpad, but no dpad axis
-  if (!desc.abs().has(AbsName("gamepad.dpad_x")) && 
+  if (!desc.abs().has(AbsName("gamepad.dpad_x")) &&
       !desc.abs().has(AbsName("gamepad.dpad_y")) &&
       desc.key().has(KeyName("gamepad.dpad_up")) &&
       desc.key().has(KeyName("gamepad.dpad_down")) &&
@@ -86,7 +86,7 @@ CompatModifier::update(int msec_delta, ControllerMessage& msg, const ControllerM
 
   if (m_trigger)
   {
-    msg.set_abs(m_abs_trigger, 
+    msg.set_abs(m_abs_trigger,
                 msg.get_abs(m_rt) - msg.get_abs(m_lt),
                 -msg.get_abs_max(m_lt),
                 msg.get_abs_max(m_lt));

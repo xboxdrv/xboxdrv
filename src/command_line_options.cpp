@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -162,7 +162,7 @@ CommandLineParser::init_argp()
     .add_usage("[OPTION]...")
     .add_text("Xbox360 USB Gamepad Userspace Driver")
     .add_newline()
-  
+
     .add_text("General Options: ")
     .add_option(OPTION_HELP,         'h', "help",         "", "display this help and exit")
     .add_option(OPTION_VERSION,      'V', "version",      "", "print the version number and exit")
@@ -189,7 +189,7 @@ CommandLineParser::init_argp()
     .add_text("Config File Options: ")
     .add_option(OPTION_CONFIG,       'c', "config",      "FILE", "read configuration from FILE")
     .add_option(OPTION_ALT_CONFIG,    0, "alt-config",   "FILE", "read alternative configuration from FILE ")
-    .add_option(OPTION_CONFIG_OPTION,'o', "option",      "NAME=VALUE", "Set the given configuration option") 
+    .add_option(OPTION_CONFIG_OPTION,'o', "option",      "NAME=VALUE", "Set the given configuration option")
     .add_option(OPTION_WRITE_CONFIG,  0, "write-config", "FILE", "write an example configuration to FILE")
     .add_newline()
 
@@ -340,7 +340,7 @@ CommandLineParser::init_argp()
     .add_pseudo("  square, square-axis=XAXIS:YAXIS", "Convert the circular motion range of the given stick to a square one")
     .add_pseudo("  rotate=XAXIS:YAXIS:DEGREE[:MIRROR]", "Rotate the given stick by DEGREE, optionally also mirror it")
     .add_newline()
-  
+
     .add_text("See README for more documentation and examples.")
     .add_text("Report bugs to Ingo Ruhnke <grumbel@gmail.com>");
 }
@@ -368,7 +368,7 @@ CommandLineParser::init_ini(Options* opts)
     ("busid", &opts->busid)
     ("devid", &opts->devid)
     ("vendor-id", &opts->vendor_id)
-    ("product-id", &opts->product_id)   
+    ("product-id", &opts->product_id)
     ("evdev", &opts->evdev_device)
     ("evdev-grab", &opts->evdev_grab)
     ("evdev-debug", &opts->evdev_debug)
@@ -414,7 +414,7 @@ CommandLineParser::init_ini(Options* opts)
     ;
 
   m_ini.section("xboxdrv-daemon")
-    ("detach",        
+    ("detach",
      boost::bind(&Options::set_daemon_detach, opts, true),
      boost::bind(&Options::set_daemon_detach, opts, false))
     ("dbus", boost::bind(&Options::set_dbus_mode, opts, _1))
@@ -449,21 +449,21 @@ CommandLineParser::init_ini(Options* opts)
                     boost::bind(&CommandLineParser::set_modifier_n, this, controller, config, _1, _2));
       m_ini.section((boost::format("controller%d/config%d/keymap") % controller % config).str(),
                     boost::bind(&CommandLineParser::set_keymap_n, this, controller, config, _1, _2));
-      m_ini.section((boost::format("controller%d/config%d/absmap") % controller % config).str(), 
+      m_ini.section((boost::format("controller%d/config%d/absmap") % controller % config).str(),
                     boost::bind(&CommandLineParser::set_absmap_n, this, controller, config, _1, _2));
 
       m_ini.section((boost::format("controller%d/config%d/buttonmap") % controller % config).str(),
                     boost::bind(&CommandLineParser::set_buttonmap_n, this, controller, config, _1, _2));
-      m_ini.section((boost::format("controller%d/config%d/axismap") % controller % config).str(), 
+      m_ini.section((boost::format("controller%d/config%d/axismap") % controller % config).str(),
                     boost::bind(&CommandLineParser::set_axismap_n,   this, controller, config, _1, _2));
 
-      m_ini.section((boost::format("controller%d/config%d/autofire") % controller % config).str(), 
+      m_ini.section((boost::format("controller%d/config%d/autofire") % controller % config).str(),
                     boost::bind(&CommandLineParser::set_autofire_n, this, controller, config, _1, _2));
-      m_ini.section((boost::format("controller%d/config%d/relative-axis") % controller % config).str(), 
+      m_ini.section((boost::format("controller%d/config%d/relative-axis") % controller % config).str(),
                     boost::bind(&CommandLineParser::set_relative_axis_n, this, controller, config, _1, _2));
-      m_ini.section((boost::format("controller%d/config%d/calibration") % controller % config).str(), 
+      m_ini.section((boost::format("controller%d/config%d/calibration") % controller % config).str(),
                     boost::bind(&CommandLineParser::set_calibration_n, this, controller, config, _1, _2));
-      m_ini.section((boost::format("controller%d/config%d/axis-sensitivity") % controller % config).str(), 
+      m_ini.section((boost::format("controller%d/config%d/axis-sensitivity") % controller % config).str(),
                     boost::bind(&CommandLineParser::set_axis_sensitivity_n, this, controller, config, _1, _2));
     }
   }
@@ -475,7 +475,7 @@ CommandLineParser::init_ini(Options* opts)
 
 void
 CommandLineParser::parse_args(int argc, char** argv, Options* options)
-{  
+{
   init_ini(options);
   m_options = options;
 
@@ -495,7 +495,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
       case OPTION_VERSION:
         opts.mode = Options::PRINT_VERSION;
         break;
-          
+
       case OPTION_VERBOSE:
         opts.set_verbose();
         break;
@@ -726,7 +726,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
       case OPTION_DEVICE_USBIDS:
         process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_device_usbid, this, _1, _2));
         break;
-                    
+
       case OPTION_DEVICE_NAME:
         opts.set_device_name(opt.argument);
         break;
@@ -786,7 +786,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
       case OPTION_EVDEV_DEBUG:
         opts.evdev_debug = true;
         break;
-        
+
       case OPTION_EVDEV_NO_GRAB:
         opts.evdev_grab = false;
         break;
@@ -837,11 +837,11 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
       case OPTION_NO_EXTRA_EVENTS:
         opts.extra_events = false;
         break;
-            
+
       case OPTION_DPAD_ONLY:
         opts.set_dpad_only();
         break;
-            
+
       case OPTION_DPAD_AS_BUTTON:
         opts.set_dpad_as_button();
         break;
@@ -857,11 +857,11 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
       case OPTION_TRIGGER_AS_BUTTON:
         opts.set_trigger_as_button();
         break;
-        
+
       case OPTION_TRIGGER_AS_ZAXIS:
         opts.set_trigger_as_zaxis();
         break;
-        
+
       case OPTION_AUTOFIRE:
         process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_autofire, this, _1, _2));
         break;
@@ -940,7 +940,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
           char devid[4] = { '\0' };
 
           if (sscanf(opt.argument.c_str(), "%3s:%3s", busid, devid) != 2)
-          {  
+          {
             raise_exception(std::runtime_error, opt.option << " expected an argument in form BUS:DEV (i.e. 006:003)");
           }
           else
@@ -954,7 +954,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
       case OPTION_GENERIC_USB_SPEC:
         set_generic_usb_spec(opt.argument);
         break;
-    
+
       case OPTION_LIST_SUPPORTED_DEVICES:
         opts.mode = Options::RUN_LIST_SUPPORTED_DEVICES;
         break;
@@ -1018,7 +1018,7 @@ CommandLineParser::print_help() const
 void
 CommandLineParser::print_led_help() const
 {
-  std::cout << 
+  std::cout <<
     "Possible values for '--led VALUE' are:\n\n"
     "   0: off\n"
     "   1: all blinking\n"
@@ -1038,7 +1038,7 @@ CommandLineParser::print_led_help() const
     "  15: blink once\n"
             << std::endl;
 }
-  
+
 void
 CommandLineParser::print_version() const
 {
@@ -1097,7 +1097,7 @@ CommandLineParser::set_keymap(ButtonMapOptions& btn_map, const std::string& name
   for(std::vector<std::string>::iterator t = lst.begin(); t != lst.end(); ++t, ++idx)
   {
     switch(idx)
-    { 
+    {
       case 0: // shift+key portion
         btn_map.push_back(ButtonMapOption(*t, value, get_directory_context()));
         break;
@@ -1135,7 +1135,7 @@ CommandLineParser::set_absmap(AxisMapOptions& axis_map, const std::string& name,
   for(std::vector<std::string>::iterator t = lst.begin(); t != lst.end(); ++t, ++idx)
   {
     switch(idx)
-    { 
+    {
       case 0: // shift+key portion
         axis_map.push_back(AxisMapOption(*t, value, get_directory_context()));
         break;
@@ -1197,7 +1197,7 @@ CommandLineParser::set_calibration(const std::string& name, const std::string& v
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
   std::vector<std::string> args(tokens.begin(), tokens.end());
-  
+
   if (args.size() != 3)
   {
     throw std::runtime_error("calibration requires MIN:CENTER:MAX as argument");
@@ -1205,8 +1205,8 @@ CommandLineParser::set_calibration(const std::string& name, const std::string& v
   else
   {
     m_options->get_controller_options().calibration_map[name]
-      = AxisFilterPtr(new CalibrationAxisFilter(boost::lexical_cast<int>(args[0]), 
-                                                boost::lexical_cast<int>(args[1]), 
+      = AxisFilterPtr(new CalibrationAxisFilter(boost::lexical_cast<int>(args[0]),
+                                                boost::lexical_cast<int>(args[1]),
                                                 boost::lexical_cast<int>(args[2])));
   }
 }
@@ -1254,7 +1254,7 @@ CommandLineParser::set_dpad_rotation(const std::string& value)
 }
 
 void
-CommandLineParser::read_buildin_config_file(const std::string& filename, 
+CommandLineParser::read_buildin_config_file(const std::string& filename,
                                             const char* data, unsigned int data_len)
 {
   log_info("reading 'buildin://" << filename << "'");

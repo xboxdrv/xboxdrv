@@ -28,7 +28,7 @@ std::map<std::string, CycleKeySequencePtr> CycleKeyButtonEventHandler::s_lookup_
 
 namespace {
 
-CycleKeyButtonEventHandler::Direction 
+CycleKeyButtonEventHandler::Direction
 direction_from_string(const std::string& value)
 {
   if (value == "forward")
@@ -55,7 +55,7 @@ CycleKeyButtonEventHandler*
 CycleKeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
                                         const std::string& value, bool wrap_around)
 {
-  return from_string_named(uinput, slot, extra_devices, 
+  return from_string_named(uinput, slot, extra_devices,
                            ":" + value, wrap_around);
 }
 
@@ -142,7 +142,7 @@ CycleKeyButtonEventHandler::lookup(const std::string& name)
 
 CycleKeyButtonEventHandler::CycleKeyButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
                                                        CycleKeySequencePtr sequence,
-                                                       Direction direction, 
+                                                       Direction direction,
                                                        bool send_press) :
   m_sequence(sequence),
   m_direction(direction),

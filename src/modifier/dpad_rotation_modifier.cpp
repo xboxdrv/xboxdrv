@@ -42,9 +42,9 @@ DpadRotationModifier::from_string(const std::string& value)
   int degree = boost::lexical_cast<int>(value);
   degree /= 45;
   degree %= 8;
-  if (degree < 0) 
+  if (degree < 0)
     degree += 8;
-    
+
   return new DpadRotationModifier(degree);
 }
 
@@ -116,7 +116,7 @@ DpadRotationModifier::update(int msec_delta, ControllerMessage& msg, const Contr
   }
 
   if (direction != -1)
-  {  
+  {
     direction += m_dpad_rotation;
     direction %= 8;
     if (direction < 0)

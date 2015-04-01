@@ -26,7 +26,7 @@
 
 class JoinAxisModifier : public Modifier
 {
-public: 
+public:
   static JoinAxisModifier* from_string(const std::vector<std::string>& args);
 
 private:

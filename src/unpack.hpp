@@ -115,7 +115,7 @@ inline int16_t s16_invert(int16_t v)
 
 inline int16_t s8_to_s16(int8_t v)
 {
-  if (v > 0) 
+  if (v > 0)
     return static_cast<int16_t>(v * 32767 / 127);
   else
     return static_cast<int16_t>(v * 32768 / 128);
@@ -128,7 +128,7 @@ inline int16_t u8_to_s16(uint8_t value)
   {
     return static_cast<int16_t>((v-128) * 32767 / 127);
   }
-  else 
+  else
   {
     return static_cast<int16_t>((v-128) * 32768 / 128);
   }
@@ -148,7 +148,7 @@ inline float s16_to_float(int16_t value)
 
 /**
    input:  [0, 255]
-   output: [ -1.0f, 1.0f ] 
+   output: [ -1.0f, 1.0f ]
 */
 inline float u8_to_float(uint8_t value)
 {
@@ -168,7 +168,7 @@ inline int16_t float_to_s16(float v)
 }
 
 /**
-   input:  [ -1.0f, 1.0f ] 
+   input:  [ -1.0f, 1.0f ]
    output: [0, 255]
 */
 inline uint8_t float_to_u8(float v)

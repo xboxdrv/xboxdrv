@@ -41,10 +41,10 @@ StatusIcon::StatusIcon() :
 
   gtk_status_icon_set_title(m_status_icon, "Virtual Keyboard");
   gtk_status_icon_set_tooltip_text(m_status_icon, "Virtual Keyboard");
- 
+
   m_menu = GTK_MENU(gtk_menu_new());
 
-  GtkImageMenuItem* menuitem; 
+  GtkImageMenuItem* menuitem;
   menuitem = GTK_IMAGE_MENU_ITEM(gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, NULL));
   gtk_menu_item_set_label(GTK_MENU_ITEM(menuitem), "Quit");
   g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(&StatusIcon::on_quit_wrap), this);

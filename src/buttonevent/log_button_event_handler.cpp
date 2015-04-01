@@ -24,7 +24,7 @@ LogButtonEventHandler::LogButtonEventHandler(const std::string& format) :
   m_format(format)
 {
 }
-  
+
 void
 LogButtonEventHandler::send(bool value)
 {

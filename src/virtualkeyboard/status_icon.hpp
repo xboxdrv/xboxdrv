@@ -32,7 +32,7 @@ public:
   StatusIcon();
 
 private:
-  static void on_quit_wrap(GtkMenuItem* menuitem, gpointer userdata) 
+  static void on_quit_wrap(GtkMenuItem* menuitem, gpointer userdata)
   {
     static_cast<StatusIcon*>(userdata)->on_quit(menuitem);
   }
@@ -41,7 +41,7 @@ private:
   static void on_menu_popup_wrap(GtkStatusIcon *status_icon,
                                  guint button,
                                  guint activate_time,
-                                 gpointer userdata) 
+                                 gpointer userdata)
   {
     static_cast<StatusIcon*>(userdata)->on_menu_popup(status_icon, button, activate_time);
   }

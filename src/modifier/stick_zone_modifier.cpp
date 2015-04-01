@@ -41,8 +41,8 @@ StickZoneModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-StickZoneModifier::StickZoneModifier(const std::string& x_axis, const std::string& y_axis, 
-                                     const std::string& button, 
+StickZoneModifier::StickZoneModifier(const std::string& x_axis, const std::string& y_axis,
+                                     const std::string& button,
                                      float range_start, float range_end) :
 
   m_x_axis(x_axis),

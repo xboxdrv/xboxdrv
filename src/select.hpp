@@ -35,7 +35,7 @@ public:
   void clear();
   void add_fd(int fd);
   bool is_ready(int fd) const;
-  
+
   int wait();
 
 private:

@@ -49,7 +49,7 @@ private:
   ControllerMessage m_msg;
 
 public:
-  EvdevController(const std::string& filename, 
+  EvdevController(const std::string& filename,
                   const std::map<int, std::string>& absmap,
                   const std::map<int, std::string>& keymap,
                   const std::map<int, std::string>& relmap,
@@ -68,7 +68,7 @@ private:
                         GIOCondition condition);
   static gboolean on_read_data_wrap(GIOChannel* source,
                                     GIOCondition condition,
-                                    gpointer userdata) 
+                                    gpointer userdata)
   {
     return static_cast<EvdevController*>(userdata)->on_read_data(source, condition);
   }

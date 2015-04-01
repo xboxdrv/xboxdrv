@@ -33,13 +33,13 @@ class CycleKeySequence
 public:
   static CycleKeySequencePtr from_range(UInput& uinput, int slot, bool extra_devices,
                                         std::vector<std::string>::const_iterator beg,
-                                        std::vector<std::string>::const_iterator end, 
+                                        std::vector<std::string>::const_iterator end,
                                         bool wrap_around);
 
 private:
   typedef std::vector<UIEventSequence> Keys;
   Keys m_keys;
-  
+
   /** If set the sequence wraps around when at the begin/end */
   bool m_wrap_around;
 
@@ -57,7 +57,7 @@ public:
 
   void next_key();
   void prev_key();
-  
+
   void send(bool value);
 
 private:

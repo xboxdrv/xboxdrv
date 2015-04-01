@@ -43,7 +43,7 @@ public:
   EventEmitter(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);
 
   void init(const ControllerMessageDescriptor& desc);
-  void send(const ControllerMessage& msg); 
+  void send(const ControllerMessage& msg);
   void update(int msec_delta);
 
   void reset_all_outputs();

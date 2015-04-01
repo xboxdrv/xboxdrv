@@ -30,12 +30,12 @@ AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
- 
+
   int min = -1;
   int max = -1;
   int fuzz = 0;
   int flat = 0;
- 
+
   int j = 0;
   UIEvent code = UIEvent::invalid();
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
@@ -46,23 +46,23 @@ AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
         code = str2abs_event(*i);
         break;
 
-      case 1: 
+      case 1:
         min = boost::lexical_cast<int>(*i);
         break;
 
-      case 2: 
+      case 2:
         max = boost::lexical_cast<int>(*i);
         break;
 
-      case 3: 
+      case 3:
         fuzz = boost::lexical_cast<int>(*i);
         break;
 
-      case 4: 
+      case 4:
         flat = boost::lexical_cast<int>(*i);
         break;
-        
-      default: 
+
+      default:
         raise_exception(std::runtime_error, "to many arguments: " + str);
     }
   }
@@ -73,7 +73,7 @@ AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
   }
   else
   {
-    return new AbsAxisEventHandler(uinput, slot, extra_devices, 
+    return new AbsAxisEventHandler(uinput, slot, extra_devices,
                                    code, min, max, fuzz, flat);
   }
 }
@@ -88,7 +88,7 @@ AbsAxisEventHandler::AbsAxisEventHandler(UInput& uinput, int slot, bool extra_de
   m_abs_emitter()
 {
   m_code.resolve_device_id(slot, extra_devices);
-  m_abs_emitter = uinput.add_abs(m_code.get_device_id(), m_code.code, 
+  m_abs_emitter = uinput.add_abs(m_code.get_device_id(), m_code.code,
                                  m_min, m_max, m_fuzz, m_flat);
 }
 
@@ -97,7 +97,7 @@ AbsAxisEventHandler::send(int value, int min, int max)
 {
   m_abs_emitter->send(value);
 }
- 
+
 void
 AbsAxisEventHandler::update(int msec_delta)
 {
@@ -107,8 +107,8 @@ std::string
 AbsAxisEventHandler::str() const
 {
   std::ostringstream out;
-  out << m_code.get_device_id() << "-" << m_code.code << ":" 
-      << m_min << ":" << m_max << ":" 
+  out << m_code.get_device_id() << "-" << m_code.code << ":"
+      << m_min << ":" << m_max << ":"
       << m_fuzz << ":" << m_flat;
   return out.str();
 }

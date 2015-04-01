@@ -31,7 +31,7 @@ struct USBReadCallback
     iface(iface_),
     callback(callback_)
   {}
-  
+
 private:
   USBReadCallback(const USBReadCallback&);
   USBReadCallback& operator=(const USBReadCallback&);
@@ -105,7 +105,7 @@ USBInterface::~USBInterface()
 }
 
 void
-USBInterface::submit_read(int endpoint, int len, 
+USBInterface::submit_read(int endpoint, int len,
                           const boost::function<bool (uint8_t*, int)>& callback)
 {
   assert(m_endpoints.find(endpoint) == m_endpoints.end());
@@ -117,7 +117,7 @@ USBInterface::submit_read(int endpoint, int len,
   libusb_fill_interrupt_transfer(transfer, m_handle,
                                  static_cast<unsigned char>(endpoint | LIBUSB_ENDPOINT_IN),
                                  data, len,
-                                 &USBInterface::on_read_data_wrap, 
+                                 &USBInterface::on_read_data_wrap,
                                  new USBReadCallback(this, callback),
                                  0); // timeout
   int ret;
@@ -148,7 +148,7 @@ USBInterface::submit_write(int endpoint, uint8_t* data_in, int len,
   libusb_fill_interrupt_transfer(transfer, m_handle,
                                  static_cast<unsigned char>(endpoint | LIBUSB_ENDPOINT_OUT),
                                  data, len,
-                                 &USBInterface::on_write_data_wrap, 
+                                 &USBInterface::on_write_data_wrap,
                                  new USBWriteCallback(this, callback),
                                  0); // timeout
 
@@ -215,7 +215,7 @@ USBInterface::on_read_data(USBReadCallback* callback, libusb_transfer* transfer)
     m_endpoints.erase(transfer->endpoint);
   }
 }
- 
+
 void
 USBInterface::on_write_data(USBWriteCallback* callback, libusb_transfer* transfer)
 {

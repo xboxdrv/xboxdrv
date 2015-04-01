@@ -37,7 +37,7 @@ libusb_device* get_controller_dev()
   {
     libusb_device* dev = list[dev_it];
     libusb_device_descriptor desc;
-    
+
     int ret = libusb_get_device_descriptor(dev, &desc);
     if (ret != LIBUSB_SUCCESS)
     {
@@ -85,14 +85,14 @@ int main()
   assert(dev);
   Xbox360Controller* controller = new Xbox360Controller(dev,
                                                         false, false, false,
-                                                        false, 
+                                                        false,
                                                         false,
                                                         "",
                                                         "",
                                                         false);
   controller->set_led(2);
   g_main_loop_run(m_gmain);
-  
+
   return 0;
 }
 

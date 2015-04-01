@@ -26,7 +26,7 @@
 
 ControllerSlotConfigPtr
 ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const ControllerSlotOptions& opts)
-{  
+{
   ControllerSlotConfigPtr m_config(new ControllerSlotConfig);
 
   for(ControllerSlotOptions::Options::const_iterator i = opts.get_options().begin();
@@ -55,9 +55,9 @@ ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const
     // |- FF_SAW_UP
     // |- FF_SAW_DOWN
     // '- FF_CUSTOM
-    
+
     // FIXME: this should go through the regular resolution process
-    uint32_t ff_device = UInput::create_device_id(static_cast<uint16_t>(slot), 
+    uint32_t ff_device = UInput::create_device_id(static_cast<uint16_t>(slot),
                                                   static_cast<uint16_t>(opts.get_ff_device()));
 
     // basic types
@@ -111,7 +111,7 @@ void
 ControllerSlotConfig::prev_config()
 {
   m_current_config -= 1;
-  
+
   if (m_current_config < 0)
   {
     m_current_config = static_cast<int>(m_config.size()) - 1;
@@ -137,7 +137,7 @@ void
 ControllerSlotConfig::set_current_config(int num)
 {
   if (num >= 0 && num < static_cast<int>(m_config.size()))
-  {  
+  {
     m_current_config = num;
   }
   else

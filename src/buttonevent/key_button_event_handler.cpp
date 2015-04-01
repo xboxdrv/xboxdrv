@@ -25,7 +25,7 @@
 #include "uinput.hpp"
 
 KeyButtonEventHandler*
-KeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices, 
+KeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
                                    const std::string& str)
 {
   //std::cout << " KeyButtonEventHandler::from_string: " << str << std::endl;
@@ -40,7 +40,7 @@ KeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
   {
     switch(idx)
     {
-      case 0: 
+      case 0:
         {
           codes = UIEventSequence::from_string(*i);
         }
@@ -52,7 +52,7 @@ KeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
           hold_threshold = 250;
         }
         break;
-        
+
       case 2:
         {
           hold_threshold = boost::lexical_cast<int>(*i);
@@ -140,7 +140,7 @@ KeyButtonEventHandler::send(bool value)
 }
 
 void
-KeyButtonEventHandler::update(int msec_delta) 
+KeyButtonEventHandler::update(int msec_delta)
 {
   if (m_release_scheduled)
   {

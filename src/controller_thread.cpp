@@ -30,7 +30,7 @@
 
 extern bool global_exit_xboxdrv;
 
-ControllerThread::ControllerThread(ControllerPtr controller, 
+ControllerThread::ControllerThread(ControllerPtr controller,
                                    ControllerSlotConfigPtr config,
                                    const Options& opts) :
   m_controller(controller),
@@ -82,7 +82,7 @@ ControllerThread::on_message(const ControllerMessage& msg)
 
   int msec_delta = static_cast<int>(g_timer_elapsed(m_timer, NULL) * 1000.0f);
   g_timer_reset(m_timer);
-    
+
   if (m_processor.get())
   {
     m_processor->send(msg, m_controller->get_message_descriptor(), msec_delta);

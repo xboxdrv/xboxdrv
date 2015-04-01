@@ -39,7 +39,7 @@ private:
   boost::function<void (uint8_t, uint8_t)> m_rumble_callback;
 
 public:
-  MessageProcessor(ControllerSlotConfigPtr config, 
+  MessageProcessor(ControllerSlotConfigPtr config,
                    const ControllerMessageDescriptor& desc,
                    const Options& opts);
   ~MessageProcessor();

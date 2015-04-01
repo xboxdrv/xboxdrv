@@ -98,7 +98,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
   {
     if (!args[0].empty() && args[0][0] == '#')
     {
-      // ignore '#' comments      
+      // ignore '#' comments
       MacroEvent event;
       event.type = MacroEvent::kNull;
       return event;
@@ -197,7 +197,7 @@ MacroButtonEventHandler::MacroButtonEventHandler(UInput& uinput, int slot, bool 
             i->init.event.resolve_device_id(slot, extra_devices);
             i->init.emitter = new UIEventEmitterPtr(
               uinput.add_abs(i->init.event.get_device_id(), i->init.event.code,
-                             i->init.minimum, i->init.maximum, 
+                             i->init.minimum, i->init.maximum,
                              i->init.fuzz, i->init.flat));
             break;
 

@@ -53,7 +53,7 @@ class ButtonEventHandler
 {
 public:
   virtual ~ButtonEventHandler() {}
-  
+
   virtual void send(bool value) =0;
   virtual void send_clear() { send(false); }
   virtual void update(int msec_delta) =0;

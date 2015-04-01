@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -37,7 +37,7 @@ XboxController::XboxController(libusb_device* dev, bool try_detach) :
   // find endpoints
   m_endpoint_in  = usb_find_ep(LIBUSB_ENDPOINT_IN,  88, 66, 0);
   m_endpoint_out = usb_find_ep(LIBUSB_ENDPOINT_OUT, 88, 66, 0);
-  
+
   usb_claim_interface(0, try_detach);
   usb_submit_read(m_endpoint_in, 32);
 }

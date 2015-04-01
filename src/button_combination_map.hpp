@@ -74,7 +74,7 @@ public:
 
     // regenerate superset mappings
     for(typename Mappings::iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
-    { 
+    {
       // find which already bound combinations the new one is a
       // superset of and add it to the list
       for(typename Mappings::iterator j = m_mappings.begin(); j != m_mappings.end(); ++j)
@@ -99,7 +99,7 @@ public:
         // check if a superset matches
         bool superset_matches = false;
         for(std::vector<ButtonCombinationPtr>::iterator j = i->m_supersets.begin(); j != i->m_supersets.end(); ++j)
-        {      
+        {
           if ((*j)->match(button_state))
           {
             superset_matches = true;
@@ -120,7 +120,7 @@ public:
       {
         i->m_state = false;
       }
-    }   
+    }
   }
 
   typedef typename Mappings::iterator iterator;

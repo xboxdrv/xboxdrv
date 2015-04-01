@@ -27,7 +27,7 @@
 class Key
 {
 public:
-  enum Style { kLetter, kFunction, kModifier };   
+  enum Style { kLetter, kFunction, kModifier };
 
 public:
   virtual ~Key() {}
@@ -68,7 +68,7 @@ public:
   RealKey(int x, int y,
           int code,
           Style style,
-          const std::string& label, 
+          const std::string& label,
           const std::string& shift_label = std::string(),
           const std::string& alt_label = std::string(),
           int xspan = 1,
@@ -110,7 +110,7 @@ private:
 public:
   ReferenceKey(Key* key) :
     m_key(key)
-  { 
+  {
   }
 
   int get_code() const { return m_key->get_code(); }
@@ -162,16 +162,16 @@ public:
   Key* get_key(int x, int y) const;
 
 private:
-  void make_key(int x, int y, 
+  void make_key(int x, int y,
                 int code,
                 Key::Style style,
-                const std::string& label, 
+                const std::string& label,
                 const std::string& shift_label = std::string(),
                 const std::string& alt_label = std::string(),
                 int xspan = 1,
                 int yspan = 1);
   void set_key(int x, int y, Key* key);
-  
+
 private:
   KeyboardDescription(const KeyboardDescription&);
   KeyboardDescription& operator=(const KeyboardDescription&);

@@ -44,7 +44,7 @@ private:
 class UIRelEmitter
 {
 private:
-  
+
 public:
   UIRelEmitter();
 

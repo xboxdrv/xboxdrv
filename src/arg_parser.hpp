@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -51,14 +51,14 @@ public:
     std::string option;
     std::string argument;
 
-    ParsedOption() : 
+    ParsedOption() :
       key(-1),
       option(),
       argument()
     {}
 
     ParsedOption(int key_, const std::string& option_, const std::string& argument_) :
-      key(key_), 
+      key(key_),
       option(option_),
       argument(argument_)
     {}
@@ -73,11 +73,11 @@ public:
 
 private:
   std::string programm;
-  
+
   typedef std::vector<Option> Options;
   Options options;
 
-public:  
+public:
   typedef std::vector<ParsedOption> ParsedOptions;
 
   ArgParser();
@@ -86,17 +86,17 @@ public:
   ArgParser& add_text(const std::string& doc);
   ArgParser& add_pseudo(const std::string& left, const std::string& doc);
   ArgParser& add_newline();
-  
+
   ArgParser& add_option(int key,
                         char short_option,
-                        const std::string& long_option, 
+                        const std::string& long_option,
                         const std::string& argument,
                         const std::string& help,
                         bool visible = true);
 
   ParsedOptions parse_args(int argc, char** argv);
   void print_help(std::ostream& out) const;
-  
+
   bool next();
   int  get_key();
   std::string get_argument();

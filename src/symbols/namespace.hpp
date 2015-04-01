@@ -33,7 +33,7 @@ private:
   std::string m_name;
   typedef std::map<std::string, SymbolPtr> Symbols;
   Symbols m_symbols;
-  
+
 public:
   Namespace(const std::string& name);
 

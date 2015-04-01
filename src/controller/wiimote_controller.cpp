@@ -78,7 +78,7 @@ WiiNames::WiiNames(ControllerMessageDescriptor& desc) :
   minus = desc.key().put(KeyName("wiimote.minus"));
   home  = desc.key().put(KeyName("wiimote.home"));
   plus  = desc.key().put(KeyName("wiimote.plus"));
-  
+
   a = desc.key().put(KeyName("wiimote.a"));
   b = desc.key().put(KeyName("wiimote.b"));
   btn1 = desc.key().put(KeyName("wiimote.1"));
@@ -168,7 +168,7 @@ WiimoteController::connect()
       std::cerr << "Unable to set message callback" << std::endl;
     }
 
-    if (cwiid_command(m_wiimote, CWIID_CMD_RPT_MODE, 
+    if (cwiid_command(m_wiimote, CWIID_CMD_RPT_MODE,
                       CWIID_RPT_STATUS  |
                       CWIID_RPT_NUNCHUK |
                       CWIID_RPT_ACC     |
@@ -195,9 +195,9 @@ WiimoteController::disconnect()
 
 std::ostream& operator<<(std::ostream& os, const AccCalibration& cal)
 {
-  return os << "(" 
-            << static_cast<int>(cal.x) << " " 
-            << static_cast<int>(cal.y) << " " 
+  return os << "("
+            << static_cast<int>(cal.x) << " "
+            << static_cast<int>(cal.y) << " "
             << static_cast<int>(cal.z) << ")";
 }
 
@@ -244,7 +244,7 @@ WiimoteController::read_nunchuk_calibration()
     m_nunchuk_zero.x = buf[0];
     m_nunchuk_zero.y = buf[1];
     m_nunchuk_zero.z = buf[2];
-            
+
     m_nunchuk_one.x  = buf[4];
     m_nunchuk_one.y  = buf[5];
     m_nunchuk_one.z  = buf[6];
@@ -330,7 +330,7 @@ WiimoteController::on_status(const cwiid_status_mesg& msg)
       break;
 
     case CWIID_EXT_UNKNOWN:
-      break;        
+      break;
   }
 }
 
@@ -378,7 +378,7 @@ WiimoteController::on_ir(const cwiid_ir_mesg& msg)
   // x 0,1024
   // y 0,768
   if (false)
-    log_tmp("IR: " << 
+    log_tmp("IR: " <<
             msg.src[0].pos[0] << " " << msg.src[0].pos[1] << " " << static_cast<int>(msg.src[0].size) << " " << static_cast<int>(msg.src[0].valid) << " - " <<
             msg.src[1].pos[0] << " " << msg.src[1].pos[1] << " " << static_cast<int>(msg.src[1].size) << " " << static_cast<int>(msg.src[1].valid) << " - " <<
             msg.src[2].pos[0] << " " << msg.src[2].pos[1] << " " << static_cast<int>(msg.src[2].size) << " " << static_cast<int>(msg.src[2].valid) << " - " <<
@@ -425,7 +425,7 @@ int8_t calibrate(int value, const AccCalibration& cal)
   int m_center = cal.z;
   int m_max  = cal.x;
   int m_min  = cal.y;
-  
+
   int min = -128;
   int max =  127;
 
@@ -475,7 +475,7 @@ WiimoteController::mesg_callback(cwiid_wiimote_t*, int mesg_count, union cwiid_m
   // other thread
   for (int i=0; i < mesg_count; i++)
   {
-    switch (msg[i].type) 
+    switch (msg[i].type)
     {
       case CWIID_MESG_STATUS:
         s_wiimote->on_status(msg[i].status_mesg);

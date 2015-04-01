@@ -33,7 +33,7 @@ RelAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
 
   UIEvent code = UIEvent::invalid();
   int     repeat = 10;
-  float   value = 5.0f; 
+  float   value = 5.0f;
 
   int j = 0;
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
@@ -45,14 +45,14 @@ RelAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
         break;
 
       case 1:
-        value = boost::lexical_cast<float>(*i); 
+        value = boost::lexical_cast<float>(*i);
         break;
 
       case 2:
-        repeat = boost::lexical_cast<int>(*i); 
+        repeat = boost::lexical_cast<int>(*i);
         break;
 
-      default: 
+      default:
         throw std::runtime_error("AxisEvent::rel_from_string(): to many arguments: " + str);
     }
   }
@@ -62,7 +62,7 @@ RelAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
     throw std::runtime_error("AxisEvent::rel_from_string(): at least one argument required: " + str);
   }
 
-  return new RelAxisEventHandler(uinput, slot, extra_devices, 
+  return new RelAxisEventHandler(uinput, slot, extra_devices,
                                  code, repeat, value);
 }
 
@@ -88,7 +88,7 @@ RelAxisEventHandler::send(int value, int min, int max)
     m_stick_value = static_cast<float>(value) / static_cast<float>(max);
 
   if (m_repeat != -1)
-  { 
+  {
     // regular old style sending of REL events
 #if 0
     float v = m_value * m_stick_value;

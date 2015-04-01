@@ -59,7 +59,7 @@ Namespace::add_symbol(const std::string& name)
 void
 Namespace::add_alias(const std::string& name, SymbolPtr sym)
 {
-  Symbols::iterator it = m_symbols.find(name);    
+  Symbols::iterator it = m_symbols.find(name);
   if (it != m_symbols.end())
   {
     raise_exception(std::runtime_error, "name conflict for symbol: " << name);

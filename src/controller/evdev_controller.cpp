@@ -100,7 +100,7 @@ EvdevController::EvdevController(const std::string& filename,
       {
         struct input_absinfo absinfo;
         ioctl(m_fd, EVIOCGABS(i), &absinfo);
-        
+
         log_debug(boost::format("abs: %-20s min: %6d max: %6d") % abs2str(i) % absinfo.minimum % absinfo.maximum);
         m_absinfo[i] = absinfo;
 
@@ -172,7 +172,7 @@ EvdevController::EvdevController(const std::string& filename,
 
     g_io_channel_set_buffered(m_io_channel, false);
 
-    g_io_add_watch(m_io_channel, 
+    g_io_add_watch(m_io_channel,
                    static_cast<GIOCondition>(G_IO_IN | G_IO_ERR | G_IO_HUP),
                    &EvdevController::on_read_data_wrap, this);
   }
@@ -275,7 +275,7 @@ EvdevController::parse(const struct input_event& ev, ControllerMessage& msg_inou
         {
           return false;
         }
-      }      
+      }
       break;
 
     default:
@@ -305,7 +305,7 @@ EvdevController::on_read_data(GIOChannel* source, GIOCondition condition)
       }
     }
   }
-  
+
   return TRUE;
 }
 

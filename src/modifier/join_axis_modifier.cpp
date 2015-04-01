@@ -61,7 +61,7 @@ std::string
 JoinAxisModifier::str() const
 {
   std::ostringstream os;
-  os << "join-axis:" 
+  os << "join-axis:"
      << m_lhs.get_name() << ":"
      << m_rhs.get_name() << ":"
      << m_out.get_name();

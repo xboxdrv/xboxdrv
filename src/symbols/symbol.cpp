@@ -55,19 +55,19 @@ Symbol::add_provides(SymbolPtr sym)
 }
 
 std::string
-Symbol::get_namespace() const 
+Symbol::get_namespace() const
 {
-  return m_namespace.get_name(); 
+  return m_namespace.get_name();
 }
 
 std::string
-Symbol::get_name() const 
+Symbol::get_name() const
 {
-  return m_name; 
+  return m_name;
 }
 
 std::string
-Symbol::str() const 
+Symbol::str() const
 {
   std::ostringstream out;
   out << get_namespace() << "." << get_name();

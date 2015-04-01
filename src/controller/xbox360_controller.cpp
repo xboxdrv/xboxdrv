@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -27,9 +27,9 @@
 #include "usb_helper.hpp"
 
 Xbox360Controller::Xbox360Controller(libusb_device* dev,
-                                     bool chatpad, bool chatpad_no_init, bool chatpad_debug, 
-                                     bool headset, 
-                                     bool headset_debug, 
+                                     bool chatpad, bool chatpad_no_init, bool chatpad_debug,
+                                     bool headset,
+                                     bool headset_debug,
                                      const std::string& headset_dump,
                                      const std::string& headset_play,
                                      bool try_detach) :
@@ -61,7 +61,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
     int ret = libusb_get_device_descriptor(dev, &desc);
     if (ret != LIBUSB_SUCCESS)
     {
-      raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));    
+      raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));
     }
     else
     {
@@ -99,7 +99,7 @@ Xbox360Controller::set_rumble_real(uint8_t left, uint8_t right)
 void
 Xbox360Controller::set_led_real(uint8_t status)
 {
-  uint8_t ledcmd[] = { 0x01, 0x03, status }; 
+  uint8_t ledcmd[] = { 0x01, 0x03, status };
   usb_write(endpoint_out, ledcmd, sizeof(ledcmd));
 }
 
@@ -113,11 +113,11 @@ Xbox360Controller::parse(const uint8_t* data, int len, ControllerMessage* msg_ou
     //log_debug("zero length read");
   }
   else if (len == 3 && data[0] == 0x01 && data[1] == 0x03)
-  { 
+  {
     log_debug("Xbox360Controller: LED Status: " << int(data[2]));
   }
   else if (len == 3 && data[0] == 0x03 && data[1] == 0x03)
-  { 
+  {
     // data[2] == 0x00 means that rumble is disabled
     // data[2] == 0x01 unknown, but rumble works
     // data[2] == 0x02 unknown, but rumble works

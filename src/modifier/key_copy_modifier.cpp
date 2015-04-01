@@ -50,7 +50,7 @@ KeyCopyModifier::init(ControllerMessageDescriptor& desc)
   m_from_sym = desc.key().put(m_from);
   m_to_sym   = desc.key().getput(m_to);
 }
-  
+
 void
 KeyCopyModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {

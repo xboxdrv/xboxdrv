@@ -59,7 +59,7 @@ struct AxisMapping
   void init(ControllerMessageDescriptor& desc);
 };
 
-class AxismapModifier : public Modifier 
+class AxismapModifier : public Modifier
 {
 public:
   static AxismapModifier* from_string(const std::string& args);

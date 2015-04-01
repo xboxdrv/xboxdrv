@@ -31,7 +31,7 @@ FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
   }
   else if (args.size() == 4)
   {
-    return new FourWayRestrictorModifier(args[0], args[1], args[2], args[3]);    
+    return new FourWayRestrictorModifier(args[0], args[1], args[2], args[3]);
   }
   else
   {
@@ -76,9 +76,9 @@ std::string
 FourWayRestrictorModifier::str() const
 {
   std::ostringstream out;
-  out << "4way:" 
-      << m_xaxis_in.str()  << ":" << m_yaxis_in.str() << ":" 
-      << m_xaxis_out.str() << ":" << m_yaxis_out.str();    
+  out << "4way:"
+      << m_xaxis_in.str()  << ":" << m_yaxis_in.str() << ":"
+      << m_xaxis_out.str() << ":" << m_yaxis_out.str();
   return out.str();
 }
 

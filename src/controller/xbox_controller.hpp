@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -33,7 +33,7 @@ private:
   int m_endpoint_out;
 
   Xbox360DefaultNames xbox;
-  
+
 public:
   XboxController(libusb_device* dev, bool try_detach);
   virtual ~XboxController();

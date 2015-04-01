@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -37,7 +37,7 @@ bool is_float(const std::string& str);
 
    When VALUE is supposed to contain a "," the value has to be quoted
    with [], i.e. "NAME=[VALUE1,VALUE2]", the "[" and "]" itself can
-   be quoted with "\[" and "\]" 
+   be quoted with "\[" and "\]"
 */
 void process_name_value_string(const std::string& str, const boost::function<void (const std::string&, const std::string&)>& func);
 
@@ -49,7 +49,7 @@ void split_string_at(const std::string& str, char c, std::string* lhs, std::stri
 /**
    Convert the given string \a str to an integer, the string can
    either be an exact integer or a percent value (i.e. "75%"), in
-   which case it is handled as (range * int(str)) 
+   which case it is handled as (range * int(str))
 */
 int to_number(int range, const std::string& str);
 uint32_t get_time();

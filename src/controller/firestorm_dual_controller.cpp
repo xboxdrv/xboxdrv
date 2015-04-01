@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -42,7 +42,7 @@ struct Firestorm_vsb_Msg
 
   unsigned int back  :1;
   unsigned int start :1;
-  
+
   unsigned int thumb_l :1;
   unsigned int thumb_r :1;
 
@@ -51,7 +51,7 @@ struct Firestorm_vsb_Msg
   int x1 :8;
   int y1 :8;
   int x2 :8;
-  unsigned int y2 :8;  
+  unsigned int y2 :8;
 } __attribute__((__packed__));
 
 // 044f:b304
@@ -69,7 +69,7 @@ struct FirestormMsg
 
   unsigned int back  :1;
   unsigned int start :1;
-  
+
   unsigned int thumb_l :1;
   unsigned int thumb_r :1;
 
@@ -162,7 +162,7 @@ FirestormDualController::parse_vsb(const uint8_t* data_in, int len, ControllerMe
 
     if (dpad == 0x3 || dpad == 0x4 || dpad == 0x5)
       msg.set_key(xbox.dpad_down, 1);
-      
+
     if (dpad == 0x5 || dpad == 0x6 || dpad == 0x7)
       msg.set_key(xbox.dpad_left, 1);
 
@@ -177,7 +177,7 @@ FirestormDualController::parse_vsb(const uint8_t* data_in, int len, ControllerMe
   else
   {
     return false;
-  }  
+  }
 }
 
 bool
@@ -217,7 +217,7 @@ FirestormDualController::parse_default(const uint8_t* data_in, int len, Controll
 
     if (data_in[2] == 0x30 || data_in[2] == 0x40 || data_in[2] == 0x50)
       msg.set_key(xbox.dpad_down, 1);
-      
+
     if (data_in[2] == 0x50 || data_in[2] == 0x60 || data_in[2] == 0x70)
       msg.set_key(xbox.dpad_left, 1);
 

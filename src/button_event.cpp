@@ -85,7 +85,7 @@ ButtonEvent::update(int msec_delta)
   }
 
   m_handler->update(msec_delta);
-  
+
   send(m_last_raw_state);
 }
 

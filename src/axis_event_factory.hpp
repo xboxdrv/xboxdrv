@@ -32,10 +32,10 @@ private:
 
 public:
   AxisEventFactory(UInput& uinput, int slot, bool extra_devices);
-  
+
   AxisEventPtr invalid();
 
-  /** If an AxisEvent gets created the user has to set min/max with set_axis_range() */ 
+  /** If an AxisEvent gets created the user has to set min/max with set_axis_range() */
   AxisEventPtr from_string(const std::string& str);
 
 private:

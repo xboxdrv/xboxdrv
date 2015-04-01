@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -30,7 +30,7 @@
 struct Xbox360Msg;
 struct XboxMsg;
 struct Xbox360GuitarMsg;
-  
+
 class UInput
 {
 public:
@@ -65,7 +65,7 @@ private:
   typedef std::vector<UIEventCollectorPtr> Collectors;
   Collectors m_collectors;
 
-  struct RelRepeat 
+  struct RelRepeat
   {
     UIEvent code;
     float value;

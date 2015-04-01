@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -41,14 +41,14 @@ private:
   int m_fd;
   GIOChannel* m_io_channel;
   guint m_source_id;
-  
+
   uinput_user_dev user_dev;
   bool key_bit;
   bool rel_bit;
   bool abs_bit;
   bool led_bit;
   bool ff_bit;
-  
+
   bool abs_lst[ABS_CNT];
   bool rel_lst[REL_CNT];
   bool key_lst[KEY_CNT];
@@ -60,7 +60,7 @@ private:
   bool needs_sync;
 
 public:
-  LinuxUinput(DeviceType device_type, const std::string& name, 
+  LinuxUinput(DeviceType device_type, const std::string& name,
               const struct input_id& usbid_);
   ~LinuxUinput();
 
@@ -94,7 +94,7 @@ private:
                         GIOCondition condition);
   static gboolean on_read_data_wrap(GIOChannel* source,
                                     GIOCondition condition,
-                                    gpointer userdata) 
+                                    gpointer userdata)
   {
     return static_cast<LinuxUinput*>(userdata)->on_read_data(source, condition);
   }

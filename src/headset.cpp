@@ -48,7 +48,7 @@ Headset::play_file(const std::string& filename)
   {
     std::ostringstream out;
     out << "[headset] " << filename << ": " << strerror(errno);
-    throw std::runtime_error(out.str());    
+    throw std::runtime_error(out.str());
   }
   else
   {
@@ -60,9 +60,9 @@ Headset::play_file(const std::string& filename)
     }
     else
     {
-      m_interface->submit_write(4, reinterpret_cast<uint8_t*>(data), len, 
+      m_interface->submit_write(4, reinterpret_cast<uint8_t*>(data), len,
                                 boost::bind(&Headset::send_data, this, _1));
-    }    
+    }
   }
 }
 
@@ -70,7 +70,7 @@ void
 Headset::record_file(const std::string& filename)
 {
   m_fout.reset(new std::ofstream(filename.c_str(), std::ios::binary));
-  
+
   if (!*m_fout)
   {
     raise_exception(std::runtime_error, filename << ": " << strerror(errno));
@@ -86,7 +86,7 @@ Headset::send_data(libusb_transfer* transfer)
 {
   // fill the buffer with new data from the file
   int len = m_fin->read(reinterpret_cast<char*>(transfer->buffer), transfer->length).gcount();
-  
+
   if (len != 32)
   {
     log_error("short read");

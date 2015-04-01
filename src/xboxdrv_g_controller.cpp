@@ -116,7 +116,7 @@ xboxdrv_g_controller_set_config(XboxdrvGController* self, int config_num, GError
   {
     MessageProcessor* msg_proc = self->controller->get_thread()->get_message_proc();
 
-    try 
+    try
     {
       msg_proc->set_config(config_num);
       return TRUE;

@@ -66,7 +66,7 @@ ButtonMap::ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, boo
 
     ButtonEventPtr event;
     if (it->get_event().empty())
-    { 
+    {
 #if 0
       // BROKEN
       // if no new event is given, add filters to the current binding
@@ -75,7 +75,7 @@ ButtonMap::ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, boo
     }
     else
     {
-      event = button_event_factory.from_string(it->get_event(), it->get_directory()); 
+      event = button_event_factory.from_string(it->get_event(), it->get_directory());
       if (event)
       {
         bind(buttons, event);
@@ -83,7 +83,7 @@ ButtonMap::ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, boo
     }
 
     // FIXME: How are unbound events handled?!
-    for(std::vector<std::string>::const_iterator j = it->get_filter().begin(); 
+    for(std::vector<std::string>::const_iterator j = it->get_filter().begin();
         j != it->get_filter().end();
         ++j)
     {

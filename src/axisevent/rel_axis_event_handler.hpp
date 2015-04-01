@@ -26,7 +26,7 @@
 class RelAxisEventHandler : public AxisEventHandler
 {
 public:
-  static RelAxisEventHandler* from_string(UInput& uinput, int slot, bool extra_devices, 
+  static RelAxisEventHandler* from_string(UInput& uinput, int slot, bool extra_devices,
                                           const std::string& str);
 
 public:

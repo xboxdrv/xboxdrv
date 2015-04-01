@@ -66,7 +66,7 @@ VirtualKeyboard::VirtualKeyboard(KeyboardDescriptionPtr keyboard_desc) :
 
   m_vbox = gtk_vbox_new(FALSE, 0);
   m_drawing_area = gtk_drawing_area_new();
-  
+
   GdkColor color;
   gdk_color_parse("#222", &color);
   gtk_widget_modify_bg(m_window, GTK_STATE_NORMAL, &color);
@@ -89,14 +89,14 @@ VirtualKeyboard::VirtualKeyboard(KeyboardDescriptionPtr keyboard_desc) :
 
   g_signal_connect(G_OBJECT(m_window), "destroy", G_CALLBACK(&VirtualKeyboard::on_destroy), NULL);
   //g_signal_connect(G_OBJECT(m_window), "configure-event", G_CALLBACK(&VirtualKeyboard::on_configure_wrap), this);
-  g_signal_connect(G_OBJECT(m_drawing_area), "expose-event", 
+  g_signal_connect(G_OBJECT(m_drawing_area), "expose-event",
                    G_CALLBACK(&VirtualKeyboard::on_expose_wrap), this);
 
   if (true)
   {
-    g_signal_connect(m_window, "key-press-event", 
+    g_signal_connect(m_window, "key-press-event",
                      G_CALLBACK(&VirtualKeyboard::on_key_press_wrap), this);
-    g_signal_connect(m_window, "key-release-event", 
+    g_signal_connect(m_window, "key-release-event",
                      G_CALLBACK(&VirtualKeyboard::on_key_release_wrap), this);
   }
 
@@ -125,7 +125,7 @@ VirtualKeyboard::show()
 {
   /*
     GdkScreen* ;
-  GdkWindow* 
+  GdkWindow*
   GdkWindow* gdk_window_get_pointer(gdk_screen_get_root_window(gdk_screen_get_default()),
                                     gint *x, gint *y,
                                     GdkModifierType *mask);
@@ -263,22 +263,22 @@ VirtualKeyboard::on_key_press(GtkWidget* widget, GdkEventKey* event)
 {
   switch (event->keyval)
   {
-    case GDK_KEY_Escape: 
+    case GDK_KEY_Escape:
       break;
 
-    case GDK_KEY_Left: 
+    case GDK_KEY_Left:
       cursor_left();
       break;
 
-    case GDK_KEY_Right: 
+    case GDK_KEY_Right:
       cursor_right();
       break;
 
-    case GDK_KEY_Up: 
+    case GDK_KEY_Up:
       cursor_up();
       break;
 
-    case GDK_KEY_Down: 
+    case GDK_KEY_Down:
       cursor_down();
       break;
 
@@ -334,15 +334,15 @@ VirtualKeyboard::on_expose(GtkWidget* widget, GdkEventExpose* event)
 {
   if (false)
   {
-    std::cout << "Size: " << 
-      widget->allocation.width << " " << 
+    std::cout << "Size: " <<
+      widget->allocation.width << " " <<
       widget->allocation.height << std::endl;
   }
 
   cairo_t *cr = gdk_cairo_create (widget->window);
 
-  cairo_rectangle(cr, 
-                  event->area.x, event->area.y, 
+  cairo_rectangle(cr,
+                  event->area.x, event->area.y,
                   event->area.width, event->area.height);
   cairo_clip(cr);
 
@@ -352,7 +352,7 @@ VirtualKeyboard::on_expose(GtkWidget* widget, GdkEventExpose* event)
               static_cast<double>(widget->allocation.height) / get_height());
 
   draw_keyboard(cr);
-    
+
   cairo_destroy(cr);
 }
 
@@ -363,7 +363,7 @@ VirtualKeyboard::draw_keyboard(cairo_t* cr)
 
   Key* current_key = get_current_key();
   assert(current_key);
-  
+
   for(int y = 0; y < m_keyboard->get_height(); ++y)
   {
     for(int x = 0; x < m_keyboard->get_width(); ++x)
@@ -386,10 +386,10 @@ VirtualKeyboard::draw_centered_text(cairo_t* cr, double x, double y, const std::
   cairo_text_extents_t extents;
   cairo_text_extents(cr, str.c_str(), &extents);
 
-  cairo_move_to(cr, 
-                x - (extents.width)/2.0 - extents.x_bearing, 
+  cairo_move_to(cr,
+                x - (extents.width)/2.0 - extents.x_bearing,
                 y + ((font_extents.descent + font_extents.ascent * 0.1f))/2.0);
-  cairo_show_text(cr, str.c_str()); 
+  cairo_show_text(cr, str.c_str());
 }
 
 void
@@ -465,7 +465,7 @@ VirtualKeyboard::draw_key(cairo_t* cr, int x, int y, const Key& key, bool highli
       }
       break;
   }
- 
+
   cairo_restore(cr);
 }
 
@@ -476,11 +476,11 @@ VirtualKeyboard::set_key_callback(const boost::function<void (const Key&, bool)>
 }
 
 void
-VirtualKeyboard::set_shift_mode(bool shift) 
+VirtualKeyboard::set_shift_mode(bool shift)
 {
   if (shift != m_shift_mode)
   {
-    m_shift_mode = shift; 
+    m_shift_mode = shift;
     gtk_widget_queue_draw(m_drawing_area);
   }
 }

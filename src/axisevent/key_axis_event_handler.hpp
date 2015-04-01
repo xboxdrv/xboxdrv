@@ -28,7 +28,7 @@ class KeyAxisEventHandler : public AxisEventHandler
 public:
   static KeyAxisEventHandler* from_string(UInput& uinput, int slot, bool extra_devices,
                                           const std::string& str);
-  
+
 public:
   KeyAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
                       UIEventSequence up_codes,
@@ -42,7 +42,7 @@ public:
 
 private:
   int  get_zone(float value) const;
-  
+
 private:
   int m_old_value;
 

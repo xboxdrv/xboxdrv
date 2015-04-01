@@ -29,14 +29,14 @@ class AbsPort
 protected:
   std::string m_name;
   int m_abs;
-  
+
 public:
   AbsPort(const std::string& name) :
     m_name(name),
     m_abs(-1)
   {}
 
-  virtual ~AbsPort() 
+  virtual ~AbsPort()
   {}
 
   inline std::string get_name() const { return m_name; }
@@ -50,7 +50,7 @@ public:
   AbsPortIn(const std::string& name) :
     AbsPort(name)
   {}
- 
+
   void init(const ControllerMessageDescriptor& desc)
   {
     m_abs = desc.abs().get(get_name());

@@ -37,11 +37,11 @@ AxisEventFactory::AxisEventFactory(UInput& uinput, int slot, bool extra_devices)
 }
 
 AxisEventPtr
-AxisEventFactory::invalid() 
-{ 
+AxisEventFactory::invalid()
+{
   return AxisEventPtr();
 }
-  
+
 AxisEventPtr
 AxisEventFactory::from_string(const std::string& str)
 {
@@ -51,7 +51,7 @@ AxisEventFactory::from_string(const std::string& str)
   const std::string& token = str.substr(0, p);
   std::string rest;
 
-  if (p != std::string::npos) 
+  if (p != std::string::npos)
     rest = str.substr(p+1);
 
   if (token == "abs")

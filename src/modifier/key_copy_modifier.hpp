@@ -30,7 +30,7 @@ public:
 
 public:
   KeyCopyModifier(const std::string& from, const std::string& to);
-  
+
   void init(ControllerMessageDescriptor& desc);
   void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
   std::string str() const;

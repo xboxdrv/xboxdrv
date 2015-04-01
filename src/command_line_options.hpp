@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -31,14 +31,14 @@ class Options;
 class Xboxdrv;
 class AxisMap;
 
-class CommandLineParser 
+class CommandLineParser
 {
 public:
   ArgParser m_argp;
   INISchema m_ini;
   Options*  m_options;
   std::vector<std::string> m_directory_context;
-  
+
 public:
   CommandLineParser();
 
@@ -94,7 +94,7 @@ private:
   void set_evdev_keymap(const std::string& name, const std::string& value);
   void set_evdev_relmap(const std::string& name, const std::string& value);
 
-  void read_buildin_config_file(const std::string& filename, 
+  void read_buildin_config_file(const std::string& filename,
                                 const char* data, unsigned int data_len);
   void read_config_file(const std::string& filename);
   void read_alt_config_file(const std::string& filename);

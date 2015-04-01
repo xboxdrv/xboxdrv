@@ -1,4 +1,4 @@
-/* 
+/*
 **  Logitech Gamepad F310 driver for xboxdrv
 **  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **  Contributed by Doug Morse <dm@dougmorse.org>
@@ -28,7 +28,7 @@
 
 class LogitechF310Controller : public USBController
 {
-private: 
+private:
   int left_rumble;
   int right_rumble;
 

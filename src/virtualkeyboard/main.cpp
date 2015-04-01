@@ -44,7 +44,7 @@ int main(int argc, char** argv)
     .add_usage("[OPTION]...")
     .add_text("Virtual Keyboard")
     .add_newline()
- 
+
     .add_option(OPTION_HELP,   'h', "help", "", "display this help and exit")
     .add_option(OPTION_DEVICE, 'd', "device", "DEVICE", "read events from device");
 
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
   }
 
   StatusIcon status_icon;
-  KeyboardDescriptionPtr keyboard_desc = KeyboardDescription::create_us_layout(); 
+  KeyboardDescriptionPtr keyboard_desc = KeyboardDescription::create_us_layout();
   VirtualKeyboard virtual_keyboard(keyboard_desc);
 
   if (!device.empty())
@@ -82,10 +82,10 @@ int main(int argc, char** argv)
     gtk_main();
   }
   else
-  { 
+  {
     {
       std::cout << "--device DEVICE option not given, starting in test mode" << std::endl;
-    
+
       // non-interactive test mode
       virtual_keyboard.show();
       gtk_main();

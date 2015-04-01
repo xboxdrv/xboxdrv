@@ -42,7 +42,7 @@ protected:
 public:
   USBController(libusb_device* dev);
   virtual ~USBController();
-  
+
   virtual std::string get_usbpath() const;
   virtual std::string get_usbid() const;
   virtual std::string get_name() const;

@@ -61,7 +61,7 @@ UdevSubsystem::set_device_callback(const boost::function<void (udev_device*)>& p
   enumerate_udev_devices();
 
   GIOChannel* udev_channel = g_io_channel_unix_new(udev_monitor_get_fd(m_monitor));
-  g_io_add_watch(udev_channel, 
+  g_io_add_watch(udev_channel,
                  static_cast<GIOCondition>(G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP),
                  &UdevSubsystem::on_udev_data_wrap, this);
   g_io_channel_unref(udev_channel);
@@ -82,9 +82,9 @@ UdevSubsystem::enumerate_udev_devices()
 
   struct udev_list_entry* devices;
   struct udev_list_entry* dev_list_entry;
-    
+
   devices = udev_enumerate_get_list_entry(enumerate);
-  udev_list_entry_foreach(dev_list_entry, devices) 
+  udev_list_entry_foreach(dev_list_entry, devices)
   {
     // name is path, value is NULL
     const char* path = udev_list_entry_get_name(dev_list_entry);
@@ -122,9 +122,9 @@ UdevSubsystem::on_udev_data(GIOChannel* channel, GIOCondition condition)
     log_error("unknown condition: " << condition);
   }
   else
-  {  
+  {
     log_info("trying to read data from udev");
-  
+
     log_info("trying to read data from udev monitor");
     struct udev_device* device = udev_monitor_receive_device(m_monitor);
     log_info("got data from udev monitor");
@@ -151,7 +151,7 @@ UdevSubsystem::on_udev_data(GIOChannel* channel, GIOCondition condition)
       udev_device_unref(device);
     }
   }
- 
+
   return true;
 }
 
@@ -160,7 +160,7 @@ UdevSubsystem::print_info(udev_device* device)
 {
   log_debug("/---------------------------------------------");
   log_debug("devpath: " << udev_device_get_devpath(device));
-  
+
   if (udev_device_get_action(device))
     log_debug("action: " << udev_device_get_action(device));
   //log_debug("init: " << udev_device_get_is_initialized(device));
@@ -188,7 +188,7 @@ UdevSubsystem::print_info(udev_device* device)
 
   if (udev_device_get_action(device))
     log_debug("action:    " << udev_device_get_action(device));
-          
+
   //udev_device_get_sysattr_value(device, "busnum");
   //udev_device_get_sysattr_value(device, "devnum");
 
@@ -198,32 +198,32 @@ UdevSubsystem::print_info(udev_device* device)
     log_debug("list: ");
     struct udev_list_entry* it = udev_device_get_tags_list_entry(device);
     while((it = udev_list_entry_get_next(it)) != 0)
-    {         
-      log_debug("  " 
+    {
+      log_debug("  "
                 << udev_list_entry_get_name(it) << " = "
                 << udev_list_entry_get_value(it)
         );
     }
   }
-          
+
   {
     log_debug("properties: ");
     struct udev_list_entry* it = udev_device_get_properties_list_entry(device);
     while((it = udev_list_entry_get_next(it)) != 0)
-    {         
-      log_debug("  " 
+    {
+      log_debug("  "
                 << udev_list_entry_get_name(it) << " = "
                 << udev_list_entry_get_value(it)
         );
     }
   }
-          
+
   {
     log_debug("devlist: ");
     struct udev_list_entry* it = udev_device_get_tags_list_entry(device);
     while((it = udev_list_entry_get_next(it)) != 0)
-    {         
-      log_debug("  " 
+    {
+      log_debug("  "
                 << udev_list_entry_get_name(it) << " = "
                 << udev_list_entry_get_value(it)
         );

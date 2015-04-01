@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -47,7 +47,7 @@ public:
   void set_rumble_real(uint8_t left, uint8_t right);
   void set_led_real(uint8_t status);
   uint8_t get_battery_status() const;
-  
+
 private:
   Xbox360WirelessController (const Xbox360WirelessController&);
   Xbox360WirelessController& operator= (const Xbox360WirelessController&);

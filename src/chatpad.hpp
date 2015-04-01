@@ -116,7 +116,7 @@ private:
   struct ChatpadMsg
   {
     uint8_t type;
-    
+
     union {
       struct {
         uint8_t unknown1;
@@ -167,7 +167,7 @@ public:
   void send_init();
 
   void set_led(unsigned int led, bool state);
-  bool get_led(unsigned int led); 
+  bool get_led(unsigned int led);
 
   void process(const ChatpadKeyMsg& msg);
   void init_uinput();
@@ -176,7 +176,7 @@ private:
   void send_command();
   void send_timeout(int msec);
   void send_ctrl(uint8_t request_type, uint8_t request, uint16_t value, uint16_t index,
-                 uint8_t* data_in = NULL, uint16_t length = 0, 
+                 uint8_t* data_in = NULL, uint16_t length = 0,
                  libusb_transfer_cb_fn callback = NULL, void* userdata = NULL);
 
   void usb_submit_read(int endpoint, int len);

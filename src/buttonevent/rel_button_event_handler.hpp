@@ -27,11 +27,11 @@
 class RelButtonEventHandler : public ButtonEventHandler
 {
 public:
-  static RelButtonEventHandler* from_string(UInput& uinput, int slot, bool extra_devices, 
+  static RelButtonEventHandler* from_string(UInput& uinput, int slot, bool extra_devices,
                                             const std::string& str);
 
 public:
-  RelButtonEventHandler(UInput& uinput, int slot, bool extra_devices, 
+  RelButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
                         const UIEvent& code);
 
   void send(bool value);

@@ -32,7 +32,7 @@ Controller::Controller() :
   m_led_status(0),
   m_rumble_left(0),
   m_rumble_right(0),
-  m_message_descriptor()  
+  m_message_descriptor()
 {
 }
 
@@ -69,7 +69,7 @@ Controller::set_led(uint8_t status)
   if (m_led_status != status)
   {
     m_led_status = status;
-    
+
     set_led_real(m_led_status);
   }
 }

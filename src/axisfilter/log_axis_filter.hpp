@@ -23,7 +23,7 @@
 
 class LogAxisFilter : public AxisFilter
 {
-public: 
+public:
   static LogAxisFilter* from_string(const std::string& str);
 
 public:

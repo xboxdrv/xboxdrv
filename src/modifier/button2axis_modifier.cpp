@@ -45,7 +45,7 @@ Button2AxisModifier::Button2AxisModifier(const std::string& lhs_btn,
   m_lhs_btn(-1),
   m_rhs_btn(-1),
   m_axis(-1)
-{  
+{
 }
 
 void
@@ -57,7 +57,7 @@ Button2AxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-Button2AxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) 
+Button2AxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   bool lhs = msg.get_key(m_lhs_btn);
   bool rhs = msg.get_key(m_rhs_btn);
@@ -82,5 +82,5 @@ Button2AxisModifier::str() const
 {
   return "btn2axis";
 }
-  
+
 /* EOF */

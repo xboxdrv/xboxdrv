@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -64,7 +64,7 @@ std::ostream& operator<<(std::ostream& out, const struct ff_effect& effect)
       break;
 
     case FF_RAMP:
-      out << "FF_RAMP(" 
+      out << "FF_RAMP("
           << "start_level:" << effect.u.ramp.start_level
           << ", end_level:" << effect.u.ramp.end_level
           << ", envelope:" <<  effect.u.ramp.envelope << ")";
@@ -190,7 +190,7 @@ ForceFeedbackEffect::ForceFeedbackEffect(const struct ff_effect& effect) :
       end_weak_magnitude     = clamp(0, 0x7fff, effect.u.rumble.weak_magnitude);
       end_strong_magnitude   = clamp(0, 0x7fff, effect.u.rumble.strong_magnitude);
       break;
-        
+
     default:
       // Unsupported effects
       // case FF_SPRING:
@@ -226,7 +226,7 @@ ForceFeedbackEffect::update(int msec_delta)
       { // attack
         strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
         weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
-              
+
         // apply envelope
         strong_magnitude = ((envelope.attack_level * t) + strong_magnitude * (envelope.attack_length - t)) / envelope.attack_length;
         weak_magnitude   = ((envelope.attack_level * t) + weak_magnitude   * (envelope.attack_length - t)) / envelope.attack_length;
@@ -276,12 +276,12 @@ ForceFeedbackHandler::ForceFeedbackHandler() :
   weak_magnitude(0),
   strong_magnitude(0)
 {
-  
+
 }
 
 ForceFeedbackHandler::~ForceFeedbackHandler()
 {
-  
+
 }
 
 int
@@ -296,7 +296,7 @@ ForceFeedbackHandler::upload(const struct ff_effect& effect)
   log_debug("FF_UPLOAD("
             << "effect_id:" << effect.id
             << ", effect_type:" << effect.type
-            << ",\n          "  << effect 
+            << ",\n          "  << effect
             << ")");
 
   std::map<int, ForceFeedbackEffect>::iterator i = effects.find(effect.id);

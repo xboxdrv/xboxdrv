@@ -52,7 +52,7 @@ LogButtonFilter::str() const
 {
   std::ostringstream out;
   out << "log:" << m_name;
-  return out.str();  
+  return out.str();
 }
 
 /* EOF */

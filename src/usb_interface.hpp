@@ -38,7 +38,7 @@ public:
   USBInterface(libusb_device_handle* handle, int interface, bool try_detach = false);
   ~USBInterface();
 
-  void submit_read(int endpoint, int len, 
+  void submit_read(int endpoint, int len,
                    const boost::function<bool (uint8_t*, int)>& callback);
   void cancel_read(int endpoint);
 

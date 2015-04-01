@@ -1,4 +1,4 @@
-/* 
+/*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
@@ -34,7 +34,7 @@ std::string gamepadtype_to_string(const GamepadType& type)
     case GAMEPAD_XBOX360_WIRELESS:
       return "xbox360-wireless";
 
-    case GAMEPAD_XBOX360_PLAY_N_CHARGE: 
+    case GAMEPAD_XBOX360_PLAY_N_CHARGE:
       return "xbox360-playncharge";
 
     case GAMEPAD_XBOX:
@@ -42,7 +42,7 @@ std::string gamepadtype_to_string(const GamepadType& type)
 
     case GAMEPAD_XBOX_MAT:
       return "xbox-mat";
-        
+
     case GAMEPAD_XBOX360_GUITAR:
       return "xbox360-guitar";
 
@@ -90,7 +90,7 @@ std::string gamepadtype_to_macro_string(const GamepadType& type)
   }
 }
 
-std::ostream& operator<<(std::ostream& out, const GamepadType& type) 
+std::ostream& operator<<(std::ostream& out, const GamepadType& type)
 {
   switch (type)
   {
@@ -100,7 +100,7 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
     case GAMEPAD_XBOX360_WIRELESS:
       return out << "Xbox360 (wireless)";
 
-    case GAMEPAD_XBOX360_PLAY_N_CHARGE: 
+    case GAMEPAD_XBOX360_PLAY_N_CHARGE:
       return out << "Xbox360 Play&Charge";
 
     case GAMEPAD_XBOX:
@@ -108,7 +108,7 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
 
     case GAMEPAD_XBOX_MAT:
       return out << "Xbox Dancepad";
-        
+
     case GAMEPAD_XBOX360_GUITAR:
       return out << "Xbox360 Guitar";
 

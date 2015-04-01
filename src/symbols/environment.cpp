@@ -32,7 +32,7 @@ Environment::lookup_namespace(const std::string& ns)
   if (it == m_namespaces.end())
   {
     return NamespacePtr();
-  }    
+  }
   else
   {
     return it->second;

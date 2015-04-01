@@ -52,8 +52,8 @@ StatisticModifier::print_stats()
 {
   std::cout << "Button Press Statistics\n"
             << "=======================\n\n";
-  
-  std::cout << boost::format("%12s | %5d") % "Name" % "Count" << std::endl;  
+
+  std::cout << boost::format("%12s | %5d") % "Name" % "Count" << std::endl;
   std::cout << "-------------+---------" << std::endl;
   for(size_t i = 0; i < m_press_count.size(); ++i)
   {

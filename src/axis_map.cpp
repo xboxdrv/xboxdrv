@@ -56,10 +56,10 @@ AxisMap::init(const ControllerMessageDescriptor& desc)
 {
   m_map.clear();
   m_map.resize(desc.get_abs_count());
-  
+
   for(std::vector<Mapping>::iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)
   {
-    try 
+    try
     {
       int abs = desc.abs().get(it->axis);
       m_map.at(abs).add(ButtonCombination(it->buttons), it->event);
@@ -109,7 +109,7 @@ AxisMap::send(const std::bitset<256>& button_state,
         }
         else
         {
-          j->m_data->send((axis_max[i] - axis_min[i])/2 + axis_min[i], 
+          j->m_data->send((axis_max[i] - axis_min[i])/2 + axis_min[i],
                           axis_min[i], axis_max[i]);
         }
       }

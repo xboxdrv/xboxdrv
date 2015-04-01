@@ -47,7 +47,7 @@ public:
 private:
   Mode m_mode;
   int m_last_unpressed_axis;
-  
+
   KeyPortIn m_dpad_up;
   KeyPortIn m_dpad_down;
   KeyPortIn m_dpad_left;

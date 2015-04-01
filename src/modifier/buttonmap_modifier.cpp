@@ -31,7 +31,7 @@ class ButtonMapping
 public:
   static ButtonMappingPtr from_string(const std::string& lhs, const std::string& rhs);
 
-public:  
+public:
   ButtonMapping(const std::string& lhs_str, const std::string& rhs_str) :
     lhs(lhs_str),
     rhs(rhs_str),
@@ -60,7 +60,7 @@ ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
   else
   {
     ButtonMappingPtr mapping;
-  
+
     if (rhs.empty())
     {
       mapping.reset(new ButtonMapping(args[0], args[0]));
@@ -91,7 +91,7 @@ ButtonmapModifier::from_string(const std::string& args)
 {
   std::auto_ptr<ButtonmapModifier> modifier(new ButtonmapModifier);
 
-  process_name_value_string(args, boost::bind(&ButtonmapModifier::add, modifier.get(), 
+  process_name_value_string(args, boost::bind(&ButtonmapModifier::add, modifier.get(),
                                               boost::bind(&ButtonMapping::from_string, _1, _2)));
 
   return modifier.release();
@@ -101,7 +101,7 @@ ButtonmapModifier*
 ButtonmapModifier::from_option(const std::vector<ButtonMappingOption>& mappings)
 {
   std::auto_ptr<ButtonmapModifier> modifier(new ButtonmapModifier);
-  
+
   for(std::vector<ButtonMappingOption>::const_iterator i = mappings.begin(); i != mappings.end(); ++i)
   {
     modifier->add(ButtonMapping::from_string(i->lhs, i->rhs));
@@ -123,7 +123,7 @@ ButtonmapModifier::init(ControllerMessageDescriptor& desc)
     (*i)->init(desc);
   }
 }
-  
+
 void
 ButtonmapModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
@@ -147,7 +147,7 @@ ButtonmapModifier::update(int msec_delta, ControllerMessage& msg, const Controll
     for(std::vector<ButtonFilterPtr>::iterator j = (*i)->filters.begin(); j != (*i)->filters.end(); ++j)
     {
       value = (*j)->filter(value);
-    }    
+    }
 
     state[key_out] = value || state[key_out];
   }
@@ -187,7 +187,7 @@ ButtonmapModifier::str() const
   for(std::vector<ButtonMappingPtr>::const_iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
     out << "  " << (*i)->lhs.str() << "=" << (*i)->rhs.str() << std::endl;
-    for(std::vector<ButtonFilterPtr>::const_iterator filter = (*i)->filters.begin(); 
+    for(std::vector<ButtonFilterPtr>::const_iterator filter = (*i)->filters.begin();
         filter != (*i)->filters.end(); ++filter)
     {
       out << "    " << (*filter)->str() << std::endl;

@@ -66,7 +66,7 @@ Sector2ButtonModifier::update(int msec_delta, ControllerMessage& msg, const Cont
 {
   float x = msg.get_abs_float(m_xaxis);
   float y = msg.get_abs_float(m_yaxis);
-  
+
   if (x != 0 || y != 0)
   {
     double sector_size = static_cast<double>(2*M_PI) / static_cast<double>(m_out_buttons.size());
@@ -85,7 +85,7 @@ Sector2ButtonModifier::update(int msec_delta, ControllerMessage& msg, const Cont
     }
   }
 }
-  
+
 std::string
 Sector2ButtonModifier::str() const
 {

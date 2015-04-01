@@ -39,7 +39,7 @@ private:
 
 public:
   static XboxdrvMain* current() { return s_current; }
-  
+
 private:
   USBSubsystem& m_usb_subsystem;
   const Options& m_opts;
@@ -65,7 +65,7 @@ public:
 
 private:
   ControllerPtr create_controller();
-  
+
   void init_controller(const ControllerPtr& controller);
 
   void print_info(libusb_device* dev,

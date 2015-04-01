@@ -57,7 +57,7 @@ void
 Playstation3USBController::set_rumble_real(uint8_t left, uint8_t right)
 {
   //log_tmp("Rumble: " << static_cast<int>(left) << " " << static_cast<int>(right));
-  uint8_t cmd[] = { 
+  uint8_t cmd[] = {
     // FIXME: 254 isn't quite right and the right motor seems to be on/off only
     0x00, 254, right, 254, left,  // rumble values
     0x00, 0x00, 0x00, 0x00, 0x03,   // 0x10=LED1 .. 0x02=LED4
@@ -67,7 +67,7 @@ Playstation3USBController::set_rumble_real(uint8_t left, uint8_t right)
     0xff, 0x27, 0x10, 0x00, 0x32,   // LED 1
     0x00, 0x00, 0x00, 0x00, 0x00
   };
-  
+
   usb_control(LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_INTERFACE, // RequestType
               HID_SET_REPORT,   // Request
               (HID_REPORT_TYPE_OUTPUT << 8) | 0x01, // Value
@@ -113,7 +113,7 @@ Playstation3USBController::set_led_real(uint8_t status)
       break;
   }
 
-  uint8_t cmd[] = { 
+  uint8_t cmd[] = {
     0x00, 0x00, 0x00, 0x00, 0x00,   // rumble values
     0x00, 0x00, 0x00, 0x00, ps3_status, // 0x10=LED1 .. 0x02=LED4
     0xff, 0x27, 0x10, 0x00, 0x32,   // LED 4
@@ -122,7 +122,7 @@ Playstation3USBController::set_led_real(uint8_t status)
     0xff, 0x27, 0x10, 0x00, 0x32,   // LED 1
     0x00, 0x00, 0x00, 0x00, 0x00
   };
-  
+
   usb_control(LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_INTERFACE, // RequestType
               HID_SET_REPORT,   // Request
               (HID_REPORT_TYPE_OUTPUT << 8) | 0x01, // Value
@@ -225,23 +225,23 @@ Playstation3USBController::parse(const uint8_t* data, int len, ControllerMessage
 #if 0
     if (false)
     {
-      log_debug(boost::format("X:%5d Y:%5d Z:%5d RZ:%5d\n") 
-                % (static_cast<int>(msg_out->ps3usb.accl_x) - 512) 
+      log_debug(boost::format("X:%5d Y:%5d Z:%5d RZ:%5d\n")
+                % (static_cast<int>(msg_out->ps3usb.accl_x) - 512)
                 % (static_cast<int>(msg_out->ps3usb.accl_y) - 512)
                 % (static_cast<int>(msg_out->ps3usb.accl_z) - 512)
                 % (static_cast<int>(msg_out->ps3usb.rot_z)));
     }
-      
+
     if (false)
     {
       // values are normalized to 1g (-116 is force by gravity)
-      log_debug(boost::format("X:%6.3f Y:%6.3f Z:%6.3f RZ:%6.3f\n") 
+      log_debug(boost::format("X:%6.3f Y:%6.3f Z:%6.3f RZ:%6.3f\n")
                 % ((static_cast<int>(msg_out->ps3usb.accl_x) - 512) / 116.0f)
                 % ((static_cast<int>(msg_out->ps3usb.accl_y) - 512) / 116.0f)
                 % ((static_cast<int>(msg_out->ps3usb.accl_z) - 512) / 116.0f)
                 % ((static_cast<int>(msg_out->ps3usb.rot_z) - 5)));
     }
-    
+
     if (false)
     {
       std::ostringstream str;
@@ -255,7 +255,7 @@ Playstation3USBController::parse(const uint8_t* data, int len, ControllerMessage
     }
 #endif
 
-    return true;   
+    return true;
   }
   else
   {

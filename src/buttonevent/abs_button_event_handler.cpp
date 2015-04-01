@@ -51,7 +51,7 @@ std::string
 AbsButtonEventHandler::str() const
 {
   std::ostringstream out;
-  out << "abs: " << m_code.get_device_id() << "-" << m_code.code << ":" << m_value; 
+  out << "abs: " << m_code.get_device_id() << "-" << m_code.code << ":" << m_value;
   return out.str();
 }
 

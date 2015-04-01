@@ -71,7 +71,7 @@ KeyboardDescription::create_us_layout()
   desc->make_key(18, 1, KEY_KPSLASH, Key::kLetter, "/");
   desc->make_key(19, 1, KEY_KPASTERISK, Key::kLetter, "*");
   desc->make_key(20, 1, KEY_KPMINUS, Key::kLetter, "-");
-  
+
   // row 2
   desc->make_key( 0, 2, KEY_TAB, Key::kModifier, "Tab"); ///"\u21E5\u21E4");
   desc->make_key( 1, 2, KEY_Q, Key::kLetter, "q", "Q");
@@ -94,7 +94,7 @@ KeyboardDescription::create_us_layout()
   desc->make_key(18, 2, KEY_KP8, Key::kLetter, "8");
   desc->make_key(19, 2, KEY_KP9, Key::kLetter, "9");
   desc->make_key(20, 2, KEY_KPPLUS, Key::kLetter, "+", "", "", 1, 2);
-  
+
   // row 3
   desc->make_key( 0, 3, KEY_CAPSLOCK, Key::kModifier, "Caps");
   desc->make_key( 1, 3, KEY_A, Key::kLetter, "a", "A");
@@ -179,7 +179,7 @@ KeyboardDescription::~KeyboardDescription()
 }
 
 void
-KeyboardDescription::make_key(int x, int y, 
+KeyboardDescription::make_key(int x, int y,
                               int code,
                               Key::Style style,
                               const std::string& label,
@@ -198,10 +198,10 @@ KeyboardDescription::get_key(int x, int y) const
 }
 
 void
-KeyboardDescription::set_key(int x, int y, Key* key) 
-{ 
+KeyboardDescription::set_key(int x, int y, Key* key)
+{
   assert(m_keys[m_width * y + x] == 0);
-  //m_keys[m_width * y + x] = key; 
+  //m_keys[m_width * y + x] = key;
 
   // mark the spots that a large key covers with ReferenceKey
   if (key && !key->is_ref_key())

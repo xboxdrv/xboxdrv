@@ -38,7 +38,7 @@ private:
 
 public:
   ControllerMessage();
- 
+
   void clear();
 
   bool get_key(int key) const;

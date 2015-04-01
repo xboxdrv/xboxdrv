@@ -101,7 +101,7 @@ std::string
 SquareAxisModifier::str() const
 {
   std::ostringstream out;
-  out << "square:" 
+  out << "square:"
       << m_xaxis_in.str() << ":"
       << m_yaxis_in.str() << ":"
       << m_xaxis_out.str() << ":"
