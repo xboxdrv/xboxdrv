@@ -705,4 +705,143 @@ Unknown: len: 28 data: 0x01 0xff 0x00 0x01 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x
 
 
 
+Xbox One Wireless Controller
+==================
+
+The Xbox One controller buttons are similar to Xbox 360 controller, and it too has an extension interface.
+VID:PID is 045e:02d1.  
+
+Interface 0:
+  Endpoint 1(interrupt in):  Controller events
+  Endpoint 1(interrupt out): Messages to the controller
+Interface 1 Alternate 0:
+  None
+Interface 1 Alternate 1:
+  Endpoint 2(iso in)
+  Endpoint 2(iso out)
+Interface 2 Alternate 0:
+  None
+Interface 2 Alternate 1:
+  Endpoint 3(bulk in)
+  Endpoint 3(bulk out)
+
+
+All messages from/to controller have a 4-byte header:
+struct XboxOneMsg
+{
+  unsigned int type       :8; // type of message
+  unsigned int type2      :8; // always 0x20 except for rumble command and controls response when it's 0
+  unsigned int sequence   :8; // sequence number of a message (separate counters for each direction), incremented by 1 for each new message
+  unsigned int length     :8; // length of the following payload
+  // -------------------------
+  unsigned char payload[];
+}
+
+When connected the controller starts to send "pairing request"s every second or so until it gets back a specific response; once that response is received it starts working in a normal mode.
+Pairing request in my case:
+[02 20 03 1c] 7e ed 88 64 d2 2b 00 00 5e 04 d1 02 01 00 01 00 90 01 06 00 01 00 01 00 01 00 01 00
+Type is 02;20.  No idea about meaning of payload fields; probably some sort of ID and/or info on capabilities and connected extension hardware (note the controller VID/PID in there in reversed order).
+
+Expected response is:
+1) type 05:20 payload 06 00 00 00 00 00 55 53
+2) type 05:20 payload 00
+
+Commands sent to the controller:
+================================
+
+LED control
+-----------
+Type 0A 20
+payload:
+struct
+{
+	unsigned int field1     :8; // unknown, always 0. Maybe light ID for extensions?
+	unsigned int blink_type :8; // 0 - off, 1 - on, 2 - fast blink, 3 - slow blink, other values may have some meaning too
+	unsigned int brightness :8; // 0 to 50 decimal
+}
+
+Rumble control
+--------------
+Type 09 00
+I'm not sure about exact meaning of the most fields but changing them does change type of the rumble
+payload:
+struct
+{
+	unsigned int field1        :8; // unknown, always 0
+	unsigned int speed        :24; // speed of the motors or type or several fields controlling the type of the rumble; usual value would be 0F 00 00
+	unsigned int left          :8; // 0-100
+	unsigned int right         :8  // 0-100
+	unsigned int on_duration   :8; // duration of "ON" phase in rumble cycle (in 10ms increments or something)
+	unsigned int off_duration  :8; // duration of "OFF" phase
+	unsigned int repeats       :8; // number of repeated cycles to do (0 - single rumble, 1 - on-off-on-off etc)
+}
+
+Reports sent by the controller:
+===============================
+
+Battery status
+--------------
+Type 03 20
+4 bytes in a payload, meaning unknown
+
+Buttons event
+-------------
+Type 07 20
+Only seems to be sent when pressing the big X button
+Payload:
+struct
+{
+	unsigned int state   :1; // 1 - pressed, 0 - released
+	unsigned int padding :7;
+	unsigned int id      :8; // Always 0x5B; I assume this is button ID
+}
+
+Controls event
+--------------
+Type 20 20
+It is sent on every other button/joystick press/release/move; somehow similar to Xbox 360 message layout
+Payload:
+struct
+{
+  unsigned int connect     :1; // small button on the back for wireless pairing
+  unsigned int dummy1      :1; // always 0
+  unsigned int start       :1;
+  unsigned int back        :1;
+
+  unsigned int a           :1; // green
+  unsigned int b           :1; // red
+  unsigned int x           :1; // blue
+  unsigned int y           :1; // yellow
+
+  // --------------------------
+
+  unsigned int dpad_up     :1;
+  unsigned int dpad_down   :1;
+  unsigned int dpad_left   :1;
+  unsigned int dpad_right  :1;
+
+  unsigned int lb          :1; // left back digital button
+  unsigned int rb          :1; // right back digital button
+  unsigned int thumb_l     :1; // left analog joystick click
+  unsigned int thumb_r     :1; // right analog joystick click
+
+  // --------------------------
+
+  unsigned int lt         :10; // left analog trigger
+  unsigned int padding1    :6;
+  unsigned int rt         :10; // right analog trigger
+  unsigned int padding2    :6;
+
+  // --------------------------
+
+  int x1                   :16; // left analog joystick - signed shorts
+  int y1                   :16;
+
+  // --------------------------
+
+  int x2                   :16; // right analog joystick
+  int y2                   :16;
+}
+
+
 # EOF #

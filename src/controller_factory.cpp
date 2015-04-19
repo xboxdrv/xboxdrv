@@ -30,6 +30,7 @@
 #include "controller/xbox360_controller.hpp"
 #include "controller/xbox360_wireless_controller.hpp"
 #include "controller/xbox_controller.hpp"
+#include "controller/xboxone_wireless_controller.hpp"
 
 ControllerPtr
 ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const Options& opts)
@@ -61,6 +62,9 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
 
     case GAMEPAD_XBOX360_WIRELESS:
       return ControllerPtr(new Xbox360WirelessController(dev, opts.wireless_id, opts.detach_kernel_driver));
+
+    case GAMEPAD_XBOXONE_WIRELESS:
+      return ControllerPtr(new XboxOneWirelessController(dev, opts.detach_kernel_driver));
 
     case GAMEPAD_FIRESTORM:
       return ControllerPtr(new FirestormDualController(dev, false, opts.detach_kernel_driver));
@@ -136,6 +140,10 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
       {
         lst.push_back(ControllerPtr(new Xbox360WirelessController(dev, wireless_id, opts.detach_kernel_driver)));
       }
+      break;
+
+    case GAMEPAD_XBOXONE_WIRELESS:
+      lst.push_back(ControllerPtr(new XboxOneWirelessController(dev, opts.detach_kernel_driver)));
       break;
 
     case GAMEPAD_FIRESTORM:
