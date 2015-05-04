@@ -86,6 +86,7 @@ opts.Add('LINKFLAGS', 'Linker Compiler flags')
 opts.Add('CC', 'C Compiler')
 opts.Add('CXX', 'C++ Compiler')
 opts.Add('BUILD', 'Build type: release, custom, development')
+opts.Add('PKG_CONFIG', 'pkg-config helper tool', 'pkg-config')
 
 opts.Update(env)
 Help(opts.GenerateHelpText(env))
@@ -114,11 +115,11 @@ elif 'BUILD' in env and env['BUILD'] == 'custom':
 else:
     env.Append(CPPFLAGS = ['-g', '-O3', '-Wall', '-ansi', '-pedantic'])
 
-env.ParseConfig("pkg-config --cflags --libs dbus-glib-1 | sed 's/-I/-isystem/g'")
-env.ParseConfig("pkg-config --cflags --libs glib-2.0 | sed 's/-I/-isystem/g'")
-env.ParseConfig("pkg-config --cflags --libs gthread-2.0 | sed 's/-I/-isystem/g'")
-env.ParseConfig("pkg-config --cflags --libs libusb-1.0 | sed 's/-I/-isystem/g'")
-env.ParseConfig("pkg-config --cflags --libs libudev | sed 's/-I/-isystem/g'")
+env.ParseConfig(env['PKG_CONFIG'] + " --cflags --libs dbus-glib-1 | sed 's/-I/-isystem/g'")
+env.ParseConfig(env['PKG_CONFIG'] + " --cflags --libs glib-2.0 | sed 's/-I/-isystem/g'")
+env.ParseConfig(env['PKG_CONFIG'] + " --cflags --libs gthread-2.0 | sed 's/-I/-isystem/g'")
+env.ParseConfig(env['PKG_CONFIG'] + " --cflags --libs libusb-1.0 | sed 's/-I/-isystem/g'")
+env.ParseConfig(env['PKG_CONFIG'] + " --cflags --libs libudev | sed 's/-I/-isystem/g'")
 
 f = open("VERSION")
 package_version = f.read()
