@@ -44,32 +44,17 @@ FourWayRestrictorModifier::FourWayRestrictorModifier(XboxAxis xaxis, XboxAxis ya
 void
 FourWayRestrictorModifier::update(int msec_delta, XboxGenericMsg& msg)
 {
-  // left Stick
-  if (abs(get_axis(msg, XBOX_AXIS_X1)) > abs(get_axis(msg, XBOX_AXIS_Y1)))
+  if (abs(get_axis(msg, m_xaxis)) > abs(get_axis(msg, m_yaxis)))
   {
-    set_axis(msg, XBOX_AXIS_Y1, 0);
+    set_axis(msg, m_yaxis, 0);
   }
-  else if (abs(get_axis(msg, XBOX_AXIS_Y1)) > abs(get_axis(msg, XBOX_AXIS_X1)))
+  else if (abs(get_axis(msg, m_yaxis)) > abs(get_axis(msg, m_xaxis)))
   {
-    set_axis(msg, XBOX_AXIS_X1, 0);
-  }
-  else
-  {
-    set_axis(msg, XBOX_AXIS_X1, 0);
-  }
-
-  // right stick
-  if (abs(get_axis(msg, XBOX_AXIS_X2)) > abs(get_axis(msg, XBOX_AXIS_Y2)))
-  {
-    set_axis(msg, XBOX_AXIS_Y2, 0);
-  }
-  else if (abs(get_axis(msg, XBOX_AXIS_Y2)) > abs(get_axis(msg, XBOX_AXIS_X2)))
-  {
-    set_axis(msg, XBOX_AXIS_X2, 0);
+    set_axis(msg, m_xaxis, 0);
   }
   else
   {
-    set_axis(msg, XBOX_AXIS_X2, 0);
+    set_axis(msg, m_xaxis, 0);
   }
 }
 
