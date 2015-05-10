@@ -1276,11 +1276,11 @@ start=KEY_ESC
         </varlistentry>
 
         <varlistentry>
-          <term><option>--axis-sensitivty <replaceable class="parameter">AXIS=SENSITIVITY</replaceable></option>,...</term>
+          <term><option>--axis-sensitivity <replaceable class="parameter">AXIS=SENSITIVITY</replaceable></option>,...</term>
           <listitem>
-            <para>The sensitive of an axis can be adjusted via --axis-sensitivty:</para>
+            <para>The sensitive of an axis can be adjusted via --axis-sensitivity:</para>
 
-            <programlisting>$ xboxdrv --axis-sensitivty X1=-1.0,Y1=-1.0</programlisting>
+            <programlisting>$ xboxdrv --axis-sensitivity X1=-1.0,Y1=-1.0</programlisting>
 
             <para>
               A value of 0 gives you the default linear sensitivity,
