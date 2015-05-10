@@ -3257,7 +3257,7 @@ $ export SDL_JOYSTICK_DEVICE]]></programlisting>
     </refsect2>
 
     <refsect2>
-      <title>"Error: No stuitable uinput device found"</title>
+      <title>"Error: No suitable uinput device found"</title>
       <para>
         Make sure that uinput and joydev kernel modules are loaded. Make sure
         that you have a /dev/input/uinput, /dev/uinput or /dev/misc/uinput and
