@@ -74,7 +74,7 @@ LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_,
   if (m_fd < 0)
   {
     std::ostringstream out;
-    out << "\nError: No stuitable uinput device found, tried:" << std::endl;
+    out << "\nError: No suitable uinput device found, tried:" << std::endl;
     out << std::endl;
     out << str.str();
     out << "" << std::endl;
