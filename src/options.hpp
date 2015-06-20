@@ -153,16 +153,16 @@ public:
   public:
     static GenericUSBSpec from_string(const std::string& str);
 
-    GenericUSBSpec(int vendor_id,
-                   int product_id,
-                   int interface,
-                   int endpoint,
-                   int packetsize) :
-      m_vendor_id(vendor_id),
-      m_product_id(product_id),
-      m_interface(interface),
-      m_endpoint(endpoint),
-      m_packetsize(packetsize)
+    GenericUSBSpec(int vendor_id_,
+                   int product_id_,
+                   int interface_,
+                   int endpoint_,
+                   int packetsize_) :
+      m_vendor_id(vendor_id_),
+      m_product_id(product_id_),
+      m_interface(interface_),
+      m_endpoint(endpoint_),
+      m_packetsize(packetsize_)
     {}
 
     int m_vendor_id;
