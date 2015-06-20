@@ -30,8 +30,8 @@ matrix:
 
 env:
   matrix:
-    - BUILD_TYPE="Debug"
-    - BUILD_TYPE="Release"
+    - BUILD_TYPE="development"
+    - BUILD_TYPE="release"
 
 before_install:
   - sudo apt-get update -qq
@@ -39,6 +39,6 @@ before_install:
 
 script:
   - git clean -f
-  - make && make install
+  - scons BUILD=${BUILD_TYPE} && make install
 
 # EOF #
