@@ -20,9 +20,10 @@
 import sys
 import argparse
 import string
+import os.path
 
 
-def build_bin2h(target, sources, namespace=None):
+def build_bin2h(target, sources, prefixpath, namespace):
     """
     Takes a list of files and converts them into a C source that can be included
     """
@@ -37,10 +38,15 @@ def build_bin2h(target, sources, namespace=None):
 
         # write down data
         for src in sources:
+            if prefixpath is None:
+                src_c_name = c_escape(src)
+            else:
+                src_c_name = c_escape(os.path.relpath(src, prefixpath))
+
             with open(src, "rb") as fin:
                 data = fin.read()
                 fout.write("// \"%s\"\n" % src)
-                fout.write("const char %s[] = {" % c_escape(src))
+                fout.write("const char %s[] = {" % src_c_name)
                 bytes_arr = ["0x%02x" % ord(c) for c in data]
                 for i in xrange(len(bytes_arr)):
                     if i % 13 == 0:
@@ -66,13 +72,18 @@ def build_bin2h(target, sources, namespace=None):
 
 def main():
     parser = argparse.ArgumentParser(description="Convert binary file to .h")
-    parser.add_argument('SOURCE', action='store', nargs='+', type=str, help="SOURCE file")
-    parser.add_argument('-o', '--output', metavar='TARGET', action='store', required=True, type=str, help="TARGET file")
-    parser.add_argument('--namespace', metavar='NAMESPACE', action='store', type=str, help="Wrap code into NAMESPACE")
+    parser.add_argument('SOURCE', action='store', nargs='+', type=str,
+                        help="SOURCE file")
+    parser.add_argument('-o', '--output', metavar='TARGET', action='store', required=True, type=str,
+                        help="TARGET file")
+    parser.add_argument('-p', '--prefix', metavar='PREFIX', action='store', required=False, type=str,
+                        help="PREFIX is removed from the path before converting it to a C variable name")
+    parser.add_argument('--namespace', metavar='NAMESPACE', action='store', type=str,
+                        help="Wrap code into NAMESPACE")
 
     args = parser.parse_args()
 
-    build_bin2h(args.output, args.SOURCE, args.namespace)
+    build_bin2h(args.output, args.SOURCE, args.prefix, args.namespace)
 
 
 if __name__ == "__main__":

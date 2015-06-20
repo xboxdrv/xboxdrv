@@ -77,7 +77,7 @@ set(SOURCES
 add_custom_command(
   OUTPUT ${TARGET}
   DEPENDS ${SOURCES}
-  COMMAND ${BIN2H} -o ${TARGET} --namespace=xboxdrv_vfs ${SOURCES})
+  COMMAND ${BIN2H} --output ${TARGET} --prefix ${CMAKE_CURRENT_SOURCE_DIR} --namespace=xboxdrv_vfs ${SOURCES})
 
 set(TARGET ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_controller_glue.hpp)
 set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/xboxdrv_controller.xml)
