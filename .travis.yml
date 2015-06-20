@@ -39,6 +39,6 @@ before_install:
 
 script:
   - git clean -f
-  - scons BUILD=${BUILD_TYPE} && make install
+  - scons CXX=${CXX} BUILD=${BUILD_TYPE} && sudo make install
 
 # EOF #
