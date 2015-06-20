@@ -17,14 +17,20 @@
 cmake_minimum_required(VERSION 3.0)
 project(xboxdrv)
 
-set(BUILD_TESTS 0 CACHE BOOL "Build tests")
-set(WARNINGS 0 CACHE BOOL "Switch on extra warnings")
+set(BUILD_TESTS OFF CACHE BOOL "Build tests")
+set(WARNINGS OFF CACHE BOOL "Switch on extra warnings")
+set(WERROR OFF CACHE BOOL "Turn warnings into errors")
 
 if(WARNINGS)
-  set(WARNINGS_CXX_FLAGS
+  set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
     -pedantic -Wall -Wextra -Wno-c++0x-compat -Wnon-virtual-dtor -Weffc++
-    -Wconversion -Werror -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter)
+    -Wconversion -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter)
   # -Winline -Wfloat-equal -Wunreachable-code
+endif()
+
+if(WERROR)
+  set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
+    -Werror)
 endif()
 
 set(XBOXDRV_BINDIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Install location for executables")
