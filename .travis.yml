@@ -1,0 +1,55 @@
+# Xbox/Xbox360 USB Gamepad Userspace Driver
+# Copyright (C) 2015 Ingo Ruhnke <grumbel@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Build file for https://travis-ci.org/
+#
+# Configuration manual:
+# http://docs.travis-ci.com/user/build-configuration/
+#
+# Based on:
+# https://github.com/supertuxkart/stk-code/blob/master/.travis.yml
+# https://github.com/SuperTux/supertux/blob/master/.travis.yml
+
+language: cpp
+
+compiler:
+  - gcc
+  - clang
+
+matrix:
+  fast_finish: true
+
+env:
+  matrix:
+    - BUILD_TYPE="development"
+    - BUILD_TYPE="release"
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install build-essential libboost-dev pkg-config libusb-1.0-0-dev libx11-dev libudev-dev x11proto-core-dev libdbus-glib-1-dev libgtk2.0-dev libcwiid-dev
+
+  # CMake
+  - wget http://www.cmake.org/files/v3.2/cmake-$CMAKE_VERSION.tar.gz -O - | tar xz
+  - (cd cmake-$CMAKE_VERSION && cmake . && make -j3 && sudo make install)
+
+script:
+  - git clean -f
+  - mkdir "build-$BUILD_TYPE"
+  - cd "build-$BUILD_TYPE"
+  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWARNINGS=ON -DWERROR=ON -DBUILD_TESTS=ON -DBUILD_EXTRA=ON
+  - make VERBOSE=1 -j3
+
+# EOF #
