@@ -23,7 +23,7 @@
 
 #include "modifier.hpp"
 
-class XboxGenericMsg;
+struct XboxGenericMsg;
 
 class DpadRotationModifier : public Modifier
 {

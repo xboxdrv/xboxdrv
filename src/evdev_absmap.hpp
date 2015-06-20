@@ -23,7 +23,7 @@
 
 #include "xboxmsg.hpp"
 
-class XboxGenericMsg;
+struct XboxGenericMsg;
 
 class EvdevAbsMap
 {
