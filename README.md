@@ -1,5 +1,5 @@
-[[ Xbox/Xbox360 USB Gamepad Driver for Userspace ]]
-===================================================
+Xbox/Xbox360 USB Gamepad Driver for Userspace
+=============================================
 
 Xboxdrv is a Xbox/Xbox360 gamepad driver for Linux that works in
 userspace. It is an alternative to the xpad kernel driver and has
@@ -24,9 +24,9 @@ The development version can be optained via:
 
  * git clone http://pingus.seul.org/~grumbel/xboxdrv.git
 
-
-[[ Compilation ]]
------------------
+
+Compilation
+-----------
 
 Required libraries and tools:
 
@@ -44,11 +44,11 @@ Required libraries and tools:
 
 Once everything installed, you can compile by typing:
 
- $ scons
+    scons
 
 On Ubuntu 10.10 you can install all the required libraries via:
 
- $ sudo apt-get install \
+    sudo apt-get install \
      g++ \
      libboost1.42-dev \
      scons \
@@ -63,40 +63,37 @@ On Ubuntu 10.10 you can install all the required libraries via:
 To load the uinput kernel module automatically on boot add it
 /etc/modules, to load it manually type:
 
- $ sudo modprobe uinput
+    sudo modprobe uinput
 
 On other distributions exact install instructions might be
 slightly different.
 
-
-[[ Installation ]]
-------------------
+
+Installation
+------------
 
 Once the compilation process is complete you can install xboxdrv with:
 
- $ make install
+    make install
 
 You can also change the install PREFIX and DESTDIR as usual with:
 
- $ make install PREFIX=/usr DESTDIR=/tmp
+    make install PREFIX=/usr DESTDIR=/tmp
 
 Note that there is no need to install xboxdrv, you can run it directly
 from the source directory if you prefer.
 
-
-[[ Running ]]
--------------
+
+Running
+-------
 
 Extensive documentation on running xboxdrv can be found in the RUNNING
 XBOXDRV section of the xboxdrv manpage. When you haven't installed
 xboxdrv the man page can be found in doc/xboxdrv.1 and be read with:
 
- $ man -l doc/xboxdrv.1
+    man -l doc/xboxdrv.1
 
 Documentation on xboxdrv-daemon, a daemon that will automatically
 launch xboxdrv when a pad is plugged in can be read via:
 
- $ man -l doc/xboxdrv-daemon.1
-
-
-# EOF #
+    man -l doc/xboxdrv-daemon.1
