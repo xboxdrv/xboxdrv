@@ -33,9 +33,11 @@ matrix:
   fast_finish: true
 
 env:
+  global:
+    - CMAKE_VERSION=3.2.1
   matrix:
-    - BUILD_TYPE="development"
-    - BUILD_TYPE="release"
+    - BUILD_TYPE="Debug"
+    - BUILD_TYPE="Release"
 
 before_install:
   - sudo apt-get update -qq
@@ -49,7 +51,7 @@ script:
   - git clean -f
   - mkdir "build-$BUILD_TYPE"
   - cd "build-$BUILD_TYPE"
-  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWARNINGS=ON -DWERROR=ON -DBUILD_TESTS=ON -DBUILD_EXTRA=ON
+  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWARNINGS=ON -DWERROR=ON -DBUILD_TESTS=ON
   - make VERBOSE=1 -j3
 
 # EOF #
