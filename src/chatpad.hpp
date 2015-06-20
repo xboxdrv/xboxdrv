@@ -116,21 +116,24 @@ private:
   {
     uint8_t type;
 
-    union {
-      struct {
-        uint8_t unknown1;
-        uint8_t unknown2;
-        uint8_t count1;
-        uint8_t count2;
-      } __attribute__((__packed__)) clock;
+    struct ClockData {
+      uint8_t unknown1;
+      uint8_t unknown2;
+      uint8_t count1;
+      uint8_t count2;
+    } __attribute__((__packed__));
 
-      struct {
-        uint8_t zero1;
-        uint8_t modifier;
-        uint8_t scancode1;
-        uint8_t scancode2;
-        uint8_t zero3;
-      } __attribute__((__packed__)) key;
+    struct KeyData {
+      uint8_t zero1;
+      uint8_t modifier;
+      uint8_t scancode1;
+      uint8_t scancode2;
+      uint8_t zero3;
+    } __attribute__((__packed__));
+
+    union {
+      ClockData clock;
+      KeyData key;
     };
   } __attribute__((__packed__));
 

@@ -25,26 +25,30 @@ class MacroButtonEventHandler : public ButtonEventHandler
 {
 public:
 private:
+  struct AbsInfo {
+    UIEvent event;
+    int minimum;
+    int maximum;
+    int fuzz;
+    int flat;
+  };
+
+  struct Event {
+    UIEvent event;
+    int     value;
+  };
+
+  struct Time {
+    int msec;
+  };
+
   struct MacroEvent {
     enum { kInitOp, kSendOp, kWaitOp, kNull } type;
 
     union {
-      struct {
-        UIEvent event;
-	int minimum;
-	int maximum;
-	int fuzz;
-	int flat;
-      } init;
-
-      struct {
-        UIEvent event;
-        int     value;
-      } send;
-
-      struct {
-        int msec;
-      } wait;
+      AbsInfo init;
+      Event send;
+      Time wait;
     };
   };
 
