@@ -5,7 +5,7 @@
  *
  *  Event device test program
  *
- *  29.Apr 2008: --list option added by Ingo Ruhnke <grumbel@gmx.de>
+ *  29.Apr 2008: --list option added by Ingo Ruhnke <grumbel@gmail.com>
  */
 
 /*
