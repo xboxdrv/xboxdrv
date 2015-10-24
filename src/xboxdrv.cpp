@@ -217,6 +217,7 @@ Xboxdrv::run_daemon(const Options& opts)
 
   if (!opts.detach)
   {
+    USBSubsystem usb_subsystem;
     XboxdrvDaemon daemon(opts);
     daemon.run();
   }
