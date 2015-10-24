@@ -219,10 +219,21 @@ USBController::on_control(libusb_transfer* transfer)
 void
 USBController::on_write_data(libusb_transfer* transfer)
 {
-  if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
+  if (transfer->status == LIBUSB_TRANSFER_COMPLETED)
   {
-    if (transfer->status != LIBUSB_TRANSFER_CANCELLED)
-      log_error("USB write failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
+    // ok
+  }
+  else if (transfer->status == LIBUSB_TRANSFER_CANCELLED)
+  {
+    // ok
+  }
+  else if (transfer->status == LIBUSB_TRANSFER_NO_DEVICE)
+  {
+    send_disconnect();
+  }
+  else
+  {
+    log_error("USB write failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
   }
 
   m_transfers.erase(transfer);
@@ -234,15 +245,7 @@ USBController::on_read_data(libusb_transfer* transfer)
 {
   assert(transfer);
 
-  if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
-  {
-    if (transfer->status != LIBUSB_TRANSFER_CANCELLED)
-      log_error("USB read failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
-
-    m_transfers.erase(transfer);
-    libusb_free_transfer(transfer);
-  }
-  else
+  if (transfer->status == LIBUSB_TRANSFER_COMPLETED)
   {
     // process data
     ControllerMessage msg;
@@ -256,11 +259,26 @@ USBController::on_read_data(libusb_transfer* transfer)
     if (ret != LIBUSB_SUCCESS) // could also check for LIBUSB_ERROR_NO_DEVICE
     {
       log_error("failed to resubmit USB transfer: " << usb_strerror(ret));
-
+      m_transfers.erase(transfer);
       libusb_free_transfer(transfer);
-
       send_disconnect();
     }
+  }
+  else if (transfer->status == LIBUSB_TRANSFER_CANCELLED)
+  {
+    // ok
+  }
+  else if (transfer->status == LIBUSB_TRANSFER_NO_DEVICE)
+  {
+    m_transfers.erase(transfer);
+    libusb_free_transfer(transfer);
+    send_disconnect();
+  }
+  else
+  {
+    log_error("USB read failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
+    m_transfers.erase(transfer);
+    libusb_free_transfer(transfer);
   }
 }
 
