@@ -156,4 +156,12 @@
   add(ABS_MT_DISTANCE, "ABS_MT_DISTANCE");
 #endif
 
+#ifdef ABS_MT_TOOL_X
+  add(ABS_MT_TOOL_X, "ABS_MT_TOOL_X");
+#endif
+
+#ifdef ABS_MT_TOOL_Y
+  add(ABS_MT_TOOL_Y, "ABS_MT_TOOL_Y");
+#endif
+
 /* EOF */
