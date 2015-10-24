@@ -213,9 +213,9 @@ Xboxdrv::run_daemon(const Options& opts)
     libusb_set_debug(NULL, 3);
   }
 
-  USBSubsystem usb_subsystem;
   if (!opts.detach)
   {
+    USBSubsystem usb_subsystem;
     XboxdrvDaemon daemon(usb_subsystem, opts);
     daemon.run();
   }
@@ -247,6 +247,7 @@ Xboxdrv::run_daemon(const Options& opts)
         }
         else
         {
+          USBSubsystem usb_subsystem;
           XboxdrvDaemon daemon(usb_subsystem, opts);
           daemon.run();
         }
