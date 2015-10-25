@@ -1,7 +1,16 @@
-xboxdrv 0.8.6 - (??/???/2014)
+xboxdrv 0.8.6 - (25/10/2015)
 =============================
 
+* Buttonevent exec: double fork to avoid zombies
+* fixed axis handling in FourWayRestrictorModifier
+* fixed device disconnect issues
 * fixed segfault due to incorrect shutdown of USB subsystem
+* fixed some compiler warnings/errors
+* ignore Play'n Charge kit instead of error out
+* added device support for Thrustmaster Gamepad GP XID, Razer
+  Sabertooth, Gamestop BB-070, Afterglow AX.1, MLG Pro Circuit
+  Controller (Xbox), Rock Candy, Saitek p3600, Hori GEM Xbox
+  controller
 
 
 xboxdrv 0.8.5 - (07/Apr/2013)
