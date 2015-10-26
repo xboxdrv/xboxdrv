@@ -53,5 +53,6 @@ script:
   - cd "build-$BUILD_TYPE"
   - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWARNINGS=ON -DWERROR=ON -DBUILD_TESTS=ON
   - make VERBOSE=1 -j3
+  - sudo make install
 
 # EOF #
