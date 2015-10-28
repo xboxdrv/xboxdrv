@@ -1,5 +1,11 @@
+xboxdrv 0.8.7 - (28/10/2015)
+============================
+
+* fixed USB cleanup issue on exit
+
+
 xboxdrv 0.8.6 - (25/10/2015)
-=============================
+============================
 
 * Buttonevent exec: double fork to avoid zombies
 * fixed axis handling in FourWayRestrictorModifier
