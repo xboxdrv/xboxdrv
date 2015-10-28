@@ -265,7 +265,8 @@ USBController::on_read_data(libusb_transfer* transfer)
   }
   else if (transfer->status == LIBUSB_TRANSFER_CANCELLED)
   {
-    // ok
+    m_transfers.erase(transfer);
+    libusb_free_transfer(transfer);
   }
   else if (transfer->status == LIBUSB_TRANSFER_NO_DEVICE)
   {
