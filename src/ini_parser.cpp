@@ -48,7 +48,7 @@ INIParser::run()
         eat_rest_of_line();
       newline();
     }
-    else if (accept(' ') || accept('\t') || accept('\n'))
+    else if (accept(' ') || accept('\t') || accept('\n') || accept('\r'))
     {
       // eat whitespace
     }
@@ -206,9 +206,9 @@ INIParser::get_value()
   char last_c = -1;
   while(peek() != '\n' &&
         peek() != -1 &&
-        !((last_c == ' ' || last_c == '\t') && (peek() == ';' || peek() == '#')))
+        !((last_c == ' ' || last_c == '\t' || last_c == '\r') && (peek() == ';' || peek() == '#')))
   {
-    if (peek() != ' ' && peek() != '\t')
+    if (peek() != ' ' && peek() != '\t' && peek() != '\r')
     {
       last_char = cur;
     }
@@ -242,9 +242,9 @@ INIParser::get_ident()
   while(peek() != '\n' &&
         peek() != -1 &&
         peek() != '=' &&
-        !((last_c == ' ' || last_c == '\t') && (peek() == ';' || peek() == '#')))
+        !((last_c == ' ' || last_c == '\t' || last_c == '\r') && (peek() == ';' || peek() == '#')))
   {
-    if (peek() != ' ' && peek() != '\t')
+    if (peek() != ' ' && peek() != '\t' && peek() != '\r')
     {
       last_char = cur;
     }
@@ -339,7 +339,7 @@ INIParser::get_section()
 void
 INIParser::whitespace()
 {
-  while(peek() == ' ' || peek() == '\t')
+  while(peek() == ' ' || peek() == '\t' || peek() == '\r')
   {
     next();
   }
