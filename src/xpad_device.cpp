@@ -91,6 +91,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360_GUITAR,   0x1bad, 0x0002, "Harmonix Guitar for Xbox 360" },
   { GAMEPAD_XBOX360_GUITAR,   0x1bad, 0x0003, "Harmonix Drum Kit for Xbox 360" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf016, "Mad Catz Xbox 360 Controller" },
+  { GAMEPAD_XBOX360,          0x1bad, 0xf018, "Mad Catz Street Fighter IV SE Fighting Stick" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf023, "MLG Pro Circuit Controller (Xbox)" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf028, "Street Fighter IV FightPad" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf038, "Street Fighter IV FightStick TE" },
