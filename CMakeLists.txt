@@ -17,9 +17,9 @@
 cmake_minimum_required(VERSION 3.0)
 project(xboxdrv)
 
-set(BUILD_TESTS OFF CACHE BOOL "Build tests")
-set(WARNINGS OFF CACHE BOOL "Switch on extra warnings")
-set(WERROR OFF CACHE BOOL "Turn warnings into errors")
+option(BUILD_TESTS "Build tests" OFF)
+option(WARNINGS "Switch on extra warnings" OFF)
+option(WERROR "Turn warnings into errors" OFF)
 
 if(WARNINGS)
   set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
@@ -36,6 +36,7 @@ endif()
 set(XBOXDRV_BINDIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Install location for executables")
 set(XBOXDRV_MANDIR "${CMAKE_INSTALL_PREFIX}/share/man" CACHE PATH "Install location for datafiles")
 
+find_package(Threads REQUIRED)
 find_package(X11)
 find_package(GTK2 COMPONENTS gtk)
 
@@ -144,6 +145,23 @@ target_link_libraries(virtualkeyboard
   ${X11_LIBRARIES})
 
 if(BUILD_TESTS)
+  include_directories(SYSTEM external/googletest/googletest/include/)
+
+  # build gtest
+  add_library(gtest STATIC ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/src/gtest-all.cc)
+  target_include_directories(gtest SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/)
+
+  # build gtest_main
+  add_library(gtest_main STATIC ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/src/gtest_main.cc)
+
+  # build automatic tests
+  file(GLOB XBOXDRV_TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    test/*_gtest.cpp)
+  add_executable(test_xboxdrv ${XBOXDRV_TEST_SOURCES})
+  target_compile_options(test_xboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
+  target_link_libraries(test_xboxdrv gtest gtest_main libxboxdrv ${CMAKE_THREAD_LIBS_INIT})
+
+  # build old manual tests
   file(GLOB TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     test/*_test.cpp)
   foreach(SOURCE ${TEST_SOURCES})
