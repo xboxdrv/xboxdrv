@@ -72,6 +72,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x24c6, 0x5501, "Hori Real Arcade Pro VX-SA" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5303, "Xbox Airflo wired controller" },
   { GAMEPAD_XBOX360,          0x24c6, 0x531a, "PowerA Pro Ex" },
+  { GAMEPAD_XBOX360,          0x24c6, 0x5397, "FUS1ON Tournament Controller" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5503, "Hori Fighting Edge" },
   { GAMEPAD_XBOX360,          0x24c6, 0x550d, "Hori GEM Xbox controller" },
   { GAMEPAD_XBOX360,          0x162e, 0xbeef, "Joytech Neo-Se Take2" },
