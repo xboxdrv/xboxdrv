@@ -97,6 +97,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x1bad, 0xf021, "Mad Cats Ghost Recon FS GamePad" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf023, "MLG Pro Circuit Controller (Xbox)" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf028, "Street Fighter IV FightPad" },
+  { GAMEPAD_XBOX360,          0x1bad, 0xf02e, "Mad Catz Fightpad" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf038, "Street Fighter IV FightStick TE" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf03a, "Mad Catz SFxT Fightstick Pro" },
   { GAMEPAD_XBOX360,          0x1bad, 0xf900, "Harmonix Xbox 360 Controller" },
