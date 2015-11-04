@@ -69,6 +69,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x0f0d, 0x000a, "Hori Co. DOA4 FightStick" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x000d, "Hori Fighting Stick Ex2" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x0016, "Hori Real Arcade Pro Ex" },
+  { GAMEPAD_XBOX360,          0x056e, 0x2004, "Elcom JC-U3613M" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5501, "Hori Real Arcade Pro VX-SA" },
   { GAMEPAD_XBOX360,          0x24c6, 0x5303, "Xbox Airflo wired controller" },
   { GAMEPAD_XBOX360,          0x24c6, 0x531a, "PowerA Pro Ex" },
