@@ -151,11 +151,31 @@ Xboxdrv::run_list_supported_devices_xpad()
 
   for(int i = 0; i < xpad_devices_count; ++i)
   {
-    std::cout << boost::format("{ 0x%04x, 0x%04x, \"%s\", %s },\n")
+
+    std::string gamepadtype;
+    switch(sorted_devices[i].type)
+    {
+      case GAMEPAD_XBOX:
+        gamepadtype = "XTYPE_XBOX";
+        break;
+
+      case GAMEPAD_XBOX360:
+        gamepadtype = "XTYPE_XBOX360";
+        break;
+
+      case GAMEPAD_XBOX360_WIRELESS:
+        gamepadtype = "XTYPE_XBOX360W";
+        break;
+
+      default:
+        continue;
+    }
+
+    std::cout << boost::format("{ 0x%04x, 0x%04x, \"%s\", 0, %s },\n")
       % int(sorted_devices[i].idVendor)
       % int(sorted_devices[i].idProduct)
       % sorted_devices[i].name
-      % gamepadtype_to_macro_string(sorted_devices[i].type);
+      % gamepadtype;
   }
 }
 
