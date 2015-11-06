@@ -149,14 +149,7 @@ XboxdrvDaemon::run()
       switch(m_opts.dbus)
       {
         case Options::kDBusAuto:
-          if (getuid() == 0)
-          {
-            dbus_bus_type = DBUS_BUS_SYSTEM;
-          }
-          else
-          {
-            dbus_bus_type = DBUS_BUS_SESSION;
-          }
+          dbus_bus_type = DBUS_BUS_SESSION;
           break;
 
         case Options::kDBusSession:
