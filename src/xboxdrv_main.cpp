@@ -191,11 +191,11 @@ XboxdrvMain::run()
 
       if (m_opts.silent)
       {
-        std::cout << "\nPress Ctrl-c to quit" << std::endl;
+        std::cout << "\nPress Ctrl-C to quit" << std::endl;
       }
       else
       {
-        std::cout << "\nPress Ctrl-c to quit, use '--silent' to suppress the event output" << std::endl;
+        std::cout << "\nPress Ctrl-C to quit, use '--silent' to suppress the event output" << std::endl;
       }
     }
 
