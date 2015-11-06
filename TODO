@@ -11,7 +11,7 @@ Pre Release Testing:
 
 VERSION="$(cat VERSION)"
 TAG="v${VERSION}"
-git tag -s  "${TAG}" -m "xboxdrv ${TAG}" 
+git tag -s  "${TAG}" -m "xboxdrv ${TAG}"
 
 # Normal Source
 git archive --format=tar --prefix="xboxdrv-linux-${VERSION}/" ${TAG} | bzip2 -c > /tmp/xboxdrv-linux-${VERSION}.tar.bz2
@@ -30,13 +30,30 @@ cd ../debian/xboxdrv
 # Ubuntu 12.04
 # ============
 git checkout master
-git-import-orig -u 0.8.5 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.8.5.tar.bz2 
+git-import-orig -u 0.8.5 ~/projects/xboxdrv/htdocs/xboxdrv-linux-0.8.5.tar.bz2
 dch -v "0.8.5-0ubuntu1" "xboxdrv 0.8.5 release"
 git commit -m "xboxdrv 0.8.5 release" -a
 git-buildpackage --git-no-create-orig --git-tag --git-builder="debuild -S"
 sudo pbuilder --build --basetgz /var/cache/pbuilder/base-precise.tgz ../xboxdrv_0.8.5-0ubuntu1.dsc
 dput my-ppa ../xboxdrv_0.8.5-0ubuntu1_source.changes
 
+Checklist
+=========
+
+* unplug/replug while xboxdrv is running
+* unplug/replug while xboxdrv is running in daemon mode
+* Steam big picture config
+* submit config to SDL2 game database
+
+
+Bugs
+====
+
+* SymbolTable<T>::get(): lookup failure for: 'gamepad.start'
+
+https://tkkrlab.nl/wiki/XBOX_360_RF_Module
+
+
 Target for 0.9.?
 ================
 
@@ -55,9 +72,9 @@ Target for 0.9.?
 
 * macros could need locking, so that the next one isn't run before the first one executed
 
-* add NullButtonEvent, useful to kill unwanted keybindings 
+* add NullButtonEvent, useful to kill unwanted keybindings
 
-* Wiimote must try to reconnect after connection got lost 
+* Wiimote must try to reconnect after connection got lost
 
 * use separate In/Out Ports for Modifier, never use InOut ports, make
   InOut ports a feature of the parser (i.e. two args -> InOut, four
@@ -78,7 +95,7 @@ Target for 0.9.?
 
   --ui-buttonmap du=exec:/usr/bin/script:Arg1:Arg2:Arg3
   --ui-buttonmap du=exec:/usr/bin/script:[Arg1:Arg2:Arg3]
-  
+
   - what about more common quoting style:
 
   --ui-buttonmap du=exec:"/usr/bin/script":"Arg1":"Arg2":"Arg3"
@@ -118,7 +135,7 @@ libusb:warning [libusb_close] internal signalling write failed, closing anyway
   etc. REL_HWEEL will be button 6 and 7, add that to documentation somewhere
 
 == Bugs ==
-     
+
 * multiple ControllerThread lead to UInput::update() being called
   multiple times, as UInputMessageProcessor does call the update()
   which is wrong
@@ -158,7 +175,7 @@ Checklist
 
 * search for "#ifdef FIXME"
 
-* do proper error checking: 
+* do proper error checking:
 
 xboxdrv: src/usb_controller.cpp:218: void USBController::on_read_data(libusb_transfer*): Assertion `ret == LIBUSB_SUCCESS' failed.
 Aborted
@@ -308,7 +325,7 @@ libusb:warning [libusb_close] internal signalling write failed, closing anyway
   -> need a time delay before button is actually send for situations
      where sending the key is expensive (weapon switching in game might be slow)
 
-  -> add an option to have the cycle sequence not wrap around: 
+  -> add an option to have the cycle sequence not wrap around:
      -> possible use: throttle in a flightsim mapped to 1-9
 
   Possible future improvements:
@@ -339,7 +356,7 @@ Target for 0.?.?
 
   - hold button to make it 'sticky' (maybe a delay filter to allow two
     level hold buttons, one to not confuse diagonals with vert/horz
-    movement, another regular hold buttos)  
+    movement, another regular hold buttos)
 
 * MacroButtonEventHandler is still using raw UInput::send(), should
   use UIEventEmitterPtr instead
@@ -426,7 +443,7 @@ Target for 0.?.?
 
 * search for "#ifdef FIXME"
 
-* do proper error checking: 
+* do proper error checking:
 
 xboxdrv: src/usb_controller.cpp:218: void USBController::on_read_data(libusb_transfer*): Assertion `ret == LIBUSB_SUCCESS' failed.
 Aborted
@@ -489,7 +506,7 @@ make: *** [xboxdrv] Error 2
 
 * when verbose is given, warn when keys are dual mapped, give list of free keys
 
-* space is currently illegal, but shouldn't be "GUIDE = KEY_LEFTALT + KEY_E" 
+* space is currently illegal, but shouldn't be "GUIDE = KEY_LEFTALT + KEY_E"
 
 * extra-devices adds a button when one only uses JS_0 buttons, shouldn't happen
 
@@ -558,7 +575,7 @@ Autolaunch error: X11 initialization failed." failed to open connection to bus: 
 
   -> do we need more rel types? rel-once? or can repeat values be
      abused?
-     
+
      repeat: 0 - always repeat, -1, never repeat, NUM - repeat every NUM msec
 
   -> add rel-repeat:{repeat} type that repeats more often the more the
@@ -571,7 +588,7 @@ Autolaunch error: X11 initialization failed." failed to open connection to bus: 
 
 * documentation needs to be improved
 
-* --ui-axismap LT=KEY_A:KEY_B:1 
+* --ui-axismap LT=KEY_A:KEY_B:1
 
 Here KEY_B is the key you want to send and KEY_A is a random other key
 that you don't need. It's a hack as mapping both to KEY_B seems to
@@ -605,7 +622,7 @@ disable LT and RT -> already fixed, check it
   and use them when a slot got free -> discard, bad idea, as it
   results in confusing behaviour
 
-* daemon and regular xboxdrv have different controller orderings 
+* daemon and regular xboxdrv have different controller orderings
 
   -> hard to avoid, as wireless controllers are only picked up when
      active, which they always become later then the wired ones, which
@@ -629,7 +646,7 @@ disable LT and RT -> already fixed, check it
   number of allocated controller slots
 
 * get rid of all std::cout stuff when using detached daemon, redirect
-  log output to a file, syslog or somewhere else: 
+  log output to a file, syslog or somewhere else:
 
   --silent:  stops event output
   --quiet:   stops all stdout output (automatically used when --detach is given, except for errors)
@@ -662,8 +679,8 @@ disable LT and RT -> already fixed, check it
     proper functions and use the same functions for both cmdline and ini
 
 * allow setting a --default-name from which all other controller names
-  are derived 
-   -> already there in the form of auto.auto? 
+  are derived
+   -> already there in the form of auto.auto?
      -> No, as those don't derive the name, but set a fixed one
 
 * allow swap/assign of controller to slots via dbus
@@ -689,7 +706,7 @@ disable LT and RT -> already fixed, check it
   * timeout makes a huge difference, real MarbleMouse Trackball send around every 10msec
   * need to deal with rounding errors to allow small movements
 
-* add --ui-buttonmap A=KEY_A:KEY_B:1000:1 
+* add --ui-buttonmap A=KEY_A:KEY_B:1000:1
 
   the last 0/1 parameter tells if it should do:
 
@@ -721,7 +738,7 @@ Other Stuff
 
 * remove uinput.send_rel_repetitive() replace with just EventHandler::update()
 
-  -> might not be needed, send_rel_repetitive() is kind of convenient  
+  -> might not be needed, send_rel_repetitive() is kind of convenient
 
   -> send_rel_repetitive() doesn't work with multi-axis REL events (mouse emulation)
 
@@ -784,7 +801,7 @@ Stuff to do before 0.7.3 release:
   - Options::finish() to do final things?
 
 
-* add Wiimote and PS3 bluetooth support 
+* add Wiimote and PS3 bluetooth support
 
 * -R, --rumble-test is broken for FirestormDualController (has no analog triggers)
 
@@ -863,7 +880,7 @@ http://www.mp3car.com/vbulletin/input-devices/108554-xbox360-chatpad-awsome-back
 
 * remove guide button from default mapping when its an Xbox1 controller
 
-* guitar handling was changed in a4e1003cba0ff925358ce5ed84d2bf9a728e93d6 
+* guitar handling was changed in a4e1003cba0ff925358ce5ed84d2bf9a728e93d6
 
 * REL_ events could need acceleration support, as mouse emulation is currently kind of imprecise
 
@@ -902,7 +919,7 @@ Feature
 * test TR:Anniversary with max effect 16
 
 
-fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?) 
+fixme:dinput:joy_polldev joystick cannot handle type 21 event (code 0) <- 21 == EV_FF (status report?)
 
 http://www.immersion.com/developer/downloads/ImmFundamentals/HTML/
 http://msdn.microsoft.com/en-us/library/bb219655(VS.85).aspx
@@ -953,27 +970,27 @@ Stuff to do before 0.8.0 release:
      // leaving controller plugged in for a longer time settles to this:
       00 00 03 ef 16 00 00 00 00 33 fc 77 01 de
 
-     00 00 03 ef 16 00 00 00 00 33 fc 77 01 de 
+     00 00 03 ef 16 00 00 00 00 33 fc 77 01 de
      00 00 03 ef 16 00 00 00 00 33 fc 77 01 c0
      00 00 02 ee 12 00 00 00 00 12 fc 77 01 de
            ^^^^^                         ^^^^^
-     00 00 01 ee 12 00 00 00 00 12 fc 77 01 de 
-     00 00 03 ef 16 00 00 00 00 11 fc 77 01 de 
-     00 00 03 ef 16 00 00 00 00 33 fc 77 01 de 
-     00 00 02 ee 12 00 00 00 00 12 fc 77 01 de 
+     00 00 01 ee 12 00 00 00 00 12 fc 77 01 de
+     00 00 03 ef 16 00 00 00 00 11 fc 77 01 de
+     00 00 03 ef 16 00 00 00 00 33 fc 77 01 de
+     00 00 02 ee 12 00 00 00 00 12 fc 77 01 de
      wrong ideas: bluetooth master id
 
      00 00 01 ef 16 00 00 00 00 11 fc 77 01 c0
      00 00 03 ef 16 00 00 00 00 11 fc 77 01 c0
 
      SIXAXIS:
-     00 00 06 ee 10 00 00 00 00 06 83 77 01 81 
+     00 00 06 ee 10 00 00 00 00 06 83 77 01 81
      00 00 06 ee 10 00 00 00 00 06 83 77 01
-     00 00 06 ee 10 00 00 00 00 06 83 77 
+     00 00 06 ee 10 00 00 00 00 06 83 77
 
      // taken from: http://www.pabr.org/sixlinux/sixlinux.en.html
      00 00 02 ee 10 00 00 00 00 02 b2 77 01 81
-     
+
      random guesses: bluetooth id, serial number, calibration data,
      battery status
 
