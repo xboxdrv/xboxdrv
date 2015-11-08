@@ -44,7 +44,7 @@ before_install:
   - sudo apt-get install build-essential libboost-dev pkg-config libusb-1.0-0-dev libx11-dev libudev-dev x11proto-core-dev libdbus-glib-1-dev libgtk2.0-dev libcwiid-dev
 
   # CMake
-  - wget http://www.cmake.org/files/v3.2/cmake-$CMAKE_VERSION.tar.gz -O - | tar xz
+  - wget --no-check-certificate http://www.cmake.org/files/v3.2/cmake-$CMAKE_VERSION.tar.gz -O - | tar xz
   - (cd cmake-$CMAKE_VERSION && cmake . && make -j3 && sudo make install)
 
 script:
