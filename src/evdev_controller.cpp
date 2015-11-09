@@ -37,7 +37,7 @@
 
 EvdevController::EvdevController(const std::string& filename,
                                  const EvdevAbsMap& absmap,
-                                 const std::map<int, XboxButton>& keymap,
+                                 const std::map<int, UIActionPtr>& keymap,
                                  bool grab,
                                  bool debug) :
   m_fd(-1),
@@ -51,8 +51,9 @@ EvdevController::EvdevController(const std::string& filename,
   m_event_buffer(),
   m_msg()
 {
-  memset(&m_msg, 0, sizeof(m_msg));
-  m_msg.type = XBOX_MSG_XBOX360;
+  XboxGenericMsg msg;
+  memset(&msg, 0, sizeof(XboxGenericMsg));
+  msg.type = XBOX_MSG_XBOX360;
 
   m_fd = open(filename.c_str(), O_RDONLY | O_NONBLOCK);
 
@@ -162,7 +163,7 @@ EvdevController::set_led_real(uint8_t status)
 }
 
 bool
-EvdevController::parse(const struct input_event& ev, XboxGenericMsg& msg_inout) const
+EvdevController::parse(const struct input_event& ev, XboxGenericMsg &msg_inout) const
 {
   if (m_debug)
   {
@@ -202,7 +203,7 @@ EvdevController::parse(const struct input_event& ev, XboxGenericMsg& msg_inout) 
         KeyMap::const_iterator it = m_keymap.find(ev.code);
         if (it != m_keymap.end())
         {
-          set_button(msg_inout, it->second, ev.value);
+          it->second->parse(msg_inout, ev);
           return true;
         }
         else

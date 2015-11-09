@@ -16,8 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui_event.hpp"
+#include <boost/tokenizer.hpp>
 
+#include "raise_exception.hpp"
+#include "ui_event.hpp"
 #include "evdev_helper.hpp"
 #include "uinput.hpp"
 
@@ -217,6 +219,87 @@ void split_event_name(const std::string& str, std::string* event_str, int* slot_
       *device_id = str2deviceid(device.substr(0, p));
     }
   }
+}
+
+UIAction::AxisAction UIAction::string2axis_action(const std::string &str) {
+    AxisAction a;
+    a.rezero = FALSE;
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    tokenizer ev_tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+    int i = 0;
+    for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m, i++) {
+        if (i == 0) {
+            a.axis = string2axis(*m);
+        } else if (i == 1) {
+            a.set_value = boost::lexical_cast<int>(*m);
+        } else if (i == 2) {
+            a.zero_value = boost::lexical_cast<int>(*m);
+            a.rezero = TRUE;
+        } else {
+            raise_exception(std::runtime_error, "Can't parse string: too many items: \"" + str + "\"");
+        }
+    }
+    if (i < 2) {
+        raise_exception(std::runtime_error, "Not enough arguments: \"" + str + "\"");
+    }
+    return a;
+}
+
+UIAction::UIAction(const ButtonList buttons, const AxesList axes) :
+    btns(buttons),
+    axes(axes)
+{
+}
+
+UIActionPtr UIAction::from_string(const std::string &value) {
+    ButtonList buttons;
+    AxesList axs;
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    tokenizer ev_tokens(value, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
+    for(tokenizer::iterator m = ev_tokens.begin(); m != ev_tokens.end(); ++m)
+    {
+        std::string event_name;
+        std::string token = *m;
+        switch(get_event_type(token))
+        {
+          case EV_KEY: {
+            event_name = token.substr(token.find('_') + 1, std::string::npos);
+            buttons.push_back(string2btn(event_name));
+            break;
+          }
+          case EV_REL: {
+            raise_exception(std::runtime_error, "Relative events not supported.");
+            break;
+          }
+          case EV_ABS: {
+            event_name = token.substr(token.find('_') + 1, std::string::npos);
+            axs.push_back(string2axis_action(event_name));
+            break;
+          }
+          default: {
+            raise_exception(std::runtime_error, "Unsupported event \"" + token + "\".");
+          }
+        }
+    }
+    return UIActionPtr(new UIAction(buttons, axs));
+}
+
+void UIAction::parse(XboxGenericMsg &msg, const struct input_event& ev) {
+    for (ButtonList::iterator it = btns.begin(); it != btns.end(); ++it) {
+        set_button(msg, *it, ev.value);
+    }
+    for (AxesList::iterator it = axes.begin(); it != axes.end(); ++it) {
+        AxisAction a = *it;
+        if (ev.value || a.rezero) {
+            int value;
+            if (ev.value) {
+                value = a.set_value;
+            } else {
+                value = a.zero_value;
+            }
+            set_axis(msg, a.axis, value);
+        }
+    }
 }
 
 /* EOF */

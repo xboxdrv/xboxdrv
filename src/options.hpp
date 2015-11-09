@@ -88,7 +88,8 @@ public:
   EvdevAbsMap evdev_absmap;
   bool evdev_grab;
   bool evdev_debug;
-  std::map<int, XboxButton> evdev_keymap;
+  typedef boost::shared_ptr<UIAction> UIActionPtr;
+  std::map<int, UIActionPtr> evdev_keymap;
 
   // controller options
   typedef std::map<int, ControllerSlotOptions> ControllerSlots;

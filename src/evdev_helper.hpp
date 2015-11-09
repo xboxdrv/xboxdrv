@@ -38,7 +38,7 @@ int str2rel(const std::string& str);
 UIEvent str2key_event(const std::string& str);
 UIEvent str2rel_event(const std::string& str);
 UIEvent str2abs_event(const std::string& str);
-
+
 class EvDevRelEnum : public EnumBox<int>
 {
 public:

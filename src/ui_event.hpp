@@ -21,6 +21,8 @@
 
 #include <boost/lexical_cast.hpp>
 #include <stdint.h>
+#include <linux/input.h>
+#include "xboxmsg.hpp"
 
 enum {
   DEVICEID_INVALID  = static_cast<uint16_t>(-5),
@@ -70,6 +72,36 @@ void split_event_name(const std::string& str, std::string* event_str, int* slot_
 
 int str2deviceid(const std::string& device);
 int str2slotid(const std::string& slot);
+
+class UIAction;
+
+typedef boost::shared_ptr<UIAction> UIActionPtr;
+
+class UIAction
+{
+private:
+    typedef struct {
+        XboxAxis axis;
+        int set_value;
+        bool rezero;
+        int zero_value;
+    } AxisAction;
+
+
+    typedef std::vector<XboxButton> ButtonList;
+    ButtonList btns;
+
+    typedef std::vector<AxisAction> AxesList;
+    AxesList axes;
+
+    UIAction(const ButtonList buttons, const AxesList axes);
+
+    static AxisAction string2axis_action(const std::string &str_);
+public:
+    static UIActionPtr from_string(const std::string& value);
+
+    void parse(XboxGenericMsg &msg, const input_event &ev);
+};
 
 #endif
 
