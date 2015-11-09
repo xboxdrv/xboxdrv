@@ -167,6 +167,10 @@ Xboxdrv::run_list_supported_devices_xpad()
         gamepadtype = "XTYPE_XBOX360W";
         break;
 
+      case GAMEPAD_XBOXONE_WIRELESS:
+        gamepadtype = "XTYPE_XBOXONE";
+        break;
+
       default:
         continue;
     }
