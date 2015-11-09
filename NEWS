@@ -1,3 +1,17 @@
+xboxdrv 0.8.8 - (09/11/2015)
+============================
+
+* use session dbus even for user root, except when DISPLAY is not set
+* fixed issue in to_float() triggering assert()
+* fixed vendor/product not getting set for virtual device in daemon mode
+* fixed \r\n newlines causing errors in INIParser, ignore \r like whitespace
+* added device support for Rock Candy Gamepad Wired Controller, Mad
+  Catz Street Fighter IV SE Fighting Stick, MadCatz GamePad, Hori
+  Fighting Edge, Elcom JC-U3613M, Mad Catz Fightpad, Mad Cats Ghost
+  Recon FS GamePad, Mad Catz SFxT Fightstick Pro, Razer Sabertooth,
+  FUS1ON Tournament Controller, PowerA Pro Ex and others
+
+
 xboxdrv 0.8.7 - (28/10/2015)
 ============================
 
