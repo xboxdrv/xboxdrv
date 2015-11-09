@@ -92,6 +92,11 @@ You can also change the install PREFIX and DESTDIR as usual with:
 Note that there is no need to install xboxdrv, you can run it directly
 from the source directory if you prefer.
 
+If you want to run xboxdrv in daemon mode on boot, copy
+`data/org.seul.Xboxdrv.conf` into `/etc/dbus-1/system.d/`, otherwise xboxdrv will complain with:
+
+    [ERROR] XboxdrvDaemon::run(): fatal exception: failed to get unique dbus name: Connection ":1.135" is not allowed to own the service "org.seul.Xboxdrv" due to security policies in the configuration file
+
 
 Running
 -------
