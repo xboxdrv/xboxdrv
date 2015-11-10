@@ -20,6 +20,7 @@
 
 #include <linux/input.h>
 
+#include "helper.hpp"
 #include "log.hpp"
 
 EvDevRelEnum evdev_rel_names;
@@ -136,7 +137,7 @@ void str2event(const std::string& name, int& type, int& code)
   else if (name.compare(0, 2, "JS") == 0)
   {
     type = EV_KEY;
-    code = BTN_JOYSTICK + boost::lexical_cast<int>(name.substr(3));
+    code = BTN_JOYSTICK + str2int(name.substr(3));
   }
   else if (name.compare(0, 3, "KEY") == 0 ||
            name.compare(0, 3, "BTN") == 0)
@@ -181,7 +182,7 @@ int str2abs(const std::string& name)
 {
   if (name.compare(0, 5, "ABS_#") == 0)
   {
-    return boost::lexical_cast<int>(name.substr(5));
+    return str2int(name.substr(5));
   }
   else
   {
@@ -197,11 +198,11 @@ int str2key(const std::string& name)
   }
   else if (name.compare(0, 2, "JS") == 0)
   {
-    return BTN_JOYSTICK + boost::lexical_cast<int>(name.substr(3));
+    return BTN_JOYSTICK + str2int(name.substr(3));
   }
   else if (name.compare(0, 5, "KEY_#") == 0)
   {
-    return boost::lexical_cast<int>(name.substr(5));
+    return str2int(name.substr(5));
   }
   else if (name.compare(0, 3, "KEY") == 0 ||
            name.compare(0, 3, "BTN") == 0)
@@ -218,7 +219,7 @@ int str2rel(const std::string& name)
 {
   if (name.compare(0, 5, "REL_#") == 0)
   {
-    return boost::lexical_cast<int>(name.substr(5));
+    return str2int(name.substr(5));
   }
   else
   {

@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "evdev_helper.hpp"
+#include "helper.hpp"
 #include "log.hpp"
 #include "raise_exception.hpp"
 #include "uinput.hpp"
@@ -80,12 +81,12 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
         MacroEvent event;
         event.type = MacroEvent::kInitOp;
         event.init.event = UIEvent::from_string(args[1]);
-        event.init.minimum = boost::lexical_cast<int>(args[2]);
-        event.init.maximum = boost::lexical_cast<int>(args[3]);
+        event.init.minimum = str2int(args[2]);
+        event.init.maximum = str2int(args[3]);
         event.init.fuzz = 0;
         event.init.flat = 0;
-        if (args.size() > 4) event.init.fuzz = boost::lexical_cast<int>(args[4]);
-        if (args.size() > 5) event.init.flat = boost::lexical_cast<int>(args[5]);
+        if (args.size() > 4) event.init.fuzz = str2int(args[4]);
+        if (args.size() > 5) event.init.flat = str2int(args[5]);
 
         return event;
       }
@@ -101,7 +102,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
         MacroEvent event;
         event.type  = MacroEvent::kSendOp;
         event.send.event = UIEvent::from_string(args[1]);
-        event.send.value = boost::lexical_cast<int>(args[2]);
+        event.send.value = str2int(args[2]);
         return event;
       }
     }
@@ -115,7 +116,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
       {
         MacroEvent event;
         event.type = MacroEvent::kWaitOp;
-        event.wait.msec = boost::lexical_cast<int>(args[1]);
+        event.wait.msec = str2int(args[1]);
         return event;
       }
     }

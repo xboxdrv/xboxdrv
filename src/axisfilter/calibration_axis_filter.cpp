@@ -19,7 +19,7 @@
 #include "axisfilter/calibration_axis_filter.hpp"
 
 #include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
+#include <sstream>
 
 #include "helper.hpp"
 
@@ -38,9 +38,9 @@ CalibrationAxisFilter::from_string(const std::string& str)
   {
     switch(j)
     {
-      case 0: min    = boost::lexical_cast<int>(*i); break;
-      case 1: center = boost::lexical_cast<int>(*i); break;
-      case 2: max    = boost::lexical_cast<int>(*i); break;
+      case 0: min    = str2int(*i); break;
+      case 1: center = str2int(*i); break;
+      case 2: max    = str2int(*i); break;
       default: throw std::runtime_error("to many arguments");
     };
   }

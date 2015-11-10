@@ -19,7 +19,7 @@
 #include "button_filter.hpp"
 
 #include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
+#include <sstream>
 
 #include "buttonfilter/autofire_button_filter.hpp"
 #include "buttonfilter/click_button_filter.hpp"

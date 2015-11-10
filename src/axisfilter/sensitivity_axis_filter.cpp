@@ -19,8 +19,8 @@
 #include "sensitivity_axis_filter.hpp"
 
 #include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
 #include <math.h>
+#include <sstream>
 
 #include "helper.hpp"
 
@@ -37,7 +37,7 @@ SensitivityAxisFilter::from_string(const std::string& str)
   {
     switch(j)
     {
-      case 0: sensitivity = boost::lexical_cast<float>(*i); break;
+      case 0: sensitivity = str2float(*i); break;
       default: throw std::runtime_error("to many arguments");
     };
   }

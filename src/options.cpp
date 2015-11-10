@@ -42,11 +42,11 @@ Options::GenericUSBSpec::apply_pair(const std::string& name,
 {
   if (name == "if" || name == "interface")
   {
-    m_interface = boost::lexical_cast<int>(value);
+    m_interface = str2int(value);
   }
   else if (name == "ep" || name == "endpoint")
   {
-    m_endpoint = boost::lexical_cast<int>(value);
+    m_endpoint = str2int(value);
   }
   else if (name == "vid" || name == "vendor_id" || name == "vendorid" || name == "vendor")
   {
@@ -249,7 +249,7 @@ Options::set_dbus_mode(const std::string& value)
   {
     try {
       // Fallback for backward compatibility
-      if (boost::lexical_cast<bool>(value))
+      if (str2bool(value))
       {
         dbus = kDBusAuto;
       }
@@ -270,7 +270,7 @@ Options::set_dbus_mode(const std::string& value)
 void
 Options::set_led(const std::string& value)
 {
-  get_controller_slot().set_led_status(boost::lexical_cast<int>(value));
+  get_controller_slot().set_led_status(str2int(value));
 }
 
 void
@@ -335,7 +335,7 @@ Options::set_dpad_only()
 void
 Options::set_force_feedback(const std::string& value)
 {
-  get_controller_slot().set_force_feedback(boost::lexical_cast<bool>(value));
+  get_controller_slot().set_force_feedback(str2bool(value));
 }
 
 void

@@ -19,7 +19,9 @@
 #include "buttonfilter/autofire_button_filter.hpp"
 
 #include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
+#include <sstream>
+
+#include "helper.hpp"
 
 AutofireButtonFilter*
 AutofireButtonFilter::from_string(const std::string& str)
@@ -34,8 +36,8 @@ AutofireButtonFilter::from_string(const std::string& str)
   {
     switch(idx)
     {
-      case 0: rate  = boost::lexical_cast<int>(*t); break;
-      case 1: delay = boost::lexical_cast<int>(*t); break;
+      case 0: rate  = str2int(*t); break;
+      case 1: delay = str2int(*t); break;
       default: throw std::runtime_error("to many arguments"); break;
     }
   }

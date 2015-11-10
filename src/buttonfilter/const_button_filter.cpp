@@ -18,12 +18,14 @@
 
 #include "buttonfilter/const_button_filter.hpp"
 
-#include <boost/lexical_cast.hpp>
+#include <sstream>
+
+#include "helper.hpp"
 
 ConstButtonFilter*
 ConstButtonFilter::from_string(const std::string& str)
 {
-  return new ConstButtonFilter(boost::lexical_cast<bool>(str));
+  return new ConstButtonFilter(str2bool(str));
 }
 
 ConstButtonFilter::ConstButtonFilter(bool value) :

@@ -47,6 +47,48 @@ int hexstr2int(const std::string& str)
     raise_exception(std::runtime_error, "couldn't convert '" << str << "' to int");
   }
 }
+
+bool str2bool(std::string const& str)
+{
+  try
+  {
+    return boost::lexical_cast<bool>(str);
+  }
+  catch(boost::bad_lexical_cast const& err)
+  {
+    std::ostringstream out;
+    out << "str2bool(): couldn't convert '" << str << "' to bool";
+    throw std::runtime_error(out.str());
+  }
+}
+
+int str2int(std::string const& str)
+{
+  try
+  {
+    return boost::lexical_cast<int>(str);
+  }
+  catch(boost::bad_lexical_cast const& err)
+  {
+    std::ostringstream out;
+    out << "str2int(): couldn't convert '" << str << "' to int";
+    throw std::runtime_error(out.str());
+  }
+}
+
+float str2float(std::string const& str)
+{
+  try
+  {
+    return boost::lexical_cast<float>(str);
+  }
+  catch(boost::bad_lexical_cast const& err)
+  {
+    std::ostringstream out;
+    out << "str2float(): couldn't convert '" << str << "' to float";
+    throw std::runtime_error(out.str());
+  }
+}
 
 std::string raw2str(uint8_t* data, int len)
 {
@@ -119,12 +161,12 @@ int to_number(int range, const std::string& str)
   {
     if (str[str.size() - 1] == '%')
     {
-      int percent = boost::lexical_cast<int>(str.substr(0, str.size()-1));
+      int percent = str2int(str.substr(0, str.size()-1));
       return range * percent / 100;
     }
     else
     {
-      return boost::lexical_cast<int>(str);
+      return str2int(str);
     }
   }
 }

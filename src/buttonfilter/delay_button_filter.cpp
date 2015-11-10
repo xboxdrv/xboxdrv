@@ -18,12 +18,14 @@
 
 #include "buttonfilter/delay_button_filter.hpp"
 
-#include <boost/lexical_cast.hpp>
+#include <sstream>
+
+#include "helper.hpp"
 
 DelayButtonFilter*
 DelayButtonFilter::from_string(const std::string& str)
 {
-  return new DelayButtonFilter(boost::lexical_cast<int>(str));
+  return new DelayButtonFilter(str2int(str));
 }
 
 DelayButtonFilter::DelayButtonFilter(int delay) :
