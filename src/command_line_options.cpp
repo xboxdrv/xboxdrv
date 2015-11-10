@@ -452,6 +452,8 @@ CommandLineParser::init_ini(Options* opts)
 void
 CommandLineParser::parse_args(int argc, char** argv, Options* options)
 {
+  Options& opts = *options;
+
   init_ini(options);
   m_options = options;
 
@@ -459,527 +461,548 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
   for(ArgParser::ParsedOptions::const_iterator i = parsed.begin(); i != parsed.end(); ++i)
   {
-    Options& opts = *options;
-    const ArgParser::ParsedOption& opt = *i;
-
-    switch (i->key)
+    try
     {
-      case OPTION_HELP:
-        opts.mode = Options::PRINT_HELP;
-        break;
-
-      case OPTION_VERSION:
-        opts.mode = Options::PRINT_VERSION;
-        break;
-
-      case OPTION_VERBOSE:
-        opts.set_verbose();
-        break;
-
-      case OPTION_QUIET:
-        opts.quiet = true;
-        break;
-
-      case OPTION_SILENT:
-        opts.silent = true;
-        break;
-
-      case OPTION_DEBUG:
-        opts.set_debug();
-        break;
-
-      case OPTION_USB_DEBUG:
-        opts.set_usb_debug();
-        break;
-
-      case OPTION_PRIORITY:
-        opts.set_priority(opt.argument);
-        break;
-
-      case OPTION_DAEMON:
-        opts.set_daemon();
-        break;
-
-      case OPTION_DAEMON_MATCH:
-        opts.set_match(opt.argument);
-        break;
-
-      case OPTION_DAEMON_MATCH_GROUP:
-        opts.set_match_group(opt.argument);
-        break;
-
-      case OPTION_WRITE_CONFIG:
-        {
-          opts.instant_exit = true;
-
-          std::ofstream out(opt.argument.c_str());
-          if (!out)
-          {
-            std::ostringstream str;
-            str << "Couldn't create " << opt.argument;
-            throw std::runtime_error(str.str());
-          }
-          else
-          {
-            // FIXME: implement me
-            m_ini.save(out);
-          }
-        }
-        break;
-
-      case OPTION_CONFIG_OPTION:
-        {
-          std::string name, value;
-          split_string_at(opt.argument, '=', &name, &value);
-
-          INISchemaBuilder builder(m_ini);
-          builder.send_section("xboxdrv");
-          builder.send_pair(name, value);
-        }
-        break;
-
-      case OPTION_CONFIG:
-        read_config_file(opt.argument);
-        break;
-
-      case OPTION_ALT_CONFIG:
-        read_alt_config_file(opt.argument);
-        break;
-
-      case OPTION_TEST_RUMBLE:
-        opts.rumble = true;
-        break;
-
-      case OPTION_RUMBLE:
-        if (sscanf(opt.argument.c_str(), "%d,%d", &opts.rumble_l, &opts.rumble_r) == 2)
-        {
-          opts.rumble_l = std::max(0, std::min(255, opts.rumble_l));
-          opts.rumble_r = std::max(0, std::min(255, opts.rumble_r));
-        }
-        else
-        {
-          raise_exception(std::runtime_error, opt.option << " expected an argument in form INT,INT");
-        }
-        break;
-
-      case OPTION_FF_DEVICE:
-        opts.set_ff_device(opt.argument);
-        break;
-
-      case OPTION_QUIT:
-        opts.instant_exit = true;
-        break;
-
-      case OPTION_TIMEOUT:
-        opts.timeout = boost::lexical_cast<int>(opt.argument);
-        break;
-
-      case OPTION_NO_UINPUT:
-        opts.no_uinput = true;
-        break;
-
-      case OPTION_MIMIC_XPAD:
-        opts.set_mimic_xpad();
-        break;
-
-      case OPTION_MIMIC_XPAD_WIRELESS:
-        opts.set_mimic_xpad_wireless();
-        break;
-
-      case OPTION_TYPE:
-        if (opt.argument == "xbox")
-        {
-          opts.gamepad_type = GAMEPAD_XBOX;
-        }
-        else if (opt.argument == "xbox-mat")
-        {
-          opts.gamepad_type = GAMEPAD_XBOX_MAT;
-        }
-        else if (opt.argument == "xbox360")
-        {
-          opts.gamepad_type = GAMEPAD_XBOX360;
-        }
-        else if (opt.argument == "xbox360-guitar")
-        {
-          opts.gamepad_type = GAMEPAD_XBOX360_GUITAR;
-        }
-        else if (opt.argument == "xbox360-wireless")
-        {
-          opts.gamepad_type = GAMEPAD_XBOX360_WIRELESS;
-        }
-        else if (opt.argument == "firestorm")
-        {
-          opts.gamepad_type = GAMEPAD_FIRESTORM;
-        }
-        else if (opt.argument == "firestorm-vsb")
-        {
-          opts.gamepad_type = GAMEPAD_FIRESTORM_VSB;
-        }
-        else if (opt.argument == "saitek-p2500")
-        {
-          opts.gamepad_type = GAMEPAD_SAITEK_P2500;
-        }
-        else if (opt.argument == "playstation3-usb")
-        {
-          opts.gamepad_type = GAMEPAD_PLAYSTATION3_USB;
-        }
-        else if (opt.argument == "generic-usb")
-        {
-          opts.gamepad_type = GAMEPAD_GENERIC_USB;
-        }
-        else
-        {
-          raise_exception(std::runtime_error, "unknown type: " << opt.argument << '\n'
-                          << "Possible types are:\n"
-                          << " * xbox\n"
-                          << " * xbox-mat\n"
-                          << " * xbox360\n"
-                          << " * xbox360-guitar\n"
-                          << " * xbox360-wireless\n"
-                          << " * firestorm\n"
-                          << " * firestorm-vsb\n"
-                          << " * saitek-p2500\n"
-                          << " * generic-usb\n");
-        }
-        break;
-
-      case OPTION_CHATPAD:
-        opts.chatpad = true;
-        break;
-
-      case OPTION_CHATPAD_NO_INIT:
-        opts.chatpad_no_init = true;
-        opts.chatpad = true;
-        break;
-
-      case OPTION_CHATPAD_DEBUG:
-        opts.chatpad_debug = true;
-        break;
-
-      case OPTION_HEADSET:
-        opts.headset = true;
-        break;
-
-      case OPTION_HEADSET_DUMP:
-        opts.headset = true;
-        opts.headset_dump = opt.argument;
-        break;
-
-      case OPTION_HEADSET_PLAY:
-        opts.headset = true;
-        opts.headset_play = opt.argument;
-        break;
-
-      case OPTION_FORCE_FEEDBACK:
-        opts.get_controller_slot().set_force_feedback(true);
-        break;
-
-      case OPTION_RUMBLE_GAIN:
-        opts.rumble_gain = to_number(255, opt.argument);
-        break;
-
-      case OPTION_MODIFIER:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_modifier, this, _1, _2));
-        break;
-
-      case OPTION_BUTTONMAP:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_buttonmap, this, _1, _2));
-        break;
-
-      case OPTION_AXISMAP:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_axismap, this, _1, _2));
-        break;
-
-      case OPTION_DEVICE_USBID:
-        opts.set_device_usbid(opt.argument);
-        break;
-
-      case OPTION_DEVICE_USBIDS:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_device_usbid, this, _1, _2));
-        break;
-
-      case OPTION_DEVICE_NAME:
-        opts.set_device_name(opt.argument);
-        break;
-
-      case OPTION_DEVICE_NAMES:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_device_name, this, _1, _2));
-        break;
-
-      case OPTION_NEXT_CONFIG:
-        opts.next_config();
-        break;
-
-      case OPTION_NEXT_CONTROLLER:
-        opts.next_controller();
-        break;
-
-      case OPTION_CONTROLLER_SLOT:
-        opts.controller_slot = boost::lexical_cast<int>(opt.argument);
-        break;
-
-      case OPTION_CONFIG_SLOT:
-        opts.config_slot = boost::lexical_cast<int>(opt.argument);
-        break;
-
-      case OPTION_TOGGLE:
-        opts.set_toggle_button(opt.argument);
-        break;
-
-      case OPTION_UI_CLEAR:
-        opts.set_ui_clear();
-        break;
-
-      case OPTION_UI_AXISMAP:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_axismap, this, _1, _2));
-        break;
-
-      case OPTION_UI_BUTTONMAP:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
-        break;
-
-      case OPTION_MOUSE:
-        mouse();
-        break;
-
-      case OPTION_GUITAR:
-        opts.get_controller_options().uinput.guitar();
-        break;
-
-      case OPTION_DETACH_KERNEL_DRIVER:
-        opts.detach_kernel_driver = true;
-        break;
-
-      case OPTION_EVDEV:
-        opts.evdev_device = opt.argument;
-        break;
-
-      case OPTION_EVDEV_DEBUG:
-        opts.evdev_debug = true;
-        break;
-
-      case OPTION_EVDEV_NO_GRAB:
-        opts.evdev_grab = false;
-        break;
-
-      case OPTION_EVDEV_ABSMAP:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_evdev_absmap, this, _1, _2));
-        break;
-
-      case OPTION_EVDEV_KEYMAP:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
-        break;
-
-      case OPTION_ID:
-        opts.controller_id = boost::lexical_cast<int>(opt.argument);
-        break;
-
-      case OPTION_WID:
-        opts.wireless_id = boost::lexical_cast<int>(opt.argument);
-        if (opts.wireless_id < 0 || opts.wireless_id > 3)
-        {
-          throw std::runtime_error("wireless id must be within 0 and 3");
-        }
-        break;
-
-      case OPTION_LED:
-        if (opt.argument == "help")
-        {
-          opts.mode = Options::PRINT_LED_HELP;
-        }
-        else
-        {
-          opts.set_led(opt.argument);
-        }
-        break;
-
-      case OPTION_NO_EXTRA_DEVICES:
-        opts.extra_devices = false;
-        break;
-
-      case OPTION_NO_EXTRA_EVENTS:
-        opts.extra_events = false;
-        break;
-
-      case OPTION_DPAD_ONLY:
-        opts.set_dpad_only();
-        break;
-
-      case OPTION_DPAD_AS_BUTTON:
-        opts.set_dpad_as_button();
-        break;
-
-      case OPTION_DEADZONE:
-        set_deadzone(opt.argument);
-        break;
-
-      case OPTION_DEADZONE_TRIGGER:
-        set_deadzone_trigger(opt.argument);
-        break;
-
-      case OPTION_TRIGGER_AS_BUTTON:
-        opts.set_trigger_as_button();
-        break;
-
-      case OPTION_TRIGGER_AS_ZAXIS:
-        opts.set_trigger_as_zaxis();
-        break;
-
-      case OPTION_AUTOFIRE:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_autofire, this, _1, _2));
-        break;
-
-      case OPTION_CALIBRARIOTION:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_calibration, this, _1, _2));
-        break;
-
-      case OPTION_RELATIVE_AXIS:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_relative_axis, this, _1, _2));
-        break;
-
-      case OPTION_AXIS_SENSITIVITY:
-        process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_axis_sensitivity, this, _1, _2));
-        break;
-
-      case OPTION_FOUR_WAY_RESTRICTOR:
-        set_four_way_restrictor();
-        break;
-
-      case OPTION_DPAD_ROTATION:
-        set_dpad_rotation(opt.argument);
-        break;
-
-      case OPTION_SQUARE_AXIS:
-        set_square_axis();
-        break;
-
-      case OPTION_HELP_LED:
-        opts.mode = Options::PRINT_LED_HELP;
-        break;
-
-      case OPTION_DAEMON_DETACH:
-        opts.set_daemon_detach(true);
-        break;
-
-      case OPTION_DAEMON_PID_FILE:
-        opts.pid_file = opt.argument;
-        break;
-
-      case OPTION_DAEMON_ON_CONNECT:
-        opts.on_connect = opt.argument;
-        break;
-
-      case OPTION_DAEMON_ON_DISCONNECT:
-        opts.on_disconnect = opt.argument;
-        break;
-
-      case OPTION_DAEMON_DBUS:
-        opts.set_dbus_mode(opt.argument);
-        break;
-
-      case OPTION_DAEMON_NO_DBUS:
-        opts.dbus = Options::kDBusDisabled;
-        break;
-
-      case OPTION_DEVICE_BY_ID:
-        {
-          unsigned int tmp_product_id;
-          unsigned int tmp_vendor_id;
-          if (sscanf(opt.argument.c_str(), "%x:%x", &tmp_vendor_id, &tmp_product_id) == 2)
-          {
-            opts.vendor_id  = tmp_vendor_id;
-            opts.product_id = tmp_product_id;
-          }
-          else
-          {
-            raise_exception(std::runtime_error, opt.option << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)");
-          }
-          break;
-        }
-
-      case OPTION_DEVICE_BY_PATH:
-        {
-          char busid[4] = { '\0' };
-          char devid[4] = { '\0' };
-
-          if (sscanf(opt.argument.c_str(), "%3s:%3s", busid, devid) != 2)
-          {
-            raise_exception(std::runtime_error, opt.option << " expected an argument in form BUS:DEV (i.e. 006:003)");
-          }
-          else
-          {
-            opts.busid = busid;
-            opts.devid = devid;
-          }
-        }
-        break;
-
-      case OPTION_GENERIC_USB_SPEC:
-        set_generic_usb_spec(opt.argument);
-        break;
-
-      case OPTION_LIST_SUPPORTED_DEVICES:
-        opts.mode = Options::RUN_LIST_SUPPORTED_DEVICES;
-        break;
-
-      case OPTION_LIST_SUPPORTED_DEVICES_XPAD:
-        opts.mode = Options::RUN_LIST_SUPPORTED_DEVICES_XPAD;
-        break;
-
-      case OPTION_LIST_CONTROLLER:
-        opts.mode = Options::RUN_LIST_CONTROLLER;
-        break;
-
-      case OPTION_HELP_DEVICES:
-        opts.mode = Options::PRINT_HELP_DEVICES;
-        break;
-
-      case OPTION_LIST_ALL:
-        opts.mode = Options::PRINT_ENUMS;
-        opts.list_enums |= Options::LIST_ALL;
-        break;
-
-      case OPTION_LIST_ABS:
-        opts.mode = Options::PRINT_ENUMS;
-        opts.list_enums |= Options::LIST_ABS;
-        break;
-
-      case OPTION_LIST_REL:
-        opts.mode = Options::PRINT_ENUMS;
-        opts.list_enums |= Options::LIST_REL;
-        break;
-
-      case OPTION_LIST_KEY:
-        opts.mode = Options::PRINT_ENUMS;
-        opts.list_enums |= Options::LIST_KEY;
-        break;
-
-      case OPTION_LIST_X11KEYSYM:
-        opts.mode = Options::PRINT_ENUMS;
-        opts.list_enums |= Options::LIST_X11KEYSYM;
-        break;
-
-      case OPTION_LIST_AXIS:
-        opts.mode = Options::PRINT_ENUMS;
-        opts.list_enums |= Options::LIST_AXIS;
-        break;
-
-      case OPTION_LIST_BUTTON:
-        opts.mode = Options::PRINT_ENUMS;
-        opts.list_enums |= Options::LIST_BUTTON;
-        break;
-
-      case ArgParser::REST_ARG:
-        opts.exec.push_back(opt.argument);
-        break;
-
-      default:
-        raise_exception(std::runtime_error, "unknown command line option: " << opt.option);
-        break;
+      apply_opt(*i, opts);
+    }
+    catch(std::exception const& err)
+    {
+      std::ostringstream out;
+      out << "error: invalid argument ";
+      if (i->argument.empty())
+      {
+        out << "'" << i->option << "'";
+      }
+      else
+      {
+        out << "'" << i->option << " " << i->argument << "'";
+      }
+      out << "\n    " << err.what();
+      throw std::runtime_error(out.str());
     }
   }
 
   options->finish();
+}
+
+void
+CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
+{
+  switch (opt.key)
+  {
+    case OPTION_HELP:
+      opts.mode = Options::PRINT_HELP;
+      break;
+
+    case OPTION_VERSION:
+      opts.mode = Options::PRINT_VERSION;
+      break;
+
+    case OPTION_VERBOSE:
+      opts.set_verbose();
+      break;
+
+    case OPTION_QUIET:
+      opts.quiet = true;
+      break;
+
+    case OPTION_SILENT:
+      opts.silent = true;
+      break;
+
+    case OPTION_DEBUG:
+      opts.set_debug();
+      break;
+
+    case OPTION_USB_DEBUG:
+      opts.set_usb_debug();
+      break;
+
+    case OPTION_PRIORITY:
+      opts.set_priority(opt.argument);
+      break;
+
+    case OPTION_DAEMON:
+      opts.set_daemon();
+      break;
+
+    case OPTION_DAEMON_MATCH:
+      opts.set_match(opt.argument);
+      break;
+
+    case OPTION_DAEMON_MATCH_GROUP:
+      opts.set_match_group(opt.argument);
+      break;
+
+    case OPTION_WRITE_CONFIG:
+      {
+        opts.instant_exit = true;
+
+        std::ofstream out(opt.argument.c_str());
+        if (!out)
+        {
+          std::ostringstream str;
+          str << "Couldn't create " << opt.argument;
+          throw std::runtime_error(str.str());
+        }
+        else
+        {
+          // FIXME: implement me
+          m_ini.save(out);
+        }
+      }
+      break;
+
+    case OPTION_CONFIG_OPTION:
+      {
+        std::string name, value;
+        split_string_at(opt.argument, '=', &name, &value);
+
+        INISchemaBuilder builder(m_ini);
+        builder.send_section("xboxdrv");
+        builder.send_pair(name, value);
+      }
+      break;
+
+    case OPTION_CONFIG:
+      read_config_file(opt.argument);
+      break;
+
+    case OPTION_ALT_CONFIG:
+      read_alt_config_file(opt.argument);
+      break;
+
+    case OPTION_TEST_RUMBLE:
+      opts.rumble = true;
+      break;
+
+    case OPTION_RUMBLE:
+      if (sscanf(opt.argument.c_str(), "%d,%d", &opts.rumble_l, &opts.rumble_r) == 2)
+      {
+        opts.rumble_l = std::max(0, std::min(255, opts.rumble_l));
+        opts.rumble_r = std::max(0, std::min(255, opts.rumble_r));
+      }
+      else
+      {
+        raise_exception(std::runtime_error, opt.option << " expected an argument in form INT,INT");
+      }
+      break;
+
+    case OPTION_FF_DEVICE:
+      opts.set_ff_device(opt.argument);
+      break;
+
+    case OPTION_QUIT:
+      opts.instant_exit = true;
+      break;
+
+    case OPTION_TIMEOUT:
+      opts.timeout = boost::lexical_cast<int>(opt.argument);
+      break;
+
+    case OPTION_NO_UINPUT:
+      opts.no_uinput = true;
+      break;
+
+    case OPTION_MIMIC_XPAD:
+      opts.set_mimic_xpad();
+      break;
+
+    case OPTION_MIMIC_XPAD_WIRELESS:
+      opts.set_mimic_xpad_wireless();
+      break;
+
+    case OPTION_TYPE:
+      if (opt.argument == "xbox")
+      {
+        opts.gamepad_type = GAMEPAD_XBOX;
+      }
+      else if (opt.argument == "xbox-mat")
+      {
+        opts.gamepad_type = GAMEPAD_XBOX_MAT;
+      }
+      else if (opt.argument == "xbox360")
+      {
+        opts.gamepad_type = GAMEPAD_XBOX360;
+      }
+      else if (opt.argument == "xbox360-guitar")
+      {
+        opts.gamepad_type = GAMEPAD_XBOX360_GUITAR;
+      }
+      else if (opt.argument == "xbox360-wireless")
+      {
+        opts.gamepad_type = GAMEPAD_XBOX360_WIRELESS;
+      }
+      else if (opt.argument == "firestorm")
+      {
+        opts.gamepad_type = GAMEPAD_FIRESTORM;
+      }
+      else if (opt.argument == "firestorm-vsb")
+      {
+        opts.gamepad_type = GAMEPAD_FIRESTORM_VSB;
+      }
+      else if (opt.argument == "saitek-p2500")
+      {
+        opts.gamepad_type = GAMEPAD_SAITEK_P2500;
+      }
+      else if (opt.argument == "playstation3-usb")
+      {
+        opts.gamepad_type = GAMEPAD_PLAYSTATION3_USB;
+      }
+      else if (opt.argument == "generic-usb")
+      {
+        opts.gamepad_type = GAMEPAD_GENERIC_USB;
+      }
+      else
+      {
+        raise_exception(std::runtime_error, "unknown type: " << opt.argument << '\n'
+                        << "Possible types are:\n"
+                        << " * xbox\n"
+                        << " * xbox-mat\n"
+                        << " * xbox360\n"
+                        << " * xbox360-guitar\n"
+                        << " * xbox360-wireless\n"
+                        << " * firestorm\n"
+                        << " * firestorm-vsb\n"
+                        << " * saitek-p2500\n"
+                        << " * generic-usb\n");
+      }
+      break;
+
+    case OPTION_CHATPAD:
+      opts.chatpad = true;
+      break;
+
+    case OPTION_CHATPAD_NO_INIT:
+      opts.chatpad_no_init = true;
+      opts.chatpad = true;
+      break;
+
+    case OPTION_CHATPAD_DEBUG:
+      opts.chatpad_debug = true;
+      break;
+
+    case OPTION_HEADSET:
+      opts.headset = true;
+      break;
+
+    case OPTION_HEADSET_DUMP:
+      opts.headset = true;
+      opts.headset_dump = opt.argument;
+      break;
+
+    case OPTION_HEADSET_PLAY:
+      opts.headset = true;
+      opts.headset_play = opt.argument;
+      break;
+
+    case OPTION_FORCE_FEEDBACK:
+      opts.get_controller_slot().set_force_feedback(true);
+      break;
+
+    case OPTION_RUMBLE_GAIN:
+      opts.rumble_gain = to_number(255, opt.argument);
+      break;
+
+    case OPTION_MODIFIER:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_modifier, this, _1, _2));
+      break;
+
+    case OPTION_BUTTONMAP:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_buttonmap, this, _1, _2));
+      break;
+
+    case OPTION_AXISMAP:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_axismap, this, _1, _2));
+      break;
+
+    case OPTION_DEVICE_USBID:
+      opts.set_device_usbid(opt.argument);
+      break;
+
+    case OPTION_DEVICE_USBIDS:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_device_usbid, this, _1, _2));
+      break;
+
+    case OPTION_DEVICE_NAME:
+      opts.set_device_name(opt.argument);
+      break;
+
+    case OPTION_DEVICE_NAMES:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_device_name, this, _1, _2));
+      break;
+
+    case OPTION_NEXT_CONFIG:
+      opts.next_config();
+      break;
+
+    case OPTION_NEXT_CONTROLLER:
+      opts.next_controller();
+      break;
+
+    case OPTION_CONTROLLER_SLOT:
+      opts.controller_slot = boost::lexical_cast<int>(opt.argument);
+      break;
+
+    case OPTION_CONFIG_SLOT:
+      opts.config_slot = boost::lexical_cast<int>(opt.argument);
+      break;
+
+    case OPTION_TOGGLE:
+      opts.set_toggle_button(opt.argument);
+      break;
+
+    case OPTION_UI_CLEAR:
+      opts.set_ui_clear();
+      break;
+
+    case OPTION_UI_AXISMAP:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_axismap, this, _1, _2));
+      break;
+
+    case OPTION_UI_BUTTONMAP:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
+      break;
+
+    case OPTION_MOUSE:
+      mouse();
+      break;
+
+    case OPTION_GUITAR:
+      opts.get_controller_options().uinput.guitar();
+      break;
+
+    case OPTION_DETACH_KERNEL_DRIVER:
+      opts.detach_kernel_driver = true;
+      break;
+
+    case OPTION_EVDEV:
+      opts.evdev_device = opt.argument;
+      break;
+
+    case OPTION_EVDEV_DEBUG:
+      opts.evdev_debug = true;
+      break;
+
+    case OPTION_EVDEV_NO_GRAB:
+      opts.evdev_grab = false;
+      break;
+
+    case OPTION_EVDEV_ABSMAP:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_evdev_absmap, this, _1, _2));
+      break;
+
+    case OPTION_EVDEV_KEYMAP:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
+      break;
+
+    case OPTION_ID:
+      opts.controller_id = boost::lexical_cast<int>(opt.argument);
+      break;
+
+    case OPTION_WID:
+      opts.wireless_id = boost::lexical_cast<int>(opt.argument);
+      if (opts.wireless_id < 0 || opts.wireless_id > 3)
+      {
+        throw std::runtime_error("wireless id must be within 0 and 3");
+      }
+      break;
+
+    case OPTION_LED:
+      if (opt.argument == "help")
+      {
+        opts.mode = Options::PRINT_LED_HELP;
+      }
+      else
+      {
+        opts.set_led(opt.argument);
+      }
+      break;
+
+    case OPTION_NO_EXTRA_DEVICES:
+      opts.extra_devices = false;
+      break;
+
+    case OPTION_NO_EXTRA_EVENTS:
+      opts.extra_events = false;
+      break;
+
+    case OPTION_DPAD_ONLY:
+      opts.set_dpad_only();
+      break;
+
+    case OPTION_DPAD_AS_BUTTON:
+      opts.set_dpad_as_button();
+      break;
+
+    case OPTION_DEADZONE:
+      set_deadzone(opt.argument);
+      break;
+
+    case OPTION_DEADZONE_TRIGGER:
+      set_deadzone_trigger(opt.argument);
+      break;
+
+    case OPTION_TRIGGER_AS_BUTTON:
+      opts.set_trigger_as_button();
+      break;
+
+    case OPTION_TRIGGER_AS_ZAXIS:
+      opts.set_trigger_as_zaxis();
+      break;
+
+    case OPTION_AUTOFIRE:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_autofire, this, _1, _2));
+      break;
+
+    case OPTION_CALIBRARIOTION:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_calibration, this, _1, _2));
+      break;
+
+    case OPTION_RELATIVE_AXIS:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_relative_axis, this, _1, _2));
+      break;
+
+    case OPTION_AXIS_SENSITIVITY:
+      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_axis_sensitivity, this, _1, _2));
+      break;
+
+    case OPTION_FOUR_WAY_RESTRICTOR:
+      set_four_way_restrictor();
+      break;
+
+    case OPTION_DPAD_ROTATION:
+      set_dpad_rotation(opt.argument);
+      break;
+
+    case OPTION_SQUARE_AXIS:
+      set_square_axis();
+      break;
+
+    case OPTION_HELP_LED:
+      opts.mode = Options::PRINT_LED_HELP;
+      break;
+
+    case OPTION_DAEMON_DETACH:
+      opts.set_daemon_detach(true);
+      break;
+
+    case OPTION_DAEMON_PID_FILE:
+      opts.pid_file = opt.argument;
+      break;
+
+    case OPTION_DAEMON_ON_CONNECT:
+      opts.on_connect = opt.argument;
+      break;
+
+    case OPTION_DAEMON_ON_DISCONNECT:
+      opts.on_disconnect = opt.argument;
+      break;
+
+    case OPTION_DAEMON_DBUS:
+      opts.set_dbus_mode(opt.argument);
+      break;
+
+    case OPTION_DAEMON_NO_DBUS:
+      opts.dbus = Options::kDBusDisabled;
+      break;
+
+    case OPTION_DEVICE_BY_ID:
+      {
+        unsigned int tmp_product_id;
+        unsigned int tmp_vendor_id;
+        if (sscanf(opt.argument.c_str(), "%x:%x", &tmp_vendor_id, &tmp_product_id) == 2)
+        {
+          opts.vendor_id  = tmp_vendor_id;
+          opts.product_id = tmp_product_id;
+        }
+        else
+        {
+          raise_exception(std::runtime_error, opt.option << " expected an argument in form PRODUCT:VENDOR (i.e. 046d:c626)");
+        }
+        break;
+      }
+
+    case OPTION_DEVICE_BY_PATH:
+      {
+        char busid[4] = { '\0' };
+        char devid[4] = { '\0' };
+
+        if (sscanf(opt.argument.c_str(), "%3s:%3s", busid, devid) != 2)
+        {
+          raise_exception(std::runtime_error, opt.option << " expected an argument in form BUS:DEV (i.e. 006:003)");
+        }
+        else
+        {
+          opts.busid = busid;
+          opts.devid = devid;
+        }
+      }
+      break;
+
+    case OPTION_GENERIC_USB_SPEC:
+      set_generic_usb_spec(opt.argument);
+      break;
+
+    case OPTION_LIST_SUPPORTED_DEVICES:
+      opts.mode = Options::RUN_LIST_SUPPORTED_DEVICES;
+      break;
+
+    case OPTION_LIST_SUPPORTED_DEVICES_XPAD:
+      opts.mode = Options::RUN_LIST_SUPPORTED_DEVICES_XPAD;
+      break;
+
+    case OPTION_LIST_CONTROLLER:
+      opts.mode = Options::RUN_LIST_CONTROLLER;
+      break;
+
+    case OPTION_HELP_DEVICES:
+      opts.mode = Options::PRINT_HELP_DEVICES;
+      break;
+
+    case OPTION_LIST_ALL:
+      opts.mode = Options::PRINT_ENUMS;
+      opts.list_enums |= Options::LIST_ALL;
+      break;
+
+    case OPTION_LIST_ABS:
+      opts.mode = Options::PRINT_ENUMS;
+      opts.list_enums |= Options::LIST_ABS;
+      break;
+
+    case OPTION_LIST_REL:
+      opts.mode = Options::PRINT_ENUMS;
+      opts.list_enums |= Options::LIST_REL;
+      break;
+
+    case OPTION_LIST_KEY:
+      opts.mode = Options::PRINT_ENUMS;
+      opts.list_enums |= Options::LIST_KEY;
+      break;
+
+    case OPTION_LIST_X11KEYSYM:
+      opts.mode = Options::PRINT_ENUMS;
+      opts.list_enums |= Options::LIST_X11KEYSYM;
+      break;
+
+    case OPTION_LIST_AXIS:
+      opts.mode = Options::PRINT_ENUMS;
+      opts.list_enums |= Options::LIST_AXIS;
+      break;
+
+    case OPTION_LIST_BUTTON:
+      opts.mode = Options::PRINT_ENUMS;
+      opts.list_enums |= Options::LIST_BUTTON;
+      break;
+
+    case ArgParser::REST_ARG:
+      opts.exec.push_back(opt.argument);
+      break;
+
+    default:
+      raise_exception(std::runtime_error, "unknown command line option: " << opt.option);
+      break;
+  }
 }
 
 void
