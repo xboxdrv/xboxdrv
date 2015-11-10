@@ -23,6 +23,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "helper.hpp"
 #include "xboxmsg.hpp"
 #include "raise_exception.hpp"
 
@@ -36,8 +37,8 @@ StickZoneModifier::from_string(const std::vector<std::string>& args)
   else
   {
     return new StickZoneModifier(args[0], args[1], args[2],
-                                 boost::lexical_cast<float>(args[3]),
-                                 boost::lexical_cast<float>(args[4]));
+                                 str2float(args[3]),
+                                 str2float(args[4]));
   }
 }
 

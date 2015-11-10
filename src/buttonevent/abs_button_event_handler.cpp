@@ -18,6 +18,8 @@
 
 #include "abs_button_event_handler.hpp"
 
+#include <sstream>
+
 #include "uinput.hpp"
 
 AbsButtonEventHandler*

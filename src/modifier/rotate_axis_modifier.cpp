@@ -18,9 +18,11 @@
 
 #include "rotate_axis_modifier.hpp"
 
-#include <stdexcept>
-#include <boost/lexical_cast.hpp>
 #include <math.h>
+#include <sstream>
+#include <stdexcept>
+
+#include "helper.hpp"
 
 RotateAxisModifier*
 RotateAxisModifier::from_string(const std::vector<std::string>& args)
@@ -32,8 +34,8 @@ RotateAxisModifier::from_string(const std::vector<std::string>& args)
   else
   {
     return new RotateAxisModifier(args[0], args[1],
-                                  boost::lexical_cast<float>(args[2]) * static_cast<float>(M_PI) / 180.0f,
-                                  args.size() == 3 ? false : boost::lexical_cast<bool>(args[3]));
+                                  str2float(args[2]) * static_cast<float>(M_PI) / 180.0f,
+                                  args.size() == 3 ? false : str2bool(args[3]));
   }
 }
 

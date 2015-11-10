@@ -20,8 +20,10 @@
 
 #include <boost/tokenizer.hpp>
 #include <math.h>
+#include <sstream>
 
 #include "evdev_helper.hpp"
+#include "helper.hpp"
 #include "raise_exception.hpp"
 #include "uinput.hpp"
 
@@ -39,8 +41,8 @@ RelRepeatAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devi
   {
     return new RelRepeatAxisEventHandler(uinput, slot, extra_devices,
                                          str2rel_event(args[0]),
-                                         boost::lexical_cast<int>(args[1]),
-                                         boost::lexical_cast<float>(args[2]));
+                                         str2int(args[1]),
+                                         str2float(args[2]));
   }
   else
   {

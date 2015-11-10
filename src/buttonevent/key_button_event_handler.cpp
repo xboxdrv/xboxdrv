@@ -22,6 +22,7 @@
 #include <linux/input.h>
 
 #include "evdev_helper.hpp"
+#include "helper.hpp"
 #include "uinput.hpp"
 
 KeyButtonEventHandler*
@@ -55,7 +56,7 @@ KeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
 
       case 2:
         {
-          hold_threshold = boost::lexical_cast<int>(*i);
+          hold_threshold = str2int(*i);
         }
         break;
 

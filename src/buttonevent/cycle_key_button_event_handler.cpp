@@ -21,6 +21,7 @@
 #include <boost/tokenizer.hpp>
 #include <stdexcept>
 
+#include "helper.hpp"
 #include "ui_event_sequence.hpp"
 #include "raise_exception.hpp"
 
@@ -107,7 +108,7 @@ CycleKeyButtonEventHandler::from_string_ref(UInput& uinput, int slot, bool extra
   {
     std::string name = args[0];
     Direction direction = (args.size() > 1) ? direction_from_string(args[1]) : kBackward;
-    bool press    = (args.size() > 2) ? boost::lexical_cast<bool>(args[2]) : true;
+    bool press    = (args.size() > 2) ? str2bool(args[2]) : true;
 
     CycleKeySequencePtr cycle_sequence = CycleKeyButtonEventHandler::lookup(name);
     if (!cycle_sequence)

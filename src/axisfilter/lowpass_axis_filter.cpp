@@ -25,7 +25,7 @@
 AxisFilterPtr
 LowpassAxisFilter::from_string(const std::string& str)
 {
-  return AxisFilterPtr(new LowpassAxisFilter(boost::lexical_cast<float>(str)));
+  return AxisFilterPtr(new LowpassAxisFilter(str2float(str)));
 }
 
 LowpassAxisFilter::LowpassAxisFilter(float rate) :

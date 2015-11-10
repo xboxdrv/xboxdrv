@@ -19,7 +19,9 @@
 #include "axisfilter/deadzone_axis_filter.hpp"
 
 #include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
+#include <sstream>
+
+#include "helper.hpp"
 
 DeadzoneAxisFilter*
 DeadzoneAxisFilter::from_string(const std::string& str)
@@ -36,17 +38,17 @@ DeadzoneAxisFilter::from_string(const std::string& str)
     switch(idx)
     {
       case 0:
-        max_deadzone = boost::lexical_cast<int>(*t);
+        max_deadzone = str2int(*t);
         min_deadzone = -max_deadzone;
         break;
 
       case 1:
         min_deadzone = -min_deadzone;
-        max_deadzone = boost::lexical_cast<int>(*t);
+        max_deadzone = str2int(*t);
         break;
 
       case 2:
-        smooth = boost::lexical_cast<bool>(*t);
+        smooth = str2bool(*t);
         break;
 
       default:

@@ -19,8 +19,8 @@
 #ifndef HEADER_XBOXDRV_UI_EVENT_HPP
 #define HEADER_XBOXDRV_UI_EVENT_HPP
 
-#include <boost/lexical_cast.hpp>
 #include <stdint.h>
+#include <string>
 
 enum {
   DEVICEID_INVALID  = static_cast<uint16_t>(-5),

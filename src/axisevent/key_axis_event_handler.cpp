@@ -51,7 +51,7 @@ KeyAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
           if (is_float(*i))
           {
             // bit of hackery to handle simplified syntax for trigger button that don't need up/down events
-            threshold = boost::lexical_cast<float>(*i);
+            threshold = str2float(*i);
             down_codes = up_codes;
             up_codes.clear();
           }
@@ -63,7 +63,7 @@ KeyAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
         break;
 
       case 2:
-        threshold = boost::lexical_cast<float>(*i);
+        threshold = str2float(*i);
         break;
 
       default:

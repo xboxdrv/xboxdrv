@@ -18,7 +18,10 @@
 
 #include "ui_event.hpp"
 
+#include <boost/lexical_cast.hpp>
+
 #include "evdev_helper.hpp"
+#include "helper.hpp"
 #include "uinput.hpp"
 
 bool

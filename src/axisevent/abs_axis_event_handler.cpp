@@ -21,6 +21,7 @@
 #include <boost/tokenizer.hpp>
 
 #include "evdev_helper.hpp"
+#include "helper.hpp"
 #include "raise_exception.hpp"
 #include "uinput.hpp"
 
@@ -47,19 +48,19 @@ AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
         break;
 
       case 1:
-        min = boost::lexical_cast<int>(*i);
+        min = str2int(*i);
         break;
 
       case 2:
-        max = boost::lexical_cast<int>(*i);
+        max = str2int(*i);
         break;
 
       case 3:
-        fuzz = boost::lexical_cast<int>(*i);
+        fuzz = str2int(*i);
         break;
 
       case 4:
-        flat = boost::lexical_cast<int>(*i);
+        flat = str2int(*i);
         break;
 
       default:

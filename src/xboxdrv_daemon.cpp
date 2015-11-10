@@ -79,7 +79,7 @@ bool get_usb_path(udev_device* device, int* bus, int* dev)
   }
   else
   {
-    *bus = boost::lexical_cast<int>(busnum_str);
+    *bus = str2int(busnum_str);
   }
 
   const char* devnum_str = udev_device_get_property_value(device, "DEVNUM");
@@ -89,7 +89,7 @@ bool get_usb_path(udev_device* device, int* bus, int* dev)
   }
   else
   {
-    *dev = boost::lexical_cast<int>(devnum_str);
+    *dev = str2int(devnum_str);
   }
 
   return true;

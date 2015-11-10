@@ -26,6 +26,10 @@
 int hexstr2int(const std::string& str);
 uint16_t hexstr2uint16(const std::string& str);
 
+bool str2bool(std::string const& str);
+int str2int(std::string const& str);
+float str2float(std::string const& str);
+
 std::string raw2str(const uint8_t* buffer, int len);
 std::string to_lower(const std::string &str);
 bool is_number(const std::string& str);

@@ -21,6 +21,7 @@
 #include <boost/tokenizer.hpp>
 
 #include "evdev_helper.hpp"
+#include "helper.hpp"
 #include "uinput.hpp"
 
 RelButtonEventHandler*
@@ -43,11 +44,11 @@ RelButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
         break;
 
       case 1:
-        ev->m_value  = boost::lexical_cast<int>(*i);
+        ev->m_value  = str2int(*i);
         break;
 
       case 2:
-        ev->m_repeat = boost::lexical_cast<int>(*i);
+        ev->m_repeat = str2int(*i);
         break;
     }
   }

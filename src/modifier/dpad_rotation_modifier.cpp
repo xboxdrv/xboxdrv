@@ -19,7 +19,9 @@
 #include "modifier/dpad_rotation_modifier.hpp"
 
 #include <stdexcept>
-#include <boost/lexical_cast.hpp>
+#include <sstream>
+
+#include "helper.hpp"
 
 #include "controller_config.hpp"
 
@@ -39,7 +41,7 @@ DpadRotationModifier::from_string(const std::vector<std::string>& args)
 DpadRotationModifier*
 DpadRotationModifier::from_string(const std::string& value)
 {
-  int degree = boost::lexical_cast<int>(value);
+  int degree = str2int(value);
   degree /= 45;
   degree %= 8;
   if (degree < 0)

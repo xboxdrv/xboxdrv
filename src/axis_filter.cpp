@@ -18,8 +18,8 @@
 
 #include "axis_filter.hpp"
 
-#include <boost/lexical_cast.hpp>
 #include <stdexcept>
+#include <sstream>
 
 #include "axisfilter/calibration_axis_filter.hpp"
 #include "axisfilter/const_axis_filter.hpp"

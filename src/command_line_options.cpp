@@ -621,7 +621,7 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
         break;
 
       case OPTION_TIMEOUT:
-        opts.timeout = boost::lexical_cast<int>(opt.argument);
+        opts.timeout = str2int(opt.argument);
         break;
 
       case OPTION_NO_UINPUT:
@@ -770,11 +770,11 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
         break;
 
       case OPTION_CONTROLLER_SLOT:
-        opts.controller_slot = boost::lexical_cast<int>(opt.argument);
+        opts.controller_slot = str2int(opt.argument);
         break;
 
       case OPTION_CONFIG_SLOT:
-        opts.config_slot = boost::lexical_cast<int>(opt.argument);
+        opts.config_slot = str2int(opt.argument);
         break;
 
       case OPTION_TOGGLE:
@@ -834,11 +834,11 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
         break;
 
       case OPTION_ID:
-        opts.controller_id = boost::lexical_cast<int>(opt.argument);
+        opts.controller_id = str2int(opt.argument);
         break;
 
       case OPTION_WID:
-        opts.wireless_id = boost::lexical_cast<int>(opt.argument);
+        opts.wireless_id = str2int(opt.argument);
         if (opts.wireless_id < 0 || opts.wireless_id > 3)
         {
           throw std::runtime_error("wireless id must be within 0 and 3");
@@ -1204,14 +1204,14 @@ void
 CommandLineParser::set_relative_axis(const std::string& name, const std::string& value)
 {
   m_options->get_controller_options().relative_axis_map[name]
-    = AxisFilterPtr(new RelativeAxisFilter(boost::lexical_cast<int>(value)));
+    = AxisFilterPtr(new RelativeAxisFilter(str2int(value)));
 }
 
 void
 CommandLineParser::set_autofire(const std::string& name, const std::string& value)
 {
   m_options->get_controller_options().autofire_map[name]
-    = ButtonFilterPtr(new AutofireButtonFilter(boost::lexical_cast<int>(value), 0));
+    = ButtonFilterPtr(new AutofireButtonFilter(str2int(value), 0));
 }
 
 void
@@ -1228,9 +1228,9 @@ CommandLineParser::set_calibration(const std::string& name, const std::string& v
   else
   {
     m_options->get_controller_options().calibration_map[name]
-      = AxisFilterPtr(new CalibrationAxisFilter(boost::lexical_cast<int>(args[0]),
-                                                boost::lexical_cast<int>(args[1]),
-                                                boost::lexical_cast<int>(args[2])));
+      = AxisFilterPtr(new CalibrationAxisFilter(str2int(args[0]),
+                                                str2int(args[1]),
+                                                str2int(args[2])));
   }
 }
 
@@ -1238,7 +1238,7 @@ void
 CommandLineParser::set_axis_sensitivity(const std::string& name, const std::string& value)
 {
   m_options->get_controller_options().sensitivity_map[name]
-    = AxisFilterPtr(new SensitivityAxisFilter(boost::lexical_cast<float>(value)));
+    = AxisFilterPtr(new SensitivityAxisFilter(str2float(value)));
 }
 
 void
@@ -1268,7 +1268,7 @@ CommandLineParser::set_four_way_restrictor()
 void
 CommandLineParser::set_dpad_rotation(const std::string& value)
 {
-  int degree = boost::lexical_cast<int>(value);
+  int degree = str2int(value);
   degree /= 45;
   degree %= 8;
   if (degree < 0) degree += 8;
@@ -1361,14 +1361,14 @@ void
 CommandLineParser::set_relative_axis_n(int controller, int config, const std::string& name, const std::string& value)
 {
   m_options->controller_slots[controller].get_options(config)
-    .relative_axis_map[name] = AxisFilterPtr(new RelativeAxisFilter(boost::lexical_cast<int>(value)));
+    .relative_axis_map[name] = AxisFilterPtr(new RelativeAxisFilter(str2int(value)));
 }
 
 void
 CommandLineParser::set_autofire_n(int controller, int config, const std::string& name, const std::string& value)
 {
   m_options->controller_slots[controller].get_options(config)
-    .autofire_map[name] = ButtonFilterPtr(new AutofireButtonFilter(boost::lexical_cast<int>(value), 0));
+    .autofire_map[name] = ButtonFilterPtr(new AutofireButtonFilter(str2int(value), 0));
 }
 
 void
@@ -1382,7 +1382,7 @@ void
 CommandLineParser::set_axis_sensitivity_n(int controller, int config, const std::string& name, const std::string& value)
 {
   m_options->controller_slots[controller].get_options(config)
-    .sensitivity_map[name] = AxisFilterPtr(new SensitivityAxisFilter(boost::lexical_cast<float>(value)));
+    .sensitivity_map[name] = AxisFilterPtr(new SensitivityAxisFilter(str2float(value)));
 }
 
 void

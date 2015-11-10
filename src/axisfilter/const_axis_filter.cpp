@@ -18,13 +18,14 @@
 
 #include "axisfilter/const_axis_filter.hpp"
 
-#include <boost/lexical_cast.hpp>
 #include <sstream>
+
+#include "helper.hpp"
 
 ConstAxisFilter*
 ConstAxisFilter::from_string(const std::string& rest)
 {
-  return new ConstAxisFilter(boost::lexical_cast<int>(rest));
+  return new ConstAxisFilter(str2int(rest));
 }
 
 ConstAxisFilter::ConstAxisFilter(int value) :

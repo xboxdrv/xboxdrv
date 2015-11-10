@@ -22,6 +22,7 @@
 #include <math.h>
 
 #include "evdev_helper.hpp"
+#include "helper.hpp"
 #include "uinput.hpp"
 
 RelAxisEventHandler*
@@ -45,11 +46,11 @@ RelAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
         break;
 
       case 1:
-        value = boost::lexical_cast<float>(*i);
+        value = str2float(*i);
         break;
 
       case 2:
-        repeat = boost::lexical_cast<int>(*i);
+        repeat = str2int(*i);
         break;
 
       default:

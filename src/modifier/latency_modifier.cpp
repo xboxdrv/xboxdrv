@@ -22,6 +22,7 @@
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 
+#include "helper.hpp"
 #include "raise_exception.hpp"
 
 LatencyModifier*
@@ -33,7 +34,7 @@ LatencyModifier::from_string(const std::vector<std::string>& args)
   }
   else
   {
-    return new LatencyModifier(boost::lexical_cast<int>(args[0]));
+    return new LatencyModifier(str2int(args[0]));
   }
 }
 

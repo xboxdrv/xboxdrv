@@ -52,6 +52,49 @@ uint16_t hexstr2uint16(const std::string& str)
 {
   return static_cast<uint16_t>(hexstr2int(str));
 }
+
+
+bool str2bool(std::string const& str)
+{
+  try
+  {
+    return boost::lexical_cast<bool>(str);
+  }
+  catch(boost::bad_lexical_cast const& err)
+  {
+    std::ostringstream out;
+    out << "str2bool(): couldn't convert '" << str << "' to bool";
+    throw std::runtime_error(out.str());
+  }
+}
+
+int str2int(std::string const& str)
+{
+  try
+  {
+    return boost::lexical_cast<int>(str);
+  }
+  catch(boost::bad_lexical_cast const& err)
+  {
+    std::ostringstream out;
+    out << "str2int(): couldn't convert '" << str << "' to int";
+    throw std::runtime_error(out.str());
+  }
+}
+
+float str2float(std::string const& str)
+{
+  try
+  {
+    return boost::lexical_cast<float>(str);
+  }
+  catch(boost::bad_lexical_cast const& err)
+  {
+    std::ostringstream out;
+    out << "str2float(): couldn't convert '" << str << "' to float";
+    throw std::runtime_error(out.str());
+  }
+}
 
 std::string raw2str(const uint8_t* data, int len)
 {
@@ -191,7 +234,7 @@ int to_number(int range, const std::string& str)
     }
     else
     {
-      return boost::lexical_cast<int>(str);
+      return str2int(str);
     }
   }
 }
