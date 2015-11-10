@@ -476,6 +476,8 @@ CommandLineParser::init_ini(Options* opts)
 void
 CommandLineParser::parse_args(int argc, char** argv, Options* options)
 {
+  Options& opts = *options;
+
   init_ini(options);
   m_options = options;
 
@@ -483,10 +485,34 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 
   for(ArgParser::ParsedOptions::const_iterator i = parsed.begin(); i != parsed.end(); ++i)
   {
-    Options& opts = *options;
-    const ArgParser::ParsedOption& opt = *i;
+    try
+    {
+      apply_opt(*i, opts);
+    }
+    catch(std::exception const& err)
+    {
+      std::ostringstream out;
+      out << "error: invalid argument ";
+      if (i->argument.empty())
+      {
+        out << "'" << i->option << "'";
+      }
+      else
+      {
+        out << "'" << i->option << " " << i->argument << "'";
+      }
+      out << "\n    " << err.what();
+      throw std::runtime_error(out.str());
+    }
+  }
 
-    switch (i->key)
+  options->finish();
+}
+
+void
+CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
+{
+  switch (opt.key)
     {
       case OPTION_HELP:
         opts.mode = Options::PRINT_HELP;
@@ -1005,9 +1031,6 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
         break;
     }
   }
-
-  options->finish();
-}
 
 void
 CommandLineParser::print_help() const

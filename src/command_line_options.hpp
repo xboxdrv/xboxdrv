@@ -50,6 +50,8 @@ public:
   void create_ini_schema(Options* opts);
 
 private:
+  void apply_opt(ArgParser::ParsedOption const& opt, Options& opts);
+
   void set_device_name(const std::string& name, const std::string& value);
   void set_device_usbid(const std::string& name, const std::string& value);
 
