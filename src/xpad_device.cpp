@@ -88,6 +88,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x0e6f, 0x0201, "Pelican PL-3601 'TSZ' Wired Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x0105, "HSM3 Xbox360 dancepad" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x0113, "Afterglow AX.1 Gamepad for Xbox 360" },
+  { GAMEPAD_XBOX360,          0x0e6f, 0x0413, "Afterglow AX.1 Gamepad for Xbox 360" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x0213, "Afterglow Gamepad for Xbox 360" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x0401, "Logic3 Controller" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x0301, "Logic3 Controller" },
