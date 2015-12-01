@@ -65,6 +65,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x0738, 0xf738, "Super SFIV FightStick TE S" },
   { GAMEPAD_XBOX360,          0x0738, 0x4718, "Mad Catz Street Fighter IV FightStick SE" },
   { GAMEPAD_XBOX360,          0x0738, 0x4738, "Mad Catz Wired Xbox 360 Controller (SFIV)" },
+  { GAMEPAD_XBOX360,          0x0738, 0xb738, "MadCatz FightStick TE" },
   { GAMEPAD_XBOX360,          0x0738, 0xbeef, "Mad Catz JOYTECH NEO SE Advanced GamePad" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x000a, "Hori Co. DOA4 FightStick" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x000d, "Hori Fighting Stick EX2" },
