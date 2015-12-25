@@ -27,6 +27,7 @@
 #include "saitek_p3600_controller.hpp"
 #include "xbox360_controller.hpp"
 #include "xbox360_wireless_controller.hpp"
+#include "xboxone_wireless_controller.hpp"
 #include "xbox_controller.hpp"
 
 ControllerPtr
@@ -59,6 +60,9 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
 
     case GAMEPAD_XBOX360_WIRELESS:
       return ControllerPtr(new Xbox360WirelessController(dev, opts.wireless_id, opts.detach_kernel_driver));
+
+    case GAMEPAD_XBOXONE_WIRELESS:
+      return ControllerPtr(new XboxOneWirelessController(dev, opts.wireless_id, opts.detach_kernel_driver));
 
     case GAMEPAD_FIRESTORM:
       return ControllerPtr(new FirestormDualController(dev, false, opts.detach_kernel_driver));
@@ -125,6 +129,10 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
       }
       break;
 
+    case GAMEPAD_XBOXONE_WIRELESS:
+      lst.push_back(ControllerPtr(new XboxOneWirelessController(dev, opts.wireless_id, opts.detach_kernel_driver)));
+      break;
+
     case GAMEPAD_FIRESTORM:
       lst.push_back(ControllerPtr(new FirestormDualController(dev, false, opts.detach_kernel_driver)));
       break;
@@ -136,7 +144,7 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
     case GAMEPAD_SAITEK_P2500:
       lst.push_back(ControllerPtr(new SaitekP2500Controller(dev, opts.detach_kernel_driver)));
       break;
-    
+
     case GAMEPAD_SAITEK_P3600:
       lst.push_back(ControllerPtr(new SaitekP3600Controller(dev, opts.detach_kernel_driver)));
       break;
