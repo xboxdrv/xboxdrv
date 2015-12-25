@@ -39,14 +39,13 @@
 #include "usb_helper.hpp"
 #include "xboxmsg.hpp"
 
-XboxOneWiredController::XboxOneWiredController(libusb_device* usb, int controller_id, bool try_detach): USBController(usb)
+XboxOneWiredController::XboxOneWiredController(libusb_device* usb, int controller_id, bool try_detach):
+  USBController(usb),
+  endpoint(controller_id * 2 + 1),
+  interface(controller_id * 2),
+  sent_auth(false),
+  guide_button(false)
 {
-  endpoint  = controller_id * 2 + 1;
-  interface = controller_id * 2;
-
-  sent_auth = false;
-  guide_button = false;
-
   usb_claim_interface(interface, try_detach);
   usb_submit_read(endpoint, 32);
 }
@@ -57,13 +56,20 @@ XboxOneWiredController::~XboxOneWiredController()
 
 bool XboxOneWiredController::parse(uint8_t* data, int len, XboxGenericMsg* omsg)
 {
-  if(data[0] == 0x20) {
+  if(data[0] == 0x20)
+  {
     return parse_button_status(data, len, omsg);
-  } else if(data[0] == 0x07) {
+  }
+  else if(data[0] == 0x07)
+  {
     return parse_ledbutton_status(data, len, omsg);
-  } else if(data[0] == 0x03) {
+  }
+  else if(data[0] == 0x03)
+  {
     return parse_init_status(data, len, omsg);
-  } else if(data[0] == 0x02) {
+  }
+  else if(data[0] == 0x02)
+  {
     return parse_auth_status(data, len, omsg);
   }
 
@@ -129,9 +135,9 @@ bool XboxOneWiredController::parse_button_status(uint8_t* data, int len, XboxGen
 {
   omsg->type = XBOX_MSG_XBOX360;
   Xbox360Msg& msg = omsg->xbox360;
-  XboxOneButtonData* button_data = (XboxOneButtonData*) data;
+  XboxOneButtonData* button_data = reinterpret_cast<XboxOneButtonData*>(data);
 
-  memset((void*) &msg, 0, sizeof(msg));
+  memset(reinterpret_cast<void*>(&msg), 0, sizeof(msg));
 
   msg.a = button_data->a;
   msg.b = button_data->b;
@@ -160,10 +166,10 @@ bool XboxOneWiredController::parse_button_status(uint8_t* data, int len, XboxGen
 
 bool XboxOneWiredController::parse_ledbutton_status(uint8_t* data, int len, XboxGenericMsg* omsg)
 {
-  XboxOneGuideData* gd = (XboxOneGuideData*) data;
+  XboxOneGuideData* gd = reinterpret_cast<XboxOneGuideData*>(data);
   Xbox360Msg& msg = omsg->xbox360;
 
-  memset((void*) &msg, 0, sizeof(msg));
+  memset(reinterpret_cast<void*>(&msg), 0, sizeof(msg));
 
   msg.type = XBOX_MSG_XBOX360;
   msg.guide = gd->down;
@@ -179,7 +185,8 @@ bool XboxOneWiredController::parse_init_status(uint8_t* data, int len, XboxGener
 
 bool XboxOneWiredController::parse_auth_status(uint8_t* data, int len, XboxGenericMsg* omsg)
 {
-  if(!sent_auth && data[1] == 0x20) {
+  if(!sent_auth && data[1] == 0x20)
+  {
     uint8_t authbuf[2] = { 0x05, 0x20 };
     usb_write(endpoint, authbuf, 2);
     sent_auth = true;

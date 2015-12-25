@@ -5,13 +5,9 @@
 
 #include "usb_controller.hpp"
 
-struct XPadDevice;
-
 class XboxOneWiredController: public USBController
 {
 private:
-  XPadDevice* dev_type;
-
   int endpoint;
   int interface;
   bool sent_auth;
@@ -22,6 +18,9 @@ private:
   bool parse_ledbutton_status(uint8_t* data, int len, XboxGenericMsg* omsg);
   bool parse_init_status(uint8_t* data, int len, XboxGenericMsg* omsg);
   bool parse_auth_status(uint8_t* data, int len, XboxGenericMsg* omsg);
+
+  XboxOneWiredController(const XboxOneWiredController& other);
+  XboxOneWiredController& operator= (const XboxOneWiredController&);
 
 public:
   XboxOneWiredController(libusb_device* usb, int controller_id, bool try_detach);
