@@ -11,7 +11,7 @@
 **  - The Linux 'xpad' driver:
 **    -> drivers/input/joystick/xpad.c
 **
-**  - XboxOne rev-eng work by quantus (Pekka Pöyry):
+**  - XboxOne controller rev-eng work by quantus (Pekka Pöyry):
 **    -> https://github.com/quantus/xbox-one-controller-protocol
 **
 **  This program is free software: you can redistribute it and/or modify

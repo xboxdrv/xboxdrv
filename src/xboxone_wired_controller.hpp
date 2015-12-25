@@ -14,7 +14,6 @@ private:
 
   int endpoint;
   int interface;
-  uint8_t sequence;
   bool sent_auth;
   bool guide_button;
 
