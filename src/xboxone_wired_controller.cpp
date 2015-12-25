@@ -1,4 +1,4 @@
-#include "xboxone_wireless_controller.hpp"
+#include "xboxone_wired_controller.hpp"
 
 #include <sstream>
 #include <boost/format.hpp>
@@ -13,7 +13,7 @@
 
 //#define LOG(...) {std::cout << "log: " << __VA_ARGS__ << "\n";}
 
-XboxOneWirelessController::XboxOneWirelessController(libusb_device* usb, int controller_id, bool try_detach): USBController(usb) {
+XboxOneWiredController::XboxOneWiredController(libusb_device* usb, int controller_id, bool try_detach): USBController(usb) {
   m_endpoint  = controller_id*2 + 1;
   m_interface = controller_id*2;
 
@@ -24,11 +24,11 @@ XboxOneWirelessController::XboxOneWirelessController(libusb_device* usb, int con
   usb_submit_read(m_endpoint, 32);
 }
 
-XboxOneWirelessController::~XboxOneWirelessController() {
+XboxOneWiredController::~XboxOneWiredController() {
 }
 
 static const char* ascii = "0123456789abcdefXXXX";
-bool XboxOneWirelessController::parse(uint8_t* data, int len, XboxGenericMsg* omsg) {
+bool XboxOneWiredController::parse(uint8_t* data, int len, XboxGenericMsg* omsg) {
 //    std::string hexbuf;
 //    for(int i = 0; i < len; i++) {
 //        hexbuf += ascii[data[i] >> 4];
@@ -51,10 +51,10 @@ bool XboxOneWirelessController::parse(uint8_t* data, int len, XboxGenericMsg* om
     return false;
 }
 
-void XboxOneWirelessController::set_rumble_real(uint8_t left, uint8_t right) {
+void XboxOneWiredController::set_rumble_real(uint8_t left, uint8_t right) {
 }
 
-void XboxOneWirelessController::set_led_real(uint8_t status) {
+void XboxOneWiredController::set_led_real(uint8_t status) {
 }
 
 struct XboxOneButtonData {
@@ -100,7 +100,7 @@ struct XboxOneGuideData {
     uint8_t dummy_const_5b;
 };
 
-bool XboxOneWirelessController::parse_button_status(uint8_t* data, int len, XboxGenericMsg* omsg) {
+bool XboxOneWiredController::parse_button_status(uint8_t* data, int len, XboxGenericMsg* omsg) {
     omsg->type = XBOX_MSG_XBOX360;
     Xbox360Msg& msg = omsg->xbox360;
     XboxOneButtonData* button_data = (XboxOneButtonData*) data;
@@ -132,7 +132,7 @@ bool XboxOneWirelessController::parse_button_status(uint8_t* data, int len, Xbox
     return true;
 }
 
-bool XboxOneWirelessController::parse_ledbutton_status(uint8_t* data, int len, XboxGenericMsg* omsg) {
+bool XboxOneWiredController::parse_ledbutton_status(uint8_t* data, int len, XboxGenericMsg* omsg) {
     XboxOneGuideData* gd = (XboxOneGuideData*) data;
     Xbox360Msg& msg = omsg->xbox360;
 
@@ -145,11 +145,11 @@ bool XboxOneWirelessController::parse_ledbutton_status(uint8_t* data, int len, X
     return true;
 }
 
-bool XboxOneWirelessController::parse_init_status(uint8_t* data, int len, XboxGenericMsg* omsg) {
+bool XboxOneWiredController::parse_init_status(uint8_t* data, int len, XboxGenericMsg* omsg) {
     return false;
 }
 
-bool XboxOneWirelessController::parse_auth_status(uint8_t* data, int len, XboxGenericMsg* omsg) {
+bool XboxOneWiredController::parse_auth_status(uint8_t* data, int len, XboxGenericMsg* omsg) {
     if(!sent_auth && data[1] == 0x20) {
         uint8_t authbuf[2] = { 0x05, 0x20 };
         usb_write(m_endpoint, authbuf, 2);

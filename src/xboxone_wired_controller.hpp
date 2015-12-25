@@ -7,7 +7,7 @@
 
 struct XPadDevice;
 
-class XboxOneWirelessController: public USBController {
+class XboxOneWiredController: public USBController {
 private:
     XPadDevice* dev_type;
 
@@ -27,8 +27,8 @@ private:
     bool parse_auth_status(uint8_t* data, int len, XboxGenericMsg* omsg);
 
 public:
-    XboxOneWirelessController(libusb_device* usb, int controller_id, bool try_detach);
-    virtual ~XboxOneWirelessController();
+    XboxOneWiredController(libusb_device* usb, int controller_id, bool try_detach);
+    virtual ~XboxOneWiredController();
 
     bool parse(uint8_t* data, int len, XboxGenericMsg* msg_out);
     void set_rumble_real(uint8_t left, uint8_t right);
