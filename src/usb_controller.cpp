@@ -279,6 +279,7 @@ USBController::on_read_data(libusb_transfer* transfer)
     log_error("USB read failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
     m_transfers.erase(transfer);
     libusb_free_transfer(transfer);
+    send_disconnect();
   }
 }
 
