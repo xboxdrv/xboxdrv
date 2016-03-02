@@ -65,7 +65,9 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x0738, 0xf738, "Super SFIV FightStick TE S" },
   { GAMEPAD_XBOX360,          0x0738, 0x4718, "Mad Catz Street Fighter IV FightStick SE" },
   { GAMEPAD_XBOX360,          0x0738, 0x4738, "Mad Catz Wired Xbox 360 Controller (SFIV)" },
+  { GAMEPAD_XBOX360,          0x0738, 0xb738, "MadCatz FightStick TE" },
   { GAMEPAD_XBOX360,          0x0738, 0xbeef, "Mad Catz JOYTECH NEO SE Advanced GamePad" },
+  { GAMEPAD_XBOX360,          0x0738, 0xb738, "MadCatz FightStick TE" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x000a, "Hori Co. DOA4 FightStick" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x000d, "Hori Fighting Stick EX2" },
   { GAMEPAD_XBOX360,          0x0f0d, 0x0016, "Hori Real Arcade Pro.EX" },
@@ -126,6 +128,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x24c6, 0x5d04, "Razer Sabertooth" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x011f, "Rock Candy Gamepad Wired Controller" },
   { GAMEPAD_XBOX360,          0x0e6f, 0x021f, "Rock Candy Gamepad for Xbox 360" },
+  { GAMEPAD_XBOX360,          0x0e6f, 0x0246, "Rock Candy Gamepad for Xbox 360" },
 
   { GAMEPAD_XBOX_MAT,         0x0738, 0x4540, "Mad Catz Beat Pad" },
   { GAMEPAD_XBOX_MAT,         0x0738, 0x6040, "Mad Catz Beat Pad Pro" },
@@ -138,6 +141,10 @@ XPadDevice xpad_devices[] = {
 
   { GAMEPAD_SAITEK_P2500,     0x06a3, 0xff0c, "Saitek P2500" },
   { GAMEPAD_SAITEK_P3600,     0x06a3, 0xf51a, "Saitek P3600 (Cyborg Rumble)" },
+
+  { GAMEPAD_XBOXONE,          0x045e, 0x02d1, "XboxOne Controller (Wired)" },
+  { GAMEPAD_XBOXONE,          0x045e, 0x02dd, "XboxOne Controller (Wired, Firmware 2015)" },
+  { GAMEPAD_XBOXONE,          0x0e6f, 0x0139, "Afterglow Wired Controller for Xbox One" },
 
   { GAMEPAD_PLAYSTATION3_USB, 0x054c, 0x0268, "PLAYSTATION(R)3 Controller" }
 };

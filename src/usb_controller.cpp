@@ -252,23 +252,15 @@ USBController::on_read_data(libusb_transfer* transfer)
     {
       submit_msg(msg);
     }
-
-    int ret;
-    ret = libusb_submit_transfer(transfer);
-    if (ret != LIBUSB_SUCCESS) // could also check for LIBUSB_ERROR_NO_DEVICE
-    {
-      log_error("failed to resubmit USB transfer: " << usb_strerror(ret));
-      m_transfers.erase(transfer);
-      libusb_free_transfer(transfer);
-      send_disconnect();
-    }
   }
-  else if (transfer->status == LIBUSB_TRANSFER_CANCELLED)
+  else if (transfer->status == LIBUSB_TRANSFER_NO_DEVICE)
   {
     m_transfers.erase(transfer);
     libusb_free_transfer(transfer);
+    send_disconnect();
+    return;
   }
-  else if (transfer->status == LIBUSB_TRANSFER_NO_DEVICE)
+  else if (transfer->status == LIBUSB_TRANSFER_ERROR)
   {
     m_transfers.erase(transfer);
     libusb_free_transfer(transfer);
@@ -277,8 +269,16 @@ USBController::on_read_data(libusb_transfer* transfer)
   else
   {
     log_error("USB read failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
+  }
+
+  int ret;
+  ret = libusb_submit_transfer(transfer);
+  if (ret != LIBUSB_SUCCESS) // could also check for LIBUSB_ERROR_NO_DEVICE
+  {
+    log_error("failed to resubmit USB transfer: " << usb_strerror(ret));
     m_transfers.erase(transfer);
     libusb_free_transfer(transfer);
+    send_disconnect();
   }
 }
 
