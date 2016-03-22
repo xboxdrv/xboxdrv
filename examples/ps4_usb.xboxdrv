@@ -2,7 +2,7 @@
 # ========================
 
 [xboxdrv]
-# Using the 'by-id' name is recomment, as it is static, while an
+# Using the 'by-id' name is recommended, as it is static, while an
 # /dev/input/eventX name can change depending on what other USB
 # devices you use.
 evdev = /dev/input/by-id/usb-Sony_Computer_Entertainment_Wireless_Controller-event-joystick
