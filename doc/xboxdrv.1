@@ -1969,7 +1969,7 @@ good working configuration with a broken one (unplugging the
 gamepad or a reboot will fix that). So avoid them unless you
 clearly understand the issues of using them.
 .PP
-If your gamepad produces incorrect data and you do want to
+If your gamepad produces incorrect data and you want to
 calibrate it, you might want to check out the
 option \*(T<\fB\-\-calibration\fR\*(T>, which lets you tweak
 the way xboxdrv interprets your gamepad data.
@@ -2284,7 +2284,7 @@ In newer kernels this issue is fixed.
 On Ubuntu 9.04 the permissions of the uinput device have
 changed to 0640, meaning only root has access to the device.
 To change this back so that users in the group root have
-access the device and in turn can run xboxdrv without sudo you
+access to the device and in turn can run xboxdrv without sudo you
 have to create a file
 called \*(T<\fI/etc/udev/rules.d/55\-permissions\-uinput.rules\fR\*(T>
 with the content:
@@ -2347,7 +2347,7 @@ And insert the following lines:
 </match>\*(T>
 .fi
 .SS "PERMANENT WORKAROUND BY DISABLING DEVICE AUTO DETECTION"
-A fourth workaround involved disabling the autodetection of Xorg
+A fourth workaround involves disabling the autodetection of Xorg
 completely, you can do that by adding the following lines to
 \*(T<\fI/etc/X11/xorg.conf\fR\*(T>:
 .PP
