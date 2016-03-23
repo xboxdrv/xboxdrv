@@ -1883,7 +1883,7 @@ NAME       = STRING ;]]></programlisting>
               The value of -1 has a special meaning, it will result in
               the REL event being fired as soon as possible (i.e.
               every <replaceable>timeout</replaceable> miliseconds).
-              This is the recomment way for handling mouse emulation,
+              This is the recommended way for handling mouse emulation,
               as it will keep REL events syncronized and thus avoid
               jaggies in the movement, that will result from manually
               specifying a timeout.
@@ -2223,7 +2223,7 @@ send KEY_LEFTSHIFT 0]]></programlisting>
               The value of -1 has a special meaning, it will result in
               the REL event being fired as soon as possible (i.e.
               every <replaceable>timeout</replaceable> miliseconds).
-              This is the recomment way for handling mouse emulation,
+              This is the recommended way for handling mouse emulation,
               as it will keep REL events syncronized and thus avoid
               jaggies in the movement, that will result from manually
               specifying a timeout.
@@ -2635,7 +2635,7 @@ $ modprobe joydev]]></programlisting>
         By default xboxdrv will echo all controller events to the
         console, this makes it easy to see if things are properly
         working, but will eat a lot of CPU, thus it is strongly
-        recomment to disabled that output with
+        recommended to disabled that output with
         the <option>--silent</option> option.
       </para>
 
@@ -2644,7 +2644,7 @@ $ modprobe joydev]]></programlisting>
         giving you analog feedback, while this reproduces the Xbox360
         controller the most accurately, it will confuse many and only
         be useful in a few, racing games mainly. So in the majority of
-        cases it is recomment to change the triggers to regular buttons via:
+        cases it is recommended to change the triggers to regular buttons via:
       </para>
       <programlisting>$ xboxdrv --trigger-as-button</programlisting>
     </refsect2>
@@ -2783,7 +2783,7 @@ dbus-send --session --type=method_call --print-reply \
       configuration in a game is most often not helpful, since you won't see
       the true cause beyond endless layers of abstraction between you and
       the actual events. Luckily there are a few tools you can use to test,
-      all of these are command line based and it is recomment that you get
+      all of these are command line based and it is recommended that you get
       familar with them when you want to do any more complex configuration.
     </para>
 
