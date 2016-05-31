@@ -352,7 +352,7 @@ Options::set_mimic_xpad()
   extra_devices = false;
   extra_events  = false;
 
-  set_device_name("Microsoft X-Box 360 pad");
+  set_device_name("Microsoft Xbox 360 pad");
   set_device_usbid("045e:028e:110");
   get_controller_options().uinput.mimic_xpad();
 }
