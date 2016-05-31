@@ -22,20 +22,20 @@
 // automatically catch all third party stuff
 XPadDevice xpad_devices[] = {
   // Evil?! Anymore info we could use to identify the devices?
-  // { GAMEPAD_XBOX,             0x0000, 0x0000, "Generic X-Box pad" },
+  // { GAMEPAD_XBOX,             0x0000, 0x0000, "Generic Xbox pad" },
   // { GAMEPAD_XBOX,             0xffff, 0xffff, "Chinese-made Xbox Controller" },
 
   // These should work
   { GAMEPAD_XBOX,             0x0d2f, 0x0002, "Andamiro Pump It Up pad" },
-  { GAMEPAD_XBOX,             0x045e, 0x0202, "Microsoft X-Box pad v1 (US)" },
-  { GAMEPAD_XBOX,             0x045e, 0x0285, "Microsoft X-Box pad (Japan)" },
+  { GAMEPAD_XBOX,             0x045e, 0x0202, "Microsoft Xbox pad v1 (US)" },
+  { GAMEPAD_XBOX,             0x045e, 0x0285, "Microsoft Xbox pad (Japan)" },
   { GAMEPAD_XBOX,             0x045e, 0x0287, "Microsoft Xbox Controller S" },
-  { GAMEPAD_XBOX,             0x045e, 0x0289, "Microsoft X-Box pad v2 (US)" },
+  { GAMEPAD_XBOX,             0x045e, 0x0289, "Microsoft Xbox pad v2 (US)" },
   // { GAMEPAD_XBOX,          0x045e, 0x0288, "Microsoft Corp. Xbox Controller S Hub" },  memory card slot
   { GAMEPAD_XBOX,             0x046d, 0xca84, "Logitech Xbox Cordless Controller" },
   { GAMEPAD_XBOX,             0x046d, 0xca88, "Logitech Compact Controller for Xbox" },
   { GAMEPAD_XBOX,             0x05fd, 0x1007, "Mad Catz Controller (unverified)" },
-  { GAMEPAD_XBOX,             0x05fd, 0x107a, "InterAct 'PowerPad Pro' X-Box pad (Germany)" },
+  { GAMEPAD_XBOX,             0x05fd, 0x107a, "InterAct 'PowerPad Pro' Xbox pad (Germany)" },
   { GAMEPAD_XBOX,             0x0738, 0x4516, "Mad Catz Control Pad" },
   { GAMEPAD_XBOX,             0x0738, 0x4522, "Mad Catz LumiCON" },
   { GAMEPAD_XBOX,             0x0738, 0x4526, "Mad Catz Control Pad Pro" },
@@ -55,7 +55,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX,             0x102c, 0xff0c, "Joytech Wireless Advanced Controller" },
   { GAMEPAD_XBOX,             0x044f, 0x0f07, "Thrustmaster, Inc. Controller" },
   { GAMEPAD_XBOX,             0x0e8f, 0x3008, "Generic xbox control (dealextreme)" },
-  { GAMEPAD_XBOX360,          0x045e, 0x028e, "Microsoft X-Box 360 pad" },
+  { GAMEPAD_XBOX360,          0x045e, 0x028e, "Microsoft Xbox 360 pad" },
   //{ GAMEPAD_XBOX360_PLAY_N_CHARGE, 0x045e, 0x028f, "Microsoft Xbox 360 Play&Charge Kit" },
   { GAMEPAD_XBOX360,          0x0738, 0x4716, "Mad Catz Wired Xbox 360 Controller" },
   { GAMEPAD_XBOX360,          0x0738, 0x4726, "Mad Catz Xbox 360 Controller" },
