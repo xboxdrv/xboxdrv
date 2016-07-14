@@ -641,6 +641,10 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
       {
         opts.gamepad_type = GAMEPAD_FIRESTORM_VSB;
       }
+      else if (opt.argument == "t-wireless")
+      {
+        opts.gamepad_type = GAMEPAD_T_WIRELESS;
+      }
       else if (opt.argument == "saitek-p2500")
       {
         opts.gamepad_type = GAMEPAD_SAITEK_P2500;
