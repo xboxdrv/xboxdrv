@@ -91,7 +91,7 @@ enum {
   OPTION_TRIGGER_AS_BUTTON,
   OPTION_TRIGGER_AS_ZAXIS,
   OPTION_AUTOFIRE,
-  OPTION_CALIBRARIOTION,
+  OPTION_CALIBRATION,
   OPTION_RELATIVE_AXIS,
   OPTION_SQUARE_AXIS,
   OPTION_FOUR_WAY_RESTRICTOR,
@@ -265,7 +265,7 @@ CommandLineParser::init_argp()
     .add_text("Modifier Preset Options: ")
     .add_option(OPTION_AUTOFIRE,           0, "autofire",         "MAP",  "Cause the given buttons to act as autofire (example: A=250)")
     .add_option(OPTION_AXIS_SENSITIVITY,   0, "axis-sensitivity", "MAP",  "Adjust the axis sensitivity (example: X1=2.0,Y1=1.0)")
-    .add_option(OPTION_CALIBRARIOTION,     0, "calibration",      "MAP",  "Changes the calibration for the given axis (example: X2=-32768:0:32767)")
+    .add_option(OPTION_CALIBRATION,     0, "calibration",      "MAP",  "Changes the calibration for the given axis (example: X2=-32768:0:32767)")
     .add_option(OPTION_DEADZONE,           0, "deadzone",         "INT",  "Threshold under which axis events are ignored (default: 0)")
     .add_option(OPTION_DEADZONE_TRIGGER,   0, "deadzone-trigger", "INT",  "Threshold under which trigger events are ignored (default: 0)")
     .add_option(OPTION_DPAD_ROTATION,      0, "dpad-rotation",    "DEGREE", "Rotate the dpad by the given DEGREE, must be a multiple of 45")
@@ -855,7 +855,7 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
       process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_autofire, this, _1, _2));
       break;
 
-    case OPTION_CALIBRARIOTION:
+    case OPTION_CALIBRATION:
       process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_calibration, this, _1, _2));
       break;
 
