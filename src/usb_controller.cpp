@@ -79,19 +79,25 @@ USBController::USBController(libusb_device* dev) :
 
 USBController::~USBController()
 {
+  m_is_disconnected = true;
+
   // cancel all transfers
   for(std::set<libusb_transfer*>::iterator it = m_transfers.begin(); it != m_transfers.end(); ++it)
   {
     libusb_cancel_transfer(*it);
   }
 
+  struct timeval to;
+  to.tv_sec = 1;
+  to.tv_usec = 0;
+
   // wait for cancel to succeed
   while (!m_transfers.empty())
   {
-    int ret = libusb_handle_events(NULL);
+    int ret = libusb_handle_events_timeout_completed(NULL, &to, NULL);
     if (ret != 0)
     {
-      log_error("libusb_handle_events() failure: " << ret);
+      log_error("libusb_handle_events_timeout_completed() failure: " << ret);
     }
   }
 
@@ -261,14 +267,22 @@ USBController::on_read_data(libusb_transfer* transfer)
         submit_msg(msg);
       }
 
-      int ret;
-      ret = libusb_submit_transfer(transfer);
-      if (ret != LIBUSB_SUCCESS) // could also check for LIBUSB_ERROR_NO_DEVICE
+      if (m_is_disconnected)
       {
+        m_transfers.erase(transfer);
+        libusb_free_transfer(transfer);
+      }
+      else
+      {
+        int ret;
+        ret = libusb_submit_transfer(transfer);
+        if (ret != LIBUSB_SUCCESS) // could also check for LIBUSB_ERROR_NO_DEVICE
+        {
           log_error("failed to resubmit USB transfer: " << usb_strerror(ret));
           m_transfers.erase(transfer);
           libusb_free_transfer(transfer);
           send_disconnect();
+        }
       }
       break;
 
