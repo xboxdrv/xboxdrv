@@ -123,6 +123,13 @@ USBController::get_name() const
   return m_name;
 }
 
+bool
+USBController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out)
+{
+  // dummy method for destructor
+  return false;
+}
+
 void
 USBController::usb_submit_read(int endpoint, int len)
 {
