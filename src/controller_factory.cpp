@@ -25,6 +25,7 @@
 #include "playstation3_usb_controller.hpp"
 #include "saitek_p2500_controller.hpp"
 #include "saitek_p3600_controller.hpp"
+#include "steam_controller.hpp"
 #include "xbox360_controller.hpp"
 #include "xbox360_wireless_controller.hpp"
 #include "xbox_controller.hpp"
@@ -74,6 +75,12 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
 
     case GAMEPAD_PLAYSTATION3_USB:
       return ControllerPtr(new Playstation3USBController(dev, opts.detach_kernel_driver));
+
+    case GAMEPAD_STEAM:
+      return ControllerPtr(new SteamController(dev, 0, opts.detach_kernel_driver));
+
+    case GAMEPAD_STEAM_WIRELESS:
+      return ControllerPtr(new SteamController(dev, opts.wireless_id + 1, opts.detach_kernel_driver));
 
     case GAMEPAD_GENERIC_USB:
       {
@@ -143,6 +150,17 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
 
     case GAMEPAD_PLAYSTATION3_USB:
       lst.push_back(ControllerPtr(new Playstation3USBController(dev, opts.detach_kernel_driver)));
+      break;
+
+    case GAMEPAD_STEAM:
+      lst.push_back(ControllerPtr(new SteamController(dev, 0, opts.detach_kernel_driver)));
+      break;
+
+    case GAMEPAD_STEAM_WIRELESS:
+      for(uint8_t wireless_id = 1; wireless_id < 5; ++wireless_id)
+      {
+        lst.push_back(ControllerPtr(new SteamController(dev, wireless_id, opts.detach_kernel_driver)));
+      }
       break;
 
     case GAMEPAD_GENERIC_USB:

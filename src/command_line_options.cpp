@@ -649,6 +649,14 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
       {
         opts.gamepad_type = GAMEPAD_PLAYSTATION3_USB;
       }
+      else if (opt.argument == "steam")
+      {
+        opts.gamepad_type = GAMEPAD_STEAM;
+      }
+      else if (opt.argument == "steam-wireless")
+      {
+        opts.gamepad_type = GAMEPAD_STEAM_WIRELESS;
+      }
       else if (opt.argument == "generic-usb")
       {
         opts.gamepad_type = GAMEPAD_GENERIC_USB;
