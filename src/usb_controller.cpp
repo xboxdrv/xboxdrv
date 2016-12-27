@@ -251,41 +251,43 @@ USBController::on_read_data(libusb_transfer* transfer)
 {
   assert(transfer);
 
-  if (transfer->status == LIBUSB_TRANSFER_COMPLETED)
+  switch(transfer->status)
   {
-    // process data
-    XboxGenericMsg msg;
-    if (parse(transfer->buffer, transfer->actual_length, &msg))
-    {
-      submit_msg(msg);
-    }
+    case LIBUSB_TRANSFER_COMPLETED:
+      // process data
+      XboxGenericMsg msg;
+      if (parse(transfer->buffer, transfer->actual_length, &msg))
+      {
+        submit_msg(msg);
+      }
 
-    int ret;
-    ret = libusb_submit_transfer(transfer);
-    if (ret != LIBUSB_SUCCESS) // could also check for LIBUSB_ERROR_NO_DEVICE
-    {
-      log_error("failed to resubmit USB transfer: " << usb_strerror(ret));
+      int ret;
+      ret = libusb_submit_transfer(transfer);
+      if (ret != LIBUSB_SUCCESS) // could also check for LIBUSB_ERROR_NO_DEVICE
+      {
+          log_error("failed to resubmit USB transfer: " << usb_strerror(ret));
+          m_transfers.erase(transfer);
+          libusb_free_transfer(transfer);
+          send_disconnect();
+      }
+      break;
+
+    case LIBUSB_TRANSFER_CANCELLED:
+      m_transfers.erase(transfer);
+      libusb_free_transfer(transfer);
+      break;
+
+    case LIBUSB_TRANSFER_NO_DEVICE:
       m_transfers.erase(transfer);
       libusb_free_transfer(transfer);
       send_disconnect();
-    }
-  }
-  else if (transfer->status == LIBUSB_TRANSFER_CANCELLED)
-  {
-    m_transfers.erase(transfer);
-    libusb_free_transfer(transfer);
-  }
-  else if (transfer->status == LIBUSB_TRANSFER_NO_DEVICE)
-  {
-    m_transfers.erase(transfer);
-    libusb_free_transfer(transfer);
-    send_disconnect();
-  }
-  else
-  {
-    log_error("USB read failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
-    m_transfers.erase(transfer);
-    libusb_free_transfer(transfer);
+      break;
+
+    default:
+      log_error("USB read failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
+      m_transfers.erase(transfer);
+      libusb_free_transfer(transfer);
+      break;
   }
 }
 
