@@ -24,6 +24,8 @@
 # https://github.com/SuperTux/supertux/blob/master/.travis.yml
 
 language: cpp
+dist: trusty
+sudo: required
 
 compiler:
   - gcc
@@ -33,8 +35,6 @@ matrix:
   fast_finish: true
 
 env:
-  global:
-    - CMAKE_VERSION=3.2.1
   matrix:
     - BUILD_TYPE="Debug"
     - BUILD_TYPE="Release"
@@ -43,10 +43,6 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install build-essential libboost-dev pkg-config libusb-1.0-0-dev libx11-dev libudev-dev x11proto-core-dev libdbus-glib-1-dev libgtk2.0-dev libcwiid-dev
 
-  # CMake
-  - wget --no-check-certificate http://www.cmake.org/files/v3.2/cmake-$CMAKE_VERSION.tar.gz -O - | tar xz
-  - (cd cmake-$CMAKE_VERSION && cmake . && make -j3 && sudo make install)
-
 script:
   - git clean -f
   - mkdir "build-$BUILD_TYPE"
@@ -54,5 +50,27 @@ script:
   - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWARNINGS=ON -DWERROR=ON -DBUILD_TESTS=ON
   - make VERBOSE=1 -j3
   - sudo make install
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    - llvm-toolchain-precise
+    packages:
+    - build-essential
+    - clang-5.0
+    - cmake
+    - g++-4.9
+    - libboost-all-dev
+    - libboost-dev
+    - libc++-dev
+    - libcwiid-dev
+    - libdbus-glib-1-dev
+    - libgtk2.0-dev
+    - libudev-dev
+    - libusb-1.0-0-dev
+    - libx11-dev
+    - pkg-config
+    - x11proto-core-dev
 
 # EOF #
