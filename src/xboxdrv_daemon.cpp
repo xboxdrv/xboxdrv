@@ -144,7 +144,7 @@ XboxdrvDaemon::run()
     boost::scoped_ptr<DBusSubsystem> dbus_subsystem;
     if (m_opts.dbus != Options::kDBusDisabled)
     {
-      DBusBusType dbus_bus_type;
+      DBusBusType dbus_bus_type = DBUS_BUS_SESSION;
 
       switch(m_opts.dbus)
       {
@@ -270,7 +270,7 @@ XboxdrvDaemon::init_uinput()
     {
       log_info("creating slot: " << slot_count);
       m_controller_slots.push_back(
-        ControllerSlotPtr(new ControllerSlot(m_controller_slots.size(),
+        ControllerSlotPtr(new ControllerSlot(static_cast<int>(m_controller_slots.size()),
                                              ControllerSlotConfig::create(*m_uinput, slot_count,
                                                                           m_opts.extra_devices,
                                                                           controller->second),

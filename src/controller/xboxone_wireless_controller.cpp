@@ -29,9 +29,13 @@
 
 XboxOneWirelessController::XboxOneWirelessController(libusb_device* dev, bool try_detach) :
   USBController(dev),
+  dev_type(),
+  endpoint_in(),
+  endpoint_out(),
   m_sequence(0),
-  xbox(m_message_descriptor),
-  m_serial()
+  m_battery_status(),
+  m_serial(),
+  xbox(m_message_descriptor)
 {
   m_is_active = false;
 
@@ -51,7 +55,7 @@ XboxOneWirelessController::submit_command(uint8_t cmd1, uint8_t cmd2, const uint
   cmd[0] = cmd1;
   cmd[1] = cmd2;
   cmd[2] = m_sequence++;
-  cmd[3] = len;
+  cmd[3] = static_cast<uint8_t>(len);
   memcpy(cmd+4, data, len);
   usb_write(1, cmd, len + 4);
 }

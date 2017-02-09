@@ -43,7 +43,7 @@ public:
 
   int put(const T& name)
   {
-    int symbol = m_int2name.size();
+    int symbol = static_cast<int>(m_int2name.size());
     m_int2name.push_back(name);
     m_name2int[name] = symbol;
     return symbol;
@@ -88,7 +88,7 @@ public:
     return m_name2int.find(name) != m_name2int.end();
   }
 
-  int size() const { return m_int2name.size(); }
+  int size() const { return static_cast<int>(m_int2name.size()); }
 };
 
 #endif

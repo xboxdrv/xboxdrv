@@ -132,6 +132,7 @@ Options::get_controller_slot() const
   if (it == controller_slots.end())
   {
     assert(!"shouldn't happen");
+    return controller_slots.begin()->second;
   }
   else
   {
@@ -152,6 +153,7 @@ Options::get_controller_options() const
   if (it == controller_slots.end())
   {
     assert(!"shouldn't happen");
+    return it->second.get_options().begin()->second;
   }
   else
   {
@@ -159,6 +161,7 @@ Options::get_controller_options() const
     if (cfg == it->second.get_options().end())
     {
       assert(!"shouldn't happen either");
+      return cfg->second;
     }
     else
     {

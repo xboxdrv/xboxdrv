@@ -61,7 +61,7 @@ ClickButtonFilter::filter(bool value)
 
       default:
         assert(!"never reached");
-        break;
+        return false;
     }
   }
   else
@@ -86,7 +86,7 @@ ClickButtonFilter::str() const
 
     default:
       assert(!"never reached");
-      break;
+      return {};
   }
 }
 

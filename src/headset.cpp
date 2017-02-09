@@ -53,7 +53,7 @@ Headset::play_file(const std::string& filename)
   else
   {
     char data[32];
-    int len = m_fin->read(data, sizeof(data)).gcount();
+    int len = static_cast<int>(m_fin->read(data, sizeof(data)).gcount());
     if (len != 32)
     {
       log_error("short read");
@@ -85,7 +85,7 @@ bool
 Headset::send_data(libusb_transfer* transfer)
 {
   // fill the buffer with new data from the file
-  int len = m_fin->read(reinterpret_cast<char*>(transfer->buffer), transfer->length).gcount();
+  int len = static_cast<int>(m_fin->read(reinterpret_cast<char*>(transfer->buffer), transfer->length).gcount());
 
   if (len != 32)
   {

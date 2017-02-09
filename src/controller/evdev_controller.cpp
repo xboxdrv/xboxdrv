@@ -290,7 +290,7 @@ EvdevController::on_read_data(GIOChannel* source, GIOCondition condition)
 {
   // read data
   struct input_event ev[128];
-  int rd = 0;
+  ssize_t rd = 0;
   while((rd = ::read(m_fd, ev, sizeof(struct input_event) * 128)) > 0)
   {
     for (size_t i = 0; i < rd / sizeof(struct input_event); ++i)

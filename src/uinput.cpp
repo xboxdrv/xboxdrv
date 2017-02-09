@@ -421,7 +421,7 @@ UInput::create_emitter(int device_id, int type, int code)
 
     default:
       assert(!"unknown type");
-      break;
+      return {};
   }
 }
 

@@ -43,9 +43,9 @@ public:
   const SymbolTable<KeyName>& key() const { return m_key; }
   const SymbolTable<RelName>& rel() const { return m_rel; }
 
-  int get_key_count() const { return m_key.size(); }
-  int get_abs_count() const { return m_abs.size(); }
-  int get_rel_count() const { return m_rel.size(); }
+  int get_key_count() const { return static_cast<int>(m_key.size()); }
+  int get_abs_count() const { return static_cast<int>(m_abs.size()); }
+  int get_rel_count() const { return static_cast<int>(m_rel.size()); }
 };
 
 #endif

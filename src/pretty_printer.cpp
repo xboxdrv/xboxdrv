@@ -34,7 +34,7 @@ PrettyPrinter::print(const std::string& str)
 void
 PrettyPrinter::print(const std::string& indent_str, const std::string& left, const std::string& str)
 {
-  const int width = terminal_width - indent_str.size() - 1;
+  const int width = terminal_width - static_cast<int>(indent_str.size()) - 1;
 
   if (!left.empty())
   {
@@ -61,7 +61,7 @@ PrettyPrinter::print(const std::string& indent_str, const std::string& left, con
 
   for(std::string::size_type i = start; i < str.size(); ++i)
   {
-    const int word_length = i - word_begin;
+    const int word_length = static_cast<int>(i - word_begin);
 
     { // flush a word or a space sequence to stdout when a state change occurs
       switch(state)

@@ -66,7 +66,7 @@ StatisticModifier::update(int msec_delta, ControllerMessage& msg, const Controll
 {
   for(size_t btn = 0; btn < m_press_count.size(); ++btn)
   {
-    bool state = msg.get_key(btn);
+    bool state = msg.get_key(static_cast<int>(btn));
 
     // state changed and button is pressed
     if (state != m_button_state[btn] && state)

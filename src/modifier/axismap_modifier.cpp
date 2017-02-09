@@ -82,7 +82,7 @@ AxisMapping::init(ControllerMessageDescriptor& desc)
 AxismapModifier*
 AxismapModifier::from_string(const std::string& args)
 {
-  std::auto_ptr<AxismapModifier> modifier(new AxismapModifier);
+  std::unique_ptr<AxismapModifier> modifier(new AxismapModifier);
 
   process_name_value_string(args, boost::bind(&AxismapModifier::add, modifier.get(),
                                               boost::bind(&AxisMapping::from_string, _1, _2)));
@@ -93,7 +93,7 @@ AxismapModifier::from_string(const std::string& args)
 AxismapModifier*
 AxismapModifier::from_option(const std::vector<AxisMappingOption>& mappings)
 {
-  std::auto_ptr<AxismapModifier> modifier(new AxismapModifier);
+  std::unique_ptr<AxismapModifier> modifier(new AxismapModifier);
 
   for(std::vector<AxisMappingOption>::const_iterator i = mappings.begin(); i != mappings.end(); ++i)
   {

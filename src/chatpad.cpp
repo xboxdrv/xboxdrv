@@ -366,7 +366,7 @@ Chatpad::on_timeout()
 
     default:
       assert(!"invalid state");
-      break;
+      return false;
   }
 }
 

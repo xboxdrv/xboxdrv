@@ -89,7 +89,7 @@ ButtonMapping::init(ControllerMessageDescriptor& desc)
 ButtonmapModifier*
 ButtonmapModifier::from_string(const std::string& args)
 {
-  std::auto_ptr<ButtonmapModifier> modifier(new ButtonmapModifier);
+  std::unique_ptr<ButtonmapModifier> modifier(new ButtonmapModifier);
 
   process_name_value_string(args, boost::bind(&ButtonmapModifier::add, modifier.get(),
                                               boost::bind(&ButtonMapping::from_string, _1, _2)));
@@ -100,7 +100,7 @@ ButtonmapModifier::from_string(const std::string& args)
 ButtonmapModifier*
 ButtonmapModifier::from_option(const std::vector<ButtonMappingOption>& mappings)
 {
-  std::auto_ptr<ButtonmapModifier> modifier(new ButtonmapModifier);
+  std::unique_ptr<ButtonmapModifier> modifier(new ButtonmapModifier);
 
   for(std::vector<ButtonMappingOption>::const_iterator i = mappings.begin(); i != mappings.end(); ++i)
   {

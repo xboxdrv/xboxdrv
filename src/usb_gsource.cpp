@@ -127,7 +127,7 @@ USBGSource::on_source_prepare(GSource* source, gint* timeout)
   }
   else if (ret == 1) // timeout was returned
   {
-    *timeout = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+    *timeout = static_cast<gint>((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
   }
   else
   {

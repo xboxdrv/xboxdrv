@@ -28,7 +28,7 @@ RelButtonEventHandler*
 RelButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
                                    const std::string& str)
 {
-  std::auto_ptr<RelButtonEventHandler> ev;
+  std::unique_ptr<RelButtonEventHandler> ev;
 
   int idx = 0;
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;

@@ -69,6 +69,7 @@ std::string gamepadtype_to_string(const GamepadType& type)
 
     default:
       assert(!"Unknown gamepad type supplied");
+      return {};
   }
 }
 
@@ -91,6 +92,7 @@ std::string gamepadtype_to_macro_string(const GamepadType& type)
     case GAMEPAD_GENERIC_USB: return "GAMEPAD_GENERIC_USB";
     default:
       assert(!"Unknown gamepad type supplied");
+      return {};
   }
 }
 

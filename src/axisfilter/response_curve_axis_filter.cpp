@@ -59,7 +59,7 @@ ResponseCurveAxisFilter::filter(int value, int min, int max)
   {
     // FIXME: should rewrite this to use integer only and make sure
     // that the edge conditions are meet
-    int   bucket_count = m_samples.size() - 1;
+    int   bucket_count = static_cast<int>(m_samples.size()) - 1;
     float bucket_size  = static_cast<float>(max - min) / static_cast<float>(bucket_count);
 
     int bucket_index = static_cast<int>(static_cast<float>(value - min) / bucket_size);

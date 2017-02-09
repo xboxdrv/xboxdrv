@@ -28,6 +28,7 @@ AbsButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
 {
   // FIXME: Need magic to detect min/max of the axis
   assert(!"not implemented");
+  return {};
 }
 
 AbsButtonEventHandler::AbsButtonEventHandler(UInput& uinput, int slot, bool extra_devices,

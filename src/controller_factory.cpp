@@ -101,6 +101,7 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
 
     default:
       assert(!"unknown gamepad type");
+      return {};
   }
 }
 

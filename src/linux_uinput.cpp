@@ -241,7 +241,7 @@ LinuxUinput::finish()
   }
 
   {
-    int write_ret = write(m_fd, &user_dev, sizeof(user_dev));
+    auto write_ret = write(m_fd, &user_dev, sizeof(user_dev));
     if (write_ret < 0)
     {
       throw std::runtime_error("uinput:finish: " + name + ": " + strerror(errno));
@@ -336,7 +336,7 @@ gboolean
 LinuxUinput::on_read_data(GIOChannel* source, GIOCondition condition)
 {
   struct input_event ev;
-  int ret;
+  ssize_t ret;
 
   while((ret = read(m_fd, &ev, sizeof(ev))) == sizeof(ev))
   {

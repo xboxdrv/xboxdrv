@@ -243,7 +243,7 @@ uint32_t get_time()
 {
   struct timeval tv;
   gettimeofday(&tv, NULL);
-  return tv.tv_sec * 1000 + tv.tv_usec/1000;
+  return static_cast<uint32_t>(tv.tv_sec * 1000 + tv.tv_usec/1000);
 }
 
 float to_float_no_range_check(int value, int min, int max)
