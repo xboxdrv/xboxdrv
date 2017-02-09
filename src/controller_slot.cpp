@@ -55,7 +55,7 @@ ControllerSlot::disconnect()
 bool
 ControllerSlot::is_connected() const
 {
-  return m_thread;
+  return m_thread != nullptr;
 }
 
 /* EOF */

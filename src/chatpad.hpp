@@ -151,9 +151,7 @@ private:
 
 
   bool m_quit_thread;
-  //std::auto_ptr<boost::thread> m_read_thread;
-  //std::auto_ptr<boost::thread> m_keep_alive_thread;
-  std::auto_ptr<LinuxUinput> m_uinput;
+  std::unique_ptr<LinuxUinput> m_uinput;
   boost::array<uint16_t, 256> m_keymap;
   boost::array<bool, 256> m_state;
   unsigned int m_led_state;

@@ -38,8 +38,8 @@ private:
   int endpoint_in;
   int endpoint_out;
 
-  std::auto_ptr<Chatpad> m_chatpad;
-  std::auto_ptr<Headset> m_headset;
+  std::unique_ptr<Chatpad> m_chatpad;
+  std::unique_ptr<Headset> m_headset;
 
   uint8_t m_rumble_left;
   uint8_t m_rumble_right;

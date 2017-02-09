@@ -28,10 +28,10 @@ class Headset
 {
 private:
   libusb_device_handle* m_handle;
-  std::auto_ptr<USBInterface> m_interface;
+  std::unique_ptr<USBInterface> m_interface;
 
-  std::auto_ptr<std::ofstream> m_fout;
-  std::auto_ptr<std::ifstream> m_fin;
+  std::unique_ptr<std::ofstream> m_fout;
+  std::unique_ptr<std::ifstream> m_fin;
 
 public:
   Headset(libusb_device_handle* handle, bool debug);

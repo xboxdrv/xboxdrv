@@ -41,7 +41,7 @@ class ControllerThread // FIXME: find a better name,ControllerLoop?!
 {
 private:
   ControllerPtr m_controller;
-  std::auto_ptr<MessageProcessor> m_processor;
+  std::unique_ptr<MessageProcessor> m_processor;
 
   ControllerMessage m_oldrealmsg; /// last data read from the device
 
