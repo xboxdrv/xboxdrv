@@ -101,6 +101,7 @@ set_target_properties(libxboxdrv PROPERTIES OUTPUT_NAME xboxdrv)
 
 file(STRINGS VERSION XBOXDRV_VERSION)
 target_compile_definitions(libxboxdrv PUBLIC -DPACKAGE_VERSION="${XBOXDRV_VERSION}")
+target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 
 target_include_directories(libxboxdrv SYSTEM PUBLIC
   ${DBUSGLIB_INCLUDE_DIRS}
