@@ -56,7 +56,7 @@ LinuxUinput::LinuxUinput(DeviceType device_type, const std::string& name_,
 
   // Open the input device
   const char* uinput_filename[] = { "/dev/input/uinput", "/dev/uinput", "/dev/misc/uinput" };
-  const int uinput_filename_count = (sizeof(uinput_filename)/sizeof(const char*));
+  const int uinput_filename_count = static_cast<int>(sizeof(uinput_filename)/sizeof(const char*));
 
   std::ostringstream str;
   for (int i = 0; i < uinput_filename_count; ++i)
