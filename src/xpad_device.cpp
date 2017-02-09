@@ -147,7 +147,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_HAMA_CRUX,        0x1038, 0x0310, "Hama cruX Gaming Keyboard" }
 };
 
-const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
+const int xpad_devices_count = static_cast<int>(sizeof(xpad_devices)/sizeof(XPadDevice));
 
 bool find_xpad_device(uint16_t idVendor, uint16_t idProduct, XPadDevice* dev_type)
 {
