@@ -20,15 +20,17 @@
 
 #include <sstream>
 #include <boost/format.hpp>
+#include <ctime>
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
 #include "unpack.hpp"
 #include "usb_helper.hpp"
 #include "xboxmsg.hpp"
+#include "chatpad.hpp"
 
-Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int controller_id,
-                                                     bool try_detach) :
+Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, bool chatpad,
+                                                     int controller_id, bool try_detach) :
   USBController(dev),
   m_endpoint(),
   m_interface(),
@@ -46,6 +48,79 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
 
   usb_claim_interface(m_interface, try_detach);
   usb_submit_read(m_endpoint, 32);
+
+  m_chatpad = chatpad;
+  if (m_chatpad)
+  {
+    struct input_id usbid;
+
+    m_chatpad_timeout = 8; // chatpad would enter sleep mode in about 10s
+    chatpad_send(0x1f);
+    m_chatpad_next = time(NULL) + m_chatpad_timeout;
+    m_chatpad_lastpacket = 0xffffffff;
+    memset(m_chatpad_laststroke, 0x00, sizeof(m_chatpad_laststroke));
+    memset(m_chatpad_keymap, 0x00, sizeof(m_chatpad_keymap));
+
+    m_chatpad_keymap[CHATPAD_KEY_1] = KEY_1;
+    m_chatpad_keymap[CHATPAD_KEY_2] = KEY_2;
+    m_chatpad_keymap[CHATPAD_KEY_3] = KEY_3;
+    m_chatpad_keymap[CHATPAD_KEY_4] = KEY_4;
+    m_chatpad_keymap[CHATPAD_KEY_5] = KEY_5;
+    m_chatpad_keymap[CHATPAD_KEY_6] = KEY_6;
+    m_chatpad_keymap[CHATPAD_KEY_7] = KEY_7;
+    m_chatpad_keymap[CHATPAD_KEY_8] = KEY_8;
+    m_chatpad_keymap[CHATPAD_KEY_9] = KEY_9;
+    m_chatpad_keymap[CHATPAD_KEY_0] = KEY_0;
+    m_chatpad_keymap[CHATPAD_KEY_Q] = KEY_Q;
+    m_chatpad_keymap[CHATPAD_KEY_W] = KEY_W;
+    m_chatpad_keymap[CHATPAD_KEY_E] = KEY_E;
+    m_chatpad_keymap[CHATPAD_KEY_R] = KEY_R;
+    m_chatpad_keymap[CHATPAD_KEY_T] = KEY_T;
+    m_chatpad_keymap[CHATPAD_KEY_Y] = KEY_Y;
+    m_chatpad_keymap[CHATPAD_KEY_U] = KEY_U;
+    m_chatpad_keymap[CHATPAD_KEY_I] = KEY_I;
+    m_chatpad_keymap[CHATPAD_KEY_O] = KEY_O;
+    m_chatpad_keymap[CHATPAD_KEY_P] = KEY_P;
+    m_chatpad_keymap[CHATPAD_KEY_A] = KEY_A;
+    m_chatpad_keymap[CHATPAD_KEY_S] = KEY_S;
+    m_chatpad_keymap[CHATPAD_KEY_D] = KEY_D;
+    m_chatpad_keymap[CHATPAD_KEY_F] = KEY_F;
+    m_chatpad_keymap[CHATPAD_KEY_G] = KEY_G;
+    m_chatpad_keymap[CHATPAD_KEY_H] = KEY_H;
+    m_chatpad_keymap[CHATPAD_KEY_J] = KEY_J;
+    m_chatpad_keymap[CHATPAD_KEY_K] = KEY_K;
+    m_chatpad_keymap[CHATPAD_KEY_L] = KEY_L;
+    m_chatpad_keymap[CHATPAD_KEY_COMMA] = KEY_COMMA;
+    m_chatpad_keymap[CHATPAD_KEY_Z] = KEY_Z;
+    m_chatpad_keymap[CHATPAD_KEY_X] = KEY_X;
+    m_chatpad_keymap[CHATPAD_KEY_C] = KEY_C;
+    m_chatpad_keymap[CHATPAD_KEY_V] = KEY_V;
+    m_chatpad_keymap[CHATPAD_KEY_B] = KEY_B;
+    m_chatpad_keymap[CHATPAD_KEY_N] = KEY_N;
+    m_chatpad_keymap[CHATPAD_KEY_M] = KEY_M;
+    m_chatpad_keymap[CHATPAD_KEY_PERIOD] = KEY_DOT;
+    m_chatpad_keymap[CHATPAD_KEY_ENTER] = KEY_ENTER;
+    m_chatpad_keymap[CHATPAD_KEY_BACKSPACE] = KEY_BACKSPACE;
+    m_chatpad_keymap[CHATPAD_KEY_LEFT] = KEY_LEFT;
+    m_chatpad_keymap[CHATPAD_KEY_SPACEBAR] = KEY_SPACE;
+    m_chatpad_keymap[CHATPAD_KEY_RIGHT] = KEY_RIGHT;
+
+    usbid.bustype = 0;
+    usbid.vendor = 0;
+    usbid.product = 0;
+    usbid.version = 0;
+    m_uinput.reset(new LinuxUinput(LinuxUinput::kGenericDevice, "Xbox360 Chatpad", usbid));
+    for(uint i=0; i<sizeof(m_chatpad_keymap); ++i)
+    {
+      if (m_chatpad_keymap[i])
+        m_uinput->add_key(m_chatpad_keymap[i]);
+    }
+    m_uinput->add_key(KEY_LEFTSHIFT);
+    m_uinput->add_key(KEY_LEFTCTRL);
+    m_uinput->add_key(KEY_LEFTMETA);
+    m_uinput->add_key(KEY_RIGHTALT);
+    m_uinput->finish();
+  }
 }
 
 Xbox360WirelessController::~Xbox360WirelessController()
@@ -110,6 +185,12 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       {
         log_info("Connection status: unknown");
       }
+
+      // Connection status other than nothing
+      if (m_chatpad)
+      {
+        chatpad_send(0x1f);
+      }
     }
     else if (len == 29)
     {
@@ -171,6 +252,12 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
         msg.dummy2 = unpack::int32le(ptr+14);
         msg.dummy3 = unpack::int16le(ptr+18);
 
+        if (m_chatpad && time(NULL) > m_chatpad_next)
+        { // wake up chatpad if timeout
+          chatpad_send(0x1f);
+          m_chatpad_next = time(NULL) + m_chatpad_timeout;
+        }
+
         return true;
       }
       else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
@@ -182,6 +269,104 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       {
         // 0x00 0x00 0x00 0xf0 0x00 ... is send after each button
         // press, doesn't seem to contain any information
+      }
+      else if (data[0] == 0x00 && data[1] == 0x02 && data[2] == 0x00 && data[3] == 0xf0)
+      { // Chatpad
+        if (m_chatpad && m_chatpad_lastpacket != *(uint32_t *)(data+24))
+        {
+          log_debug("chatpad: " << raw2str(data+24, 5));
+          m_chatpad_lastpacket = *(uint32_t *)(data+24); // skip dup packet
+
+          if (data[24] == 0xf0 && data[25] == 0x03)
+          { // wake up chatpad and release all keys
+            chatpad_send(0x1e);
+            chatpad_send(0x1b);
+            if (m_chatpad_laststroke[0] & CHATPAD_MOD_SHIFT)
+            {
+              m_uinput->send(EV_KEY, KEY_LEFTSHIFT, 0);
+            }
+            if (m_chatpad_laststroke[0] & CHATPAD_MOD_GREEN)
+            {
+              m_uinput->send(EV_KEY, KEY_LEFTCTRL, 0);
+            }
+            if (m_chatpad_laststroke[0] & CHATPAD_MOD_ORANGE)
+            {
+              m_uinput->send(EV_KEY, KEY_RIGHTALT, 0);
+            }
+            if (m_chatpad_laststroke[0] & CHATPAD_MOD_PEOPLE)
+            {
+              m_uinput->send(EV_KEY, KEY_LEFTMETA, 0);
+            }
+            m_chatpad_laststroke[0] = 0;
+            if (m_chatpad_laststroke[1])
+            {
+              m_uinput->send(EV_KEY, m_chatpad_keymap[m_chatpad_laststroke[1]], 0);
+              m_chatpad_laststroke[1] = 0;
+            }
+            if (m_chatpad_laststroke[2])
+            {
+              m_uinput->send(EV_KEY, m_chatpad_keymap[m_chatpad_laststroke[2]], 0);
+              m_chatpad_laststroke[2] = 0;
+            }
+          }
+          else if (data[24] == 0xf0 && data[25] == 0x04)
+          {
+//             log_debug("chatpad: working");
+          }
+          else if (data[24] == 0x00)
+          {
+            uint8_t xor_modifier;
+
+            log_debug("chatpad: keystroke " << raw2str(data+25, 4));
+            xor_modifier = data[25] ^ m_chatpad_laststroke[0];
+//             log_debug("chatpad: xor_modifier " << raw2str(&xor_modifier, 1));
+            if (xor_modifier & CHATPAD_MOD_SHIFT) // as KEY_LEFTSHIFT
+            {
+              m_uinput->send(EV_KEY, KEY_LEFTSHIFT, data[25]&CHATPAD_MOD_SHIFT);
+            }
+            if (xor_modifier & CHATPAD_MOD_GREEN) // as KEY_LEFTCTRL
+            {
+              m_uinput->send(EV_KEY, KEY_LEFTCTRL, data[25]&CHATPAD_MOD_GREEN);
+            }
+            if (xor_modifier & CHATPAD_MOD_ORANGE) // as KEY_RIGHTALT
+            {
+              m_uinput->send(EV_KEY, KEY_RIGHTALT, data[25]&CHATPAD_MOD_ORANGE);
+            }
+            if (xor_modifier & CHATPAD_MOD_PEOPLE) // as KEY_LEFTMETA
+            {
+              m_uinput->send(EV_KEY, KEY_LEFTMETA, data[25]&CHATPAD_MOD_PEOPLE);
+            }
+            if (m_chatpad_laststroke[1] && m_chatpad_laststroke[1] != data[26]
+                && m_chatpad_laststroke[1] != data[27]) // key released
+            {
+              m_uinput->send(EV_KEY, m_chatpad_keymap[m_chatpad_laststroke[1]], 0);
+            }
+            if (m_chatpad_laststroke[2] && m_chatpad_laststroke[2] != data[26]
+                && m_chatpad_laststroke[1] != data[27]) // key released
+            {
+              m_uinput->send(EV_KEY, m_chatpad_keymap[m_chatpad_laststroke[2]], 0);
+            }
+            if (data[26] && data[26] != m_chatpad_laststroke[1]
+                && data[26] != m_chatpad_laststroke[2]) // key pressed
+            {
+              m_uinput->send(EV_KEY, m_chatpad_keymap[data[26]], 1);
+            }
+            if (data[27] && data[27] != m_chatpad_laststroke[1]
+                && data[27] != m_chatpad_laststroke[2]) // key pressed
+            {
+              m_uinput->send(EV_KEY, m_chatpad_keymap[data[27]], 1);
+            }
+            m_chatpad_laststroke[0] = data[25];
+            m_chatpad_laststroke[1] = data[26];
+            m_chatpad_laststroke[2] = data[27];
+            m_uinput->sync();
+            m_chatpad_next = time(NULL) + m_chatpad_timeout;
+          }
+          else
+          {
+            log_debug("chatpad: unknown: " << raw2str(data, len));
+          }
+        }
       }
       else
       {
@@ -195,6 +380,13 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
   }
 
   return false;
+}
+
+void
+Xbox360WirelessController::chatpad_send(uint8_t cmd)
+{
+  uint8_t chatpadcmd[] = { 0x00, 0x00, 0x0c, cmd, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+  usb_write(m_endpoint, chatpadcmd, sizeof(chatpadcmd));
 }
 
 /* EOF */
