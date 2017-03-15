@@ -277,10 +277,10 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       }
       else if (data[0] == 0x00 && data[1] == 0x02 && data[2] == 0x00 && data[3] == 0xf0)
       { // Chatpad
-        if (m_chatpad && m_chatpad_lastpacket != (uint32_t)(data[24] << 24 | data[25] << 16 | data[26] << 24 | data[27]))
+        if (m_chatpad && m_chatpad_lastpacket != static_cast<uint32_t>(data[24] << 24 | data[25] << 16 | data[26] << 24 | data[27]))
         {
           log_debug("chatpad: " << raw2str(data+24, 5));
-          m_chatpad_lastpacket = (uint32_t)(data[24] << 24 | data[25] << 16 | data[26] << 24 | data[27]); // skip dup packet
+          m_chatpad_lastpacket = static_cast<uint32_t>(data[24] << 24 | data[25] << 16 | data[26] << 24 | data[27]); // skip dup packet
 
           if (data[24] == 0xf0 && data[25] == 0x03)
           { // wake up chatpad and release all keys
