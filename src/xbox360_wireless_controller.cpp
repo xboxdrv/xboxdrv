@@ -20,7 +20,6 @@
 
 #include <sstream>
 #include <boost/format.hpp>
-#include <ctime>
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
@@ -37,8 +36,8 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, bool ch
   m_battery_status(),
   m_serial(),
   m_chatpad(),
-  m_chatpad_next(),
-  m_chatpad_timeout(),
+  m_chatpad_pending(),
+  m_chatpad_timeout_gid(0),
   m_uinput(),
   m_chatpad_lastpacket()
 {
@@ -59,9 +58,7 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, bool ch
   {
     struct input_id usbid;
 
-    m_chatpad_timeout = 8; // chatpad would enter sleep mode in about 10s
     chatpad_send(0x1f);
-    m_chatpad_next = time(NULL) + m_chatpad_timeout;
     m_chatpad_lastpacket = 0xffffffff;
     memset(m_chatpad_laststroke, 0x00, sizeof(m_chatpad_laststroke));
     memset(m_chatpad_keymap, 0x00, sizeof(m_chatpad_keymap));
@@ -130,6 +127,8 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, bool ch
 
 Xbox360WirelessController::~Xbox360WirelessController()
 {
+  if (m_chatpad_timeout_gid)
+    g_source_remove(m_chatpad_timeout_gid);
 }
 
 void
@@ -168,6 +167,16 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
         // reset the controller into neutral position on disconnect
         memset(msg_out, 0, sizeof(*msg_out));
         set_active(false);
+
+        if (m_chatpad)
+        {
+          if (m_chatpad_timeout_gid)
+          {
+            g_source_remove(m_chatpad_timeout_gid);
+            m_chatpad_timeout_gid = 0;
+          }
+          m_chatpad_pending = false;
+        }
 
         return true;
       }
@@ -257,12 +266,6 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
         msg.dummy2 = unpack::int32le(ptr+14);
         msg.dummy3 = unpack::int16le(ptr+18);
 
-        if (m_chatpad && time(NULL) > m_chatpad_next)
-        { // wake up chatpad if timeout
-          chatpad_send(0x1f);
-          m_chatpad_next = time(NULL) + m_chatpad_timeout;
-        }
-
         return true;
       }
       else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
@@ -284,39 +287,15 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
 
           if (data[24] == 0xf0 && data[25] == 0x03)
           { // wake up chatpad and release all keys
-            chatpad_send(0x1e);
+            chatpad_release();
+            m_chatpad_pending = false;
+//             chatpad_send(0x1e);
             chatpad_send(0x1b);
-            if (m_chatpad_laststroke[0] & CHATPAD_MOD_SHIFT)
-            {
-              m_uinput->send(EV_KEY, KEY_LEFTSHIFT, 0);
-            }
-            if (m_chatpad_laststroke[0] & CHATPAD_MOD_GREEN)
-            {
-              m_uinput->send(EV_KEY, KEY_LEFTCTRL, 0);
-            }
-            if (m_chatpad_laststroke[0] & CHATPAD_MOD_ORANGE)
-            {
-              m_uinput->send(EV_KEY, KEY_RIGHTALT, 0);
-            }
-            if (m_chatpad_laststroke[0] & CHATPAD_MOD_PEOPLE)
-            {
-              m_uinput->send(EV_KEY, KEY_LEFTMETA, 0);
-            }
-            m_chatpad_laststroke[0] = 0;
-            if (m_chatpad_laststroke[1])
-            {
-              m_uinput->send(EV_KEY, m_chatpad_keymap[m_chatpad_laststroke[1]], 0);
-              m_chatpad_laststroke[1] = 0;
-            }
-            if (m_chatpad_laststroke[2])
-            {
-              m_uinput->send(EV_KEY, m_chatpad_keymap[m_chatpad_laststroke[2]], 0);
-              m_chatpad_laststroke[2] = 0;
-            }
           }
           else if (data[24] == 0xf0 && data[25] == 0x04)
           {
 //             log_debug("chatpad: working");
+            m_chatpad_pending = false;
           }
           else if (data[24] == 0x00)
           {
@@ -324,7 +303,6 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
 
             log_debug("chatpad: keystroke " << raw2str(data+25, 4));
             xor_modifier = data[25] ^ m_chatpad_laststroke[0];
-//             log_debug("chatpad: xor_modifier " << raw2str(&xor_modifier, 1));
             if (xor_modifier & CHATPAD_MOD_SHIFT) // as KEY_LEFTSHIFT
             {
               m_uinput->send(EV_KEY, KEY_LEFTSHIFT, data[25]&CHATPAD_MOD_SHIFT);
@@ -365,7 +343,6 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
             m_chatpad_laststroke[1] = data[26];
             m_chatpad_laststroke[2] = data[27];
             m_uinput->sync();
-            m_chatpad_next = time(NULL) + m_chatpad_timeout;
           }
           else
           {
@@ -392,6 +369,63 @@ Xbox360WirelessController::chatpad_send(uint8_t cmd)
 {
   uint8_t chatpadcmd[] = { 0x00, 0x00, 0x0c, cmd, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
   usb_write(m_endpoint, chatpadcmd, sizeof(chatpadcmd));
+  if (cmd == 0x1f)
+  {
+    log_debug("chatpad pending: " << m_chatpad_pending << m_chatpad_timeout_gid);
+    m_chatpad_pending = true;
+    if (m_chatpad_timeout_gid)
+      g_source_remove(m_chatpad_timeout_gid);
+    m_chatpad_timeout_gid = g_timeout_add_seconds(4, chatpad_timeout_cb, this);
+    log_debug("chatpad pending: " << m_chatpad_pending << m_chatpad_timeout_gid);
+  }
+}
+
+void
+Xbox360WirelessController::chatpad_release()
+{
+  if (m_chatpad_laststroke[0] & CHATPAD_MOD_SHIFT)
+  {
+    m_uinput->send(EV_KEY, KEY_LEFTSHIFT, 0);
+  }
+  if (m_chatpad_laststroke[0] & CHATPAD_MOD_GREEN)
+  {
+    m_uinput->send(EV_KEY, KEY_LEFTCTRL, 0);
+  }
+  if (m_chatpad_laststroke[0] & CHATPAD_MOD_ORANGE)
+  {
+    m_uinput->send(EV_KEY, KEY_RIGHTALT, 0);
+  }
+  if (m_chatpad_laststroke[0] & CHATPAD_MOD_PEOPLE)
+  {
+    m_uinput->send(EV_KEY, KEY_LEFTMETA, 0);
+  }
+  m_chatpad_laststroke[0] = 0;
+  if (m_chatpad_laststroke[1])
+  {
+    m_uinput->send(EV_KEY, m_chatpad_keymap[m_chatpad_laststroke[1]], 0);
+    m_chatpad_laststroke[1] = 0;
+  }
+  if (m_chatpad_laststroke[2])
+  {
+    m_uinput->send(EV_KEY, m_chatpad_keymap[m_chatpad_laststroke[2]], 0);
+    m_chatpad_laststroke[2] = 0;
+  }
+  m_uinput->sync();
+}
+
+bool
+Xbox360WirelessController::chatpad_timeout_check()
+{
+  uint8_t chatpadcmd[] = { 0x00, 0x00, 0x0c, 0x1f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+  if (m_chatpad_pending)
+  { // chatpad disconnected
+    chatpad_release();
+  }
+  usb_write(m_endpoint, chatpadcmd, sizeof(chatpadcmd));
+  m_chatpad_pending = true;
+
+  return true;
 }
 
 /* EOF */

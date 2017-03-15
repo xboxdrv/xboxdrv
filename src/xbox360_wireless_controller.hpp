@@ -36,8 +36,8 @@ private:
   int  m_battery_status;
   std::string m_serial;
   bool m_chatpad;
-  time_t m_chatpad_next;
-  int m_chatpad_timeout;
+  bool m_chatpad_pending;
+  guint m_chatpad_timeout_gid;
   std::auto_ptr<LinuxUinput> m_uinput;
   uint32_t m_chatpad_lastpacket;
   uint8_t m_chatpad_laststroke[3];
@@ -57,6 +57,12 @@ private:
   Xbox360WirelessController (const Xbox360WirelessController&);
   Xbox360WirelessController& operator= (const Xbox360WirelessController&);
   void chatpad_send(uint8_t cmd);
+  void chatpad_release();
+  bool chatpad_timeout_check();
+  static gboolean chatpad_timeout_cb(gpointer data)
+  {
+    return static_cast<Xbox360WirelessController *>(data)->chatpad_timeout_check();
+  }
 };
 
 #endif
