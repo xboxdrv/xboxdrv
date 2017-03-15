@@ -35,7 +35,12 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, bool ch
   m_endpoint(),
   m_interface(),
   m_battery_status(),
-  m_serial()
+  m_serial(),
+  m_chatpad(),
+  m_chatpad_next(),
+  m_chatpad_timeout(),
+  m_uinput(),
+  m_chatpad_lastpacket()
 {
   // FIXME: A little bit of a hack
   m_is_active = false;
@@ -272,10 +277,10 @@ Xbox360WirelessController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       }
       else if (data[0] == 0x00 && data[1] == 0x02 && data[2] == 0x00 && data[3] == 0xf0)
       { // Chatpad
-        if (m_chatpad && m_chatpad_lastpacket != *(uint32_t *)(data+24))
+        if (m_chatpad && m_chatpad_lastpacket != (uint32_t)(data[24] << 24 | data[25] << 16 | data[26] << 24 | data[27]))
         {
           log_debug("chatpad: " << raw2str(data+24, 5));
-          m_chatpad_lastpacket = *(uint32_t *)(data+24); // skip dup packet
+          m_chatpad_lastpacket = (uint32_t)(data[24] << 24 | data[25] << 16 | data[26] << 24 | data[27]); // skip dup packet
 
           if (data[24] == 0xf0 && data[25] == 0x03)
           { // wake up chatpad and release all keys
