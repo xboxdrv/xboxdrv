@@ -1,10 +1,10 @@
 # Axis Sensitivty Example
 # =======================
 #
-# You can adjust the axis sensitivty by a few means, the sensitivty
+# You can adjust the axis sensitivity by a few means, the sensitivity
 # modifier, the deadzone and the response curve. The deadzone is the
 # most basic one, it just filters out the noise around the center. The
-# sensitivty adjust the sensitivity curve via a simple value, while
+# sensitivity adjust the sensitivity curve via a simple value, while
 # the response curve gives you close to complete control over the axis
 # response.
 #
