@@ -18,6 +18,8 @@
 
 #include "chatpad.hpp"
 
+#include <algorithm>
+
 #include "helper.hpp"
 #include "linux_uinput.hpp"
 #include "raise_exception.hpp"
@@ -59,8 +61,8 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
                              "to <grumbel@gmail.com> and include the output of 'lsusb -v'");
   }
 
-  memset(m_keymap, 0, 256);
-  memset(m_state, 0, 256);
+  std::fill_n(m_keymap, 256, 0);
+  std::fill_n(m_state, 256, 0);
 
   m_keymap[CHATPAD_KEY_1] = KEY_1;
   m_keymap[CHATPAD_KEY_2] = KEY_2;
@@ -459,7 +461,7 @@ Chatpad::process(const ChatpadKeyMsg& msg)
   memcpy(old_state, m_state, 256);
 
   // generate new state
-  memset(m_state, 0, 256);
+  std::fill_n(m_state, 256, 0);
 
   m_state[CHATPAD_MOD_PEOPLE] = msg.modifier & CHATPAD_MOD_PEOPLE;
   m_state[CHATPAD_MOD_ORANGE] = msg.modifier & CHATPAD_MOD_ORANGE;
