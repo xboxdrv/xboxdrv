@@ -174,7 +174,10 @@ USBGSource::on_source_dispatch(GSource* source, GSourceFunc callback, gpointer u
 gboolean
 USBGSource::on_source()
 {
-  libusb_handle_events(NULL);
+  struct timeval to;
+  to.tv_sec = 0;
+  to.tv_usec = 0;
+  libusb_handle_events_timeout_completed(NULL, &to, NULL);
   return TRUE;
 }
 
