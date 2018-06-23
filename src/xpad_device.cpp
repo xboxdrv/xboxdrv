@@ -139,7 +139,10 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_SAITEK_P2500,     0x06a3, 0xff0c, "Saitek P2500" },
   { GAMEPAD_SAITEK_P3600,     0x06a3, 0xf51a, "Saitek P3600 (Cyborg Rumble)" },
 
-  { GAMEPAD_PLAYSTATION3_USB, 0x054c, 0x0268, "PLAYSTATION(R)3 Controller" }
+  { GAMEPAD_PLAYSTATION3_USB, 0x054c, 0x0268, "PLAYSTATION(R)3 Controller" },
+
+  { GAMEPAD_STEAM,            0x28de, 0x1102, "Valve Software Steam Controller" },
+  { GAMEPAD_STEAM_WIRELESS,   0x28de, 0x1142, "Valve Software Steam Controller (wireless)" }
 };
 
 const int xpad_devices_count = sizeof(xpad_devices)/sizeof(XPadDevice);
