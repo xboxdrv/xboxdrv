@@ -30,25 +30,29 @@ private:
   struct MacroEvent {
     enum { kInitOp, kSendOp, kWaitOp, kNull } type;
 
+    struct InitEvent {
+      UIEvent event;
+      UIEventEmitterPtr* emitter;
+      int minimum;
+      int maximum;
+      int fuzz;
+      int flat;
+    };
+
+    struct SendEvent {
+      UIEvent event;
+      UIEventEmitterPtr* emitter;
+      int     value;
+    };
+
+    struct WaitEvent {
+      int msec;
+    };
+
     union {
-      struct {
-        UIEvent event;
-        UIEventEmitterPtr* emitter;
-	int minimum;
-	int maximum;
-	int fuzz;
-	int flat;
-      } init;
-
-      struct {
-        UIEvent event;
-        UIEventEmitterPtr* emitter;
-        int     value;
-      } send;
-
-      struct {
-        int msec;
-      } wait;
+      InitEvent init;
+      SendEvent send;
+      WaitEvent wait;
     };
   };
 
