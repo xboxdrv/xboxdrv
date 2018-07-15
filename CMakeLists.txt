@@ -26,7 +26,8 @@ add_compile_options(-std=c++11)
 if(WARNINGS)
   set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
     -pedantic -Wall -Wextra -Wno-c++0x-compat -Wnon-virtual-dtor -Weffc++
-    -Wconversion -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter)
+    -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter
+    -Wconversion -Wno-sign-conversion)
   # -Winline -Wfloat-equal -Wunreachable-code
 endif()
 
