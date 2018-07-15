@@ -187,11 +187,11 @@ MacroButtonEventHandler::MacroButtonEventHandler(UInput& uinput, int slot, bool 
         switch(i->init.event.type)
         {
           case EV_REL:
-            assert(!"not implemented");
+            assert(false && "not implemented");
             break;
 
           case EV_KEY:
-            assert(!"not implemented");
+            assert(false && "not implemented");
             break;
 
           case EV_ABS:
@@ -203,7 +203,7 @@ MacroButtonEventHandler::MacroButtonEventHandler(UInput& uinput, int slot, bool 
             break;
 
           default:
-            assert(!"not implemented");
+            assert(false && "not implemented");
             break;
         }
         break;
@@ -229,7 +229,7 @@ MacroButtonEventHandler::MacroButtonEventHandler(UInput& uinput, int slot, bool 
             break;
 
           default:
-            assert(!"not implemented");
+            assert(false && "not implemented");
             break;
         }
         break;
@@ -325,7 +325,7 @@ MacroButtonEventHandler::update(int msec_delta)
             break;
 
           default:
-            assert(!"never reached");
+            assert(false && "never reached");
             break;
         }
 

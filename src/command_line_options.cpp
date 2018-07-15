@@ -1375,7 +1375,7 @@ void
 CommandLineParser::set_calibration_n(int controller, int config, const std::string& name, const std::string& value)
 {
   // FIXME: not implemented
-  assert(!"implement me");
+  assert(false && "implement me");
 }
 
 void

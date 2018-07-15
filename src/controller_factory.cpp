@@ -100,7 +100,7 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
       }
 
     default:
-      assert(!"unknown gamepad type");
+      assert(false && "unknown gamepad type");
       return {};
   }
 }
@@ -189,7 +189,7 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
       break;
 
     default:
-      assert(!"unknown gamepad type");
+      assert(false && "unknown gamepad type");
   }
 
   return lst;

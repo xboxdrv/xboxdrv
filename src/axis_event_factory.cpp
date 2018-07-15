@@ -102,7 +102,7 @@ AxisEventFactory::from_string(const std::string& str)
         break;
 
       default:
-        assert(!"should never be reached");
+        assert(false && "should never be reached");
     }
   }
 

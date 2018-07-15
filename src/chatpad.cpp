@@ -293,7 +293,7 @@ Chatpad::send_command()
       break;
 
     default:
-      assert(!"unknown state");
+      assert(false && "unknown state");
       break;
   }
 }
@@ -341,7 +341,7 @@ Chatpad::on_control(libusb_transfer* transfer)
       break;
 
     default:
-      assert(!"unknown state");
+      assert(false && "unknown state");
       break;
   }
 }
@@ -365,7 +365,7 @@ Chatpad::on_timeout()
       return false;
 
     default:
-      assert(!"invalid state");
+      assert(false && "invalid state");
       return false;
   }
 }

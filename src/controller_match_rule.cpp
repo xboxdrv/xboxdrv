@@ -87,7 +87,7 @@ ControllerMatchRuleGroup::match(udev_device* device) const
 bool
 ControllerMatchRule::match(udev_device* device) const
 {
-  assert(!"implement me");
+  assert(false && "implement me");
   return false;
 #if 0
         const char* serial = udev_device_get_property_value(device, "ID_SERIAL_SHORT");
@@ -108,11 +108,11 @@ ControllerMatchRule::match(udev_device* device) const
       return serial && (m_serial == serial);
 
     case kMatchEvdevPath:
-      assert(!"not implemented");
+      assert(false && "not implemented");
       return false;
 
     default:
-      assert(!"never reached");
+      assert(false && "never reached");
       return false;
   }
 #endif

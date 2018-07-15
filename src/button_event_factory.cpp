@@ -109,7 +109,7 @@ ButtonEventFactory::from_string(const std::string& str, const std::string& direc
       case EV_REL: return create(RelButtonEventHandler::from_string(m_uinput, m_slot, m_extra_devices, str));
       case EV_ABS: return create(AbsButtonEventHandler::from_string(m_uinput, m_slot, m_extra_devices, str));
       case     -1: return ButtonEventPtr(); // void
-      default: assert(!"unknown type"); return {}; 
+      default: assert(false && "unknown type"); return {};
     }
   }
 }
