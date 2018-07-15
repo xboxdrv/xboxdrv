@@ -25,8 +25,7 @@
 #include "controller/usb_controller.hpp"
 #include "xbox360_default_names.hpp"
 
-struct ControllerMessage;
-struct XPadDevice;
+class ControllerMessage;
 
 class Xbox360WirelessController : public USBController
 {

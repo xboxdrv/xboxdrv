@@ -30,7 +30,7 @@ extern "C" {
 #include <libudev.h>
 }
 
-struct ControllerMessage;
+class ControllerMessage;
 
 class Controller
 {

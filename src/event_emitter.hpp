@@ -24,10 +24,7 @@
 #include "axis_map.hpp"
 #include "button_map.hpp"
 
-struct Xbox360Msg;
-struct ControllerMessage;
-struct Playstation3USBMsg;
-struct XboxMsg;
+class ControllerMessage;
 
 class UInputOptions;
 
