@@ -76,6 +76,9 @@ std::string gamepadtype_to_string(const GamepadType& type)
     case GAMEPAD_GENERIC_USB:
       return "generic-usb";
 
+    case GAMEPAD_XEOX:
+      return "xeox";
+
     default:
       assert(!"Unknown gamepad type supplied");
   }
@@ -98,6 +101,7 @@ std::string gamepadtype_to_macro_string(const GamepadType& type)
     case GAMEPAD_SAITEK_P3600: return "GAMEPAD_SAITEK_P3600";
     case GAMEPAD_PLAYSTATION3_USB: return "GAMEPAD_PLAYSTATION3_USB";
     case GAMEPAD_GENERIC_USB: return "GAMEPAD_GENERIC_USB";
+    case GAMEPAD_XEOX: return "GAMEPAD_XEOX";
     default:
       assert(!"Unknown gamepad type supplied");
   }
@@ -142,6 +146,9 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
 
     case GAMEPAD_GENERIC_USB:
       return out << "Generic USB";
+
+    case GAMEPAD_XEOX:
+      return out << "Xeox USB Gamepad";
 
     default:
       return out << "unknown" << std::endl;
