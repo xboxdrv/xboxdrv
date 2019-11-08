@@ -64,6 +64,9 @@ std::string gamepadtype_to_string(const GamepadType& type)
     case GAMEPAD_FIRESTORM_VSB:
       return "firestorm-vsb";
 
+    case GAMEPAD_T_WIRELESS:
+      return "t-wireless";
+
     case GAMEPAD_SAITEK_P2500:
       return "saitek-p2500";
 
@@ -94,6 +97,7 @@ std::string gamepadtype_to_macro_string(const GamepadType& type)
     case GAMEPAD_XBOX360_GUITAR: return "GAMEPAD_XBOX360_GUITAR";
     case GAMEPAD_FIRESTORM: return "GAMEPAD_FIRESTORM";
     case GAMEPAD_FIRESTORM_VSB: return "GAMEPAD_FIRESTORM_VSB";
+    case GAMEPAD_T_WIRELESS: return "GAMEPAD_T_WIRELESS";
     case GAMEPAD_SAITEK_P2500: return "GAMEPAD_SAITEK_P2500";
     case GAMEPAD_SAITEK_P3600: return "GAMEPAD_SAITEK_P3600";
     case GAMEPAD_PLAYSTATION3_USB: return "GAMEPAD_PLAYSTATION3_USB";
@@ -130,6 +134,9 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
 
     case GAMEPAD_FIRESTORM_VSB:
       return out << "Firestorm Dual Power (vsb)";
+
+    case GAMEPAD_T_WIRELESS:
+      return out << "T-Wireless";
 
     case GAMEPAD_SAITEK_P2500:
       return out << "Saitek P2500";
