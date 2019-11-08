@@ -13,7 +13,7 @@ provided, Chatpad on wireless ones is not supported. The headset is
 not supported, but you can dump raw data from it.
 
 This driver is only of interest if the xpad kernel driver doesn't work
-for you or if you want more configurabity. If the xpad kernel driver
+for you or if you want more configurability. If the xpad kernel driver
 works for you there is no need to try this driver.
 
 Newest version of the driver can be found at:
