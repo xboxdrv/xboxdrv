@@ -185,7 +185,7 @@ install(
   TARGETS virtualkeyboard
   RUNTIME DESTINATION ${XBOXDRV_BINDIR})
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/xboxdrvctl
+  PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/xboxdrvctl
   DESTINATION ${XBOXDRV_BINDIR})
 install(
   FILES doc/xboxdrv.1 doc/virtualkeyboard.1
