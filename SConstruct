@@ -28,9 +28,9 @@ def build_bin2h(target, source, env):
     """
     Takes a list of files and converts them into a C source that can be included
     """
-    def c_escape(str): 
+    def c_escape(str):
         return str.translate(str.maketrans("/.-", "___"))
-    
+
     print(target)
     print(source)
     with open(target[0].get_path(), "w") as fout:
@@ -38,7 +38,7 @@ def build_bin2h(target, source, env):
 
         if "BIN2H_NAMESPACE" in env:
             fout.write("namespace %s {\n\n" % env["BIN2H_NAMESPACE"])
-            
+
         # write down data
         for src in source:
             with open(src.get_path(), "rb") as fin:
@@ -64,9 +64,9 @@ def build_bin2h(target, source, env):
 
         if "BIN2H_NAMESPACE" in env:
             fout.write("} // namespace %s\n\n" % env["BIN2H_NAMESPACE"])
-                
+
         fout.write("/* EOF */\n")
-                
+
 
 env = Environment(ENV=os.environ, BUILDERS = {
     'DBusGlue' : Builder(action = build_dbus_glue),
@@ -125,7 +125,7 @@ env.ParseConfig(env['PKG_CONFIG'] + " --cflags --libs libudev | sed 's/-I/-isyst
 f = open("VERSION")
 package_version = f.read()
 f.close()
-    
+
 env.Append(CPPDEFINES = { 'PACKAGE_VERSION': "'\"%s\"'" % package_version })
 
 conf = Configure(env)
