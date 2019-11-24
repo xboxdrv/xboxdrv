@@ -46,6 +46,7 @@ find_package(X11)
 find_package(GTK2 COMPONENTS gtk)
 
 find_package(PkgConfig)
+find_package(Python REQUIRED)
 pkg_search_module(USB REQUIRED libusb-1.0)
 pkg_search_module(UDEV REQUIRED libudev)
 pkg_search_module(DBUSGLIB REQUIRED dbus-glib-1)
@@ -73,8 +74,8 @@ set(XBOXDRV_SOURCES_CXX
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src)
 
-set(DBUS_GLUE ${CMAKE_CURRENT_SOURCE_DIR}/dbus_glue.py)
-set(BIN2H ${CMAKE_CURRENT_SOURCE_DIR}/bin2h.py)
+set(DBUS_GLUE ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dbus_glue.py)
+set(BIN2H ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/bin2h.py)
 
 set(TARGET ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_vfs.hpp)
 set(SOURCES
