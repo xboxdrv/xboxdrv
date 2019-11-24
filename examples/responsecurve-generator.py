@@ -1,14 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import string
 
 if len(sys.argv) != 3:
-    print "Usage:", sys.argv[0], "STEPS", "EQUATION"
-    print "Simple generator for generating responsecurve data from equations."
-    print ""
-    print "Example:"
-    print "   ", sys.argv[0], "6 i**2"
+    print("Usage:", sys.argv[0], "STEPS", "EQUATION")
+    print("Simple generator for generating responsecurve data from equations.")
+    print("")
+    print("Example:")
+    print("   ", sys.argv[0], "6 i**2")
 else:
     steps = int(sys.argv[1])
     equation = sys.argv[2]
@@ -19,6 +19,6 @@ else:
     left.reverse()
     left = left[0:-1]
     
-    print string.join([str(x) for x in (left + right)], ":")
+    print(string.join([str(x) for x in (left + right)], ":"))
     
 # EOF #

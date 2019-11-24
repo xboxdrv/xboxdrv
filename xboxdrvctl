@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 ##  Xbox360 USB Gamepad Userspace Driver
 ##  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmail.com>
@@ -71,7 +71,7 @@ elif options.bus == "auto":
     except dbus.exceptions.DBusException:
 				bus = dbus.SystemBus()
 else:
-    print "Error: invalid argument to --bus. Must be 'auto', 'session, or 'system'"
+    print("Error: invalid argument to --bus. Must be 'auto', 'session, or 'system'")
     exit()
 
 if options.status:
@@ -82,7 +82,7 @@ elif options.shutdown:
     daemon.Shutdown()
 else:
     if (options.led or options.rumble or options.config) and options.slot == None:
-        print "Error: --slot argument required"
+        print("Error: --slot argument required")
         exit()
     else:
         if options.slot != None:
@@ -94,7 +94,7 @@ else:
             if options.rumble:
                 m = re.match('^(\d+):(\d+)$', options.rumble)
                 if not m:
-                    print "Error: invalid argument to --rumble"
+                    print("Error: invalid argument to --rumble")
                     exit()
                 else:
                     left  = int(m.group(1))
