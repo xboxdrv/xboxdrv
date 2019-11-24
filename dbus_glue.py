@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # Xbox360 USB Gamepad Userspace Driver
 # Copyright (C) 2015 Ingo Ruhnke <grumbel@gmail.com>
@@ -33,7 +33,7 @@ def build_dbus_glue(target, source, dbus_prefix):
                             "--mode=glib-server",
                             "--prefix=" + dbus_prefix, source],
                            stdout=subprocess.PIPE).communicate()[0]
-
+    xml = xml.decode()
     xml = re.sub(r"callback = \(([A-Za-z_]+)\) \(marshal_data \? marshal_data : cc->callback\);",
                  r"union { \1 fn; void* obj; } conv;\n  "
                  "conv.obj = (marshal_data ? marshal_data : cc->callback);\n  "
