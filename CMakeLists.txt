@@ -21,6 +21,8 @@ option(BUILD_TESTS "Build tests" OFF)
 option(WARNINGS "Switch on extra warnings" OFF)
 option(WERROR "Turn warnings into errors" OFF)
 
+include(GNUInstallDirs)
+
 add_compile_options(-std=c++11)
 
 if(WARNINGS)
