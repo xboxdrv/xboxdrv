@@ -77,7 +77,7 @@ driver and has support for Xbox1 gamepads, Xbox360 USB gamepads and
 Xbox360 wireless gamepads. The Xbox360 guitar and some Xbox1 dancemats
 might work too. The Xbox 360 racing wheel is not supported, but
 shouldn't be to hard to add if somebody is interested.")
-   (home-page "http://gitlab.com/grumbel/xboxdrv")
+   (home-page "https://gitlab.com/xboxdrv/xboxdrv/")
    (license license:gpl3+)))
 
 xboxdrv
