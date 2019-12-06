@@ -15,7 +15,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (set! %load-path
-  (cons* "/ipfs/QmetP3eCAM9q3VPCj9BvjFdWkTA7voycebnXjyfc2zacFE/guix-cocfree_v0.0.0-45-g0fe3c86"
+  (cons* "/ipfs/QmbmkUqHztzcfwEx1EjQxPV2D5F1CLqx4MJZf4yp5jRs3n/guix-cocfree_0.0.0-53-g9880ce2"
          %load-path))
 
 (use-modules (guix build-system cmake)
@@ -46,19 +46,9 @@
       #:phases
       (modify-phases
        %standard-phases
-       (add-after
-        'install 'wrap-program
-        (lambda* (#:key outputs inputs #:allow-other-keys)
-          (let* ((out (assoc-ref outputs "out"))
-                 (python (assoc-ref inputs "python"))
-                 (python-version ,(version-major+minor (package-version python)))
-                 (pythonpath (cons (string-append out "/lib/python"
-                                                  python-version
-                                                  "/site-packages")
-                                   (search-path-as-string->list
-                                    (or (getenv "PYTHONPATH") "")))))
-            (wrap-program (string-append out "/bin/xboxdrvctl")
-                          `("PYTHONPATH" ":" prefix ,pythonpath))))))
+       (add-after 'install 'wrap-programs
+                  ,(wrap-python-programs python
+                                         '("/bin/xboxdrvctl"))))
       #:configure-flags
       (list
        ;; Configuration cannot find GTK2 without the two following flags.
