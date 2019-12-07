@@ -15,7 +15,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (set! %load-path
-  (cons* "/ipfs/QmbmkUqHztzcfwEx1EjQxPV2D5F1CLqx4MJZf4yp5jRs3n/guix-cocfree_0.0.0-53-g9880ce2"
+  (cons* "/ipfs/QmWbVsgXWQ14H1H6GFnxNDvHu7LMHsMSSFPyC1y9tVwM3B/guix-cocfree_0.0.0-54-g112ae41"
          %load-path))
 
 (use-modules (guix build-system cmake)
@@ -49,15 +49,7 @@
        (add-after 'install 'wrap-programs
                   ,(wrap-python-programs python
                                          '("/bin/xboxdrvctl"))))
-      #:configure-flags
-      (list
-       ;; Configuration cannot find GTK2 without the two following flags.
-       (string-append "-DGTK2_GDKCONFIG_INCLUDE_DIR="
-                      (assoc-ref %build-inputs "gtk+-2")
-                      "/lib/gtk-2.0/include")
-       (string-append "-DGTK2_GLIBCONFIG_INCLUDE_DIR="
-                      (assoc-ref %build-inputs "glib")
-                      "/lib/glib-2.0/include"))))
+      #:configure-flags ,(cmake-gtk2-include-flags)))
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("glib:bin" ,glib "bin")))
