@@ -18,7 +18,6 @@
 
 #include "xboxdrv.hpp"
 
-#include <boost/algorithm/string/join.hpp>
 #include <fmt/format.h>
 #include <errno.h>
 #include <iostream>
@@ -37,6 +36,7 @@
 #include "usb_gsource.hpp"
 #include "usb_helper.hpp"
 #include "usb_subsystem.hpp"
+#include "util/string.hpp"
 #include "util/terminal.hpp"
 #include "word_wrap.hpp"
 #include "xboxdrv_daemon.hpp"
@@ -285,21 +285,21 @@ Xboxdrv::run_list_enums(uint32_t enums)
   if (enums & Options::LIST_ABS)
   {
     wrap.println("EV_ABS:");
-    wrap.para("  ", boost::algorithm::join(evdev_abs_names.get_names(), ", "));
+    wrap.para("  ", string_join(evdev_abs_names.get_names(), ", "));
     wrap.newline();
   }
 
   if (enums & Options::LIST_REL)
   {
     wrap.println("EV_REL:");
-    wrap.para("  ", boost::algorithm::join(evdev_rel_names.get_names(), ", "));
+    wrap.para("  ", string_join(evdev_rel_names.get_names(), ", "));
     wrap.newline();
   }
 
   if (enums & Options::LIST_KEY)
   {
     wrap.println("EV_KEY:");
-    wrap.para("  ", boost::algorithm::join(evdev_key_names.get_names(), ", "));
+    wrap.para("  ", string_join(evdev_key_names.get_names(), ", "));
     wrap.newline();
   }
 
@@ -312,7 +312,7 @@ Xboxdrv::run_list_enums(uint32_t enums)
       lst.push_back(i->second);
     }
     wrap.println("X11Keysym:");
-    wrap.para("  ", boost::algorithm::join(lst, ", "));
+    wrap.para("  ", string_join(lst, ", "));
     wrap.newline();
   }
 }

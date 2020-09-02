@@ -55,6 +55,28 @@ std::vector<std::string> split_string_at_comma(const std::string& str);
 
 void split_string_at(const std::string& str, char c, std::string* lhs, std::string* rhs);
 
+template<typename C>
+std::string string_join(C const& c, std::string_view sep)
+{
+  std::string result;
+  auto it = std::begin(c);
+  if (it == std::end(c))
+  {
+    return {};
+  }
+  else
+  {
+    result += *it;
+    ++it;
+    for(; it != std::end(c); ++it)
+    {
+      result += sep;
+      result += *it;
+    }
+    return result;
+  }
+}
+
 #endif
 
 /* EOF */
