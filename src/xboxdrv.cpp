@@ -234,7 +234,7 @@ Xboxdrv::run_daemon(const Options& opts)
 
   if (opts.usb_debug)
   {
-    libusb_set_debug(NULL, 3);
+    libusb_set_option(NULL, LIBUSB_OPTION_LOG_LEVEL, 3);
   }
 
   if (!opts.detach)
