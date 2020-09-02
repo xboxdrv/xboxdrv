@@ -16,10 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/bind.hpp>
 #include <iostream>
 
 #include "util/string.hpp"
+
+using namespace std::placeholders;
 
 void print_name_value(const std::string& name, const std::string& value)
 {
@@ -30,7 +31,7 @@ int main(int argc, char** argv)
 {
   for(int i = 1; i < argc; ++i)
   {
-    process_name_value_string(argv[i], boost::bind(&print_name_value, _1, _2));
+    process_name_value_string(argv[i], std::bind(&print_name_value, _1, _2));
   }
   return 0;
 }
