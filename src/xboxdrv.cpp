@@ -20,7 +20,6 @@
 
 #include <boost/algorithm/string/join.hpp>
 #include <fmt/format.h>
-#include <boost/scoped_array.hpp>
 #include <errno.h>
 #include <iostream>
 #include <sched.h>
@@ -142,10 +141,9 @@ bool xpad_device_sorter(const XPadDevice& lhs, const XPadDevice& rhs)
 void
 Xboxdrv::run_list_supported_devices_xpad()
 {
-  boost::scoped_array<XPadDevice> sorted_devices(new XPadDevice[xpad_devices_count]);
-  memcpy(sorted_devices.get(), xpad_devices, sizeof(XPadDevice) * xpad_devices_count);
-
-  std::sort(sorted_devices.get(), sorted_devices.get() + xpad_devices_count, xpad_device_sorter);
+  std::vector<XPadDevice> sorted_devices(xpad_devices_count);
+  std::copy_n(xpad_devices, xpad_devices_count, sorted_devices.begin());
+  std::sort(sorted_devices.begin(), sorted_devices.end(), xpad_device_sorter);
 
   for(int i = 0; i < xpad_devices_count; ++i)
   {
