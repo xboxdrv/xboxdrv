@@ -22,7 +22,7 @@
 #include <memory>
 #include <libusb.h>
 #include <glib.h>
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 
 #include "xpad_device.hpp"
 #include "controller_ptr.hpp"
@@ -44,7 +44,7 @@ private:
   USBSubsystem& m_usb_subsystem;
   const Options& m_opts;
   GMainLoop* m_gmain;
-  boost::scoped_ptr<USBGSource> m_usb_gsource;
+  std::unique_ptr<USBGSource> m_usb_gsource;
 
   std::unique_ptr<UInput> m_uinput;
 

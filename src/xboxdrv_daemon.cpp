@@ -20,7 +20,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 #include <fstream>
 #include <dbus/dbus-glib.h>
 #include <dbus/dbus-glib-lowlevel.h>
@@ -141,7 +141,7 @@ XboxdrvDaemon::run()
     UdevSubsystem udev_subsystem;
     udev_subsystem.set_device_callback(boost::bind(&XboxdrvDaemon::process_match, this, _1));
 
-    boost::scoped_ptr<DBusSubsystem> dbus_subsystem;
+    std::unique_ptr<DBusSubsystem> dbus_subsystem;
     if (m_opts.dbus != Options::kDBusDisabled)
     {
       DBusBusType dbus_bus_type = DBUS_BUS_SESSION;

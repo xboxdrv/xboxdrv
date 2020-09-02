@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_AXIS_EVENT_HPP
 #define HEADER_XBOXDRV_AXIS_EVENT_HPP
 
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 
 #include "axis_filter.hpp"
 #include "uinput/ui_event.hpp"
@@ -47,7 +47,7 @@ private:
   int  m_last_send_value;
   int  m_last_min;
   int  m_last_max;
-  boost::scoped_ptr<AxisEventHandler> m_handler;
+  std::unique_ptr<AxisEventHandler> m_handler;
   std::vector<AxisFilterPtr> m_filters;
 };
 

@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_BUTTON_EVENT_HPP
 #define HEADER_XBOXDRV_BUTTON_EVENT_HPP
 
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 #include <vector>
 
 #include "button_filter.hpp"
@@ -45,7 +45,7 @@ public:
 private:
   bool m_last_send_state;
   bool m_last_raw_state;
-  boost::scoped_ptr<ButtonEventHandler> m_handler;
+  std::unique_ptr<ButtonEventHandler> m_handler;
   std::vector<ButtonFilterPtr> m_filters;
 };
 
