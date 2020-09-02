@@ -19,7 +19,6 @@
 #include "util/string.hpp"
 
 #include <fmt/format.h>
-#include <boost/lexical_cast.hpp>
 
 #include "raise_exception.hpp"
 
@@ -50,13 +49,23 @@ bool str2bool(std::string const& str)
 {
   try
   {
-    return boost::lexical_cast<bool>(str);
+    int result = std::stoi(str);
+    if (result == 1)
+    {
+      return true;
+    }
+    else if (result == 0)
+    {
+      return false;
+    }
+    else
+    {
+      throw std::runtime_error(fmt::format("str2bool(): couldn't convert '{}' to bool", str));
+    }
   }
-  catch(boost::bad_lexical_cast const& err)
+  catch(...)
   {
-    std::ostringstream out;
-    out << "str2bool(): couldn't convert '" << str << "' to bool";
-    throw std::runtime_error(out.str());
+    std::throw_with_nested(std::runtime_error(fmt::format("str2bool(): couldn't convert '{}' to bool", str)));
   }
 }
 
@@ -64,13 +73,11 @@ int str2int(std::string const& str)
 {
   try
   {
-    return boost::lexical_cast<int>(str);
+    return std::stoi(str);
   }
-  catch(boost::bad_lexical_cast const& err)
+  catch(...)
   {
-    std::ostringstream out;
-    out << "str2int(): couldn't convert '" << str << "' to int";
-    throw std::runtime_error(out.str());
+    std::throw_with_nested(std::runtime_error(fmt::format("str2int(): couldn't convert '{}' to int", str)));
   }
 }
 
@@ -78,13 +85,11 @@ float str2float(std::string const& str)
 {
   try
   {
-    return boost::lexical_cast<float>(str);
+    return std::stof(str);
   }
-  catch(boost::bad_lexical_cast const& err)
+  catch(...)
   {
-    std::ostringstream out;
-    out << "str2float(): couldn't convert '" << str << "' to float";
-    throw std::runtime_error(out.str());
+    std::throw_with_nested(std::runtime_error(fmt::format("str2float(): couldn't convert '{}' to float", str)));
   }
 }
 
@@ -221,7 +226,7 @@ int to_number(int range, const std::string& str)
   {
     if (str[str.size() - 1] == '%')
     {
-      int percent = boost::lexical_cast<int>(str.substr(0, str.size()-1));
+      int percent = std::stoi(str.substr(0, str.size()-1));
       return range * percent / 100;
     }
     else

@@ -18,7 +18,8 @@
 
 #include "uinput/ui_event.hpp"
 
-#include <boost/lexical_cast.hpp>
+#include <assert.h>
+#include <fmt/format.h>
 
 #include "evdev_helper.hpp"
 #include "uinput/uinput.hpp"
@@ -235,7 +236,15 @@ uint16_t str2deviceid(const std::string& device)
   }
   else
   {
-    return boost::lexical_cast<uint16_t>(device);
+    int result = std::stoi(device);
+    if (result < 0 || result > std::numeric_limits<uint16_t>::max())
+    {
+      throw std::runtime_error(fmt::format("str2deviceid(): out of range: '{}'", device));
+    }
+    else
+    {
+      return static_cast<uint16_t>(result);
+    }
   }
 }
 
@@ -247,7 +256,15 @@ uint16_t str2slotid(const std::string& slot)
   }
   else
   {
-    return boost::lexical_cast<uint16_t>(slot);
+    int result = std::stoi(slot);
+    if (result < 0 || result > std::numeric_limits<uint16_t>::max())
+    {
+      throw std::runtime_error(fmt::format("str2deviceid(): out of range: '{}'", slot));
+    }
+    else
+    {
+      return static_cast<uint16_t>(result);
+    }
   }
 }
 

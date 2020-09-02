@@ -20,7 +20,6 @@
 
 #include <stdexcept>
 #include <iostream>
-#include <boost/lexical_cast.hpp>
 
 #include "util/string.hpp"
 #include "raise_exception.hpp"

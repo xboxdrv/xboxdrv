@@ -18,7 +18,6 @@
 
 #include <iostream>
 #include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include "axis_filter.hpp"
 
@@ -45,7 +44,7 @@ int main(int argc, char** argv)
     std::string line;
     while(std::getline(std::cin, line))
     {
-      int value = boost::lexical_cast<int>(line);
+      int value = std::stoi(line);
       for(std::vector<AxisFilterPtr>::iterator i = filters.begin(); i != filters.end(); ++i)
       {
         value = (*i)->filter(value, -32768, 32767);

@@ -18,7 +18,6 @@
 
 #include "modifier/stick_zone_modifier.hpp"
 
-#include <boost/lexical_cast.hpp>
 #include <math.h>
 #include <sstream>
 #include <stdexcept>

@@ -18,7 +18,6 @@
 
 #include <iostream>
 #include <boost/tokenizer.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include "button_filter.hpp"
 
@@ -34,7 +33,7 @@ int main(int argc, char** argv)
     std::vector<ButtonFilterPtr> filters;
 
     std::string str = argv[1];
-    int duration = (argc == 3) ? boost::lexical_cast<int>(argv[2]) : 0;
+    int duration = (argc == 3) ? std::stoi(argv[2]) : 0;
 
     typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
     tokenizer tokens(str, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
@@ -48,7 +47,7 @@ int main(int argc, char** argv)
     std::string line;
     while(std::getline(std::cin, line))
     {
-      values.push_back(boost::lexical_cast<int>(line));
+      values.push_back(std::stoi(line));
     }
 
     int time_step = duration / values.size();

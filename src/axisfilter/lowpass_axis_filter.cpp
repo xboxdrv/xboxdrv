@@ -18,8 +18,6 @@
 
 #include "axisfilter/lowpass_axis_filter.hpp"
 
-#include <boost/lexical_cast.hpp>
-
 #include "util/math.hpp"
 #include "util/string.hpp"
 
