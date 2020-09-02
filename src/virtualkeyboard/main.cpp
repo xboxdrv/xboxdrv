@@ -18,7 +18,7 @@
 
 #include <gtk/gtk.h>
 #include <iostream>
-#include <boost/bind.hpp>
+#include <functional>
 #include <errno.h>
 
 #include "arg_parser.hpp"

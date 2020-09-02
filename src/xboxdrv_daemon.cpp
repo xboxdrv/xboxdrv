@@ -18,7 +18,7 @@
 
 #include "xboxdrv_daemon.hpp"
 
-#include <boost/bind.hpp>
+#include <functional>
 #include <boost/format.hpp>
 #include <memory>
 #include <fstream>
@@ -39,6 +39,8 @@
 #include "udev_subsystem.hpp"
 #include "dbus_subsystem.hpp"
 #include "usb_subsystem.hpp"
+
+using namespace std::placeholders;
 
 XboxdrvDaemon* XboxdrvDaemon::s_current = 0;
 
@@ -139,7 +141,7 @@ XboxdrvDaemon::run()
     init_uinput();
 
     UdevSubsystem udev_subsystem;
-    udev_subsystem.set_device_callback(boost::bind(&XboxdrvDaemon::process_match, this, _1));
+    udev_subsystem.set_device_callback(std::bind(&XboxdrvDaemon::process_match, this, _1));
 
     std::unique_ptr<DBusSubsystem> dbus_subsystem;
     if (m_opts.dbus != Options::kDBusDisabled)
@@ -360,8 +362,8 @@ XboxdrvDaemon::launch_controller_thread(udev_device* udev_dev,
     {
       ControllerPtr& controller = *i;
 
-      controller->set_disconnect_cb(boost::bind(&g_idle_add, &XboxdrvDaemon::on_controller_disconnect_wrap, this));
-      controller->set_activation_cb(boost::bind(&g_idle_add, &XboxdrvDaemon::on_controller_activate_wrap, this));
+      controller->set_disconnect_cb(std::bind(&g_idle_add, &XboxdrvDaemon::on_controller_disconnect_wrap, this));
+      controller->set_activation_cb(std::bind(&g_idle_add, &XboxdrvDaemon::on_controller_activate_wrap, this));
 
       // FIXME: Little dirty hack
       controller->set_udev_device(udev_dev);
@@ -510,7 +512,7 @@ XboxdrvDaemon::on_controller_disconnect()
 
   // cleanup inactive controllers
   m_inactive_controllers.erase(std::remove_if(m_inactive_controllers.begin(), m_inactive_controllers.end(),
-                                              boost::bind(&Controller::is_disconnected, _1)),
+                                              std::bind(&Controller::is_disconnected, _1)),
                                m_inactive_controllers.end());
 }
 

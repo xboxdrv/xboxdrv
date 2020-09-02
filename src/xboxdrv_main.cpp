@@ -24,7 +24,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <boost/format.hpp>
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "controller_factory.hpp"
 #include "controller_slot_config.hpp"
@@ -38,6 +38,8 @@
 #include "usb_subsystem.hpp"
 #include "controller_thread.hpp"
 #include "helper.hpp"
+
+using namespace std::placeholders;
 
 XboxdrvMain* XboxdrvMain::s_current = 0;
 
@@ -155,7 +157,7 @@ void
 XboxdrvMain::run()
 {
   m_controller = create_controller();
-  m_controller->set_disconnect_cb(boost::bind(&XboxdrvMain::on_controller_disconnect, this));
+  m_controller->set_disconnect_cb(std::bind(&XboxdrvMain::on_controller_disconnect, this));
   init_controller(m_controller);
 
   if (m_opts.instant_exit)

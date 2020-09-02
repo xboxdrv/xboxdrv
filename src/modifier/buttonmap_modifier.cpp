@@ -18,13 +18,16 @@
 
 #include "buttonmap_modifier.hpp"
 
-#include <boost/bind.hpp>
+#include <functional>
 #include <boost/tokenizer.hpp>
 #include <sstream>
 
 #include "helper.hpp"
 #include "key_port.hpp"
 #include "raise_exception.hpp"
+
+using namespace std::placeholders;
+
 
 class ButtonMapping
 {
@@ -91,8 +94,8 @@ ButtonmapModifier::from_string(const std::string& args)
 {
   std::unique_ptr<ButtonmapModifier> modifier(new ButtonmapModifier);
 
-  process_name_value_string(args, boost::bind(&ButtonmapModifier::add, modifier.get(),
-                                              boost::bind(&ButtonMapping::from_string, _1, _2)));
+  process_name_value_string(args, std::bind(&ButtonmapModifier::add, modifier.get(),
+                                              std::bind(&ButtonMapping::from_string, _1, _2)));
 
   return modifier.release();
 }

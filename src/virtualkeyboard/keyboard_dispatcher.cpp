@@ -19,12 +19,14 @@
 #include "virtualkeyboard/keyboard_dispatcher.hpp"
 
 #include <linux/input.h>
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "log.hpp"
 #include "uinput/uinput.hpp"
 #include "virtualkeyboard/keyboard_description.hpp"
 #include "virtualkeyboard/virtual_keyboard.hpp"
+
+using namespace std::placeholders;
 
 KeyboardDispatcher::KeyboardDispatcher(VirtualKeyboard& gui_keyboard,
                                        UInput& uinput) :
@@ -45,7 +47,7 @@ KeyboardDispatcher::KeyboardDispatcher(VirtualKeyboard& gui_keyboard,
     }
   }
 
-  gui_keyboard.set_key_callback(boost::bind(&KeyboardDispatcher::on_key, this, _1, _2));
+  gui_keyboard.set_key_callback(std::bind(&KeyboardDispatcher::on_key, this, _1, _2));
 }
 
 void

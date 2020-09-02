@@ -18,7 +18,7 @@
 
 #include "controller.hpp"
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "log.hpp"
 

@@ -20,11 +20,13 @@
 
 #include <fstream>
 #include <errno.h>
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
+
+using namespace std::placeholders;
 
 Headset::Headset(libusb_device_handle* handle, bool debug) :
   m_handle(handle),
@@ -61,7 +63,7 @@ Headset::play_file(const std::string& filename)
     else
     {
       m_interface->submit_write(4, reinterpret_cast<uint8_t*>(data), len,
-                                boost::bind(&Headset::send_data, this, _1));
+                                std::bind(&Headset::send_data, this, _1));
     }
   }
 }
@@ -77,7 +79,7 @@ Headset::record_file(const std::string& filename)
   }
   else
   {
-    m_interface->submit_read(3, 32, boost::bind(&Headset::receive_data, this, _1, _2));
+    m_interface->submit_read(3, 32, std::bind(&Headset::receive_data, this, _1, _2));
   }
 }
 

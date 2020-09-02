@@ -18,12 +18,14 @@
 
 #include "axismap_modifier.hpp"
 
-#include <boost/bind.hpp>
+#include <functional>
 #include <boost/tokenizer.hpp>
 #include <sstream>
 
 #include "axisfilter/invert_axis_filter.hpp"
 #include "helper.hpp"
+
+using namespace std::placeholders;
 
 AxisMappingPtr
 AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
@@ -84,8 +86,8 @@ AxismapModifier::from_string(const std::string& args)
 {
   std::unique_ptr<AxismapModifier> modifier(new AxismapModifier);
 
-  process_name_value_string(args, boost::bind(&AxismapModifier::add, modifier.get(),
-                                              boost::bind(&AxisMapping::from_string, _1, _2)));
+  process_name_value_string(args, std::bind(&AxismapModifier::add, modifier.get(),
+                                              std::bind(&AxisMapping::from_string, _1, _2)));
 
   return modifier.release();
 }

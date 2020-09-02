@@ -18,11 +18,13 @@
 
 #include "controller_slot_config.hpp"
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "controller_slot_options.hpp"
 #include "raise_exception.hpp"
 #include "uinput/uinput.hpp"
+
+using namespace std::placeholders;
 
 ControllerSlotConfigPtr
 ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const ControllerSlotOptions& opts)
@@ -83,7 +85,7 @@ ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const
     // uinput.add_ff(ff_device, FF_DAMPER);
     // uinput.add_ff(ff_device, FF_INERTIA);
 
-    uinput.set_ff_callback(ff_device, boost::bind(&ControllerSlotConfig::set_rumble, m_config.get(), _1, _2));
+    uinput.set_ff_callback(ff_device, std::bind(&ControllerSlotConfig::set_rumble, m_config.get(), _1, _2));
   }
 
   return m_config;
