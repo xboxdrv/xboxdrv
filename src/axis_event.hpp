@@ -27,7 +27,7 @@
 class AxisEvent;
 class AxisEventHandler;
 
-typedef boost::shared_ptr<AxisEvent> AxisEventPtr;
+typedef std::shared_ptr<AxisEvent> AxisEventPtr;
 
 class AxisEvent
 {

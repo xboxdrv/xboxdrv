@@ -19,11 +19,11 @@
 #ifndef HEADER_XBOXDRV_BUTTON_COMBINATION_MAP_HPP
 #define HEADER_XBOXDRV_BUTTON_COMBINATION_MAP_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "button_combination.hpp"
 
-typedef boost::shared_ptr<ButtonCombination> ButtonCombinationPtr;
+typedef std::shared_ptr<ButtonCombination> ButtonCombinationPtr;
 
 template<typename C>
 class ButtonCombinationMap

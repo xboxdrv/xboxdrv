@@ -37,7 +37,7 @@ struct ButtonMappingOption
 };
 
 class ButtonMapping;
-typedef boost::shared_ptr<ButtonMapping> ButtonMappingPtr;
+typedef std::shared_ptr<ButtonMapping> ButtonMappingPtr;
 
 class ButtonmapModifier : public Modifier
 {

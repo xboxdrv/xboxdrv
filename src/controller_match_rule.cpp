@@ -134,7 +134,7 @@ ControllerMatchRule::from_string(const std::string& lhs,
     }
     else
     {
-      boost::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
+      std::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
 
       group->add_rule(ControllerMatchRulePtr(new ControllerMatchRuleProperty("ID_VENDOR_ID", args[0])));
       group->add_rule(ControllerMatchRulePtr(new ControllerMatchRuleProperty("ID_MODEL_ID", args[1])));
@@ -183,7 +183,7 @@ ControllerMatchRule::from_string(const std::string& lhs,
     }
     else
     {
-      boost::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
+      std::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
 
       group->add_rule(ControllerMatchRulePtr(new ControllerMatchRuleProperty("BUSNUM", args[0])));
       group->add_rule(ControllerMatchRulePtr(new ControllerMatchRuleProperty("DEVNUM", args[1])));

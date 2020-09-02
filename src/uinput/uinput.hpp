@@ -48,7 +48,7 @@ public:
   }
 
 private:
-  typedef std::map<uint32_t, boost::shared_ptr<LinuxUinput> > UInputDevs;
+  typedef std::map<uint32_t, std::shared_ptr<LinuxUinput> > UInputDevs;
   UInputDevs m_uinput_devs;
 
   typedef std::map<uint32_t, std::string> DeviceNames;

@@ -38,7 +38,7 @@ private:
   UIRelEventEmitter& operator=(const UIRelEventEmitter&);
 };
 
-typedef boost::shared_ptr<UIRelEventEmitter> UIRelEventEmitterPtr;
+typedef std::shared_ptr<UIRelEventEmitter> UIRelEventEmitterPtr;
 
 #endif
 

@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_BUTTONFILTER_DELAY_BUTTON_FILTER_HPP
 #define HEADER_XBOXDRV_BUTTONFILTER_DELAY_BUTTON_FILTER_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <string>
 
 #include "button_filter.hpp"

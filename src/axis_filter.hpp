@@ -19,13 +19,13 @@
 #ifndef HEADER_XBOXDRV_AXIS_FILTER_HPP
 #define HEADER_XBOXDRV_AXIS_FILTER_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <string>
 #include <vector>
 
 class AxisFilter;
 
-typedef boost::shared_ptr<AxisFilter> AxisFilterPtr;
+typedef std::shared_ptr<AxisFilter> AxisFilterPtr;
 
 class AxisFilter
 {

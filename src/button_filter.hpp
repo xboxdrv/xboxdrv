@@ -19,12 +19,12 @@
 #ifndef HEADER_XBOXDRV_BUTTON_FILTER_HPP
 #define HEADER_XBOXDRV_BUTTON_FILTER_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <string>
 
 class ButtonFilter;
 
-typedef boost::shared_ptr<ButtonFilter> ButtonFilterPtr;
+typedef std::shared_ptr<ButtonFilter> ButtonFilterPtr;
 
 class ButtonFilter
 {

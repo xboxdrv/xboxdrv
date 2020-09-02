@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_MATCH_RULE_HPP
 #define HEADER_XBOXDRV_CONTROLLER_MATCH_RULE_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 extern "C" {
 #include <libudev.h>
 }
@@ -28,7 +28,7 @@ extern "C" {
 
 struct udev_device;
 class ControllerMatchRule;
-typedef boost::shared_ptr<ControllerMatchRule> ControllerMatchRulePtr;
+typedef std::shared_ptr<ControllerMatchRule> ControllerMatchRulePtr;
 
 class ControllerMatchRule
 {

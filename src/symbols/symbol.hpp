@@ -19,14 +19,14 @@
 #ifndef HEADER_XBOXDRV_SYMBOLS_SYMBOL_HPP
 #define HEADER_XBOXDRV_SYMBOLS_SYMBOL_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sstream>
 #include <vector>
 
 class Namespace;
 class Symbol;
 
-typedef boost::shared_ptr<Symbol> SymbolPtr;
+typedef std::shared_ptr<Symbol> SymbolPtr;
 
 class Symbol
 {

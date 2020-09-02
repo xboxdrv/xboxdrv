@@ -19,12 +19,12 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_SLOT_PTR_HPP
 #define HEADER_XBOXDRV_CONTROLLER_SLOT_PTR_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/weak_ptr.hpp>
 
 class ControllerSlot;
 
-typedef boost::shared_ptr<ControllerSlot> ControllerSlotPtr;
+typedef std::shared_ptr<ControllerSlot> ControllerSlotPtr;
 typedef boost::weak_ptr<ControllerSlot> ControllerSlotWeakPtr;
 
 #endif

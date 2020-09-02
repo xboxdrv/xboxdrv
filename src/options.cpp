@@ -415,7 +415,7 @@ Options::set_match(const std::string& str)
 void
 Options::set_match_group(const std::string& str)
 {
-  boost::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
+  std::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
 
   process_name_value_string(str, boost::bind(&ControllerMatchRuleGroup::add_rule_from_string, group, _1, _2));
 

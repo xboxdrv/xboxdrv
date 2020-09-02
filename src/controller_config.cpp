@@ -34,7 +34,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
   // create modifier
   if (!opts.calibration_map.empty())
   {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
     for(std::map<std::string, AxisFilterPtr>::const_iterator i = opts.calibration_map.begin();
         i != opts.calibration_map.end();
@@ -49,7 +49,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
   if (opts.deadzone)
   {
 #if 0
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
     XboxAxis axes[] = { XBOX_AXIS_X1,
                         XBOX_AXIS_Y1,
@@ -72,7 +72,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
   if (opts.deadzone_trigger)
   {
 #if 0
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
     XboxAxis axes[] = { XBOX_AXIS_LT,
                         XBOX_AXIS_RT };
@@ -97,7 +97,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
 
   if (!opts.sensitivity_map.empty())
   {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
     for(std::map<std::string, AxisFilterPtr>::const_iterator i = opts.sensitivity_map.begin();
         i != opts.sensitivity_map.end(); ++i)
@@ -116,7 +116,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
 
   if (!opts.relative_axis_map.empty())
   {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
     for(std::map<std::string, AxisFilterPtr>::const_iterator i = opts.relative_axis_map.begin();
         i != opts.relative_axis_map.end(); ++i)
@@ -135,7 +135,7 @@ ControllerConfig::ControllerConfig(UInput& uinput, int slot, bool extra_devices,
 #if 0
   if (!opts.autofire_map.empty())
   {
-    boost::shared_ptr<ButtonmapModifier> buttonmap(new ButtonmapModifier);
+    std::shared_ptr<ButtonmapModifier> buttonmap(new ButtonmapModifier);
 
     for(std::map<std::string, ButtonFilterPtr>::const_iterator i = opts.autofire_map.begin();
         i != opts.autofire_map.end(); ++i)

@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_SYMBOLS_NAMESPACE_HPP
 #define HEADER_XBOXDRV_SYMBOLS_NAMESPACE_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <map>
 #include <string>
 #include <stdexcept>
@@ -48,7 +48,7 @@ private:
   Namespace& operator=(const Namespace&);
 };
 
-typedef boost::shared_ptr<Namespace> NamespacePtr;
+typedef std::shared_ptr<Namespace> NamespacePtr;
 
 #endif
 

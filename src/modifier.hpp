@@ -19,7 +19,7 @@
 #ifndef HEADER_MODIFIER_HPP
 #define HEADER_MODIFIER_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "controller_message.hpp"
 #include "controller_message_descriptor.hpp"
@@ -27,7 +27,7 @@
 class Modifier;
 class Options;
 
-typedef boost::shared_ptr<Modifier> ModifierPtr;
+typedef std::shared_ptr<Modifier> ModifierPtr;
 
 struct ModifierOption
 {

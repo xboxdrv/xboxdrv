@@ -22,7 +22,7 @@
 #include <vector>
 #include <string>
 #include <assert.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Key
 {
@@ -137,7 +137,7 @@ private:
 
 class KeyboardDescription;
 
-typedef boost::shared_ptr<KeyboardDescription> KeyboardDescriptionPtr;
+typedef std::shared_ptr<KeyboardDescription> KeyboardDescriptionPtr;
 
 class KeyboardDescription
 {

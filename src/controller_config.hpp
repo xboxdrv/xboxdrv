@@ -24,7 +24,7 @@
 
 class ControllerOptions;
 class ControllerConfig;
-typedef boost::shared_ptr<ControllerConfig> ControllerConfigPtr;
+typedef std::shared_ptr<ControllerConfig> ControllerConfigPtr;
 
 class ControllerConfig
 {

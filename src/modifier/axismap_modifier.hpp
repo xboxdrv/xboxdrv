@@ -38,7 +38,7 @@ struct AxisMappingOption
 };
 
 struct AxisMapping;
-typedef boost::shared_ptr<AxisMapping> AxisMappingPtr;
+typedef std::shared_ptr<AxisMapping> AxisMappingPtr;
 
 struct AxisMapping
 {

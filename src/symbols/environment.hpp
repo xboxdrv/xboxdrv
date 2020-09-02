@@ -43,7 +43,7 @@ private:
   Environment& operator=(const Environment&);
 };
 
-typedef boost::shared_ptr<Environment> EnvironmentPtr;
+typedef std::shared_ptr<Environment> EnvironmentPtr;
 
 #endif
 

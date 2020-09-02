@@ -27,7 +27,7 @@
 class ButtonEvent;
 class ButtonEventHandler;
 
-typedef boost::shared_ptr<ButtonEvent> ButtonEventPtr;
+typedef std::shared_ptr<ButtonEvent> ButtonEventPtr;
 
 class ButtonEvent
 {
