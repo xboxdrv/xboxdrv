@@ -72,13 +72,10 @@ VirtualKeyboard::VirtualKeyboard(KeyboardDescriptionPtr keyboard_desc) :
   gtk_widget_override_background_color(m_window, GTK_STATE_FLAG_NORMAL, &color);
   gtk_widget_override_background_color(m_drawing_area, GTK_STATE_FLAG_NORMAL, &color);
 
-  //gtk_window_set_resizable(GTK_WINDOW(m_window), FALSE);
-  gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
-
-  //gdk_window_set_override_redirect(GTK_WINDOW(m_window)->window, TRUE);
-  //gdk_window_set_decorations(GTK_WINDOW(m_window)->window, 0);
-  gtk_window_set_decorated(GTK_WINDOW(m_window), FALSE);
-  gtk_window_set_keep_above(GTK_WINDOW(m_window), TRUE);
+  if (false) {
+    gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
+    gtk_window_set_keep_above(GTK_WINDOW(m_window), TRUE);
+  }
 
   gtk_window_set_default_size(GTK_WINDOW(m_window), 3*get_width()/4, 3*get_height()/4);
   //gtk_widget_set_size_request(m_window, get_width(), get_height());
