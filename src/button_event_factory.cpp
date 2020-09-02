@@ -21,7 +21,7 @@
 #include "evdev_helper.hpp"
 #include "log.hpp"
 #include "path.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 #include "buttonevent/abs_button_event_handler.hpp"
 #include "buttonevent/cycle_key_button_event_handler.hpp"

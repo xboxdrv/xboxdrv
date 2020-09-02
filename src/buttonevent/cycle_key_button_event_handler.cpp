@@ -22,7 +22,7 @@
 #include <stdexcept>
 
 #include "helper.hpp"
-#include "ui_event_sequence.hpp"
+#include "uinput/ui_event_sequence.hpp"
 #include "raise_exception.hpp"
 
 std::map<std::string, CycleKeySequencePtr> CycleKeyButtonEventHandler::s_lookup_table;

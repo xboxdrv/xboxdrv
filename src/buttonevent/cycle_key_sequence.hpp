@@ -22,7 +22,7 @@
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
-#include "ui_event_sequence.hpp"
+#include "uinput/ui_event_sequence.hpp"
 
 class CycleKeySequence;
 

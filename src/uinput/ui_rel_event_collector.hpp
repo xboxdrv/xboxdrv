@@ -16,29 +16,29 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_UI_REL_EVENT_EMITTER_HPP
-#define HEADER_XBOXDRV_UI_REL_EVENT_EMITTER_HPP
+#ifndef HEADER_XBOXDRV_UI_REL_EVENT_COLLECTOR_HPP
+#define HEADER_XBOXDRV_UI_REL_EVENT_COLLECTOR_HPP
 
-#include "ui_event_emitter.hpp"
+#include "uinput/ui_event_collector.hpp"
+#include "uinput/ui_rel_event_emitter.hpp"
 
-class UIRelEventCollector;
-
-class UIRelEventEmitter : public UIEventEmitter
+class UIRelEventCollector : public UIEventCollector
 {
 private:
-  UIRelEventCollector& m_collector;
+  typedef std::vector<UIRelEventEmitterPtr> Emitters;
+  Emitters m_emitters;
 
 public:
-  UIRelEventEmitter(UIRelEventCollector& collector);
+  UIRelEventCollector(UInput& uinput, uint32_t device_id, int type, int code);
 
+  UIEventEmitterPtr create_emitter();
   void send(int value);
+  void sync();
 
 private:
-  UIRelEventEmitter(const UIRelEventEmitter&);
-  UIRelEventEmitter& operator=(const UIRelEventEmitter&);
+  UIRelEventCollector(const UIRelEventCollector&);
+  UIRelEventCollector& operator=(const UIRelEventCollector&);
 };
-
-typedef boost::shared_ptr<UIRelEventEmitter> UIRelEventEmitterPtr;
 
 #endif
 

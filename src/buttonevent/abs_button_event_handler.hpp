@@ -21,8 +21,8 @@
 
 #include "button_event.hpp"
 
-#include "ui_event.hpp"
-#include "ui_event_emitter.hpp"
+#include "uinput/ui_event.hpp"
+#include "uinput/ui_event_emitter.hpp"
 
 class AbsButtonEventHandler : public ButtonEventHandler
 {

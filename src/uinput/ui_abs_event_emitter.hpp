@@ -16,29 +16,30 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_UI_ABS_EVENT_COLLECTOR_CPP
-#define HEADER_XBOXDRV_UI_ABS_EVENT_COLLECTOR_CPP
+#ifndef HEADER_XBOXDRV_UI_ABS_EVENT_EMITTER_HPP
+#define HEADER_XBOXDRV_UI_ABS_EVENT_EMITTER_HPP
 
-#include "ui_event_collector.hpp"
-#include "ui_abs_event_emitter.hpp"
+#include "uinput/ui_event_emitter.hpp"
 
-class UIAbsEventCollector : public UIEventCollector
+class UIAbsEventCollector;
+
+class UIAbsEventEmitter : public UIEventEmitter
 {
 private:
-  typedef std::vector<UIAbsEventEmitterPtr> Emitters;
-  Emitters m_emitters;
+  UIAbsEventCollector& m_collector;
+  int m_value;
 
 public:
-  UIAbsEventCollector(UInput& uinput, uint32_t device_id, int type, int code);
+  UIAbsEventEmitter(UIAbsEventCollector& collector);
 
-  UIEventEmitterPtr create_emitter();
   void send(int value);
-  void sync();
 
 private:
-  UIAbsEventCollector(const UIAbsEventCollector&);
-  UIAbsEventCollector& operator=(const UIAbsEventCollector&);
+  UIAbsEventEmitter(const UIAbsEventEmitter&);
+  UIAbsEventEmitter& operator=(const UIAbsEventEmitter&);
 };
+
+typedef boost::shared_ptr<UIAbsEventEmitter> UIAbsEventEmitterPtr;
 
 #endif
 

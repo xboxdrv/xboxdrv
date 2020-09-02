@@ -16,33 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui_rel_event_collector.hpp"
+#include "uinput/ui_event_emitter.hpp"
 
-#include "uinput.hpp"
+#include <assert.h>
 
-UIRelEventCollector::UIRelEventCollector(UInput& uinput, uint32_t device_id, int type, int code) :
-  UIEventCollector(uinput, device_id, type, code),
-  m_emitters()
-{
-}
-
-UIEventEmitterPtr
-UIRelEventCollector::create_emitter()
-{
-  UIRelEventEmitterPtr emitter(new UIRelEventEmitter(*this));
-  m_emitters.push_back(emitter);
-  return m_emitters.back();
-}
-
-void
-UIRelEventCollector::send(int value)
-{
-  m_uinput.send(get_device_id(), get_type(), get_code(), value);
-}
-
-void
-UIRelEventCollector::sync()
-{
-}
+#include "log.hpp"
+#include "uinput/uinput.hpp"
 
 /* EOF */

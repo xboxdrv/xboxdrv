@@ -19,17 +19,12 @@
 #ifndef HEADER_UINPUT_HPP
 #define HEADER_UINPUT_HPP
 
-#include <glib.h>
 #include <map>
 
-#include "axis_event.hpp"
-#include "linux_uinput.hpp"
-#include "ui_event_emitter.hpp"
-#include "ui_event_collector.hpp"
-
-struct Xbox360Msg;
-struct XboxMsg;
-struct Xbox360GuitarMsg;
+#include "uinput/ui_event.hpp"
+#include "uinput/linux_uinput.hpp"
+#include "uinput/ui_event_emitter.hpp"
+#include "uinput/ui_event_collector.hpp"
 
 class UInput
 {

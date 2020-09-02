@@ -16,13 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui_event.hpp"
+#include "uinput/ui_event.hpp"
 
 #include <boost/lexical_cast.hpp>
 
 #include "evdev_helper.hpp"
 #include "helper.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 bool
 UIEvent::is_mouse_button(int ev_code)

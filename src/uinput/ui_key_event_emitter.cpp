@@ -16,27 +16,26 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui_event_collector.hpp"
+#include "uinput/ui_key_event_emitter.hpp"
 
-#include <assert.h>
+#include "uinput/ui_key_event_collector.hpp"
 
-#include "log.hpp"
-#include "uinput.hpp"
-
-UIEventCollector::UIEventCollector(UInput& uinput,
-                               uint32_t device_id,
-                               int type,
-                               int code) :
-  m_uinput(uinput),
-  m_device_id(device_id),
-  m_type(type),
-  m_code(code)
+UIKeyEventEmitter::UIKeyEventEmitter(UIKeyEventCollector& collector) :
+  m_collector(collector),
+  m_value(0)
 {
-  assert(m_code != -1);
 }
 
-UIEventCollector::~UIEventCollector()
+void
+UIKeyEventEmitter::send(int value)
 {
+  assert(value == 0 || value == 1);
+
+  if (m_value != value)
+  {
+    m_value = value;
+    m_collector.send(m_value);
+  }
 }
 
 /* EOF */

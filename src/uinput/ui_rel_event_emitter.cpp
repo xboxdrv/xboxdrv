@@ -16,24 +16,19 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui_abs_event_emitter.hpp"
+#include "uinput/ui_rel_event_emitter.hpp"
 
-#include "ui_abs_event_collector.hpp"
+#include "uinput/ui_rel_event_collector.hpp"
 
-UIAbsEventEmitter::UIAbsEventEmitter(UIAbsEventCollector& collector) :
-  m_collector(collector),
-  m_value(0)
+UIRelEventEmitter::UIRelEventEmitter(UIRelEventCollector& collector) :
+  m_collector(collector)
 {
 }
 
 void
-UIAbsEventEmitter::send(int value)
+UIRelEventEmitter::send(int value)
 {
-  if (m_value != value)
-  {
-    m_value = value;
-    m_collector.send(m_value);
-  }
+  m_collector.send(value);
 }
 
 /* EOF */

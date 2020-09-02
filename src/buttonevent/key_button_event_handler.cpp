@@ -23,7 +23,7 @@
 
 #include "evdev_helper.hpp"
 #include "helper.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 KeyButtonEventHandler*
 KeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,

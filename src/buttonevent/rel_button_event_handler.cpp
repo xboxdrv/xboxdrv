@@ -22,7 +22,7 @@
 
 #include "evdev_helper.hpp"
 #include "helper.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 RelButtonEventHandler*
 RelButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,

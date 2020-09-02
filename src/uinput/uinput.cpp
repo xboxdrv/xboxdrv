@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 #include <boost/tokenizer.hpp>
 #include <iostream>
@@ -24,9 +24,9 @@
 #include <stdexcept>
 #include <stdio.h>
 
-#include "ui_abs_event_collector.hpp"
-#include "ui_key_event_collector.hpp"
-#include "ui_rel_event_collector.hpp"
+#include "uinput/ui_abs_event_collector.hpp"
+#include "uinput/ui_key_event_collector.hpp"
+#include "uinput/ui_rel_event_collector.hpp"
 
 #include "helper.hpp"
 #include "log.hpp"

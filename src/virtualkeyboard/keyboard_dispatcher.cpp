@@ -22,7 +22,7 @@
 #include <boost/bind.hpp>
 
 #include "log.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 #include "virtualkeyboard/keyboard_description.hpp"
 #include "virtualkeyboard/virtual_keyboard.hpp"
 

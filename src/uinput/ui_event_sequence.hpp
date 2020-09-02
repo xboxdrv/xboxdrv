@@ -16,32 +16,47 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_UI_KEY_EVENT_COLLECTOR_HPP
-#define HEADER_XBOXDRV_UI_KEY_EVENT_COLLECTOR_HPP
-
-#include "ui_event_collector.hpp"
-#include "ui_key_event_emitter.hpp"
+#ifndef HEADER_XBOXDRV_UI_EVENT_SEQUENCE_HPP
+#define HEADER_XBOXDRV_UI_EVENT_SEQUENCE_HPP
 
 #include <vector>
 
-class UIKeyEventCollector : public UIEventCollector
-{
-private:
-  typedef std::vector<UIKeyEventEmitterPtr> Emitters;
-  Emitters m_emitters;
+#include "uinput/ui_event.hpp"
+#include "uinput/ui_event_emitter.hpp"
 
-  int m_value;
+class UInput;
+
+/**
+    A sequence of UIEvents (only key events allowed right now)
+
+    FIXME: class name is kind of wrong
+ */
+class UIEventSequence
+{
+public:
+  /**
+      "KEY_LEFTSHIFT+KEY_B"
+  */
+  static UIEventSequence from_string(const std::string& value);
+  static UIEventSequence from_char(char c);
+
+private:
+  typedef std::vector<UIEvent> UIEvents;
+  typedef std::vector<UIEventEmitterPtr> UIEventEmitters;
+  UIEvents m_sequence;
+  UIEventEmitters m_emitters;
 
 public:
-  UIKeyEventCollector(UInput& uinput, uint32_t device_id, int type, int code);
+  UIEventSequence();
+  UIEventSequence(const UIEvents& sequence);
+  UIEventSequence(const UIEvent& event);
 
-  UIEventEmitterPtr create_emitter();
+  void init(UInput& uinput, int slot, bool extra_devices);
   void send(int value);
-  void sync();
 
-private:
-  UIKeyEventCollector(const UIKeyEventCollector&);
-  UIKeyEventCollector& operator=(const UIKeyEventCollector&);
+  void clear();
+
+  std::string str() const;
 };
 
 #endif

@@ -20,7 +20,7 @@
 
 #include <sstream>
 
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 AbsButtonEventHandler*
 AbsButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,

@@ -22,7 +22,7 @@
 #include <map>
 
 #include "button_event.hpp"
-#include "ui_event_sequence.hpp"
+#include "uinput/ui_event_sequence.hpp"
 
 #include "buttonevent/cycle_key_sequence.hpp"
 

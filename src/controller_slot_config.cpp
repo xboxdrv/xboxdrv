@@ -22,7 +22,7 @@
 
 #include "controller_slot_options.hpp"
 #include "raise_exception.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 ControllerSlotConfigPtr
 ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const ControllerSlotOptions& opts)

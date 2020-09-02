@@ -32,7 +32,7 @@
 #include "controller/wiimote_controller.hpp"
 #include "options.hpp"
 #include "raise_exception.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 #include "usb_helper.hpp"
 #include "usb_gsource.hpp"
 #include "usb_subsystem.hpp"

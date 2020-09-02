@@ -16,30 +16,29 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_UI_KEY_EVENT_EMITTER_HPP
-#define HEADER_XBOXDRV_UI_KEY_EVENT_EMITTER_HPP
+#ifndef HEADER_XBOXDRV_UI_REL_EVENT_EMITTER_HPP
+#define HEADER_XBOXDRV_UI_REL_EVENT_EMITTER_HPP
 
-#include "ui_event_emitter.hpp"
+#include "uinput/ui_event_emitter.hpp"
 
-class UIKeyEventCollector;
+class UIRelEventCollector;
 
-class UIKeyEventEmitter : public UIEventEmitter
+class UIRelEventEmitter : public UIEventEmitter
 {
 private:
-  UIKeyEventCollector& m_collector;
-  bool m_value;
+  UIRelEventCollector& m_collector;
 
 public:
-  UIKeyEventEmitter(UIKeyEventCollector& collector);
+  UIRelEventEmitter(UIRelEventCollector& collector);
 
   void send(int value);
 
 private:
-  UIKeyEventEmitter(const UIKeyEventEmitter&);
-  UIKeyEventEmitter& operator=(const UIKeyEventEmitter&);
+  UIRelEventEmitter(const UIRelEventEmitter&);
+  UIRelEventEmitter& operator=(const UIRelEventEmitter&);
 };
 
-typedef boost::shared_ptr<UIKeyEventEmitter> UIKeyEventEmitterPtr;
+typedef boost::shared_ptr<UIRelEventEmitter> UIRelEventEmitterPtr;
 
 #endif
 

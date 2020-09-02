@@ -25,7 +25,7 @@
 #include "axis_map_option.hpp"
 #include "button_map_option.hpp"
 #include "ini_schema.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 class Options;
 class Xboxdrv;

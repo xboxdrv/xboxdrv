@@ -16,13 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui_event_sequence.hpp"
+#include "uinput/ui_event_sequence.hpp"
 
 #include <boost/tokenizer.hpp>
 
 #include "evdev_helper.hpp"
-#include "ui_event.hpp"
-#include "uinput.hpp"
+#include "uinput/ui_event.hpp"
+#include "uinput/uinput.hpp"
 
 UIEventSequence
 UIEventSequence::from_string(const std::string& value)

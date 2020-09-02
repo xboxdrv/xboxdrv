@@ -21,7 +21,7 @@
 
 #include "axis_event.hpp"
 
-#include "ui_event_emitter.hpp"
+#include "uinput/ui_event_emitter.hpp"
 
 class RelRepeatAxisEventHandler : public AxisEventHandler
 {

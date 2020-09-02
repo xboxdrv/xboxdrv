@@ -16,21 +16,19 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui_key_event_emitter.hpp"
+#include "uinput/ui_abs_event_emitter.hpp"
 
-#include "ui_key_event_collector.hpp"
+#include "uinput/ui_abs_event_collector.hpp"
 
-UIKeyEventEmitter::UIKeyEventEmitter(UIKeyEventCollector& collector) :
+UIAbsEventEmitter::UIAbsEventEmitter(UIAbsEventCollector& collector) :
   m_collector(collector),
   m_value(0)
 {
 }
 
 void
-UIKeyEventEmitter::send(int value)
+UIAbsEventEmitter::send(int value)
 {
-  assert(value == 0 || value == 1);
-
   if (m_value != value)
   {
     m_value = value;

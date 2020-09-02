@@ -23,7 +23,7 @@
 #include "evdev_helper.hpp"
 #include "helper.hpp"
 #include "raise_exception.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 AbsAxisEventHandler*
 AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,

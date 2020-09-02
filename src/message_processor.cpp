@@ -19,7 +19,7 @@
 #include "message_processor.hpp"
 
 #include "log.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config,
                                    const ControllerMessageDescriptor& desc,

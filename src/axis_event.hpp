@@ -22,7 +22,7 @@
 #include <boost/scoped_ptr.hpp>
 
 #include "axis_filter.hpp"
-#include "ui_event.hpp"
+#include "uinput/ui_event.hpp"
 
 class AxisEvent;
 class AxisEventHandler;

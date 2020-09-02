@@ -16,10 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui_key_event_collector.hpp"
+#include "uinput/ui_key_event_collector.hpp"
 
 #include "log.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 UIKeyEventCollector::UIKeyEventCollector(UInput& uinput, uint32_t device_id, int type, int code) :
   UIEventCollector(uinput, device_id, type, code),

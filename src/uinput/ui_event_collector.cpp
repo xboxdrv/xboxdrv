@@ -16,30 +16,27 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_UI_REL_EVENT_COLLECTOR_HPP
-#define HEADER_XBOXDRV_UI_REL_EVENT_COLLECTOR_HPP
+#include "uinput/ui_event_collector.hpp"
 
-#include "ui_event_collector.hpp"
-#include "ui_rel_event_emitter.hpp"
+#include <assert.h>
 
-class UIRelEventCollector : public UIEventCollector
+#include "log.hpp"
+#include "uinput/uinput.hpp"
+
+UIEventCollector::UIEventCollector(UInput& uinput,
+                               uint32_t device_id,
+                               int type,
+                               int code) :
+  m_uinput(uinput),
+  m_device_id(device_id),
+  m_type(type),
+  m_code(code)
 {
-private:
-  typedef std::vector<UIRelEventEmitterPtr> Emitters;
-  Emitters m_emitters;
+  assert(m_code != -1);
+}
 
-public:
-  UIRelEventCollector(UInput& uinput, uint32_t device_id, int type, int code);
-
-  UIEventEmitterPtr create_emitter();
-  void send(int value);
-  void sync();
-
-private:
-  UIRelEventCollector(const UIRelEventCollector&);
-  UIRelEventCollector& operator=(const UIRelEventCollector&);
-};
-
-#endif
+UIEventCollector::~UIEventCollector()
+{
+}
 
 /* EOF */

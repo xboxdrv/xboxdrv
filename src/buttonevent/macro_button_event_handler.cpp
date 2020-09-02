@@ -27,7 +27,7 @@
 #include "helper.hpp"
 #include "log.hpp"
 #include "raise_exception.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 MacroButtonEventHandler*
 MacroButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,

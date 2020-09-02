@@ -20,8 +20,8 @@
 #define HEADER_XBOXDRV_BUTTONEVENT_MACRO_BUTTON_EVENT_HANDLER_HPP
 
 #include "button_event.hpp"
-#include "ui_event.hpp"
-#include "uinput.hpp"
+#include "uinput/ui_event.hpp"
+#include "uinput/uinput.hpp"
 
 class MacroButtonEventHandler : public ButtonEventHandler
 {

@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "linux_uinput.hpp"
+#include "uinput/linux_uinput.hpp"
 
 #include <boost/format.hpp>
 #include <errno.h>

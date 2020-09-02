@@ -24,7 +24,7 @@
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
-#include "uinput.hpp"
+#include "uinput/uinput.hpp"
 
 Options* g_options;
 

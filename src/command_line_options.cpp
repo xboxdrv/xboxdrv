@@ -32,7 +32,7 @@
 #include "options.hpp"
 #include "path.hpp"
 #include "raise_exception.hpp"
-#include "ui_event.hpp"
+#include "uinput/ui_event.hpp"
 
 #include "axis_map_option.hpp"
 #include "button_event_factory.hpp"
