@@ -20,6 +20,7 @@
 #define HEADER_XBOXDRV_HEADSET_HPP
 
 #include <libusb.h>
+#include <memory>
 #include <string>
 
 #include "usb_interface.hpp"

@@ -18,6 +18,7 @@
 
 #include "controller/usb_controller.hpp"
 
+#include <string.h>
 #include <boost/format.hpp>
 
 #include "controller_message.hpp"

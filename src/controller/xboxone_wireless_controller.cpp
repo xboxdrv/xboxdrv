@@ -19,6 +19,7 @@
 #include "controller/xboxone_wireless_controller.hpp"
 
 #include <sstream>
+#include <string.h>
 #include <boost/format.hpp>
 
 #include "controller_message.hpp"

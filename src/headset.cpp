@@ -19,8 +19,9 @@
 #include "headset.hpp"
 
 #include <fstream>
-#include <errno.h>
 #include <functional>
+#include <errno.h>
+#include <string.h>
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
