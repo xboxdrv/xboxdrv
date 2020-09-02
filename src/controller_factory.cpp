@@ -18,6 +18,7 @@
 
 #include "controller_factory.hpp"
 
+#include <assert.h>
 #include <stdexcept>
 
 #include "controller/firestorm_dual_controller.hpp"

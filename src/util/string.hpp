@@ -22,6 +22,7 @@
 #include <functional>
 #include <stdint.h>
 #include <string>
+#include <string_view>
 #include <vector>
 
 int hexstr2int(const std::string& str);
@@ -76,6 +77,10 @@ std::string string_join(C const& c, std::string_view sep)
     return result;
   }
 }
+
+std::vector<std::string> string_tokenize(std::string_view text, std::string_view delimiter);
+
+std::vector<std::string> string_split(std::string_view text, std::string_view delimiter);
 
 #endif
 

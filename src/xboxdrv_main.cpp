@@ -18,6 +18,7 @@
 
 #include "xboxdrv_main.hpp"
 
+#include <assert.h>
 #include <glib.h>
 #include <stdio.h>
 #include <libusb.h>

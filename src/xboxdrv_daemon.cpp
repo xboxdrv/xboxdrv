@@ -18,6 +18,7 @@
 
 #include "xboxdrv_daemon.hpp"
 
+#include <assert.h>
 #include <iterator>
 #include <functional>
 #include <fmt/format.h>

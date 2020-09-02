@@ -18,6 +18,7 @@
 
 #include "controller_slot_config.hpp"
 
+#include <assert.h>
 #include <functional>
 
 #include "controller_slot_options.hpp"

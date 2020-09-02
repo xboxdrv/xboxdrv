@@ -19,7 +19,6 @@
 #include "buttonmap_modifier.hpp"
 
 #include <functional>
-#include <boost/tokenizer.hpp>
 #include <sstream>
 
 #include "util/string.hpp"
@@ -52,9 +51,7 @@ public:
 ButtonMappingPtr
 ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(lhs, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
-  std::vector<std::string> args(tokens.begin(), tokens.end());
+  std::vector<std::string> args = string_split(lhs, "^");
 
   if (args.empty())
   {

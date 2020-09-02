@@ -18,9 +18,10 @@
 
 #include "button_combination.hpp"
 
-#include <boost/tokenizer.hpp>
+#include <assert.h>
 #include <algorithm>
 
+#include "util/string.hpp"
 #include "controller_message_descriptor.hpp"
 
 ButtonCombination
@@ -32,9 +33,7 @@ ButtonCombination::from_string(const std::string& str)
   }
   else
   {
-    boost::tokenizer<boost::char_separator<char> >
-      btn_tokens(str, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
-    return ButtonCombination(std::vector<std::string>(btn_tokens.begin(), btn_tokens.end()));
+    return ButtonCombination(string_split(str, "+"));
   }
 }
 

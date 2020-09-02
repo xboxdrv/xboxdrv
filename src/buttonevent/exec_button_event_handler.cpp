@@ -18,24 +18,19 @@
 
 #include "exec_button_event_handler.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <errno.h>
 #include <string.h>
+#include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #include "log.hpp"
+#include "util/string.hpp"
 
 ExecButtonEventHandler*
 ExecButtonEventHandler::from_string(const std::string& str)
 {
-  std::vector<std::string> args;
-
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-
-  std::copy(tokens.begin(), tokens.end(), std::back_inserter(args));
-
-  return new ExecButtonEventHandler(args);
+  return new ExecButtonEventHandler(string_split(str, ":"));
 }
 
 ExecButtonEventHandler::ExecButtonEventHandler(const std::vector<std::string>& args) :

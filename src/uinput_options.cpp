@@ -18,7 +18,6 @@
 
 #include "uinput_options.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <linux/input.h>
 
 #include "button_event_factory.hpp"

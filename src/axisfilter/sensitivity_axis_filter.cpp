@@ -18,7 +18,6 @@
 
 #include "sensitivity_axis_filter.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <math.h>
 #include <sstream>
 
@@ -28,13 +27,12 @@
 SensitivityAxisFilter*
 SensitivityAxisFilter::from_string(const std::string& str)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  auto tokens = string_split(str, ":");
 
   float sensitivity = 0.0f;
 
   int j = 0;
-  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+  for(auto i = tokens.begin(); i != tokens.end(); ++i, ++j)
   {
     switch(j)
     {

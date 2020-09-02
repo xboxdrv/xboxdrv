@@ -18,7 +18,6 @@
 
 #include "modifier.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <linux/input.h>
 
 #include "modifier/acc2axis_modifier.hpp"
@@ -45,6 +44,7 @@
 
 #include "evdev_helper.hpp"
 #include "raise_exception.hpp"
+#include "util/string.hpp"
 
 Modifier*
 Modifier::from_string(const std::string& name, const std::string& value)
@@ -59,10 +59,7 @@ Modifier::from_string(const std::string& name, const std::string& value)
   }
   else
   {
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-    tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-
-    std::vector<std::string> args(tokens.begin(), tokens.end());
+    std::vector<std::string> args = string_split(value, ":");
 
     if (name == "dpad-rotation" || name == "dpad-rotate")
     {

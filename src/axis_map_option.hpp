@@ -21,8 +21,8 @@
 
 #include <string>
 #include <vector>
-#include <boost/tokenizer.hpp>
 
+#include "util/string.hpp"
 #include "raise_exception.hpp"
 
 class AxisMapOption
@@ -44,10 +44,7 @@ public:
     m_event(event),
     m_directory(directory)
   {
-    boost::tokenizer<boost::char_separator<char> >
-      tokens(lhs, boost::char_separator<char>("+", "", boost::keep_empty_tokens));
-
-    std::vector<std::string> args(tokens.begin(), tokens.end());
+    std::vector<std::string> args = string_split(lhs, "+");
     if (args.empty())
     {
       raise_exception(std::runtime_error, "no axis given");

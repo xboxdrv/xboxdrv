@@ -236,4 +236,49 @@ int to_number(int range, const std::string& str)
   }
 }
 
+std::vector<std::string> string_tokenize(std::string_view text, std::string_view delimiter)
+{
+  auto is_delimiter = [delimiter](char c) -> bool {
+    return std::find(delimiter.begin(), delimiter.end(), c) != delimiter.end();
+  };
+
+  std::vector<std::string> result;
+
+  for(std::string::size_type i = 0; i != text.size();)
+  {
+    while(is_delimiter(text[i]) && i != text.size()) { ++i; };
+    const std::string::size_type start = i;
+    while(!is_delimiter(text[i]) && i != text.size()) { ++i; };
+    const std::string::size_type end = i;
+    if (start != end) {
+      result.emplace_back(text.substr(start, end - start));
+    }
+  }
+
+  return result;
+}
+
+std::vector<std::string> string_split(std::string_view text, std::string_view delimiter)
+{
+  auto is_delimiter = [delimiter](char c) -> bool {
+    return std::find(delimiter.begin(), delimiter.end(), c) != delimiter.end();
+  };
+
+    std::vector<std::string> result;
+
+  std::string::size_type start = 0;
+  for(std::string::size_type i = 0; i != text.size(); ++i)
+  {
+    if (is_delimiter(text[i]))
+    {
+      result.emplace_back(text.substr(start, i - start));
+      start = i + 1;
+    }
+  }
+
+  result.emplace_back(text.substr(start));
+
+  return result;
+}
+
 /* EOF */

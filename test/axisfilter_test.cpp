@@ -17,8 +17,8 @@
 */
 
 #include <iostream>
-#include <boost/tokenizer.hpp>
 
+#include "util/string.hpp"
 #include "axis_filter.hpp"
 
 int main(int argc, char** argv)
@@ -34,9 +34,8 @@ int main(int argc, char** argv)
 
     std::string str = argv[1];
 
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-    tokenizer tokens(str, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
-    for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t)
+    auto tokens = string_split(str, "^");
+    for(auto t = tokens.begin(); t != tokens.end(); ++t)
     {
       filters.push_back(AxisFilter::from_string(*t));
     }

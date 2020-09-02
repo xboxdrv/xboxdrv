@@ -18,7 +18,7 @@
 
 #include "buttonevent/macro_button_event_handler.hpp"
 
-#include <boost/tokenizer.hpp>
+#include <assert.h>
 #include <fstream>
 #include <linux/input.h>
 #include <vector>
@@ -92,8 +92,7 @@ MacroButtonEventHandler::from_file(UInput& uinput, int slot, bool extra_devices,
 MacroButtonEventHandler::MacroEvent
 MacroButtonEventHandler::macro_event_from_string(const std::string& str)
 {
-  boost::tokenizer<boost::char_separator<char> > tokens(str, boost::char_separator<char>(" "));
-  std::vector<std::string> args(tokens.begin(), tokens.end());
+  std::vector<std::string> args = string_tokenize(str, " ");
 
   if (args.size() >= 1)
   {

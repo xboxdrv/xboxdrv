@@ -18,7 +18,6 @@
 
 #include "buttonevent/cycle_key_button_event_handler.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <stdexcept>
 
 #include "util/string.hpp"
@@ -64,8 +63,7 @@ CycleKeyButtonEventHandler*
 CycleKeyButtonEventHandler::from_string_named(UInput& uinput, int slot, bool extra_devices,
                                               const std::string& value, bool wrap_around)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  auto tokens = string_split(value, ":");
   std::vector<std::string> args(tokens.begin(), tokens.end());
 
   if (args.size() < 2)
@@ -100,9 +98,7 @@ CycleKeyButtonEventHandler*
 CycleKeyButtonEventHandler::from_string_ref(UInput& uinput, int slot, bool extra_devices,
                                             const std::string& value)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  std::vector<std::string> args(tokens.begin(), tokens.end());
+  auto args = string_split(value, ":");
 
   if (args.size() > 0)
   {

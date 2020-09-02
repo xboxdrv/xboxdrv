@@ -18,7 +18,7 @@
 
 #include "dpad_restrictor_modifier.hpp"
 
-#include <boost/tokenizer.hpp>
+#include <assert.h>
 #include <stdexcept>
 
 #include "raise_exception.hpp"

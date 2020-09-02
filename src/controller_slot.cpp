@@ -18,6 +18,8 @@
 
 #include "controller_slot.hpp"
 
+#include <assert.h>
+
 ControllerSlot::ControllerSlot(int id_,
                                ControllerSlotConfigPtr config_,
                                std::vector<ControllerMatchRulePtr> rules_,

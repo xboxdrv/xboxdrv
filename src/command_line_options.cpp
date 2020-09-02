@@ -18,9 +18,9 @@
 
 #include "command_line_options.hpp"
 
+#include <assert.h>
 #include <functional>
 #include <fmt/format.h>
-#include <boost/tokenizer.hpp>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -1106,17 +1106,7 @@ CommandLineParser::set_keymap(const std::string& name, const std::string& value)
 void
 CommandLineParser::set_keymap_helper(ButtonMapOptions& btn_map, const std::string& name, const std::string& value)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
-  std::vector<std::string> lst(tokens.begin(), tokens.end());
-
-  // boost::tokenizer doesn't return any tokens on an empty string, so
-  // add an empty token to the list to make the interpretation work
-  // properly
-  if (lst.empty())
-  {
-    lst.push_back(std::string());
-  }
+  std::vector<std::string> lst = string_split(name, "^");
 
   int idx = 0;
   for(std::vector<std::string>::iterator t = lst.begin(); t != lst.end(); ++t, ++idx)
@@ -1144,17 +1134,7 @@ CommandLineParser::set_absmap(const std::string& name, const std::string& value)
 void
 CommandLineParser::set_absmap_helper(AxisMapOptions& axis_map, const std::string& name, const std::string& value)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
-  std::vector<std::string> lst(tokens.begin(), tokens.end());
-
-  // boost::tokenizer doesn't return any tokens on an empty string, so
-  // add an empty token to the list to make the interpretation work
-  // properly
-  if (lst.empty())
-  {
-    lst.push_back(std::string());
-  }
+  std::vector<std::string> lst = string_split(name, "^");
 
   int idx = 0;
   for(std::vector<std::string>::iterator t = lst.begin(); t != lst.end(); ++t, ++idx)
@@ -1219,9 +1199,7 @@ CommandLineParser::set_autofire(const std::string& name, const std::string& valu
 void
 CommandLineParser::set_calibration(const std::string& name, const std::string& value)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  std::vector<std::string> args(tokens.begin(), tokens.end());
+  std::vector<std::string> args = string_split(name, ":");
 
   if (args.size() != 3)
   {

@@ -18,7 +18,6 @@
 
 #include "axisfilter/deadzone_axis_filter.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <sstream>
 
 #include "util/string.hpp"
@@ -30,10 +29,9 @@ DeadzoneAxisFilter::from_string(const std::string& str)
   int  max_deadzone = 0;
   bool smooth   = true;
 
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  auto tokens = string_split(str, ":");
   int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  for(auto t = tokens.begin(); t != tokens.end(); ++t, ++idx)
   {
     switch(idx)
     {

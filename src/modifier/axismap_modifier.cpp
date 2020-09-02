@@ -19,7 +19,6 @@
 #include "axismap_modifier.hpp"
 
 #include <functional>
-#include <boost/tokenizer.hpp>
 #include <sstream>
 
 #include "axisfilter/invert_axis_filter.hpp"
@@ -43,9 +42,7 @@ AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
     lhs = lhs.substr(1);
   }
 
-  boost::tokenizer<boost::char_separator<char> >
-    tokens(lhs, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
-  std::vector<std::string> tks(tokens.begin(), tokens.end());
+  std::vector<std::string> tks = string_split(lhs, "^");
 
   if (!tks.empty())
   {

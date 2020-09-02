@@ -18,11 +18,12 @@
 
 #include "uinput/uinput.hpp"
 
-#include <boost/tokenizer.hpp>
+#include <assert.h>
 #include <iostream>
 #include <math.h>
 #include <stdexcept>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "uinput/ui_abs_event_collector.hpp"
 #include "uinput/ui_key_event_collector.hpp"
@@ -44,10 +45,7 @@ UInput::parse_input_id(const std::string& str)
   usbid.version = 0;
 
   // split string at ':'
-  boost::tokenizer<boost::char_separator<char> >
-    tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  std::vector<std::string> args;
-  std::copy(tokens.begin(), tokens.end(), std::back_inserter(args));
+  std::vector<std::string> args = string_split(str, ":");
 
   if (args.size() == 2)
   { // VENDOR:PRODUCT

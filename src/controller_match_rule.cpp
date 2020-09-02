@@ -19,9 +19,9 @@
 #include "controller_match_rule.hpp"
 
 #include <assert.h>
-#include <boost/tokenizer.hpp>
 
 #include "raise_exception.hpp"
+#include "util/string.hpp"
 
 class ControllerMatchRuleProperty : public ControllerMatchRule
 {
@@ -122,9 +122,7 @@ ControllerMatchRulePtr
 ControllerMatchRule::from_string(const std::string& lhs,
                                  const std::string& rhs)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(rhs, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  std::vector<std::string> args(tokens.begin(), tokens.end());
+  std::vector<std::string> args = string_split(rhs, ":");
 
   if (lhs == "usbid")
   {

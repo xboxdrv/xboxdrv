@@ -18,9 +18,9 @@
 
 #include "options.hpp"
 
+#include <assert.h>
 #include <functional>
 #include <fmt/format.h>
-#include <boost/tokenizer.hpp>
 
 #include "util/string.hpp"
 #include "raise_exception.hpp"

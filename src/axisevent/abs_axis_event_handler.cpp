@@ -18,8 +18,6 @@
 
 #include "abs_axis_event_handler.hpp"
 
-#include <boost/tokenizer.hpp>
-
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
 #include "raise_exception.hpp"
@@ -29,8 +27,7 @@ AbsAxisEventHandler*
 AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
                                  const std::string& str)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  auto tokens = string_split(str, ":");
 
   int min = -1;
   int max = -1;
@@ -39,7 +36,7 @@ AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
 
   int j = 0;
   UIEvent code = UIEvent::invalid();
-  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+  for(auto i = tokens.begin(); i != tokens.end(); ++i, ++j)
   {
     switch(j)
     {
