@@ -18,6 +18,7 @@
 
 #include "abs_button_event_handler.hpp"
 
+#include <assert.h>
 #include <sstream>
 
 #include "uinput/uinput.hpp"

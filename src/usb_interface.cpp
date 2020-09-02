@@ -18,6 +18,7 @@
 
 #include "usb_interface.hpp"
 
+#include <assert.h>
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
 

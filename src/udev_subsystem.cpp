@@ -18,6 +18,7 @@
 
 #include "udev_subsystem.hpp"
 
+#include <assert.h>
 #include <stdexcept>
 
 #include "raise_exception.hpp"
