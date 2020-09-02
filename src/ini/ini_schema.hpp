@@ -19,8 +19,9 @@
 #ifndef HEADER_XBOXDRV_INI_SCHEMA_HPP
 #define HEADER_XBOXDRV_INI_SCHEMA_HPP
 
-#include <map>
 #include <functional>
+#include <map>
+#include <string>
 
 class INIPairSchema
 {

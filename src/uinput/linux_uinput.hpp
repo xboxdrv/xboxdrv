@@ -19,6 +19,7 @@
 #ifndef HEADER_LINUX_UINPUT_HPP
 #define HEADER_LINUX_UINPUT_HPP
 
+#include <string>
 #include <functional>
 #include <linux/uinput.h>
 #include <glib.h>

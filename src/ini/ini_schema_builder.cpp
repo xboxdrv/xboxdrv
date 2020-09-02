@@ -18,6 +18,8 @@
 
 #include "ini/ini_schema_builder.hpp"
 
+#include <stdexcept>
+
 #include "ini/ini_schema.hpp"
 
 INISchemaBuilder::INISchemaBuilder(const INISchema& schema) :
