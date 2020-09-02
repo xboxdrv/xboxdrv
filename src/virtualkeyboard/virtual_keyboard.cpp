@@ -470,7 +470,7 @@ VirtualKeyboard::draw_key(cairo_t* cr, int x, int y, const Key& key, bool highli
 }
 
 void
-VirtualKeyboard::set_key_callback(const boost::function<void (const Key&, bool)>& callback)
+VirtualKeyboard::set_key_callback(const std::function<void (const Key&, bool)>& callback)
 {
   m_key_callback = callback;
 }

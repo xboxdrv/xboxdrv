@@ -34,7 +34,7 @@ Options::GenericUSBSpec
 Options::GenericUSBSpec::from_string(const std::string& str)
 {
   GenericUSBSpec spec;
-  process_name_value_string(str, std::bind(&GenericUSBSpec::apply_pair, boost::ref(spec), _1, _2));
+  process_name_value_string(str, std::bind(&GenericUSBSpec::apply_pair, std::ref(spec), _1, _2));
   return spec;
 }
 

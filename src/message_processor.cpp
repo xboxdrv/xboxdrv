@@ -142,7 +142,7 @@ MessageProcessor::set_config(int num)
 }
 
 void
-MessageProcessor::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+MessageProcessor::set_ff_callback(const std::function<void (uint8_t, uint8_t)>& callback)
 {
   m_rumble_callback = callback;
   if (m_config)

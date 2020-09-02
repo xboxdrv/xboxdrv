@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_UDEV_SUBSYSTEM_HPP
 #define HEADER_XBOXDRV_UDEV_SUBSYSTEM_HPP
 
-#include <boost/function.hpp>
+#include <functional>
 extern "C" {
 #include <libudev.h>
 }
@@ -31,13 +31,13 @@ private:
   struct udev* m_udev;
   struct udev_monitor* m_monitor;
 
-  boost::function<void (udev_device*)> m_process_match_cb;
+  std::function<void (udev_device*)> m_process_match_cb;
 
 public:
   UdevSubsystem();
   ~UdevSubsystem();
 
-  void set_device_callback(const boost::function<void (udev_device*)>& process_match_cb);
+  void set_device_callback(const std::function<void (udev_device*)>& process_match_cb);
   void enumerate_udev_devices();
   void print_info(udev_device* device);
 

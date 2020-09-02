@@ -172,7 +172,7 @@ ControllerSlotConfig::set_rumble(uint8_t strong, uint8_t weak)
 }
 
 void
-ControllerSlotConfig::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+ControllerSlotConfig::set_ff_callback(const std::function<void (uint8_t, uint8_t)>& callback)
 {
   m_rumble_callback = callback;
 }

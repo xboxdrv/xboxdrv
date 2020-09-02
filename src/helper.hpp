@@ -19,7 +19,7 @@
 #ifndef HEADER_HELPER_HPP
 #define HEADER_HELPER_HPP
 
-#include <boost/function.hpp>
+#include <functional>
 #include <stdint.h>
 #include <assert.h>
 #include <vector>
@@ -44,7 +44,7 @@ bool is_float(const std::string& str);
    with [], i.e. "NAME=[VALUE1,VALUE2]", the "[" and "]" itself can
    be quoted with "\[" and "\]"
 */
-void process_name_value_string(const std::string& str, const boost::function<void (const std::string&, const std::string&)>& func);
+void process_name_value_string(const std::string& str, const std::function<void (const std::string&, const std::string&)>& func);
 
 /** Split \a str at characters c */
 std::vector<std::string> split_string_at_comma(const std::string& str);

@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_CONFIG_SET_HPP
 #define HEADER_XBOXDRV_CONTROLLER_CONFIG_SET_HPP
 
-#include <boost/function.hpp>
+#include <functional>
 
 #include "controller_config.hpp"
 #include "modifier.hpp"
@@ -42,7 +42,7 @@ public:
 private:
   std::vector<ControllerConfigPtr> m_config;
   int m_current_config;
-  boost::function<void (uint8_t, uint8_t)> m_rumble_callback;
+  std::function<void (uint8_t, uint8_t)> m_rumble_callback;
 
 public:
   ControllerSlotConfig();
@@ -61,7 +61,7 @@ public:
   bool empty() const { return m_config.empty(); }
 
   void set_rumble(uint8_t strong, uint8_t weak);
-  void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
+  void set_ff_callback(const std::function<void (uint8_t, uint8_t)>& callback);
 
 private:
   ControllerSlotConfig(const ControllerSlotConfig&);

@@ -136,7 +136,7 @@ void split_string_at(const std::string& str, char c, std::string* lhs, std::stri
   }
 }
 
-void process_name_value_string(const std::string& str, const boost::function<void (const std::string&, const std::string&)>& func)
+void process_name_value_string(const std::string& str, const std::function<void (const std::string&, const std::string&)>& func)
 {
   int quote_count = 0;
   std::string res;

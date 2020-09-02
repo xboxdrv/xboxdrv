@@ -88,7 +88,7 @@ public:
 
   void set_device_names(const std::map<uint32_t, std::string>& device_names);
   void set_device_usbids(const std::map<uint32_t, struct input_id>& device_usbids);
-  void set_ff_callback(int device_id, const boost::function<void (uint8_t, uint8_t)>& callback);
+  void set_ff_callback(int device_id, const std::function<void (uint8_t, uint8_t)>& callback);
 
   /** Device construction functions
       @{*/

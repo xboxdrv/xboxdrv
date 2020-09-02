@@ -20,7 +20,7 @@
 #define HEADER_XBOXDRV_INI_SCHEMA_HPP
 
 #include <map>
-#include <boost/function.hpp>
+#include <functional>
 
 class INIPairSchema
 {
@@ -38,20 +38,20 @@ private:
   Schema m_schema;
 
 public:
-  boost::function<void (const std::string&, const std::string&)> m_callback;
+  std::function<void (const std::string&, const std::string&)> m_callback;
 
 public:
-  INISchemaSection(boost::function<void (const std::string&, const std::string&)> callback);
+  INISchemaSection(std::function<void (const std::string&, const std::string&)> callback);
   ~INISchemaSection();
 
   INISchemaSection& operator()(const std::string& name, bool*  value);
   INISchemaSection& operator()(const std::string& name, int*   value);
   INISchemaSection& operator()(const std::string& name, float* value);
   INISchemaSection& operator()(const std::string& name, std::string* value);
-  INISchemaSection& operator()(const std::string& name, boost::function<void (const std::string&)> callback);
+  INISchemaSection& operator()(const std::string& name, std::function<void (const std::string&)> callback);
   INISchemaSection& operator()(const std::string& name,
-                               boost::function<void ()> true_callback,
-                               boost::function<void ()> false_callback);
+                               std::function<void ()> true_callback,
+                               std::function<void ()> false_callback);
 
   INIPairSchema* get(const std::string& name) const;
 
@@ -78,8 +78,8 @@ public:
   void clear();
 
   INISchemaSection& section(const std::string& name,
-                            boost::function<void (const std::string&, const std::string&)> callback
-                            = boost::function<void (const std::string&, const std::string&)>());
+                            std::function<void (const std::string&, const std::string&)> callback
+                            = std::function<void (const std::string&, const std::string&)>());
 
   INISchemaSection* get_section(const std::string& name) const;
 

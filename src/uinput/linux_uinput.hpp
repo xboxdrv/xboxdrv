@@ -19,7 +19,7 @@
 #ifndef HEADER_LINUX_UINPUT_HPP
 #define HEADER_LINUX_UINPUT_HPP
 
-#include <boost/function.hpp>
+#include <functional>
 #include <linux/uinput.h>
 #include <glib.h>
 #include <stdint.h>
@@ -55,7 +55,7 @@ private:
   bool ff_lst[FF_CNT];
 
   ForceFeedbackHandler* m_ff_handler;
-  boost::function<void (uint8_t, uint8_t)> m_ff_callback;
+  std::function<void (uint8_t, uint8_t)> m_ff_callback;
 
   bool needs_sync;
 
@@ -76,7 +76,7 @@ public:
 
   void add_ff(uint16_t code);
 
-  void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback);
+  void set_ff_callback(const std::function<void (uint8_t, uint8_t)>& callback);
 
   /** Finalized the device creation */
   void finish();

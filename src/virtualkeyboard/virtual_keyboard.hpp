@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_VIRTUALKEYBOARD_VIRTUAL_KEYBOARD_HPP
 #define HEADER_XBOXDRV_VIRTUALKEYBOARD_VIRTUAL_KEYBOARD_HPP
 
-#include <boost/function.hpp>
+#include <functional>
 #include <gtk/gtk.h>
 #include <string>
 #include <vector>
@@ -43,7 +43,7 @@ private:
   int m_cursor_x;
   int m_cursor_y;
 
-  boost::function<void (const Key&, bool)> m_key_callback;
+  std::function<void (const Key&, bool)> m_key_callback;
 
 public:
   VirtualKeyboard(KeyboardDescriptionPtr keyboard_desc);
@@ -70,7 +70,7 @@ public:
 
   KeyboardDescriptionPtr get_description() const { return m_keyboard; }
 
-  void set_key_callback(const boost::function<void (const Key&, bool)>& callback);
+  void set_key_callback(const std::function<void (const Key&, bool)>& callback);
 
   void set_shift_mode(bool shift);
 

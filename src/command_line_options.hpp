@@ -55,9 +55,10 @@ private:
   void set_device_name(const std::string& name, const std::string& value);
   void set_device_usbid(const std::string& name, const std::string& value);
 
-  void set_absmap(AxisMapOptions& axis_map, const std::string& name, const std::string& value);
+  void set_absmap_helper(AxisMapOptions& axis_map, const std::string& name, const std::string& value);
+  void set_keymap_helper(ButtonMapOptions& btn_map, const std::string& name, const std::string& value);
+
   void set_absmap(const std::string& name, const std::string& value);
-  void set_keymap(ButtonMapOptions& btn_map, const std::string& name, const std::string& value);
   void set_keymap(const std::string& name, const std::string& value);
   void set_relmap(const std::string& name, const std::string& value);
 

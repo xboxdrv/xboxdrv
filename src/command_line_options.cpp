@@ -353,7 +353,7 @@ CommandLineParser::init_ini(Options* opts)
   m_ini.clear();
 
   m_ini.section("xboxdrv")
-    ("verbose", std::bind(&Options::set_verbose, opts), boost::function<void ()>())
+    ("verbose", std::bind(&Options::set_verbose, opts), std::function<void ()>())
     ("silent", &opts->silent)
     ("quiet",  &opts->quiet)
     ("usb-debug",  &opts->usb_debug)
@@ -378,8 +378,8 @@ CommandLineParser::init_ini(Options* opts)
     ("alt-config", std::bind(&CommandLineParser::read_alt_config_file, this, _1))
     ("timeout", &opts->timeout)
     ("priority", std::bind(&Options::set_priority, opts, _1))
-    ("next", std::bind(&Options::next_config, opts), boost::function<void ()>())
-    ("next-controller", std::bind(&Options::next_controller, opts), boost::function<void ()>())
+    ("next", std::bind(&Options::next_config, opts), std::function<void ()>())
+    ("next-controller", std::bind(&Options::next_controller, opts), std::function<void ()>())
     ("extra-devices", &opts->extra_devices)
     ("extra-events", &opts->extra_events)
     ("toggle", std::bind(&Options::set_toggle_button, opts, _1))
@@ -387,22 +387,22 @@ CommandLineParser::init_ini(Options* opts)
 
     ("deadzone", std::bind(&CommandLineParser::set_deadzone, this, _1))
     ("deadzone-trigger", std::bind(&CommandLineParser::set_deadzone_trigger, this, _1))
-    ("square-axis", std::bind(&CommandLineParser::set_square_axis, this), boost::function<void ()>())
-    ("four-way-restrictor", std::bind(&CommandLineParser::set_four_way_restrictor, this), boost::function<void ()>())
+    ("square-axis", std::bind(&CommandLineParser::set_square_axis, this), std::function<void ()>())
+    ("four-way-restrictor", std::bind(&CommandLineParser::set_four_way_restrictor, this), std::function<void ()>())
     ("dpad-rotation", std::bind(&CommandLineParser::set_dpad_rotation, this, _1))
 
     // uinput stuff
     ("device-name",       std::bind(&Options::set_device_name, opts, _1))
     ("device-usbid",      std::bind(&Options::set_device_usbid, opts, _1))
-    ("mouse",             std::bind(&CommandLineParser::mouse, this), boost::function<void ()>())
-    ("guitar",            std::bind(&Options::set_guitar, opts),            boost::function<void ()>())
-    ("trigger-as-button", std::bind(&Options::set_trigger_as_button, opts), boost::function<void ()>())
-    ("trigger-as-zaxis",  std::bind(&Options::set_trigger_as_zaxis, opts),  boost::function<void ()>())
-    ("dpad-as-button",    std::bind(&Options::set_dpad_as_button, opts),    boost::function<void ()>())
-    ("dpad-only",         std::bind(&Options::set_dpad_only, opts),         boost::function<void ()>())
+    ("mouse",             std::bind(&CommandLineParser::mouse, this), std::function<void ()>())
+    ("guitar",            std::bind(&Options::set_guitar, opts),            std::function<void ()>())
+    ("trigger-as-button", std::bind(&Options::set_trigger_as_button, opts), std::function<void ()>())
+    ("trigger-as-zaxis",  std::bind(&Options::set_trigger_as_zaxis, opts),  std::function<void ()>())
+    ("dpad-as-button",    std::bind(&Options::set_dpad_as_button, opts),    std::function<void ()>())
+    ("dpad-only",         std::bind(&Options::set_dpad_only, opts),         std::function<void ()>())
     ("force-feedback",    std::bind(&Options::set_force_feedback, opts, _1))
-    ("mimic-xpad",        std::bind(&Options::set_mimic_xpad, opts),        boost::function<void ()>())
-    ("mimic-xpad-wireless", std::bind(&Options::set_mimic_xpad_wireless, opts), boost::function<void ()>())
+    ("mimic-xpad",        std::bind(&Options::set_mimic_xpad, opts),        std::function<void ()>())
+    ("mimic-xpad-wireless", std::bind(&Options::set_mimic_xpad_wireless, opts), std::function<void ()>())
 
     ("chatpad",         &opts->chatpad)
     ("chatpad-no-init", &opts->chatpad_no_init)
@@ -412,7 +412,7 @@ CommandLineParser::init_ini(Options* opts)
     ("headset-debug",   &opts->headset_debug)
     ("headset-dump",    &opts->headset_dump)
     ("headset-play",    &opts->headset_play)
-    ("ui-clear",        std::bind(&Options::set_ui_clear, opts), boost::function<void ()>())
+    ("ui-clear",        std::bind(&Options::set_ui_clear, opts), std::function<void ()>())
     ;
 
   m_ini.section("xboxdrv-daemon")
@@ -1099,12 +1099,12 @@ CommandLineParser::set_device_name(const std::string& name, const std::string& v
 void
 CommandLineParser::set_keymap(const std::string& name, const std::string& value)
 {
-  set_keymap(m_options->get_controller_options().uinput.get_btn_map(),
-                   name, value);
+  set_keymap_helper(m_options->get_controller_options().uinput.get_btn_map(),
+                    name, value);
 }
 
 void
-CommandLineParser::set_keymap(ButtonMapOptions& btn_map, const std::string& name, const std::string& value)
+CommandLineParser::set_keymap_helper(ButtonMapOptions& btn_map, const std::string& name, const std::string& value)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
@@ -1137,12 +1137,12 @@ CommandLineParser::set_keymap(ButtonMapOptions& btn_map, const std::string& name
 void
 CommandLineParser::set_absmap(const std::string& name, const std::string& value)
 {
-  set_absmap(m_options->get_controller_options().uinput.get_axis_map(),
-             name, value);
+  set_absmap_helper(m_options->get_controller_options().uinput.get_axis_map(),
+                    name, value);
 }
 
 void
-CommandLineParser::set_absmap(AxisMapOptions& axis_map, const std::string& name, const std::string& value)
+CommandLineParser::set_absmap_helper(AxisMapOptions& axis_map, const std::string& name, const std::string& value)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
@@ -1330,15 +1330,15 @@ CommandLineParser::read_alt_config_file(const std::string& filename)
 void
 CommandLineParser::set_keymap_n(int controller, int config, const std::string& name, const std::string& value)
 {
-  set_keymap(m_options->controller_slots[controller].get_options(config).uinput.get_btn_map(),
-                   name, value);
+  set_keymap_helper(m_options->controller_slots[controller].get_options(config).uinput.get_btn_map(),
+                    name, value);
 }
 
 void
 CommandLineParser::set_absmap_n(int controller, int config, const std::string& name, const std::string& value)
 {
-  set_absmap(m_options->controller_slots[controller].get_options(config).uinput.get_axis_map(),
-             name, value);
+  set_absmap_helper(m_options->controller_slots[controller].get_options(config).uinput.get_axis_map(),
+                    name, value);
 }
 
 void
