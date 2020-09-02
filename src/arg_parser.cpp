@@ -23,7 +23,7 @@
 #include <ostream>
 
 #include "util/terminal.hpp"
-#include "pretty_printer.hpp"
+#include "util/pretty_printer.hpp"
 
 ArgParser::ArgParser() :
   programm(),

@@ -16,11 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_PRETTY_PRINTER_HPP
-#define HEADER_PRETTY_PRINTER_HPP
+#ifndef HEADER_UTIL_PRETTY_PRINTER_HPP
+#define HEADER_UTIL_PRETTY_PRINTER_HPP
 
 #include <string>
-
+
 class PrettyPrinter
 {
 private:
@@ -36,7 +36,7 @@ private:
   PrettyPrinter(const PrettyPrinter&);
   PrettyPrinter& operator=(const PrettyPrinter&);
 };
-
+
 #endif
 
 /* EOF */

@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "pretty_printer.hpp"
+#include "util/pretty_printer.hpp"
 
 #include <iostream>
 
