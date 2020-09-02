@@ -19,6 +19,7 @@
 #include "axis_event_factory.hpp"
 
 #include <linux/uinput.h>
+#include <assert.h>
 
 #include "evdev_helper.hpp"
 

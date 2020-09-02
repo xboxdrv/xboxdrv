@@ -21,6 +21,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include <assert.h>
 
 #include "uinput/ui_event_sequence.hpp"
 
