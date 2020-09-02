@@ -24,7 +24,7 @@
 #include "arg_parser.hpp"
 #include "axis_map_option.hpp"
 #include "button_map_option.hpp"
-#include "ini_schema.hpp"
+#include "ini/ini_schema.hpp"
 #include "uinput/uinput.hpp"
 
 class Options;

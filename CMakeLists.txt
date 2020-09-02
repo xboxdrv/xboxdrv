@@ -67,6 +67,7 @@ file(GLOB XBOXDRV_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/controller/*.cpp
   src/modifier/*.cpp
   src/symbols/*.cpp
+  src/ini/*.cpp
   src/uinput/*.cpp
   src/util/*.cpp)
 

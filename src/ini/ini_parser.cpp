@@ -16,11 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ini_parser.hpp"
+#include "ini/ini_parser.hpp"
 
 #include <stdexcept>
 
-#include "ini_builder.hpp"
+#include "ini/ini_builder.hpp"
 
 INIParser::INIParser(std::istream& in, INIBuilder& builder, const std::string& context) :
   m_in(in),

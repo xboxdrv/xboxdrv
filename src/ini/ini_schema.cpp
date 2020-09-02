@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ini_schema.hpp"
+#include "ini/ini_schema.hpp"
 
 #include <sstream>
 
