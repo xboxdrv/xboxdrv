@@ -19,8 +19,7 @@
 #ifndef HEADER_XBOXDRV_VIRTUALKEYBOARD_STATUS_ICON_HPP
 #define HEADER_XBOXDRV_VIRTUALKEYBOARD_STATUS_ICON_HPP
 
-#include <gtk/gtkstatusicon.h>
-#include <gtk/gtkmenuitem.h>
+#include <gtk/gtk.h>
 
 class StatusIcon
 {

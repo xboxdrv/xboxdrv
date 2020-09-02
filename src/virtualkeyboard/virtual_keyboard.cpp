@@ -64,13 +64,13 @@ VirtualKeyboard::VirtualKeyboard(KeyboardDescriptionPtr keyboard_desc) :
   m_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_container_set_border_width(GTK_CONTAINER(m_window), 0);
 
-  m_vbox = gtk_vbox_new(FALSE, 0);
+  m_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
   m_drawing_area = gtk_drawing_area_new();
 
-  GdkColor color;
-  gdk_color_parse("#222", &color);
-  gtk_widget_modify_bg(m_window, GTK_STATE_NORMAL, &color);
-  gtk_widget_modify_bg(m_drawing_area, GTK_STATE_NORMAL, &color);
+  GdkRGBA color;
+  gdk_rgba_parse(&color, "#222");
+  gtk_widget_override_background_color(m_window, GTK_STATE_FLAG_NORMAL, &color);
+  gtk_widget_override_background_color(m_drawing_area, GTK_STATE_FLAG_NORMAL, &color);
 
   //gtk_window_set_resizable(GTK_WINDOW(m_window), FALSE);
   gtk_window_set_accept_focus(GTK_WINDOW(m_window), FALSE);
@@ -89,8 +89,8 @@ VirtualKeyboard::VirtualKeyboard(KeyboardDescriptionPtr keyboard_desc) :
 
   g_signal_connect(G_OBJECT(m_window), "destroy", G_CALLBACK(&VirtualKeyboard::on_destroy), NULL);
   //g_signal_connect(G_OBJECT(m_window), "configure-event", G_CALLBACK(&VirtualKeyboard::on_configure_wrap), this);
-  g_signal_connect(G_OBJECT(m_drawing_area), "expose-event",
-                   G_CALLBACK(&VirtualKeyboard::on_expose_wrap), this);
+  g_signal_connect(G_OBJECT(m_drawing_area), "draw",
+                   G_CALLBACK(&VirtualKeyboard::on_draw_wrap), this);
 
   if (true)
   {
@@ -330,30 +330,18 @@ VirtualKeyboard::on_configure(GtkWindow *window, GdkEvent *event)
 }
 
 void
-VirtualKeyboard::on_expose(GtkWidget* widget, GdkEventExpose* event)
+VirtualKeyboard::on_draw(GtkWidget *widget, cairo_t *cr, gpointer data)
 {
-  if (false)
-  {
-    std::cout << "Size: " <<
-      widget->allocation.width << " " <<
-      widget->allocation.height << std::endl;
-  }
+  GtkAllocation allocation;
+  gtk_widget_get_allocation(widget, &allocation);
 
-  cairo_t *cr = gdk_cairo_create (widget->window);
-
-  cairo_rectangle(cr,
-                  event->area.x, event->area.y,
-                  event->area.width, event->area.height);
-  cairo_clip(cr);
 
   // scale the keyboard to the size of the window
   cairo_scale(cr,
-              static_cast<double>(widget->allocation.width)  / get_width(),
-              static_cast<double>(widget->allocation.height) / get_height());
+              static_cast<double>(allocation.width)  / get_width(),
+              static_cast<double>(allocation.height) / get_height());
 
   draw_keyboard(cr);
-
-  cairo_destroy(cr);
 }
 
 void

@@ -48,8 +48,7 @@
        %standard-phases
        (add-after 'install 'wrap-programs
                   ,(wrap-python-programs python
-                                         '("/bin/xboxdrvctl"))))
-      #:configure-flags ,(cmake-gtk2-include-flags)))
+                                         '("/bin/xboxdrvctl"))))))
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("glib:bin" ,glib "bin")))
@@ -61,8 +60,8 @@
       ("bluez" ,bluez)
       ("libx11" ,libx11)
       ("glib" ,glib)
-      ("gdk-pixbuf" ,gdk-pixbuf)
-      ("gtk+-2" ,gtk+-2)
+      ;;("gdk-pixbuf" ,gdk-pixbuf)
+      ("gtk+" ,gtk+)
       ("python" ,python)
       ("python-dbus" ,python-dbus)))
    (synopsis "Xbox360 USB Gamepad Userspace Driver")

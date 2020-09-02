@@ -19,11 +19,7 @@
 #include "virtualkeyboard/status_icon.hpp"
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtkmenu.h>
-#include <gtk/gtkmenuitem.h>
-#include <gtk/gtkimagemenuitem.h>
-#include <gtk/gtkmain.h>
+#include <gtk/gtk.h>
 
 #include "virtualkeyboard/virtualkeyboard_png.h"
 

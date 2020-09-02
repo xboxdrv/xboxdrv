@@ -76,7 +76,7 @@ public:
 
 private:
   void on_configure(GtkWindow *window, GdkEvent *event);
-  void on_expose(GtkWidget* widget, GdkEventExpose* event);
+  void on_draw(GtkWidget *widget, cairo_t *cr, gpointer userdata);
   void on_key_press(GtkWidget* widget, GdkEventKey* event);
   void on_key_release(GtkWidget* widget, GdkEventKey* event);
 
@@ -87,8 +87,8 @@ private:
   Key* get_current_key() const;
 
 private:
-  static void on_expose_wrap(GtkWidget* widget, GdkEventExpose* event, gpointer userdata) {
-    static_cast<VirtualKeyboard*>(userdata)->on_expose(widget, event);
+  static void on_draw_wrap(GtkWidget *widget, cairo_t *cr, gpointer userdata) {
+    static_cast<VirtualKeyboard*>(userdata)->on_draw(widget, cr, userdata);
   }
 
   static void on_key_press_wrap(GtkWidget* widget, GdkEventKey* event, gpointer userdata) {
