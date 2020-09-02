@@ -22,7 +22,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "helper.hpp"
+#include "util/string.hpp"
 
 RotateAxisModifier*
 RotateAxisModifier::from_string(const std::vector<std::string>& args)

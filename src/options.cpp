@@ -22,7 +22,7 @@
 #include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
 
-#include "helper.hpp"
+#include "util/string.hpp"
 #include "raise_exception.hpp"
 #include "uinput/uinput.hpp"
 

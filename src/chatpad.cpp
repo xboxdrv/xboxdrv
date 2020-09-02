@@ -18,7 +18,6 @@
 
 #include "chatpad.hpp"
 
-#include "helper.hpp"
 #include "uinput/linux_uinput.hpp"
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"

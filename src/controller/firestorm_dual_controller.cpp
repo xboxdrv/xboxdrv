@@ -22,7 +22,7 @@
 #include <boost/format.hpp>
 
 #include "controller_message.hpp"
-#include "helper.hpp"
+#include "util/string.hpp"
 #include "log.hpp"
 #include "unpack.hpp"
 #include "usb_helper.hpp"

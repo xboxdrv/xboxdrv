@@ -21,7 +21,7 @@
 #include <boost/tokenizer.hpp>
 #include <sstream>
 
-#include "helper.hpp"
+#include "util/string.hpp"
 
 DeadzoneAxisFilter*
 DeadzoneAxisFilter::from_string(const std::string& str)

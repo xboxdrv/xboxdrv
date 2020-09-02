@@ -21,7 +21,7 @@
 #include <boost/tokenizer.hpp>
 #include <stdexcept>
 
-#include "helper.hpp"
+#include "util/string.hpp"
 #include "uinput/ui_event_sequence.hpp"
 #include "raise_exception.hpp"
 

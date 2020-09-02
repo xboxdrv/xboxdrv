@@ -20,7 +20,6 @@
 
 #include <boost/format.hpp>
 
-#include "helper.hpp"
 #include "raise_exception.hpp"
 #include "unpack.hpp"
 

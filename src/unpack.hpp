@@ -21,7 +21,7 @@
 
 #include <stdint.h>
 
-#include "helper.hpp"
+#include "util/math.hpp"
 
 namespace unpack {
 

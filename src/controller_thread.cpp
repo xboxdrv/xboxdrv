@@ -24,7 +24,6 @@
 
 #include "controller.hpp"
 #include "controller_slot_config.hpp"
-#include "helper.hpp"
 #include "log.hpp"
 #include "message_processor.hpp"
 

@@ -22,7 +22,7 @@
 #include <linux/input.h>
 
 #include "evdev_helper.hpp"
-#include "helper.hpp"
+#include "util/string.hpp"
 #include "uinput/uinput.hpp"
 
 KeyButtonEventHandler*

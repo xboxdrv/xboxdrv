@@ -22,7 +22,8 @@
 #include <sstream>
 
 #include "controller_message.hpp"
-#include "helper.hpp"
+#include "util/math.hpp"
+#include "util/string.hpp"
 
 namespace {
 

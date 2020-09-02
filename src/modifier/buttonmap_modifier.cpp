@@ -22,7 +22,7 @@
 #include <boost/tokenizer.hpp>
 #include <sstream>
 
-#include "helper.hpp"
+#include "util/string.hpp"
 #include "key_port.hpp"
 #include "raise_exception.hpp"
 

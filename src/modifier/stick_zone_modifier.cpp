@@ -23,7 +23,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "helper.hpp"
+#include "util/string.hpp"
 #include "xboxmsg.hpp"
 #include "raise_exception.hpp"
 

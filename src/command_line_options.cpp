@@ -26,7 +26,7 @@
 #include <iterator>
 
 #include "evdev_helper.hpp"
-#include "helper.hpp"
+#include "util/string.hpp"
 #include "ini_parser.hpp"
 #include "ini_schema_builder.hpp"
 #include "options.hpp"

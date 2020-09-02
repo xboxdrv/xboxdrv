@@ -1,6 +1,6 @@
 /*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmail.com>
+**  Copyright (C) 2008-2020 Ingo Ruhnke <grumbel@gmail.com>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,23 +16,30 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/bind.hpp>
-#include <iostream>
+#ifndef HEADER_XBOXDRV_UTIL_MATH_HPP
+#define HEADER_XBOXDRV_UTIL_MATH_HPP
 
-#include "util/string.hpp"
+#include <algorithm>
+#include <assert.h>
 
-void print_name_value(const std::string& name, const std::string& value)
+namespace Math {
+
+template<class T>
+T clamp (const T& low, const T& v, const T& high)
 {
-  std::cout << "'" << name << "' = '" << value << "'" << std::endl;
+  assert(low <= high);
+  return std::max((low), std::min((v), (high)));
 }
 
-int main(int argc, char** argv)
-{
-  for(int i = 1; i < argc; ++i)
-  {
-    process_name_value_string(argv[i], boost::bind(&print_name_value, _1, _2));
-  }
-  return 0;
-}
+} // namespace Math
+
+/** converts the arbitary range to [-1,1] */
+float to_float(int value, int min, int max);
+float to_float_no_range_check(int value, int min, int max);
+
+/** converts the range [-1,1] to [min,max] */
+int from_float(float value, int min, int max);
+
+#endif
 
 /* EOF */

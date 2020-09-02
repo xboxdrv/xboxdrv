@@ -22,7 +22,8 @@
 #include <math.h>
 #include <sstream>
 
-#include "helper.hpp"
+#include "util/math.hpp"
+#include "util/string.hpp"
 
 SensitivityAxisFilter*
 SensitivityAxisFilter::from_string(const std::string& str)

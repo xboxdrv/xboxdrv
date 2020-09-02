@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-#include "helper.hpp"
+#include "util/string.hpp"
 #include "raise_exception.hpp"
 
 GenericUSBController::GenericUSBController(libusb_device* dev,

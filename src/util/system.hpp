@@ -1,6 +1,6 @@
 /*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmail.com>
+**  Copyright (C) 2008-2020 Ingo Ruhnke <grumbel@gmail.com>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,23 +16,20 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/bind.hpp>
-#include <iostream>
+#ifndef HEADER_XBOXDRV_UTIL_SYSTEM_HPP
+#define HEADER_XBOXDRV_UTIL_SYSTEM_HPP
 
-#include "util/string.hpp"
-
-void print_name_value(const std::string& name, const std::string& value)
+class System
 {
-  std::cout << "'" << name << "' = '" << value << "'" << std::endl;
-}
+private:
+public:
+  System();
 
-int main(int argc, char** argv)
-{
-  for(int i = 1; i < argc; ++i)
-  {
-    process_name_value_string(argv[i], boost::bind(&print_name_value, _1, _2));
-  }
-  return 0;
-}
+private:
+  System(const System&) = delete;
+  System& operator=(const System&) = delete;
+};
+
+#endif
 
 /* EOF */

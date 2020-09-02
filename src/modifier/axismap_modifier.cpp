@@ -23,7 +23,8 @@
 #include <sstream>
 
 #include "axisfilter/invert_axis_filter.hpp"
-#include "helper.hpp"
+#include "util/math.hpp"
+#include "util/string.hpp"
 
 using namespace std::placeholders;
 

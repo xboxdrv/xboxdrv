@@ -21,11 +21,11 @@
 #include <stdexcept>
 #include <boost/format.hpp>
 
-#include "helper.hpp"
 #include "options.hpp"
 #include "raise_exception.hpp"
 #include "usb_gsource.hpp"
 #include "usb_helper.hpp"
+#include "util/string.hpp"
 
 USBSubsystem::USBSubsystem() :
   m_usb_gsource()

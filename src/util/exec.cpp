@@ -1,6 +1,6 @@
 /*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmail.com>
+**  Copyright (C) 2008-2020 Ingo Ruhnke <grumbel@gmail.com>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,57 +16,42 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "buttonfilter/delay_button_filter.hpp"
+#include "util/exec.hpp"
 
-#include <sstream>
+#include <assert.h>
+#include <string.h>
 
-#include "util/string.hpp"
+#include "log.hpp"
 
-DelayButtonFilter*
-DelayButtonFilter::from_string(const std::string& str)
+pid_t spawn_exe(const std::string& arg0)
 {
-  return new DelayButtonFilter(str2int(str));
-}
-
-DelayButtonFilter::DelayButtonFilter(int delay) :
-  m_delay(delay),
-  m_time(0)
-{
+  std::vector<std::string> args;
+  args.push_back(arg0);
+  return spawn_exe(args);
 }
 
-bool
-DelayButtonFilter::filter(bool value)
+pid_t spawn_exe(const std::vector<std::string>& args)
 {
-  if (value)
+  assert(!args.empty());
+
+  pid_t pid = fork();
+  if (pid == 0)
   {
-    if (m_time < m_delay)
+    char** argv = static_cast<char**>(malloc(sizeof(char*) * (args.size() + 1)));
+    for(size_t i = 0; i < args.size(); ++i)
     {
-      return false;
+      argv[i] = strdup(args[i].c_str());
     }
-    else
+    argv[args.size()] = NULL;
+
+    if (execvp(args[0].c_str(), argv) == -1)
     {
-      return true;
+      log_error(args[0] << ": exec failed: " << strerror(errno));
+      _exit(EXIT_FAILURE);
     }
   }
-  else
-  {
-    m_time = 0;
-    return false;
-  }
-}
 
-void
-DelayButtonFilter::update(int msec_delta)
-{
-  m_time += msec_delta;
-}
-
-std::string
-DelayButtonFilter::str() const
-{
-  std::ostringstream os;
-  os << "delay:" << m_delay;
-  return os.str();
+  return pid;
 }
 
 /* EOF */

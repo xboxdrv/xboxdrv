@@ -21,9 +21,10 @@
 #include <stdexcept>
 #include <math.h>
 
-#include "helper.hpp"
 #include "log.hpp"
 #include "raise_exception.hpp"
+#include "util/math.hpp"
+#include "util/string.hpp"
 
 Acc2AxisModifier*
 Acc2AxisModifier::from_string(const std::vector<std::string>& args)

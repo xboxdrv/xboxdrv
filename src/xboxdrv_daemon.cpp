@@ -27,18 +27,19 @@
 #include <dbus/dbus.h>
 #include <errno.h>
 
-#include "helper.hpp"
-#include "raise_exception.hpp"
-#include "select.hpp"
-#include "uinput/uinput.hpp"
-#include "usb_helper.hpp"
-#include "usb_gsource.hpp"
+#include "controller.hpp"
 #include "controller_factory.hpp"
 #include "controller_slot.hpp"
-#include "controller.hpp"
-#include "udev_subsystem.hpp"
 #include "dbus_subsystem.hpp"
+#include "raise_exception.hpp"
+#include "select.hpp"
+#include "udev_subsystem.hpp"
+#include "uinput/uinput.hpp"
+#include "usb_gsource.hpp"
+#include "usb_helper.hpp"
 #include "usb_subsystem.hpp"
+#include "util/exec.hpp"
+#include "util/string.hpp"
 
 using namespace std::placeholders;
 

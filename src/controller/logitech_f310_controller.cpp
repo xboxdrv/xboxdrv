@@ -22,7 +22,7 @@
 #include <sstream>
 
 #include "controller_message.hpp"
-#include "helper.hpp"
+#include "util/string.hpp"
 #include "usb_helper.hpp"
 #include "unpack.hpp"
 

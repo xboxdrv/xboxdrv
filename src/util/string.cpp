@@ -1,6 +1,6 @@
 /*
-**  Xbox/Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmail.com>
+**  Xbox360 USB Gamepad Userspace Driver
+**  Copyright (C) 2008-2020 Ingo Ruhnke <grumbel@gmail.com>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,21 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "helper.hpp"
+#include "util/string.hpp"
 
-#include <assert.h>
 #include <boost/format.hpp>
-#include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
-#include <stdio.h>
-#include <sys/time.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-#include <errno.h>
-#include <iostream>
 
 #include "raise_exception.hpp"
-
+
 int hexstr2int(const std::string& str)
 {
   unsigned int value = 0;
@@ -95,7 +87,7 @@ float str2float(std::string const& str)
     throw std::runtime_error(out.str());
   }
 }
-
+
 std::string raw2str(const uint8_t* data, int len)
 {
   std::ostringstream out;
@@ -107,7 +99,7 @@ std::string raw2str(const uint8_t* data, int len)
 
   return out.str();
 }
-
+
 std::string to_lower(const std::string &str)
 {
   std::string lower_impl = str;
@@ -121,7 +113,7 @@ std::string to_lower(const std::string &str)
 
   return lower_impl;
 }
-
+
 void split_string_at(const std::string& str, char c, std::string* lhs, std::string* rhs)
 {
   std::string::size_type p = str.find(c);
@@ -202,7 +194,7 @@ void process_name_value_string(const std::string& str, const std::function<void 
     func(lhs, rhs);
   }
 }
-
+
 bool is_number(const std::string& str)
 {
   for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
@@ -218,7 +210,7 @@ bool is_float(const std::string& str)
       return false;
   return true;
 }
-
+
 int to_number(int range, const std::string& str)
 {
   if (str.empty())
@@ -238,85 +230,5 @@ int to_number(int range, const std::string& str)
     }
   }
 }
-
-uint32_t get_time()
-{
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  return static_cast<uint32_t>(tv.tv_sec * 1000 + tv.tv_usec/1000);
-}
-
-float to_float_no_range_check(int value, int min, int max)
-{
-  // FIXME: '+1' is kind of a hack to
-  // get the center at 0 for the
-  // [-32768, 32767] case
-  int center = (max + min + 1)/2;
 
-  if (value < center)
-  {
-    return static_cast<float>(value - center) / static_cast<float>(center - min);
-  }
-  else // (value >= center)
-  {
-    return static_cast<float>(value - center) / static_cast<float>(max - center);
-  }
-}
-
-float to_float(int value, int min, int max)
-{
-  return Math::clamp(-1.0f,
-                     to_float_no_range_check(value, min, max),
-                     1.0f);
-}
-
-int from_float(float value, int min, int max)
-{
-  return static_cast<int>((value + 1.0f) / 2.0f * static_cast<float>(max - min)) + min;
-}
-
-int get_terminal_width()
-{
-  struct winsize w;
-  if (ioctl(0, TIOCGWINSZ, &w) < 0)
-  {
-    return 80;
-  }
-  else
-  {
-    return w.ws_col;
-  }
-}
-
-pid_t spawn_exe(const std::string& arg0)
-{
-  std::vector<std::string> args;
-  args.push_back(arg0);
-  return spawn_exe(args);
-}
-
-pid_t spawn_exe(const std::vector<std::string>& args)
-{
-  assert(!args.empty());
-
-  pid_t pid = fork();
-  if (pid == 0)
-  {
-    char** argv = static_cast<char**>(malloc(sizeof(char*) * (args.size() + 1)));
-    for(size_t i = 0; i < args.size(); ++i)
-    {
-      argv[i] = strdup(args[i].c_str());
-    }
-    argv[args.size()] = NULL;
-
-    if (execvp(args[0].c_str(), argv) == -1)
-    {
-      log_error(args[0] << ": exec failed: " << strerror(errno));
-      _exit(EXIT_FAILURE);
-    }
-  }
-
-  return pid;
-}
-
 /* EOF */

@@ -23,7 +23,6 @@
 
 #include "evdev_helper.hpp"
 #include "log.hpp"
-#include "helper.hpp"
 #include "raise_exception.hpp"
 
 AxisEvent::AxisEvent(AxisEventHandler* handler) :

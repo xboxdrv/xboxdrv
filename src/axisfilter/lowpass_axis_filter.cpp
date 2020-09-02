@@ -20,7 +20,8 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include "helper.hpp"
+#include "util/math.hpp"
+#include "util/string.hpp"
 
 AxisFilterPtr
 LowpassAxisFilter::from_string(const std::string& str)

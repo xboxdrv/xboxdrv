@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <ostream>
 
-#include "helper.hpp"
+#include "util/terminal.hpp"
 #include "pretty_printer.hpp"
 
 ArgParser::ArgParser() :

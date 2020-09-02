@@ -21,7 +21,8 @@
 #include <boost/tokenizer.hpp>
 #include <sstream>
 
-#include "helper.hpp"
+#include "util/math.hpp"
+#include "util/string.hpp"
 
 RelativeAxisFilter*
 RelativeAxisFilter::from_string(const std::string& str)

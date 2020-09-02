@@ -20,7 +20,7 @@
 
 #include "chatpad.hpp"
 #include "headset.hpp"
-#include "helper.hpp"
+#include "util/string.hpp"
 #include "options.hpp"
 #include "raise_exception.hpp"
 #include "unpack.hpp"

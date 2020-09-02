@@ -21,7 +21,7 @@
 #include <stdexcept>
 #include <sstream>
 
-#include "helper.hpp"
+#include "util/string.hpp"
 
 #include "controller_config.hpp"
 

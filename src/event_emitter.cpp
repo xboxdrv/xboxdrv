@@ -21,7 +21,6 @@
 #include <iostream>
 
 #include "controller_message.hpp"
-#include "helper.hpp"
 #include "uinput/uinput.hpp"
 #include "uinput_options.hpp"
 

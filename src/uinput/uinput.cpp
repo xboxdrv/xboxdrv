@@ -28,9 +28,9 @@
 #include "uinput/ui_key_event_collector.hpp"
 #include "uinput/ui_rel_event_collector.hpp"
 
-#include "helper.hpp"
 #include "log.hpp"
 #include "raise_exception.hpp"
+#include "util/string.hpp"
 
 struct input_id
 UInput::parse_input_id(const std::string& str)

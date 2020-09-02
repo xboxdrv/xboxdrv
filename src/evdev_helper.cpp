@@ -20,7 +20,8 @@
 
 #include <linux/input.h>
 
-#include "helper.hpp"
+#include "util/math.hpp"
+#include "util/string.hpp"
 #include "log.hpp"
 
 EvDevRelEnum evdev_rel_names;

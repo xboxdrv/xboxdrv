@@ -20,7 +20,7 @@
 
 #include <sstream>
 
-#include "helper.hpp"
+#include "util/string.hpp"
 
 ConstButtonFilter*
 ConstButtonFilter::from_string(const std::string& str)

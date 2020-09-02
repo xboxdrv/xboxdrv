@@ -23,7 +23,8 @@
 #include <boost/format.hpp>
 
 #include "controller_message.hpp"
-#include "helper.hpp"
+#include "util/math.hpp"
+#include "util/string.hpp"
 #include "raise_exception.hpp"
 #include "unpack.hpp"
 #include "usb_helper.hpp"

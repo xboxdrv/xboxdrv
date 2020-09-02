@@ -26,18 +26,19 @@
 #include <boost/format.hpp>
 #include <functional>
 
-#include "controller_factory.hpp"
-#include "controller_slot_config.hpp"
 #include "controller/evdev_controller.hpp"
 #include "controller/wiimote_controller.hpp"
+#include "controller_factory.hpp"
+#include "controller_slot_config.hpp"
+#include "controller_thread.hpp"
 #include "options.hpp"
 #include "raise_exception.hpp"
 #include "uinput/uinput.hpp"
-#include "usb_helper.hpp"
 #include "usb_gsource.hpp"
+#include "usb_helper.hpp"
 #include "usb_subsystem.hpp"
-#include "controller_thread.hpp"
-#include "helper.hpp"
+#include "util/exec.hpp"
+#include "util/string.hpp"
 
 using namespace std::placeholders;
 

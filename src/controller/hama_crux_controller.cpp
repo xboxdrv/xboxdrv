@@ -21,7 +21,7 @@
 #include <iostream>
 
 #include "log.hpp"
-#include "helper.hpp"
+#include "util/string.hpp"
 
 HamaCruxNames::HamaCruxNames(ControllerMessageDescriptor& desc) :
   crouch(desc.key().put(KeyName("hama-crux.crouch"))),

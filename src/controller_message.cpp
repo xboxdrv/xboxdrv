@@ -24,7 +24,8 @@
 #include <ostream>
 #include <string.h>
 
-#include "helper.hpp"
+#include "util/math.hpp"
+#include "util/string.hpp"
 #include "controller_message_descriptor.hpp"
 
 ControllerMessage::ControllerMessage() :
