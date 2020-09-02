@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_MESSAGE_HPP
 #define HEADER_XBOXDRV_CONTROLLER_MESSAGE_HPP
 
-#include <boost/array.hpp>
+#include <array>
 #include <bitset>
 #include <linux/input.h>
 
@@ -30,10 +30,10 @@ class ControllerMessageDescriptor;
 class ControllerMessage
 {
 private:
-  boost::array<int, 256> m_abs_state;
-  boost::array<int, 256> m_abs_min;
-  boost::array<int, 256> m_abs_max;
-  boost::array<int, 256> m_rel_state;
+  std::array<int, 256> m_abs_state;
+  std::array<int, 256> m_abs_min;
+  std::array<int, 256> m_abs_max;
+  std::array<int, 256> m_rel_state;
   std::bitset<256>       m_key_state;
 
 public:
@@ -46,9 +46,9 @@ public:
 
   void set_key_state(const std::bitset<256>& state) { m_key_state = state; }
   const std::bitset<256>& get_key_state() const { return m_key_state; }
-  const boost::array<int, 256>& get_abs_state() const { return m_abs_state; }
-  const boost::array<int, 256>& get_abs_min() const { return m_abs_min; }
-  const boost::array<int, 256>& get_abs_max() const { return m_abs_max; }
+  const std::array<int, 256>& get_abs_state() const { return m_abs_state; }
+  const std::array<int, 256>& get_abs_min() const { return m_abs_min; }
+  const std::array<int, 256>& get_abs_max() const { return m_abs_max; }
 
   int  get_abs(int abs) const;
   void set_abs(int abs, int v, int min, int max);

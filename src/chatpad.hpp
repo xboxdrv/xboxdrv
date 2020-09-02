@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_CHATPAD_HPP
 #define HEADER_XBOXDRV_CHATPAD_HPP
 
-#include <boost/array.hpp>
+#include <array>
 #include <glib.h>
 #include <libusb.h>
 #include <memory>
@@ -155,8 +155,8 @@ private:
 
   bool m_quit_thread;
   std::unique_ptr<LinuxUinput> m_uinput;
-  boost::array<uint16_t, 256> m_keymap;
-  boost::array<bool, 256> m_state;
+  std::array<uint16_t, 256> m_keymap;
+  std::array<bool, 256> m_state;
   unsigned int m_led_state;
   libusb_transfer* m_read_transfer;
 

@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_AXIS_MAP_HPP
 #define HEADER_XBOXDRV_AXIS_MAP_HPP
 
-#include <boost/array.hpp>
+#include <array>
 
 #include "axis_event.hpp"
 #include "axis_map_option.hpp"
@@ -56,9 +56,9 @@ public:
   void init(const ControllerMessageDescriptor& desc);
 
   void send(const std::bitset<256>& button_state,
-            const boost::array<int, 256>& axis_state,
-            const boost::array<int, 256>& axis_min,
-            const boost::array<int, 256>& axis_max);
+            const std::array<int, 256>& axis_state,
+            const std::array<int, 256>& axis_min,
+            const std::array<int, 256>& axis_max);
   void send_clear();
   void update(int msec_delta);
 };

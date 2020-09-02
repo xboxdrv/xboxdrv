@@ -18,6 +18,8 @@
 
 #include "chatpad.hpp"
 
+#include <assert.h>
+
 #include "uinput/linux_uinput.hpp"
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
@@ -456,7 +458,7 @@ void
 Chatpad::process(const ChatpadKeyMsg& msg)
 {
   // save old state
-  boost::array<bool, 256> old_state = m_state;
+  std::array<bool, 256> old_state = m_state;
 
   // generate new state
   std::fill(m_state.begin(), m_state.end(), 0);

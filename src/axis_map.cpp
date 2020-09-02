@@ -90,9 +90,9 @@ AxisMap::send_clear()
 
 void
 AxisMap::send(const std::bitset<256>& button_state,
-              const boost::array<int, 256>& axis_state,
-              const boost::array<int, 256>& axis_min,
-              const boost::array<int, 256>& axis_max)
+              const std::array<int, 256>& axis_state,
+              const std::array<int, 256>& axis_min,
+              const std::array<int, 256>& axis_max)
 {
   for(int i = 0; i < static_cast<int>(m_map.size()); ++i)
   {
