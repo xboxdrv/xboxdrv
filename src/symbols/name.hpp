@@ -20,7 +20,6 @@
 #define HEADER_XBOXDRV_SYMBOLS_NAME_HPP
 
 #include <string>
-#include <boost/serialization/strong_typedef.hpp>
 #include <iostream>
 
 #include "symbols/environment.hpp"

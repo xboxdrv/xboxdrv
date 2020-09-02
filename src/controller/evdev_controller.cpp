@@ -19,6 +19,7 @@
 #include "controller/evdev_controller.hpp"
 
 #include <fmt/format.h>
+#include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <iostream>
