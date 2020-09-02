@@ -18,8 +18,9 @@
 
 #include "xboxdrv_daemon.hpp"
 
+#include <iterator>
 #include <functional>
-#include <boost/format.hpp>
+#include <fmt/format.h>
 #include <memory>
 #include <fstream>
 #include <dbus/dbus-glib.h>
@@ -220,7 +221,7 @@ XboxdrvDaemon::process_match(struct udev_device* device)
     XPadDevice dev_type;
     if (!find_xpad_device(vendor, product, &dev_type))
     {
-      log_debug("ignoring " << boost::format("%04x:%04x") % vendor % product <<
+      log_debug("ignoring " << fmt::format("{:04x}:{:04x}", vendor, product) <<
                 " not a valid Xboxdrv device");
     }
     else
@@ -376,12 +377,12 @@ XboxdrvDaemon::launch_controller_thread(udev_device* udev_dev,
         if (!slot)
         {
           log_error("no free controller slot found, controller will be ignored: "
-                    << boost::format("%03d:%03d %04x:%04x '%s'")
-                    % static_cast<int>(busnum)
-                    % static_cast<int>(devnum)
-                    % dev_type.idVendor
-                    % dev_type.idProduct
-                    % dev_type.name);
+                    << fmt::format("{:03d}:{:03d} {:04x}:{:04x} '{}'",
+                                   static_cast<int>(busnum),
+                                   static_cast<int>(devnum),
+                                   dev_type.idVendor,
+                                   dev_type.idProduct,
+                                   dev_type.name));
         }
         else
         {
@@ -570,39 +571,42 @@ XboxdrvDaemon::on_controller_activate()
 std::string
 XboxdrvDaemon::status()
 {
-  std::ostringstream out;
+  std::string out;
 
-  out << boost::format("SLOT  CFG  NCFG    USBID    USBPATH  NAME\n");
+  fmt::format_to(std::back_inserter(out), "SLOT  CFG  NCFG    USBID    USBPATH  NAME\n");
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
     if ((*i)->get_controller())
     {
-      out << boost::format("%4d  %3d  %4d  %5s  %7s  %s\n")
-        % (i - m_controller_slots.begin())
-        % (*i)->get_config()->get_current_config()
-        % (*i)->get_config()->config_count()
-        % (*i)->get_controller()->get_usbid()
-        % (*i)->get_controller()->get_usbpath()
-        % (*i)->get_controller()->get_name();
+      fmt::format_to(std::back_inserter(out),
+                     "{:4d}  {:3d}  {:4d}  {:5s}  {:7s}  {}\n",
+                     (i - m_controller_slots.begin()),
+                     (*i)->get_config()->get_current_config(),
+                     (*i)->get_config()->config_count(),
+                     (*i)->get_controller()->get_usbid(),
+                     (*i)->get_controller()->get_usbpath(),
+                     (*i)->get_controller()->get_name());
     }
     else
     {
-      out << boost::format("%4d  %3d  %4d      -         -\n")
-        % (i - m_controller_slots.begin())
-        % (*i)->get_config()->get_current_config()
-        % (*i)->get_config()->config_count();
+      fmt::format_to(std::back_inserter(out),
+                     "{:4d}  {:3d}  {:4d}      -         -\n",
+                     (i - m_controller_slots.begin()),
+                     (*i)->get_config()->get_current_config(),
+                     (*i)->get_config()->config_count());
     }
   }
 
   for(Controllers::iterator i = m_inactive_controllers.begin(); i != m_inactive_controllers.end(); ++i)
   {
-    out << boost::format("   -             %5s  %7s  %s\n")
-      % (*i)->get_usbid()
-      % (*i)->get_usbpath()
-      % (*i)->get_name();
+    fmt::format_to(std::back_inserter(out),
+                   "   -             {:5s}  {:7s}  {}\n",
+                   (*i)->get_usbid(),
+                   (*i)->get_usbpath(),
+                   (*i)->get_name());
   }
 
-  return out.str();
+  return out;
 }
 
 void

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <boost/format.hpp>
+#include <fmt/format.h>
 #include <signal.h>
 #include <usb.h>
 #include <sstream>

@@ -18,8 +18,6 @@
 
 #include "xboxmsg.hpp"
 
-#include <boost/format.hpp>
-
 #include "raise_exception.hpp"
 #include "unpack.hpp"
 

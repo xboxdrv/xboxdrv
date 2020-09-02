@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include <assert.h>
-#include <boost/format.hpp>
 #include <ostream>
 #include <string.h>
 

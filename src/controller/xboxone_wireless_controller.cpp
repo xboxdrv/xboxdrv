@@ -20,7 +20,7 @@
 
 #include <sstream>
 #include <string.h>
-#include <boost/format.hpp>
+#include <fmt/format.h>
 
 #include "controller_message.hpp"
 #include "util/math.hpp"

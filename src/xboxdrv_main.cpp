@@ -23,7 +23,7 @@
 #include <libusb.h>
 #include <stdexcept>
 #include <iostream>
-#include <boost/format.hpp>
+#include <fmt/format.h>
 #include <functional>
 
 #include "controller/evdev_controller.hpp"
@@ -251,11 +251,12 @@ XboxdrvMain::print_info(libusb_device* dev, const XPadDevice& dev_type, const Op
   }
 
   std::cout << "Controller:        " << dev_type.name << std::endl;
-  std::cout << "Vendor/Product:    " << boost::format("%04x:%04x")
-    % uint16_t(desc.idVendor) % uint16_t(desc.idProduct) << std::endl;
-  std::cout << "USB Path:          " << boost::format("%03d:%03d")
-    % static_cast<int>(libusb_get_bus_number(dev))
-    % static_cast<int>(libusb_get_device_address(dev)) << std::endl;
+  std::cout << "Vendor/Product:    " << fmt::format("{:04x}:{:04x}",
+                                                    uint16_t(desc.idVendor),
+                                                    uint16_t(desc.idProduct)) << std::endl;
+  std::cout << "USB Path:          " << fmt::format("{:03d}:{:03d}",
+                                                    static_cast<int>(libusb_get_bus_number(dev)),
+                                                    static_cast<int>(libusb_get_device_address(dev))) << std::endl;
   if (dev_type.type == GAMEPAD_XBOX360_WIRELESS)
     std::cout << "Wireless Port:     " << opts.wireless_id << std::endl;
   std::cout << "Controller Type:   " << dev_type.type << std::endl;

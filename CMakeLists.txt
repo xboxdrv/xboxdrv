@@ -48,6 +48,7 @@ find_package(X11 REQUIRED)
 
 find_package(PkgConfig)
 find_package(Python REQUIRED)
+find_package(fmt REQUIRED)
 pkg_search_module(GTK REQUIRED gtk+-3.0 IMPORTED_TARGET)
 pkg_search_module(USB REQUIRED libusb-1.0 IMPORTED_TARGET)
 pkg_search_module(UDEV REQUIRED libudev IMPORTED_TARGET)
@@ -113,6 +114,7 @@ target_compile_definitions(libxboxdrv PUBLIC -DPACKAGE_VERSION="${XBOXDRV_VERSIO
 target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 
 target_link_libraries(libxboxdrv PUBLIC
+  fmt::fmt
   PkgConfig::DBUSGLIB
   PkgConfig::USB
   PkgConfig::UDEV

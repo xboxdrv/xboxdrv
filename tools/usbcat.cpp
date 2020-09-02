@@ -17,7 +17,7 @@
 */
 
 #include <usb.h>
-#include <boost/format.hpp>
+#include <fmt/format.h>
 #include <iostream>
 #include <math.h>
 #include <string.h>
@@ -38,7 +38,7 @@ std::ostream& operator<<(std::ostream& out, struct usb_device* dev)
           usb_close(handle);
         }
 
-      return out << boost::format("idVendor: 0x%04hx  idProduct: 0x%04hx  iProduct: %s")
+      return out << fmt::format("idVendor: 0x{:04hx}  idProduct: 0x{:04hx}  iProduct: {}")
         % uint16_t(dev->descriptor.idVendor) % uint16_t(dev->descriptor.idProduct)
         % iProduct_buf;
     }
@@ -216,7 +216,7 @@ cat_usb_device(struct usb_device* dev, int interface, int endpoint)
 
               for(int j = 0; j < ret; ++j)
                 {
-                  std::cout << boost::format("0x%02x ") % int(data[j]);
+                  std::cout << fmt::format("0x{:02x} ", int(data[j]));
                 }
               //std::cout << "\r" << std::flush;
               std::cout << std::endl;
@@ -263,7 +263,7 @@ cat_usb_device(struct usb_device* dev, int interface, int endpoint)
 
                               for(int j = 0; j < ret; ++j)
                                 {
-                                  std::cout << boost::format("0x%02x ") % int(data[j]);
+                                  std::cout << fmt::format("0x{:%02x} ", int(data[j]));
                                 }
                               //std::cout << "\r" << std::flush;
                               std::cout << std::endl;

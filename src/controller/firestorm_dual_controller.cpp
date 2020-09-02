@@ -19,7 +19,6 @@
 #include "controller/firestorm_dual_controller.hpp"
 
 #include <sstream>
-#include <boost/format.hpp>
 
 #include "controller_message.hpp"
 #include "util/string.hpp"

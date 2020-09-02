@@ -18,7 +18,7 @@
 
 #include "util/string.hpp"
 
-#include <boost/format.hpp>
+#include <fmt/format.h>
 #include <boost/lexical_cast.hpp>
 
 #include "raise_exception.hpp"
@@ -95,7 +95,7 @@ std::string raw2str(const uint8_t* data, int len)
       << " data: ";
 
   for(int i = 0; i < len; ++i)
-    out << boost::format("%02x ") % int(data[i]);
+    out << fmt::format("{:02x} ", int(data[i]));
 
   return out.str();
 }

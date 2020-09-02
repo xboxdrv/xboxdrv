@@ -18,7 +18,7 @@
 
 #include "controller/evdev_controller.hpp"
 
-#include <boost/format.hpp>
+#include <fmt/format.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <iostream>
@@ -101,7 +101,7 @@ EvdevController::EvdevController(const std::string& filename,
         struct input_absinfo absinfo;
         ioctl(m_fd, EVIOCGABS(i), &absinfo);
 
-        log_debug(boost::format("abs: %-20s min: %6d max: %6d") % abs2str(i) % absinfo.minimum % absinfo.maximum);
+        log_debug(fmt::format("abs: {:-20s} min: {:6d} max: {:6d}", abs2str(i), absinfo.minimum, absinfo.maximum));
         m_absinfo[i] = absinfo;
 
         std::map<int, std::string>::const_iterator it = absmap.find(i);
