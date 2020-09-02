@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.14)
 project(xboxdrv)
 
 option(BUILD_TESTS "Build tests" OFF)
@@ -44,15 +44,15 @@ set(XBOXDRV_BINDIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Install location fo
 set(XBOXDRV_MANDIR "${CMAKE_INSTALL_PREFIX}/share/man" CACHE PATH "Install location for datafiles")
 
 find_package(Threads REQUIRED)
-find_package(X11)
-find_package(GTK2 COMPONENTS gtk)
+find_package(X11 REQUIRED)
 
 find_package(PkgConfig)
 find_package(Python REQUIRED)
-pkg_search_module(USB REQUIRED libusb-1.0)
-pkg_search_module(UDEV REQUIRED libudev)
-pkg_search_module(DBUSGLIB REQUIRED dbus-glib-1)
-pkg_search_module(CWIID OPTIONAL cwiid)
+pkg_search_module(GTK REQUIRED gtk+-3.0 IMPORTED_TARGET)
+pkg_search_module(USB REQUIRED libusb-1.0 IMPORTED_TARGET)
+pkg_search_module(UDEV REQUIRED libudev IMPORTED_TARGET)
+pkg_search_module(DBUSGLIB REQUIRED dbus-glib-1 IMPORTED_TARGET)
+pkg_search_module(CWIID OPTIONAL cwiid IMPORTED_TARGET)
 # FIXME: define -DHAVE_CWIID when found
 
 include_directories(src/)
@@ -112,21 +112,11 @@ file(STRINGS VERSION XBOXDRV_VERSION)
 target_compile_definitions(libxboxdrv PUBLIC -DPACKAGE_VERSION="${XBOXDRV_VERSION}")
 target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 
-target_include_directories(libxboxdrv SYSTEM PUBLIC
-  ${DBUSGLIB_INCLUDE_DIRS}
-  ${GLIB_INCLUDE_DIRS}
-  ${GTHREAD_INCLUDE_DIRS}
-  ${USB_INCLUDE_DIRS}
-  ${UDEV_INCLUDE_DIRS}
-  ${X11_INCLUDE_DIR})
-
 target_link_libraries(libxboxdrv PUBLIC
-  ${DBUSGLIB_LIBRARIES}
-  ${GLIB_LIBRARIES}
-  ${GTHREAD_LIBRARIES}
-  ${USB_LIBRARIES}
-  ${UDEV_LIBRARIES}
-  ${X11_LIBRARIES})
+  PkgConfig::DBUSGLIB
+  PkgConfig::USB
+  PkgConfig::UDEV
+  X11::X11)
 
 add_executable(xboxdrv src/main/main.cpp)
 target_link_libraries(xboxdrv libxboxdrv)
@@ -134,27 +124,9 @@ target_link_libraries(xboxdrv libxboxdrv)
 file(GLOB VIRTUALKEYBOARD_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/virtualkeyboard/*.cpp)
 add_executable(virtualkeyboard ${VIRTUALKEYBOARD_SOURCES_CXX})
-target_include_directories(virtualkeyboard SYSTEM PUBLIC
-  ${CAIRO_INCLUDE_DIRS}
-  ${DBUSGLIB_INCLUDE_DIRS}
-  ${GLIB_INCLUDE_DIRS}
-  ${GLIB_INCLUDE_DIRS}
-  ${GTHREAD_INCLUDE_DIRS}
-  ${GTK2_INCLUDE_DIRS}
-  ${UDEV_INCLUDE_DIRS}
-  ${USB_INCLUDE_DIRS}
-  ${X11_INCLUDE_DIRS})
 target_link_libraries(virtualkeyboard libxboxdrv)
 target_link_libraries(virtualkeyboard
-  ${CAIRO_LIBRARIES}
-  ${DBUSGLIB_LIBRARIES}
-  ${GLIB_LIBRARIES}
-  ${GLIB_LIBRARIES}
-  ${GTHREAD_LIBRARIES}
-  ${GTK2_LIBRARIES}
-  ${UDEV_LIBRARIES}
-  ${USB_LIBRARIES}
-  ${X11_LIBRARIES})
+  PkgConfig::GTK)
 
 if(BUILD_TESTS)
   include_directories(SYSTEM external/googletest/googletest/include/)
