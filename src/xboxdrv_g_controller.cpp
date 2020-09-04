@@ -24,8 +24,11 @@
 #include "message_processor.hpp"
 #include "log.hpp"
 
+#pragma GCC diagnostic ignored "-Wcast-qual"
+
 #define XBOXDRV_CONTROLLER_ERROR xboxdrv_controller_error_quark()
 #define XBOXDRV_CONTROLLER_ERROR_FAILED 0
+
 GQuark
 xboxdrv_controller_error_quark()
 {

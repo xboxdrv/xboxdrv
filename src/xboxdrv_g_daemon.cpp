@@ -21,6 +21,8 @@
 #include "log.hpp"
 #include "xboxdrv_daemon.hpp"
 
+#pragma GCC diagnostic ignored "-Wcast-qual"
+
 /* will create xboxdrv_g_daemon_get_type and set xboxdrv_g_daemon_parent_class */
 G_DEFINE_TYPE(XboxdrvGDaemon, xboxdrv_g_daemon, G_TYPE_OBJECT)
 
