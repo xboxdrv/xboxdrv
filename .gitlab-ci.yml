@@ -20,6 +20,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 before_script:
+  - export DEBIAN_FRONTEND=noninteractive
   - apt-get -qq update
   - apt-get -qq -y install lsb-release
   - lsb_release -a
