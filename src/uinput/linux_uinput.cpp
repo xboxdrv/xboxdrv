@@ -229,7 +229,8 @@ LinuxUinput::finish()
       break;
   }
 
-  strncpy(user_dev.name, name.c_str(), UINPUT_MAX_NAME_SIZE);
+  strncpy(user_dev.name, name.c_str(), UINPUT_MAX_NAME_SIZE - 1);
+  user_dev.name[UINPUT_MAX_NAME_SIZE - 1] = '\0';
   user_dev.id.version = usbid.version;
   user_dev.id.bustype = usbid.bustype;
   user_dev.id.vendor  = usbid.vendor;
