@@ -134,6 +134,8 @@ target_link_libraries(virtualkeyboard
   PkgConfig::GTK)
 
 if(BUILD_TESTS)
+  enable_testing()
+
   include_directories(SYSTEM external/googletest/googletest/include/)
 
   # build gtest
@@ -149,6 +151,10 @@ if(BUILD_TESTS)
   add_executable(test_xboxdrv ${XBOXDRV_TEST_SOURCES})
   target_compile_options(test_xboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
   target_link_libraries(test_xboxdrv gtest gtest_main libxboxdrv ${CMAKE_THREAD_LIBS_INIT})
+
+  add_test(NAME test_xboxdrv
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND test_xboxdrv)
 
   # build old manual tests
   file(GLOB TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
