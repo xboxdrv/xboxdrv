@@ -154,195 +154,173 @@ CommandLineParser::CommandLineParser() :
   m_options(),
   m_directory_context()
 {
-  init_argp();
 }
 
 void
-CommandLineParser::init_argp()
+CommandLineParser::init_argp(int argc, char** argv)
 {
-  m_argp
-    .add_usage("[OPTION]...")
-    .add_text("Xbox360 USB Gamepad Userspace Driver")
-    .add_newline()
+  constexpr char NUL = '\0';
+  m_argp.add_usage(argv[0], "[OPTION]...")
+    .add_text("Xbox360 USB Gamepad Userspace Driver");
 
-    .add_text("General Options: ")
+  m_argp.add_group("General Options: ")
     .add_option(OPTION_HELP,         'h', "help",         "", "display this help and exit")
     .add_option(OPTION_VERSION,      'V', "version",      "", "print the version number and exit")
     .add_option(OPTION_VERBOSE,      'v', "verbose",      "", "print verbose messages")
-    .add_option(OPTION_DEBUG,         0,  "debug",   "",  "be even more verbose then --verbose")
+    .add_option(OPTION_DEBUG,        NUL, "debug",   "",  "be even more verbose then --verbose")
     .add_option(OPTION_SILENT,       's', "silent",  "",  "do not display events on console")
-    .add_option(OPTION_QUIET,         0,  "quiet",   "",  "do not display startup text")
-    .add_option(OPTION_USB_DEBUG,     0,  "usb-debug", "",  "enable log messages from libusb")
-    .add_option(OPTION_PRIORITY,      0,  "priority", "PRI", "increases process priority (default: normal)")
-    .add_newline()
+    .add_option(OPTION_QUIET,        NUL, "quiet",   "",  "do not display startup text")
+    .add_option(OPTION_USB_DEBUG,    NUL, "usb-debug", "",  "enable log messages from libusb")
+    .add_option(OPTION_PRIORITY,     NUL, "priority", "PRI", "increases process priority (default: normal)");
 
-    .add_text("List Options: ")
-    .add_option(OPTION_LIST_SUPPORTED_DEVICES, 0, "list-supported-devices", "", "list supported devices (used by xboxdrv-daemon.py)", false)
-    .add_option(OPTION_LIST_SUPPORTED_DEVICES_XPAD, 0, "list-supported-devices-xpad", "", "list supported devices in xpad.c style", false)
-    .add_option(OPTION_HELP_LED,      0,  "help-led",     "", "list possible values for the led")
-    .add_option(OPTION_HELP_DEVICES,  0,  "help-devices", "", "list supported devices")
-    .add_option(OPTION_LIST_ABS,       0, "help-abs",       "", "list all possible EV_ABS names")
-    .add_option(OPTION_LIST_REL,       0, "help-rel",       "", "list all possible EV_REL names")
-    .add_option(OPTION_LIST_KEY,       0, "help-key",       "", "list all possible EV_KEY names")
-    .add_option(OPTION_LIST_X11KEYSYM, 0, "help-x11keysym", "", "list all possible X11KeySym")
-    .add_option(OPTION_LIST_ALL,       0, "help-all",       "", "list all symbols above")
-    .add_newline()
+  m_argp.add_group("List Options: ")
+    .add_option(OPTION_LIST_SUPPORTED_DEVICES,NUL, "list-supported-devices", "", "list supported devices (used by xboxdrv-daemon.py)", false)
+    .add_option(OPTION_LIST_SUPPORTED_DEVICES_XPAD,NUL, "list-supported-devices-xpad", "", "list supported devices in xpad.c style", false)
+    .add_option(OPTION_HELP_LED,     NUL, "help-led",     "", "list possible values for the led")
+    .add_option(OPTION_HELP_DEVICES, NUL, "help-devices", "", "list supported devices")
+    .add_option(OPTION_LIST_ABS,      NUL, "help-abs",       "", "list all possible EV_ABS names")
+    .add_option(OPTION_LIST_REL,      NUL, "help-rel",       "", "list all possible EV_REL names")
+    .add_option(OPTION_LIST_KEY,      NUL, "help-key",       "", "list all possible EV_KEY names")
+    .add_option(OPTION_LIST_X11KEYSYM,NUL, "help-x11keysym", "", "list all possible X11KeySym")
+    .add_option(OPTION_LIST_ALL,      NUL, "help-all",       "", "list all symbols above");
 
-    .add_text("Config File Options: ")
+  m_argp.add_group("Config File Options: ")
     .add_option(OPTION_CONFIG,       'c', "config",      "FILE", "read configuration from FILE")
-    .add_option(OPTION_ALT_CONFIG,    0, "alt-config",   "FILE", "read alternative configuration from FILE ")
+    .add_option(OPTION_ALT_CONFIG,   NUL, "alt-config",   "FILE", "read alternative configuration from FILE ")
     .add_option(OPTION_CONFIG_OPTION,'o', "option",      "NAME=VALUE", "Set the given configuration option")
-    .add_option(OPTION_WRITE_CONFIG,  0, "write-config", "FILE", "write an example configuration to FILE")
-    .add_newline()
+    .add_option(OPTION_WRITE_CONFIG, NUL, "write-config", "FILE", "write an example configuration to FILE");
 
-    .add_text("Daemon Options: ")
+  m_argp.add_group("Daemon Options: ")
     .add_option(OPTION_DAEMON,        'D', "daemon",    "", "Run as daemon")
-    .add_option(OPTION_DAEMON_DETACH,   0, "detach",      "", "Detach the daemon from the current shell")
-    .add_option(OPTION_DAEMON_PID_FILE, 0, "pid-file",    "FILE", "Write daemon pid to FILE")
-    .add_option(OPTION_DAEMON_NO_DBUS,  0, "no-dbus",    "", "Disables D-Bus support in the daemon", false)
-    .add_option(OPTION_DAEMON_DBUS,     0, "dbus",    "MODE", "Set D-Bus mode (auto, system, session, disabled)")
-    .add_option(OPTION_DAEMON_ON_CONNECT,    0, "on-connect", "FILE", "Launch EXE when a new controller is connected")
-    .add_option(OPTION_DAEMON_ON_DISCONNECT, 0, "on-disconnect", "FILE", "Launch EXE when a controller is disconnected")
-    .add_newline()
+    .add_option(OPTION_DAEMON_DETACH,  NUL, "detach",      "", "Detach the daemon from the current shell")
+    .add_option(OPTION_DAEMON_PID_FILE,NUL, "pid-file",    "FILE", "Write daemon pid to FILE")
+    .add_option(OPTION_DAEMON_NO_DBUS, NUL, "no-dbus",    "", "Disables D-Bus support in the daemon", false)
+    .add_option(OPTION_DAEMON_DBUS,    NUL, "dbus",    "MODE", "Set D-Bus mode (auto, system, session, disabled)")
+    .add_option(OPTION_DAEMON_ON_CONNECT,   NUL, "on-connect", "FILE", "Launch EXE when a new controller is connected")
+    .add_option(OPTION_DAEMON_ON_DISCONNECT,NUL, "on-disconnect", "FILE", "Launch EXE when a controller is disconnected");
 
-    .add_text("Device Options: ")
+  m_argp.add_group("Device Options: ")
     .add_option(OPTION_LIST_CONTROLLER, 'L', "list-controller", "", "list available controllers")
     .add_option(OPTION_ID,           'i', "id",      "N", "use controller with id N (default: 0)")
     .add_option(OPTION_WID,          'w', "wid",     "N", "use wireless controller with wid N (default: 0)")
-    .add_option(OPTION_DEVICE_BY_PATH, 0, "device-by-path", "BUS:DEV", "Use device BUS:DEV, do not do any scanning")
-    .add_option(OPTION_DEVICE_BY_ID,   0, "device-by-id",   "VENDOR:PRODUCT", "Use device that matches VENDOR:PRODUCT (as returned by lsusb)")
-    .add_option(OPTION_TYPE,           0, "type",    "TYPE", "Ignore autodetection and enforce controller type (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)")
+    .add_option(OPTION_DEVICE_BY_PATH,NUL, "device-by-path", "BUS:DEV", "Use device BUS:DEV, do not do any scanning")
+    .add_option(OPTION_DEVICE_BY_ID,  NUL, "device-by-id",   "VENDOR:PRODUCT", "Use device that matches VENDOR:PRODUCT (as returned by lsusb)")
+    .add_option(OPTION_TYPE,          NUL, "type",    "TYPE", "Ignore autodetection and enforce controller type (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar)")
     .add_option(OPTION_DETACH_KERNEL_DRIVER, 'd', "detach-kernel-driver", "", "Detaches the kernel driver currently associated with the device")
-    .add_option(OPTION_GENERIC_USB_SPEC, 0, "generic-usb-spec", "SPEC", "Specification for generic USB device")
-    .add_newline()
+    .add_option(OPTION_GENERIC_USB_SPEC,NUL, "generic-usb-spec", "SPEC", "Specification for generic USB device");
 
-    .add_text("Evdev Options: ")
-    .add_option(OPTION_EVDEV,          0, "evdev",   "DEVICE", "Read events from a evdev device, instead of USB")
-    .add_option(OPTION_EVDEV_DEBUG,    0, "evdev-debug", "", "Print out all events received from evdev")
-    .add_option(OPTION_EVDEV_NO_GRAB,  0, "evdev-no-grab", "", "Do not grab the event device, allow other apps to receive events")
-    .add_option(OPTION_EVDEV_ABSMAP,   0, "evdev-absmap", "MAP", "Set how evdev abs names are mapped to xboxdrv names")
-    .add_option(OPTION_EVDEV_KEYMAP,   0, "evdev-keymap", "MAP", "Set how evdev abs names are mapped to xboxdrv names")
-    .add_option(OPTION_EVDEV_RELMAP,   0, "evdev-relmap", "MAP", "Set how evdev abs names are mapped to xboxdrv names")
-    .add_newline()
+  m_argp.add_group("Evdev Options: ")
+    .add_option(OPTION_EVDEV,         NUL, "evdev",   "DEVICE", "Read events from a evdev device, instead of USB")
+    .add_option(OPTION_EVDEV_DEBUG,   NUL, "evdev-debug", "", "Print out all events received from evdev")
+    .add_option(OPTION_EVDEV_NO_GRAB, NUL, "evdev-no-grab", "", "Do not grab the event device, allow other apps to receive events")
+    .add_option(OPTION_EVDEV_ABSMAP,  NUL, "evdev-absmap", "MAP", "Set how evdev abs names are mapped to xboxdrv names")
+    .add_option(OPTION_EVDEV_KEYMAP,  NUL, "evdev-keymap", "MAP", "Set how evdev abs names are mapped to xboxdrv names")
+    .add_option(OPTION_EVDEV_RELMAP,  NUL, "evdev-relmap", "MAP", "Set how evdev abs names are mapped to xboxdrv names");
 
-    .add_text("Wiimote Options: ")
-    .add_option(OPTION_WIIMOTE,   0, "wiimote", "", "Use Wiimote as main controller")
-    .add_newline()
+  m_argp.add_group("Wiimote Options: ")
+    .add_option(OPTION_WIIMOTE,  NUL, "wiimote", "", "Use Wiimote as main controller");
 
-    .add_text("Status Options: ")
+  m_argp.add_group("Status Options: ")
     .add_option(OPTION_LED,     'l', "led",    "STATUS", "set LED status, see --help-led for possible values")
     .add_option(OPTION_RUMBLE,  'r', "rumble", "L,R", "set the speed for both rumble motors [0-255] (default: 0,0)")
-    .add_option(OPTION_QUIT,    'q', "quit",   "",    "only set led and rumble status then quit")
-    .add_newline()
+    .add_option(OPTION_QUIT,    'q', "quit",   "",    "only set led and rumble status then quit");
 
-    .add_text("Chatpad Options (experimental): ")
-    .add_option(OPTION_CHATPAD,        0, "chatpad", "",  "Enable Chatpad support for Xbox360 USB controller")
-    .add_option(OPTION_CHATPAD_NO_INIT, 0, "chatpad-no-init", "",  "To not send init code to the Chatpad")
-    .add_option(OPTION_CHATPAD_DEBUG, 0, "chatpad-debug", "",  "To not send init code to the Chatpad")
-    .add_newline()
+  m_argp.add_group("Chatpad Options (experimental): ")
+    .add_option(OPTION_CHATPAD,       NUL, "chatpad", "",  "Enable Chatpad support for Xbox360 USB controller")
+    .add_option(OPTION_CHATPAD_NO_INIT,NUL, "chatpad-no-init", "",  "To not send init code to the Chatpad")
+    .add_option(OPTION_CHATPAD_DEBUG,NUL, "chatpad-debug", "",  "To not send init code to the Chatpad");
 
-    .add_text("Headset Options (experimental, Xbox360 USB only): ")
-    .add_option(OPTION_HEADSET,        0, "headset", "",  "Enable Headset support for Xbox360 USB controller (not working)")
-    .add_option(OPTION_HEADSET_DUMP,   0, "headset-dump", "FILE",  "Dump headset data to FILE")
-    .add_option(OPTION_HEADSET_PLAY,   0, "headset-play", "FILE",  "Play FILE on the headset")
-    .add_newline()
+  m_argp.add_group("Headset Options (experimental, Xbox360 USB only): ")
+    .add_option(OPTION_HEADSET,       NUL, "headset", "",  "Enable Headset support for Xbox360 USB controller (not working)")
+    .add_option(OPTION_HEADSET_DUMP,  NUL, "headset-dump", "FILE",  "Dump headset data to FILE")
+    .add_option(OPTION_HEADSET_PLAY,  NUL, "headset-play", "FILE",  "Play FILE on the headset");
 
-    .add_text("Force Feedback: ")
-    .add_option(OPTION_FORCE_FEEDBACK,     0, "force-feedback",   "",     "Enable force feedback support")
-    .add_option(OPTION_RUMBLE_GAIN,        0, "rumble-gain",      "NUM",  "Set relative rumble strength (default: 255)")
+  m_argp.add_group("Force Feedback: ")
+    .add_option(OPTION_FORCE_FEEDBACK,    NUL, "force-feedback",   "",     "Enable force feedback support")
+    .add_option(OPTION_RUMBLE_GAIN,       NUL, "rumble-gain",      "NUM",  "Set relative rumble strength (default: 255)")
     .add_option(OPTION_TEST_RUMBLE,      'R', "test-rumble", "", "map rumbling to LT and RT (for testing only)")
-    .add_option(OPTION_FF_DEVICE,          0, "ff-device", "DEV", "select to which evdev the force feedback should be connected (default: joystick)")
-    .add_newline()
+    .add_option(OPTION_FF_DEVICE,         NUL, "ff-device", "DEV", "select to which evdev the force feedback should be connected (default: joystick)");
 
-    .add_text("Controller Slot Options: ")
-    .add_option(OPTION_CONTROLLER_SLOT,    0, "controller-slot", "N", "Use controller slot N")
-    .add_option(OPTION_NEXT_CONTROLLER,    0, "next-controller", "", "Create a new controller entry")
-    .add_option(OPTION_DAEMON_MATCH,       0, "match", "RULES",   "Only allow controllers that match any of RULES")
-    .add_option(OPTION_DAEMON_MATCH_GROUP, 0, "match-group", "RULES", "Only allow controllers that match all of RULES")
-    .add_newline()
+  m_argp.add_group("Controller Slot Options: ")
+    .add_option(OPTION_CONTROLLER_SLOT,   NUL, "controller-slot", "N", "Use controller slot N")
+    .add_option(OPTION_NEXT_CONTROLLER,   NUL, "next-controller", "", "Create a new controller entry")
+    .add_option(OPTION_DAEMON_MATCH,      NUL, "match", "RULES",   "Only allow controllers that match any of RULES")
+    .add_option(OPTION_DAEMON_MATCH_GROUP,NUL, "match-group", "RULES", "Only allow controllers that match all of RULES");
 
-    .add_text("Config Slot Options: ")
-    .add_option(OPTION_CONFIG_SLOT,        0, "config-slot",     "N", "Use configuration slot N")
-    .add_option(OPTION_NEXT_CONFIG,        0, "ui-new", "", "", false) // backward compatibility
-    .add_option(OPTION_NEXT_CONFIG,        0, "next-config", "", "Create a new configuration entry")
-    .add_option(OPTION_TOGGLE,             0, "toggle", "BTN", "Set button to use for toggling between configs")
-    .add_option(OPTION_TOGGLE,             0, "ui-toggle", "BTN", "", false) // backward compatibility
-    .add_newline()
+  m_argp.add_group("Config Slot Options: ")
+    .add_option(OPTION_CONFIG_SLOT,       NUL, "config-slot",     "N", "Use configuration slot N")
+    .add_option(OPTION_NEXT_CONFIG,       NUL, "ui-new", "", "", false) // backward compatibility
+    .add_option(OPTION_NEXT_CONFIG,       NUL, "next-config", "", "Create a new configuration entry")
+    .add_option(OPTION_TOGGLE,            NUL, "toggle", "BTN", "Set button to use for toggling between configs")
+    .add_option(OPTION_TOGGLE,            NUL, "ui-toggle", "BTN", "", false); // backward compatibility
 
-    .add_text("Configuration Options:")
+  m_argp.add_group("Configuration Options:")
     .add_option(OPTION_MODIFIER,          'm', "modifier",       "MOD=ARG:..", "Add a modifier to the modifier spec")
-    .add_option(OPTION_TIMEOUT,            0, "timeout",         "INT",  "Amount of time to wait fo a device event before processing autofire, etc. (default: 25)")
+    .add_option(OPTION_TIMEOUT,           NUL, "timeout",         "INT",  "Amount of time to wait fo a device event before processing autofire, etc. (default: 25)")
     .add_option(OPTION_BUTTONMAP,         'b', "buttonmap",      "MAP",   "Remap the buttons as specified by MAP (example: B=A,X=A,Y=A)")
-    .add_option(OPTION_AXISMAP,           'a', "axismap",        "MAP",   "Remap the axis as specified by MAP (example: -Y1=Y1,X1=X2)")
-    .add_newline()
+    .add_option(OPTION_AXISMAP,           'a', "axismap",        "MAP",   "Remap the axis as specified by MAP (example: -Y1=Y1,X1=X2)");
 
-    .add_text("Modifier Preset Options: ")
-    .add_option(OPTION_AUTOFIRE,           0, "autofire",         "MAP",  "Cause the given buttons to act as autofire (example: A=250)")
-    .add_option(OPTION_AXIS_SENSITIVITY,   0, "axis-sensitivity", "MAP",  "Adjust the axis sensitivity (example: X1=2.0,Y1=1.0)")
-    .add_option(OPTION_CALIBRARIOTION,     0, "calibration",      "MAP",  "Changes the calibration for the given axis (example: X2=-32768:0:32767)")
-    .add_option(OPTION_DEADZONE,           0, "deadzone",         "INT",  "Threshold under which axis events are ignored (default: 0)")
-    .add_option(OPTION_DEADZONE_TRIGGER,   0, "deadzone-trigger", "INT",  "Threshold under which trigger events are ignored (default: 0)")
-    .add_option(OPTION_DPAD_ROTATION,      0, "dpad-rotation",    "DEGREE", "Rotate the dpad by the given DEGREE, must be a multiple of 45")
-    .add_option(OPTION_FOUR_WAY_RESTRICTOR,0, "four-way-restrictor", "",  "Restrict axis movement to one axis at a time")
-    .add_option(OPTION_RELATIVE_AXIS,      0, "relative-axis",    "MAP",  "Make an axis emulate a joystick throttle (example: y2=64000)")
-    .add_option(OPTION_SQUARE_AXIS,        0, "square-axis",       "",     "Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)")
-    .add_newline()
+  m_argp.add_group("Modifier Preset Options: ")
+    .add_option(OPTION_AUTOFIRE,          NUL, "autofire",         "MAP",  "Cause the given buttons to act as autofire (example: A=250)")
+    .add_option(OPTION_AXIS_SENSITIVITY,  NUL, "axis-sensitivity", "MAP",  "Adjust the axis sensitivity (example: X1=2.0,Y1=1.0)")
+    .add_option(OPTION_CALIBRARIOTION,    NUL, "calibration",      "MAP",  "Changes the calibration for the given axis (example: X2=-32768:0:32767)")
+    .add_option(OPTION_DEADZONE,          NUL, "deadzone",         "INT",  "Threshold under which axis events are ignored (default: 0)")
+    .add_option(OPTION_DEADZONE_TRIGGER,  NUL, "deadzone-trigger", "INT",  "Threshold under which trigger events are ignored (default: 0)")
+    .add_option(OPTION_DPAD_ROTATION,     NUL, "dpad-rotation",    "DEGREE", "Rotate the dpad by the given DEGREE, must be a multiple of 45")
+    .add_option(OPTION_FOUR_WAY_RESTRICTOR, NUL, "four-way-restrictor", "",  "Restrict axis movement to one axis at a time")
+    .add_option(OPTION_RELATIVE_AXIS,     NUL, "relative-axis",    "MAP",  "Make an axis emulate a joystick throttle (example: y2=64000)")
+    .add_option(OPTION_SQUARE_AXIS,       NUL, "square-axis",       "",     "Cause the diagonals to be reported as (1,1) instead of (0.7, 0.7)");
 
-    .add_text("Uinput Preset Configuration Options: ")
-    .add_option(OPTION_TRIGGER_AS_BUTTON,  0, "trigger-as-button", "",    "LT and RT send button instead of axis events")
-    .add_option(OPTION_TRIGGER_AS_ZAXIS,   0, "trigger-as-zaxis", "",     "Combine LT and RT to form a zaxis instead")
-    .add_option(OPTION_DPAD_AS_BUTTON,     0, "dpad-as-button",   "",     "DPad sends button instead of axis events")
-    .add_option(OPTION_DPAD_ONLY,          0, "dpad-only",        "",     "Both sticks are ignored, only DPad sends out axis events")
-    .add_option(OPTION_GUITAR,             0, "guitar",            "",     "Enables guitar button and axis mapping")
-    .add_option(OPTION_MOUSE,              0, "mouse",            "",     "Enable mouse emulation")
-    .add_option(OPTION_MIMIC_XPAD,         0,  "mimic-xpad",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver for wired gamepads")
-    .add_option(OPTION_MIMIC_XPAD_WIRELESS, 0,  "mimic-xpad-wireless",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver for wireless gamepads")
-    .add_newline()
+  m_argp.add_group("Uinput Preset Configuration Options: ")
+    .add_option(OPTION_TRIGGER_AS_BUTTON, NUL, "trigger-as-button", "",    "LT and RT send button instead of axis events")
+    .add_option(OPTION_TRIGGER_AS_ZAXIS,  NUL, "trigger-as-zaxis", "",     "Combine LT and RT to form a zaxis instead")
+    .add_option(OPTION_DPAD_AS_BUTTON,    NUL, "dpad-as-button",   "",     "DPad sends button instead of axis events")
+    .add_option(OPTION_DPAD_ONLY,         NUL, "dpad-only",        "",     "Both sticks are ignored, only DPad sends out axis events")
+    .add_option(OPTION_GUITAR,            NUL, "guitar",            "",     "Enables guitar button and axis mapping")
+    .add_option(OPTION_MOUSE,             NUL, "mouse",            "",     "Enable mouse emulation")
+    .add_option(OPTION_MIMIC_XPAD,        NUL, "mimic-xpad",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver for wired gamepads")
+    .add_option(OPTION_MIMIC_XPAD_WIRELESS,NUL, "mimic-xpad-wireless",  "", "Causes xboxdrv to use the same axis and button names as the xpad kernel driver for wireless gamepads");
 
-    .add_text("Uinput Options: ")
-    .add_option(OPTION_NO_UINPUT,          0, "no-uinput",   "", "do not try to start uinput event dispatching")
-    .add_option(OPTION_NO_EXTRA_DEVICES,   0, "no-extra-devices",  "", "Do not create separate virtual keyboard and mouse devices, just use a single virtual device")
-    .add_option(OPTION_NO_EXTRA_EVENTS,    0, "no-extra-events",  "", "Do not create dummy events to facilitate device type detection")
-    .add_option(OPTION_DEVICE_NAME,        0, "device-name",     "NAME", "Changes the name prefix used for devices in the current slot")
-    .add_option(OPTION_DEVICE_NAMES,       0, "device-names",    "DEVID=NAME,...", "Changes the descriptive name the given devices")
-    .add_option(OPTION_DEVICE_USBID,       0, "device-usbid",     "VENDOR:PRODUCT:VERSION", "Changes the USB Id used for devices in the current slot")
-    .add_option(OPTION_DEVICE_USBIDS,      0, "device-usbids",    "DEVID=VENDOR:PRODUCT:VERSION,...", "Changes the USB Id for the given devices")
-    .add_newline()
+  m_argp.add_group("Uinput Options: ")
+    .add_option(OPTION_NO_UINPUT,         NUL, "no-uinput",   "", "do not try to start uinput event dispatching")
+    .add_option(OPTION_NO_EXTRA_DEVICES,  NUL, "no-extra-devices",  "", "Do not create separate virtual keyboard and mouse devices, just use a single virtual device")
+    .add_option(OPTION_NO_EXTRA_EVENTS,   NUL, "no-extra-events",  "", "Do not create dummy events to facilitate device type detection")
+    .add_option(OPTION_DEVICE_NAME,       NUL, "device-name",     "NAME", "Changes the name prefix used for devices in the current slot")
+    .add_option(OPTION_DEVICE_NAMES,      NUL, "device-names",    "DEVID=NAME,...", "Changes the descriptive name the given devices")
+    .add_option(OPTION_DEVICE_USBID,      NUL, "device-usbid",     "VENDOR:PRODUCT:VERSION", "Changes the USB Id used for devices in the current slot")
+    .add_option(OPTION_DEVICE_USBIDS,     NUL, "device-usbids",    "DEVID=VENDOR:PRODUCT:VERSION,...", "Changes the USB Id for the given devices");
 
-    .add_text("Emitter Options: ")
-    .add_option(OPTION_UI_CLEAR,     0, "ui-clear",         "",     "Removes all existing uinput bindings")
-    .add_option(OPTION_ABSMAP,       0, "absmap", "MAP", "Changes the uinput events send when moving a abs (example: X1=ABS_X2)")
-    .add_option(OPTION_KEYMAP,       0, "keymap", "MAP", "Changes the uinput events send when hitting a key (example: X=BTN_Y,A=KEY_A)")
-    .add_option(OPTION_RELMAP,       0, "relmap", "MAP", "Changes the uinput events send when moving a rel (example: X1=REL_X)")
-    .add_option(OPTION_KEYMAP,       0, "ui-buttonmap",     "MAP", "", false)
-    .add_option(OPTION_ABSMAP,       0, "ui-axismap",       "MAP", "", false)
-    .add_newline()
+  m_argp.add_group("Emitter Options: ")
+    .add_option(OPTION_UI_CLEAR,    NUL, "ui-clear",         "",     "Removes all existing uinput bindings")
+    .add_option(OPTION_ABSMAP,      NUL, "absmap", "MAP", "Changes the uinput events send when moving a abs (example: X1=ABS_X2)")
+    .add_option(OPTION_KEYMAP,      NUL, "keymap", "MAP", "Changes the uinput events send when hitting a key (example: X=BTN_Y,A=KEY_A)")
+    .add_option(OPTION_RELMAP,      NUL, "relmap", "MAP", "Changes the uinput events send when moving a rel (example: X1=REL_X)")
+    .add_option(OPTION_KEYMAP,      NUL, "ui-buttonmap",     "MAP", "", false)
+    .add_option(OPTION_ABSMAP,      NUL, "ui-axismap",       "MAP", "", false);
 
-    .add_text("Axis Filter:")
+  m_argp.add_group("Axis Filter:")
     .add_pseudo("  cal, calibration MIN:CENTER:MAX", "Set the calibration values for the axis")
     .add_pseudo("  sen, sensitivity:SENSITIVITY", "Set the axis sensitivity")
     .add_pseudo("  dead:VALUE, dead:MIN:CENTER:MAX", "Set the axis deadzone")
     .add_pseudo("  rel, relative:SPEED", "Turn axis into a relative-axis")
     .add_pseudo("  resp, response:VALUES:...", "Set values of the response curve")
-    .add_pseudo("  log:STRING", "Print axis value to stdout")
-    .add_newline()
+    .add_pseudo("  log:STRING", "Print axis value to stdout");
 
-    .add_text("Button Filter:")
+  m_argp.add_group("Button Filter:")
     .add_pseudo("  tog, toggle", "Turn button into a toggle button")
     .add_pseudo("  inv, invert", "Invert the button value")
     .add_pseudo("  auto, autofire:RATE:DELAY", "Enable automatic button press repetition")
-    .add_pseudo("  log:STRING", "Print button value to stdout")
-    .add_newline()
+    .add_pseudo("  log:STRING", "Print button value to stdout");
 
-    .add_text("Modifier:")
+  m_argp.add_group("Modifier:")
     .add_pseudo("  btn2axis=BTN:BTN:AXIS", "Turns two buttons into an axis")
     .add_pseudo("  dpad-rotate=DEGREE", "Rotate the dpad by the given number of degree")
     .add_pseudo("  dpad-restrictor=RESTRICTION", "Restrict dpad movment to 'x-axis', 'y-axis' or 'four-way'")
     .add_pseudo("  4wayrest, four-way-restrictor=XAXIS:YAXIS", "Restrict the given stick to four directions")
     .add_pseudo("  square, square-axis=XAXIS:YAXIS", "Convert the circular motion range of the given stick to a square one")
-    .add_pseudo("  rotate=XAXIS:YAXIS:DEGREE[:MIRROR]", "Rotate the given stick by DEGREE, optionally also mirror it")
-    .add_newline()
+    .add_pseudo("  rotate=XAXIS:YAXIS:DEGREE[:MIRROR]", "Rotate the given stick by DEGREE, optionally also mirror it");
 
+  m_argp.add_group()
     .add_text("See README for more documentation and examples.")
     .add_text("Report bugs to Ingo Ruhnke <grumbel@gmail.com>");
 }
@@ -483,25 +461,24 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
   init_ini(options);
   m_options = options;
 
-  ArgParser::ParsedOptions parsed = m_argp.parse_args(argc, argv);
-
-  for(ArgParser::ParsedOptions::const_iterator i = parsed.begin(); i != parsed.end(); ++i)
+  init_argp(argc, argv);
+  for(auto const& opt : m_argp.parse_args(argc, argv))
   {
     try
     {
-      apply_opt(*i, opts);
+      apply_opt(opt, opts);
     }
     catch(std::exception const& err)
     {
       std::ostringstream out;
       out << "error: invalid argument ";
-      if (i->argument.empty())
+      if (opt.argument.empty())
       {
-        out << "'" << i->option << "'";
+        out << "'" << opt.option << "'";
       }
       else
       {
-        out << "'" << i->option << " " << i->argument << "'";
+        out << "'" << opt.option << " " << opt.argument << "'";
       }
       out << "\n    " << err.what();
       throw std::runtime_error(out.str());
@@ -512,7 +489,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 }
 
 void
-CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
+CommandLineParser::apply_opt(argparser::ParsedOption const& opt, Options& opts)
 {
   switch (opt.key)
     {
@@ -1024,7 +1001,7 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
         opts.list_enums |= Options::LIST_X11KEYSYM;
         break;
 
-      case ArgParser::REST_ARG:
+      case argparser::ArgumentType::REST:
         opts.exec.push_back(opt.argument);
         break;
 

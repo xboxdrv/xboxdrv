@@ -21,7 +21,8 @@
 #include <functional>
 #include <errno.h>
 
-#include "arg_parser.hpp"
+#include <argparser.hpp>
+
 #include "log.hpp"
 #include "status_icon.hpp"
 #include "uinput/ui_key_event_emitter.hpp"
@@ -39,22 +40,18 @@ int main(int argc, char** argv)
 
   gtk_init(&argc, &argv);
 
-  ArgParser argp;
-  argp
-    .add_usage("[OPTION]...")
-    .add_text("Virtual Keyboard")
-    .add_newline()
+  argparser::ArgParser argp;
+  argp.add_usage(argv[0], "[OPTION]...")
+    .add_text("Virtual Keyboard");
 
+  argp.add_group()
     .add_option(OPTION_HELP,   'h', "help", "", "display this help and exit")
     .add_option(OPTION_DEVICE, 'd', "device", "DEVICE", "read events from device");
 
-  ArgParser::ParsedOptions parsed = argp.parse_args(argc, argv);
   std::string device;
-  for(ArgParser::ParsedOptions::const_iterator i = parsed.begin(); i != parsed.end(); ++i)
+  for(auto const& opt : argp.parse_args(argc, argv))
   {
-    const ArgParser::ParsedOption& opt = *i;
-
-    switch (i->key)
+    switch (opt.key)
     {
       case OPTION_HELP:
         argp.print_help(std::cout);

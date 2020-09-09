@@ -21,7 +21,8 @@
 
 #include <vector>
 
-#include "arg_parser.hpp"
+#include <argparser.hpp>
+
 #include "axis_map_option.hpp"
 #include "button_map_option.hpp"
 #include "ini/ini_schema.hpp"
@@ -34,7 +35,7 @@ class AxisMap;
 class CommandLineParser
 {
 public:
-  ArgParser m_argp;
+  argparser::ArgParser m_argp;
   INISchema m_ini;
   Options*  m_options;
   std::vector<std::string> m_directory_context;
@@ -50,7 +51,7 @@ public:
   void create_ini_schema(Options* opts);
 
 private:
-  void apply_opt(ArgParser::ParsedOption const& opt, Options& opts);
+  void apply_opt(argparser::ParsedOption const& opt, Options& opts);
 
   void set_device_name(const std::string& name, const std::string& value);
   void set_device_usbid(const std::string& name, const std::string& value);
@@ -107,7 +108,7 @@ private:
   void set_generic_usb_spec(const std::string& name);
 
 private:
-  void init_argp();
+  void init_argp(int argc, char* argv[]);
   void init_ini(Options* opts);
   std::string get_directory_context() const;
 
