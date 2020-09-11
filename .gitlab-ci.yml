@@ -30,13 +30,14 @@ before_script:
     cmake
     build-essential
     libc++-dev
-    libfmt-dev
     libcwiid-dev
     libdbus-glib-1-dev
+    libfmt-dev
+    libgtest-dev
+    libgtk-3-dev
     libgtk2.0-dev
     libudev-dev
     libusb-1.0-0-dev
-    libgtk-3-dev
     libx11-dev
     pkg-config
     x11proto-core-dev

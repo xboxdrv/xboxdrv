@@ -1,6 +1,3 @@
-[submodule "external/googletest"]
-	path = external/googletest
-	url = https://github.com/google/googletest.git
 [submodule "external/argparser"]
 	path = external/argparser
 	url = https://gitlab.com/argparser/argparser.git
