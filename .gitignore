@@ -10,6 +10,7 @@
 /tools/wiimote
 /virtualkeyboard
 /xboxdrv
+/result
 cache/
 config.log
 custom.py
