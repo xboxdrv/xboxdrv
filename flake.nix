@@ -4,9 +4,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
     flake-utils.url = "github:numtide/flake-utils";
+
+    argparser.url = "gitlab:argparser/argparser/stable";
+    argparser.inputs.nixpkgs.follows = "nixpkgs";
+    argparser.inputs.flake-utils.follows = "flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, argparser }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -21,6 +25,8 @@
               pkgs.pkg-config
             ];
             buildInputs = [
+              argparser.defaultPackage.${system}
+
               pkgs.at-spi2-core
               pkgs.bluez
               pkgs.dbus-glib

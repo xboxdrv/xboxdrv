@@ -1,5 +1,29 @@
 {
   "nodes": {
+    "argparser": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1646240255,
+        "narHash": "sha256-goP+g31qxr9htFSPutK8vkdrL+6UiPoaNz5G1nbHp48=",
+        "owner": "argparser",
+        "repo": "argparser",
+        "rev": "ec96783094a70484b349f8e545d74d3b9b2ff512",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "argparser",
+        "ref": "stable",
+        "repo": "argparser",
+        "type": "gitlab"
+      }
+    },
     "flake-utils": {
       "locked": {
         "lastModified": 1644229661,
@@ -33,6 +57,7 @@
     },
     "root": {
       "inputs": {
+        "argparser": "argparser",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs"
       }
