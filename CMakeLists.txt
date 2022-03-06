@@ -106,7 +106,10 @@ add_custom_command(
   DEPENDS ${SOURCE}
   COMMAND ${DBUS_GLUE} -o ${TARGET} ${SOURCE} --dbus-prefix=xboxdrv_daemon)
 
-add_subdirectory(external/argparser/)
+find_package(argparser)
+if(NOT TARGET argparser)
+  add_subdirectory(external/argparser/)
+endif()
 
 add_library(libxboxdrv STATIC ${XBOXDRV_SOURCES_CXX})
 set_target_properties(libxboxdrv PROPERTIES OUTPUT_NAME xboxdrv)
