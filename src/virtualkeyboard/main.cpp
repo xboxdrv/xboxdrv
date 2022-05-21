@@ -21,12 +21,12 @@
 #include <functional>
 #include <errno.h>
 
-#include <argparser.hpp>
+#include <argparser/argparser.hpp>
+
+#include <uinpp/uinput.hpp>
 
 #include "log.hpp"
 #include "status_icon.hpp"
-#include "uinput/ui_key_event_emitter.hpp"
-#include "uinput/uinput.hpp"
 #include "virtualkeyboard/virtual_keyboard.hpp"
 #include "virtualkeyboard/keyboard_dispatcher.hpp"
 #include "virtualkeyboard/keyboard_controller.hpp"

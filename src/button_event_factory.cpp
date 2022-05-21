@@ -18,10 +18,11 @@
 
 #include "button_event_factory.hpp"
 
+#include <uinpp/uinput.hpp>
+
 #include "evdev_helper.hpp"
 #include "log.hpp"
 #include "path.hpp"
-#include "uinput/uinput.hpp"
 
 #include "buttonevent/abs_button_event_handler.hpp"
 #include "buttonevent/cycle_key_button_event_handler.hpp"

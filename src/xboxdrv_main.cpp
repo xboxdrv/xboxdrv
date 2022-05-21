@@ -27,6 +27,8 @@
 #include <fmt/format.h>
 #include <functional>
 
+#include <uinpp/uinput.hpp>
+
 #include "controller/evdev_controller.hpp"
 #include "controller/wiimote_controller.hpp"
 #include "controller_factory.hpp"
@@ -34,7 +36,6 @@
 #include "controller_thread.hpp"
 #include "options.hpp"
 #include "raise_exception.hpp"
-#include "uinput/uinput.hpp"
 #include "usb_gsource.hpp"
 #include "usb_helper.hpp"
 #include "usb_subsystem.hpp"

@@ -29,6 +29,8 @@
 #include <dbus/dbus.h>
 #include <errno.h>
 
+#include <uinpp/uinput.hpp>
+
 #include "controller.hpp"
 #include "controller_factory.hpp"
 #include "controller_slot.hpp"
@@ -36,7 +38,6 @@
 #include "raise_exception.hpp"
 #include "select.hpp"
 #include "udev_subsystem.hpp"
-#include "uinput/uinput.hpp"
 #include "usb_gsource.hpp"
 #include "usb_helper.hpp"
 #include "usb_subsystem.hpp"

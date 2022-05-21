@@ -106,13 +106,26 @@ add_custom_command(
   DEPENDS ${SOURCE}
   COMMAND ${DBUS_GLUE} -o ${TARGET} ${SOURCE} --dbus-prefix=xboxdrv_daemon)
 
-find_package(argparser)
-if(NOT TARGET argparser)
-  add_subdirectory(external/argparser/)
-endif()
+function(build_dependencies)
+  set(BUILD_TESTS OFF)
+  find_package(argparser)
+  if(NOT TARGET argparser::argparser)
+    add_subdirectory(external/argparser/)
+  endif()
+
+  find_package(uinpp)
+  if(NOT TARGET uinpp::uinpp)
+    add_subdirectory(external/uinpp/)
+  endif()
+endfunction()
+build_dependencies()
 
 add_library(libxboxdrv STATIC ${XBOXDRV_SOURCES_CXX})
 set_target_properties(libxboxdrv PROPERTIES OUTPUT_NAME xboxdrv)
+set_target_properties(libxboxdrv PROPERTIES
+  CXX_STANDARD 20
+  CXX_STANDARD_REQUIRED ON
+  CXX_EXTENSIONS OFF)
 
 file(STRINGS VERSION XBOXDRV_VERSION)
 target_compile_definitions(libxboxdrv PUBLIC -DPACKAGE_VERSION="${XBOXDRV_VERSION}")
@@ -120,6 +133,7 @@ target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 
 target_link_libraries(libxboxdrv PUBLIC
   argparser
+  uinpp::uinpp
   fmt::fmt
   PkgConfig::DBUSGLIB
   PkgConfig::USB
@@ -127,11 +141,19 @@ target_link_libraries(libxboxdrv PUBLIC
   X11::X11)
 
 add_executable(xboxdrv src/main/main.cpp)
+set_target_properties(xboxdrv PROPERTIES
+  CXX_STANDARD 20
+  CXX_STANDARD_REQUIRED ON
+  CXX_EXTENSIONS OFF)
 target_link_libraries(xboxdrv libxboxdrv)
 
 file(GLOB VIRTUALKEYBOARD_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/virtualkeyboard/*.cpp)
 add_executable(virtualkeyboard ${VIRTUALKEYBOARD_SOURCES_CXX})
+set_target_properties(virtualkeyboard PROPERTIES
+  CXX_STANDARD 20
+  CXX_STANDARD_REQUIRED ON
+  CXX_EXTENSIONS OFF)
 target_link_libraries(virtualkeyboard libxboxdrv)
 target_link_libraries(virtualkeyboard
   PkgConfig::GTK)

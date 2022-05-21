@@ -21,7 +21,7 @@
 
 #include "button_event.hpp"
 
-#include "uinput/ui_event_sequence.hpp"
+#include <uinpp/ui_event_sequence.hpp>
 
 class KeyButtonEventHandler : public ButtonEventHandler
 {

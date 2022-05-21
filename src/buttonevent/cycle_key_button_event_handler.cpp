@@ -20,8 +20,9 @@
 
 #include <stdexcept>
 
+#include <uinpp/ui_event_sequence.hpp>
+
 #include "util/string.hpp"
-#include "uinput/ui_event_sequence.hpp"
 #include "raise_exception.hpp"
 
 std::map<std::string, CycleKeySequencePtr> CycleKeyButtonEventHandler::s_lookup_table;

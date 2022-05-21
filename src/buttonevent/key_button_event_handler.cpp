@@ -20,9 +20,11 @@
 
 #include <linux/input.h>
 
+#include <uinpp/uinput.hpp>
+#include <uinpp/from.hpp>
+
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
-#include "uinput/uinput.hpp"
 
 KeyButtonEventHandler*
 KeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
@@ -41,13 +43,13 @@ KeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
     {
       case 0:
         {
-          codes = UIEventSequence::from_string(*i);
+          codes = UIEventSequence_from_string(*i);
         }
         break;
 
       case 1:
         {
-          secondary_codes = UIEventSequence::from_string(*i);
+          secondary_codes = UIEventSequence_from_string(*i);
           hold_threshold = 250;
         }
         break;

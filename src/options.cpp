@@ -22,9 +22,10 @@
 #include <functional>
 #include <fmt/format.h>
 
+#include <uinpp/uinput.hpp>
+
 #include "util/string.hpp"
 #include "raise_exception.hpp"
-#include "uinput/uinput.hpp"
 
 using namespace std::placeholders;
 

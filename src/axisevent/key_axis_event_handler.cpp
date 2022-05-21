@@ -18,10 +18,13 @@
 
 #include "key_axis_event_handler.hpp"
 
+#include <uinpp/uinput.hpp>
+#include <uinpp/ui_event_sequence.hpp>
+#include <uinpp/from.hpp>
+
 #include "evdev_helper.hpp"
 #include "util/math.hpp"
 #include "util/string.hpp"
-#include "uinput/uinput.hpp"
 
 KeyAxisEventHandler*
 KeyAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
@@ -40,7 +43,7 @@ KeyAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
     {
       case 0:
         {
-          up_codes = UIEventSequence::from_string(*i);
+          up_codes = UIEventSequence_from_string(*i);
         }
         break;
 
@@ -55,7 +58,7 @@ KeyAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
           }
           else
           {
-            down_codes = UIEventSequence::from_string(*i);
+            down_codes = UIEventSequence_from_string(*i);
           }
         }
         break;

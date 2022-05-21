@@ -19,6 +19,7 @@
 #include "buttonevent/cycle_key_sequence.hpp"
 
 #include <stdexcept>
+#include <uinpp/from.hpp>
 
 #include "raise_exception.hpp"
 
@@ -32,7 +33,7 @@ CycleKeySequence::from_range(UInput& uinput, int slot, bool extra_devices,
 
   for(std::vector<std::string>::const_iterator i = beg; i != end; ++i)
   {
-    keys.push_back(UIEventSequence::from_string(*i));
+    keys.push_back(UIEventSequence_from_string(*i));
   }
 
   if (keys.empty())

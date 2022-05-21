@@ -21,8 +21,8 @@
 
 #include "button_event.hpp"
 
-#include "uinput/ui_event.hpp"
-#include "uinput/ui_event_emitter.hpp"
+#include <uinpp/ui_event.hpp>
+#include <uinpp/ui_event_emitter.hpp>
 
 class RelButtonEventHandler : public ButtonEventHandler
 {

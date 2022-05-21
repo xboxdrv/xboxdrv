@@ -20,8 +20,9 @@
 
 #include <iostream>
 
+#include <uinpp/uinput.hpp>
+
 #include "controller_message.hpp"
-#include "uinput/uinput.hpp"
 #include "uinput_options.hpp"
 
 EventEmitter::EventEmitter(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :

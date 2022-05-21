@@ -8,9 +8,30 @@
     argparser.url = "gitlab:argparser/argparser/stable";
     argparser.inputs.nixpkgs.follows = "nixpkgs";
     argparser.inputs.flake-utils.follows = "flake-utils";
+
+    tinycmmc.url = "gitlab:grumbel/cmake-modules";
+    tinycmmc.inputs.nixpkgs.follows = "nixpkgs";
+    tinycmmc.inputs.flake-utils.follows = "flake-utils";
+
+    strutcpp.url = "gitlab:grumbel/strutcpp";
+    strutcpp.inputs.nixpkgs.follows = "nixpkgs";
+    strutcpp.inputs.flake-utils.follows = "flake-utils";
+    strutcpp.inputs.tinycmmc.follows = "tinycmmc";
+
+    logmich.url = "gitlab:logmich/logmich";
+    logmich.inputs.nixpkgs.follows = "nixpkgs";
+    logmich.inputs.flake-utils.follows = "flake-utils";
+    logmich.inputs.tinycmmc.follows = "tinycmmc";
+
+    uinpp.url = "gitlab:Grumbel/uinpp";
+    uinpp.inputs.nixpkgs.follows = "nixpkgs";
+    uinpp.inputs.flake-utils.follows = "flake-utils";
+    uinpp.inputs.strutcpp.follows = "strutcpp";
+    uinpp.inputs.logmich.follows = "logmich";
+    uinpp.inputs.tinycmmc.follows = "tinycmmc";
   };
 
-  outputs = { self, nixpkgs, flake-utils, argparser }:
+  outputs = { self, nixpkgs, flake-utils, argparser, tinycmmc, strutcpp, logmich, uinpp }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -26,6 +47,9 @@
             ];
             buildInputs = [
               argparser.defaultPackage.${system}
+              logmich.defaultPackage.${system}
+              strutcpp.defaultPackage.${system}
+              uinpp.defaultPackage.${system}
 
               pkgs.at-spi2-core
               pkgs.bluez

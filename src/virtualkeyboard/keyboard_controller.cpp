@@ -25,8 +25,9 @@
 #include <stdexcept>
 #include <math.h>
 
+#include <uinpp/uinput.hpp>
+
 #include "log.hpp"
-#include "uinput/uinput.hpp"
 #include "virtualkeyboard/virtual_keyboard.hpp"
 
 KeyboardController::KeyboardController(VirtualKeyboard& keyboard, UInput& uinput,

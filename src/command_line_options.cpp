@@ -25,6 +25,8 @@
 #include <iostream>
 #include <iterator>
 
+#include <uinpp/ui_event.hpp>
+
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
 #include "ini/ini_parser.hpp"
@@ -32,7 +34,6 @@
 #include "options.hpp"
 #include "path.hpp"
 #include "raise_exception.hpp"
-#include "uinput/ui_event.hpp"
 
 #include "axis_map_option.hpp"
 #include "button_event_factory.hpp"

@@ -7,14 +7,15 @@
         ],
         "nixpkgs": [
           "nixpkgs"
-        ]
+        ],
+        "tinycmmc": "tinycmmc"
       },
       "locked": {
-        "lastModified": 1646240255,
-        "narHash": "sha256-goP+g31qxr9htFSPutK8vkdrL+6UiPoaNz5G1nbHp48=",
+        "lastModified": 1647119910,
+        "narHash": "sha256-ljvsHTP8ZMVtOJmBm1T3yqswTf+A7wZteFftVwnkxrs=",
         "owner": "argparser",
         "repo": "argparser",
-        "rev": "ec96783094a70484b349f8e545d74d3b9b2ff512",
+        "rev": "2979328108f6ca44aa1227cf0fc9f5931aa819a3",
         "type": "gitlab"
       },
       "original": {
@@ -26,11 +27,11 @@
     },
     "flake-utils": {
       "locked": {
-        "lastModified": 1644229661,
-        "narHash": "sha256-1YdnJAsNy69bpcjuoKdOYQX0YxZBiCYZo4Twxerqv7k=",
+        "lastModified": 1652776076,
+        "narHash": "sha256-gzTw/v1vj4dOVbpBSJX4J0DwUR6LIyXo7/SuuTJp1kM=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "3cecb5b042f7f209c56ffd8371b2711a290ec797",
+        "rev": "04c1b180862888302ddfb2e3ad9eaa63afc60cf8",
         "type": "github"
       },
       "original": {
@@ -39,13 +40,39 @@
         "type": "github"
       }
     },
+    "logmich": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "tinycmmc": [
+          "tinycmmc"
+        ]
+      },
+      "locked": {
+        "lastModified": 1647108752,
+        "narHash": "sha256-l2jWi0/mNVMqXQF3THQPEa9+EubkEW5HXvg2untN4/I=",
+        "owner": "logmich",
+        "repo": "logmich",
+        "rev": "41b8edfd97c2a0834f210bbebe75050f6e336d6f",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "logmich",
+        "repo": "logmich",
+        "type": "gitlab"
+      }
+    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1646011258,
-        "narHash": "sha256-+aen4zu5uVp52arEcgL2maCS0zQDuG1t+Azwd/O1gN4=",
+        "lastModified": 1652975354,
+        "narHash": "sha256-qP1DpEYQdSq7NZ542TSHffIT6xGm7MaSMG9faQWPcg0=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "a25df4c2b79c4343bcc72ad671200e5a3e286c41",
+        "rev": "685d243d971c4f9655c981036b9c7bafdb728a0d",
         "type": "github"
       },
       "original": {
@@ -59,7 +86,117 @@
       "inputs": {
         "argparser": "argparser",
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "logmich": "logmich",
+        "nixpkgs": "nixpkgs",
+        "strutcpp": "strutcpp",
+        "tinycmmc": "tinycmmc_2",
+        "uinpp": "uinpp"
+      }
+    },
+    "strutcpp": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "tinycmmc": [
+          "tinycmmc"
+        ]
+      },
+      "locked": {
+        "lastModified": 1645977297,
+        "narHash": "sha256-s5RhiA721UlNU6s00gJw/gE/4h0mpjZYlZPNJumi5i8=",
+        "owner": "grumbel",
+        "repo": "strutcpp",
+        "rev": "c304d0cef635445e4ee71d7a427e8f74d1f994e8",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "grumbel",
+        "repo": "strutcpp",
+        "type": "gitlab"
+      }
+    },
+    "tinycmmc": {
+      "inputs": {
+        "flake-utils": [
+          "argparser",
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "argparser",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1647094963,
+        "narHash": "sha256-8FzS0dq3yvzWxO5vjTC5B7xJIflAdVIunQXNpvrq0fM=",
+        "owner": "grumbel",
+        "repo": "cmake-modules",
+        "rev": "84c8ed49605d46d58e6a5dd4e3427a5aa2f32a17",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "grumbel",
+        "repo": "cmake-modules",
+        "type": "gitlab"
+      }
+    },
+    "tinycmmc_2": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1651061750,
+        "narHash": "sha256-UHX7IFAcb8dmcZj5W9YE+y5/p7TY2U3o1re84xgM27c=",
+        "owner": "grumbel",
+        "repo": "cmake-modules",
+        "rev": "820041251099f94d107de9a2f16fd23154621cbc",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "grumbel",
+        "repo": "cmake-modules",
+        "type": "gitlab"
+      }
+    },
+    "uinpp": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "logmich": [
+          "logmich"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "strutcpp": [
+          "strutcpp"
+        ],
+        "tinycmmc": [
+          "tinycmmc"
+        ]
+      },
+      "locked": {
+        "lastModified": 1653156978,
+        "narHash": "sha256-TQ+9XYqITfCXjYRCq0tIcexbA74+CxEYUn8O1lUA4KA=",
+        "owner": "Grumbel",
+        "repo": "uinpp",
+        "rev": "9ecb78cb705dade3529d86aff90786aa95f28b61",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "Grumbel",
+        "repo": "uinpp",
+        "type": "gitlab"
       }
     }
   },

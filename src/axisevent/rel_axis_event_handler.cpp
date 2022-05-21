@@ -20,9 +20,10 @@
 
 #include <math.h>
 
+#include <uinpp/uinput.hpp>
+
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
-#include "uinput/uinput.hpp"
 
 RelAxisEventHandler*
 RelAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,

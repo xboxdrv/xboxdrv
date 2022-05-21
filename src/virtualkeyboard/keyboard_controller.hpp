@@ -23,7 +23,7 @@
 #include <linux/input.h>
 #include <glib.h>
 
-#include "uinput/ui_event_emitter.hpp"
+#include <uinpp/ui_event_emitter.hpp>
 
 class VirtualKeyboard;
 class UInput;

@@ -23,7 +23,7 @@
 #include <vector>
 #include <assert.h>
 
-#include "uinput/ui_event_sequence.hpp"
+#include <uinpp/ui_event_sequence.hpp>
 
 class CycleKeySequence;
 

@@ -21,8 +21,9 @@
 
 #include <memory>
 
+#include <uinpp/ui_event.hpp>
+
 #include "axis_filter.hpp"
-#include "uinput/ui_event.hpp"
 
 class AxisEvent;
 class AxisEventHandler;

@@ -19,12 +19,13 @@
 #ifndef HEADER_XBOXDRV_BUTTONEVENT_CYCLE_KEY_BUTTON_EVENT_HANDLER_HPP
 #define HEADER_XBOXDRV_BUTTONEVENT_CYCLE_KEY_BUTTON_EVENT_HANDLER_HPP
 
+#include "buttonevent/cycle_key_sequence.hpp"
+
 #include <map>
 
-#include "button_event.hpp"
-#include "uinput/ui_event_sequence.hpp"
+#include <uinpp/ui_event_sequence.hpp>
 
-#include "buttonevent/cycle_key_sequence.hpp"
+#include "button_event.hpp"
 
 class CycleKeyButtonEventHandler : public ButtonEventHandler
 {

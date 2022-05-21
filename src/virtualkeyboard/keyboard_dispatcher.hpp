@@ -21,7 +21,7 @@
 
 #include <vector>
 
-#include "uinput/ui_event_emitter.hpp"
+#include <uinpp/ui_event_emitter.hpp>
 
 class Key;
 class UInput;

@@ -21,9 +21,10 @@
 #include <assert.h>
 #include <functional>
 
+#include <uinpp/uinput.hpp>
+
 #include "controller_slot_options.hpp"
 #include "raise_exception.hpp"
-#include "uinput/uinput.hpp"
 
 using namespace std::placeholders;
 

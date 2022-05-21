@@ -21,8 +21,9 @@
 #include <linux/input.h>
 #include <functional>
 
+#include <uinpp/uinput.hpp>
+
 #include "log.hpp"
-#include "uinput/uinput.hpp"
 #include "virtualkeyboard/keyboard_description.hpp"
 #include "virtualkeyboard/virtual_keyboard.hpp"
 

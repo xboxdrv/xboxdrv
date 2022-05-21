@@ -21,7 +21,7 @@
 #include <assert.h>
 #include <sstream>
 
-#include "uinput/uinput.hpp"
+#include <uinpp/uinput.hpp>
 
 AbsButtonEventHandler*
 AbsButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
