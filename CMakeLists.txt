@@ -147,17 +147,6 @@ set_target_properties(xboxdrv PROPERTIES
   CXX_EXTENSIONS OFF)
 target_link_libraries(xboxdrv libxboxdrv)
 
-file(GLOB VIRTUALKEYBOARD_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-  src/virtualkeyboard/*.cpp)
-add_executable(virtualkeyboard ${VIRTUALKEYBOARD_SOURCES_CXX})
-set_target_properties(virtualkeyboard PROPERTIES
-  CXX_STANDARD 20
-  CXX_STANDARD_REQUIRED ON
-  CXX_EXTENSIONS OFF)
-target_link_libraries(virtualkeyboard libxboxdrv)
-target_link_libraries(virtualkeyboard
-  PkgConfig::GTK)
-
 if(BUILD_TESTS)
   enable_testing()
 
@@ -188,13 +177,7 @@ install(
   TARGETS xboxdrv
   RUNTIME DESTINATION ${XBOXDRV_BINDIR})
 install(
-  TARGETS virtualkeyboard
-  RUNTIME DESTINATION ${XBOXDRV_BINDIR})
-install(
   PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/xboxdrvctl
   DESTINATION ${XBOXDRV_BINDIR})
-install(
-  FILES doc/xboxdrv.1 doc/virtualkeyboard.1
-  DESTINATION ${XBOXDRV_MANDIR}/man1)
 
 # EOF #
