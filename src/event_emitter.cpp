@@ -25,7 +25,7 @@
 #include "controller_message.hpp"
 #include "uinput_options.hpp"
 
-EventEmitter::EventEmitter(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
+EventEmitter::EventEmitter(uinpp::UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
   m_btn_map(opts.get_btn_map(), uinput, slot, extra_devices),
   m_abs_map(opts.get_axis_map(), uinput, slot, extra_devices)

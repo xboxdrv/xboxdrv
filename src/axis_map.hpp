@@ -21,12 +21,13 @@
 
 #include <array>
 
+#include <uinpp/fwd.hpp>
+
 #include "axis_event.hpp"
 #include "axis_map_option.hpp"
 #include "button_combination_map.hpp"
 
 class ControllerMessageDescriptor;
-class UInput;
 
 class AxisMap
 {
@@ -51,7 +52,7 @@ private:
   AxisMapping m_map;
 
 public:
-  AxisMap(const AxisMapOptions& opts, UInput& uinput, int slot, bool extra_devices);
+  AxisMap(const AxisMapOptions& opts, uinpp::UInput& uinput, int slot, bool extra_devices);
 
   void init(const ControllerMessageDescriptor& desc);
 

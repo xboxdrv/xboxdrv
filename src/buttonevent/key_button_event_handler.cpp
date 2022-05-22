@@ -27,12 +27,12 @@
 #include "util/string.hpp"
 
 KeyButtonEventHandler*
-KeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+KeyButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                    const std::string& str)
 {
   //std::cout << " KeyButtonEventHandler::from_string: " << str << std::endl;
-  UIEventSequence codes;
-  UIEventSequence secondary_codes;
+  uinpp::UIEventSequence codes;
+  uinpp::UIEventSequence secondary_codes;
   int hold_threshold = 0;
 
   auto tokens = string_split(str, ":");
@@ -43,13 +43,13 @@ KeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
     {
       case 0:
         {
-          codes = UIEventSequence_from_string(*i);
+          codes = uinpp::UIEventSequence_from_string(*i);
         }
         break;
 
       case 1:
         {
-          secondary_codes = UIEventSequence_from_string(*i);
+          secondary_codes = uinpp::UIEventSequence_from_string(*i);
           hold_threshold = 250;
         }
         break;
@@ -74,9 +74,9 @@ KeyButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
                                    codes, secondary_codes, hold_threshold);
 }
 
-KeyButtonEventHandler::KeyButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
-                                             const UIEventSequence& codes,
-                                             const UIEventSequence& secondary_codes,
+KeyButtonEventHandler::KeyButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+                                             const uinpp::UIEventSequence& codes,
+                                             const uinpp::UIEventSequence& secondary_codes,
                                              int hold_threshold) :
   m_state(false),
   m_codes(codes),

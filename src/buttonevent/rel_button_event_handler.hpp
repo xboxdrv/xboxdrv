@@ -27,12 +27,12 @@
 class RelButtonEventHandler : public ButtonEventHandler
 {
 public:
-  static RelButtonEventHandler* from_string(UInput& uinput, int slot, bool extra_devices,
+  static RelButtonEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                             const std::string& str);
 
 public:
-  RelButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
-                        const UIEvent& code);
+  RelButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+                        const uinpp::UIEvent& code);
 
   void send(bool value);
   void update(int msec_delta) {}
@@ -40,12 +40,12 @@ public:
   std::string str() const;
 
 private:
-  UIEvent m_code;
+  uinpp::UIEvent m_code;
 
   int  m_value;
   int  m_repeat;
 
-  UIEventEmitterPtr m_rel_emitter;
+  uinpp::UIEventEmitter* m_rel_emitter;
 };
 
 #endif

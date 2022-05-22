@@ -26,13 +26,13 @@
 class KeyButtonEventHandler : public ButtonEventHandler
 {
 public:
-  static KeyButtonEventHandler* from_string(UInput& uinput, int slot, bool extra_devices,
+  static KeyButtonEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                             const std::string& str);
 
 public:
-  KeyButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
-                        const UIEventSequence& codes,
-                        const UIEventSequence& secondary_codes,
+  KeyButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+                        const uinpp::UIEventSequence& codes,
+                        const uinpp::UIEventSequence& secondary_codes,
                         int m_hold_threshold);
 
   void send(bool value);
@@ -42,8 +42,8 @@ public:
 
 private:
   bool m_state;
-  UIEventSequence m_codes;
-  UIEventSequence m_secondary_codes;
+  uinpp::UIEventSequence m_codes;
+  uinpp::UIEventSequence m_secondary_codes;
 
   int m_hold_threshold;
   int m_hold_counter;

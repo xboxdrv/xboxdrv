@@ -1063,14 +1063,14 @@ CommandLineParser::set_modifier(const std::string& name, const std::string& valu
 void
 CommandLineParser::set_device_usbid(const std::string& name, const std::string& value)
 {
-  uint32_t devid = UInput::parse_device_id(name);
-  m_options->uinput_device_usbids[devid] = UInput::parse_input_id(value);
+  uint32_t devid = uinpp::UInput::parse_device_id(name);
+  m_options->uinput_device_usbids[devid] = uinpp::UInput::parse_input_id(value);
 }
 
 void
 CommandLineParser::set_device_name(const std::string& name, const std::string& value)
 {
-  uint32_t devid = UInput::parse_device_id(name);
+  uint32_t devid = uinpp::UInput::parse_device_id(name);
   m_options->uinput_device_names[devid] = value;
 }
 

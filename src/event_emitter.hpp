@@ -21,23 +21,24 @@
 
 #include <bitset>
 
+#include <uinpp/fwd.hpp>
+
 #include "axis_map.hpp"
 #include "button_map.hpp"
 
-class ControllerMessage;
-
 class UInputOptions;
+class ControllerMessage;
 
 class EventEmitter
 {
 private:
-  UInput& m_uinput;
+  uinpp::UInput& m_uinput;
 
   ButtonMap m_btn_map;
   AxisMap   m_abs_map;
 
 public:
-  EventEmitter(UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);
+  EventEmitter(uinpp::UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);
 
   void init(const ControllerMessageDescriptor& desc);
   void send(const ControllerMessage& msg);

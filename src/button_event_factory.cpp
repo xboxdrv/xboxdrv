@@ -32,7 +32,7 @@
 #include "buttonevent/macro_button_event_handler.hpp"
 #include "buttonevent/rel_button_event_handler.hpp"
 
-ButtonEventFactory::ButtonEventFactory(UInput& uinput, int slot, bool extra_devices) :
+ButtonEventFactory::ButtonEventFactory(uinpp::UInput& uinput, int slot, bool extra_devices) :
   m_uinput(uinput),
   m_slot(slot),
   m_extra_devices(extra_devices)

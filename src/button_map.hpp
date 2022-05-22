@@ -23,12 +23,12 @@
 #include <map>
 #include <vector>
 
+#include <uinpp/fwd.hpp>
+
 #include "button_combination.hpp"
 #include "button_combination_map.hpp"
 #include "button_event.hpp"
 #include "button_map_option.hpp"
-
-class UInput;
 
 class ButtonMap
 {
@@ -37,7 +37,7 @@ private:
   Map m_map;
 
 public:
-  ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices);
+  ButtonMap(const ButtonMapOptions& opts, uinpp::UInput& uinput, int slot, bool extra_devices);
 
   void init(const ControllerMessageDescriptor& desc);
 

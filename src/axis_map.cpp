@@ -23,7 +23,7 @@
 #include "axis_event_factory.hpp"
 #include "controller_message_descriptor.hpp"
 
-AxisMap::AxisMap(const AxisMapOptions& opts, UInput& uinput, int slot, bool extra_devices) :
+AxisMap::AxisMap(const AxisMapOptions& opts, uinpp::UInput& uinput, int slot, bool extra_devices) :
   m_mappings(),
   m_map()
 {

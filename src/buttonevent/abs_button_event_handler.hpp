@@ -27,11 +27,11 @@
 class AbsButtonEventHandler : public ButtonEventHandler
 {
 public:
-  static AbsButtonEventHandler* from_string(UInput& uinput, int slot, bool extra_devices,
+  static AbsButtonEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                             const std::string& str);
 
 public:
-  AbsButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+  AbsButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
                         int code);
 
   void send(bool value);
@@ -40,10 +40,10 @@ public:
   std::string str() const;
 
 private:
-  UIEvent m_code;
+  uinpp::UIEvent m_code;
   int m_value;
 
-  UIEventEmitterPtr m_abs_emitter;
+  uinpp::UIEventEmitter* m_abs_emitter;
 };
 
 #endif

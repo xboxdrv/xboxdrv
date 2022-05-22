@@ -26,12 +26,12 @@
 class RelAxisEventHandler : public AxisEventHandler
 {
 public:
-  static RelAxisEventHandler* from_string(UInput& uinput, int slot, bool extra_devices,
+  static RelAxisEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                           const std::string& str);
 
 public:
-  RelAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
-                      const UIEvent& code, int repeat = 10, float value = 5);
+  RelAxisEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+                      uinpp::UIEvent const& code, int repeat = 10, float value = 5);
 
   void send(int value, int min, int max);
   void update(int msec_delta);
@@ -39,14 +39,14 @@ public:
   std::string str() const;
 
 private:
-  UIEvent m_code;
+  uinpp::UIEvent m_code;
   float   m_value;
   int     m_repeat;
 
   float   m_stick_value;
   float   m_rest_value;
 
-  UIEventEmitterPtr m_rel_emitter;
+  uinpp::UIEventEmitter* m_rel_emitter;
 };
 
 #endif

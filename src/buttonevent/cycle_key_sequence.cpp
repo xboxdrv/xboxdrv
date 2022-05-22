@@ -24,7 +24,7 @@
 #include "raise_exception.hpp"
 
 CycleKeySequencePtr
-CycleKeySequence::from_range(UInput& uinput, int slot, bool extra_devices,
+CycleKeySequence::from_range(uinpp::UInput& uinput, int slot, bool extra_devices,
                              std::vector<std::string>::const_iterator beg,
                              std::vector<std::string>::const_iterator end,
                              bool wrap_around)
@@ -33,7 +33,7 @@ CycleKeySequence::from_range(UInput& uinput, int slot, bool extra_devices,
 
   for(std::vector<std::string>::const_iterator i = beg; i != end; ++i)
   {
-    keys.push_back(UIEventSequence_from_string(*i));
+    keys.push_back(uinpp::UIEventSequence_from_string(*i));
   }
 
   if (keys.empty())
@@ -47,7 +47,7 @@ CycleKeySequence::from_range(UInput& uinput, int slot, bool extra_devices,
   }
 }
 
-CycleKeySequence::CycleKeySequence(UInput& uinput, int slot, bool extra_devices,
+CycleKeySequence::CycleKeySequence(uinpp::UInput& uinput, int slot, bool extra_devices,
                                    const Keys& keys, bool wrap_around) :
   m_keys(keys),
   m_wrap_around(wrap_around),

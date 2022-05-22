@@ -26,12 +26,12 @@
 class AbsAxisEventHandler : public AxisEventHandler
 {
 public:
-  static AbsAxisEventHandler* from_string(UInput& uinput, int slot, bool extra_devices,
+  static AbsAxisEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                           const std::string& str);
 
 public:
-  AbsAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
-                      const UIEvent& code, int min, int max, int fuzz, int flat);
+  AbsAxisEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+                      const uinpp::UIEvent& code, int min, int max, int fuzz, int flat);
 
   void send(int value, int min, int max);
   void update(int msec_delta);
@@ -39,13 +39,13 @@ public:
   std::string str() const;
 
 private:
-  UIEvent m_code;
+  uinpp::UIEvent m_code;
   int m_min;
   int m_max;
   int m_fuzz;
   int m_flat;
 
-  UIEventEmitterPtr m_abs_emitter;
+  uinpp::UIEventEmitter* m_abs_emitter;
 };
 
 #endif

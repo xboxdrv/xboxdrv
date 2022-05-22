@@ -186,11 +186,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1653222498,
-        "narHash": "sha256-c6MPL5W8hp+99/5Q6K3WItsf9aWnuFCPSWD0wOAr4Ks=",
+        "lastModified": 1653239961,
+        "narHash": "sha256-stfJWk9LbXm1ATpclfFckIjEzR5t19+CW7z5n6IMghM=",
         "owner": "Grumbel",
         "repo": "uinpp",
-        "rev": "1af9dabd9bae92adc830d91c85c25155d085b436",
+        "rev": "e3874fd735609851fcfed3b546d54f8d40623ad8",
         "type": "gitlab"
       },
       "original": {

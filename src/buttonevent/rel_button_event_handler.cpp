@@ -24,7 +24,7 @@
 #include "util/string.hpp"
 
 RelButtonEventHandler*
-RelButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+RelButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                    const std::string& str)
 {
   std::unique_ptr<RelButtonEventHandler> ev;
@@ -54,8 +54,8 @@ RelButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
   return ev.release();
 }
 
-RelButtonEventHandler::RelButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
-                                             const UIEvent& code) :
+RelButtonEventHandler::RelButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+                                             const uinpp::UIEvent& code) :
   m_code(code),
   m_value(3),
   m_repeat(100),

@@ -32,8 +32,8 @@ private:
     enum { kInitOp, kSendOp, kWaitOp, kNull } type;
 
     struct InitEvent {
-      UIEvent event;
-      UIEventEmitterPtr* emitter;
+      uinpp::UIEvent event;
+      uinpp::UIEventEmitter* emitter;
       int minimum;
       int maximum;
       int fuzz;
@@ -41,8 +41,8 @@ private:
     };
 
     struct SendEvent {
-      UIEvent event;
-      UIEventEmitterPtr* emitter;
+      uinpp::UIEvent event;
+      uinpp::UIEventEmitter* emitter;
       int     value;
     };
 
@@ -58,11 +58,11 @@ private:
   };
 
 public:
-  static MacroButtonEventHandler* from_file(UInput& uinput, int slot, bool extra_devices, const std::string& filename);
-  static MacroButtonEventHandler* from_string(UInput& uinput, int slot, bool extra_devices, const std::string& str);
+  static MacroButtonEventHandler* from_file(uinpp::UInput& uinput, int slot, bool extra_devices, const std::string& filename);
+  static MacroButtonEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices, const std::string& str);
 
 public:
-  MacroButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+  MacroButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
                           const std::vector<MacroEvent>& events);
   ~MacroButtonEventHandler();
 
@@ -72,7 +72,7 @@ public:
   std::string str() const;
 
 private:
-  UIEventEmitterPtr get_emitter(UInput& uinput, const UIEvent& ev);
+  uinpp::UIEventEmitter* get_emitter(uinpp::UInput& uinput, const uinpp::UIEvent& ev);
 
 private:
   static MacroEvent macro_event_from_string(const std::string& str);
@@ -83,7 +83,7 @@ private:
   int m_countdown;
   std::vector<MacroEvent>::size_type m_event_counter;
 
-  typedef std::map<UIEvent, UIEventEmitterPtr> Emitter;
+  typedef std::map<uinpp::UIEvent, uinpp::UIEventEmitter*> Emitter;
   Emitter m_emitter;
 };
 

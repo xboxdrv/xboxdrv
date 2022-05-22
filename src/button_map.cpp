@@ -22,7 +22,7 @@
 
 #include "button_event_factory.hpp"
 
-ButtonMap::ButtonMap(const ButtonMapOptions& opts, UInput& uinput, int slot, bool extra_devices) :
+ButtonMap::ButtonMap(const ButtonMapOptions& opts, uinpp::UInput& uinput, int slot, bool extra_devices) :
   m_map()
 {
 #if 0

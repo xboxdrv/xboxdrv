@@ -26,13 +26,13 @@
 class KeyAxisEventHandler : public AxisEventHandler
 {
 public:
-  static KeyAxisEventHandler* from_string(UInput& uinput, int slot, bool extra_devices,
+  static KeyAxisEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                           const std::string& str);
 
 public:
-  KeyAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
-                      UIEventSequence up_codes,
-                      UIEventSequence down_codes,
+  KeyAxisEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+                      uinpp::UIEventSequence up_codes,
+                      uinpp::UIEventSequence down_codes,
                       float threshold);
 
   void send(int value, int min, int max);
@@ -47,8 +47,8 @@ private:
   int m_old_value;
 
   // Array is terminated by -1
-  UIEventSequence m_up_codes;
-  UIEventSequence m_down_codes;
+  uinpp::UIEventSequence m_up_codes;
+  uinpp::UIEventSequence m_down_codes;
   float m_threshold;
 };
 

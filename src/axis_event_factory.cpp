@@ -30,7 +30,7 @@
 #include "axisevent/rel_repeat_axis_event_handler.hpp"
 #include "axisevent/rumble_axis_event_handler.hpp"
 
-AxisEventFactory::AxisEventFactory(UInput& uinput, int slot, bool extra_devices) :
+AxisEventFactory::AxisEventFactory(uinpp::UInput& uinput, int slot, bool extra_devices) :
   m_uinput(uinput),
   m_slot(slot),
   m_extra_devices(extra_devices)

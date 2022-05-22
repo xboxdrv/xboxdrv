@@ -26,12 +26,12 @@
 #include "util/string.hpp"
 
 RelAxisEventHandler*
-RelAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+RelAxisEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                  const std::string& str)
 {
   auto tokens = string_split(str, ":");
 
-  UIEvent code = UIEvent::invalid();
+  uinpp::UIEvent code = uinpp::UIEvent::invalid();
   int     repeat = 10;
   float   value = 5.0f;
 
@@ -66,8 +66,8 @@ RelAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
                                  code, repeat, value);
 }
 
-RelAxisEventHandler::RelAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
-                                         const UIEvent& code, int repeat, float value) :
+RelAxisEventHandler::RelAxisEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+                                         const uinpp::UIEvent& code, int repeat, float value) :
   m_code(code),
   m_value(value),
   m_repeat(repeat),

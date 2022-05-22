@@ -25,13 +25,13 @@ extern "C" {
 #include <glib.h>
 
 #include <uinpp/glib_uinput.hpp>
+#include <uinpp/fwd.hpp>
 
 #include "controller_slot_config.hpp"
 #include "controller_slot_ptr.hpp"
 #include "controller_ptr.hpp"
 
 class Options;
-class UInput;
 class USBGSource;
 class USBSubsystem;
 struct XPadDevice;
@@ -52,8 +52,8 @@ private:
   typedef std::vector<ControllerPtr> Controllers;
   Controllers m_inactive_controllers;
 
-  std::unique_ptr<UInput> m_uinput;
-  std::unique_ptr<GlibUInput> m_glib_uinput;
+  std::unique_ptr<uinpp::UInput> m_uinput;
+  std::unique_ptr<uinpp::GlibUInput> m_glib_uinput;
 
 private:
   static void on_sigint(int);

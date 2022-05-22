@@ -21,12 +21,13 @@
 
 #include <functional>
 
+#include <uinpp/fwd.hpp>
+
 #include "controller_config.hpp"
 #include "modifier.hpp"
 #include "options.hpp"
 
 class Options;
-class UInput;
 class ControllerSlotConfig;
 class ControllerSlotOptions;
 
@@ -36,7 +37,7 @@ class ControllerSlotConfig
 {
 public:
   /** Creates a ControllerSlotConfig from the Options object and connects it to UInput */
-  static ControllerSlotConfigPtr create(UInput& uinput, int slot, bool extra_devices,
+  static ControllerSlotConfigPtr create(uinpp::UInput& uinput, int slot, bool extra_devices,
                                         const ControllerSlotOptions& opts);
 
 private:

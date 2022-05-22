@@ -21,17 +21,17 @@
 
 #include "button_event.hpp"
 
-class UInput;
+#include <uinpp/fwd.hpp>
 
 class ButtonEventFactory
 {
 private:
-  UInput& m_uinput;
+  uinpp::UInput& m_uinput;
   int  m_slot;
   bool m_extra_devices;
 
 public:
-  ButtonEventFactory(UInput& uinput, int slot, bool extra_devices);
+  ButtonEventFactory(uinpp::UInput& uinput, int slot, bool extra_devices);
 
   ButtonEventPtr from_string(const std::string& str, const std::string& directory);
 

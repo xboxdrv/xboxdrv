@@ -27,7 +27,7 @@ ControllerSlotOptions::ControllerSlotOptions() :
   m_match_rules(),
   m_force_feedback(false),
   m_led_status(-1),
-  m_ff_device(DEVICEID_JOYSTICK)
+  m_ff_device(uinpp::DEVICEID_JOYSTICK)
 {
 }
 
@@ -78,7 +78,7 @@ ControllerSlotOptions::get_ff_device() const
 void
 ControllerSlotOptions::set_ff_device(const std::string& device)
 {
-  m_ff_device = str2deviceid(device);
+  m_ff_device = uinpp::str2deviceid(device);
 }
 
 /* EOF */

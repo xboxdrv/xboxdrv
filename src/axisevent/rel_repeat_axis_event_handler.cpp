@@ -28,7 +28,7 @@
 #include "raise_exception.hpp"
 
 RelRepeatAxisEventHandler*
-RelRepeatAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+RelRepeatAxisEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                        const std::string& str)
 {
   // split string at ':'
@@ -47,8 +47,8 @@ RelRepeatAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devi
   }
 }
 
-RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
-                                                     const UIEvent& code, int value, float repeat) :
+RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+                                                     const uinpp::UIEvent& code, int value, float repeat) :
   m_code(code),
   m_value(value),
   m_repeat(repeat),

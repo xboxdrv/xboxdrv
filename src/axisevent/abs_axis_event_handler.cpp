@@ -25,7 +25,7 @@
 #include "raise_exception.hpp"
 
 AbsAxisEventHandler*
-AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+AbsAxisEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                  const std::string& str)
 {
   auto tokens = string_split(str, ":");
@@ -36,7 +36,7 @@ AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
   int flat = 0;
 
   int j = 0;
-  UIEvent code = UIEvent::invalid();
+  uinpp::UIEvent code = uinpp::UIEvent::invalid();
   for(auto i = tokens.begin(); i != tokens.end(); ++i, ++j)
   {
     switch(j)
@@ -77,8 +77,8 @@ AbsAxisEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
   }
 }
 
-AbsAxisEventHandler::AbsAxisEventHandler(UInput& uinput, int slot, bool extra_devices,
-                                         const UIEvent& code, int min, int max, int fuzz, int flat) :
+AbsAxisEventHandler::AbsAxisEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+                                         const uinpp::UIEvent& code, int min, int max, int fuzz, int flat) :
   m_code(code),
   m_min(min),
   m_max(max),

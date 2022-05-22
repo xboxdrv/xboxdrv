@@ -229,31 +229,31 @@ int str2rel(const std::string& name)
   }
 }
 
-UIEvent str2key_event(const std::string& str)
+uinpp::UIEvent str2key_event(const std::string& str)
 {
   int slot_id;
   int device_id;
   std::string rest;
-  split_event_name(str, &rest, &slot_id, &device_id);
-  return UIEvent::create(static_cast<uint16_t>(device_id), EV_KEY, str2key(rest));
+  uinpp::split_event_name(str, &rest, &slot_id, &device_id);
+  return uinpp::UIEvent::create(static_cast<uint16_t>(device_id), EV_KEY, str2key(rest));
 }
 
-UIEvent str2rel_event(const std::string& str)
+uinpp::UIEvent str2rel_event(const std::string& str)
 {
   int slot_id;
   int device_id;
   std::string rest;
-  split_event_name(str, &rest, &slot_id, &device_id);
-  return UIEvent::create(static_cast<uint16_t>(device_id), EV_REL, str2rel(rest));
+  uinpp::split_event_name(str, &rest, &slot_id, &device_id);
+  return uinpp::UIEvent::create(static_cast<uint16_t>(device_id), EV_REL, str2rel(rest));
 }
 
-UIEvent str2abs_event(const std::string& str)
+uinpp::UIEvent str2abs_event(const std::string& str)
 {
   int slot_id;
   int device_id;
   std::string rest;
-  split_event_name(str, &rest, &slot_id, &device_id);
-  return UIEvent::create(static_cast<uint16_t>(device_id), EV_ABS, str2abs(rest));
+  uinpp::split_event_name(str, &rest, &slot_id, &device_id);
+  return uinpp::UIEvent::create(static_cast<uint16_t>(device_id), EV_ABS, str2abs(rest));
 }
 
 std::string key2str(int v)

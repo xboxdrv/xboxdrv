@@ -21,17 +21,17 @@
 
 #include "axis_event.hpp"
 
-class UInput;
+#include <uinpp/fwd.hpp>
 
 class AxisEventFactory
 {
 private:
-  UInput& m_uinput;
+  uinpp::UInput& m_uinput;
   int  m_slot;
   bool m_extra_devices;
 
 public:
-  AxisEventFactory(UInput& uinput, int slot, bool extra_devices);
+  AxisEventFactory(uinpp::UInput& uinput, int slot, bool extra_devices);
 
   AxisEventPtr invalid();
 

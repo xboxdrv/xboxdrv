@@ -33,7 +33,7 @@
 #include "raise_exception.hpp"
 
 MacroButtonEventHandler*
-MacroButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+MacroButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                      const std::string& str)
 {
   std::vector<MacroEvent> events;
@@ -42,7 +42,7 @@ MacroButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_device
     { // push
       MacroEvent event;
       event.type  = MacroEvent::kSendOp;
-      event.send.event = UIEvent_from_char(*i);
+      event.send.event = uinpp::UIEvent_from_char(*i);
       event.send.emitter = 0;
       event.send.value = 1;
       events.push_back(event);
@@ -56,7 +56,7 @@ MacroButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_device
     { // release
       MacroEvent event;
       event.type  = MacroEvent::kSendOp;
-      event.send.event = UIEvent_from_char(*i);
+      event.send.event = uinpp::UIEvent_from_char(*i);
       event.send.emitter = 0;
       event.send.value = 0;
       events.push_back(event);
@@ -67,7 +67,7 @@ MacroButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_device
 }
 
 MacroButtonEventHandler*
-MacroButtonEventHandler::from_file(UInput& uinput, int slot, bool extra_devices,
+MacroButtonEventHandler::from_file(uinpp::UInput& uinput, int slot, bool extra_devices,
                                    const std::string& filename)
 {
   std::vector<MacroEvent> events;
@@ -117,7 +117,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
       {
         MacroEvent event;
         event.type = MacroEvent::kInitOp;
-        event.init.event = UIEvent_from_string(args[1]);
+        event.init.event = uinpp::UIEvent_from_string(args[1]);
         event.init.emitter = 0;
         event.init.minimum = str2int(args[2]);
         event.init.maximum = str2int(args[3]);
@@ -139,7 +139,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
       {
         MacroEvent event;
         event.type  = MacroEvent::kSendOp;
-        event.send.event = UIEvent_from_string(args[1]);
+        event.send.event = uinpp::UIEvent_from_string(args[1]);
         event.send.emitter = 0;
         event.send.value = str2int(args[2]);
         return event;
@@ -173,7 +173,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
   }
 }
 
-MacroButtonEventHandler::MacroButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+MacroButtonEventHandler::MacroButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
                                                  const std::vector<MacroEvent>& events) :
   m_events(events),
   m_send_in_progress(false),
@@ -198,10 +198,9 @@ MacroButtonEventHandler::MacroButtonEventHandler(UInput& uinput, int slot, bool 
 
           case EV_ABS:
             i->init.event.resolve_device_id(slot, extra_devices);
-            i->init.emitter = new UIEventEmitterPtr(
-              uinput.add_abs(i->init.event.get_device_id(), i->init.event.code,
-                             i->init.minimum, i->init.maximum,
-                             i->init.fuzz, i->init.flat));
+            i->init.emitter = uinput.add_abs(i->init.event.get_device_id(), i->init.event.code,
+                                             i->init.minimum, i->init.maximum,
+                                             i->init.fuzz, i->init.flat);
             break;
 
           default:
@@ -215,17 +214,17 @@ MacroButtonEventHandler::MacroButtonEventHandler(UInput& uinput, int slot, bool 
         {
           case EV_REL:
             i->send.event.resolve_device_id(slot, extra_devices);
-            i->send.emitter = new UIEventEmitterPtr(get_emitter(uinput, i->send.event));
+            i->send.emitter = get_emitter(uinput, i->send.event);
             break;
 
           case EV_KEY:
             i->send.event.resolve_device_id(slot, extra_devices);
-            i->send.emitter = new UIEventEmitterPtr(get_emitter(uinput, i->send.event));
+            i->send.emitter = get_emitter(uinput, i->send.event);
             break;
 
           case EV_ABS:
             i->send.event.resolve_device_id(slot, extra_devices);
-            // BROKEN: need to get the UIEventEmitterPtr inited earlier
+            // BROKEN: need to get the UIEventEmitter* inited earlier
             // not doing a add_abs() here, its the users job to use a
             // init command for that
             break;
@@ -264,8 +263,8 @@ MacroButtonEventHandler::~MacroButtonEventHandler()
   }
 }
 
-UIEventEmitterPtr
-MacroButtonEventHandler::get_emitter(UInput& uinput, const UIEvent& ev)
+uinpp::UIEventEmitter*
+MacroButtonEventHandler::get_emitter(uinpp::UInput& uinput, const uinpp::UIEvent& ev)
 {
   Emitter::iterator it = m_emitter.find(ev);
   if (it != m_emitter.end())
@@ -274,7 +273,7 @@ MacroButtonEventHandler::get_emitter(UInput& uinput, const UIEvent& ev)
   }
   else
   {
-    UIEventEmitterPtr emitter = uinput.add(ev);
+    uinpp::UIEventEmitter* emitter = uinput.add(ev);
     m_emitter[ev] = emitter;
     return emitter;
   }
@@ -307,7 +306,7 @@ MacroButtonEventHandler::update(int msec_delta)
             break;
 
           case MacroEvent::kSendOp:
-            (*m_events[m_event_counter].send.emitter)->send(m_events[m_event_counter].send.value);
+            m_events[m_event_counter].send.emitter->send(m_events[m_event_counter].send.value);
             break;
 
           case MacroEvent::kWaitOp:

@@ -24,7 +24,7 @@
 #include <uinpp/uinput.hpp>
 
 AbsButtonEventHandler*
-AbsButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
+AbsButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
                                    const std::string& str)
 {
   // FIXME: Need magic to detect min/max of the axis
@@ -32,9 +32,9 @@ AbsButtonEventHandler::from_string(UInput& uinput, int slot, bool extra_devices,
   return {};
 }
 
-AbsButtonEventHandler::AbsButtonEventHandler(UInput& uinput, int slot, bool extra_devices,
+AbsButtonEventHandler::AbsButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
                                              int code) :
-  m_code(UIEvent::invalid()),
+  m_code(uinpp::UIEvent::invalid()),
   m_value(),
   m_abs_emitter()
 {
