@@ -21,7 +21,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "log.hpp"
+#include <logmich/log.hpp>
 
 pid_t spawn_exe(const std::string& arg0)
 {
@@ -46,7 +46,7 @@ pid_t spawn_exe(const std::vector<std::string>& args)
 
     if (execvp(args[0].c_str(), argv) == -1)
     {
-      log_error(args[0] << ": exec failed: " << strerror(errno));
+      log_error("{}: exec failed: {}", args[0], strerror(errno));
       _exit(EXIT_FAILURE);
     }
   }

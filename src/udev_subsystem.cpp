@@ -120,7 +120,7 @@ UdevSubsystem::on_udev_data(GIOChannel* channel, GIOCondition condition)
   }
   else if (condition != G_IO_IN)
   {
-    log_error("unknown condition: " << condition);
+    log_error("unknown condition: {}", condition);
   }
   else
   {
@@ -133,13 +133,13 @@ UdevSubsystem::on_udev_data(GIOChannel* channel, GIOCondition condition)
     if (!device)
     {
       // seem to be normal, do we get this when the given device is filtered out?
-      log_debug("udev device couldn't be read: " << device);
+      log_debug("udev device couldn't be read: {}", static_cast<void*>(device));
     }
     else
     {
       const char* action = udev_device_get_action(device);
 
-      if (g_logger.get_log_level() >= Logger::kDebug)
+      if (logmich::g_logger.get_log_level() >= logmich::LogLevel::DEBUG)
       {
         print_info(device);
       }
@@ -160,35 +160,35 @@ void
 UdevSubsystem::print_info(udev_device* device)
 {
   log_debug("/---------------------------------------------");
-  log_debug("devpath: " << udev_device_get_devpath(device));
+  log_debug("devpath: {}", udev_device_get_devpath(device));
 
   if (udev_device_get_action(device))
-    log_debug("action: " << udev_device_get_action(device));
-  //log_debug("init: " << udev_device_get_is_initialized(device));
+    log_debug("action: {}", udev_device_get_action(device));
+  //log_debug("init: {}", udev_device_get_is_initialized(device));
 
   if (udev_device_get_subsystem(device))
-    log_debug("subsystem: " << udev_device_get_subsystem(device));
+    log_debug("subsystem: {}", udev_device_get_subsystem(device));
 
   if (udev_device_get_devtype(device))
-    log_debug("devtype:   " << udev_device_get_devtype(device));
+    log_debug("devtype:   {}", udev_device_get_devtype(device));
 
   if (udev_device_get_syspath(device))
-    log_debug("syspath:   " << udev_device_get_syspath(device));
+    log_debug("syspath:   {}", udev_device_get_syspath(device));
 
   if (udev_device_get_sysname(device))
-    log_debug("sysname:   " << udev_device_get_sysname(device));
+    log_debug("sysname:   {}", udev_device_get_sysname(device));
 
   if (udev_device_get_sysnum(device))
-    log_debug("sysnum:    " << udev_device_get_sysnum(device));
+    log_debug("sysnum:    {}", udev_device_get_sysnum(device));
 
   if (udev_device_get_devnode(device))
-    log_debug("devnode:   " << udev_device_get_devnode(device));
+    log_debug("devnode:   {}", udev_device_get_devnode(device));
 
   if (udev_device_get_driver(device))
-    log_debug("driver:    " << udev_device_get_driver(device));
+    log_debug("driver:    {}", udev_device_get_driver(device));
 
   if (udev_device_get_action(device))
-    log_debug("action:    " << udev_device_get_action(device));
+    log_debug("action:    {}", udev_device_get_action(device));
 
   //udev_device_get_sysattr_value(device, "busnum");
   //udev_device_get_sysattr_value(device, "devnum");
@@ -200,10 +200,7 @@ UdevSubsystem::print_info(udev_device* device)
     struct udev_list_entry* it = udev_device_get_tags_list_entry(device);
     while((it = udev_list_entry_get_next(it)) != 0)
     {
-      log_debug("  "
-                << udev_list_entry_get_name(it) << " = "
-                << udev_list_entry_get_value(it)
-        );
+      log_debug("  {} = {}", udev_list_entry_get_name(it), udev_list_entry_get_value(it));
     }
   }
 

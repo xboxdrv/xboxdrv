@@ -25,7 +25,7 @@
 
 #include "bluetooth.hpp"
 #include "controller_message_descriptor.hpp"
-#include "log.hpp"
+#include <logmich/log.hpp>
 #include "unpack.hpp"
 
 WiimoteController* WiimoteController::s_wiimote = 0;

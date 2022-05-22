@@ -47,8 +47,8 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
   endpoint_in  = usb_find_ep(LIBUSB_ENDPOINT_IN,  LIBUSB_CLASS_VENDOR_SPEC, 93, 1);
   endpoint_out = usb_find_ep(LIBUSB_ENDPOINT_OUT, LIBUSB_CLASS_VENDOR_SPEC, 93, 1);
 
-  log_debug("EP(IN):  " << endpoint_in);
-  log_debug("EP(OUT): " << endpoint_out);
+  log_debug("EP(IN):  {}", endpoint_in);
+  log_debug("EP(OUT): {}", endpoint_out);
 
   usb_claim_interface(0, try_detach);
   usb_submit_read(endpoint_in, 32);
@@ -114,7 +114,7 @@ Xbox360Controller::parse(const uint8_t* data, int len, ControllerMessage* msg_ou
   }
   else if (len == 3 && data[0] == 0x01 && data[1] == 0x03)
   {
-    log_debug("Xbox360Controller: LED Status: " << int(data[2]));
+    log_debug("Xbox360Controller: LED Status: {}", int(data[2]));
   }
   else if (len == 3 && data[0] == 0x03 && data[1] == 0x03)
   {
@@ -122,7 +122,7 @@ Xbox360Controller::parse(const uint8_t* data, int len, ControllerMessage* msg_ou
     // data[2] == 0x01 unknown, but rumble works
     // data[2] == 0x02 unknown, but rumble works
     // data[2] == 0x03 is default with rumble enabled
-    log_info("rumble status: " << int(data[2]));
+    log_info("rumble status: {}", int(data[2]));
   }
   else if (len == 3 && data[0] == 0x08 && data[1] == 0x03)
   {
@@ -146,7 +146,7 @@ Xbox360Controller::parse(const uint8_t* data, int len, ControllerMessage* msg_ou
     }
     else
     {
-      log_info("peripheral: unknown: " << int(data[2]));
+      log_info("peripheral: unknown: {}", int(data[2]));
     }
   }
   else if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
@@ -192,7 +192,7 @@ Xbox360Controller::parse(const uint8_t* data, int len, ControllerMessage* msg_ou
   }
   else
   {
-    log_debug("unknown: " << raw2str(data, len));
+    log_debug("unknown: {}", raw2str(data, len));
   }
 
   return false;

@@ -18,11 +18,12 @@
 
 #include "xboxdrv_g_controller.hpp"
 
+#include <logmich/log.hpp>
+
 #include "controller.hpp"
 #include "controller_slot.hpp"
 #include "controller_thread.hpp"
 #include "message_processor.hpp"
-#include "log.hpp"
 
 #pragma GCC diagnostic ignored "-Wcast-qual"
 
@@ -72,7 +73,7 @@ xboxdrv_g_controller_new(ControllerSlot* controller)
 gboolean
 xboxdrv_g_controller_set_led(XboxdrvGController* self, int status, GError** error)
 {
-  log_info("D-Bus: xboxdrv_g_controller_set_led(" << self << ", " << status << ")");
+  log_info("D-Bus: xboxdrv_g_controller_set_led({}, {})", static_cast<void*>(self), status);
 
   if (self->controller &&
       self->controller->get_controller())
@@ -91,7 +92,7 @@ xboxdrv_g_controller_set_led(XboxdrvGController* self, int status, GError** erro
 gboolean
 xboxdrv_g_controller_set_rumble(XboxdrvGController* self, int strong, int weak, GError** error)
 {
-  log_info("D-Bus: xboxdrv_g_controller_set_rumble(" << self << ", " << strong << ", " << weak << ")");
+  log_info("D-Bus: xboxdrv_g_controller_set_rumble({}, {}, {})", static_cast<void*>(self), strong, weak);
 
   if (self->controller &&
       self->controller->get_controller())
@@ -111,7 +112,7 @@ xboxdrv_g_controller_set_rumble(XboxdrvGController* self, int strong, int weak, 
 gboolean
 xboxdrv_g_controller_set_config(XboxdrvGController* self, int config_num, GError** error)
 {
-  log_info("D-Bus: xboxdrv_g_controller_set_config(" << self << ", " << config_num << ")");
+  log_info("D-Bus: xboxdrv_g_controller_set_config({}, {})", static_cast<void*>(self), config_num);
 
   if (self->controller &&
       self->controller->get_thread() &&

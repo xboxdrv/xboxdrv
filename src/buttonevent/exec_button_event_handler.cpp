@@ -24,7 +24,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "log.hpp"
+#include <logmich/log.hpp>
 #include "util/string.hpp"
 
 ExecButtonEventHandler*
@@ -63,7 +63,7 @@ ExecButtonEventHandler::send(bool value)
 
       if (execvp(m_args[0].c_str(), argv) == -1)
       {
-        log_error("exec failed: " << strerror(errno));
+        log_error("exec failed: {}", strerror(errno));
         _exit(EXIT_FAILURE);
       }
     }

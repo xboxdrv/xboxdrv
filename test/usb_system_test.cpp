@@ -21,8 +21,9 @@
 #include <glib.h>
 #include <stdexcept>
 
+#include <logmich/log.hpp>
+
 #include "controller_message.hpp"
-#include "log.hpp"
 #include "raise_exception.hpp"
 #include "usb_gsource.hpp"
 #include "usb_helper.hpp"
@@ -42,7 +43,7 @@ libusb_device* get_controller_dev()
     int ret = libusb_get_device_descriptor(dev, &desc);
     if (ret != LIBUSB_SUCCESS)
     {
-      log_warn("libusb_get_device_descriptor() failed: " << usb_strerror(ret));
+      log_warn("libusb_get_device_descriptor() failed: {}", usb_strerror(ret));
     }
     else
     {
@@ -67,7 +68,7 @@ void process_msg(const ControllerMessage& msg)
 
 int main()
 {
-  g_logger.set_log_level(Logger::kDebug);
+  logmich::g_logger.set_log_level(logmich::LogLevel::DEBUG);
 
   //g_type_init();
 

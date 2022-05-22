@@ -19,8 +19,7 @@
 #include "message_processor.hpp"
 
 #include <uinpp/uinput.hpp>
-
-#include "log.hpp"
+#include <logmich/log.hpp>
 
 MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config,
                                    const ControllerMessageDescriptor& desc,
@@ -88,7 +87,7 @@ MessageProcessor::send(const ControllerMessage& msg_in,
         // switch to the next input mapping
         m_config->next_config();
 
-        log_info("switched to config: " << m_config->get_current_config());
+        log_info("switched to config: {}", m_config->get_current_config());
       }
     }
 
@@ -138,7 +137,7 @@ MessageProcessor::set_config(int num)
 
     m_config->set_current_config(num);
 
-    log_info("switched to config: " << m_config->get_current_config());
+    log_info("switched to config: {}", m_config->get_current_config());
   }
 }
 

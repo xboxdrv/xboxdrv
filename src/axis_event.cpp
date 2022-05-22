@@ -20,8 +20,9 @@
 
 #include <math.h>
 
+#include <logmich/log.hpp>
+
 #include "evdev_helper.hpp"
-#include "log.hpp"
 #include "raise_exception.hpp"
 
 AxisEvent::AxisEvent(AxisEventHandler* handler) :

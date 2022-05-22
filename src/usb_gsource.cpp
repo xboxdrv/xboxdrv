@@ -23,7 +23,8 @@
 #include <libusb.h>
 #include <stdlib.h>
 
-#include "log.hpp"
+#include <logmich/log.hpp>
+
 #include "usb_helper.hpp"
 
 USBGSource::USBGSource() :
@@ -131,7 +132,7 @@ USBGSource::on_source_prepare(GSource* source, gint* timeout)
   }
   else
   {
-    log_error("libusb_get_next_timeout() failed: " << usb_strerror(ret));
+    log_error("libusb_get_next_timeout() failed: {}", usb_strerror(ret));
     *timeout = -1;
   }
 
@@ -148,12 +149,12 @@ USBGSource::on_source_check(GSource* source)
   {
     if (false)
     {
-      log_debug("GSource GPollFD: " << (*i)->fd);
-      log_debug("REvents: G_IO_OUT: " << ((*i)->revents & G_IO_OUT));
-      log_debug("         G_IO_IN:  " << ((*i)->revents & G_IO_IN));
-      log_debug("         G_IO_PRI: " << ((*i)->revents & G_IO_PRI));
-      log_debug("         G_IO_HUP: " << ((*i)->revents & G_IO_HUP));
-      log_debug("         G_IO_ERR: " << ((*i)->revents & G_IO_ERR));
+      log_debug("GSource GPollFD: {}", (*i)->fd);
+      log_debug("REvents: G_IO_OUT: {}", ((*i)->revents & G_IO_OUT));
+      log_debug("         G_IO_IN:  {}", ((*i)->revents & G_IO_IN));
+      log_debug("         G_IO_PRI: {}", ((*i)->revents & G_IO_PRI));
+      log_debug("         G_IO_HUP: {}", ((*i)->revents & G_IO_HUP));
+      log_debug("         G_IO_ERR: {}", ((*i)->revents & G_IO_ERR));
     }
 
     if ((*i)->revents)

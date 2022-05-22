@@ -18,9 +18,10 @@
 
 #include "axis_map.hpp"
 
+#include <logmich/log.hpp>
+
 #include "axis_event_factory.hpp"
 #include "controller_message_descriptor.hpp"
-#include "log.hpp"
 
 AxisMap::AxisMap(const AxisMapOptions& opts, UInput& uinput, int slot, bool extra_devices) :
   m_mappings(),
@@ -66,7 +67,7 @@ AxisMap::init(const ControllerMessageDescriptor& desc)
     }
     catch(const std::exception& err)
     {
-      log_warn(err.what() << ": " << it->axis);
+      log_warn("{}: {}", err.what(), it->axis);
     }
   }
 

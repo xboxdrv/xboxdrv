@@ -18,7 +18,7 @@
 
 #include "compat_modifier.hpp"
 
-#include "log.hpp"
+#include <logmich/log.hpp>
 
 CompatModifier::CompatModifier() :
   m_dpad(false),
@@ -38,7 +38,7 @@ CompatModifier::CompatModifier() :
 void
 CompatModifier::init(ControllerMessageDescriptor& desc)
 {
-  log_tmp("CompatModifier");
+  log_none("CompatModifier");
 
 #if 0
   // have a dpad, but no dpad axis

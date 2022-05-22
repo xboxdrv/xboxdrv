@@ -22,9 +22,10 @@
 #include <functional>
 #include <glib.h>
 
+#include <logmich/log.hpp>
+
 #include "controller.hpp"
 #include "controller_slot_config.hpp"
-#include "log.hpp"
 #include "message_processor.hpp"
 
 using namespace std::placeholders;

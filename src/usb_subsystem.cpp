@@ -150,7 +150,7 @@ USBSubsystem::find_controller_by_id(int id, int vendor_id, int product_id, libus
     int ret = libusb_get_device_descriptor(dev, &desc);
     if (ret != LIBUSB_SUCCESS)
     {
-      log_warn("libusb_get_device_descriptor() failed: " << usb_strerror(ret));
+      log_warn("libusb_get_device_descriptor() failed: {}", usb_strerror(ret));
     }
     else
     {
@@ -192,7 +192,7 @@ USBSubsystem::find_xbox360_controller(int id, libusb_device** xbox_device, XPadD
     int ret = libusb_get_device_descriptor(dev, &desc);
     if (ret != LIBUSB_SUCCESS)
     {
-      log_warn("libusb_get_device_descriptor() failed: " << usb_strerror(ret));
+      log_warn("libusb_get_device_descriptor() failed: {}", usb_strerror(ret));
     }
     else
     {

@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-#include "log.hpp"
+#include <logmich/log.hpp>
 #include "util/string.hpp"
 
 HamaCruxNames::HamaCruxNames(ControllerMessageDescriptor& desc) :
@@ -187,7 +187,7 @@ HamaCruxController::parse(const uint8_t* data, int len, ControllerMessage* msg)
           break;
 
         default:
-          log_error("unhandled scancode: " << static_cast<int>(scancode));
+          log_error("unhandled scancode: {}", static_cast<int>(scancode));
           break;
       }
     }

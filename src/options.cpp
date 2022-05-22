@@ -219,13 +219,13 @@ Options::next_config()
 void
 Options::set_verbose()
 {
-  g_logger.incr_log_level(Logger::kInfo);
+  logmich::g_logger.incr_log_level(logmich::LogLevel::INFO);
 }
 
 void
 Options::set_debug()
 {
-  g_logger.incr_log_level(Logger::kDebug);
+  logmich::g_logger.incr_log_level(logmich::LogLevel::DEBUG);
 }
 
 void

@@ -20,7 +20,7 @@
 
 #include <functional>
 
-#include "log.hpp"
+#include <logmich/log.hpp>
 
 Controller::Controller() :
   m_msg_cb(),
@@ -98,7 +98,7 @@ Controller::set_active(bool v)
 {
   if (m_is_active != v)
   {
-    log_debug("activation status: " << v << " " << m_activation_cb.target<void*>());
+    log_debug("activation status: {} {}", v, static_cast<void*>(m_activation_cb.target<void*>()));
     m_is_active = v;
     if (m_activation_cb)
     {

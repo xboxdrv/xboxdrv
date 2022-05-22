@@ -40,8 +40,7 @@ public:
   {
     const char* str = udev_device_get_property_value(device, m_name.c_str());
 
-    log_debug("matching property '" << m_name << "' with value '" << (str?str:"(null)") <<
-              "' against '" << m_value);
+    log_debug("matching property '{}' with value '{}' against '{}'", m_name, (str ? str : "(null)"), m_value);
 
     if (!str)
     {

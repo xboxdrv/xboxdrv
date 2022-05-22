@@ -23,7 +23,7 @@
 #include <fmt/format.h>
 
 #include "controller_message.hpp"
-#include "log.hpp"
+#include <logmich/log.hpp>
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
 #include "xboxmsg.hpp"
@@ -94,7 +94,7 @@ USBController::~USBController()
     int ret = libusb_handle_events(NULL);
     if (ret != 0)
     {
-      log_error("libusb_handle_events() failure: " << ret);
+      log_error("libusb_handle_events() failure: {}", ret);
     }
   }
 
@@ -235,7 +235,7 @@ USBController::on_write_data(libusb_transfer* transfer)
   }
   else
   {
-    log_error("USB write failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
+    log_error("USB write failure: {}: {}", transfer->length, usb_transfer_strerror(transfer->status));
   }
 
   m_transfers.erase(transfer);
@@ -260,7 +260,7 @@ USBController::on_read_data(libusb_transfer* transfer)
     ret = libusb_submit_transfer(transfer);
     if (ret != LIBUSB_SUCCESS) // could also check for LIBUSB_ERROR_NO_DEVICE
     {
-      log_error("failed to resubmit USB transfer: " << usb_strerror(ret));
+      log_error("failed to resubmit USB transfer: {}", usb_strerror(ret));
       m_transfers.erase(transfer);
       libusb_free_transfer(transfer);
       send_disconnect();
@@ -279,7 +279,7 @@ USBController::on_read_data(libusb_transfer* transfer)
   }
   else
   {
-    log_error("USB read failure: " << transfer->length << ": " << usb_transfer_strerror(transfer->status));
+    log_error("USB read failure: {}: {}", transfer->length, usb_transfer_strerror(transfer->status));
     m_transfers.erase(transfer);
     libusb_free_transfer(transfer);
   }
@@ -326,14 +326,15 @@ USBController::usb_find_ep(int direction, uint8_t if_class, uint8_t if_subclass,
           altsetting != interface->altsetting + interface->num_altsetting;
           ++altsetting)
       {
-        log_debug("Interface: " << static_cast<int>(altsetting->bInterfaceNumber));
+        log_debug("Interface: {}", static_cast<int>(altsetting->bInterfaceNumber));
 
         for(const libusb_endpoint_descriptor* endpoint = altsetting->endpoint;
             endpoint != altsetting->endpoint + altsetting->bNumEndpoints;
             ++endpoint)
         {
-          log_debug("    Endpoint: " << int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK) <<
-                    "(" << ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? "IN" : "OUT") << ")");
+          log_debug("    Endpoint: {} ({})",
+                    int(endpoint->bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK),
+                    ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? "IN" : "OUT"));
 
           if ((endpoint->bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) == direction &&
               altsetting->bInterfaceClass    == if_class    &&

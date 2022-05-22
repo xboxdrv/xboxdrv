@@ -1238,7 +1238,7 @@ void
 CommandLineParser::read_buildin_config_file(const std::string& filename,
                                             const char* data, unsigned int data_len)
 {
-  log_info("reading 'buildin://" << filename << "'");
+  log_info("reading 'buildin://{}'", filename);
 
   std::string str(data, data_len);
   std::istringstream in(str);
@@ -1257,7 +1257,7 @@ CommandLineParser::read_buildin_config_file(const std::string& filename,
 void
 CommandLineParser::read_config_file(const std::string& filename)
 {
-  log_info("reading '" << filename << "'");
+  log_info("reading '{}'", filename);
 
   std::ifstream in(filename.c_str());
   if (!in)

@@ -29,7 +29,7 @@
 
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
-#include "log.hpp"
+#include <logmich/log.hpp>
 #include "raise_exception.hpp"
 
 MacroButtonEventHandler*

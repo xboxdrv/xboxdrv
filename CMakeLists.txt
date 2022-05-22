@@ -113,6 +113,11 @@ function(build_dependencies)
     add_subdirectory(external/argparser/)
   endif()
 
+  find_package(logmich)
+  if(NOT TARGET logmich::logmich)
+    add_subdirectory(external/logmich/)
+  endif()
+
   find_package(uinpp)
   if(NOT TARGET uinpp::uinpp)
     add_subdirectory(external/uinpp/)
@@ -132,7 +137,7 @@ target_compile_definitions(libxboxdrv PUBLIC -DPACKAGE_VERSION="${XBOXDRV_VERSIO
 target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 
 target_link_libraries(libxboxdrv PUBLIC
-  argparser
+  argparser::argparser
   uinpp::uinpp
   fmt::fmt
   PkgConfig::DBUSGLIB

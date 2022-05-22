@@ -18,7 +18,7 @@
 
 #include "symbols/environment.hpp"
 
-#include "log.hpp"
+#include <logmich/log.hpp>
 
 Environment::Environment() :
   m_namespaces()
@@ -42,7 +42,7 @@ Environment::lookup_namespace(const std::string& ns)
 SymbolPtr
 Environment::lookup_symbol(const std::string& ns, const std::string& symbol)
 {
-  log_debug(ns << " " << symbol);
+  log_debug("{} {}", ns, symbol);
 
   Namespaces::iterator it = m_namespaces.find(ns);
   if (it == m_namespaces.end())

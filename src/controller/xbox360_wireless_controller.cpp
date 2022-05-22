@@ -127,8 +127,8 @@ Xbox360WirelessController::parse(const uint8_t* data, int len, ControllerMessage
                                int(data[12]),
                                int(data[13]));
         m_battery_status = data[17];
-        log_info("Serial: " << m_serial);
-        log_info("Battery Status: " << m_battery_status);
+        log_info("Serial: {}", m_serial);
+        log_info("Battery Status: {}", m_battery_status);
       }
       else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
       { // Event message
@@ -168,7 +168,7 @@ Xbox360WirelessController::parse(const uint8_t* data, int len, ControllerMessage
       else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
       { // Battery status
         m_battery_status = data[4];
-        log_info("battery status: " << m_battery_status);
+        log_info("battery status: {}", m_battery_status);
       }
       else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0xf0)
       {
@@ -177,12 +177,12 @@ Xbox360WirelessController::parse(const uint8_t* data, int len, ControllerMessage
       }
       else
       {
-        log_debug("unknown: " << raw2str(data, len));
+        log_debug("unknown: {}", raw2str(data, len));
       }
     }
     else
     {
-      log_debug("unknown: " << raw2str(data, len));
+      log_debug("unknown: {}", raw2str(data, len));
     }
   }
 

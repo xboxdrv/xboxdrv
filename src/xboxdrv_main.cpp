@@ -238,7 +238,7 @@ XboxdrvMain::run()
 void
 XboxdrvMain::on_child_watch(GPid pid, gint status)
 {
-  log_info("child processes exited with status: " << status);
+  log_info("child processes exited with status: {}", status);
   shutdown();
 }
 

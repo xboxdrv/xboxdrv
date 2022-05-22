@@ -109,7 +109,7 @@ XboxOneWirelessController::parse(const uint8_t* data, int len, ControllerMessage
     }
     else
     {
-      log_debug("unknown: " << raw2str(data, len));
+      log_debug("unknown: {}", raw2str(data, len));
     }
   }
   else if (len == 18 && data[0] == 0x20 && data[1] == 0x00)
@@ -146,7 +146,7 @@ XboxOneWirelessController::parse(const uint8_t* data, int len, ControllerMessage
   }
   else
   {
-    log_debug("unknown: " << raw2str(data, len));
+    log_debug("unknown: {}", raw2str(data, len));
   }
 
   return false;

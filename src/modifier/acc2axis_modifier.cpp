@@ -21,7 +21,7 @@
 #include <stdexcept>
 #include <math.h>
 
-#include "log.hpp"
+#include <logmich/log.hpp>
 #include "raise_exception.hpp"
 #include "util/math.hpp"
 #include "util/string.hpp"

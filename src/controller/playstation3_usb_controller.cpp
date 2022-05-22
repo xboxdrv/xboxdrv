@@ -23,7 +23,7 @@
 #include <string.h>
 
 #include "controller_message.hpp"
-#include "log.hpp"
+#include <logmich/log.hpp>
 #include "unpack.hpp"
 #include "usb_helper.hpp"
 #include "xboxmsg.hpp"

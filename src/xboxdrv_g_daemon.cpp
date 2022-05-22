@@ -18,7 +18,8 @@
 
 #include "xboxdrv_g_daemon.hpp"
 
-#include "log.hpp"
+#include <logmich/log.hpp>
+
 #include "xboxdrv_daemon.hpp"
 
 #pragma GCC diagnostic ignored "-Wcast-qual"
@@ -60,7 +61,7 @@ xboxdrv_g_daemon_new(XboxdrvDaemon* daemon)
 gboolean
 xboxdrv_g_daemon_status(XboxdrvGDaemon* self, gchar** ret, GError** error)
 {
-  log_info("D-Bus: xboxdrv_g_daemon_status(" << self << ")");
+  log_info("D-Bus: xboxdrv_g_daemon_status({})", static_cast<void*>(self));
 
   *ret = g_strdup(self->daemon->status().c_str());
   return TRUE;
@@ -68,7 +69,7 @@ xboxdrv_g_daemon_status(XboxdrvGDaemon* self, gchar** ret, GError** error)
 
 gboolean xboxdrv_g_daemon_shutdown(XboxdrvGDaemon* self, GError** error)
 {
-  log_info("D-Bus: xboxdrv_g_daemon_shutdown(" << self << ")");
+  log_info("D-Bus: xboxdrv_g_daemon_shutdown({})", static_cast<void*>(self));
 
   self->daemon->shutdown();
   return TRUE;

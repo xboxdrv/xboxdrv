@@ -27,7 +27,7 @@
 
 #include "controller_message.hpp"
 #include "evdev_helper.hpp"
-#include "log.hpp"
+#include <logmich/log.hpp>
 
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
@@ -65,7 +65,7 @@ EvdevController::EvdevController(const std::string& filename,
     char c_name[1024] = "unknown";
     ioctl(m_fd, EVIOCGNAME(sizeof(c_name)), c_name);
     m_name = c_name;
-    log_debug("name: " << m_name);
+    log_debug("name: {}", m_name);
   }
 
   if (m_grab)
@@ -123,7 +123,7 @@ EvdevController::EvdevController(const std::string& filename,
     {
       if (test_bit(i, rel_bit))
       {
-        log_debug("rel: " << rel2str(i));
+        log_debug("rel: {}", rel2str(i));
 
         std::map<int, std::string>::const_iterator it = relmap.find(i);
         if (it == relmap.end())
@@ -143,7 +143,7 @@ EvdevController::EvdevController(const std::string& filename,
     {
       if (test_bit(i, key_bit))
       {
-        log_debug("key: " << key2str(i));
+        log_debug("key: {}", key2str(i));
 
         std::map<int, std::string>::const_iterator it = keymap.find(i);
         if (it == keymap.end())
@@ -226,7 +226,7 @@ EvdevController::parse(const struct input_event& ev, ControllerMessage& msg_inou
         break;
 
       default:
-        log_info("unknown: " << ev.type << " " << ev.code << " " << ev.value);
+        log_info("unknown: {} {} {}", ev.type, ev.code, ev.value);
         break;
     }
   }

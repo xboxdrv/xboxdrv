@@ -19,11 +19,13 @@
 #ifndef HEADER_XBOXDRV_RAISE_EXCEPTION_HPP
 #define HEADER_XBOXDRV_RAISE_EXCEPTION_HPP
 
-#include "log.hpp"
+#include <sstream>
+
+#include <logmich/log.hpp>
 
 #define raise_exception(type, expr) do {  \
   std::ostringstream b42465a70169; \
-  b42465a70169 << log_pretty_print(__PRETTY_FUNCTION__) << ": " << expr; \
+  b42465a70169 << logmich::detail::log_pretty_print(__PRETTY_FUNCTION__) << ": " << expr; \
   throw type(b42465a70169.str()); \
 } while(false)
 

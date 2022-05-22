@@ -20,9 +20,10 @@
 
 #include <linux/input.h>
 
+#include <logmich/log.hpp>
+
 #include "util/math.hpp"
 #include "util/string.hpp"
-#include "log.hpp"
 
 EvDevRelEnum evdev_rel_names;
 EvDevKeyEnum evdev_key_names;
@@ -94,7 +95,7 @@ X11KeysymEnum::process_keymap(Display* dpy)
       const char* keysym_str = XKeysymToString(keysym);
       if (!keysym_str)
       {
-        log_warn("couldn't convert keysym " << keysym << " to string");
+        log_warn("couldn't convert keysym {} to string", keysym);
       }
       else
       {

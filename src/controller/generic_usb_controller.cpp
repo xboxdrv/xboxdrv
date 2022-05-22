@@ -73,7 +73,7 @@ GenericUSBController::GenericUSBController(libusb_device* dev,
     {
       uint16_t wMaxPacketSize = ep->wMaxPacketSize;
 
-      log_debug("wMaxPacketSize: " << wMaxPacketSize);
+      log_debug("wMaxPacketSize: {}", wMaxPacketSize);
       usb_claim_interface(m_interface, try_detach);
       usb_submit_read(m_endpoint, wMaxPacketSize);
     }

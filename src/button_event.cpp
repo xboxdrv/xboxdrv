@@ -21,8 +21,9 @@
 #include <errno.h>
 #include <fstream>
 
+#include <logmich/log.hpp>
+
 #include "evdev_helper.hpp"
-#include "log.hpp"
 #include "path.hpp"
 
 ButtonEvent::ButtonEvent(ButtonEventHandler* handler) :

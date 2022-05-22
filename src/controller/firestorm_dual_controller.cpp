@@ -22,7 +22,7 @@
 
 #include "controller_message.hpp"
 #include "util/string.hpp"
-#include "log.hpp"
+#include <logmich/log.hpp>
 #include "unpack.hpp"
 #include "usb_helper.hpp"
 
