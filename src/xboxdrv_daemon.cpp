@@ -291,6 +291,8 @@ XboxdrvDaemon::init_uinput()
     // After all the ControllerConfig registered their events, finish up
     // the device creation
     m_uinput->finish();
+
+    m_glib_uinput = std::make_unique<GlibUInput>(*m_uinput);
   }
 }
 

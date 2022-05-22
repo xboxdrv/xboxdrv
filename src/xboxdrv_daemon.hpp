@@ -24,6 +24,8 @@ extern "C" {
 }
 #include <glib.h>
 
+#include <uinpp/glib_uinput.hpp>
+
 #include "controller_slot_config.hpp"
 #include "controller_slot_ptr.hpp"
 #include "controller_ptr.hpp"
@@ -51,6 +53,7 @@ private:
   Controllers m_inactive_controllers;
 
   std::unique_ptr<UInput> m_uinput;
+  std::unique_ptr<GlibUInput> m_glib_uinput;
 
 private:
   static void on_sigint(int);

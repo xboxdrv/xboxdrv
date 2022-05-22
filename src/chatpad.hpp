@@ -24,6 +24,8 @@
 #include <libusb.h>
 #include <memory>
 
+#include <uinpp/glib_uinput.hpp>
+
 class LinuxUinput;
 
 enum {
@@ -155,6 +157,7 @@ private:
 
   bool m_quit_thread;
   std::unique_ptr<LinuxUinput> m_uinput;
+  std::unique_ptr<GlibLinuxUinput> m_glib_uinput;
   std::array<uint16_t, 256> m_keymap;
   std::array<bool, 256> m_state;
   unsigned int m_led_state;

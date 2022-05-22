@@ -52,6 +52,7 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_debug(debug),
   m_quit_thread(false),
   m_uinput(),
+  m_glib_uinput(),
   m_keymap(),
   m_state(),
   m_led_state(0),
@@ -141,6 +142,9 @@ Chatpad::~Chatpad()
     libusb_cancel_transfer(m_read_transfer);
     libusb_free_transfer(m_read_transfer);
   }
+
+  m_glib_uinput.reset();
+  m_uinput.reset();
 }
 
 void
@@ -153,7 +157,7 @@ Chatpad::init_uinput()
   usbid.product = 0;
   usbid.version = 0;
 
-  m_uinput.reset(new LinuxUinput(LinuxUinput::kGenericDevice, "Xbox360 Chatpad", usbid));
+  m_uinput = std::make_unique<LinuxUinput>(LinuxUinput::kGenericDevice, "Xbox360 Chatpad", usbid);
 
   for(int i = 0; i < 256; ++i)
   {
@@ -163,6 +167,9 @@ Chatpad::init_uinput()
     }
   }
   m_uinput->finish();
+
+  // register glib callbacks
+  m_glib_uinput = std::make_unique<GlibLinuxUinput>(*m_uinput);
 }
 
 void
