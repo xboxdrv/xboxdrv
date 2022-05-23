@@ -33,7 +33,7 @@ private:
   EventEmitter m_emitter;
 
 public:
-  ControllerConfig(uinpp::UInput& uinput, int slot, bool extra_devices,
+  ControllerConfig(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                    const ControllerOptions& opts);
 
   std::vector<ModifierPtr>& get_modifier();

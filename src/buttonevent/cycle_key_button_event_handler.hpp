@@ -23,7 +23,7 @@
 
 #include <map>
 
-#include <uinpp/ui_event_sequence.hpp>
+#include <uinpp/event_sequence.hpp>
 
 #include "button_event.hpp"
 
@@ -33,9 +33,9 @@ private:
   static std::map<std::string, CycleKeySequencePtr> s_lookup_table;
 
 public:
-  static CycleKeyButtonEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+  static CycleKeyButtonEventHandler* from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                                  const std::string& str, bool wrap_around);
-  static CycleKeyButtonEventHandler* from_string_named(uinpp::UInput& uinput, int slot, bool extra_devices,
+  static CycleKeyButtonEventHandler* from_string_named(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                                        const std::string& str, bool wrap_around);
 
   /**
@@ -47,7 +47,7 @@ public:
       press: a bool, true if a keypress is send,
       false when only the current key should change
   */
-  static CycleKeyButtonEventHandler* from_string_ref(uinpp::UInput& uinput, int slot, bool extra_devices,
+  static CycleKeyButtonEventHandler* from_string_ref(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                                      const std::string& value);
 
 
@@ -62,7 +62,7 @@ private:
   bool m_send_press;
 
 private:
-  CycleKeyButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+  CycleKeyButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                              CycleKeySequencePtr sequence, Direction direction, bool send_press);
 
 public:

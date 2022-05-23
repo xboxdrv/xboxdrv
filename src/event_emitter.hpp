@@ -32,13 +32,13 @@ class ControllerMessage;
 class EventEmitter
 {
 private:
-  uinpp::UInput& m_uinput;
+  uinpp::MultiDevice& m_uinput;
 
   ButtonMap m_btn_map;
   AxisMap   m_abs_map;
 
 public:
-  EventEmitter(uinpp::UInput& uinput, int slot, bool extra_devices, const UInputOptions& opts);
+  EventEmitter(uinpp::MultiDevice& uinput, int slot, bool extra_devices, const UInputOptions& opts);
 
   void init(const ControllerMessageDescriptor& desc);
   void send(const ControllerMessage& msg);

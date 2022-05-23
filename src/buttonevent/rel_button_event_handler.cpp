@@ -18,13 +18,13 @@
 
 #include "buttonevent/rel_button_event_handler.hpp"
 
-#include <uinpp/uinput.hpp>
+#include <uinpp/multi_device.hpp>
 
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
 
 RelButtonEventHandler*
-RelButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+RelButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                    const std::string& str)
 {
   std::unique_ptr<RelButtonEventHandler> ev;
@@ -54,8 +54,8 @@ RelButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_d
   return ev.release();
 }
 
-RelButtonEventHandler::RelButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
-                                             const uinpp::UIEvent& code) :
+RelButtonEventHandler::RelButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
+                                             const uinpp::Event& code) :
   m_code(code),
   m_value(3),
   m_repeat(100),

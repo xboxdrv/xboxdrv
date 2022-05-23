@@ -27,7 +27,8 @@
 #include <fmt/format.h>
 #include <functional>
 
-#include <uinpp/uinput.hpp>
+#include <uinpp/multi_device.hpp>
+#include <uinpp/linux.hpp>
 
 #include "controller/evdev_controller.hpp"
 #include "controller/wiimote_controller.hpp"
@@ -131,8 +132,8 @@ XboxdrvMain::create_controller()
 void
 XboxdrvMain::init_controller(const ControllerPtr& controller)
 {
-  m_jsdev_number = uinpp::UInput::find_jsdev_number();
-  m_evdev_number = uinpp::UInput::find_evdev_number();
+  m_jsdev_number = uinpp::find_jsdev_number();
+  m_evdev_number = uinpp::find_evdev_number();
 
   if (m_opts.get_controller_slot().get_led_status() == -1)
   {
@@ -180,7 +181,7 @@ XboxdrvMain::run()
     else
     {
       log_debug("creating UInput");
-      m_uinput.reset(new uinpp::UInput);
+      m_uinput = std::make_unique<uinpp::MultiDevice>();
       m_uinput->set_extra_events(m_opts.extra_events);
       m_uinput->set_device_names(m_opts.uinput_device_names);
       m_uinput->set_device_usbids(m_opts.uinput_device_usbids);

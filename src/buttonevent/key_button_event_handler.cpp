@@ -20,19 +20,19 @@
 
 #include <linux/input.h>
 
-#include <uinpp/uinput.hpp>
+#include <uinpp/multi_device.hpp>
 #include <uinpp/from.hpp>
 
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
 
 KeyButtonEventHandler*
-KeyButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+KeyButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                    const std::string& str)
 {
   //std::cout << " KeyButtonEventHandler::from_string: " << str << std::endl;
-  uinpp::UIEventSequence codes;
-  uinpp::UIEventSequence secondary_codes;
+  uinpp::EventSequence codes;
+  uinpp::EventSequence secondary_codes;
   int hold_threshold = 0;
 
   auto tokens = string_split(str, ":");
@@ -43,13 +43,13 @@ KeyButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_d
     {
       case 0:
         {
-          codes = uinpp::UIEventSequence_from_string(*i);
+          codes = uinpp::EventSequence_from_string(*i);
         }
         break;
 
       case 1:
         {
-          secondary_codes = uinpp::UIEventSequence_from_string(*i);
+          secondary_codes = uinpp::EventSequence_from_string(*i);
           hold_threshold = 250;
         }
         break;
@@ -74,9 +74,9 @@ KeyButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_d
                                    codes, secondary_codes, hold_threshold);
 }
 
-KeyButtonEventHandler::KeyButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
-                                             const uinpp::UIEventSequence& codes,
-                                             const uinpp::UIEventSequence& secondary_codes,
+KeyButtonEventHandler::KeyButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
+                                             const uinpp::EventSequence& codes,
+                                             const uinpp::EventSequence& secondary_codes,
                                              int hold_threshold) :
   m_state(false),
   m_codes(codes),

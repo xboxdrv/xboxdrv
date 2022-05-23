@@ -25,7 +25,8 @@
 #include <iostream>
 #include <iterator>
 
-#include <uinpp/ui_event.hpp>
+#include <uinpp/event.hpp>
+#include <uinpp/parse.hpp>
 
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
@@ -1063,14 +1064,14 @@ CommandLineParser::set_modifier(const std::string& name, const std::string& valu
 void
 CommandLineParser::set_device_usbid(const std::string& name, const std::string& value)
 {
-  uint32_t devid = uinpp::UInput::parse_device_id(name);
-  m_options->uinput_device_usbids[devid] = uinpp::UInput::parse_input_id(value);
+  uint32_t devid = uinpp::parse_device_id(name);
+  m_options->uinput_device_usbids[devid] = uinpp::parse_input_id(value);
 }
 
 void
 CommandLineParser::set_device_name(const std::string& name, const std::string& value)
 {
-  uint32_t devid = uinpp::UInput::parse_device_id(name);
+  uint32_t devid = uinpp::parse_device_id(name);
   m_options->uinput_device_names[devid] = value;
 }
 

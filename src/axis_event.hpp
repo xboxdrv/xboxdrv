@@ -21,7 +21,7 @@
 
 #include <memory>
 
-#include <uinpp/ui_event.hpp>
+#include <uinpp/event.hpp>
 
 #include "axis_filter.hpp"
 

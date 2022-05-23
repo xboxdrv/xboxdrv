@@ -20,6 +20,8 @@
 
 #include <stdexcept>
 
+#include <uinpp/parse.hpp>
+
 #include "raise_exception.hpp"
 
 ControllerSlotOptions::ControllerSlotOptions() :

@@ -18,7 +18,7 @@
 
 #include "message_processor.hpp"
 
-#include <uinpp/uinput.hpp>
+#include <uinpp/multi_device.hpp>
 #include <logmich/log.hpp>
 
 MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config,

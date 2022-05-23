@@ -20,7 +20,7 @@
 
 #include <stdexcept>
 
-#include <uinpp/ui_event_sequence.hpp>
+#include <uinpp/event_sequence.hpp>
 
 #include "util/string.hpp"
 #include "raise_exception.hpp"
@@ -53,7 +53,7 @@ direction_from_string(const std::string& value)
 } // namespace
 
 CycleKeyButtonEventHandler*
-CycleKeyButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+CycleKeyButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                         const std::string& value, bool wrap_around)
 {
   return from_string_named(uinput, slot, extra_devices,
@@ -61,7 +61,7 @@ CycleKeyButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool ex
 }
 
 CycleKeyButtonEventHandler*
-CycleKeyButtonEventHandler::from_string_named(uinpp::UInput& uinput, int slot, bool extra_devices,
+CycleKeyButtonEventHandler::from_string_named(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                               const std::string& value, bool wrap_around)
 {
   auto tokens = string_split(value, ":");
@@ -96,7 +96,7 @@ CycleKeyButtonEventHandler::from_string_named(uinpp::UInput& uinput, int slot, b
 }
 
 CycleKeyButtonEventHandler*
-CycleKeyButtonEventHandler::from_string_ref(uinpp::UInput& uinput, int slot, bool extra_devices,
+CycleKeyButtonEventHandler::from_string_ref(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                             const std::string& value)
 {
   auto args = string_split(value, ":");
@@ -138,7 +138,7 @@ CycleKeyButtonEventHandler::lookup(const std::string& name)
   }
 }
 
-CycleKeyButtonEventHandler::CycleKeyButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+CycleKeyButtonEventHandler::CycleKeyButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                                        CycleKeySequencePtr sequence,
                                                        Direction direction,
                                                        bool send_press) :

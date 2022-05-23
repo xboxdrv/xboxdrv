@@ -18,14 +18,14 @@
 
 #include "abs_axis_event_handler.hpp"
 
-#include <uinpp/uinput.hpp>
+#include <uinpp/multi_device.hpp>
 
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
 #include "raise_exception.hpp"
 
 AbsAxisEventHandler*
-AbsAxisEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+AbsAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                  const std::string& str)
 {
   auto tokens = string_split(str, ":");
@@ -36,7 +36,7 @@ AbsAxisEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_dev
   int flat = 0;
 
   int j = 0;
-  uinpp::UIEvent code = uinpp::UIEvent::invalid();
+  uinpp::Event code = uinpp::Event::invalid();
   for(auto i = tokens.begin(); i != tokens.end(); ++i, ++j)
   {
     switch(j)
@@ -77,8 +77,8 @@ AbsAxisEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_dev
   }
 }
 
-AbsAxisEventHandler::AbsAxisEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
-                                         const uinpp::UIEvent& code, int min, int max, int fuzz, int flat) :
+AbsAxisEventHandler::AbsAxisEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
+                                         const uinpp::Event& code, int min, int max, int fuzz, int flat) :
   m_code(code),
   m_min(min),
   m_max(max),

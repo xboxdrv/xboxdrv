@@ -37,7 +37,7 @@ private:
   Map m_map;
 
 public:
-  ButtonMap(const ButtonMapOptions& opts, uinpp::UInput& uinput, int slot, bool extra_devices);
+  ButtonMap(const ButtonMapOptions& opts, uinpp::MultiDevice& uinput, int slot, bool extra_devices);
 
   void init(const ControllerMessageDescriptor& desc);
 

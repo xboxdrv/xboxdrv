@@ -20,7 +20,7 @@
 
 #include <assert.h>
 
-#include <uinpp/linux_uinput.hpp>
+#include <uinpp/device.hpp>
 
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
@@ -157,7 +157,7 @@ Chatpad::init_uinput()
   usbid.product = 0;
   usbid.version = 0;
 
-  m_uinput = std::make_unique<uinpp::LinuxUinput>(uinpp::LinuxUinput::kGenericDevice, "Xbox360 Chatpad", usbid);
+  m_uinput = std::make_unique<uinpp::Device>(uinpp::DeviceType::GENERIC, "Xbox360 Chatpad", usbid);
 
   for(int i = 0; i < 256; ++i)
   {
@@ -169,7 +169,7 @@ Chatpad::init_uinput()
   m_uinput->finish();
 
   // register glib callbacks
-  m_glib_uinput = std::make_unique<uinpp::GlibLinuxUinput>(*m_uinput);
+  m_glib_uinput = std::make_unique<uinpp::GlibDevice>(*m_uinput);
 }
 
 void

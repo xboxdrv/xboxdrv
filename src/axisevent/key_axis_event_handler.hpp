@@ -21,18 +21,18 @@
 
 #include "axis_event.hpp"
 
-#include <uinpp/ui_event_sequence.hpp>
+#include <uinpp/event_sequence.hpp>
 
 class KeyAxisEventHandler : public AxisEventHandler
 {
 public:
-  static KeyAxisEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+  static KeyAxisEventHandler* from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                           const std::string& str);
 
 public:
-  KeyAxisEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
-                      uinpp::UIEventSequence up_codes,
-                      uinpp::UIEventSequence down_codes,
+  KeyAxisEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
+                      uinpp::EventSequence up_codes,
+                      uinpp::EventSequence down_codes,
                       float threshold);
 
   void send(int value, int min, int max);
@@ -47,8 +47,8 @@ private:
   int m_old_value;
 
   // Array is terminated by -1
-  uinpp::UIEventSequence m_up_codes;
-  uinpp::UIEventSequence m_down_codes;
+  uinpp::EventSequence m_up_codes;
+  uinpp::EventSequence m_down_codes;
   float m_threshold;
 };
 

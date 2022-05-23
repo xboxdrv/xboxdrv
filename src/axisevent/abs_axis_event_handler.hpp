@@ -21,17 +21,17 @@
 
 #include "axis_event.hpp"
 
-#include <uinpp/ui_event_emitter.hpp>
+#include <uinpp/event_emitter.hpp>
 
 class AbsAxisEventHandler : public AxisEventHandler
 {
 public:
-  static AbsAxisEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+  static AbsAxisEventHandler* from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                           const std::string& str);
 
 public:
-  AbsAxisEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
-                      const uinpp::UIEvent& code, int min, int max, int fuzz, int flat);
+  AbsAxisEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
+                      const uinpp::Event& code, int min, int max, int fuzz, int flat);
 
   void send(int value, int min, int max);
   void update(int msec_delta);
@@ -39,13 +39,13 @@ public:
   std::string str() const;
 
 private:
-  uinpp::UIEvent m_code;
+  uinpp::Event m_code;
   int m_min;
   int m_max;
   int m_fuzz;
   int m_flat;
 
-  uinpp::UIEventEmitter* m_abs_emitter;
+  uinpp::EventEmitter* m_abs_emitter;
 };
 
 #endif

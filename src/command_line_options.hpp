@@ -23,7 +23,7 @@
 
 #include <argparser/argparser.hpp>
 
-#include <uinpp/uinput.hpp>
+#include <uinpp/multi_device.hpp>
 
 #include "axis_map_option.hpp"
 #include "button_map_option.hpp"

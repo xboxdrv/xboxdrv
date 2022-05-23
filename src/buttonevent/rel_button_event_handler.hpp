@@ -21,18 +21,18 @@
 
 #include "button_event.hpp"
 
-#include <uinpp/ui_event.hpp>
-#include <uinpp/ui_event_emitter.hpp>
+#include <uinpp/event.hpp>
+#include <uinpp/event_emitter.hpp>
 
 class RelButtonEventHandler : public ButtonEventHandler
 {
 public:
-  static RelButtonEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+  static RelButtonEventHandler* from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                             const std::string& str);
 
 public:
-  RelButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
-                        const uinpp::UIEvent& code);
+  RelButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
+                        const uinpp::Event& code);
 
   void send(bool value);
   void update(int msec_delta) {}
@@ -40,12 +40,12 @@ public:
   std::string str() const;
 
 private:
-  uinpp::UIEvent m_code;
+  uinpp::Event m_code;
 
   int  m_value;
   int  m_repeat;
 
-  uinpp::UIEventEmitter* m_rel_emitter;
+  uinpp::EventEmitter* m_rel_emitter;
 };
 
 #endif

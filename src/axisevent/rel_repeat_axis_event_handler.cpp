@@ -21,14 +21,14 @@
 #include <math.h>
 #include <sstream>
 
-#include <uinpp/uinput.hpp>
+#include <uinpp/multi_device.hpp>
 
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
 #include "raise_exception.hpp"
 
 RelRepeatAxisEventHandler*
-RelRepeatAxisEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+RelRepeatAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                        const std::string& str)
 {
   // split string at ':'
@@ -47,8 +47,8 @@ RelRepeatAxisEventHandler::from_string(uinpp::UInput& uinput, int slot, bool ext
   }
 }
 
-RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
-                                                     const uinpp::UIEvent& code, int value, float repeat) :
+RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
+                                                     const uinpp::Event& code, int value, float repeat) :
   m_code(code),
   m_value(value),
   m_repeat(repeat),

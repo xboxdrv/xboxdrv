@@ -52,8 +52,8 @@ private:
   typedef std::vector<ControllerPtr> Controllers;
   Controllers m_inactive_controllers;
 
-  std::unique_ptr<uinpp::UInput> m_uinput;
-  std::unique_ptr<uinpp::GlibUInput> m_glib_uinput;
+  std::unique_ptr<uinpp::MultiDevice> m_uinput;
+  std::unique_ptr<uinpp::GlibMultiDevice> m_glib_uinput;
 
 private:
   static void on_sigint(int);

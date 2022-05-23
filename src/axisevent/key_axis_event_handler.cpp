@@ -18,8 +18,8 @@
 
 #include "key_axis_event_handler.hpp"
 
-#include <uinpp/uinput.hpp>
-#include <uinpp/ui_event_sequence.hpp>
+#include <uinpp/multi_device.hpp>
+#include <uinpp/event_sequence.hpp>
 #include <uinpp/from.hpp>
 
 #include "evdev_helper.hpp"
@@ -27,13 +27,13 @@
 #include "util/string.hpp"
 
 KeyAxisEventHandler*
-KeyAxisEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+KeyAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                  const std::string& str)
 {
   auto tokens = string_split(str, ":");
 
-  uinpp::UIEventSequence up_codes;
-  uinpp::UIEventSequence down_codes;
+  uinpp::EventSequence up_codes;
+  uinpp::EventSequence down_codes;
   float threshold = 0.25f;
 
   int j = 0;
@@ -43,7 +43,7 @@ KeyAxisEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_dev
     {
       case 0:
         {
-          up_codes = uinpp::UIEventSequence_from_string(*i);
+          up_codes = uinpp::EventSequence_from_string(*i);
         }
         break;
 
@@ -58,7 +58,7 @@ KeyAxisEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_dev
           }
           else
           {
-            down_codes = uinpp::UIEventSequence_from_string(*i);
+            down_codes = uinpp::EventSequence_from_string(*i);
           }
         }
         break;
@@ -82,9 +82,9 @@ KeyAxisEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_dev
 
 }
 
-KeyAxisEventHandler::KeyAxisEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
-                                         uinpp::UIEventSequence up_codes,
-                                         uinpp::UIEventSequence down_codes,
+KeyAxisEventHandler::KeyAxisEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
+                                         uinpp::EventSequence up_codes,
+                                         uinpp::EventSequence down_codes,
                                          float threshold) :
   m_old_value(0),
   m_up_codes(up_codes),

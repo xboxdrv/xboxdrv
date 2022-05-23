@@ -52,7 +52,7 @@ private:
   AxisMapping m_map;
 
 public:
-  AxisMap(const AxisMapOptions& opts, uinpp::UInput& uinput, int slot, bool extra_devices);
+  AxisMap(const AxisMapOptions& opts, uinpp::MultiDevice& uinput, int slot, bool extra_devices);
 
   void init(const ControllerMessageDescriptor& desc);
 

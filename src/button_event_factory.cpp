@@ -18,7 +18,7 @@
 
 #include "button_event_factory.hpp"
 
-#include <uinpp/uinput.hpp>
+#include <uinpp/multi_device.hpp>
 #include <logmich/log.hpp>
 
 #include "evdev_helper.hpp"
@@ -32,7 +32,7 @@
 #include "buttonevent/macro_button_event_handler.hpp"
 #include "buttonevent/rel_button_event_handler.hpp"
 
-ButtonEventFactory::ButtonEventFactory(uinpp::UInput& uinput, int slot, bool extra_devices) :
+ButtonEventFactory::ButtonEventFactory(uinpp::MultiDevice& uinput, int slot, bool extra_devices) :
   m_uinput(uinput),
   m_slot(slot),
   m_extra_devices(extra_devices)

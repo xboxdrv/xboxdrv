@@ -23,8 +23,8 @@
 #include <linux/input.h>
 #include <vector>
 
-#include <uinpp/uinput.hpp>
-#include <uinpp/ui_event_emitter.hpp>
+#include <uinpp/multi_device.hpp>
+#include <uinpp/event_emitter.hpp>
 #include <uinpp/from.hpp>
 
 #include "evdev_helper.hpp"
@@ -33,7 +33,7 @@
 #include "raise_exception.hpp"
 
 MacroButtonEventHandler*
-MacroButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+MacroButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                      const std::string& str)
 {
   std::vector<MacroEvent> events;
@@ -42,7 +42,7 @@ MacroButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra
     { // push
       MacroEvent event;
       event.type  = MacroEvent::kSendOp;
-      event.send.event = uinpp::UIEvent_from_char(*i);
+      event.send.event = uinpp::Event_from_char(*i);
       event.send.emitter = 0;
       event.send.value = 1;
       events.push_back(event);
@@ -56,7 +56,7 @@ MacroButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra
     { // release
       MacroEvent event;
       event.type  = MacroEvent::kSendOp;
-      event.send.event = uinpp::UIEvent_from_char(*i);
+      event.send.event = uinpp::Event_from_char(*i);
       event.send.emitter = 0;
       event.send.value = 0;
       events.push_back(event);
@@ -67,7 +67,7 @@ MacroButtonEventHandler::from_string(uinpp::UInput& uinput, int slot, bool extra
 }
 
 MacroButtonEventHandler*
-MacroButtonEventHandler::from_file(uinpp::UInput& uinput, int slot, bool extra_devices,
+MacroButtonEventHandler::from_file(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                    const std::string& filename)
 {
   std::vector<MacroEvent> events;
@@ -117,7 +117,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
       {
         MacroEvent event;
         event.type = MacroEvent::kInitOp;
-        event.init.event = uinpp::UIEvent_from_string(args[1]);
+        event.init.event = uinpp::Event_from_string(args[1]);
         event.init.emitter = 0;
         event.init.minimum = str2int(args[2]);
         event.init.maximum = str2int(args[3]);
@@ -139,7 +139,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
       {
         MacroEvent event;
         event.type  = MacroEvent::kSendOp;
-        event.send.event = uinpp::UIEvent_from_string(args[1]);
+        event.send.event = uinpp::Event_from_string(args[1]);
         event.send.emitter = 0;
         event.send.value = str2int(args[2]);
         return event;
@@ -173,7 +173,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
   }
 }
 
-MacroButtonEventHandler::MacroButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+MacroButtonEventHandler::MacroButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                                  const std::vector<MacroEvent>& events) :
   m_events(events),
   m_send_in_progress(false),
@@ -263,8 +263,8 @@ MacroButtonEventHandler::~MacroButtonEventHandler()
   }
 }
 
-uinpp::UIEventEmitter*
-MacroButtonEventHandler::get_emitter(uinpp::UInput& uinput, const uinpp::UIEvent& ev)
+uinpp::EventEmitter*
+MacroButtonEventHandler::get_emitter(uinpp::MultiDevice& uinput, const uinpp::Event& ev)
 {
   Emitter::iterator it = m_emitter.find(ev);
   if (it != m_emitter.end())
@@ -273,7 +273,7 @@ MacroButtonEventHandler::get_emitter(uinpp::UInput& uinput, const uinpp::UIEvent
   }
   else
   {
-    uinpp::UIEventEmitter* emitter = uinput.add(ev);
+    uinpp::EventEmitter* emitter = uinput.add(ev);
     m_emitter[ev] = emitter;
     return emitter;
   }

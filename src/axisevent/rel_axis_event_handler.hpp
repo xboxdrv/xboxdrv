@@ -21,17 +21,17 @@
 
 #include "axis_event.hpp"
 
-#include <uinpp/ui_event_emitter.hpp>
+#include <uinpp/event_emitter.hpp>
 
 class RelAxisEventHandler : public AxisEventHandler
 {
 public:
-  static RelAxisEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+  static RelAxisEventHandler* from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                           const std::string& str);
 
 public:
-  RelAxisEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
-                      uinpp::UIEvent const& code, int repeat = 10, float value = 5);
+  RelAxisEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
+                      uinpp::Event const& code, int repeat = 10, float value = 5);
 
   void send(int value, int min, int max);
   void update(int msec_delta);
@@ -39,14 +39,14 @@ public:
   std::string str() const;
 
 private:
-  uinpp::UIEvent m_code;
+  uinpp::Event m_code;
   float   m_value;
   int     m_repeat;
 
   float   m_stick_value;
   float   m_rest_value;
 
-  uinpp::UIEventEmitter* m_rel_emitter;
+  uinpp::EventEmitter* m_rel_emitter;
 };
 
 #endif

@@ -27,7 +27,7 @@
 #include "modifier/four_way_restrictor_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 
-ControllerConfig::ControllerConfig(uinpp::UInput& uinput, int slot, bool extra_devices, const ControllerOptions& opts) :
+ControllerConfig::ControllerConfig(uinpp::MultiDevice& uinput, int slot, bool extra_devices, const ControllerOptions& opts) :
   m_modifier(),
   m_emitter(uinput, slot, extra_devices, opts.uinput)
 {

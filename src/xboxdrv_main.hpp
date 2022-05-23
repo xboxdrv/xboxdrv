@@ -47,7 +47,7 @@ private:
   GMainLoop* m_gmain;
   std::unique_ptr<USBGSource> m_usb_gsource;
 
-  std::unique_ptr<uinpp::UInput> m_uinput;
+  std::unique_ptr<uinpp::MultiDevice> m_uinput;
 
   int m_jsdev_number;
   int m_evdev_number;

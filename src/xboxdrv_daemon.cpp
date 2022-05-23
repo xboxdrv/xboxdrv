@@ -29,7 +29,7 @@
 #include <dbus/dbus.h>
 #include <errno.h>
 
-#include <uinpp/uinput.hpp>
+#include <uinpp/multi_device.hpp>
 
 #include "controller.hpp"
 #include "controller_factory.hpp"
@@ -263,7 +263,7 @@ XboxdrvDaemon::init_uinput()
   {
     log_info("starting with UInput");
 
-    m_uinput.reset(new uinpp::UInput);
+    m_uinput.reset(new uinpp::MultiDevice);
     m_uinput->set_extra_events(m_opts.extra_events);
     m_uinput->set_device_names(m_opts.uinput_device_names);
     m_uinput->set_device_usbids(m_opts.uinput_device_usbids);
@@ -292,7 +292,7 @@ XboxdrvDaemon::init_uinput()
     // the device creation
     m_uinput->finish();
 
-    m_glib_uinput = std::make_unique<uinpp::GlibUInput>(*m_uinput);
+    m_glib_uinput = std::make_unique<uinpp::GlibMultiDevice>(*m_uinput);
   }
 }
 

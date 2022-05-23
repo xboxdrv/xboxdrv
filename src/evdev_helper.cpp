@@ -21,6 +21,7 @@
 #include <linux/input.h>
 
 #include <logmich/log.hpp>
+#include <uinpp/parse.hpp>
 
 #include "util/math.hpp"
 #include "util/string.hpp"
@@ -229,31 +230,31 @@ int str2rel(const std::string& name)
   }
 }
 
-uinpp::UIEvent str2key_event(const std::string& str)
+uinpp::Event str2key_event(const std::string& str)
 {
   int slot_id;
   int device_id;
   std::string rest;
   uinpp::split_event_name(str, &rest, &slot_id, &device_id);
-  return uinpp::UIEvent::create(static_cast<uint16_t>(device_id), EV_KEY, str2key(rest));
+  return uinpp::Event::create(static_cast<uint16_t>(device_id), EV_KEY, str2key(rest));
 }
 
-uinpp::UIEvent str2rel_event(const std::string& str)
+uinpp::Event str2rel_event(const std::string& str)
 {
   int slot_id;
   int device_id;
   std::string rest;
   uinpp::split_event_name(str, &rest, &slot_id, &device_id);
-  return uinpp::UIEvent::create(static_cast<uint16_t>(device_id), EV_REL, str2rel(rest));
+  return uinpp::Event::create(static_cast<uint16_t>(device_id), EV_REL, str2rel(rest));
 }
 
-uinpp::UIEvent str2abs_event(const std::string& str)
+uinpp::Event str2abs_event(const std::string& str)
 {
   int slot_id;
   int device_id;
   std::string rest;
   uinpp::split_event_name(str, &rest, &slot_id, &device_id);
-  return uinpp::UIEvent::create(static_cast<uint16_t>(device_id), EV_ABS, str2abs(rest));
+  return uinpp::Event::create(static_cast<uint16_t>(device_id), EV_ABS, str2abs(rest));
 }
 
 std::string key2str(int v)

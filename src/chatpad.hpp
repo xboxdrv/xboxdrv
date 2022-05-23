@@ -155,8 +155,8 @@ private:
 
 
   bool m_quit_thread;
-  std::unique_ptr<uinpp::LinuxUinput> m_uinput;
-  std::unique_ptr<uinpp::GlibLinuxUinput> m_glib_uinput;
+  std::unique_ptr<uinpp::Device> m_uinput;
+  std::unique_ptr<uinpp::GlibDevice> m_glib_uinput;
   std::array<uint16_t, 256> m_keymap;
   std::array<bool, 256> m_state;
   unsigned int m_led_state;

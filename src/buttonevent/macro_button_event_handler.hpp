@@ -19,8 +19,8 @@
 #ifndef HEADER_XBOXDRV_BUTTONEVENT_MACRO_BUTTON_EVENT_HANDLER_HPP
 #define HEADER_XBOXDRV_BUTTONEVENT_MACRO_BUTTON_EVENT_HANDLER_HPP
 
-#include <uinpp/ui_event.hpp>
-#include <uinpp/uinput.hpp>
+#include <uinpp/event.hpp>
+#include <uinpp/multi_device.hpp>
 
 #include "button_event.hpp"
 
@@ -32,8 +32,8 @@ private:
     enum { kInitOp, kSendOp, kWaitOp, kNull } type;
 
     struct InitEvent {
-      uinpp::UIEvent event;
-      uinpp::UIEventEmitter* emitter;
+      uinpp::Event event;
+      uinpp::EventEmitter* emitter;
       int minimum;
       int maximum;
       int fuzz;
@@ -41,8 +41,8 @@ private:
     };
 
     struct SendEvent {
-      uinpp::UIEvent event;
-      uinpp::UIEventEmitter* emitter;
+      uinpp::Event event;
+      uinpp::EventEmitter* emitter;
       int     value;
     };
 
@@ -58,11 +58,11 @@ private:
   };
 
 public:
-  static MacroButtonEventHandler* from_file(uinpp::UInput& uinput, int slot, bool extra_devices, const std::string& filename);
-  static MacroButtonEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices, const std::string& str);
+  static MacroButtonEventHandler* from_file(uinpp::MultiDevice& uinput, int slot, bool extra_devices, const std::string& filename);
+  static MacroButtonEventHandler* from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices, const std::string& str);
 
 public:
-  MacroButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+  MacroButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                           const std::vector<MacroEvent>& events);
   ~MacroButtonEventHandler();
 
@@ -72,7 +72,7 @@ public:
   std::string str() const;
 
 private:
-  uinpp::UIEventEmitter* get_emitter(uinpp::UInput& uinput, const uinpp::UIEvent& ev);
+  uinpp::EventEmitter* get_emitter(uinpp::MultiDevice& uinput, const uinpp::Event& ev);
 
 private:
   static MacroEvent macro_event_from_string(const std::string& str);
@@ -83,7 +83,7 @@ private:
   int m_countdown;
   std::vector<MacroEvent>::size_type m_event_counter;
 
-  typedef std::map<uinpp::UIEvent, uinpp::UIEventEmitter*> Emitter;
+  typedef std::map<uinpp::Event, uinpp::EventEmitter*> Emitter;
   Emitter m_emitter;
 };
 

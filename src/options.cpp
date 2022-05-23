@@ -22,7 +22,8 @@
 #include <functional>
 #include <fmt/format.h>
 
-#include <uinpp/uinput.hpp>
+#include <uinpp/multi_device.hpp>
+#include <uinpp/parse.hpp>
 
 #include "util/string.hpp"
 #include "raise_exception.hpp"
@@ -284,15 +285,15 @@ Options::set_led(const std::string& value)
 void
 Options::set_device_name(const std::string& name)
 {
-  uint32_t device_id = uinpp::UInput::create_device_id(static_cast<uint16_t>(controller_slot), uinpp::DEVICEID_AUTO);
+  uint32_t device_id = uinpp::create_device_id(static_cast<uint16_t>(controller_slot), uinpp::DEVICEID_AUTO);
   uinput_device_names[device_id] = name;
 }
 
 void
 Options::set_device_usbid(const std::string& name)
 {
-  uint32_t device_id = uinpp::UInput::create_device_id(static_cast<uint16_t>(controller_slot), uinpp::DEVICEID_AUTO);
-  uinput_device_usbids[device_id] = uinpp::UInput::parse_input_id(name);
+  uint32_t device_id = uinpp::create_device_id(static_cast<uint16_t>(controller_slot), uinpp::DEVICEID_AUTO);
+  uinput_device_usbids[device_id] = uinpp::parse_input_id(name);
 }
 
 void

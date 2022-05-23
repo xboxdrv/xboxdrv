@@ -21,7 +21,8 @@
 #include <assert.h>
 #include <functional>
 
-#include <uinpp/uinput.hpp>
+#include <uinpp/multi_device.hpp>
+#include <uinpp/parse.hpp>
 
 #include "controller_slot_options.hpp"
 #include "raise_exception.hpp"
@@ -29,7 +30,7 @@
 using namespace std::placeholders;
 
 ControllerSlotConfigPtr
-ControllerSlotConfig::create(uinpp::UInput& uinput, int slot, bool extra_devices, const ControllerSlotOptions& opts)
+ControllerSlotConfig::create(uinpp::MultiDevice& uinput, int slot, bool extra_devices, const ControllerSlotOptions& opts)
 {
   ControllerSlotConfigPtr m_config(new ControllerSlotConfig);
 
@@ -61,8 +62,8 @@ ControllerSlotConfig::create(uinpp::UInput& uinput, int slot, bool extra_devices
     // '- FF_CUSTOM
 
     // FIXME: this should go through the regular resolution process
-    uint32_t ff_device = uinpp::UInput::create_device_id(static_cast<uint16_t>(slot),
-                                                         static_cast<uint16_t>(opts.get_ff_device()));
+    uint32_t ff_device = uinpp::create_device_id(static_cast<uint16_t>(slot),
+                                                 static_cast<uint16_t>(opts.get_ff_device()));
 
     // basic types
     uinput.add_ff(ff_device, FF_RUMBLE);

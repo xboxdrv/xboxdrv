@@ -23,7 +23,7 @@
 #include <vector>
 #include <assert.h>
 
-#include <uinpp/ui_event_sequence.hpp>
+#include <uinpp/event_sequence.hpp>
 
 class CycleKeySequence;
 
@@ -32,13 +32,13 @@ typedef std::shared_ptr<CycleKeySequence> CycleKeySequencePtr;
 class CycleKeySequence
 {
 public:
-  static CycleKeySequencePtr from_range(uinpp::UInput& uinput, int slot, bool extra_devices,
+  static CycleKeySequencePtr from_range(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                         std::vector<std::string>::const_iterator beg,
                                         std::vector<std::string>::const_iterator end,
                                         bool wrap_around);
 
 private:
-  typedef std::vector<uinpp::UIEventSequence> Keys;
+  typedef std::vector<uinpp::EventSequence> Keys;
   Keys m_keys;
 
   /** If set the sequence wraps around when at the begin/end */
@@ -51,7 +51,7 @@ private:
   int m_last_key;
 
 public:
-  CycleKeySequence(uinpp::UInput& uinput, int slot, bool extra_devices,
+  CycleKeySequence(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                    const Keys& keys, bool wrap_around);
 
   bool has_current_key() const { return m_current_key != -1; }

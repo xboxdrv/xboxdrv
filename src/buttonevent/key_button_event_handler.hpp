@@ -21,18 +21,18 @@
 
 #include "button_event.hpp"
 
-#include <uinpp/ui_event_sequence.hpp>
+#include <uinpp/event_sequence.hpp>
 
 class KeyButtonEventHandler : public ButtonEventHandler
 {
 public:
-  static KeyButtonEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+  static KeyButtonEventHandler* from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                             const std::string& str);
 
 public:
-  KeyButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
-                        const uinpp::UIEventSequence& codes,
-                        const uinpp::UIEventSequence& secondary_codes,
+  KeyButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
+                        const uinpp::EventSequence& codes,
+                        const uinpp::EventSequence& secondary_codes,
                         int m_hold_threshold);
 
   void send(bool value);
@@ -42,8 +42,8 @@ public:
 
 private:
   bool m_state;
-  uinpp::UIEventSequence m_codes;
-  uinpp::UIEventSequence m_secondary_codes;
+  uinpp::EventSequence m_codes;
+  uinpp::EventSequence m_secondary_codes;
 
   int m_hold_threshold;
   int m_hold_counter;

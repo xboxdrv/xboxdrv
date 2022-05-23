@@ -21,17 +21,17 @@
 
 #include "button_event.hpp"
 
-#include <uinpp/ui_event.hpp>
-#include <uinpp/ui_event_emitter.hpp>
+#include <uinpp/event.hpp>
+#include <uinpp/event_emitter.hpp>
 
 class AbsButtonEventHandler : public ButtonEventHandler
 {
 public:
-  static AbsButtonEventHandler* from_string(uinpp::UInput& uinput, int slot, bool extra_devices,
+  static AbsButtonEventHandler* from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                             const std::string& str);
 
 public:
-  AbsButtonEventHandler(uinpp::UInput& uinput, int slot, bool extra_devices,
+  AbsButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                         int code);
 
   void send(bool value);
@@ -40,10 +40,10 @@ public:
   std::string str() const;
 
 private:
-  uinpp::UIEvent m_code;
+  uinpp::Event m_code;
   int m_value;
 
-  uinpp::UIEventEmitter* m_abs_emitter;
+  uinpp::EventEmitter* m_abs_emitter;
 };
 
 #endif

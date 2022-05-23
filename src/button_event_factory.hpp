@@ -26,12 +26,12 @@
 class ButtonEventFactory
 {
 private:
-  uinpp::UInput& m_uinput;
+  uinpp::MultiDevice& m_uinput;
   int  m_slot;
   bool m_extra_devices;
 
 public:
-  ButtonEventFactory(uinpp::UInput& uinput, int slot, bool extra_devices);
+  ButtonEventFactory(uinpp::MultiDevice& uinput, int slot, bool extra_devices);
 
   ButtonEventPtr from_string(const std::string& str, const std::string& directory);
 

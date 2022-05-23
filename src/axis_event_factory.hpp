@@ -26,12 +26,12 @@
 class AxisEventFactory
 {
 private:
-  uinpp::UInput& m_uinput;
+  uinpp::MultiDevice& m_uinput;
   int  m_slot;
   bool m_extra_devices;
 
 public:
-  AxisEventFactory(uinpp::UInput& uinput, int slot, bool extra_devices);
+  AxisEventFactory(uinpp::MultiDevice& uinput, int slot, bool extra_devices);
 
   AxisEventPtr invalid();
 
