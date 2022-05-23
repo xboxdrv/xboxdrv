@@ -109,7 +109,8 @@ XboxdrvDaemon::XboxdrvDaemon(USBSubsystem& usb_subsystem, const Options& opts) :
   m_gmain(),
   m_controller_slots(),
   m_inactive_controllers(),
-  m_uinput()
+  m_uinput(),
+  m_glib_uinput()
 {
   assert(!s_current);
   s_current = this;

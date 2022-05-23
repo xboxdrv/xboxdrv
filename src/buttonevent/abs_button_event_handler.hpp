@@ -44,6 +44,10 @@ private:
   int m_value;
 
   uinpp::EventEmitter* m_abs_emitter;
+
+public:
+  AbsButtonEventHandler(const AbsButtonEventHandler&) = delete;
+  AbsButtonEventHandler& operator=(const AbsButtonEventHandler&) = delete;
 };
 
 #endif

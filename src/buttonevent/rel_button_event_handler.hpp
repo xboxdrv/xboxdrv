@@ -46,6 +46,10 @@ private:
   int  m_repeat;
 
   uinpp::EventEmitter* m_rel_emitter;
+
+public:
+  RelButtonEventHandler(const RelButtonEventHandler&) = delete;
+  RelButtonEventHandler& operator=(const RelButtonEventHandler&) = delete;
 };
 
 #endif

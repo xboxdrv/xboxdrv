@@ -47,6 +47,10 @@ private:
   float   m_rest_value;
 
   uinpp::EventEmitter* m_rel_emitter;
+
+public:
+  RelAxisEventHandler(const RelAxisEventHandler&) = delete;
+  RelAxisEventHandler& operator=(const RelAxisEventHandler&) = delete;
 };
 
 #endif

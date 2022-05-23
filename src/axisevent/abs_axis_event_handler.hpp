@@ -46,6 +46,10 @@ private:
   int m_flat;
 
   uinpp::EventEmitter* m_abs_emitter;
+
+public:
+  AbsAxisEventHandler(const AbsAxisEventHandler&) = delete;
+  AbsAxisEventHandler& operator=(const AbsAxisEventHandler&) = delete;
 };
 
 #endif

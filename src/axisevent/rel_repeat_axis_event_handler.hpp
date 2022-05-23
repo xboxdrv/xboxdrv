@@ -47,6 +47,10 @@ private:
   float   m_timer;
 
   uinpp::EventEmitter* m_rel_emitter;
+
+public:
+  RelRepeatAxisEventHandler(const RelRepeatAxisEventHandler&) = delete;
+  RelRepeatAxisEventHandler& operator=(const RelRepeatAxisEventHandler&) = delete;
 };
 
 #endif
