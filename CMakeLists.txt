@@ -40,9 +40,6 @@ if(WERROR)
     -Werror)
 endif()
 
-set(XBOXDRV_BINDIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Install location for executables")
-set(XBOXDRV_MANDIR "${CMAKE_INSTALL_PREFIX}/share/man" CACHE PATH "Install location for datafiles")
-
 find_package(Threads REQUIRED)
 find_package(X11 REQUIRED)
 
@@ -178,11 +175,11 @@ if(BUILD_TESTS)
   endforeach(SOURCE)
 endif()
 
-install(
-  TARGETS xboxdrv
-  RUNTIME DESTINATION ${XBOXDRV_BINDIR})
-install(
-  PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/xboxdrvctl
-  DESTINATION ${XBOXDRV_BINDIR})
+install(TARGETS xboxdrv
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/xboxdrvctl
+  DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES doc/xboxdrv.1
+  DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 
 # EOF #
