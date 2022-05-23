@@ -50,6 +50,7 @@
               logmich.defaultPackage.${system}
               strutcpp.defaultPackage.${system}
               uinpp.defaultPackage.${system}
+              tinycmmc.defaultPackage.${system}
 
               pkgs.at-spi2-core
               pkgs.bluez
