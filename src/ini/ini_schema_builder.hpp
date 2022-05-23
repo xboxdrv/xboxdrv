@@ -32,8 +32,8 @@ private:
 public:
   INISchemaBuilder(const INISchema& schema);
 
-  void send_section(const std::string& section);
-  void send_pair(const std::string& name, const std::string& value);
+  void send_section(const std::string& section) override;
+  void send_pair(const std::string& name, const std::string& value) override;
 
 private:
   INISchemaBuilder(const INISchemaBuilder&);

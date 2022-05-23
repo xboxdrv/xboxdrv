@@ -20,6 +20,7 @@
 
 #include <stdexcept>
 #include <math.h>
+#include <numbers>
 
 #include <logmich/log.hpp>
 #include "raise_exception.hpp"
@@ -73,23 +74,23 @@ Acc2AxisModifier::update(int msec_delta, ControllerMessage& msg, const Controlle
   float ay = msg.get_abs_float(m_acc_y);
   float az = msg.get_abs_float(m_acc_z);
 
-  float rx = (atan2f(az, ax) - static_cast<float>(M_PI)/2.0f) * -1.0f;
-  float ry = (atan2f(az, ay) - static_cast<float>(M_PI)/2.0f) * -1.0f;
+  float rx = (atan2f(az, ax) - static_cast<float>(std::numbers::pi_v<float>)/2.0f) * -1.0f;
+  float ry = (atan2f(az, ay) - static_cast<float>(std::numbers::pi_v<float>)/2.0f) * -1.0f;
 
   // FIXME: to simplistic, need a better way to normalize the angles
   // normalize the range from [-pi/2, 3/2pi] to [-pi,pi]
-  if (rx > static_cast<float>(M_PI))
-    rx -= static_cast<float>(M_PI*2.0);
+  if (rx > static_cast<float>(std::numbers::pi_v<float>))
+    rx -= static_cast<float>(std::numbers::pi_v<float>*2.0f);
 
-  if (ry > static_cast<float>(M_PI))
-    ry -= static_cast<float>(M_PI*2.0);
+  if (ry > static_cast<float>(std::numbers::pi_v<float>))
+    ry -= static_cast<float>(std::numbers::pi_v<float>*2.0f);
 
   ry *= -1.0f;
 
-  // full range is M_PI, but we use M_PI/2 as beyond that point
+  // full range is std::numbers::pi_v<float>, but we use std::numbers::pi_v<float>/2 as beyond that point
   // precision is lacking
-  rx = static_cast<float>(rx/(M_PI/2.0));
-  ry = static_cast<float>(ry/(M_PI/2.0));
+  rx = static_cast<float>(rx / (std::numbers::pi_v<float>/2.0f));
+  ry = static_cast<float>(ry / (std::numbers::pi_v<float>/2.0f));
 
   rx = Math::clamp(-1.0f, rx, 1.0f);
   ry = Math::clamp(-1.0f, ry, 1.0f);

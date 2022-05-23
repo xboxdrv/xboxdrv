@@ -66,10 +66,10 @@ private:
                              CycleKeySequencePtr sequence, Direction direction, bool send_press);
 
 public:
-  void send(bool value);
-  void update(int msec_delta);
+  void send(bool value) override;
+  void update(int msec_delta) override;
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   CycleKeyButtonEventHandler(const CycleKeyButtonEventHandler&);

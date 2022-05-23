@@ -66,10 +66,10 @@ public:
                           const std::vector<MacroEvent>& events);
   ~MacroButtonEventHandler();
 
-  void send(bool value);
-  void update(int msec_delta);
+  void send(bool value) override;
+  void update(int msec_delta) override;
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   uinpp::EventEmitter* get_emitter(uinpp::MultiDevice& uinput, const uinpp::Event& ev);

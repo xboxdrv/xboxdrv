@@ -43,9 +43,9 @@ public:
   USBController(libusb_device* dev);
   virtual ~USBController();
 
-  virtual std::string get_usbpath() const;
-  virtual std::string get_usbid() const;
-  virtual std::string get_name() const;
+  std::string get_usbpath() const override;
+  std::string get_usbid() const override;
+  std::string get_name() const override;
 
   virtual bool parse(const uint8_t* data, int len, ControllerMessage* msg_out) =0;
 

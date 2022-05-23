@@ -33,7 +33,7 @@ public:
     m_false_callback(false_callback)
   {}
 
-  void call(const std::string& value)
+  void call(const std::string& value) override
   {
     bool v = false;
     if (value == "yes" || value == "true" || value == "1")
@@ -59,7 +59,7 @@ public:
     }
   }
 
-  std::string str() const
+  std::string str() const override
   {
     // FIXME: implement me
     return "<not implemented>";
@@ -73,7 +73,7 @@ private:
 
 public:
   INIPairSchemaBool(bool* data) : m_data(data) {}
-  void call(const std::string& value)
+  void call(const std::string& value) override
   {
     if (value == "yes" || value == "true" || value == "1")
     {
@@ -89,7 +89,7 @@ public:
     }
   }
 
-  std::string str() const
+  std::string str() const override
   {
     if (m_data)
     {
@@ -113,12 +113,12 @@ private:
 
 public:
   INIPairSchemaInt(int* data) : m_data(data) {}
-  void call(const std::string& value)
+  void call(const std::string& value) override
   {
     *m_data = atoi(value.c_str());
   }
 
-  std::string str() const
+  std::string str() const override
   {
     std::ostringstream out;
     out << *m_data;
@@ -137,12 +137,12 @@ private:
 
 public:
   INIPairSchemaFloat(float* data) : m_data(data) {}
-  void call(const std::string& value)
+  void call(const std::string& value) override
   {
     *m_data = static_cast<float>(atof(value.c_str()));
   }
 
-  std::string str() const
+  std::string str() const override
   {
     std::ostringstream out;
     out << *m_data;
@@ -161,12 +161,12 @@ private:
 
 public:
   INIPairSchemaString(std::string* data) : m_data(data) {}
-  void call(const std::string& value)
+  void call(const std::string& value) override
   {
     *m_data = value;
   }
 
-  std::string str() const
+  std::string str() const override
   {
     // FIXME: implement proper escaping
     return *m_data;
@@ -187,13 +187,13 @@ public:
     m_callback(callback)
   {}
 
-  void call(const std::string& value)
+  void call(const std::string& value) override
   {
     if (m_callback)
       m_callback(value);
   }
 
-  std::string str() const
+  std::string str() const override
   {
     // FIXME: implement me
     return "<not implemented>";
@@ -279,7 +279,7 @@ INISchemaSection::get(const std::string& name) const
   Schema::const_iterator i = m_schema.find(name);
   if (i == m_schema.end())
   {
-    return 0;
+    return nullptr;
   }
   else
   {
@@ -341,7 +341,7 @@ INISchema::get_section(const std::string& name) const
   }
   else
   {
-    return 0;
+    return nullptr;
   }
 }
 

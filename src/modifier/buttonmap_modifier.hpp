@@ -49,13 +49,13 @@ public:
 public:
   ButtonmapModifier();
 
-  void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
+  void init(ControllerMessageDescriptor& desc) override;
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
 
   void add(ButtonMappingPtr mapping);
   void add_filter(const std::string& btn, ButtonFilterPtr filter);
 
-  std::string str() const;
+  std::string str() const override;
 
   bool empty() const { return m_buttonmap.empty(); }
 

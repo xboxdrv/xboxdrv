@@ -15,12 +15,12 @@ public:
     m_out(out)
   {}
 
-  void send_section(const std::string& section)
+  void send_section(const std::string& section) override
   {
     m_out << "[" << section << "]" << std::endl;
   }
 
-  void send_pair(const std::string& name, const std::string& value)
+  void send_pair(const std::string& name, const std::string& value) override
   {
     m_out << "\"" << name << "\" = \"" << value << "\"" << std::endl;
   }

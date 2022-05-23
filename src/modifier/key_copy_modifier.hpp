@@ -31,9 +31,9 @@ public:
 public:
   KeyCopyModifier(const std::string& from, const std::string& to);
 
-  void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
-  std::string str() const;
+  void init(ControllerMessageDescriptor& desc) override;
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
+  std::string str() const override;
 
 private:
   std::string m_from;

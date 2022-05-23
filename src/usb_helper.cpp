@@ -88,7 +88,7 @@ const char* usb_transfer_strerror(libusb_transfer_status err)
 
 libusb_device* usb_find_device_by_path(uint8_t busnum, uint8_t devnum)
 {
-  libusb_device* ret_device = 0;
+  libusb_device* ret_device = nullptr;
 
   libusb_device** list;
   ssize_t num_devices = libusb_get_device_list(NULL, &list);

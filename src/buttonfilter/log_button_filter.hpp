@@ -29,8 +29,8 @@ public:
 public:
   LogButtonFilter(const std::string& name);
 
-  bool filter(bool value);
-  std::string str() const;
+  bool filter(bool value) override;
+  std::string str() const override;
 
 private:
   std::string m_name;

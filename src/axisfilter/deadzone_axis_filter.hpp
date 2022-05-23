@@ -29,8 +29,8 @@ public:
 public:
   DeadzoneAxisFilter(int min_deadzone, int max_deathzone, bool smooth);
 
-  int filter(int value, int min, int max);
-  std::string str() const;
+  int filter(int value, int min, int max) override;
+  std::string str() const override;
 
 private:
   int m_min_deadzone;

@@ -45,7 +45,7 @@
 
 using namespace std::placeholders;
 
-XboxdrvMain* XboxdrvMain::s_current = 0;
+XboxdrvMain* XboxdrvMain::s_current = nullptr;
 
 XboxdrvMain::XboxdrvMain(USBSubsystem& usb_subsystem, const Options& opts) :
   m_usb_subsystem(usb_subsystem),
@@ -73,7 +73,7 @@ XboxdrvMain::~XboxdrvMain()
   signal(SIGINT,  NULL);
   signal(SIGTERM, NULL);
 
-  s_current = 0;
+  s_current = nullptr;
 
   g_main_loop_unref(m_gmain);
 }
@@ -109,7 +109,7 @@ XboxdrvMain::create_controller()
   { // regular USB Xbox360-like controller
 
     // FIXME: this must be libusb_unref_device()'ed, child code must not keep a copy around
-    libusb_device* dev = 0;
+    libusb_device* dev = nullptr;
 
     USBSubsystem::find_controller(&dev, m_dev_type, m_opts);
 

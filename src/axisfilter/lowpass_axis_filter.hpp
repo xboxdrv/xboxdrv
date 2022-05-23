@@ -34,9 +34,9 @@ private:
 public:
   LowpassAxisFilter(float rate);
 
-  void update(int msec_delta);
-  int filter(int value, int min, int max);
-  std::string str() const;
+  void update(int msec_delta) override;
+  int filter(int value, int min, int max) override;
+  std::string str() const override;
 
 private:
   LowpassAxisFilter(const LowpassAxisFilter&);

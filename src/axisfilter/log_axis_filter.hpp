@@ -29,8 +29,8 @@ public:
 public:
   LogAxisFilter(const std::string& name);
 
-  int filter(int value, int min, int max);
-  std::string str() const;
+  int filter(int value, int min, int max) override;
+  std::string str() const override;
 
 private:
   std::string m_name;

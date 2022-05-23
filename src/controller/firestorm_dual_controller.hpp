@@ -36,10 +36,10 @@ public:
   FirestormDualController(libusb_device* dev, bool is_vsb, bool try_detach);
   ~FirestormDualController();
 
-  void set_rumble_real(uint8_t left, uint8_t right);
-  void set_led_real(uint8_t status);
+  void set_rumble_real(uint8_t left, uint8_t right) override;
+  void set_led_real(uint8_t status) override;
 
-  bool parse(const uint8_t* data, int len, ControllerMessage* msg_out);
+  bool parse(const uint8_t* data, int len, ControllerMessage* msg_out) override;
 
 private:
   bool parse_default(const uint8_t* data, int len, ControllerMessage* msg_out);

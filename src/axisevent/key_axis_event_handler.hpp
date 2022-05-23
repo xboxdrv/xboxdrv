@@ -35,10 +35,10 @@ public:
                       uinpp::EventSequence down_codes,
                       float threshold);
 
-  void send(int value, int min, int max);
-  void update(int msec_delta);
+  void send(int value, int min, int max) override;
+  void update(int msec_delta) override;
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   int  get_zone(float value) const;

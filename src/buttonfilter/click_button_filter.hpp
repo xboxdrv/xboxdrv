@@ -30,8 +30,8 @@ public:
 public:
   ClickButtonFilter(Mode mode);
 
-  bool filter(bool value);
-  std::string str() const;
+  bool filter(bool value) override;
+  std::string str() const override;
 
 private:
   Mode m_mode;

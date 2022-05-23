@@ -37,10 +37,10 @@ private:
 public:
   JoinAxisModifier(const std::string& lhs, const std::string& rhs, const std::string& out);
 
-  void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
+  void init(ControllerMessageDescriptor& desc) override;
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   JoinAxisModifier(const JoinAxisModifier&);

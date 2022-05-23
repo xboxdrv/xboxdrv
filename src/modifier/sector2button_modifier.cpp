@@ -18,8 +18,9 @@
 
 #include "sector2button_modifier.hpp"
 
+#include <numbers>
 #include <stdexcept>
-#include <math.h>
+#include <cmath>
 
 #include "raise_exception.hpp"
 
@@ -69,17 +70,17 @@ Sector2ButtonModifier::update(int msec_delta, ControllerMessage& msg, const Cont
 
   if (x != 0 || y != 0)
   {
-    double sector_size = static_cast<double>(2*M_PI) / static_cast<double>(m_out_buttons.size());
+    float sector_size = (2.0f * std::numbers::pi_v<float>) / static_cast<float>(m_out_buttons.size());
 
     // FIXME: fugly angle hackery
-    double length = sqrt(x*x + y*y);
-    double angle  = atan2(y, x) + M_PI/2.0;
-    angle += sector_size/2.0;
-    angle = fmod(angle + 4*M_PI, 2*M_PI);
+    float length = std::sqrt(x*x + y*y);
+    float angle  = std::atan2(y, x) + std::numbers::pi_v<float> / 2.0f;
+    angle += sector_size / 2.0f;
+    angle = std::fmod(angle + 4.0f * std::numbers::pi_v<float>, 2.0f * std::numbers::pi_v<float>);
 
     if (length > 0.75f) // FIXME: hardcoded threshold
     {
-      int sector = static_cast<int>((angle) / sector_size);
+      int sector = static_cast<int>(angle / sector_size);
       //log_tmp("sector: " << sector << " " << angle);
       msg.set_key(m_out_buttons[sector], true);
     }

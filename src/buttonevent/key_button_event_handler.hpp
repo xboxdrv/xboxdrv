@@ -35,10 +35,10 @@ public:
                         const uinpp::EventSequence& secondary_codes,
                         int m_hold_threshold);
 
-  void send(bool value);
-  void update(int msec_delta);
+  void send(bool value) override;
+  void update(int msec_delta) override;
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   bool m_state;

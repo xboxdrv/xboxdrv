@@ -69,12 +69,12 @@ public:
 public:
   AxismapModifier();
 
-  void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
+  void init(ControllerMessageDescriptor& desc) override;
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
 
   void add(AxisMappingPtr mapping);
 
-  std::string str() const;
+  std::string str() const override;
 
   bool empty() const { return m_axismap.empty(); }
 

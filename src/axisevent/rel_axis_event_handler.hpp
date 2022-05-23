@@ -33,10 +33,10 @@ public:
   RelAxisEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                       uinpp::Event const& code, int repeat = 10, float value = 5);
 
-  void send(int value, int min, int max);
-  void update(int msec_delta);
+  void send(int value, int min, int max) override;
+  void update(int msec_delta) override;
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   uinpp::Event m_code;

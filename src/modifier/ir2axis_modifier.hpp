@@ -40,9 +40,9 @@ private:
 public:
   IR2AxisModifier(const std::string& xaxis, const std::string& yaxis);
 
-  void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
-  std::string str() const;
+  void init(ControllerMessageDescriptor& desc) override;
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
+  std::string str() const override;
 
 private:
   IR2AxisModifier(const IR2AxisModifier&);

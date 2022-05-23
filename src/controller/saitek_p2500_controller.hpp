@@ -37,10 +37,10 @@ public:
   SaitekP2500Controller(libusb_device* dev, bool try_detach);
   ~SaitekP2500Controller();
 
-  void set_rumble_real(uint8_t left, uint8_t right);
-  void set_led_real(uint8_t status);
+  void set_rumble_real(uint8_t left, uint8_t right) override;
+  void set_led_real(uint8_t status) override;
 
-  bool parse(const uint8_t* data, int len, ControllerMessage* msg_out);
+  bool parse(const uint8_t* data, int len, ControllerMessage* msg_out) override;
 
 private:
   SaitekP2500Controller(const SaitekP2500Controller&);

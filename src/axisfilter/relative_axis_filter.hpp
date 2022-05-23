@@ -29,9 +29,9 @@ public:
 public:
   RelativeAxisFilter(int speed);
 
-  void update(int msec_delta);
-  int filter(int value, int min, int max);
-  std::string str() const;
+  void update(int msec_delta) override;
+  int filter(int value, int min, int max) override;
+  std::string str() const override;
 
 private:
   int m_speed;

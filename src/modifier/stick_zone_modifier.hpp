@@ -42,10 +42,10 @@ public:
   StickZoneModifier(const std::string& x_axis, const std::string& y_axis, const std::string& button,
                     float range_start, float range_end);
 
-  void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
+  void init(ControllerMessageDescriptor& desc) override;
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   StickZoneModifier(const StickZoneModifier&);

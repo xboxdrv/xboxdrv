@@ -36,7 +36,7 @@ public:
     m_value(value)
   {}
 
-  bool match(udev_device* device) const
+  bool match(udev_device* device) const override
   {
     const char* str = udev_device_get_property_value(device, m_name.c_str());
 

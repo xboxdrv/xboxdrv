@@ -37,10 +37,10 @@ private:
 public:
   SplitAxisModifier(const std::string& axis, const std::string& out_lhs, const std::string& out_rhs);
 
-  void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
+  void init(ControllerMessageDescriptor& desc) override;
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   SplitAxisModifier(const SplitAxisModifier&);

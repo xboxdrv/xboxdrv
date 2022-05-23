@@ -29,10 +29,10 @@ public:
 public:
   ExecButtonEventHandler(const std::vector<std::string>& args);
 
-  void send(bool value);
-  void update(int msec_delta) {}
+  void send(bool value) override;
+  void update(int msec_delta) override {}
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   std::vector<std::string> m_args;

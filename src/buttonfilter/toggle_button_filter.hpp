@@ -26,9 +26,9 @@ class ToggleButtonFilter : public ButtonFilter
 public:
   ToggleButtonFilter();
 
-  bool filter(bool value);
-  void update(int msec_delta) {}
-  std::string str() const;
+  bool filter(bool value) override;
+  void update(int msec_delta) override {}
+  std::string str() const override;
 
 private:
   bool m_state;

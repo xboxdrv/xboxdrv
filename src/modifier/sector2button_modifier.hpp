@@ -20,6 +20,7 @@
 #define HEADER_XBOXDRV_MODIFIER_SECTOR2BUTTON_MODIFIER_HPP
 
 #include <vector>
+#include <numeric>
 
 #include "modifier.hpp"
 
@@ -32,10 +33,10 @@ public:
   Sector2ButtonModifier(const std::string& xaxis, const std::string& yaxis,
                         const std::vector<std::string>& out_buttons_str);
 
-  void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
+  void init(ControllerMessageDescriptor& desc) override;
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   std::string m_xaxis_str;

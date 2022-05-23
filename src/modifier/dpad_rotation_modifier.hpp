@@ -48,10 +48,10 @@ private:
 public:
   DpadRotationModifier(int dpad_rotation);
 
-  void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
+  void init(ControllerMessageDescriptor& desc) override;
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   DpadRotationModifier(const DpadRotationModifier&);

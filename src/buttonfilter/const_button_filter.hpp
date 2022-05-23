@@ -29,9 +29,9 @@ public:
 public:
   ConstButtonFilter(bool value);
 
-  void update(int msec_delta) {}
-  bool filter(bool value);
-  std::string str() const;
+  void update(int msec_delta) override {}
+  bool filter(bool value) override;
+  std::string str() const override;
 
 private:
   bool m_value;

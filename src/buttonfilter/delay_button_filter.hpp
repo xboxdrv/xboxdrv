@@ -32,10 +32,10 @@ public:
 public:
   DelayButtonFilter(int delay);
 
-  bool filter(bool value);
-  void update(int msec_delta);
+  bool filter(bool value) override;
+  void update(int msec_delta) override;
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   int m_delay;

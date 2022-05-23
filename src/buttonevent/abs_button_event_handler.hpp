@@ -34,10 +34,10 @@ public:
   AbsButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                         int code);
 
-  void send(bool value);
-  void update(int msec_delta) {}
+  void send(bool value) override;
+  void update(int msec_delta) override {}
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   uinpp::Event m_code;

@@ -30,8 +30,8 @@ public:
   Playstation3BluetoothController();
   ~Playstation3BluetoothController();
 
-  void set_rumble_real(uint8_t left, uint8_t right);
-  void set_led_real(uint8_t status);
+  void set_rumble_real(uint8_t left, uint8_t right) override;
+  void set_led_real(uint8_t status) override;
 
 private:
   Playstation3BluetoothController(const Playstation3BluetoothController&);

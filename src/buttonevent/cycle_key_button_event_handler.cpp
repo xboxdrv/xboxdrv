@@ -80,7 +80,7 @@ CycleKeyButtonEventHandler::from_string_named(uinpp::MultiDevice& uinput, int sl
     // if name is empty, don't put it in the lookup table
     if (!name.empty())
     {
-      if (lookup(name) != 0)
+      if (lookup(name) != nullptr)
       {
         raise_exception(std::runtime_error, "duplicate name entry");
       }

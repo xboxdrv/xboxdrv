@@ -47,9 +47,9 @@ public:
   Acc2AxisModifier(const std::string& acc_x, const std::string& acc_y, const std::string& acc_z,
                    const std::string& axis_x, const std::string& axis_y);
 
-  void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
-  std::string str() const;
+  void init(ControllerMessageDescriptor& desc) override;
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
+  std::string str() const override;
 
 private:
   Acc2AxisModifier(const Acc2AxisModifier&);

@@ -62,7 +62,7 @@ ControllerThread::on_timeout()
 {
   if (m_processor.get())
   {
-    int msec_delta = static_cast<int>(g_timer_elapsed(m_timer, NULL) * 1000.0f);
+    int msec_delta = static_cast<int>(g_timer_elapsed(m_timer, nullptr) * 1000.0);
     g_timer_reset(m_timer);
 
     m_processor->send(m_oldrealmsg, m_controller->get_message_descriptor(), msec_delta);
@@ -82,7 +82,7 @@ ControllerThread::on_message(const ControllerMessage& msg)
 
   m_oldrealmsg = msg;
 
-  int msec_delta = static_cast<int>(g_timer_elapsed(m_timer, NULL) * 1000.0f);
+  int msec_delta = static_cast<int>(g_timer_elapsed(m_timer, nullptr) * 1000.0);
   g_timer_reset(m_timer);
 
   if (m_processor.get())

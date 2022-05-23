@@ -29,8 +29,8 @@ public:
 public:
   ResponseCurveAxisFilter(const std::vector<int>& samples);
 
-  int filter(int value, int min, int max);
-  std::string str() const;
+  int filter(int value, int min, int max) override;
+  std::string str() const override;
 
 private:
   std::vector<int> m_samples;

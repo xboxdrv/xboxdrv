@@ -50,7 +50,7 @@ GenericUSBController::GenericUSBController(libusb_device* dev,
     }
 
     // search for the given endpoint
-    const libusb_endpoint_descriptor* ep = 0;
+    const libusb_endpoint_descriptor* ep = nullptr;
     for(int i = 0; i < config->interface[m_interface].altsetting[0].bNumEndpoints; ++i)
     {
       ep = &(config->interface[m_interface].altsetting[0].endpoint[i]);
@@ -61,7 +61,7 @@ GenericUSBController::GenericUSBController(libusb_device* dev,
       }
       else
       {
-        ep = 0;
+        ep = nullptr;
       }
     }
 

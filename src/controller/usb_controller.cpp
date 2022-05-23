@@ -30,7 +30,7 @@
 
 USBController::USBController(libusb_device* dev) :
   m_dev(dev),
-  m_handle(0),
+  m_handle(nullptr),
   m_transfers(),
   m_interfaces(),
   m_usbpath(),

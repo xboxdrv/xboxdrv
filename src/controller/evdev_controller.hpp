@@ -57,8 +57,8 @@ public:
                   bool debug);
   ~EvdevController();
 
-  void set_rumble_real(uint8_t left, uint8_t right);
-  void set_led_real(uint8_t status);
+  void set_rumble_real(uint8_t left, uint8_t right) override;
+  void set_led_real(uint8_t status) override;
 
 private:
   bool parse(const struct input_event& ev, ControllerMessage& msg_inout) const;

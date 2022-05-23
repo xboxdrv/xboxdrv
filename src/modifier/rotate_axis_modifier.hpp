@@ -31,9 +31,9 @@ public:
 public:
   RotateAxisModifier(const std::string& xaxis, const std::string& yaxis, float angle, bool mirror);
 
-  void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
-  std::string str() const;
+  void init(ControllerMessageDescriptor& desc) override;
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
+  std::string str() const override;
 
 private:
   const std::string m_xaxis_str;

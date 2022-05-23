@@ -40,9 +40,9 @@ private:
 public:
   Button2AxisModifier(const std::string& lhs_btn, const std::string& rhs_btn, const std::string& axis);
 
-  void init(ControllerMessageDescriptor& desc);
-  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc);
-  std::string str() const;
+  void init(ControllerMessageDescriptor& desc) override;
+  void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
+  std::string str() const override;
 
 private:
   Button2AxisModifier(const Button2AxisModifier&);

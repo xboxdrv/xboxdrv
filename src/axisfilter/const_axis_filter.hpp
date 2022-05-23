@@ -29,8 +29,8 @@ public:
 public:
   ConstAxisFilter(int value);
 
-  int filter(int value, int min, int max);
-  std::string str() const;
+  int filter(int value, int min, int max) override;
+  std::string str() const override;
 
 private:
   int m_value;

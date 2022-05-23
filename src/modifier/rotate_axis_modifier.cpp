@@ -19,6 +19,7 @@
 #include "rotate_axis_modifier.hpp"
 
 #include <math.h>
+#include <numbers>
 #include <sstream>
 #include <stdexcept>
 
@@ -34,7 +35,7 @@ RotateAxisModifier::from_string(const std::vector<std::string>& args)
   else
   {
     return new RotateAxisModifier(args[0], args[1],
-                                  str2float(args[2]) * static_cast<float>(M_PI) / 180.0f,
+                                  str2float(args[2]) * std::numbers::pi_v<float> / 180.0f,
                                   args.size() == 3 ? false : str2bool(args[3]));
   }
 }
@@ -78,7 +79,7 @@ std::string
 RotateAxisModifier::str() const
 {
   std::ostringstream out;
-  out << "rotate:" << m_xaxis << "=" << m_yaxis << ":" << (m_angle/180.0f*M_PI);
+  out << "rotate:" << m_xaxis << "=" << m_yaxis << ":" << (m_angle/180.0f*std::numbers::pi_v<float>);
   return out.str();
 }
 

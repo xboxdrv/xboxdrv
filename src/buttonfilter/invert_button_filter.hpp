@@ -26,9 +26,9 @@ class InvertButtonFilter : public ButtonFilter
 public:
   InvertButtonFilter() {}
 
-  void update(int msec_delta) {}
-  bool filter(bool value);
-  std::string str() const;
+  void update(int msec_delta) override {}
+  bool filter(bool value) override;
+  std::string str() const override;
 };
 
 #endif

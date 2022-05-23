@@ -36,10 +36,10 @@ public:
   Playstation3USBController(libusb_device* dev, bool try_detach);
   ~Playstation3USBController();
 
-  void set_rumble_real(uint8_t left, uint8_t right);
-  void set_led_real(uint8_t status);
+  void set_rumble_real(uint8_t left, uint8_t right) override;
+  void set_led_real(uint8_t status) override;
 
-  bool parse(const uint8_t* data, int len, ControllerMessage* msg_out);
+  bool parse(const uint8_t* data, int len, ControllerMessage* msg_out) override;
 
 private:
   Playstation3USBController(const Playstation3USBController&);

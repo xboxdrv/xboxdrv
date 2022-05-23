@@ -33,10 +33,10 @@ public:
   AbsAxisEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                       const uinpp::Event& code, int min, int max, int fuzz, int flat);
 
-  void send(int value, int min, int max);
-  void update(int msec_delta);
+  void send(int value, int min, int max) override;
+  void update(int msec_delta) override;
 
-  std::string str() const;
+  std::string str() const override;
 
 private:
   uinpp::Event m_code;

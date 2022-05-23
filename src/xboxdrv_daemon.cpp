@@ -46,7 +46,7 @@
 
 using namespace std::placeholders;
 
-XboxdrvDaemon* XboxdrvDaemon::s_current = 0;
+XboxdrvDaemon* XboxdrvDaemon::s_current = nullptr;
 
 namespace {
 
@@ -131,7 +131,7 @@ XboxdrvDaemon::~XboxdrvDaemon()
   signal(SIGTERM, NULL);
 
   assert(s_current);
-  s_current = 0;
+  s_current = nullptr;
 
   g_main_loop_unref(m_gmain);
 }

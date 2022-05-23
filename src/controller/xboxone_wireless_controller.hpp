@@ -45,10 +45,10 @@ public:
   XboxOneWirelessController(libusb_device* dev, bool try_detach);
   ~XboxOneWirelessController();
 
-  bool parse(const uint8_t* data, int len, ControllerMessage* msg_out);
+  bool parse(const uint8_t* data, int len, ControllerMessage* msg_out) override;
 
-  void set_rumble_real(uint8_t left, uint8_t right);
-  void set_led_real(uint8_t status);
+  void set_rumble_real(uint8_t left, uint8_t right) override;
+  void set_led_real(uint8_t status) override;
   uint8_t get_battery_status() const;
 
 private:

@@ -29,9 +29,9 @@ private:
 public:
   LogButtonEventHandler(const std::string& format);
 
-  void send(bool value);
-  void update(int msec_delta);
-  std::string str() const;
+  void send(bool value) override;
+  void update(int msec_delta) override;
+  std::string str() const override;
 
 private:
   LogButtonEventHandler(const LogButtonEventHandler&);

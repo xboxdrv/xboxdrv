@@ -43,7 +43,7 @@ MacroButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool 
       MacroEvent event;
       event.type  = MacroEvent::kSendOp;
       event.send.event = uinpp::Event_from_char(*i);
-      event.send.emitter = 0;
+      event.send.emitter = nullptr;
       event.send.value = 1;
       events.push_back(event);
     }
@@ -57,7 +57,7 @@ MacroButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool 
       MacroEvent event;
       event.type  = MacroEvent::kSendOp;
       event.send.event = uinpp::Event_from_char(*i);
-      event.send.emitter = 0;
+      event.send.emitter = nullptr;
       event.send.value = 0;
       events.push_back(event);
     }
@@ -118,7 +118,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
         MacroEvent event;
         event.type = MacroEvent::kInitOp;
         event.init.event = uinpp::Event_from_string(args[1]);
-        event.init.emitter = 0;
+        event.init.emitter = nullptr;
         event.init.minimum = str2int(args[2]);
         event.init.maximum = str2int(args[3]);
         event.init.fuzz = 0;
@@ -140,7 +140,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
         MacroEvent event;
         event.type  = MacroEvent::kSendOp;
         event.send.event = uinpp::Event_from_string(args[1]);
-        event.send.emitter = 0;
+        event.send.emitter = nullptr;
         event.send.value = str2int(args[2]);
         return event;
       }
