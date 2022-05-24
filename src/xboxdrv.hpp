@@ -26,7 +26,7 @@
 struct XPadDevice;
 class Options;
 class Controller;
-
+
 class Xboxdrv
 {
 private:
@@ -49,7 +49,7 @@ public:
 private:
   void set_scheduling(const Options& opts);
 };
-
+
 #endif
 
 /* EOF */

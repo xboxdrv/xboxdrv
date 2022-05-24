@@ -24,7 +24,7 @@
 
 #include "raise_exception.hpp"
 #include "util/string.hpp"
-
+
 class ControllerMatchRuleProperty : public ControllerMatchRule
 {
 private:
@@ -54,7 +54,7 @@ public:
     }
   }
 };
-
+
 ControllerMatchRuleGroup::ControllerMatchRuleGroup() :
   m_rules()
 {}
@@ -84,7 +84,7 @@ ControllerMatchRuleGroup::match(udev_device* device) const
   }
   return true;
 }
-
+
 bool
 ControllerMatchRule::match(udev_device* device) const
 {
@@ -118,7 +118,7 @@ ControllerMatchRule::match(udev_device* device) const
   }
 #endif
 }
-
+
 ControllerMatchRulePtr
 ControllerMatchRule::from_string(const std::string& lhs,
                                  const std::string& rhs)
@@ -217,5 +217,5 @@ ControllerMatchRule::from_string(const std::string& lhs,
     raise_exception(std::runtime_error, "'" << lhs << "' not a valid match rule name");
   }
 }
-
+
 /* EOF */

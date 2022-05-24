@@ -102,7 +102,7 @@ bool get_usb_path(udev_device* device, int* bus, int* dev)
 }
 
 } // namespace
-
+
 XboxdrvDaemon::XboxdrvDaemon(USBSubsystem& usb_subsystem, const Options& opts) :
   m_usb_subsystem(usb_subsystem),
   m_opts(opts),

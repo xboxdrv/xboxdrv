@@ -50,7 +50,7 @@ DpadRestrictorModifier::from_string(const std::vector<std::string>& args)
     }
   }
 }
-
+
 DpadRestrictorModifier::DpadRestrictorModifier(Mode mode) :
   m_mode(mode),
   m_last_unpressed_axis(-1),

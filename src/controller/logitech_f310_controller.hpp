@@ -25,7 +25,7 @@
 #include "xboxmsg.hpp"
 #include "controller/usb_controller.hpp"
 #include "xbox360_default_names.hpp"
-
+
 class LogitechF310Controller : public USBController
 {
 private:
@@ -47,7 +47,7 @@ private:
   LogitechF310Controller(const LogitechF310Controller&);
   LogitechF310Controller& operator=(const LogitechF310Controller&);
 };
-
+
 #endif
 
 /* EOF */

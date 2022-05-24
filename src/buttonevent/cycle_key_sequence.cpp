@@ -46,7 +46,7 @@ CycleKeySequence::from_range(uinpp::MultiDevice& uinput, int slot, bool extra_de
                                                     keys, wrap_around));
   }
 }
-
+
 CycleKeySequence::CycleKeySequence(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                    const Keys& keys, bool wrap_around) :
   m_keys(keys),

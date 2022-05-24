@@ -32,7 +32,7 @@
 #include "util/string.hpp"
 #include <logmich/log.hpp>
 #include "raise_exception.hpp"
-
+
 MacroButtonEventHandler*
 MacroButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                      const std::string& str)
@@ -173,7 +173,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
     return event;
   }
 }
-
+
 MacroButtonEventHandler::MacroButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                                  const std::vector<MacroEvent>& events) :
   m_events(events),
@@ -350,5 +350,5 @@ MacroButtonEventHandler::str() const
 {
   return "macro";
 }
-
+
 /* EOF */

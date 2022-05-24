@@ -17,7 +17,7 @@
 */
 
 #include "xpad_device.hpp"
-
+
 // FIXME: We shouldn't check device-ids, but device class or so, to
 // automatically catch all third party stuff
 XPadDevice xpad_devices[] = {
@@ -162,5 +162,5 @@ bool find_xpad_device(uint16_t idVendor, uint16_t idProduct, XPadDevice* dev_typ
   }
   return false;
 }
-
+
 /* EOF */

@@ -29,7 +29,7 @@
 class Chatpad;
 class Headset;
 struct XPadDevice;
-
+
 class Xbox360Controller : public USBController
 {
 private:
@@ -64,7 +64,7 @@ private:
   Xbox360Controller (const Xbox360Controller&);
   Xbox360Controller& operator= (const Xbox360Controller&);
 };
-
+
 #endif
 
 /* EOF */

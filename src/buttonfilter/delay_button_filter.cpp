@@ -27,7 +27,7 @@ DelayButtonFilter::from_string(const std::string& str)
 {
   return new DelayButtonFilter(str2int(str));
 }
-
+
 DelayButtonFilter::DelayButtonFilter(int delay) :
   m_delay(delay),
   m_time(0)

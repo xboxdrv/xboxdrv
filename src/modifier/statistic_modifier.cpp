@@ -28,7 +28,7 @@ StatisticModifier::from_string(const std::vector<std::string>& args)
 {
   return new StatisticModifier;
 }
-
+
 StatisticModifier::StatisticModifier() :
   m_button_state(),
   m_press_count()

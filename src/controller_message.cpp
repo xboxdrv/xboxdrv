@@ -99,7 +99,7 @@ ControllerMessage::set_rel(int rel, int v)
 {
   m_rel_state[rel] = v;
 }
-
+
 int
 ControllerMessage::get_abs_min(int abs)
 {
@@ -126,7 +126,7 @@ ControllerMessage::operator!=(const ControllerMessage& rhs) const
 {
   return !((*this) == rhs);
 }
-
+
 std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, const ControllerMessageDescriptor& desc)
 {
   for(int i = 0; i < desc.get_key_count(); ++i)
@@ -149,5 +149,5 @@ std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, co
 
   return out;
 }
-
+
 /* EOF */

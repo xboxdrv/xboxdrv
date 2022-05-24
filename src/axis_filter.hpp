@@ -26,7 +26,7 @@
 class AxisFilter;
 
 typedef std::shared_ptr<AxisFilter> AxisFilterPtr;
-
+
 class AxisFilter
 {
 public:
@@ -40,7 +40,7 @@ public:
   virtual int filter(int value, int min, int max) = 0;
   virtual std::string str() const = 0;
 };
-
+
 #endif
 
 /* EOF */

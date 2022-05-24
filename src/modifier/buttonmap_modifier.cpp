@@ -29,7 +29,7 @@
 
 using namespace std::placeholders;
 
-
+
 class ButtonMapping
 {
 public:
@@ -49,7 +49,7 @@ public:
 
   std::vector<ButtonFilterPtr> filters;
 };
-
+
 ButtonMappingPtr
 ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
 {
@@ -87,7 +87,7 @@ ButtonMapping::init(ControllerMessageDescriptor& desc)
   lhs.init(desc);
   rhs.init(desc);
 }
-
+
 ButtonmapModifier*
 ButtonmapModifier::from_string(const std::string& args)
 {
@@ -111,7 +111,7 @@ ButtonmapModifier::from_option(const std::vector<ButtonMappingOption>& mappings)
 
   return modifier.release();
 }
-
+
 ButtonmapModifier::ButtonmapModifier() :
   m_buttonmap()
 {
@@ -197,5 +197,5 @@ ButtonmapModifier::str() const
   }
   return out.str();
 }
-
+
 /* EOF */

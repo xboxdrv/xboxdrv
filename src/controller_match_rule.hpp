@@ -29,7 +29,7 @@ extern "C" {
 struct udev_device;
 class ControllerMatchRule;
 typedef std::shared_ptr<ControllerMatchRule> ControllerMatchRulePtr;
-
+
 class ControllerMatchRule
 {
 public:
@@ -42,7 +42,7 @@ public:
 
   virtual bool match(udev_device* device) const =0;
 };
-
+
 class ControllerMatchRuleGroup : public ControllerMatchRule
 {
 private:
@@ -56,7 +56,7 @@ public:
   void add_rule_from_string(const std::string& lhs, const std::string& rhs);
   bool match(udev_device* device) const override;
 };
-
+
 #endif
 
 /* EOF */

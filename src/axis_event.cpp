@@ -24,7 +24,7 @@
 
 #include "evdev_helper.hpp"
 #include "raise_exception.hpp"
-
+
 AxisEvent::AxisEvent(AxisEventHandler* handler) :
   m_last_raw_value(0),
   m_last_send_value(0),
@@ -76,9 +76,9 @@ AxisEvent::str() const
 {
   return m_handler->str();
 }
-
+
 AxisEventHandler::AxisEventHandler()
 {
 }
-
+
 /* EOF */

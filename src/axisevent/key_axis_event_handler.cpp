@@ -25,7 +25,7 @@
 #include "evdev_helper.hpp"
 #include "util/math.hpp"
 #include "util/string.hpp"
-
+
 KeyAxisEventHandler*
 KeyAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                  const std::string& str)
@@ -156,5 +156,5 @@ KeyAxisEventHandler::str() const
   out << m_up_codes.str() << ":" << m_down_codes.str() << ":" << m_threshold;
   return out.str();
 }
-
+
 /* EOF */

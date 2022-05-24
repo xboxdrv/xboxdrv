@@ -26,7 +26,7 @@
 #include "xbox360_default_names.hpp"
 
 struct XPadDevice;
-
+
 class XboxOneWirelessController : public USBController
 {
 private:

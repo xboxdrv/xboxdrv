@@ -25,7 +25,7 @@
 
 #include "util/string.hpp"
 #include "controller_message_descriptor.hpp"
-
+
 ButtonCombination
 ButtonCombination::from_string(const std::string& str)
 {
@@ -38,7 +38,7 @@ ButtonCombination::from_string(const std::string& str)
     return ButtonCombination(strut::split(str, '+'));
   }
 }
-
+
 ButtonCombination::ButtonCombination() :
   m_buttons_str(),
   m_buttons()
@@ -158,11 +158,11 @@ ButtonCombination::operator==(const ButtonCombination& rhs) const
                       rhs.m_buttons.begin());
   }
 }
-
+
 std::ostream& operator<<(std::ostream& os, const ButtonCombination& buttons)
 {
   buttons.print(os);
   return os;
 }
-
+
 /* EOF */

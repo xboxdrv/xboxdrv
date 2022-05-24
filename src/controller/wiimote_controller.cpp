@@ -460,7 +460,7 @@ WiimoteController::on_classic (const cwiid_classic_mesg& msg)
 {
   log_tmp_trace();
 }
-
+
 void
 WiimoteController::err_callback(cwiid_wiimote_t*, const char *s, va_list ap)
 {
@@ -511,7 +511,7 @@ WiimoteController::mesg_callback(cwiid_wiimote_t*, int mesg_count, union cwiid_m
     }
   }
 }
-
+
 #endif /* HAVE_CWIID */
 
 /* EOF */

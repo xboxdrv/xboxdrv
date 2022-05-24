@@ -22,7 +22,7 @@
 #include <stdint.h>
 
 #include "xboxmsg.hpp"
-
+
 struct XPadDevice
 {
   GamepadType type;
@@ -37,7 +37,7 @@ bool find_xpad_device(uint16_t idVendor, uint16_t idProduct, XPadDevice* dev_typ
 
 extern XPadDevice xpad_devices[];
 extern const int xpad_devices_count;
-
+
 #endif
 
 /* EOF */

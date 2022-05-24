@@ -26,7 +26,7 @@
 
 class Modifier;
 class Options;
-
+
 typedef std::shared_ptr<Modifier> ModifierPtr;
 
 struct ModifierOption
@@ -54,7 +54,7 @@ public:
 
   virtual std::string str() const = 0;
 };
-
+
 #endif
 
 /* EOF */

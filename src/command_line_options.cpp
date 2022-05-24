@@ -51,7 +51,7 @@
 #include "xboxdrv_vfs.hpp"
 
 using namespace std::placeholders;
-
+
 enum {
   OPTION_HELP,
   OPTION_VERBOSE,
@@ -149,7 +149,7 @@ enum {
   OPTION_DAEMON_ON_CONNECT,
   OPTION_DAEMON_ON_DISCONNECT
 };
-
+
 CommandLineParser::CommandLineParser() :
   m_argp(),
   m_ini(),
@@ -157,7 +157,7 @@ CommandLineParser::CommandLineParser() :
   m_directory_context()
 {
 }
-
+
 void
 CommandLineParser::init_argp(int argc, char** argv)
 {
@@ -326,7 +326,7 @@ CommandLineParser::init_argp(int argc, char** argv)
     .add_text("See README for more documentation and examples.")
     .add_text("Report bugs to Ingo Ruhnke <grumbel@gmail.com>");
 }
-
+
 void
 CommandLineParser::init_ini(Options* opts)
 {
@@ -454,7 +454,7 @@ CommandLineParser::init_ini(Options* opts)
   m_ini.section("evdev-keymap", std::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
   m_ini.section("evdev-relmap", std::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
 }
-
+
 void
 CommandLineParser::parse_args(int argc, char** argv, Options* options)
 {

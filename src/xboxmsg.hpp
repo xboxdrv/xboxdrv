@@ -20,7 +20,7 @@
 #define HEADER_XBOXMSG_HPP
 
 #include <iosfwd>
-
+
 enum GamepadType {
   GAMEPAD_UNKNOWN,
   GAMEPAD_XBOX,
@@ -40,18 +40,18 @@ enum GamepadType {
   GAMEPAD_WIIMOTE,
   GAMEPAD_HAMA_CRUX
 };
-
+
 enum XboxMsgType {
   XBOX_MSG_XBOX,
   XBOX_MSG_XBOX360,
   XBOX_MSG_PS3USB
 };
-
+
 std::ostream& operator<<(std::ostream& out, const GamepadType& type);
-
+
 std::string gamepadtype_to_string(const GamepadType& type);
 std::string gamepadtype_to_macro_string(const GamepadType& type);
-
+
 #endif
 
 /* EOF */

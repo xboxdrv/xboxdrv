@@ -23,7 +23,7 @@
 
 #include "button_filter.hpp"
 #include "modifier.hpp"
-
+
 struct ButtonMappingOption
 {
   ButtonMappingOption(const std::string& lhs_,
@@ -35,10 +35,10 @@ struct ButtonMappingOption
   std::string lhs;
   std::string rhs;
 };
-
+
 class ButtonMapping;
 typedef std::shared_ptr<ButtonMapping> ButtonMappingPtr;
-
+
 class ButtonmapModifier : public Modifier
 {
 public:
@@ -62,7 +62,7 @@ public:
 public:
   std::vector<ButtonMappingPtr> m_buttonmap;
 };
-
+
 #endif
 
 /* EOF */

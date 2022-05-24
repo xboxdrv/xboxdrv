@@ -24,7 +24,7 @@
 #include "controller_message.hpp"
 #include "util/math.hpp"
 #include "util/string.hpp"
-
+
 namespace {
 
 void squarify_axis(float& x_inout, float& y_inout)
@@ -49,7 +49,7 @@ void squarify_axis(float& x_inout, float& y_inout)
 
 } // namespace
 
-
+
 SquareAxisModifier*
 SquareAxisModifier::from_string(const std::vector<std::string>& args)
 {
@@ -66,7 +66,7 @@ SquareAxisModifier::from_string(const std::vector<std::string>& args)
     throw std::runtime_error("SquareAxisModifier requires two or four arguments");
   }
 }
-
+
 SquareAxisModifier::SquareAxisModifier(const std::string& x_axis_in,  const std::string& y_axis_in,
                                        const std::string& x_axis_out, const std::string& y_axis_out) :
   m_xaxis_in(x_axis_in),
@@ -109,5 +109,5 @@ SquareAxisModifier::str() const
       << m_yaxis_out.str();
   return out.str();
 }
-
+
 /* EOF */

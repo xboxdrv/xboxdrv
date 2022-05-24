@@ -21,7 +21,7 @@
 #include <math.h>
 #include <sstream>
 #include <stdexcept>
-
+
 FourWayRestrictorModifier*
 FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
 {
@@ -38,7 +38,7 @@ FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
     throw std::runtime_error("FourWayRestrictorModifier requires two or four arguments");
   }
 }
-
+
 FourWayRestrictorModifier::FourWayRestrictorModifier(const std::string& xaxis_in, const std::string& yaxis_in,
                                                      const std::string& xaxis_out, const std::string& yaxis_out) :
   m_xaxis_in(xaxis_in),
@@ -81,5 +81,5 @@ FourWayRestrictorModifier::str() const
       << m_xaxis_out.str() << ":" << m_yaxis_out.str();
   return out.str();
 }
-
+
 /* EOF */

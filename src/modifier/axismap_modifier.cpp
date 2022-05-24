@@ -28,7 +28,7 @@
 #include "util/string.hpp"
 
 using namespace std::placeholders;
-
+
 AxisMappingPtr
 AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
 {
@@ -80,7 +80,7 @@ AxisMapping::init(ControllerMessageDescriptor& desc)
   rhs.init(desc);
 }
 
-
+
 AxismapModifier*
 AxismapModifier::from_string(const std::string& args)
 {
@@ -104,7 +104,7 @@ AxismapModifier::from_option(const std::vector<AxisMappingOption>& mappings)
 
   return modifier.release();
 }
-
+
 AxismapModifier::AxismapModifier() :
   m_axismap()
 {
@@ -196,5 +196,5 @@ AxismapModifier::str() const
   }
   return out.str();
 }
-
+
 /* EOF */

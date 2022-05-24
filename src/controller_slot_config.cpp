@@ -93,7 +93,7 @@ ControllerSlotConfig::create(uinpp::MultiDevice& uinput, int slot, bool extra_de
 
   return m_config;
 }
-
+
 ControllerSlotConfig::ControllerSlotConfig() :
   m_config(),
   m_current_config(0),

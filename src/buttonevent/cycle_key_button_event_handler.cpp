@@ -138,7 +138,7 @@ CycleKeyButtonEventHandler::lookup(const std::string& name)
     return it->second;
   }
 }
-
+
 CycleKeyButtonEventHandler::CycleKeyButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                                        CycleKeySequencePtr sequence,
                                                        Direction direction,

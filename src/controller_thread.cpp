@@ -31,7 +31,7 @@
 using namespace std::placeholders;
 
 extern bool global_exit_xboxdrv;
-
+
 ControllerThread::ControllerThread(ControllerPtr controller,
                                    ControllerSlotConfigPtr config,
                                    const Options& opts) :
@@ -90,5 +90,5 @@ ControllerThread::on_message(const ControllerMessage& msg)
     m_processor->send(msg, m_controller->get_message_descriptor(), msec_delta);
   }
 }
-
+
 /* EOF */

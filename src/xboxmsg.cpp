@@ -20,7 +20,7 @@
 
 #include "raise_exception.hpp"
 #include "unpack.hpp"
-
+
 std::string gamepadtype_to_string(const GamepadType& type)
 {
   switch (type)
@@ -69,7 +69,7 @@ std::string gamepadtype_to_string(const GamepadType& type)
       return {};
   }
 }
-
+
 
 std::string gamepadtype_to_macro_string(const GamepadType& type)
 {
@@ -92,7 +92,7 @@ std::string gamepadtype_to_macro_string(const GamepadType& type)
       return {};
   }
 }
-
+
 std::ostream& operator<<(std::ostream& out, const GamepadType& type)
 {
   switch (type)
@@ -151,5 +151,5 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
 
   return out << "unknown" << std::endl;
 }
-
+
 /* EOF */

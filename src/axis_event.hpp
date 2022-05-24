@@ -29,7 +29,7 @@ class AxisEvent;
 class AxisEventHandler;
 
 typedef std::shared_ptr<AxisEvent> AxisEventPtr;
-
+
 class AxisEvent
 {
 public:
@@ -51,7 +51,7 @@ private:
   std::unique_ptr<AxisEventHandler> m_handler;
   std::vector<AxisFilterPtr> m_filters;
 };
-
+
 class AxisEventHandler
 {
 public:
@@ -63,7 +63,7 @@ public:
 
   virtual std::string str() const =0;
 };
-
+
 #endif
 
 /* EOF */

@@ -32,7 +32,7 @@
 class Options;
 class Xboxdrv;
 class AxisMap;
-
+
 class CommandLineParser
 {
 public:
@@ -119,7 +119,7 @@ private:
 };
 
 extern Options* g_options;
-
+
 #endif
 
 /* EOF */

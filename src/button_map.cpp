@@ -21,7 +21,7 @@
 #include <iostream>
 
 #include "button_event_factory.hpp"
-
+
 ButtonMap::ButtonMap(const ButtonMapOptions& opts, uinpp::MultiDevice& uinput, int slot, bool extra_devices) :
   m_map()
 {

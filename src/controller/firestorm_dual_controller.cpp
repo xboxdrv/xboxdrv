@@ -25,7 +25,7 @@
 #include <logmich/log.hpp>
 #include "unpack.hpp"
 #include "usb_helper.hpp"
-
+
 // 044f:b312
 struct Firestorm_vsb_Msg
 {
@@ -52,7 +52,7 @@ struct Firestorm_vsb_Msg
   int x2 :8;
   unsigned int y2 :8;
 } __attribute__((__packed__));
-
+
 // 044f:b304
 struct FirestormMsg
 {
@@ -81,7 +81,7 @@ struct FirestormMsg
   int x2 :8;
   unsigned int y2 :8;
 } __attribute__((__packed__));
-
+
 FirestormDualController::FirestormDualController(libusb_device* dev, bool is_vsb_, bool try_detach) :
   USBController(dev),
   is_vsb(is_vsb_),
@@ -246,5 +246,5 @@ FirestormDualController::parse(const uint8_t* data, int len, ControllerMessage* 
     return parse_default(data, len, msg_out);
   }
 }
-
+
 /* EOF */

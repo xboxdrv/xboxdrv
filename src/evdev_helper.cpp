@@ -25,36 +25,36 @@
 
 #include "util/math.hpp"
 #include "util/string.hpp"
-
+
 EvDevRelEnum evdev_rel_names;
 EvDevKeyEnum evdev_key_names;
 EvDevAbsEnum evdev_abs_names;
-
+
 const X11KeysymEnum& get_x11keysym_names()
 {
   static X11KeysymEnum x11keysym_names;
   return x11keysym_names;
 }
-
+
 EvDevRelEnum::EvDevRelEnum() :
   EnumBox<int>("EV_REL")
 {
 #  include "rel_list.x"
 }
-
+
 EvDevAbsEnum::EvDevAbsEnum() :
     EnumBox<int>("EV_ABS")
 {
 #  include "abs_list.x"
 }
-
+
 
 EvDevKeyEnum::EvDevKeyEnum() :
   EnumBox<int>("EV_KEY")
 {
 #  include "key_list.x"
 }
-
+
 X11KeysymEnum::X11KeysymEnum() :
   EnumBox<int>("X11Keysym")
 {
@@ -109,12 +109,12 @@ X11KeysymEnum::process_keymap(Display* dpy)
 
   XFree(keymap);
 }
-
+
 int xkeysym2keycode(const std::string& name)
 {
   return get_x11keysym_names()[name];
 }
-
+
 void str2event(const std::string& name, int& type, int& code)
 {
   if (name == "void" || name == "none")
@@ -298,5 +298,5 @@ std::string rel2str(int v)
     return str.str();
   }
 }
-
+
 /* EOF */

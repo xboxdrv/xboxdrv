@@ -24,7 +24,7 @@
 #include "controller/usb_controller.hpp"
 #include "xboxmsg.hpp"
 #include "xbox360_default_names.hpp"
-
+
 class SaitekP2500Controller : public USBController
 {
 private:
@@ -46,7 +46,7 @@ private:
   SaitekP2500Controller(const SaitekP2500Controller&);
   SaitekP2500Controller& operator=(const SaitekP2500Controller&);
 };
-
+
 #endif
 
 /* EOF */

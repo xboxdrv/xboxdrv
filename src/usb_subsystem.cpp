@@ -45,7 +45,7 @@ USBSubsystem::~USBSubsystem()
   m_usb_gsource.reset();
   libusb_exit(NULL);
 }
-
+
 void
 USBSubsystem::find_controller(libusb_device** dev, XPadDevice& dev_type, const Options& opts)
 {

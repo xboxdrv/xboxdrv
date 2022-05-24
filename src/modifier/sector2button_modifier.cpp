@@ -37,7 +37,7 @@ Sector2ButtonModifier::from_string(const std::vector<std::string>& args)
                                      std::vector<std::string>(args.begin()+2, args.end()));
   }
 }
-
+
 Sector2ButtonModifier::Sector2ButtonModifier(const std::string& xaxis, const std::string& yaxis,
                                              const std::vector<std::string>& out_buttons_str) :
   m_xaxis_str(xaxis),

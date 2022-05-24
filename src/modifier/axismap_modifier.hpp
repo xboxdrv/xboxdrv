@@ -24,7 +24,7 @@
 #include "controller_message.hpp"
 #include "controller_thread.hpp"
 #include "modifier.hpp"
-
+
 struct AxisMappingOption
 {
   AxisMappingOption(const std::string& lhs_,
@@ -36,7 +36,7 @@ struct AxisMappingOption
   std::string lhs;
   std::string rhs;
 };
-
+
 struct AxisMapping;
 typedef std::shared_ptr<AxisMapping> AxisMappingPtr;
 
@@ -58,7 +58,7 @@ struct AxisMapping
 
   void init(ControllerMessageDescriptor& desc);
 };
-
+
 class AxismapModifier : public Modifier
 {
 public:
@@ -81,7 +81,7 @@ public:
 public:
   std::vector<AxisMappingPtr> m_axismap;
 };
-
+
 #endif
 
 /* EOF */
