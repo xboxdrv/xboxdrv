@@ -22,17 +22,6 @@
 #include <algorithm>
 #include <assert.h>
 
-namespace Math {
-
-template<class T>
-T clamp (const T& low, const T& v, const T& high)
-{
-  assert(low <= high);
-  return std::max((low), std::min((v), (high)));
-}
-
-} // namespace Math
-
 /** converts the arbitary range to [-1,1] */
 float to_float(int value, int min, int max);
 float to_float_no_range_check(int value, int min, int max);

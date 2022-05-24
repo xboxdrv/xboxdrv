@@ -21,7 +21,6 @@
 #include <sstream>
 
 #include "util/string.hpp"
-#include "util/math.hpp"
 
 CalibrationAxisFilter*
 CalibrationAxisFilter::from_string(const std::string& str)
@@ -64,7 +63,7 @@ CalibrationAxisFilter::filter(int value, int min, int max)
   else
     value = 0;
 
-  return Math::clamp(min, value, max);
+  return std::clamp(value, min, max);
 }
 
 std::string

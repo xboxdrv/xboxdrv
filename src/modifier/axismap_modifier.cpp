@@ -166,7 +166,7 @@ AxismapModifier::update(int msec_delta, ControllerMessage& msg, const Controller
       // but doesn't work for half axis which have their center at
       // -1.0f
       float rhs = newmsg.get_abs_float((*i)->rhs.get_abs());
-      newmsg.set_abs_float((*i)->rhs.get_abs(), Math::clamp(-1.0f, lhs + rhs, 1.0f));
+      newmsg.set_abs_float((*i)->rhs.get_abs(), std::clamp(lhs + rhs, -1.0f, 1.0f));
     }
   }
   msg = newmsg;

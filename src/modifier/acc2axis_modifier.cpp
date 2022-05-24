@@ -92,8 +92,8 @@ Acc2AxisModifier::update(int msec_delta, ControllerMessage& msg, const Controlle
   rx = static_cast<float>(rx / (std::numbers::pi_v<float>/2.0f));
   ry = static_cast<float>(ry / (std::numbers::pi_v<float>/2.0f));
 
-  rx = Math::clamp(-1.0f, rx, 1.0f);
-  ry = Math::clamp(-1.0f, ry, 1.0f);
+  rx = std::clamp(rx, -1.0f, 1.0f);
+  ry = std::clamp(ry, -1.0f, 1.0f);
 
   //log_tmp("Rot: " /*<< ax << " " << ay << " " << az << " -- " */<< rx << " " << ry);
 

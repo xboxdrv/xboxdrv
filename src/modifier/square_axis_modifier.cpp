@@ -42,8 +42,8 @@ void squarify_axis(float& x_inout, float& y_inout)
     y *= v;
 
     // Convert values to int
-    x_inout = Math::clamp(-1.0f, x, 1.0f);
-    y_inout = Math::clamp(-1.0f, y, 1.0f);
+    x_inout = std::clamp(x, -1.0f, 1.0f);
+    y_inout = std::clamp(y, -1.0f, 1.0f);
   }
 }
 
