@@ -24,7 +24,7 @@
 #include <argparser/argparser.hpp>
 
 #include <uinpp/multi_device.hpp>
-#include <yaini/ini_schema.hpp>
+#include <yaini/schema.hpp>
 
 #include "axis_map_option.hpp"
 #include "button_map_option.hpp"
@@ -37,7 +37,7 @@ class CommandLineParser
 {
 public:
   argparser::ArgParser m_argp;
-  INISchema m_ini;
+  yaini::Schema m_ini;
   Options*  m_options;
   std::vector<std::string> m_directory_context;
 

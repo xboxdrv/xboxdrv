@@ -27,8 +27,8 @@
 
 #include <uinpp/event.hpp>
 #include <uinpp/parse.hpp>
-#include <yaini/ini_parser.hpp>
-#include <yaini/ini_schema_builder.hpp>
+#include <yaini/parser.hpp>
+#include <yaini/schema_builder.hpp>
 
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
@@ -563,7 +563,7 @@ CommandLineParser::apply_opt(argparser::ParsedOption const& opt, Options& opts)
           std::string name, value;
           split_string_at(opt.argument, '=', &name, &value);
 
-          INISchemaBuilder builder(m_ini);
+          yaini::SchemaBuilder builder(m_ini);
           builder.send_section("xboxdrv");
           builder.send_pair(name, value);
         }
@@ -1249,8 +1249,8 @@ CommandLineParser::read_buildin_config_file(const std::string& filename,
   }
   else
   {
-    INISchemaBuilder builder(m_ini);
-    INIParser parser(in, builder, filename);
+    yaini::SchemaBuilder builder(m_ini);
+    yaini::Parser parser(in, builder, filename);
     parser.run();
   }
 }
@@ -1269,8 +1269,8 @@ CommandLineParser::read_config_file(const std::string& filename)
   {
     m_directory_context.push_back(path::dirname(filename));
 
-    INISchemaBuilder builder(m_ini);
-    INIParser parser(in, builder, filename);
+    yaini::SchemaBuilder builder(m_ini);
+    yaini::Parser parser(in, builder, filename);
     parser.run();
 
     m_directory_context.pop_back();

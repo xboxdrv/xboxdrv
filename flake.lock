@@ -236,11 +236,11 @@
         "tinycmmc": "tinycmmc_3"
       },
       "locked": {
-        "lastModified": 1653382685,
-        "narHash": "sha256-an9lur5OOUl3RAa2mQhYFMzgQS6GGddUof2Br834I+c=",
+        "lastModified": 1653392994,
+        "narHash": "sha256-1VaHRHInUSQ19JEh8mfC4Ju92UADqMR+jMOzJzFDuzM=",
         "owner": "Grumbel",
         "repo": "yaini",
-        "rev": "a4d790f05e629a80243d43ff00100f5498421bc2",
+        "rev": "797a11fa296b638920ec924bc9d0ef5919bc25a3",
         "type": "gitlab"
       },
       "original": {
