@@ -21,6 +21,8 @@
 #include <functional>
 #include <sstream>
 
+#include <strut/split.hpp>
+
 #include "axisfilter/invert_axis_filter.hpp"
 #include "util/math.hpp"
 #include "util/string.hpp"
@@ -42,7 +44,7 @@ AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
     lhs = lhs.substr(1);
   }
 
-  std::vector<std::string> tks = string_split(lhs, "^");
+  std::vector<std::string> const tks = strut::split(lhs, '^');
 
   if (!tks.empty())
   {

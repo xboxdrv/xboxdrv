@@ -561,7 +561,7 @@ CommandLineParser::apply_opt(argparser::ParsedOption const& opt, Options& opts)
       case OPTION_CONFIG_OPTION:
         {
           std::string name, value;
-          split_string_at(opt.argument, '=', &name, &value);
+          strut::split_at(opt.argument, '=', &name, &value);
 
           yaini::SchemaBuilder builder(m_ini);
           builder.send_section("xboxdrv");
@@ -1085,7 +1085,7 @@ CommandLineParser::set_keymap(const std::string& name, const std::string& value)
 void
 CommandLineParser::set_keymap_helper(ButtonMapOptions& btn_map, const std::string& name, const std::string& value)
 {
-  std::vector<std::string> lst = string_split(name, "^");
+  std::vector<std::string> lst = strut::split(name, '^');
 
   int idx = 0;
   for(std::vector<std::string>::iterator t = lst.begin(); t != lst.end(); ++t, ++idx)
@@ -1113,7 +1113,7 @@ CommandLineParser::set_absmap(const std::string& name, const std::string& value)
 void
 CommandLineParser::set_absmap_helper(AxisMapOptions& axis_map, const std::string& name, const std::string& value)
 {
-  std::vector<std::string> lst = string_split(name, "^");
+  std::vector<std::string> lst = strut::split(name, '^');
 
   int idx = 0;
   for(std::vector<std::string>::iterator t = lst.begin(); t != lst.end(); ++t, ++idx)
@@ -1178,7 +1178,7 @@ CommandLineParser::set_autofire(const std::string& name, const std::string& valu
 void
 CommandLineParser::set_calibration(const std::string& name, const std::string& value)
 {
-  std::vector<std::string> args = string_split(name, ":");
+  std::vector<std::string> args = strut::split(name, ':');
 
   if (args.size() != 3)
   {

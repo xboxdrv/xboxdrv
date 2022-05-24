@@ -56,6 +56,11 @@ function(build_dependencies)
     add_subdirectory(external/logmich/)
   endif()
 
+  find_package(strut)
+  if(NOT TARGET strut::strut)
+    add_subdirectory(external/strut/)
+  endif()
+
   find_package(uinpp)
   if(NOT TARGET uinpp::uinpp)
     add_subdirectory(external/uinpp/)
@@ -125,6 +130,7 @@ target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 
 target_link_libraries(libxboxdrv PUBLIC
   argparser::argparser
+  strut::strut
   uinpp::uinpp
   yaini::yaini
   fmt::fmt
@@ -144,22 +150,22 @@ target_link_libraries(xboxdrv libxboxdrv)
 if(BUILD_TESTS)
   enable_testing()
 
-  find_package(GTest REQUIRED)
-
+  # find_package(GTest REQUIRED)
+  #
   # build automatic tests
-  file(GLOB XBOXDRV_TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    test/*_gtest.cpp)
-  add_executable(test_xboxdrv ${XBOXDRV_TEST_SOURCES})
-  set_target_properties(test_xboxdrv PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF)
-  target_compile_options(test_xboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
-  target_link_libraries(test_xboxdrv GTest::GTest GTest::Main libxboxdrv)
-
-  add_test(NAME test_xboxdrv
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMAND test_xboxdrv)
+  # file(GLOB XBOXDRV_TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+  #   test/*_gtest.cpp)
+  # add_executable(test_xboxdrv ${XBOXDRV_TEST_SOURCES})
+  # set_target_properties(test_xboxdrv PROPERTIES
+  #   CXX_STANDARD 20
+  #   CXX_STANDARD_REQUIRED ON
+  #   CXX_EXTENSIONS OFF)
+  # target_compile_options(test_xboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
+  # target_link_libraries(test_xboxdrv GTest::GTest GTest::Main libxboxdrv)
+  #
+  # add_test(NAME test_xboxdrv
+  #   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  #   COMMAND test_xboxdrv)
 
   # build old manual tests
   file(GLOB TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}

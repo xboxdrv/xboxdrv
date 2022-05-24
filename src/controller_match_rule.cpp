@@ -20,6 +20,8 @@
 
 #include <assert.h>
 
+#include <strut/split.hpp>
+
 #include "raise_exception.hpp"
 #include "util/string.hpp"
 
@@ -121,7 +123,7 @@ ControllerMatchRulePtr
 ControllerMatchRule::from_string(const std::string& lhs,
                                  const std::string& rhs)
 {
-  std::vector<std::string> args = string_split(rhs, ":");
+  std::vector<std::string> args = strut::split(rhs, ':');
 
   if (lhs == "usbid")
   {

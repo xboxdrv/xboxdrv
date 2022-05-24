@@ -18,6 +18,8 @@
 
 #include <iostream>
 
+#include <strut/split.hpp>
+
 #include "button_filter.hpp"
 #include "util/string.hpp"
 
@@ -35,7 +37,7 @@ int main(int argc, char** argv)
     std::string str = argv[1];
     int duration = (argc == 3) ? std::stoi(argv[2]) : 0;
 
-    auto tokens = string_split(str, "^");
+    auto tokens = strut::split(str, '^');
     for(auto t = tokens.begin(); t != tokens.end(); ++t)
     {
       filters.push_back(ButtonFilter::from_string(*t));

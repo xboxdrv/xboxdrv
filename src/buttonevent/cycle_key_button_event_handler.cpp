@@ -20,6 +20,7 @@
 
 #include <stdexcept>
 
+#include <strut/split.hpp>
 #include <uinpp/event_sequence.hpp>
 
 #include "util/string.hpp"
@@ -64,7 +65,7 @@ CycleKeyButtonEventHandler*
 CycleKeyButtonEventHandler::from_string_named(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                               const std::string& value, bool wrap_around)
 {
-  auto tokens = string_split(value, ":");
+  auto tokens = strut::split(value, ':');
   std::vector<std::string> args(tokens.begin(), tokens.end());
 
   if (args.size() < 2)
@@ -99,7 +100,7 @@ CycleKeyButtonEventHandler*
 CycleKeyButtonEventHandler::from_string_ref(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                             const std::string& value)
 {
-  auto args = string_split(value, ":");
+  auto args = strut::split(value, ':');
 
   if (args.size() > 0)
   {

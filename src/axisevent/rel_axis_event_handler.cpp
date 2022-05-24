@@ -21,6 +21,7 @@
 #include <math.h>
 
 #include <uinpp/multi_device.hpp>
+#include <strut/split.hpp>
 
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
@@ -29,7 +30,7 @@ RelAxisEventHandler*
 RelAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                  const std::string& str)
 {
-  auto tokens = string_split(str, ":");
+  auto tokens = strut::split(str, ':');
 
   uinpp::Event code = uinpp::Event::invalid();
   int     repeat = 10;

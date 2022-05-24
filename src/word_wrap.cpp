@@ -20,6 +20,8 @@
 
 #include <iostream>
 
+#include <strut/tokenize.hpp>
+
 #include "util/string.hpp"
 
 WordWrap::WordWrap(int terminal_width) :
@@ -48,7 +50,7 @@ WordWrap::para(const std::string& str) const
 void
 WordWrap::para(const std::string& prefix, const std::string& str) const
 {
-  auto tokens = string_tokenize(str, " ");
+  auto tokens = strut::tokenize(str, ' ');
 
   int len = static_cast<int>(prefix.size());
   std::cout << prefix;

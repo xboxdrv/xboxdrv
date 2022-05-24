@@ -18,6 +18,8 @@
 
 #include <iostream>
 
+#include <strut/split.hpp>
+
 #include "util/string.hpp"
 #include "axis_filter.hpp"
 
@@ -34,7 +36,7 @@ int main(int argc, char** argv)
 
     std::string str = argv[1];
 
-    auto tokens = string_split(str, "^");
+    auto tokens = strut::split(str, '^');
     for(auto t = tokens.begin(); t != tokens.end(); ++t)
     {
       filters.push_back(AxisFilter::from_string(*t));

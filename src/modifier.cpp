@@ -20,6 +20,8 @@
 
 #include <linux/input.h>
 
+#include <strut/split.hpp>
+
 #include "modifier/acc2axis_modifier.hpp"
 #include "modifier/axismap_modifier.hpp"
 #include "modifier/axismap_modifier.hpp"
@@ -59,7 +61,7 @@ Modifier::from_string(const std::string& name, const std::string& value)
   }
   else
   {
-    std::vector<std::string> args = string_split(value, ":");
+    std::vector<std::string> args = strut::split(value, ':');
 
     if (name == "dpad-rotation" || name == "dpad-rotate")
     {

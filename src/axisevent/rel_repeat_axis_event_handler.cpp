@@ -21,6 +21,7 @@
 #include <math.h>
 #include <sstream>
 
+#include <strut/split.hpp>
 #include <uinpp/multi_device.hpp>
 
 #include "evdev_helper.hpp"
@@ -32,7 +33,7 @@ RelRepeatAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, boo
                                        const std::string& str)
 {
   // split string at ':'
-  std::vector<std::string> args = string_split(str, ":");
+  std::vector<std::string> args = strut::split(str, ':');
 
   if (args.size() == 3)
   {

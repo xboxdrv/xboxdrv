@@ -20,6 +20,8 @@
 
 #include <sstream>
 
+#include <strut/split.hpp>
+
 #include "util/string.hpp"
 
 AutofireButtonFilter*
@@ -28,7 +30,7 @@ AutofireButtonFilter::from_string(const std::string& str)
   int rate  = 50;
   int delay = 0;
 
-  auto tokens = string_split(str, ":");
+  auto tokens = strut::split(str, ':');
   int idx = 0;
   for(auto t = tokens.begin(); t != tokens.end(); ++t, ++idx)
   {

@@ -21,6 +21,8 @@
 #include <assert.h>
 #include <algorithm>
 
+#include <strut/split.hpp>
+
 #include "util/string.hpp"
 #include "controller_message_descriptor.hpp"
 
@@ -33,7 +35,7 @@ ButtonCombination::from_string(const std::string& str)
   }
   else
   {
-    return ButtonCombination(string_split(str, "+"));
+    return ButtonCombination(strut::split(str, '+'));
   }
 }
 

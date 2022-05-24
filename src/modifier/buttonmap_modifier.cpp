@@ -21,6 +21,8 @@
 #include <functional>
 #include <sstream>
 
+#include <strut/split.hpp>
+
 #include "util/string.hpp"
 #include "key_port.hpp"
 #include "raise_exception.hpp"
@@ -51,7 +53,7 @@ public:
 ButtonMappingPtr
 ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
 {
-  std::vector<std::string> args = string_split(lhs, "^");
+  std::vector<std::string> args = strut::split(lhs, '^');
 
   if (args.empty())
   {

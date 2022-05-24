@@ -19,6 +19,7 @@
 #include "util/string.hpp"
 
 #include <fmt/format.h>
+#include <strut/split.hpp>
 
 #include "raise_exception.hpp"
 
@@ -105,34 +106,6 @@ std::string raw2str(const uint8_t* data, int len)
   return out.str();
 }
 
-std::string to_lower(const std::string &str)
-{
-  std::string lower_impl = str;
-
-  for( std::string::iterator i = lower_impl.begin();
-       i != lower_impl.end();
-       ++i )
-  {
-    *i = static_cast<char>(tolower(*i));
-  }
-
-  return lower_impl;
-}
-
-void split_string_at(const std::string& str, char c, std::string* lhs, std::string* rhs)
-{
-  std::string::size_type p = str.find(c);
-  if (p == std::string::npos)
-  {
-    *lhs = str;
-  }
-  else
-  {
-    *lhs = str.substr(0, p);
-    *rhs = str.substr(p+1);
-  }
-}
-
 void process_name_value_string(const std::string& str, const std::function<void (const std::string&, const std::string&)>& func)
 {
   int quote_count = 0;
@@ -170,7 +143,7 @@ void process_name_value_string(const std::string& str, const std::function<void 
         if (!res.empty())
         {
           std::string lhs, rhs;
-          split_string_at(res, '=', &lhs, &rhs);
+          strut::split_at(res, '=', &lhs, &rhs);
           func(lhs, rhs);
 
           res.clear();
@@ -195,7 +168,7 @@ void process_name_value_string(const std::string& str, const std::function<void 
   if (!res.empty())
   {
     std::string lhs, rhs;
-    split_string_at(res, '=', &lhs, &rhs);
+    strut::split_at(res, '=', &lhs, &rhs);
     func(lhs, rhs);
   }
 }
@@ -234,51 +207,6 @@ int to_number(int range, const std::string& str)
       return str2int(str);
     }
   }
-}
-
-std::vector<std::string> string_tokenize(std::string_view text, std::string_view delimiter)
-{
-  auto is_delimiter = [delimiter](char c) -> bool {
-    return std::find(delimiter.begin(), delimiter.end(), c) != delimiter.end();
-  };
-
-  std::vector<std::string> result;
-
-  for(std::string::size_type i = 0; i != text.size();)
-  {
-    while(is_delimiter(text[i]) && i != text.size()) { ++i; };
-    const std::string::size_type start = i;
-    while(!is_delimiter(text[i]) && i != text.size()) { ++i; };
-    const std::string::size_type end = i;
-    if (start != end) {
-      result.emplace_back(text.substr(start, end - start));
-    }
-  }
-
-  return result;
-}
-
-std::vector<std::string> string_split(std::string_view text, std::string_view delimiter)
-{
-  auto is_delimiter = [delimiter](char c) -> bool {
-    return std::find(delimiter.begin(), delimiter.end(), c) != delimiter.end();
-  };
-
-    std::vector<std::string> result;
-
-  std::string::size_type start = 0;
-  for(std::string::size_type i = 0; i != text.size(); ++i)
-  {
-    if (is_delimiter(text[i]))
-    {
-      result.emplace_back(text.substr(start, i - start));
-      start = i + 1;
-    }
-  }
-
-  result.emplace_back(text.substr(start));
-
-  return result;
 }
 
 /* EOF */

@@ -25,12 +25,14 @@
 #include <unistd.h>
 
 #include <logmich/log.hpp>
+#include <strut/split.hpp>
+
 #include "util/string.hpp"
 
 ExecButtonEventHandler*
 ExecButtonEventHandler::from_string(const std::string& str)
 {
-  return new ExecButtonEventHandler(string_split(str, ":"));
+  return new ExecButtonEventHandler(strut::split(str, ':'));
 }
 
 ExecButtonEventHandler::ExecButtonEventHandler(const std::vector<std::string>& args) :

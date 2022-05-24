@@ -35,7 +35,7 @@ KeyButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool ex
   uinpp::EventSequence secondary_codes;
   int hold_threshold = 0;
 
-  auto tokens = string_split(str, ":");
+  auto tokens = strut::split(str, ':');
   int idx = 0;
   for(auto i = tokens.begin(); i != tokens.end(); ++i, ++idx)
   {

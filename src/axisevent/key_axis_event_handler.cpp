@@ -30,7 +30,7 @@ KeyAxisEventHandler*
 KeyAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                  const std::string& str)
 {
-  auto tokens = string_split(str, ":");
+  auto tokens = strut::split(str, ':');
 
   uinpp::EventSequence up_codes;
   uinpp::EventSequence down_codes;

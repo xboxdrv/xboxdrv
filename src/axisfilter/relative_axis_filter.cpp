@@ -20,6 +20,8 @@
 
 #include <sstream>
 
+#include <strut/split.hpp>
+
 #include "util/math.hpp"
 #include "util/string.hpp"
 
@@ -28,7 +30,7 @@ RelativeAxisFilter::from_string(const std::string& str)
 {
   int speed = 20000;
 
-  auto tokens = string_split(str, ":");
+  auto tokens = strut::split(str, ':');
   int idx = 0;
   for(auto t = tokens.begin(); t != tokens.end(); ++t, ++idx)
   {

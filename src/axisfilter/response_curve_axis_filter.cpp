@@ -20,6 +20,8 @@
 
 #include <sstream>
 
+#include <strut/split.hpp>
+
 #include "util/string.hpp"
 
 ResponseCurveAxisFilter*
@@ -27,7 +29,7 @@ ResponseCurveAxisFilter::from_string(const std::string& str)
 {
   std::vector<int> samples;
 
-  auto tokens = string_split(str, ":");
+  auto tokens = strut::split(str, ':');
   int idx = 0;
   for(auto t = tokens.begin(); t != tokens.end(); ++t, ++idx)
   {

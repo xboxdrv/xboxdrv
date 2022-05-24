@@ -107,11 +107,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1645977297,
-        "narHash": "sha256-s5RhiA721UlNU6s00gJw/gE/4h0mpjZYlZPNJumi5i8=",
+        "lastModified": 1653399261,
+        "narHash": "sha256-Oe50JkhDT/b3texypfJXMy7Y9TsEBUed39bwt/udYnU=",
         "owner": "grumbel",
         "repo": "strutcpp",
-        "rev": "c304d0cef635445e4ee71d7a427e8f74d1f994e8",
+        "rev": "9d50ddf769dcecba985fca94f97484505561cd9c",
         "type": "gitlab"
       },
       "original": {
@@ -212,11 +212,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1653307368,
-        "narHash": "sha256-aGN4UTETQdZVR2k6xv/uKi1yn9mXIVmCK9bhm18CxyE=",
+        "lastModified": 1653401984,
+        "narHash": "sha256-/15t0gSeYDXTTiEoHFr1+k8ZlmCKSPO1X1cHikL2Wus=",
         "owner": "Grumbel",
         "repo": "uinpp",
-        "rev": "fbb21e50caa984d13cca119180889ef493cc8bd5",
+        "rev": "0f99af2f8feae938e57e5ca822710f1154345bdf",
         "type": "gitlab"
       },
       "original": {

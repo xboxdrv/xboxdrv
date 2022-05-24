@@ -21,13 +21,15 @@
 #include <math.h>
 #include <sstream>
 
+#include <strut/split.hpp>
+
 #include "util/math.hpp"
 #include "util/string.hpp"
 
 SensitivityAxisFilter*
 SensitivityAxisFilter::from_string(const std::string& str)
 {
-  auto tokens = string_split(str, ":");
+  auto tokens = strut::split(str, ':');
 
   float sensitivity = 0.0f;
 

@@ -23,6 +23,7 @@
 #include <linux/input.h>
 #include <vector>
 
+#include <strut/tokenize.hpp>
 #include <uinpp/multi_device.hpp>
 #include <uinpp/event_emitter.hpp>
 #include <uinpp/from.hpp>
@@ -95,7 +96,7 @@ MacroButtonEventHandler::from_file(uinpp::MultiDevice& uinput, int slot, bool ex
 MacroButtonEventHandler::MacroEvent
 MacroButtonEventHandler::macro_event_from_string(const std::string& str)
 {
-  std::vector<std::string> args = string_tokenize(str, " ");
+  std::vector<std::string> args = strut::tokenize(str, ' ');
 
   if (args.size() >= 1)
   {

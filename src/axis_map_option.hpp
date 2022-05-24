@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 
+#include <strut/split.hpp>
+
 #include "util/string.hpp"
 #include "raise_exception.hpp"
 
@@ -44,7 +46,7 @@ public:
     m_event(event),
     m_directory(directory)
   {
-    std::vector<std::string> args = string_split(lhs, "+");
+    std::vector<std::string> args = strut::split(lhs, '+');
     if (args.empty())
     {
       raise_exception(std::runtime_error, "no axis given");

@@ -33,7 +33,6 @@ int str2int(std::string const& str);
 float str2float(std::string const& str);
 
 std::string raw2str(const uint8_t* buffer, int len);
-std::string to_lower(const std::string &str);
 bool is_number(const std::string& str);
 bool is_float(const std::string& str);
 
@@ -42,7 +41,6 @@ bool is_float(const std::string& str);
     which case it is handled as (range * int(str)) */
 int to_number(int range, const std::string& str);
 
-
 /** Splits apart a string of the form "NAME=VALUE,..." and calls
     func(NAME, VALUE) on each.
 
@@ -50,37 +48,6 @@ int to_number(int range, const std::string& str);
     with [], i.e. "NAME=[VALUE1,VALUE2]", the "[" and "]" itself can
     be quoted with "\[" and "\]" */
 void process_name_value_string(const std::string& str, const std::function<void (const std::string&, const std::string&)>& func);
-
-/** Split \a str at characters c */
-std::vector<std::string> split_string_at_comma(const std::string& str);
-
-void split_string_at(const std::string& str, char c, std::string* lhs, std::string* rhs);
-
-template<typename C>
-std::string string_join(C const& c, std::string_view sep)
-{
-  std::string result;
-  auto it = std::begin(c);
-  if (it == std::end(c))
-  {
-    return {};
-  }
-  else
-  {
-    result += *it;
-    ++it;
-    for(; it != std::end(c); ++it)
-    {
-      result += sep;
-      result += *it;
-    }
-    return result;
-  }
-}
-
-std::vector<std::string> string_tokenize(std::string_view text, std::string_view delimiter);
-
-std::vector<std::string> string_split(std::string_view text, std::string_view delimiter);
 
 #endif
 

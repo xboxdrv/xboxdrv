@@ -20,12 +20,14 @@
 
 #include <sstream>
 
+#include <strut/split.hpp>
+
 #include "util/string.hpp"
 
 CalibrationAxisFilter*
 CalibrationAxisFilter::from_string(const std::string& str)
 {
-  auto tokens = string_split(str, ":");
+  auto tokens = strut::split(str, ':');
 
   int min    = 0;
   int center = 0;

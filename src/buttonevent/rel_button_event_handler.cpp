@@ -18,6 +18,7 @@
 
 #include "buttonevent/rel_button_event_handler.hpp"
 
+#include <strut/split.hpp>
 #include <uinpp/multi_device.hpp>
 
 #include "evdev_helper.hpp"
@@ -30,7 +31,7 @@ RelButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool ex
   std::unique_ptr<RelButtonEventHandler> ev;
 
   int idx = 0;
-  auto tokens = string_split(str, ":");
+  auto tokens = strut::split(str, ':');
 
   for(auto i = tokens.begin(); i != tokens.end(); ++i, ++idx)
   {
