@@ -90,7 +90,8 @@
         "nixpkgs": "nixpkgs",
         "strutcpp": "strutcpp",
         "tinycmmc": "tinycmmc_2",
-        "uinpp": "uinpp"
+        "uinpp": "uinpp",
+        "yaini": "yaini"
       }
     },
     "strutcpp": {
@@ -167,6 +168,31 @@
         "type": "gitlab"
       }
     },
+    "tinycmmc_3": {
+      "inputs": {
+        "flake-utils": [
+          "yaini",
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "yaini",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1651061750,
+        "narHash": "sha256-UHX7IFAcb8dmcZj5W9YE+y5/p7TY2U3o1re84xgM27c=",
+        "owner": "grumbel",
+        "repo": "cmake-modules",
+        "rev": "820041251099f94d107de9a2f16fd23154621cbc",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "grumbel",
+        "repo": "cmake-modules",
+        "type": "gitlab"
+      }
+    },
     "uinpp": {
       "inputs": {
         "flake-utils": [
@@ -196,6 +222,30 @@
       "original": {
         "owner": "Grumbel",
         "repo": "uinpp",
+        "type": "gitlab"
+      }
+    },
+    "yaini": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "tinycmmc": "tinycmmc_3"
+      },
+      "locked": {
+        "lastModified": 1653382685,
+        "narHash": "sha256-an9lur5OOUl3RAa2mQhYFMzgQS6GGddUof2Br834I+c=",
+        "owner": "Grumbel",
+        "repo": "yaini",
+        "rev": "a4d790f05e629a80243d43ff00100f5498421bc2",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "Grumbel",
+        "repo": "yaini",
         "type": "gitlab"
       }
     }

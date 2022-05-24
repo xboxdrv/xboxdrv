@@ -59,7 +59,6 @@ file(GLOB XBOXDRV_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/controller/*.cpp
   src/modifier/*.cpp
   src/symbols/*.cpp
-  src/ini/*.cpp
   src/uinput/*.cpp
   src/util/*.cpp)
 
@@ -113,6 +112,11 @@ function(build_dependencies)
   if(NOT TARGET uinpp::uinpp)
     add_subdirectory(external/uinpp/)
   endif()
+
+  find_package(yaini)
+  if(NOT TARGET yaini::yaini)
+    add_subdirectory(external/yaini/)
+  endif()
 endfunction()
 build_dependencies()
 
@@ -130,6 +134,7 @@ target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 target_link_libraries(libxboxdrv PUBLIC
   argparser::argparser
   uinpp::uinpp
+  yaini::yaini
   fmt::fmt
   PkgConfig::DBUSGLIB
   PkgConfig::USB

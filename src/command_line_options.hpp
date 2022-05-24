@@ -24,10 +24,10 @@
 #include <argparser/argparser.hpp>
 
 #include <uinpp/multi_device.hpp>
+#include <yaini/ini_schema.hpp>
 
 #include "axis_map_option.hpp"
 #include "button_map_option.hpp"
-#include "ini/ini_schema.hpp"
 
 class Options;
 class Xboxdrv;

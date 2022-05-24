@@ -29,9 +29,13 @@
     uinpp.inputs.strutcpp.follows = "strutcpp";
     uinpp.inputs.logmich.follows = "logmich";
     uinpp.inputs.tinycmmc.follows = "tinycmmc";
+
+    yaini.url = "gitlab:Grumbel/yaini";
+    yaini.inputs.nixpkgs.follows = "nixpkgs";
+    yaini.inputs.flake-utils.follows = "flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils, argparser, tinycmmc, strutcpp, logmich, uinpp }:
+  outputs = { self, nixpkgs, flake-utils, argparser, tinycmmc, strutcpp, logmich, uinpp, yaini }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -50,6 +54,7 @@
               logmich.defaultPackage.${system}
               strutcpp.defaultPackage.${system}
               uinpp.defaultPackage.${system}
+              yaini.defaultPackage.${system}
               tinycmmc.defaultPackage.${system}
 
               pkgs.at-spi2-core
