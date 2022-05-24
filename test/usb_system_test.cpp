@@ -58,7 +58,7 @@ libusb_device* get_controller_dev()
 
   libusb_free_device_list(list, 1 /* unref_devices */);
 
-  return 0;
+  return nullptr;
 }
 
 void process_msg(const ControllerMessage& msg)

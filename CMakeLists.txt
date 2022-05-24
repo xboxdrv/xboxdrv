@@ -31,10 +31,6 @@ include(GetProjectVersion)
 
 list(REMOVE_ITEM WARNINGS_CXX_FLAGS -Wpacked)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 find_package(Threads REQUIRED)
 find_package(X11 REQUIRED)
 
@@ -48,8 +44,29 @@ pkg_search_module(DBUSGLIB REQUIRED dbus-glib-1 IMPORTED_TARGET)
 pkg_search_module(CWIID OPTIONAL cwiid IMPORTED_TARGET)
 # FIXME: define -DHAVE_CWIID when found
 
-include_directories(src/)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/)
+function(build_dependencies)
+  set(BUILD_TESTS OFF)
+  find_package(argparser)
+  if(NOT TARGET argparser::argparser)
+    add_subdirectory(external/argparser/)
+  endif()
+
+  find_package(logmich)
+  if(NOT TARGET logmich::logmich)
+    add_subdirectory(external/logmich/)
+  endif()
+
+  find_package(uinpp)
+  if(NOT TARGET uinpp::uinpp)
+    add_subdirectory(external/uinpp/)
+  endif()
+
+  find_package(yaini)
+  if(NOT TARGET yaini::yaini)
+    add_subdirectory(external/yaini/)
+  endif()
+endfunction()
+build_dependencies()
 
 file(GLOB XBOXDRV_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/*.cpp
@@ -63,8 +80,7 @@ file(GLOB XBOXDRV_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/uinput/*.cpp
   src/util/*.cpp)
 
-set(XBOXDRV_SOURCES_CXX
-  ${XBOXDRV_SOURCES_CXX}
+list(APPEND XBOXDRV_SOURCES_CXX
   ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_controller_glue.hpp
   ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_daemon_glue.hpp
   ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_vfs.hpp)
@@ -97,37 +113,13 @@ add_custom_command(
   DEPENDS ${SOURCE}
   COMMAND ${DBUS_GLUE} -o ${TARGET} ${SOURCE} --dbus-prefix=xboxdrv_daemon)
 
-function(build_dependencies)
-  set(BUILD_TESTS OFF)
-  find_package(argparser)
-  if(NOT TARGET argparser::argparser)
-    add_subdirectory(external/argparser/)
-  endif()
-
-  find_package(logmich)
-  if(NOT TARGET logmich::logmich)
-    add_subdirectory(external/logmich/)
-  endif()
-
-  find_package(uinpp)
-  if(NOT TARGET uinpp::uinpp)
-    add_subdirectory(external/uinpp/)
-  endif()
-
-  find_package(yaini)
-  if(NOT TARGET yaini::yaini)
-    add_subdirectory(external/yaini/)
-  endif()
-endfunction()
-build_dependencies()
-
 add_library(libxboxdrv STATIC ${XBOXDRV_SOURCES_CXX})
 set_target_properties(libxboxdrv PROPERTIES OUTPUT_NAME xboxdrv)
 set_target_properties(libxboxdrv PROPERTIES
   CXX_STANDARD 20
   CXX_STANDARD_REQUIRED ON
   CXX_EXTENSIONS OFF)
-
+target_include_directories(libxboxdrv PUBLIC src/ ${CMAKE_CURRENT_BINARY_DIR}/src/)
 target_compile_definitions(libxboxdrv PUBLIC -DPACKAGE_VERSION="${PROJECT_VERSION}")
 target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 
@@ -146,6 +138,7 @@ set_target_properties(xboxdrv PROPERTIES
   CXX_STANDARD 20
   CXX_STANDARD_REQUIRED ON
   CXX_EXTENSIONS OFF)
+target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 target_link_libraries(xboxdrv libxboxdrv)
 
 if(BUILD_TESTS)
@@ -157,6 +150,10 @@ if(BUILD_TESTS)
   file(GLOB XBOXDRV_TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     test/*_gtest.cpp)
   add_executable(test_xboxdrv ${XBOXDRV_TEST_SOURCES})
+  set_target_properties(test_xboxdrv PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF)
   target_compile_options(test_xboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
   target_link_libraries(test_xboxdrv GTest::GTest GTest::Main libxboxdrv)
 
@@ -170,6 +167,11 @@ if(BUILD_TESTS)
   foreach(SOURCE ${TEST_SOURCES})
     get_filename_component(SOURCE_BASENAME ${SOURCE} NAME_WE)
     add_executable(${SOURCE_BASENAME} ${SOURCE})
+    set_target_properties(${SOURCE_BASENAME} PROPERTIES
+      CXX_STANDARD 20
+      CXX_STANDARD_REQUIRED ON
+      CXX_EXTENSIONS OFF)
+    target_compile_options(${SOURCE_BASENAME} PRIVATE ${WARNINGS_CXX_FLAGS})
     target_link_libraries(${SOURCE_BASENAME} libxboxdrv)
   endforeach(SOURCE)
 endif()

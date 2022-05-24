@@ -49,7 +49,7 @@ int main(int argc, char** argv)
       values.push_back(std::stoi(line));
     }
 
-    int time_step = duration / values.size();
+    int time_step = duration / static_cast<int>(values.size());
 
     for(std::vector<int>::const_iterator i = values.begin(); i != values.end(); ++i)
     {
