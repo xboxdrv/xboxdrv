@@ -39,12 +39,24 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        project_version_from_file = let
+          version_file = pkgs.lib.fileContents ./VERSION;
+          project_has_version = ((builtins.substring 0 1) version_file) == "v";
+          project_version = if !project_has_version
+                            then ("${nixpkgs.lib.substring 0 8 self.lastModifiedDate}-${self.shortRev or "dirty"}")
+                            else (builtins.substring 1 ((builtins.stringLength version_file) - 2) version_file);
+        in
+          project_version;
+
       in rec {
         packages = flake-utils.lib.flattenTree {
           xboxdrv = pkgs.stdenv.mkDerivation {
             pname = "xboxdrv";
-            version = "0.9.0";
+            version = project_version_from_file;
             src = nixpkgs.lib.cleanSource ./.;
+            postPatch = ''
+              echo "v${project_version_from_file}" > VERSION
+            '';
             nativeBuildInputs = [
               pkgs.cmake
               pkgs.pkg-config

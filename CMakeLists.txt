@@ -27,6 +27,7 @@ option(BUILD_TESTS "Build tests" OFF)
 include(GNUInstallDirs)
 include(MaximumWarnings)
 include(ClangTidy)
+include(GetProjectVersion)
 
 list(REMOVE_ITEM WARNINGS_CXX_FLAGS -Wpacked)
 
@@ -127,8 +128,7 @@ set_target_properties(libxboxdrv PROPERTIES
   CXX_STANDARD_REQUIRED ON
   CXX_EXTENSIONS OFF)
 
-file(STRINGS VERSION XBOXDRV_VERSION)
-target_compile_definitions(libxboxdrv PUBLIC -DPACKAGE_VERSION="${XBOXDRV_VERSION}")
+target_compile_definitions(libxboxdrv PUBLIC -DPACKAGE_VERSION="${PROJECT_VERSION}")
 target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 
 target_link_libraries(libxboxdrv PUBLIC
