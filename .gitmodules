@@ -1,3 +1,18 @@
 [submodule "external/argpp"]
 	path = external/argpp
 	url = https://github.com/grumbel/argpp.git
+[submodule "external/logmich"]
+	path = external/logmich
+	url = https://github.com/logmich/logmich.git
+[submodule "external/strutcpp"]
+	path = external/strutcpp
+	url = https://github.com/grumbel/strutcpp.git
+[submodule "external/tinycmmc"]
+	path = external/tinycmmc
+	url = https://github.com/grumbel/tinycmmc.git
+[submodule "external/uinpp"]
+	path = external/uinpp
+	url = https://github.com/Grumbel/uinpp.git
+[submodule "external/yaini"]
+	path = external/yaini
+	url = https://github.com/Grumbel/yaini.git
