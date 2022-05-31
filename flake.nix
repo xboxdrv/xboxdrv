@@ -2,40 +2,42 @@
   description = "Xbox360 USB Gamepad Userspace Driver";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
     flake-utils.url = "github:numtide/flake-utils";
 
-    argparser.url = "gitlab:argparser/argparser/stable";
-    argparser.inputs.nixpkgs.follows = "nixpkgs";
-    argparser.inputs.flake-utils.follows = "flake-utils";
+    argpp.url = "github:grumbel/argpp/stable";
+    argpp.inputs.nixpkgs.follows = "nixpkgs";
+    argpp.inputs.flake-utils.follows = "flake-utils";
+    argpp.inputs.tinycmmc.follows = "tinycmmc";
 
-    tinycmmc.url = "gitlab:grumbel/cmake-modules";
+    tinycmmc.url = "github:grumbel/tinycmmc";
     tinycmmc.inputs.nixpkgs.follows = "nixpkgs";
     tinycmmc.inputs.flake-utils.follows = "flake-utils";
 
-    strutcpp.url = "gitlab:grumbel/strutcpp";
+    strutcpp.url = "github:grumbel/strutcpp";
     strutcpp.inputs.nixpkgs.follows = "nixpkgs";
     strutcpp.inputs.flake-utils.follows = "flake-utils";
     strutcpp.inputs.tinycmmc.follows = "tinycmmc";
 
-    logmich.url = "gitlab:logmich/logmich";
+    logmich.url = "github:logmich/logmich";
     logmich.inputs.nixpkgs.follows = "nixpkgs";
     logmich.inputs.flake-utils.follows = "flake-utils";
     logmich.inputs.tinycmmc.follows = "tinycmmc";
 
-    uinpp.url = "gitlab:Grumbel/uinpp";
+    uinpp.url = "github:Grumbel/uinpp";
     uinpp.inputs.nixpkgs.follows = "nixpkgs";
     uinpp.inputs.flake-utils.follows = "flake-utils";
     uinpp.inputs.strutcpp.follows = "strutcpp";
     uinpp.inputs.logmich.follows = "logmich";
     uinpp.inputs.tinycmmc.follows = "tinycmmc";
 
-    yaini.url = "gitlab:Grumbel/yaini";
+    yaini.url = "github:Grumbel/yaini";
     yaini.inputs.nixpkgs.follows = "nixpkgs";
     yaini.inputs.flake-utils.follows = "flake-utils";
+    yaini.inputs.tinycmmc.follows = "tinycmmc";
   };
 
-  outputs = { self, nixpkgs, flake-utils, argparser, tinycmmc, strutcpp, logmich, uinpp, yaini }:
+  outputs = { self, nixpkgs, flake-utils, argpp, tinycmmc, strutcpp, logmich, uinpp, yaini }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -62,7 +64,7 @@
               pkgs.pkg-config
             ];
             buildInputs = [
-              argparser.defaultPackage.${system}
+              argpp.defaultPackage.${system}
               logmich.defaultPackage.${system}
               strutcpp.defaultPackage.${system}
               uinpp.defaultPackage.${system}
@@ -82,7 +84,7 @@
               pkgs.libselinux
               pkgs.libsepol
               pkgs.libthai
-              pkgs.libudev
+              pkgs.udev
               pkgs.libusb1
               pkgs.libxkbcommon
               pkgs.pcre

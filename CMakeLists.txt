@@ -46,9 +46,9 @@ pkg_search_module(CWIID OPTIONAL cwiid IMPORTED_TARGET)
 
 function(build_dependencies)
   set(BUILD_TESTS OFF)
-  find_package(argparser)
-  if(NOT TARGET argparser::argparser)
-    add_subdirectory(external/argparser/)
+  find_package(argpp)
+  if(NOT TARGET argpp::argpp)
+    add_subdirectory(external/argpp/)
   endif()
 
   find_package(logmich)
@@ -129,7 +129,7 @@ target_compile_definitions(libxboxdrv PUBLIC -DPACKAGE_VERSION="${PROJECT_VERSIO
 target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 
 target_link_libraries(libxboxdrv PUBLIC
-  argparser::argparser
+  argpp::argpp
   strut::strut
   uinpp::uinpp
   yaini::yaini

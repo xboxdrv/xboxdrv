@@ -491,7 +491,7 @@ CommandLineParser::parse_args(int argc, char** argv, Options* options)
 }
 
 void
-CommandLineParser::apply_opt(argparser::ParsedOption const& opt, Options& opts)
+CommandLineParser::apply_opt(argpp::ParsedOption const& opt, Options& opts)
 {
   switch (opt.key)
     {
@@ -1003,7 +1003,7 @@ CommandLineParser::apply_opt(argparser::ParsedOption const& opt, Options& opts)
         opts.list_enums |= Options::LIST_X11KEYSYM;
         break;
 
-      case argparser::ArgumentType::REST:
+      case argpp::ArgumentType::REST:
         opts.exec.push_back(opt.argument);
         break;
 

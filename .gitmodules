@@ -1,3 +1,3 @@
-[submodule "external/argparser"]
-	path = external/argparser
-	url = https://gitlab.com/argparser/argparser.git
+[submodule "external/argpp"]
+	path = external/argpp
+	url = https://github.com/grumbel/argpp.git

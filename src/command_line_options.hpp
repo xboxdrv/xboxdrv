@@ -21,7 +21,7 @@
 
 #include <vector>
 
-#include <argparser/argparser.hpp>
+#include <argpp/argpp.hpp>
 
 #include <uinpp/multi_device.hpp>
 #include <yaini/schema.hpp>
@@ -36,7 +36,7 @@ class AxisMap;
 class CommandLineParser
 {
 public:
-  argparser::ArgParser m_argp;
+  argpp::Parser m_argp;
   yaini::Schema m_ini;
   Options*  m_options;
   std::vector<std::string> m_directory_context;
@@ -52,7 +52,7 @@ public:
   void create_ini_schema(Options* opts);
 
 private:
-  void apply_opt(argparser::ParsedOption const& opt, Options& opts);
+  void apply_opt(argpp::ParsedOption const& opt, Options& opts);
 
   void set_device_name(const std::string& name, const std::string& value);
   void set_device_usbid(const std::string& name, const std::string& value);
