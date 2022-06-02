@@ -28,32 +28,12 @@ struct USBReadCallback
 {
   USBInterface* iface;
   std::function<bool (uint8_t*, int)> callback;
-
-  USBReadCallback(USBInterface* iface_,
-                  std::function<bool (uint8_t*, int)> callback_) :
-    iface(iface_),
-    callback(callback_)
-  {}
-
-private:
-  USBReadCallback(const USBReadCallback&);
-  USBReadCallback& operator=(const USBReadCallback&);
 };
 
 struct USBWriteCallback
 {
   USBInterface* iface;
   std::function<bool (libusb_transfer*)> callback;
-
-  USBWriteCallback(USBInterface* iface_,
-                   std::function<bool (libusb_transfer*)> callback_) :
-    iface(iface_),
-    callback(callback_)
-  {}
-
-private:
-  USBWriteCallback(const USBWriteCallback&);
-  USBWriteCallback& operator=(const USBWriteCallback&);
 };
 
 USBInterface::USBInterface(libusb_device_handle* handle, int interface, bool try_detach) :
@@ -121,7 +101,7 @@ USBInterface::submit_read(int endpoint, int len,
                                  static_cast<unsigned char>(endpoint | LIBUSB_ENDPOINT_IN),
                                  data, len,
                                  &USBInterface::on_read_data_wrap,
-                                 new USBReadCallback(this, callback),
+                                 new USBReadCallback{this, callback},
                                  0); // timeout
   int ret;
   ret = libusb_submit_transfer(transfer);
@@ -152,7 +132,7 @@ USBInterface::submit_write(int endpoint, uint8_t* data_in, int len,
                                  static_cast<unsigned char>(endpoint | LIBUSB_ENDPOINT_OUT),
                                  data, len,
                                  &USBInterface::on_write_data_wrap,
-                                 new USBWriteCallback(this, callback),
+                                 new USBWriteCallback{this, callback},
                                  0); // timeout
 
   int ret;
