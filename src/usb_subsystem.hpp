@@ -22,8 +22,6 @@
 #include <libusb.h>
 #include <memory>
 
-#include "xpad_device.hpp"
-
 namespace xboxdrv {
 
 class USBGSource;
@@ -37,13 +35,6 @@ private:
 public:
   USBSubsystem();
   ~USBSubsystem();
-
-public:
-  static void find_controller(libusb_device** dev, XPadDevice& dev_type, const Options& opts);
-  static bool find_controller_by_path(const std::string& busid, const std::string& devid,
-                                      libusb_device** xbox_device);
-  static bool find_controller_by_id(int id, int vendor_id, int product_id, libusb_device** xbox_device);
-  static bool find_xbox360_controller(int id, libusb_device** xbox_device, XPadDevice* type);
 
 private:
   USBSubsystem(const USBSubsystem&);
