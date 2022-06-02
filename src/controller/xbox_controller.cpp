@@ -22,10 +22,11 @@
 #include <stdexcept>
 #include <string.h>
 
+#include <unsebu/usb_helper.hpp>
+
 #include "controller_message.hpp"
 #include "raise_exception.hpp"
 #include "unpack.hpp"
-#include "usb_helper.hpp"
 #include "xboxmsg.hpp"
 
 namespace xboxdrv {

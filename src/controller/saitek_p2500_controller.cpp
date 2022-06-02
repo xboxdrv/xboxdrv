@@ -20,9 +20,10 @@
 
 #include <sstream>
 
+#include <unsebu/usb_helper.hpp>
+
 #include "controller_message.hpp"
 #include "util/string.hpp"
-#include "usb_helper.hpp"
 #include "unpack.hpp"
 
 namespace xboxdrv {

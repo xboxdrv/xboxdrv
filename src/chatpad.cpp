@@ -21,9 +21,9 @@
 #include <assert.h>
 
 #include <uinpp/device.hpp>
+#include <unsebu/usb_helper.hpp>
 
 #include "raise_exception.hpp"
-#include "usb_helper.hpp"
 
 namespace xboxdrv {
 

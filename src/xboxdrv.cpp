@@ -29,6 +29,9 @@
 
 #include <strut/join.hpp>
 #include <strut/layout.hpp>
+#include <unsebu/usb_gsource.hpp>
+#include <unsebu/usb_helper.hpp>
+#include <unsebu/usb_subsystem.hpp>
 
 #include "command_line_options.hpp"
 #include "controller/evdev_controller.hpp"
@@ -36,9 +39,6 @@
 #include "controller_thread.hpp"
 #include "evdev_helper.hpp"
 #include "raise_exception.hpp"
-#include "usb_gsource.hpp"
-#include "usb_helper.hpp"
-#include "usb_subsystem.hpp"
 #include "util/string.hpp"
 #include "util/terminal.hpp"
 #include "xboxdrv_daemon.hpp"

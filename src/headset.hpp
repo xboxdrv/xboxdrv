@@ -23,7 +23,7 @@
 #include <memory>
 #include <string>
 
-#include "usb_interface.hpp"
+#include <unsebu/usb_interface.hpp>
 
 namespace xboxdrv {
 

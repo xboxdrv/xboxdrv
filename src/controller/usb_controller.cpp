@@ -22,10 +22,11 @@
 #include <string.h>
 #include <fmt/format.h>
 
-#include "controller_message.hpp"
 #include <logmich/log.hpp>
+#include <unsebu/usb_helper.hpp>
+
+#include "controller_message.hpp"
 #include "raise_exception.hpp"
-#include "usb_helper.hpp"
 #include "xboxmsg.hpp"
 
 namespace xboxdrv {

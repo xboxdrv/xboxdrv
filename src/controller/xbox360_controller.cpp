@@ -18,13 +18,14 @@
 
 #include "controller/xbox360_controller.hpp"
 
+#include <unsebu/usb_helper.hpp>
+
 #include "chatpad.hpp"
 #include "headset.hpp"
 #include "util/string.hpp"
 #include "options.hpp"
 #include "raise_exception.hpp"
 #include "unpack.hpp"
-#include "usb_helper.hpp"
 
 namespace xboxdrv {
 

@@ -29,6 +29,9 @@
 
 #include <uinpp/multi_device.hpp>
 #include <uinpp/linux.hpp>
+#include <unsebu/usb_gsource.hpp>
+#include <unsebu/usb_helper.hpp>
+#include <unsebu/usb_subsystem.hpp>
 
 #include "controller/evdev_controller.hpp"
 #include "controller/wiimote_controller.hpp"
@@ -37,9 +40,6 @@
 #include "controller_thread.hpp"
 #include "options.hpp"
 #include "raise_exception.hpp"
-#include "usb_gsource.hpp"
-#include "usb_helper.hpp"
-#include "usb_subsystem.hpp"
 #include "util/exec.hpp"
 #include "util/string.hpp"
 

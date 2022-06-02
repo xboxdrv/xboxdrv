@@ -22,11 +22,11 @@
 #include <stdexcept>
 
 #include <logmich/log.hpp>
+#include <unsebu/usb_gsource.hpp>
+#include <unsebu/usb_helper.hpp>
 
 #include "controller_message.hpp"
 #include "raise_exception.hpp"
-#include "usb_gsource.hpp"
-#include "usb_helper.hpp"
 #include "controller/xbox360_controller.hpp"
 #include "xboxmsg.hpp"
 

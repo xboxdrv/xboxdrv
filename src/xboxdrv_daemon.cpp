@@ -30,6 +30,9 @@
 #include <errno.h>
 
 #include <uinpp/multi_device.hpp>
+#include <unsebu/usb_gsource.hpp>
+#include <unsebu/usb_helper.hpp>
+#include <unsebu/usb_subsystem.hpp>
 
 #include "controller.hpp"
 #include "controller_factory.hpp"
@@ -38,9 +41,6 @@
 #include "raise_exception.hpp"
 #include "select.hpp"
 #include "udev_subsystem.hpp"
-#include "usb_gsource.hpp"
-#include "usb_helper.hpp"
-#include "usb_subsystem.hpp"
 #include "util/exec.hpp"
 #include "util/string.hpp"
 
