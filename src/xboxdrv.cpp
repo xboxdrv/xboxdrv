@@ -28,6 +28,7 @@
 #include <unistd.h>
 
 #include <strut/join.hpp>
+#include <strut/layout.hpp>
 
 #include "command_line_options.hpp"
 #include "controller/evdev_controller.hpp"
@@ -40,7 +41,6 @@
 #include "usb_subsystem.hpp"
 #include "util/string.hpp"
 #include "util/terminal.hpp"
-#include "word_wrap.hpp"
 #include "xboxdrv_daemon.hpp"
 #include "xboxdrv_main.hpp"
 
@@ -200,7 +200,7 @@ Xboxdrv::run_help_devices()
 void
 Xboxdrv::print_copyright() const
 {
-  WordWrap wrap(get_terminal_width());
+  strut::Layout wrap(std::cout, get_terminal_width());
   wrap.para("xboxdrv " PACKAGE_VERSION " - http://pingus.seul.org/~grumbel/xboxdrv/");
   wrap.para("Copyright © 2008-2012 Ingo Ruhnke <grumbel@gmail.com>");
   wrap.para("Licensed under GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>");
@@ -284,7 +284,7 @@ Xboxdrv::run_list_enums(uint32_t enums)
 {
   const int terminal_width = get_terminal_width();
 
-  WordWrap wrap(terminal_width);
+  strut::Layout wrap(std::cout, terminal_width);
 
   if (enums & Options::LIST_ABS)
   {
