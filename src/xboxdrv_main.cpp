@@ -253,7 +253,7 @@ XboxdrvMain::print_info(libusb_device* dev, XPadDevice const& dev_type, Options 
   int ret = libusb_get_device_descriptor(dev, &desc);
   if (ret != LIBUSB_SUCCESS)
   {
-    raise_exception(std::runtime_error, "libusb_get_device_descriptor() failed: " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_get_device_descriptor() failed: " << libusb_strerror(ret));
   }
 
   std::cout << "Controller:        " << dev_type.name << std::endl;

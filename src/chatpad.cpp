@@ -192,7 +192,7 @@ Chatpad::usb_submit_read(int endpoint, int len)
   ret = libusb_submit_transfer(m_read_transfer);
   if (ret != LIBUSB_SUCCESS)
   {
-    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
   }
 }
 
@@ -203,7 +203,7 @@ Chatpad::on_read_data(libusb_transfer* transfer)
 
   if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
   {
-    log_error("usb transfer failed: {}", usb_transfer_strerror(transfer->status));
+    log_error("usb transfer failed: {}", libusb_error_name(transfer->status));
   }
   else
   {
@@ -221,7 +221,7 @@ Chatpad::on_read_data(libusb_transfer* transfer)
     ret = libusb_submit_transfer(transfer);
     if (ret != LIBUSB_SUCCESS)
     {
-      log_error("failed to resubmit USB transfer: {}", usb_strerror(ret));
+      log_error("failed to resubmit USB transfer: {}", libusb_strerror(ret));
       libusb_free_transfer(transfer);
     }
   }
@@ -402,7 +402,7 @@ Chatpad::send_ctrl(uint8_t request_type, uint8_t request, uint16_t value, uint16
   ret = libusb_submit_transfer(transfer);
   if (ret != LIBUSB_SUCCESS)
   {
-    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
   }
 }
 

@@ -134,7 +134,7 @@ USBGSource::on_source_prepare(GSource* source, gint* timeout)
   }
   else
   {
-    log_error("libusb_get_next_timeout() failed: {}", usb_strerror(ret));
+    log_error("libusb_get_next_timeout() failed: {}", libusb_strerror(ret));
     *timeout = -1;
   }
 

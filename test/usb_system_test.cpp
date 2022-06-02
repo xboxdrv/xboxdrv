@@ -45,7 +45,7 @@ libusb_device* get_controller_dev()
     int ret = libusb_get_device_descriptor(dev, &desc);
     if (ret != LIBUSB_SUCCESS)
     {
-      log_warn("libusb_get_device_descriptor() failed: {}", usb_strerror(ret));
+      log_warn("libusb_get_device_descriptor() failed: {}", libusb_strerror(ret));
     }
     else
     {
@@ -77,7 +77,7 @@ int main()
   int ret = libusb_init(NULL);
   if (ret != LIBUSB_SUCCESS)
   {
-    raise_exception(std::runtime_error, "libusb_init() failed: " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_init() failed: " << libusb_strerror(ret));
   }
 
   GMainLoop* m_gmain = g_main_loop_new(NULL, FALSE);

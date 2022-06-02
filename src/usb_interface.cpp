@@ -55,7 +55,7 @@ USBInterface::USBInterface(libusb_device_handle* handle, int interface, bool try
     if (ret != LIBUSB_SUCCESS)
     {
       raise_exception(std::runtime_error, "error detaching kernel driver: "
-                      << interface << ": " << usb_strerror(ret));
+                      << interface << ": " << libusb_strerror(ret));
     }
     else
     {
@@ -63,13 +63,13 @@ USBInterface::USBInterface(libusb_device_handle* handle, int interface, bool try
       ret = libusb_claim_interface(handle, interface);
       if (ret != LIBUSB_SUCCESS)
       {
-        raise_exception(std::runtime_error, "error claiming interface: " << interface << ": " << usb_strerror(ret));
+        raise_exception(std::runtime_error, "error claiming interface: " << interface << ": " << libusb_strerror(ret));
       }
     }
   }
   else
   {
-    raise_exception(std::runtime_error, "error claiming interface: " << interface << ": " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "error claiming interface: " << interface << ": " << libusb_strerror(ret));
   }
 }
 
@@ -110,7 +110,7 @@ USBInterface::submit_read(int endpoint, int len,
   if (ret != LIBUSB_SUCCESS)
   {
     libusb_free_transfer(transfer);
-    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
   }
   else
   {
@@ -142,7 +142,7 @@ USBInterface::submit_write(int endpoint, uint8_t* data_in, int len,
   if (ret != LIBUSB_SUCCESS)
   {
     libusb_free_transfer(transfer);
-    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
   }
   else
   {
@@ -189,7 +189,7 @@ USBInterface::on_read_data(USBReadCallback* callback, libusb_transfer* transfer)
     if (ret != LIBUSB_SUCCESS)
     {
       libusb_free_transfer(transfer);
-      raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+      raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
     }
   }
   else
@@ -213,7 +213,7 @@ USBInterface::on_write_data(USBWriteCallback* callback, libusb_transfer* transfe
     if (ret != LIBUSB_SUCCESS)
     {
       libusb_free_transfer(transfer);
-      raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+      raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
     }
   }
   else

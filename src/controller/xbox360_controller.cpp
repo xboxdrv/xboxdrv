@@ -63,7 +63,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
     int ret = libusb_get_device_descriptor(dev, &desc);
     if (ret != LIBUSB_SUCCESS)
     {
-      raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));
+      raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << libusb_strerror(ret));
     }
     else
     {

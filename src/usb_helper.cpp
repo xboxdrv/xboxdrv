@@ -51,43 +51,6 @@ int usb_claim_n_detach_interface(libusb_device_handle* handle, int interface, bo
   }
 }
 
-char const* usb_strerror(int err)
-{
-  switch(err)
-  {
-    case LIBUSB_SUCCESS: return "LIBUSB_SUCCESS";
-    case LIBUSB_ERROR_IO: return "LIBUSB_ERROR_IO";
-    case LIBUSB_ERROR_INVALID_PARAM: return "LIBUSB_ERROR_INVALID_PARAM";
-    case LIBUSB_ERROR_ACCESS: return "LIBUSB_ERROR_ACCESS";
-    case LIBUSB_ERROR_NO_DEVICE: return "LIBUSB_ERROR_NO_DEVICE";
-    case LIBUSB_ERROR_NOT_FOUND: return "LIBUSB_ERROR_NOT_FOUND";
-    case LIBUSB_ERROR_BUSY: return "LIBUSB_ERROR_BUSY";
-    case LIBUSB_ERROR_TIMEOUT: return "LIBUSB_ERROR_TIMEOUT";
-    case LIBUSB_ERROR_OVERFLOW: return "LIBUSB_ERROR_OVERFLOW";
-    case LIBUSB_ERROR_PIPE: return "LIBUSB_ERROR_PIPE";
-    case LIBUSB_ERROR_INTERRUPTED: return "LIBUSB_ERROR_INTERRUPTED";
-    case LIBUSB_ERROR_NO_MEM: return "LIBUSB_ERROR_NO_MEM";
-    case LIBUSB_ERROR_NOT_SUPPORTED: return "LIBUSB_ERROR_NOT_SUPPORTED";
-    case LIBUSB_ERROR_OTHER: return "LIBUSB_ERROR_OTHER";
-    default: return "<unknown libusb error code>";
-  }
-}
-
-char const* usb_transfer_strerror(libusb_transfer_status err)
-{
-  switch(err)
-  {
-    case LIBUSB_TRANSFER_COMPLETED: return "LIBUSB_TRANSFER_COMPLETED";
-    case LIBUSB_TRANSFER_ERROR: return "LIBUSB_TRANSFER_ERROR";
-    case LIBUSB_TRANSFER_TIMED_OUT: return "LIBUSB_TRANSFER_TIMED_OUT";
-    case LIBUSB_TRANSFER_CANCELLED: return "LIBUSB_TRANSFER_CANCELLED";
-    case LIBUSB_TRANSFER_STALL: return "LIBUSB_TRANSFER_STALL";
-    case LIBUSB_TRANSFER_NO_DEVICE: return "LIBUSB_TRANSFER_NO_DEVICE";
-    case LIBUSB_TRANSFER_OVERFLOW: return "LIBUSB_TRANSFER_OVERFLOW";
-    default: return "<unknown libusb transfer error code>";
-  }
-}
-
 libusb_device* usb_find_device_by_path(uint8_t busnum, uint8_t devnum)
 {
   libusb_device* ret_device = nullptr;

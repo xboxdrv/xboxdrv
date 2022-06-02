@@ -24,8 +24,6 @@
 namespace xboxdrv {
 
 int usb_claim_n_detach_interface(libusb_device_handle* handle, int interface, bool try_detach);
-const char* usb_strerror(int err);
-const char* usb_transfer_strerror(libusb_transfer_status err);
 libusb_device* usb_find_device_by_path(uint8_t busnum, uint8_t devnum);
 
 } // namespace xboxdrv

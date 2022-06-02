@@ -35,7 +35,7 @@ USBSubsystem::USBSubsystem() :
   int ret = libusb_init(NULL);
   if (ret != LIBUSB_SUCCESS)
   {
-    raise_exception(std::runtime_error, "libusb_init() failed: " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_init() failed: " << libusb_strerror(ret));
   }
 
   m_usb_gsource.reset(new USBGSource);
@@ -152,7 +152,7 @@ USBSubsystem::find_controller_by_id(int id, int vendor_id, int product_id, libus
     int ret = libusb_get_device_descriptor(dev, &desc);
     if (ret != LIBUSB_SUCCESS)
     {
-      log_warn("libusb_get_device_descriptor() failed: {}", usb_strerror(ret));
+      log_warn("libusb_get_device_descriptor() failed: {}", libusb_strerror(ret));
     }
     else
     {
@@ -194,7 +194,7 @@ USBSubsystem::find_xbox360_controller(int id, libusb_device** xbox_device, XPadD
     int ret = libusb_get_device_descriptor(dev, &desc);
     if (ret != LIBUSB_SUCCESS)
     {
-      log_warn("libusb_get_device_descriptor() failed: {}", usb_strerror(ret));
+      log_warn("libusb_get_device_descriptor() failed: {}", libusb_strerror(ret));
     }
     else
     {

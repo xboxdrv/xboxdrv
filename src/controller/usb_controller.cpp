@@ -42,7 +42,7 @@ USBController::USBController(libusb_device* dev) :
   int ret = libusb_open(dev, &m_handle);
   if (ret != LIBUSB_SUCCESS)
   {
-    raise_exception(std::runtime_error, "libusb_open() failed: " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_open() failed: " << libusb_strerror(ret));
   }
   else
   {
@@ -145,7 +145,7 @@ USBController::usb_submit_read(int endpoint, int len)
   if (ret != LIBUSB_SUCCESS)
   {
     libusb_free_transfer(transfer);
-    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
   }
   else
   {
@@ -174,7 +174,7 @@ USBController::usb_write(int endpoint, uint8_t* data_in, int len)
   if (ret != LIBUSB_SUCCESS)
   {
     libusb_free_transfer(transfer);
-    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
   }
   else
   {
@@ -203,7 +203,7 @@ USBController::usb_control(uint8_t  bmRequestType, uint8_t  bRequest,
   if (ret != LIBUSB_SUCCESS)
   {
     libusb_free_transfer(transfer);
-    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
   }
   else
   {
@@ -237,7 +237,7 @@ USBController::on_write_data(libusb_transfer* transfer)
   }
   else
   {
-    log_error("USB write failure: {}: {}", transfer->length, usb_transfer_strerror(transfer->status));
+    log_error("USB write failure: {}: {}", transfer->length, libusb_error_name(transfer->status));
   }
 
   m_transfers.erase(transfer);
@@ -262,7 +262,7 @@ USBController::on_read_data(libusb_transfer* transfer)
     ret = libusb_submit_transfer(transfer);
     if (ret != LIBUSB_SUCCESS) // could also check for LIBUSB_ERROR_NO_DEVICE
     {
-      log_error("failed to resubmit USB transfer: {}", usb_strerror(ret));
+      log_error("failed to resubmit USB transfer: {}", libusb_strerror(ret));
       m_transfers.erase(transfer);
       libusb_free_transfer(transfer);
       send_disconnect();
@@ -281,7 +281,7 @@ USBController::on_read_data(libusb_transfer* transfer)
   }
   else
   {
-    log_error("USB read failure: {}: {}", transfer->length, usb_transfer_strerror(transfer->status));
+    log_error("USB read failure: {}: {}", transfer->length, libusb_error_name(transfer->status));
     m_transfers.erase(transfer);
     libusb_free_transfer(transfer);
   }
@@ -299,7 +299,7 @@ USBController::usb_claim_interface(int ifnum, bool try_detach)
   if (err != 0)
   {
     std::ostringstream out;
-    out << " Error couldn't claim the USB interface: " << usb_strerror(err) << std::endl
+    out << " Error couldn't claim the USB interface: " << libusb_strerror(err) << std::endl
         << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
     throw std::runtime_error(out.str());
   }
@@ -313,7 +313,7 @@ USBController::usb_find_ep(int direction, uint8_t if_class, uint8_t if_subclass,
 
   if (ret != LIBUSB_SUCCESS)
   {
-    raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_get_config_descriptor() failed: " << libusb_strerror(ret));
   }
   else
   {

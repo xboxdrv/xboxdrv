@@ -55,7 +55,7 @@ Xboxdrv::run_list_controller()
   int ret = libusb_init(NULL);
   if (ret != LIBUSB_SUCCESS)
   {
-    raise_exception(std::runtime_error, "libusb_init() failed: " << usb_strerror(ret));
+    raise_exception(std::runtime_error, "libusb_init() failed: " << libusb_strerror(ret));
   }
 
   libusb_device** list;
