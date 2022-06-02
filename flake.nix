@@ -31,13 +31,19 @@
     uinpp.inputs.logmich.follows = "logmich";
     uinpp.inputs.tinycmmc.follows = "tinycmmc";
 
+    unsebu.url = "github:Grumbel/unsebu";
+    unsebu.inputs.nixpkgs.follows = "nixpkgs";
+    unsebu.inputs.flake-utils.follows = "flake-utils";
+    unsebu.inputs.tinycmmc.follows = "tinycmmc";
+    unsebu.inputs.logmich.follows = "logmich";
+
     yaini.url = "github:Grumbel/yaini";
     yaini.inputs.nixpkgs.follows = "nixpkgs";
     yaini.inputs.flake-utils.follows = "flake-utils";
     yaini.inputs.tinycmmc.follows = "tinycmmc";
   };
 
-  outputs = { self, nixpkgs, flake-utils, argpp, tinycmmc, strutcpp, logmich, uinpp, yaini }:
+  outputs = { self, nixpkgs, flake-utils, argpp, tinycmmc, strutcpp, logmich, uinpp, unsebu, yaini }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -59,41 +65,42 @@
             postPatch = ''
               echo "v${project_version_from_file}" > VERSION
             '';
-            nativeBuildInputs = [
-              pkgs.cmake
-              pkgs.pkg-config
+            nativeBuildInputs = with pkgs; [
+              cmake
+              pkg-config
             ];
-            buildInputs = [
+            buildInputs = with pkgs; [
+              at-spi2-core
+              bluez
+              dbus-glib
+              epoxy
+              fmt
+              glib
+              gobject-introspection
+              gtest
+              gtk3
+              libdatrie
+              libselinux
+              libsepol
+              libthai
+              udev
+              libusb1
+              libxkbcommon
+              pcre
+              python3
+              python3Packages.dbus-python
+              util-linux
+              xorg.libX11
+              xorg.libXdmcp
+              xorg.libXtst
+            ] ++ [
               argpp.defaultPackage.${system}
               logmich.defaultPackage.${system}
               strutcpp.defaultPackage.${system}
               uinpp.defaultPackage.${system}
+              unsebu.defaultPackage.${system}
               yaini.defaultPackage.${system}
               tinycmmc.defaultPackage.${system}
-
-              pkgs.at-spi2-core
-              pkgs.bluez
-              pkgs.dbus-glib
-              pkgs.epoxy
-              pkgs.fmt
-              pkgs.glib
-              pkgs.gobject-introspection
-              pkgs.gtest
-              pkgs.gtk3
-              pkgs.libdatrie
-              pkgs.libselinux
-              pkgs.libsepol
-              pkgs.libthai
-              pkgs.udev
-              pkgs.libusb1
-              pkgs.libxkbcommon
-              pkgs.pcre
-              pkgs.python3
-              pkgs.python3Packages.dbus-python
-              pkgs.util-linux
-              pkgs.xorg.libX11
-              pkgs.xorg.libXdmcp
-              pkgs.xorg.libXtst
             ];
           };
         };

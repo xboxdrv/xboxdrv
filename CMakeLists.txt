@@ -70,6 +70,11 @@ function(build_dependencies)
   if(NOT TARGET yaini::yaini)
     add_subdirectory(external/yaini/)
   endif()
+
+  find_package(unsebu)
+  if(NOT TARGET unsebu::unsebu)
+    add_subdirectory(external/unsebu/)
+  endif()
 endfunction()
 build_dependencies()
 
@@ -132,6 +137,7 @@ target_link_libraries(libxboxdrv PUBLIC
   argpp::argpp
   strut::strut
   uinpp::uinpp
+  unsebu::unsebu
   yaini::yaini
   fmt::fmt
   PkgConfig::DBUSGLIB

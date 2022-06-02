@@ -16,3 +16,6 @@
 [submodule "external/yaini"]
 	path = external/yaini
 	url = https://github.com/Grumbel/yaini.git
+[submodule "external/unsebu"]
+	path = external/unsebu
+	url = https://github.com/Grumbel/unsebu.git

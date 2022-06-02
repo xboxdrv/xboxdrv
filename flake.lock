@@ -93,6 +93,7 @@
         "strutcpp": "strutcpp",
         "tinycmmc": "tinycmmc",
         "uinpp": "uinpp",
+        "unsebu": "unsebu",
         "yaini": "yaini"
       }
     },
@@ -174,6 +175,35 @@
       "original": {
         "owner": "Grumbel",
         "repo": "uinpp",
+        "type": "github"
+      }
+    },
+    "unsebu": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "logmich": [
+          "logmich"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "tinycmmc": [
+          "tinycmmc"
+        ]
+      },
+      "locked": {
+        "lastModified": 1654186198,
+        "narHash": "sha256-Dyz+Rnng64FKaitwVvZSoJ5rf4GyCMErGzEHtyR1nMQ=",
+        "owner": "Grumbel",
+        "repo": "unsebu",
+        "rev": "4bc020bb2021321e7627f04f18cf17440c92f9fc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Grumbel",
+        "repo": "unsebu",
         "type": "github"
       }
     },
