@@ -29,6 +29,8 @@
 #include "xpad_device.hpp"
 #include "controller_ptr.hpp"
 
+namespace xboxdrv {
+
 class Options;
 class USBGSource;
 class USBSubsystem;
@@ -86,6 +88,8 @@ private:
   XboxdrvMain(const XboxdrvMain&);
   XboxdrvMain& operator=(const XboxdrvMain&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -21,6 +21,8 @@
 
 #include <string>
 
+namespace xboxdrv {
+
 class WordWrap
 {
 private:
@@ -38,6 +40,8 @@ private:
   WordWrap(const WordWrap&);
   WordWrap& operator=(const WordWrap&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

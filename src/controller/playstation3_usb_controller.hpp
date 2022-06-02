@@ -24,6 +24,8 @@
 #include "controller/usb_controller.hpp"
 #include "xbox360_default_names.hpp"
 
+namespace xboxdrv {
+
 class Playstation3USBController : public USBController
 {
 private:
@@ -45,6 +47,8 @@ private:
   Playstation3USBController(const Playstation3USBController&);
   Playstation3USBController& operator=(const Playstation3USBController&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

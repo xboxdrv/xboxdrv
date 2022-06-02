@@ -21,9 +21,13 @@
 
 #include <memory>
 
+namespace xboxdrv {
+
 class ControllerSlot;
 
 typedef std::shared_ptr<ControllerSlot> ControllerSlotPtr;
+
+} // namespace xboxdrv
 
 #endif
 

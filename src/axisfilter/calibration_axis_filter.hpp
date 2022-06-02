@@ -21,6 +21,8 @@
 
 #include "axis_filter.hpp"
 
+namespace xboxdrv {
+
 class CalibrationAxisFilter : public AxisFilter
 {
 public:
@@ -37,6 +39,8 @@ private:
   int m_center;
   int m_max;
 };
+
+} // namespace xboxdrv
 
 #endif
 

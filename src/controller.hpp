@@ -30,7 +30,9 @@ extern "C" {
 #include <libudev.h>
 }
 
-class ControllerMessage;
+#include "fwd.hpp"
+
+namespace xboxdrv {
 
 class Controller
 {
@@ -92,6 +94,8 @@ private:
   Controller (const Controller&);
   Controller& operator= (const Controller&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

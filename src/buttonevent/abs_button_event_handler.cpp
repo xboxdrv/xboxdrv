@@ -23,6 +23,8 @@
 
 #include <uinpp/multi_device.hpp>
 
+namespace xboxdrv {
+
 AbsButtonEventHandler*
 AbsButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                    const std::string& str)
@@ -58,5 +60,7 @@ AbsButtonEventHandler::str() const
   out << "abs: " << m_code.get_device_id() << "-" << m_code.code << ":" << m_value;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

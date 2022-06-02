@@ -21,6 +21,8 @@
 #include "util/math.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 AxisFilterPtr
 LowpassAxisFilter::from_string(const std::string& str)
 {
@@ -54,5 +56,7 @@ LowpassAxisFilter::str() const
 {
   return "lowpass";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

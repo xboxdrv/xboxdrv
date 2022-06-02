@@ -24,6 +24,8 @@
 #include "controller_message.hpp"
 #include "controller_message_descriptor.hpp"
 
+namespace xboxdrv {
+
 class Modifier;
 class Options;
 
@@ -54,6 +56,8 @@ public:
 
   virtual std::string str() const = 0;
 };
+
+} // namespace xboxdrv
 
 #endif
 

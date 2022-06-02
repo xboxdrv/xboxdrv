@@ -27,6 +27,8 @@
 #include "axis_map_option.hpp"
 #include "button_combination_map.hpp"
 
+namespace xboxdrv {
+
 class ControllerMessageDescriptor;
 
 class AxisMap
@@ -63,6 +65,8 @@ public:
   void send_clear();
   void update(int msec_delta);
 };
+
+} // namespace xboxdrv
 
 #endif
 

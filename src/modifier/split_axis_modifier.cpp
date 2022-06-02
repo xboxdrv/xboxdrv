@@ -23,6 +23,8 @@
 
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 SplitAxisModifier*
 SplitAxisModifier::from_string(const std::vector<std::string>& args)
 {
@@ -79,5 +81,7 @@ SplitAxisModifier::str() const
   os << "split-axis:" << m_axis.str() << ":" << m_out_lhs.str() << ":" << m_out_rhs.str() << std::endl;
   return os.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

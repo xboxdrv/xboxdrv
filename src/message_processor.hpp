@@ -21,6 +21,8 @@
 
 #include "controller_slot_config.hpp"
 
+namespace xboxdrv {
+
 class Options;
 class ControllerOptions;
 class ControllerMessageDescriptor;
@@ -58,6 +60,8 @@ private:
   MessageProcessor(const MessageProcessor&);
   MessageProcessor& operator=(const MessageProcessor&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

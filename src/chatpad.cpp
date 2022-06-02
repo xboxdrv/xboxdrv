@@ -25,6 +25,8 @@
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
 
+namespace xboxdrv {
+
 struct USBControlMsg
 {
   uint8_t bmRequestType;
@@ -509,5 +511,7 @@ Chatpad::process(const ChatpadKeyMsg& msg)
   }
   m_uinput->sync();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

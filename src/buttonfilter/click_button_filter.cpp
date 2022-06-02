@@ -20,6 +20,8 @@
 
 #include <assert.h>
 
+namespace xboxdrv {
+
 ClickButtonFilter::ClickButtonFilter(Mode mode) :
   m_mode(mode),
   m_last_value(false)
@@ -91,5 +93,7 @@ ClickButtonFilter::str() const
       return {};
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -25,6 +25,8 @@
 #include "util/math.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 RelativeAxisFilter*
 RelativeAxisFilter::from_string(const std::string& str)
 {
@@ -76,5 +78,7 @@ RelativeAxisFilter::str() const
   out << "relativeaxis:" << m_speed;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

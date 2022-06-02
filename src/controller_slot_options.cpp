@@ -24,6 +24,8 @@
 
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 ControllerSlotOptions::ControllerSlotOptions() :
   m_options(),
   m_match_rules(),
@@ -82,5 +84,7 @@ ControllerSlotOptions::set_ff_device(const std::string& device)
 {
   m_ff_device = uinpp::str2deviceid(device);
 }
+
+} // namespace xboxdrv
 
 /* EOF */

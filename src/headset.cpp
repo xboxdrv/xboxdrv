@@ -27,6 +27,8 @@
 #include "usb_helper.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 using namespace std::placeholders;
 
 Headset::Headset(libusb_device_handle* handle, bool debug) :
@@ -112,5 +114,7 @@ Headset::receive_data(uint8_t* data, int len)
 
   return true;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

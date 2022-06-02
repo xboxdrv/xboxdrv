@@ -21,6 +21,8 @@
 
 #include "button_filter.hpp"
 
+namespace xboxdrv {
+
 class AutofireButtonFilter : public ButtonFilter
 {
 public:
@@ -42,6 +44,8 @@ private:
   int m_delay;
   int m_counter;
 };
+
+} // namespace xboxdrv
 
 #endif
 

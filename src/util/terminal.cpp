@@ -20,6 +20,8 @@
 
 #include <sys/ioctl.h>
 
+namespace xboxdrv {
+
 int get_terminal_width()
 {
   struct winsize w;
@@ -32,5 +34,7 @@ int get_terminal_width()
     return w.ws_col;
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -24,6 +24,8 @@
 #include "options.hpp"
 #include "controller_ptr.hpp"
 
+namespace xboxdrv {
+
 class ControllerFactory
 {
 public:
@@ -38,6 +40,8 @@ private:
   ControllerFactory(const ControllerFactory&);
   ControllerFactory& operator=(const ControllerFactory&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

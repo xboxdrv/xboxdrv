@@ -4,6 +4,8 @@
 #include "namespace.hpp"
 #include "symbol.hpp"
 
+namespace xboxdrv {
+
 void init_environment_key(EnvironmentPtr env);
 
 int main()
@@ -22,5 +24,7 @@ int main()
   std::cout << gamepad->match(xbox) << std::endl;
   return 0;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

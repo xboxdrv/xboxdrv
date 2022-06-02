@@ -23,6 +23,8 @@
 
 #include <uinpp/event_emitter.hpp>
 
+namespace xboxdrv {
+
 class AbsAxisEventHandler : public AxisEventHandler
 {
 public:
@@ -51,6 +53,8 @@ public:
   AbsAxisEventHandler(const AbsAxisEventHandler&) = delete;
   AbsAxisEventHandler& operator=(const AbsAxisEventHandler&) = delete;
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -24,6 +24,8 @@
 #include <uinpp/event.hpp>
 #include <uinpp/event_emitter.hpp>
 
+namespace xboxdrv {
+
 class RelButtonEventHandler : public ButtonEventHandler
 {
 public:
@@ -51,6 +53,8 @@ public:
   RelButtonEventHandler(const RelButtonEventHandler&) = delete;
   RelButtonEventHandler& operator=(const RelButtonEventHandler&) = delete;
 };
+
+} // namespace xboxdrv
 
 #endif
 

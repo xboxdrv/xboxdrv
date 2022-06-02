@@ -29,6 +29,8 @@
 #include "uinput_options.hpp"
 #include "xpad_device.hpp"
 
+namespace xboxdrv {
+
 class Options
 {
 public:
@@ -224,6 +226,8 @@ public:
 };
 
 extern Options* g_options;
+
+} // namespace xboxdrv
 
 #endif
 

@@ -23,6 +23,8 @@
 
 #include "controller.hpp"
 
+namespace xboxdrv {
+
 class Playstation3BluetoothController : public Controller
 {
 private:
@@ -37,6 +39,8 @@ private:
   Playstation3BluetoothController(const Playstation3BluetoothController&);
   Playstation3BluetoothController& operator=(const Playstation3BluetoothController&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

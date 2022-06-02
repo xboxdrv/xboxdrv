@@ -21,10 +21,14 @@
 #include <linux/input.h>
 
 #include <uinpp/multi_device.hpp>
+
+using namespace xboxdrv; // FIXME
 #include <uinpp/from.hpp>
 
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
+
+namespace xboxdrv {
 
 KeyButtonEventHandler*
 KeyButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
@@ -178,5 +182,7 @@ KeyButtonEventHandler::str() const
   out << m_codes.str() << ":" << m_secondary_codes.str() << ":" << m_hold_threshold;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -24,6 +24,8 @@
 
 #include "button_filter.hpp"
 
+namespace xboxdrv {
+
 class DelayButtonFilter : public ButtonFilter
 {
 public:
@@ -41,6 +43,8 @@ private:
   int m_delay;
   int m_time;
 };
+
+} // namespace xboxdrv
 
 #endif
 

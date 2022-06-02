@@ -25,6 +25,8 @@
 #include "evdev_helper.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 AxisEvent::AxisEvent(AxisEventHandler* handler) :
   m_last_raw_value(0),
   m_last_send_value(0),
@@ -80,5 +82,7 @@ AxisEvent::str() const
 AxisEventHandler::AxisEventHandler()
 {
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -25,6 +25,8 @@
 #include "controller_thread.hpp"
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 struct AxisMappingOption
 {
   AxisMappingOption(const std::string& lhs_,
@@ -81,6 +83,8 @@ public:
 public:
   std::vector<AxisMappingPtr> m_axismap;
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -25,6 +25,8 @@
 
 #include "axis_filter.hpp"
 
+namespace xboxdrv {
+
 class AxisEvent;
 class AxisEventHandler;
 
@@ -63,6 +65,8 @@ public:
 
   virtual std::string str() const =0;
 };
+
+} // namespace xboxdrv
 
 #endif
 

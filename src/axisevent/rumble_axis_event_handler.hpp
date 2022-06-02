@@ -21,6 +21,8 @@
 
 #include "axis_event.hpp"
 
+namespace xboxdrv {
+
 class RumbleAxisEventHandler : public AxisEventHandler
 {
 private:
@@ -39,6 +41,8 @@ private:
   RumbleAxisEventHandler(const RumbleAxisEventHandler&);
   RumbleAxisEventHandler& operator=(const RumbleAxisEventHandler&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

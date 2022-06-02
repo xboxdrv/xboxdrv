@@ -22,6 +22,8 @@
 #include "button_map_option.hpp"
 #include "axis_map.hpp"
 
+namespace xboxdrv {
+
 class UInputOptions
 {
 private:
@@ -55,6 +57,8 @@ public:
   const AxisMapOptions&   get_axis_map() const;
   /** @}*/
 };
+
+} // namespace xboxdrv
 
 #endif
 

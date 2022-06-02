@@ -23,6 +23,8 @@
 
 #include <uinpp/event_sequence.hpp>
 
+namespace xboxdrv {
+
 class KeyAxisEventHandler : public AxisEventHandler
 {
 public:
@@ -51,6 +53,8 @@ private:
   uinpp::EventSequence m_down_codes;
   float m_threshold;
 };
+
+} // namespace xboxdrv
 
 #endif
 

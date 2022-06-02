@@ -26,6 +26,8 @@
 #include "util/math.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 EvDevRelEnum evdev_rel_names;
 EvDevKeyEnum evdev_key_names;
 EvDevAbsEnum evdev_abs_names;
@@ -298,5 +300,7 @@ std::string rel2str(int v)
     return str.str();
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -25,6 +25,8 @@
 #include "controller/usb_controller.hpp"
 #include "xboxmsg.hpp"
 
+namespace xboxdrv {
+
 class GenericUSBController : public USBController
 {
 private:
@@ -46,6 +48,8 @@ private:
   GenericUSBController(const GenericUSBController&);
   GenericUSBController& operator=(const GenericUSBController&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -25,6 +25,8 @@
 #include "util/string.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 AbsAxisEventHandler*
 AbsAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                  const std::string& str)
@@ -112,5 +114,7 @@ AbsAxisEventHandler::str() const
       << m_fuzz << ":" << m_flat;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

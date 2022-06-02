@@ -24,6 +24,8 @@
 #include "button_filter.hpp"
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 struct ButtonMappingOption
 {
   ButtonMappingOption(const std::string& lhs_,
@@ -62,6 +64,8 @@ public:
 public:
   std::vector<ButtonMappingPtr> m_buttonmap;
 };
+
+} // namespace xboxdrv
 
 #endif
 

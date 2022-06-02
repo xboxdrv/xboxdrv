@@ -20,6 +20,8 @@
 
 #include "controller_message_descriptor.hpp"
 
+namespace xboxdrv {
+
 Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& desc) :
   btn_a(-1),
   btn_b(-1),
@@ -95,5 +97,7 @@ Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& desc) :
   abs_black = desc.abs().put(AbsName("xbox.black"));
   abs_white = desc.abs().put(AbsName("xbox.white"));
 }
+
+} // namespace xboxdrv
 
 /* EOF */

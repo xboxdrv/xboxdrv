@@ -26,6 +26,8 @@
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 RelAxisEventHandler*
 RelAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                  const std::string& str)
@@ -126,5 +128,7 @@ RelAxisEventHandler::str() const
   out << m_code.get_device_id() << "-" << m_code.code << ":" << m_value << ":" << m_repeat;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

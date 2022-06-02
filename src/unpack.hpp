@@ -23,6 +23,8 @@
 
 #include "util/math.hpp"
 
+namespace xboxdrv {
+
 namespace unpack {
 
 inline bool is_big_endian()
@@ -177,6 +179,8 @@ inline uint8_t float_to_u8(float v)
 }
 
 } // namespace unpack
+
+} // namespace xboxdrv
 
 #endif
 

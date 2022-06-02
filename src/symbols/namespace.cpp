@@ -18,6 +18,8 @@
 
 #include "namespace.hpp"
 
+namespace xboxdrv {
+
 Namespace::Namespace(const std::string& name) :
   m_name(name),
   m_symbols()
@@ -69,5 +71,7 @@ Namespace::add_alias(const std::string& name, SymbolPtr sym)
     m_symbols[name] = sym;
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

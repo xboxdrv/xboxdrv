@@ -23,6 +23,8 @@
 
 #include "../xboxmsg.hpp"
 
+namespace xboxdrv {
+
 StatisticModifier*
 StatisticModifier::from_string(const std::vector<std::string>& args)
 {
@@ -83,5 +85,7 @@ StatisticModifier::str() const
 {
   return "stat";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

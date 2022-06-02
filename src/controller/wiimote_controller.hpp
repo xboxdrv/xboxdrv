@@ -27,6 +27,8 @@
 #include "controller.hpp"
 #include "controller_message.hpp"
 
+namespace xboxdrv {
+
 class ControllerMessageDescriptor;
 
 struct WiiNames
@@ -137,6 +139,8 @@ private:
   WiimoteController(const WiimoteController&);
   WiimoteController& operator=(const WiimoteController&);
 };
+
+} // namespace xboxdrv
 
 #endif /* HAVE_CWIID */
 

@@ -25,6 +25,8 @@
 #include "controller/usb_controller.hpp"
 #include "xbox360_default_names.hpp"
 
+namespace xboxdrv {
+
 struct XPadDevice;
 
 class XboxOneWirelessController : public USBController
@@ -56,6 +58,8 @@ private:
   XboxOneWirelessController (const XboxOneWirelessController&);
   XboxOneWirelessController& operator= (const XboxOneWirelessController&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -25,6 +25,8 @@
 
 #include "xboxmsg.hpp"
 
+namespace xboxdrv {
+
 class ControllerMessageDescriptor;
 
 class ControllerMessage
@@ -67,6 +69,8 @@ public:
 };
 
 std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, const ControllerMessageDescriptor& desc);
+
+} // namespace xboxdrv
 
 #endif
 

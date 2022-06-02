@@ -23,6 +23,8 @@
 
 #include <uinpp/event_sequence.hpp>
 
+namespace xboxdrv {
+
 class KeyButtonEventHandler : public ButtonEventHandler
 {
 public:
@@ -49,6 +51,8 @@ private:
   int m_hold_counter;
   int m_release_scheduled;
 };
+
+} // namespace xboxdrv
 
 #endif
 

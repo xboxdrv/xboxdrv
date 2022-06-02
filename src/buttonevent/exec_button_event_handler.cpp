@@ -29,6 +29,8 @@
 
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 ExecButtonEventHandler*
 ExecButtonEventHandler::from_string(const std::string& str)
 {
@@ -81,5 +83,7 @@ ExecButtonEventHandler::str() const
 {
   return "exec";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -22,6 +22,8 @@
 
 #include "button_event_factory.hpp"
 
+namespace xboxdrv {
+
 ButtonMap::ButtonMap(const ButtonMapOptions& opts, uinpp::MultiDevice& uinput, int slot, bool extra_devices) :
   m_map()
 {
@@ -144,5 +146,7 @@ ButtonMap::update(int msec_delta)
     }
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

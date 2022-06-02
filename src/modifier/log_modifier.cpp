@@ -21,6 +21,8 @@
 #include <iostream>
 #include <sstream>
 
+namespace xboxdrv {
+
 LogModifier*
 LogModifier::from_string(const std::string& value)
 {
@@ -66,5 +68,7 @@ LogModifier::str() const
   os << "log:" << m_prefix;
   return os.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -63,7 +63,7 @@ xboxdrv_g_controller_init(XboxdrvGController* self)
 }
 
 XboxdrvGController*
-xboxdrv_g_controller_new(ControllerSlot* controller)
+xboxdrv_g_controller_new(xboxdrv::ControllerSlot* controller)
 {
   XboxdrvGController* self = static_cast<XboxdrvGController*>(g_object_new(XBOXDRV_TYPE_G_CONTROLLER, NULL));
   self->controller = controller;
@@ -118,7 +118,7 @@ xboxdrv_g_controller_set_config(XboxdrvGController* self, int config_num, GError
       self->controller->get_thread() &&
       self->controller->get_thread()->get_controller())
   {
-    MessageProcessor* msg_proc = self->controller->get_thread()->get_message_proc();
+    xboxdrv::MessageProcessor* msg_proc = self->controller->get_thread()->get_message_proc();
 
     try
     {

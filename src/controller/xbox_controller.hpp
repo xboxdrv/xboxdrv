@@ -24,6 +24,8 @@
 #include "controller/usb_controller.hpp"
 #include "xbox360_default_names.hpp"
 
+namespace xboxdrv {
+
 struct XPadDevice;
 
 class XboxController : public USBController
@@ -46,6 +48,8 @@ private:
   XboxController (const XboxController&);
   XboxController& operator= (const XboxController&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

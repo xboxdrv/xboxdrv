@@ -28,6 +28,8 @@
 #include "buttonfilter/log_button_filter.hpp"
 #include "buttonfilter/toggle_button_filter.hpp"
 
+namespace xboxdrv {
+
 ButtonFilterPtr
 ButtonFilter::from_string(const std::string& str)
 {
@@ -81,5 +83,7 @@ ButtonFilter::from_string(const std::string& str)
     throw std::runtime_error(out.str());
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

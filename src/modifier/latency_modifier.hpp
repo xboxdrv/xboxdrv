@@ -23,6 +23,8 @@
 
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class LatencyModifier : public Modifier
 {
 public:
@@ -47,6 +49,8 @@ private:
   LatencyModifier(const LatencyModifier&);
   LatencyModifier& operator=(const LatencyModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

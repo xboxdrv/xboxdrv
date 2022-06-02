@@ -27,6 +27,8 @@
 #include "util/string.hpp"
 #include "controller_message_descriptor.hpp"
 
+namespace xboxdrv {
+
 ControllerMessage::ControllerMessage() :
   // FIXME: should get proper size from ControllerMessageDescriptor
   // instead of hardcoded defaults
@@ -149,5 +151,7 @@ std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, co
 
   return out;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

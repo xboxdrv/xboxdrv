@@ -30,6 +30,8 @@
 #include "controller/xbox360_controller.hpp"
 #include "xboxmsg.hpp"
 
+using namespace xboxdrv;
+
 libusb_device* get_controller_dev()
 {
   libusb_device** list;

@@ -21,6 +21,8 @@
 
 #include "axis_filter.hpp"
 
+namespace xboxdrv {
+
 class SensitivityAxisFilter : public AxisFilter
 {
 public:
@@ -35,6 +37,8 @@ public:
 private:
   float m_sensitivity;
 };
+
+} // namespace xboxdrv
 
 #endif
 

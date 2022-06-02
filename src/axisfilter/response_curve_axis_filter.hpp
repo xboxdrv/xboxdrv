@@ -21,6 +21,8 @@
 
 #include "axis_filter.hpp"
 
+namespace xboxdrv {
+
 class ResponseCurveAxisFilter : public AxisFilter
 {
 public:
@@ -35,6 +37,8 @@ public:
 private:
   std::vector<int> m_samples;
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -20,8 +20,11 @@
 #define HEADER_XBOXDRV_BUTTON_COMBINATION_MAP_HPP
 
 #include <memory>
+#include <vector>
 
 #include "button_combination.hpp"
+
+namespace xboxdrv {
 
 typedef std::shared_ptr<ButtonCombination> ButtonCombinationPtr;
 
@@ -129,6 +132,8 @@ public:
   iterator begin() { return m_mappings.begin(); }
   iterator end()   { return m_mappings.end(); }
 };
+
+} // namespace xboxdrv
 
 #endif
 

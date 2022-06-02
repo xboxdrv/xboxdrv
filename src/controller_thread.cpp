@@ -28,6 +28,8 @@
 #include "controller_slot_config.hpp"
 #include "message_processor.hpp"
 
+namespace xboxdrv {
+
 using namespace std::placeholders;
 
 extern bool global_exit_xboxdrv;
@@ -90,5 +92,7 @@ ControllerThread::on_message(const ControllerMessage& msg)
     m_processor->send(msg, m_controller->get_message_descriptor(), msec_delta);
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -21,6 +21,8 @@
 
 #include "axis_filter.hpp"
 
+namespace xboxdrv {
+
 class LogAxisFilter : public AxisFilter
 {
 public:
@@ -35,6 +37,8 @@ public:
 private:
   std::string m_name;
 };
+
+} // namespace xboxdrv
 
 #endif
 

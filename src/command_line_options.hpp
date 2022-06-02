@@ -29,6 +29,8 @@
 #include "axis_map_option.hpp"
 #include "button_map_option.hpp"
 
+namespace xboxdrv {
+
 class Options;
 class Xboxdrv;
 class AxisMap;
@@ -119,6 +121,8 @@ private:
 };
 
 extern Options* g_options;
+
+} // namespace xboxdrv
 
 #endif
 

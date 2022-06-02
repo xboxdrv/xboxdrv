@@ -22,6 +22,8 @@
 
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 DelayButtonFilter*
 DelayButtonFilter::from_string(const std::string& str)
 {
@@ -68,5 +70,7 @@ DelayButtonFilter::str() const
   os << "delay:" << m_delay;
   return os.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

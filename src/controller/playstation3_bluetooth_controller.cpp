@@ -18,6 +18,8 @@
 
 #include "controller/playstation3_bluetooth_controller.hpp"
 
+namespace xboxdrv {
+
 Playstation3BluetoothController::Playstation3BluetoothController()
 {
 }
@@ -35,5 +37,7 @@ void
 Playstation3BluetoothController::set_led_real(uint8_t status)
 {
 }
+
+} // namespace xboxdrv
 
 /* EOF */

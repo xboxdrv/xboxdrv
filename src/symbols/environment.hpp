@@ -24,6 +24,8 @@
 
 #include "namespace.hpp"
 
+namespace xboxdrv {
+
 class Environment
 {
 private:
@@ -44,6 +46,8 @@ private:
 };
 
 typedef std::shared_ptr<Environment> EnvironmentPtr;
+
+} // namespace xboxdrv
 
 #endif
 

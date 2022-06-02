@@ -21,6 +21,8 @@
 #include "modifier/axismap_modifier.hpp"
 #include "modifier/buttonmap_modifier.hpp"
 
+namespace xboxdrv {
+
 ControllerOptions::ControllerOptions() :
   uinput(),
   modifier(),
@@ -38,5 +40,7 @@ ControllerOptions::ControllerOptions() :
   autofire_map()
 {
 }
+
+} // namespace xboxdrv
 
 /* EOF */

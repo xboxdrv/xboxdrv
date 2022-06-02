@@ -18,6 +18,8 @@
 
 #include "invert_axis_filter.hpp"
 
+namespace xboxdrv {
+
 int
 InvertAxisFilter::filter(int value, int min, int max)
 {
@@ -43,5 +45,7 @@ InvertAxisFilter::str() const
 {
   return "invert";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

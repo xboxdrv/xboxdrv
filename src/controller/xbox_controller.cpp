@@ -28,6 +28,8 @@
 #include "usb_helper.hpp"
 #include "xboxmsg.hpp"
 
+namespace xboxdrv {
+
 XboxController::XboxController(libusb_device* dev, bool try_detach) :
   USBController(dev),
   m_endpoint_in(1),
@@ -106,5 +108,7 @@ XboxController::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
     return false;
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

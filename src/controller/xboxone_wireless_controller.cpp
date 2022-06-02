@@ -29,6 +29,8 @@
 #include "unpack.hpp"
 #include "usb_helper.hpp"
 
+namespace xboxdrv {
+
 XboxOneWirelessController::XboxOneWirelessController(libusb_device* dev, bool try_detach) :
   USBController(dev),
   dev_type(),
@@ -151,5 +153,7 @@ XboxOneWirelessController::parse(const uint8_t* data, int len, ControllerMessage
 
   return false;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

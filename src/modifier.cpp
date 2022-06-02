@@ -48,6 +48,8 @@
 #include "raise_exception.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 Modifier*
 Modifier::from_string(const std::string& name, const std::string& value)
 {
@@ -162,5 +164,7 @@ Modifier::from_string(const std::string& name, const std::string& value)
 
   throw std::runtime_error("unknown modifier: " + name);
 }
+
+} // namespace xboxdrv
 
   /* EOF */

@@ -20,6 +20,8 @@
 
 #include <iostream>
 
+namespace xboxdrv {
+
 LogAxisEventHandler::LogAxisEventHandler(const std::string& format) :
   m_format(format)
 {
@@ -41,5 +43,7 @@ LogAxisEventHandler::str() const
 {
   return "log:" + m_format;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

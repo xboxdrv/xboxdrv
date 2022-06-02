@@ -25,8 +25,12 @@
 #include <string>
 #include <vector>
 
+namespace xboxdrv {
+
 pid_t spawn_exe(const std::vector<std::string>& args);
 pid_t spawn_exe(const std::string& arg0);
+
+} // namespace xboxdrv
 
 #endif
 

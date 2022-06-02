@@ -22,6 +22,8 @@
 
 #include <logmich/log.hpp>
 
+namespace xboxdrv {
+
 Controller::Controller() :
   m_msg_cb(),
   m_disconnect_cb(),
@@ -131,5 +133,7 @@ Controller::send_disconnect()
   m_is_disconnected = true;
   m_disconnect_cb();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

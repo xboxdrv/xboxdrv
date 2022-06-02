@@ -24,6 +24,8 @@
 
 #include "button_filter.hpp"
 
+namespace xboxdrv {
+
 class ButtonEvent;
 class ButtonEventHandler;
 
@@ -59,6 +61,8 @@ public:
   virtual void update(int msec_delta) =0;
   virtual std::string str() const =0;
 };
+
+} // namespace xboxdrv
 
 #endif
 

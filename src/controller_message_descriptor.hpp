@@ -25,6 +25,8 @@
 #include "symbol_table.hpp"
 #include "symbols/name.hpp"
 
+namespace xboxdrv {
+
 class ControllerMessageDescriptor
 {
 private:
@@ -47,6 +49,8 @@ public:
   int get_abs_count() const { return static_cast<int>(m_abs.size()); }
   int get_rel_count() const { return static_cast<int>(m_rel.size()); }
 };
+
+} // namespace xboxdrv
 
 #endif
 

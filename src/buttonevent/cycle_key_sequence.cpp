@@ -19,9 +19,13 @@
 #include "buttonevent/cycle_key_sequence.hpp"
 
 #include <stdexcept>
+
+using namespace xboxdrv; // FIXME
 #include <uinpp/from.hpp>
 
 #include "raise_exception.hpp"
+
+namespace xboxdrv {
 
 CycleKeySequencePtr
 CycleKeySequence::from_range(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
@@ -120,5 +124,7 @@ CycleKeySequence::prev_key()
     prev_key();
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

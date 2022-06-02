@@ -31,6 +31,8 @@
 #include "axisfilter/response_curve_axis_filter.hpp"
 #include "axisfilter/sensitivity_axis_filter.hpp"
 
+namespace xboxdrv {
+
 AxisFilterPtr
 AxisFilter::from_string(const std::string& str)
 {
@@ -84,5 +86,7 @@ AxisFilter::from_string(const std::string& str)
     throw std::runtime_error(out.str());
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

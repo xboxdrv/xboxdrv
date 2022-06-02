@@ -22,12 +22,16 @@
 #include <algorithm>
 #include <assert.h>
 
+namespace xboxdrv {
+
 /** converts the arbitary range to [-1,1] */
 float to_float(int value, int min, int max);
 float to_float_no_range_check(int value, int min, int max);
 
 /** converts the range [-1,1] to [min,max] */
 int from_float(float value, int min, int max);
+
+} // namespace xboxdrv
 
 #endif
 

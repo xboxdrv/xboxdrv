@@ -25,6 +25,8 @@
 
 #include "xboxmsg.hpp"
 
+namespace xboxdrv {
+
 class IR2AxisModifier : public Modifier
 {
 public:
@@ -48,6 +50,8 @@ private:
   IR2AxisModifier(const IR2AxisModifier&);
   IR2AxisModifier& operator=(const IR2AxisModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

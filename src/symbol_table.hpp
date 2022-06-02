@@ -27,6 +27,8 @@
 
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 template<typename T>
 class SymbolTable
 {
@@ -90,6 +92,8 @@ public:
 
   int size() const { return static_cast<int>(m_int2name.size()); }
 };
+
+} // namespace xboxdrv
 
 #endif
 

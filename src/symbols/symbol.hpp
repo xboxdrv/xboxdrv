@@ -23,6 +23,8 @@
 #include <sstream>
 #include <vector>
 
+namespace xboxdrv {
+
 class Namespace;
 class Symbol;
 
@@ -45,6 +47,8 @@ public:
   std::string get_name() const;
   std::string str() const;
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -28,6 +28,8 @@
 #include "usb_helper.hpp"
 #include "xboxmsg.hpp"
 
+namespace xboxdrv {
+
 USBController::USBController(libusb_device* dev) :
   m_dev(dev),
   m_handle(nullptr),
@@ -358,5 +360,7 @@ USBController::usb_find_ep(int direction, uint8_t if_class, uint8_t if_subclass,
     }
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -27,6 +27,8 @@
 #include "modifier.hpp"
 #include "options.hpp"
 
+namespace xboxdrv {
+
 class Options;
 class ControllerSlotConfig;
 class ControllerSlotOptions;
@@ -68,6 +70,8 @@ private:
   ControllerSlotConfig(const ControllerSlotConfig&);
   ControllerSlotConfig& operator=(const ControllerSlotConfig&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -27,6 +27,8 @@
 
 #include "button_event.hpp"
 
+namespace xboxdrv {
+
 class CycleKeyButtonEventHandler : public ButtonEventHandler
 {
 private:
@@ -75,6 +77,8 @@ private:
   CycleKeyButtonEventHandler(const CycleKeyButtonEventHandler&);
   CycleKeyButtonEventHandler& operator=(const CycleKeyButtonEventHandler&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

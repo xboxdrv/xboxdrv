@@ -27,6 +27,8 @@
 #include "raise_exception.hpp"
 #include "symbol.hpp"
 
+namespace xboxdrv {
+
 class Namespace
 {
 private:
@@ -49,6 +51,8 @@ private:
 };
 
 typedef std::shared_ptr<Namespace> NamespacePtr;
+
+} // namespace xboxdrv
 
 #endif
 

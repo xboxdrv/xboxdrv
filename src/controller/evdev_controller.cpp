@@ -36,6 +36,8 @@
 #define LONG(x) ((x)/BITS_PER_LONG)
 #define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
 
+namespace xboxdrv {
+
 EvdevController::EvdevController(const std::string& filename,
                                  const std::map<int, std::string>& absmap,
                                  const std::map<int, std::string>& keymap,
@@ -309,5 +311,7 @@ EvdevController::on_read_data(GIOChannel* source, GIOCondition condition)
 
   return TRUE;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -26,6 +26,8 @@
 #include "util/string.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 std::map<std::string, CycleKeySequencePtr> CycleKeyButtonEventHandler::s_lookup_table;
 
 namespace {
@@ -199,5 +201,7 @@ CycleKeyButtonEventHandler::str() const
 {
   return "cycle-key";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

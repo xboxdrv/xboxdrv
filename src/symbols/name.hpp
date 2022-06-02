@@ -25,6 +25,8 @@
 #include "symbols/environment.hpp"
 #include "symbols/symbol.hpp"
 
+namespace xboxdrv {
+
 template<void (*init_environment)(EnvironmentPtr)>
 class Name
 {
@@ -111,6 +113,8 @@ void init_environment_rel(EnvironmentPtr env);
 typedef Name<init_environment_abs> AbsName;
 typedef Name<init_environment_key> KeyName;
 typedef Name<init_environment_rel> RelName;
+
+} // namespace xboxdrv
 
 #endif
 

@@ -27,6 +27,8 @@
 #include "util/math.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 Acc2AxisModifier*
 Acc2AxisModifier::from_string(const std::vector<std::string>& args)
 {
@@ -106,5 +108,7 @@ Acc2AxisModifier::str() const
 {
   return "acc2axis";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

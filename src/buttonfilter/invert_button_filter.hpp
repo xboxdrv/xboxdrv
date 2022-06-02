@@ -21,6 +21,8 @@
 
 #include "button_filter.hpp"
 
+namespace xboxdrv {
+
 class InvertButtonFilter : public ButtonFilter
 {
 public:
@@ -30,6 +32,8 @@ public:
   bool filter(bool value) override;
   std::string str() const override;
 };
+
+} // namespace xboxdrv
 
 #endif
 

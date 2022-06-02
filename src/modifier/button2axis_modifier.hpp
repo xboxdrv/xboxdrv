@@ -23,6 +23,8 @@
 
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class Button2AxisModifier : public Modifier
 {
 public:
@@ -48,6 +50,8 @@ private:
   Button2AxisModifier(const Button2AxisModifier&);
   Button2AxisModifier& operator=(const Button2AxisModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

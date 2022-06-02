@@ -23,6 +23,8 @@
 
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class StatisticModifier : public Modifier
 {
 public:
@@ -45,6 +47,8 @@ private:
   StatisticModifier(const StatisticModifier&);
   StatisticModifier& operator=(const StatisticModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

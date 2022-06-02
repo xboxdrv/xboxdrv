@@ -25,6 +25,8 @@
 #include "usb_helper.hpp"
 #include "unpack.hpp"
 
+namespace xboxdrv {
+
 struct SaitekP2500Msg
 {
   int dummy :8; // data[0]
@@ -179,5 +181,7 @@ SaitekP2500Controller::parse(const uint8_t* data, int len, ControllerMessage* ms
     return false;
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

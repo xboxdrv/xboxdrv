@@ -23,6 +23,8 @@
 
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class RotateAxisModifier : public Modifier
 {
 public:
@@ -45,6 +47,8 @@ private:
   float m_angle;
   bool m_mirror;
 };
+
+} // namespace xboxdrv
 
 #endif
 

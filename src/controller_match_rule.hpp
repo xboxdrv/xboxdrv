@@ -26,7 +26,8 @@ extern "C" {
 #include <string>
 #include <vector>
 
-struct udev_device;
+namespace xboxdrv {
+
 class ControllerMatchRule;
 typedef std::shared_ptr<ControllerMatchRule> ControllerMatchRulePtr;
 
@@ -56,6 +57,8 @@ public:
   void add_rule_from_string(const std::string& lhs, const std::string& rhs);
   bool match(udev_device* device) const override;
 };
+
+} // namespace xboxdrv
 
 #endif
 

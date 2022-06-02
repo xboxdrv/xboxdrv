@@ -24,6 +24,8 @@
 #include "controller_slot_config.hpp"
 #include "controller_thread.hpp"
 
+namespace xboxdrv {
+
 class ControllerSlot
 {
 private:
@@ -58,6 +60,8 @@ private:
   ControllerSlot(const ControllerSlot&);
   ControllerSlot& operator=(const ControllerSlot&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

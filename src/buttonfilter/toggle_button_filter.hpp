@@ -21,6 +21,8 @@
 
 #include "button_filter.hpp"
 
+namespace xboxdrv {
+
 class ToggleButtonFilter : public ButtonFilter
 {
 public:
@@ -34,6 +36,8 @@ private:
   bool m_state;
   bool m_last_value;
 };
+
+} // namespace xboxdrv
 
 #endif
 

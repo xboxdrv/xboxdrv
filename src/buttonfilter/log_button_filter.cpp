@@ -21,6 +21,8 @@
 #include <iostream>
 #include <sstream>
 
+namespace xboxdrv {
+
 LogButtonFilter*
 LogButtonFilter::from_string(const std::string& str)
 {
@@ -54,5 +56,7 @@ LogButtonFilter::str() const
   out << "log:" << m_name;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

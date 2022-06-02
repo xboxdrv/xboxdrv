@@ -23,6 +23,8 @@
 #include <functional>
 #include <map>
 
+namespace xboxdrv {
+
 struct USBReadCallback;
 struct USBWriteCallback;
 
@@ -63,6 +65,8 @@ private:
   USBInterface(const USBInterface&);
   USBInterface& operator=(const USBInterface&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

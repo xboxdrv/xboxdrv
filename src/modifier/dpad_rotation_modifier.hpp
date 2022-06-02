@@ -24,6 +24,8 @@
 #include "key_port.hpp"
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class ControllerMessage;
 
 class DpadRotationModifier : public Modifier
@@ -57,6 +59,8 @@ private:
   DpadRotationModifier(const DpadRotationModifier&);
   DpadRotationModifier& operator=(const DpadRotationModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

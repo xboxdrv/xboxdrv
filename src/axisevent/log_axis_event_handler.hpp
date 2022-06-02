@@ -21,6 +21,8 @@
 
 #include "axis_event.hpp"
 
+namespace xboxdrv {
+
 class LogAxisEventHandler : public AxisEventHandler
 {
 private:
@@ -38,6 +40,8 @@ private:
   LogAxisEventHandler(const LogAxisEventHandler&);
   LogAxisEventHandler& operator=(const LogAxisEventHandler&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

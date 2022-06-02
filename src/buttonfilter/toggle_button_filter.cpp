@@ -18,6 +18,8 @@
 
 #include "buttonfilter/toggle_button_filter.hpp"
 
+namespace xboxdrv {
+
 ToggleButtonFilter::ToggleButtonFilter() :
   m_state(false),
   m_last_value(false)
@@ -44,5 +46,7 @@ ToggleButtonFilter::str() const
 {
   return "toggle";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

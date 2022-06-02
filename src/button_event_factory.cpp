@@ -32,6 +32,8 @@
 #include "buttonevent/macro_button_event_handler.hpp"
 #include "buttonevent/rel_button_event_handler.hpp"
 
+namespace xboxdrv {
+
 ButtonEventFactory::ButtonEventFactory(uinpp::MultiDevice& uinput, int slot, bool extra_devices) :
   m_uinput(uinput),
   m_slot(slot),
@@ -114,5 +116,7 @@ ButtonEventFactory::from_string(const std::string& str, const std::string& direc
     }
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

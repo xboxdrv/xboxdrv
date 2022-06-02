@@ -1,6 +1,6 @@
 /*
 **  Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmail.com>
+**  Copyright (C) 2008-2022 Ingo Ruhnke <grumbel@gmail.com>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,45 +16,44 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_EVENT_EMITTER_HPP
-#define HEADER_XBOXDRV_EVENT_EMITTER_HPP
-
-#include <bitset>
-
-#include <uinpp/fwd.hpp>
-
-#include "axis_map.hpp"
-#include "button_map.hpp"
+#ifndef HEADER_XBOXDRV_FWD_HPP
+#define HEADER_XBOXDRV_FWD_HPP
 
 namespace xboxdrv {
 
-class UInputOptions;
+class AxisEvent;
+class AxisEventHandler;
+class AxisFilter;
+class AxisMap;
+class AxismapModifier;
+class ButtonEvent;
+class ButtonEventHandler;
+class ButtonFilter;
+class ButtonmapModifier;
+class ButtonMapping;
+class Chatpad;
+class Controller;
+class ControllerConfig;
+class ControllerMatchRule;
 class ControllerMessage;
-
-class EventEmitter
-{
-private:
-  uinpp::MultiDevice& m_uinput;
-
-  ButtonMap m_btn_map;
-  AxisMap   m_abs_map;
-
-public:
-  EventEmitter(uinpp::MultiDevice& uinput, int slot, bool extra_devices, const UInputOptions& opts);
-
-  void init(const ControllerMessageDescriptor& desc);
-  void send(const ControllerMessage& msg);
-  void update(int msec_delta);
-
-  void reset_all_outputs();
-
-private:
-  void send_axis(int code, int32_t value);
-
-private:
-  EventEmitter(const EventEmitter&);
-  EventEmitter& operator=(const EventEmitter&);
-};
+class ControllerMessageDescriptor;
+class ControllerOptions;
+class ControllerSlot;
+class ControllerSlotConfig;
+class ControllerSlotOptions;
+class ControllerThread;
+class CycleKeySequence;
+class Headset;
+class MessageProcessor;
+class Modifier;
+class Namespace;
+class Options;
+class Symbol;
+class UInputOptions;
+class USBGSource;
+class USBSubsystem;
+class Xboxdrv;
+class XboxdrvDaemon;
 
 } // namespace xboxdrv
 

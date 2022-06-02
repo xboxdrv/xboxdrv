@@ -24,6 +24,8 @@
 
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class Sector2ButtonModifier : public Modifier
 {
 public:
@@ -52,6 +54,8 @@ private:
   Sector2ButtonModifier(const Sector2ButtonModifier&);
   Sector2ButtonModifier& operator=(const Sector2ButtonModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

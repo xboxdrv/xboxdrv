@@ -21,6 +21,8 @@
 
 #include <bluetooth/bluetooth.h>
 
+namespace xboxdrv {
+
 class Bluetooth
 {
 private:
@@ -35,6 +37,8 @@ private:
   Bluetooth(const Bluetooth&);
   Bluetooth& operator=(const Bluetooth&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

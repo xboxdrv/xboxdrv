@@ -20,6 +20,8 @@
 
 #include <assert.h>
 
+namespace xboxdrv {
+
 ControllerSlot::ControllerSlot(int id_,
                                ControllerSlotConfigPtr config_,
                                std::vector<ControllerMatchRulePtr> rules_,
@@ -57,5 +59,7 @@ ControllerSlot::is_connected() const
 {
   return m_thread != nullptr;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

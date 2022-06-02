@@ -25,6 +25,8 @@
 
 #include <uinpp/event_sequence.hpp>
 
+namespace xboxdrv {
+
 class CycleKeySequence;
 
 typedef std::shared_ptr<CycleKeySequence> CycleKeySequencePtr;
@@ -65,6 +67,8 @@ private:
   CycleKeySequence(const CycleKeySequence&);
   CycleKeySequence& operator=(const CycleKeySequence&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

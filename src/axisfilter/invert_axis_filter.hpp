@@ -21,6 +21,8 @@
 
 #include "axis_filter.hpp"
 
+namespace xboxdrv {
+
 class InvertAxisFilter : public AxisFilter
 {
 public:
@@ -30,6 +32,8 @@ public:
   int filter(int value, int min, int max) override;
   std::string str() const override;
 };
+
+} // namespace xboxdrv
 
 #endif
 

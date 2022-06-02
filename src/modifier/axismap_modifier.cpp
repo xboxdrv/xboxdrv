@@ -27,6 +27,8 @@
 #include "util/math.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 using namespace std::placeholders;
 
 AxisMappingPtr
@@ -196,5 +198,7 @@ AxismapModifier::str() const
   }
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

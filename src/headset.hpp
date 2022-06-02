@@ -25,6 +25,8 @@
 
 #include "usb_interface.hpp"
 
+namespace xboxdrv {
+
 class Headset
 {
 private:
@@ -49,6 +51,8 @@ private:
   Headset(const Headset&);
   Headset& operator=(const Headset&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

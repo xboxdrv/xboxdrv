@@ -20,7 +20,7 @@
 
 int main(int argc, char** argv)
 {
-  Xboxdrv xboxdrv;
+  xboxdrv::Xboxdrv xboxdrv;
   return xboxdrv.main(argc, argv);
 }
 

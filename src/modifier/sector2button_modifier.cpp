@@ -24,6 +24,8 @@
 
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 Sector2ButtonModifier*
 Sector2ButtonModifier::from_string(const std::vector<std::string>& args)
 {
@@ -92,5 +94,7 @@ Sector2ButtonModifier::str() const
 {
   return std::string();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

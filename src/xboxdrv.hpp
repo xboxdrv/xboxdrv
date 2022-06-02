@@ -23,6 +23,8 @@
 
 #include "xboxmsg.hpp"
 
+namespace xboxdrv {
+
 struct XPadDevice;
 class Options;
 class Controller;
@@ -49,6 +51,8 @@ public:
 private:
   void set_scheduling(const Options& opts);
 };
+
+} // namespace xboxdrv
 
 #endif
 

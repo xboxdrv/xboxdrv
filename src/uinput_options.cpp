@@ -22,6 +22,8 @@
 
 #include "button_event_factory.hpp"
 
+namespace xboxdrv {
+
 UInputOptions::UInputOptions() :
   m_btn_map(),
   m_axis_map()
@@ -225,5 +227,7 @@ UInputOptions::guitar()
   m_axis_map.push_back(AxisMapOption("gamepad.dpad_x", "ABS_HAT0X:-1:1:0:0"));
   m_axis_map.push_back(AxisMapOption("gamepad.dpad_y", "ABS_HAT0Y:-1:1:0:0"));
 }
+
+} // namespace xboxdrv
 
 /* EOF */

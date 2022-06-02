@@ -23,6 +23,8 @@
 #include <logmich/log.hpp>
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 HamaCruxNames::HamaCruxNames(ControllerMessageDescriptor& desc) :
   crouch(desc.key().put(KeyName("hama-crux.crouch"))),
   run(desc.key().put(KeyName("hama-crux.run"))),
@@ -199,5 +201,7 @@ HamaCruxController::parse(const uint8_t* data, int len, ControllerMessage* msg)
     return false;
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

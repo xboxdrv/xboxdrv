@@ -25,6 +25,8 @@
 #include "controller/usb_controller.hpp"
 #include "xbox360_default_names.hpp"
 
+namespace xboxdrv {
+
 class FirestormDualController : public USBController
 {
 private:
@@ -49,6 +51,8 @@ private:
   FirestormDualController(const FirestormDualController&);
   FirestormDualController& operator=(const FirestormDualController&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

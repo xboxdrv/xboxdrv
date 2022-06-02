@@ -21,6 +21,8 @@
 
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class CompatModifier : public Modifier
 {
 private:
@@ -49,6 +51,8 @@ private:
   CompatModifier(const CompatModifier&);
   CompatModifier& operator=(const CompatModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

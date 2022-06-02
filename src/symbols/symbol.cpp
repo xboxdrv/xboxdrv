@@ -19,6 +19,8 @@
 #include "namespace.hpp"
 #include "symbol.hpp"
 
+namespace xboxdrv {
+
 Symbol::Symbol(Namespace& ns, const std::string& name) :
   m_namespace(ns),
   m_name(name),
@@ -73,5 +75,7 @@ Symbol::str() const
   out << get_namespace() << "." << get_name();
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

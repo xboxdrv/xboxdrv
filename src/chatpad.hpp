@@ -27,6 +27,8 @@
 #include <uinpp/glib_uinput.hpp>
 #include <uinpp/fwd.hpp>
 
+namespace xboxdrv {
+
 enum {
   CHATPAD_KEY_1 = 0x17,
   CHATPAD_KEY_2 = 0x16,
@@ -206,6 +208,8 @@ private:
   Chatpad(const Chatpad&);
   Chatpad& operator=(const Chatpad&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

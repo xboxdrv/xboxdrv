@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 
+namespace xboxdrv {
+
 class ButtonMapOption
 {
 private:
@@ -52,6 +54,8 @@ public:
 };
 
 typedef std::vector<ButtonMapOption> ButtonMapOptions;
+
+} // namespace xboxdrv
 
 #endif
 

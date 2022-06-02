@@ -26,6 +26,8 @@
 #include "evdev_helper.hpp"
 #include "path.hpp"
 
+namespace xboxdrv {
+
 ButtonEvent::ButtonEvent(ButtonEventHandler* handler) :
   m_last_send_state(false),
   m_last_raw_state(false),
@@ -94,5 +96,7 @@ ButtonEvent::str() const
 {
   return m_handler->str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

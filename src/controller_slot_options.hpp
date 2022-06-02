@@ -25,6 +25,8 @@
 #include "controller_options.hpp"
 #include "controller_match_rule.hpp"
 
+namespace xboxdrv {
+
 class ControllerSlotOptions
 {
 public:
@@ -57,6 +59,8 @@ private:
   int m_led_status;
   int m_ff_device;
 };
+
+} // namespace xboxdrv
 
 #endif
 

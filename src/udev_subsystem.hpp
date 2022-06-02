@@ -25,6 +25,8 @@ extern "C" {
 }
 #include <glib.h>
 
+namespace xboxdrv {
+
 class UdevSubsystem
 {
 private:
@@ -52,6 +54,8 @@ private:
   UdevSubsystem(const UdevSubsystem&);
   UdevSubsystem& operator=(const UdevSubsystem&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

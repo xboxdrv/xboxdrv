@@ -31,6 +31,8 @@ extern "C" {
 #include "controller_slot_ptr.hpp"
 #include "controller_ptr.hpp"
 
+namespace xboxdrv {
+
 class Options;
 class USBGSource;
 class USBSubsystem;
@@ -105,6 +107,8 @@ private:
   XboxdrvDaemon(const XboxdrvDaemon&);
   XboxdrvDaemon& operator=(const XboxdrvDaemon&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

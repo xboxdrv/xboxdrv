@@ -25,6 +25,8 @@
 #include <string_view>
 #include <vector>
 
+namespace xboxdrv {
+
 int hexstr2int(const std::string& str);
 uint16_t hexstr2uint16(const std::string& str);
 
@@ -48,6 +50,8 @@ int to_number(int range, const std::string& str);
     with [], i.e. "NAME=[VALUE1,VALUE2]", the "[" and "]" itself can
     be quoted with "\[" and "\]" */
 void process_name_value_string(const std::string& str, const std::function<void (const std::string&, const std::string&)>& func);
+
+} // namespace xboxdrv
 
 #endif
 

@@ -23,6 +23,8 @@
 #include "evdev_helper.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 KeyCopyModifier*
 KeyCopyModifier::from_string(const std::vector<std::string>& args)
 {
@@ -66,5 +68,7 @@ KeyCopyModifier::str() const
   os << m_to;
   return os.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

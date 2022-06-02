@@ -26,6 +26,8 @@
 #include "unpack.hpp"
 #include "usb_helper.hpp"
 
+namespace xboxdrv {
+
 Xbox360Controller::Xbox360Controller(libusb_device* dev,
                                      bool chatpad, bool chatpad_no_init, bool chatpad_debug,
                                      bool headset,
@@ -197,5 +199,7 @@ Xbox360Controller::parse(const uint8_t* data, int len, ControllerMessage* msg_ou
 
   return false;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

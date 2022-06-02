@@ -25,6 +25,8 @@
 #include <string>
 #include <vector>
 
+namespace xboxdrv {
+
 template<class Enum>
 class EnumBox
 {
@@ -108,6 +110,8 @@ public:
     return lst;
   }
 };
+
+} // namespace xboxdrv
 
 #endif
 

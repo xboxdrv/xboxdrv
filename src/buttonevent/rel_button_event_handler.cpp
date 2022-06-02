@@ -24,6 +24,8 @@
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 RelButtonEventHandler*
 RelButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                    const std::string& str)
@@ -96,5 +98,7 @@ RelButtonEventHandler::str() const
   out << "rel:" << m_code.get_device_id() << "-" << m_code.code << ":" << m_value << ":" << m_repeat;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

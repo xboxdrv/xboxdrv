@@ -21,6 +21,8 @@
 #include "raise_exception.hpp"
 #include "unpack.hpp"
 
+namespace xboxdrv {
+
 std::string gamepadtype_to_string(const GamepadType& type)
 {
   switch (type)
@@ -151,5 +153,7 @@ std::ostream& operator<<(std::ostream& out, const GamepadType& type)
 
   return out << "unknown" << std::endl;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

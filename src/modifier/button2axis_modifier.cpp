@@ -23,6 +23,8 @@
 #include "controller_config.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 Button2AxisModifier*
 Button2AxisModifier::from_string(const std::vector<std::string>& args)
 {
@@ -82,5 +84,7 @@ Button2AxisModifier::str() const
 {
   return "btn2axis";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

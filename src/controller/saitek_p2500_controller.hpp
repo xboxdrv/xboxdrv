@@ -25,6 +25,8 @@
 #include "xboxmsg.hpp"
 #include "xbox360_default_names.hpp"
 
+namespace xboxdrv {
+
 class SaitekP2500Controller : public USBController
 {
 private:
@@ -46,6 +48,8 @@ private:
   SaitekP2500Controller(const SaitekP2500Controller&);
   SaitekP2500Controller& operator=(const SaitekP2500Controller&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

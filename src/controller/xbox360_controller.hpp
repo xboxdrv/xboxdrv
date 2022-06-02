@@ -26,6 +26,8 @@
 #include "controller/usb_controller.hpp"
 #include "xbox360_default_names.hpp"
 
+namespace xboxdrv {
+
 class Chatpad;
 class Headset;
 struct XPadDevice;
@@ -64,6 +66,8 @@ private:
   Xbox360Controller (const Xbox360Controller&);
   Xbox360Controller& operator= (const Xbox360Controller&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -21,9 +21,9 @@
 
 #include <glib-object.h>
 
-#pragma GCC diagnostic ignored "-Wold-style-cast"
+#include "fwd.hpp"
 
-class XboxdrvDaemon;
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 
 #define XBOXDRV_TYPE_G_DAEMON                  (xboxdrv_g_daemon_get_type ())
 #define XBOXDRV_G_DAEMON(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), XBOXDRV_TYPE_G_DAEMON, XboxdrvGDaemon))
@@ -39,7 +39,7 @@ struct _XboxdrvGDaemon
 {
   GObject parent_instance;
 
-  XboxdrvDaemon* daemon;
+  xboxdrv::XboxdrvDaemon* daemon;
 };
 
 struct _XboxdrvGDaemonClass
@@ -48,7 +48,7 @@ struct _XboxdrvGDaemonClass
 };
 
 GType xboxdrv_g_daemon_get_type();
-XboxdrvGDaemon* xboxdrv_g_daemon_new(XboxdrvDaemon* daemon);
+XboxdrvGDaemon* xboxdrv_g_daemon_new(xboxdrv::XboxdrvDaemon* daemon);
 
 gboolean xboxdrv_g_daemon_status(XboxdrvGDaemon* self, gchar** ret, GError** error);
 gboolean xboxdrv_g_daemon_shutdown(XboxdrvGDaemon* self, GError** error);

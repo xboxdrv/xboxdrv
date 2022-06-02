@@ -24,6 +24,8 @@
 #include "controller_message.hpp"
 #include "controller_message_descriptor.hpp"
 
+namespace xboxdrv {
+
 class KeyPort
 {
 protected:
@@ -77,6 +79,8 @@ public:
     msg.set_key(get_key(), value);
   }
 };
+
+} // namespace xboxdrv
 
 #endif
 

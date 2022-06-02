@@ -25,6 +25,8 @@
 #include "raise_exception.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 class ControllerMatchRuleProperty : public ControllerMatchRule
 {
 private:
@@ -217,5 +219,7 @@ ControllerMatchRule::from_string(const std::string& lhs,
     raise_exception(std::runtime_error, "'" << lhs << "' not a valid match rule name");
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

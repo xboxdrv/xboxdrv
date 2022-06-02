@@ -26,6 +26,8 @@
 
 #include "controller.hpp"
 
+namespace xboxdrv {
+
 class USBController : public Controller
 {
 protected:
@@ -83,6 +85,8 @@ private:
   USBController(const USBController&);
   USBController& operator=(const USBController&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

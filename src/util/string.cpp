@@ -23,6 +23,8 @@
 
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 int hexstr2int(const std::string& str)
 {
   unsigned int value = 0;
@@ -208,5 +210,7 @@ int to_number(int range, const std::string& str)
     }
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -21,6 +21,8 @@
 
 #include <string>
 
+namespace xboxdrv {
+
 namespace path {
 
 /** Returns the directory component of a filename, trailing '/' is included */
@@ -29,6 +31,8 @@ std::string dirname(const std::string& filename);
 std::string join(const std::string& lhs, const std::string& rhs);
 
 } // namespace path
+
+} // namespace xboxdrv
 
 #endif
 

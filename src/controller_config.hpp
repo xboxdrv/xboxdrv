@@ -22,6 +22,8 @@
 #include "event_emitter.hpp"
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class ControllerOptions;
 class ControllerConfig;
 typedef std::shared_ptr<ControllerConfig> ControllerConfigPtr;
@@ -43,6 +45,8 @@ private:
   ControllerConfig(const ControllerConfig&);
   ControllerConfig& operator=(const ControllerConfig&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

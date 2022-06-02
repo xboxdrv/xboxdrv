@@ -20,6 +20,8 @@
 
 #include <iostream>
 
+namespace xboxdrv {
+
 LogButtonEventHandler::LogButtonEventHandler(const std::string& format) :
   m_format(format)
 {
@@ -41,5 +43,7 @@ LogButtonEventHandler::str() const
 {
   return "log:" + m_format;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

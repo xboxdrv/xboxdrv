@@ -25,6 +25,8 @@
 
 #include "enum_box.hpp"
 
+namespace xboxdrv {
+
 void str2event(const std::string& name, int& type, int& code);
 int  get_event_type(const std::string& str);
 
@@ -71,6 +73,8 @@ extern EvDevRelEnum  evdev_rel_names;
 extern EvDevKeyEnum  evdev_key_names;
 extern EvDevAbsEnum  evdev_abs_names;
 const X11KeysymEnum& get_x11keysym_names();
+
+} // namespace xboxdrv
 
 #endif
 

@@ -21,6 +21,8 @@
 #include <iostream>
 #include <sstream>
 
+namespace xboxdrv {
+
 LogAxisFilter*
 LogAxisFilter::from_string(const std::string& str)
 {
@@ -54,5 +56,7 @@ LogAxisFilter::str() const
   out << "log:" << m_name;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

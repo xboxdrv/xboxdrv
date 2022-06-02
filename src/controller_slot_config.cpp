@@ -27,6 +27,8 @@
 #include "controller_slot_options.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 using namespace std::placeholders;
 
 ControllerSlotConfigPtr
@@ -179,5 +181,7 @@ ControllerSlotConfig::set_ff_callback(const std::function<void (uint8_t, uint8_t
 {
   m_rumble_callback = callback;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

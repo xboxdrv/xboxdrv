@@ -21,6 +21,8 @@
 
 #include "axis_filter.hpp"
 
+namespace xboxdrv {
+
 class RelativeAxisFilter : public AxisFilter
 {
 public:
@@ -40,6 +42,8 @@ private:
   float m_value;
   float m_state;
 };
+
+} // namespace xboxdrv
 
 #endif
 

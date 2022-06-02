@@ -23,6 +23,8 @@
 
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 IR2AxisModifier*
 IR2AxisModifier::from_string(const std::vector<std::string>& args)
 {
@@ -134,5 +136,7 @@ IR2AxisModifier::str() const
 {
   return "ir2axis";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

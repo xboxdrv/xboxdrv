@@ -22,11 +22,15 @@
 
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 ControllerMessageDescriptor::ControllerMessageDescriptor() :
   m_abs(),
   m_key(),
   m_rel()
 {
 }
+
+} // namespace xboxdrv
 
 /* EOF */

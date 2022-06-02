@@ -28,6 +28,8 @@
 #include "usb_helper.hpp"
 #include "xboxmsg.hpp"
 
+namespace xboxdrv {
+
 Playstation3USBController::Playstation3USBController(libusb_device* dev, bool try_detach) :
   USBController(dev),
   endpoint_in(1),
@@ -272,5 +274,7 @@ Playstation3USBController::parse(const uint8_t* data, int len, ControllerMessage
     return false;
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

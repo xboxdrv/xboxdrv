@@ -21,6 +21,8 @@
 
 #include "axis_filter.hpp"
 
+namespace xboxdrv {
+
 class LowpassAxisFilter : public AxisFilter
 {
 public:
@@ -42,6 +44,8 @@ private:
   LowpassAxisFilter(const LowpassAxisFilter&);
   LowpassAxisFilter& operator=(const LowpassAxisFilter&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

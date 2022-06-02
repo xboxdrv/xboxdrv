@@ -26,6 +26,8 @@
 #include "unpack.hpp"
 #include "usb_helper.hpp"
 
+namespace xboxdrv {
+
 // 044f:b312
 struct Firestorm_vsb_Msg
 {
@@ -246,5 +248,7 @@ FirestormDualController::parse(const uint8_t* data, int len, ControllerMessage* 
     return parse_default(data, len, msg_out);
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

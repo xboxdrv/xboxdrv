@@ -24,6 +24,8 @@
 
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 DeadzoneAxisFilter*
 DeadzoneAxisFilter::from_string(const std::string& str)
 {
@@ -105,5 +107,7 @@ DeadzoneAxisFilter::str() const
   out << "deadzone:" << m_min_deadzone << ":" << m_max_deadzone << ":" << m_smooth;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

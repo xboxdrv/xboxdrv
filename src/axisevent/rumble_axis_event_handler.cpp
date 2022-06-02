@@ -20,6 +20,8 @@
 
 #include <iostream>
 
+namespace xboxdrv {
+
 RumbleAxisEventHandler*
 RumbleAxisEventHandler::from_string(const std::string& args)
 {
@@ -46,5 +48,7 @@ RumbleAxisEventHandler::str() const
 {
   return "rumble";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

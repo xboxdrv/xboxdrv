@@ -23,6 +23,8 @@
 
 #include <uinpp/event_emitter.hpp>
 
+namespace xboxdrv {
+
 class RelAxisEventHandler : public AxisEventHandler
 {
 public:
@@ -52,6 +54,8 @@ public:
   RelAxisEventHandler(const RelAxisEventHandler&) = delete;
   RelAxisEventHandler& operator=(const RelAxisEventHandler&) = delete;
 };
+
+} // namespace xboxdrv
 
 #endif
 

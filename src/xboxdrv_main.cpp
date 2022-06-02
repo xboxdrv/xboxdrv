@@ -43,6 +43,8 @@
 #include "util/exec.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 using namespace std::placeholders;
 
 XboxdrvMain* XboxdrvMain::s_current = nullptr;
@@ -289,5 +291,7 @@ XboxdrvMain::on_sigint(int)
 {
   XboxdrvMain::current()->shutdown();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

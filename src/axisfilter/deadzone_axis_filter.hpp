@@ -21,6 +21,8 @@
 
 #include "axis_filter.hpp"
 
+namespace xboxdrv {
+
 class DeadzoneAxisFilter : public AxisFilter
 {
 public:
@@ -37,6 +39,8 @@ private:
   int m_max_deadzone;
   bool m_smooth;
 };
+
+} // namespace xboxdrv
 
 #endif
 

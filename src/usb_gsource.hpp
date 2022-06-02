@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <list>
 
+namespace xboxdrv {
+
 class USBGSource;
 
 struct GUSBSource
@@ -72,6 +74,8 @@ private:
   USBGSource(const USBGSource&);
   USBGSource& operator=(const USBGSource&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

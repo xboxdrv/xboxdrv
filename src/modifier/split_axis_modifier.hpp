@@ -24,6 +24,8 @@
 #include "abs_port.hpp"
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class SplitAxisModifier : public Modifier
 {
 public:
@@ -46,6 +48,8 @@ private:
   SplitAxisModifier(const SplitAxisModifier&);
   SplitAxisModifier& operator=(const SplitAxisModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

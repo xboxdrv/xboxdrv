@@ -21,6 +21,8 @@
 
 #include "button_event.hpp"
 
+namespace xboxdrv {
+
 class LogButtonEventHandler : public ButtonEventHandler
 {
 private:
@@ -37,6 +39,8 @@ private:
   LogButtonEventHandler(const LogButtonEventHandler&);
   LogButtonEventHandler& operator=(const LogButtonEventHandler&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

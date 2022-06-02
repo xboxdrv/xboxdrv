@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+namespace xboxdrv {
+
 class AxisFilter;
 
 typedef std::shared_ptr<AxisFilter> AxisFilterPtr;
@@ -40,6 +42,8 @@ public:
   virtual int filter(int value, int min, int max) = 0;
   virtual std::string str() const = 0;
 };
+
+} // namespace xboxdrv
 
 #endif
 

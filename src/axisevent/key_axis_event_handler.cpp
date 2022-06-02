@@ -20,11 +20,15 @@
 
 #include <uinpp/multi_device.hpp>
 #include <uinpp/event_sequence.hpp>
+
+using namespace xboxdrv; // FIXME
 #include <uinpp/from.hpp>
 
 #include "evdev_helper.hpp"
 #include "util/math.hpp"
 #include "util/string.hpp"
+
+namespace xboxdrv {
 
 KeyAxisEventHandler*
 KeyAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
@@ -156,5 +160,7 @@ KeyAxisEventHandler::str() const
   out << m_up_codes.str() << ":" << m_down_codes.str() << ":" << m_threshold;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -25,6 +25,8 @@
 #include "util/math.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 namespace {
 
 void squarify_axis(float& x_inout, float& y_inout)
@@ -109,5 +111,7 @@ SquareAxisModifier::str() const
       << m_yaxis_out.str();
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -26,12 +26,16 @@
 #include <strut/tokenize.hpp>
 #include <uinpp/multi_device.hpp>
 #include <uinpp/event_emitter.hpp>
+
+using namespace xboxdrv; // FIXME
 #include <uinpp/from.hpp>
 
 #include "evdev_helper.hpp"
 #include "util/string.hpp"
 #include <logmich/log.hpp>
 #include "raise_exception.hpp"
+
+namespace xboxdrv {
 
 MacroButtonEventHandler*
 MacroButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
@@ -350,5 +354,7 @@ MacroButtonEventHandler::str() const
 {
   return "macro";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

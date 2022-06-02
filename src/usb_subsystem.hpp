@@ -24,6 +24,8 @@
 
 #include "xpad_device.hpp"
 
+namespace xboxdrv {
+
 class USBGSource;
 class Options;
 
@@ -47,6 +49,8 @@ private:
   USBSubsystem(const USBSubsystem&);
   USBSubsystem& operator=(const USBSubsystem&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -21,6 +21,8 @@
 
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class LogModifier : public Modifier
 {
 public:
@@ -41,6 +43,8 @@ private:
   LogModifier(const LogModifier&);
   LogModifier& operator=(const LogModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

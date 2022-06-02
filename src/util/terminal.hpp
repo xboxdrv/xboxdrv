@@ -19,7 +19,11 @@
 #ifndef HEADER_XBOXDRV_UTIL_TERMINAL_HPP
 #define HEADER_XBOXDRV_UTIL_TERMINAL_HPP
 
+namespace xboxdrv {
+
 int get_terminal_width();
+
+} // namespace xboxdrv
 
 #endif
 

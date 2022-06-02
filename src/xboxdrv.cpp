@@ -44,6 +44,8 @@
 #include "xboxdrv_daemon.hpp"
 #include "xboxdrv_main.hpp"
 
+namespace xboxdrv {
+
 // Some ugly global variables, needed for sigint catching
 bool global_exit_xboxdrv = false;
 
@@ -416,5 +418,7 @@ Xboxdrv::main(int argc, char** argv)
 
   return 0;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -28,6 +28,8 @@
 #include <logmich/log.hpp>
 #include "unpack.hpp"
 
+namespace xboxdrv {
+
 WiimoteController* WiimoteController::s_wiimote = 0;
 
 WiiNames::WiiNames(ControllerMessageDescriptor& desc) :
@@ -511,6 +513,8 @@ WiimoteController::mesg_callback(cwiid_wiimote_t*, int mesg_count, union cwiid_m
     }
   }
 }
+
+} // namespace xboxdrv
 
 #endif /* HAVE_CWIID */
 

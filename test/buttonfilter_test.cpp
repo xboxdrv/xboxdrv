@@ -23,6 +23,8 @@
 #include "button_filter.hpp"
 #include "util/string.hpp"
 
+using namespace xboxdrv;
+
 int main(int argc, char** argv)
 {
   if (argc < 2 || argc > 3)

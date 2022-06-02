@@ -24,6 +24,8 @@
 
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 ResponseCurveAxisFilter*
 ResponseCurveAxisFilter::from_string(const std::string& str)
 {
@@ -82,5 +84,7 @@ ResponseCurveAxisFilter::str() const
   }
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

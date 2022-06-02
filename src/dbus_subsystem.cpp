@@ -31,6 +31,8 @@
 #include "xboxdrv_daemon_glue.hpp"
 #include "xboxdrv_controller_glue.hpp"
 
+namespace xboxdrv {
+
 DBusSubsystem::DBusSubsystem(const std::string& name, DBusBusType bus_type) :
   m_connection()
 {
@@ -101,5 +103,7 @@ DBusSubsystem::register_controller_slots(const std::vector<ControllerSlotPtr>& s
                                         G_OBJECT(controller));
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

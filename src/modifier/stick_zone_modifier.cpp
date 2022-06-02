@@ -26,6 +26,8 @@
 #include "xboxmsg.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 StickZoneModifier*
 StickZoneModifier::from_string(const std::vector<std::string>& args)
 {
@@ -90,5 +92,7 @@ StickZoneModifier::str() const
   os << "stickzone:" << m_x_axis.str() << ":" << m_y_axis.str() << ":" << m_button.str();
   return os.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

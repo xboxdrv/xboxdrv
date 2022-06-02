@@ -23,6 +23,8 @@
 
 #include <uinpp/fwd.hpp>
 
+namespace xboxdrv {
+
 class ButtonEventFactory
 {
 private:
@@ -42,6 +44,8 @@ private:
   ButtonEventFactory(const ButtonEventFactory&);
   ButtonEventFactory& operator=(const ButtonEventFactory&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

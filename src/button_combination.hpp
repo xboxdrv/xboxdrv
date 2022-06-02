@@ -25,6 +25,8 @@
 
 #include "xboxmsg.hpp"
 
+namespace xboxdrv {
+
 class ControllerMessageDescriptor;
 
 class ButtonCombination
@@ -62,6 +64,8 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const ButtonCombination& buttons);
+
+} // namespace xboxdrv
 
 #endif
 

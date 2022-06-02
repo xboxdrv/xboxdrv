@@ -23,6 +23,8 @@
 
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 UdevSubsystem::UdevSubsystem() :
   m_udev(),
   m_monitor(),
@@ -231,5 +233,7 @@ UdevSubsystem::print_info(udev_device* device)
 
   log_debug("\\----------------------------------------------");
 }
+
+} // namespace xboxdrv
 
 /* EOF */

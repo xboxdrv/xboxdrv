@@ -26,6 +26,8 @@
 #include "util/string.hpp"
 #include "controller_message_descriptor.hpp"
 
+namespace xboxdrv {
+
 ButtonCombination
 ButtonCombination::from_string(const std::string& str)
 {
@@ -164,5 +166,7 @@ std::ostream& operator<<(std::ostream& os, const ButtonCombination& buttons)
   buttons.print(os);
   return os;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

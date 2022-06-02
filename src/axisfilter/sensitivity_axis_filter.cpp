@@ -26,6 +26,8 @@
 #include "util/math.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 SensitivityAxisFilter*
 SensitivityAxisFilter::from_string(const std::string& str)
 {
@@ -78,5 +80,7 @@ SensitivityAxisFilter::str() const
   out << "sensitivity:" << m_sensitivity;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -21,6 +21,8 @@
 
 #include "button_filter.hpp"
 
+namespace xboxdrv {
+
 /** */
 class ClickButtonFilter : public ButtonFilter
 {
@@ -41,6 +43,8 @@ private:
   ClickButtonFilter(const ClickButtonFilter&);
   ClickButtonFilter& operator=(const ClickButtonFilter&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -24,6 +24,8 @@
 
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 CalibrationAxisFilter*
 CalibrationAxisFilter::from_string(const std::string& str)
 {
@@ -75,5 +77,7 @@ CalibrationAxisFilter::str() const
   out << "calibration:" << m_min << ":" << m_center << ":" << m_max;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

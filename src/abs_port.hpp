@@ -24,6 +24,8 @@
 #include "controller_message.hpp"
 #include "controller_message_descriptor.hpp"
 
+namespace xboxdrv {
+
 class AbsPort
 {
 protected:
@@ -89,6 +91,8 @@ public:
     msg.set_abs_float(get_abs(), value);
   }
 };
+
+} // namespace xboxdrv
 
 #endif
 

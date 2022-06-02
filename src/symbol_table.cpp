@@ -18,4 +18,8 @@
 
 #include "symbol_table.hpp"
 
+namespace xboxdrv {
+
+} // namespace xboxdrv
+
 /* EOF */

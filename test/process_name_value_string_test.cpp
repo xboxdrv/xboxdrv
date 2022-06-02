@@ -21,6 +21,7 @@
 #include "util/string.hpp"
 
 using namespace std::placeholders;
+using namespace xboxdrv;
 
 void print_name_value(const std::string& name, const std::string& value)
 {

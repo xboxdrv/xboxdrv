@@ -21,6 +21,8 @@
 
 #include "button_filter.hpp"
 
+namespace xboxdrv {
+
 class LogButtonFilter : public ButtonFilter
 {
 public:
@@ -35,6 +37,8 @@ public:
 private:
   std::string m_name;
 };
+
+} // namespace xboxdrv
 
 #endif
 

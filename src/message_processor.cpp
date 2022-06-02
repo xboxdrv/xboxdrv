@@ -21,6 +21,8 @@
 #include <uinpp/multi_device.hpp>
 #include <logmich/log.hpp>
 
+namespace xboxdrv {
+
 MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config,
                                    const ControllerMessageDescriptor& desc,
                                    const Options& opts) :
@@ -150,5 +152,7 @@ MessageProcessor::set_ff_callback(const std::function<void (uint8_t, uint8_t)>& 
     m_config->set_ff_callback(callback);
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

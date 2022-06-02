@@ -22,6 +22,8 @@
 #include <sstream>
 #include <stdexcept>
 
+namespace xboxdrv {
+
 FourWayRestrictorModifier*
 FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
 {
@@ -81,5 +83,7 @@ FourWayRestrictorModifier::str() const
       << m_xaxis_out.str() << ":" << m_yaxis_out.str();
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

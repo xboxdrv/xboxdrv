@@ -25,6 +25,8 @@
 
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 RotateAxisModifier*
 RotateAxisModifier::from_string(const std::vector<std::string>& args)
 {
@@ -82,5 +84,7 @@ RotateAxisModifier::str() const
   out << "rotate:" << m_xaxis << "=" << m_yaxis << ":" << (m_angle/180.0f*std::numbers::pi_v<float>);
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

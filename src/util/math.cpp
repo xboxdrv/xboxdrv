@@ -18,6 +18,8 @@
 
 #include "util/math.hpp"
 
+namespace xboxdrv {
+
 float to_float_no_range_check(int value, int min, int max)
 {
   // FIXME: '+1' is kind of a hack to
@@ -45,5 +47,7 @@ int from_float(float value, int min, int max)
 {
   return static_cast<int>((value + 1.0f) / 2.0f * static_cast<float>(max - min)) + min;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

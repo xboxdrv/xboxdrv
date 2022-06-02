@@ -50,6 +50,8 @@
 
 #include "xboxdrv_vfs.hpp"
 
+namespace xboxdrv {
+
 using namespace std::placeholders;
 
 enum {
@@ -1370,5 +1372,7 @@ CommandLineParser::get_directory_context() const
     return m_directory_context.back();
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

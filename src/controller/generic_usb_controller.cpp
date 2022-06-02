@@ -23,6 +23,8 @@
 #include "util/string.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 GenericUSBController::GenericUSBController(libusb_device* dev,
                                            int interface, int endpoint,
                                            bool try_detach) :
@@ -123,5 +125,7 @@ GenericUSBController::parse(const uint8_t* data, int len, ControllerMessage* msg
   std::cout << "GenericUSBController:parse(): " << raw2str(data, len) << std::endl;
   return false;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

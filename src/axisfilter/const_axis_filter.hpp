@@ -21,6 +21,8 @@
 
 #include "axis_filter.hpp"
 
+namespace xboxdrv {
+
 class ConstAxisFilter : public AxisFilter
 {
 public:
@@ -39,6 +41,8 @@ private:
   ConstAxisFilter(const ConstAxisFilter&);
   ConstAxisFilter& operator=(const ConstAxisFilter&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

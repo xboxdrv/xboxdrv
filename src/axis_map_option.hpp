@@ -27,6 +27,8 @@
 #include "util/string.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 class AxisMapOption
 {
 private:
@@ -75,6 +77,8 @@ public:
 };
 
 typedef std::vector<AxisMapOption> AxisMapOptions;
+
+} // namespace xboxdrv
 
 #endif
 

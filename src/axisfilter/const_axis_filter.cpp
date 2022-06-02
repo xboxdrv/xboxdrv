@@ -22,6 +22,8 @@
 
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 ConstAxisFilter*
 ConstAxisFilter::from_string(const std::string& rest)
 {
@@ -45,5 +47,7 @@ ConstAxisFilter::str() const
   os << "const:" << m_value;
   return os.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

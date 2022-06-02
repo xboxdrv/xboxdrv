@@ -25,6 +25,8 @@
 #include "key_port.hpp"
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class StickZoneModifier : public Modifier
 {
 public:
@@ -51,6 +53,8 @@ private:
   StickZoneModifier(const StickZoneModifier&);
   StickZoneModifier& operator=(const StickZoneModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -27,6 +27,8 @@
 #include "usb_helper.hpp"
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 USBSubsystem::USBSubsystem() :
   m_usb_gsource()
 {
@@ -222,5 +224,7 @@ USBSubsystem::find_xbox360_controller(int id, libusb_device** xbox_device, XPadD
   libusb_free_device_list(list, 1 /* unref_devices */);
   return false;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

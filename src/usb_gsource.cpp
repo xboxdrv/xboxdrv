@@ -27,6 +27,8 @@
 
 #include "usb_helper.hpp"
 
+namespace xboxdrv {
+
 USBGSource::USBGSource() :
   m_source_funcs(),
   m_source(),
@@ -178,5 +180,7 @@ USBGSource::on_source()
   libusb_handle_events(NULL);
   return TRUE;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

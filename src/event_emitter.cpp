@@ -25,6 +25,8 @@
 #include "controller_message.hpp"
 #include "uinput_options.hpp"
 
+namespace xboxdrv {
+
 EventEmitter::EventEmitter(uinpp::MultiDevice& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
   m_uinput(uinput),
   m_btn_map(opts.get_btn_map(), uinput, slot, extra_devices),
@@ -65,5 +67,7 @@ EventEmitter::reset_all_outputs()
 
   m_uinput.sync();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

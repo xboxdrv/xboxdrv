@@ -24,6 +24,8 @@
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
 
+namespace xboxdrv {
+
 struct USBReadCallback
 {
   USBInterface* iface;
@@ -236,5 +238,7 @@ USBInterface::on_write_data_wrap(libusb_transfer* transfer)
   USBWriteCallback* cb = static_cast<USBWriteCallback*>(transfer->user_data);
   cb->iface->on_write_data(cb, transfer);
 }
+
+} // namespace xboxdrv
 
 /* EOF */

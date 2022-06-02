@@ -24,6 +24,8 @@
 
 #include "button_event.hpp"
 
+namespace xboxdrv {
+
 class MacroButtonEventHandler : public ButtonEventHandler
 {
 public:
@@ -86,6 +88,8 @@ private:
   typedef std::map<uinpp::Event, uinpp::EventEmitter*> Emitter;
   Emitter m_emitter;
 };
+
+} // namespace xboxdrv
 
 #endif
 

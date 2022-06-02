@@ -26,6 +26,8 @@
 #include "usb_helper.hpp"
 #include "unpack.hpp"
 
+namespace xboxdrv {
+
 LogitechF310Controller::LogitechF310Controller(libusb_device* dev, bool try_detach) :
   USBController(dev),
   left_rumble(-1),
@@ -113,5 +115,7 @@ LogitechF310Controller::parse(const uint8_t* data, int len, ControllerMessage* m
     return false;
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

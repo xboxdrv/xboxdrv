@@ -21,6 +21,8 @@
 
 #include "button_filter.hpp"
 
+namespace xboxdrv {
+
 class ConstButtonFilter : public ButtonFilter
 {
 public:
@@ -40,6 +42,8 @@ private:
   ConstButtonFilter(const ConstButtonFilter&);
   ConstButtonFilter& operator=(const ConstButtonFilter&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

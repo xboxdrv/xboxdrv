@@ -19,6 +19,8 @@
 #ifndef HEADER_XBOXDRV_XBOX360_NAMES_HPP
 #define HEADER_XBOXDRV_XBOX360_NAMES_HPP
 
+namespace xboxdrv {
+
 class ControllerMessageDescriptor;
 
 class Xbox360DefaultNames
@@ -78,6 +80,8 @@ private:
   Xbox360DefaultNames(const Xbox360DefaultNames&);
   Xbox360DefaultNames& operator=(const Xbox360DefaultNames&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

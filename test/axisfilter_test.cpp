@@ -23,6 +23,8 @@
 #include "util/string.hpp"
 #include "axis_filter.hpp"
 
+using namespace xboxdrv;
+
 int main(int argc, char** argv)
 {
   if (argc != 2)

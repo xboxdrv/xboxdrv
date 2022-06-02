@@ -25,6 +25,8 @@
 
 #include "controller_slot_ptr.hpp"
 
+namespace xboxdrv {
+
 class XboxdrvDaemon;
 
 class DBusSubsystem
@@ -46,6 +48,8 @@ private:
   DBusSubsystem(const DBusSubsystem&);
   DBusSubsystem& operator=(const DBusSubsystem&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

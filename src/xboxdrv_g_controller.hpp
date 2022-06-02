@@ -21,9 +21,9 @@
 
 #include <glib-object.h>
 
-#pragma GCC diagnostic ignored "-Wold-style-cast"
+#include "fwd.hpp"
 
-class ControllerSlot;
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 
 #define XBOXDRV_TYPE_G_CONTROLLER                  (xboxdrv_g_controller_get_type ())
 #define XBOXDRV_G_CONTROLLER(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), XBOXDRV_TYPE_G_CONTROLLER, XboxdrvGController))
@@ -39,7 +39,7 @@ struct _XboxdrvGController
 {
   GObject parent_instance;
 
-  ControllerSlot* controller;
+  xboxdrv::ControllerSlot* controller;
 };
 
 struct _XboxdrvGControllerClass
@@ -48,7 +48,7 @@ struct _XboxdrvGControllerClass
 };
 
 GType xboxdrv_g_controller_get_type();
-XboxdrvGController* xboxdrv_g_controller_new(ControllerSlot* controller);
+XboxdrvGController* xboxdrv_g_controller_new(xboxdrv::ControllerSlot* controller);
 
 gboolean xboxdrv_g_controller_set_config(XboxdrvGController* self, int config_num, GError** error);
 gboolean xboxdrv_g_controller_set_led(XboxdrvGController* self, int status, GError** error);

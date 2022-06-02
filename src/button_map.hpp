@@ -30,6 +30,8 @@
 #include "button_event.hpp"
 #include "button_map_option.hpp"
 
+namespace xboxdrv {
+
 class ButtonMap
 {
 private:
@@ -49,6 +51,8 @@ private:
   /** Bind a combination of multiple buttons to an event (i.e. "LB+A=KEY_A") */
   void bind(const ButtonCombination& buttons, ButtonEventPtr event);
 };
+
+} // namespace xboxdrv
 
 #endif
 

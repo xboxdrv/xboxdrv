@@ -23,6 +23,8 @@
 
 #include <uinpp/fwd.hpp>
 
+namespace xboxdrv {
+
 class AxisEventFactory
 {
 private:
@@ -42,6 +44,8 @@ private:
   AxisEventFactory(const AxisEventFactory&);
   AxisEventFactory& operator=(const AxisEventFactory&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

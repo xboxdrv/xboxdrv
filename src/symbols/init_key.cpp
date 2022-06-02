@@ -6,6 +6,8 @@
 #include "symbols/namespace.hpp"
 #include "symbols/symbol.hpp"
 
+namespace xboxdrv {
+
 void init_environment_key(EnvironmentPtr env)
 {
   {
@@ -2755,5 +2757,7 @@ void init_environment_key(EnvironmentPtr env)
     NamespacePtr ns = env->lookup_namespace("gamepad");
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

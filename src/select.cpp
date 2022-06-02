@@ -24,6 +24,8 @@
 
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 
 Select::Select() :
@@ -72,5 +74,7 @@ Select::wait()
     return ret;
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

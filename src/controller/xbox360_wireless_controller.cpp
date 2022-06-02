@@ -27,6 +27,8 @@
 #include "unpack.hpp"
 #include "usb_helper.hpp"
 
+namespace xboxdrv {
+
 Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int controller_id,
                                                      bool try_detach) :
   USBController(dev),
@@ -188,5 +190,7 @@ Xbox360WirelessController::parse(const uint8_t* data, int len, ControllerMessage
 
   return false;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

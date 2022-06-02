@@ -29,6 +29,8 @@
 #include "modifier/buttonmap_modifier.hpp"
 #include "uinput_options.hpp"
 
+namespace xboxdrv {
+
 class AxismapModifier;
 class ButtonmapModifier;
 
@@ -55,6 +57,8 @@ public:
   std::map<std::string, AxisFilterPtr> relative_axis_map;
   std::map<std::string, ButtonFilterPtr> autofire_map;
 };
+
+} // namespace xboxdrv
 
 #endif
 

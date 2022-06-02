@@ -24,6 +24,8 @@
 #include "modifier.hpp"
 #include "abs_port.hpp"
 
+namespace xboxdrv {
+
 class JoinAxisModifier : public Modifier
 {
 public:
@@ -46,6 +48,8 @@ private:
   JoinAxisModifier(const JoinAxisModifier&);
   JoinAxisModifier& operator=(const JoinAxisModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -20,6 +20,8 @@
 
 #include <logmich/log.hpp>
 
+namespace xboxdrv {
+
 Environment::Environment() :
   m_namespaces()
 {
@@ -86,5 +88,7 @@ Environment::add_namespace_alias(const std::string& name, NamespacePtr ns)
     m_namespaces[name] = ns;
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

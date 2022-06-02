@@ -51,7 +51,7 @@ xboxdrv_g_daemon_init(XboxdrvGDaemon* self)
 }
 
 XboxdrvGDaemon*
-xboxdrv_g_daemon_new(XboxdrvDaemon* daemon)
+xboxdrv_g_daemon_new(xboxdrv::XboxdrvDaemon* daemon)
 {
   XboxdrvGDaemon* self = static_cast<XboxdrvGDaemon*>(g_object_new(XBOXDRV_TYPE_G_DAEMON, NULL));
   self->daemon = daemon;

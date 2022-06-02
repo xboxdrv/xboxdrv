@@ -20,6 +20,8 @@
 
 #include <logmich/log.hpp>
 
+namespace xboxdrv {
+
 CompatModifier::CompatModifier() :
   m_dpad(false),
   m_dpad_x(-1),
@@ -98,5 +100,7 @@ CompatModifier::str() const
 {
   return "compat";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

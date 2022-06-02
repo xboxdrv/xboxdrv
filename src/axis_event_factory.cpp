@@ -30,6 +30,8 @@
 #include "axisevent/rel_repeat_axis_event_handler.hpp"
 #include "axisevent/rumble_axis_event_handler.hpp"
 
+namespace xboxdrv {
+
 AxisEventFactory::AxisEventFactory(uinpp::MultiDevice& uinput, int slot, bool extra_devices) :
   m_uinput(uinput),
   m_slot(slot),
@@ -109,5 +111,7 @@ AxisEventFactory::from_string(const std::string& str)
 
   return ev;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

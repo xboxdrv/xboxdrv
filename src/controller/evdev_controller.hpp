@@ -27,6 +27,8 @@
 #include "controller.hpp"
 #include "controller_message.hpp"
 
+namespace xboxdrv {
+
 class EvdevController : public Controller
 {
 private:
@@ -77,6 +79,8 @@ private:
   EvdevController(const EvdevController&);
   EvdevController& operator=(const EvdevController&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

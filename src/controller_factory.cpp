@@ -33,6 +33,8 @@
 #include "controller/xbox_controller.hpp"
 #include "controller/xboxone_wireless_controller.hpp"
 
+namespace xboxdrv {
+
 ControllerPtr
 ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const Options& opts)
 {
@@ -195,5 +197,7 @@ ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* de
 
   return lst;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

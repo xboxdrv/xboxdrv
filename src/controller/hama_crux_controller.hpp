@@ -25,6 +25,8 @@
 #include "controller/usb_controller.hpp"
 #include "xboxmsg.hpp"
 
+namespace xboxdrv {
+
 class ControllerMessageDescriptor;
 
 struct HamaCruxNames
@@ -64,6 +66,8 @@ private:
   HamaCruxController(const HamaCruxController&);
   HamaCruxController& operator=(const HamaCruxController&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -24,6 +24,8 @@
 #include "abs_port.hpp"
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class FourWayRestrictorModifier : public Modifier
 {
 public:
@@ -45,6 +47,8 @@ private:
   AbsPortOut m_xaxis_out;
   AbsPortOut m_yaxis_out;
 };
+
+} // namespace xboxdrv
 
 #endif
 

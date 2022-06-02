@@ -27,6 +27,8 @@
 #include "key_port.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 using namespace std::placeholders;
 
 
@@ -197,5 +199,7 @@ ButtonmapModifier::str() const
   }
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

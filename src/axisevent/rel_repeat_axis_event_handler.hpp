@@ -23,6 +23,8 @@
 
 #include <uinpp/event_emitter.hpp>
 
+namespace xboxdrv {
+
 class RelRepeatAxisEventHandler : public AxisEventHandler
 {
 public:
@@ -52,6 +54,8 @@ public:
   RelRepeatAxisEventHandler(const RelRepeatAxisEventHandler&) = delete;
   RelRepeatAxisEventHandler& operator=(const RelRepeatAxisEventHandler&) = delete;
 };
+
+} // namespace xboxdrv
 
 #endif
 

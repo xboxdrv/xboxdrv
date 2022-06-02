@@ -26,6 +26,8 @@
 #include "controller_ptr.hpp"
 #include "controller_slot_ptr.hpp"
 
+namespace xboxdrv {
+
 class Options;
 class MessageProcessor;
 class ControllerThread;
@@ -69,6 +71,8 @@ private:
   ControllerThread(const ControllerThread&);
   ControllerThread& operator=(const ControllerThread&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

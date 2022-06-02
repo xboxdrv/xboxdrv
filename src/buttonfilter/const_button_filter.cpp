@@ -22,6 +22,8 @@
 
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 ConstButtonFilter*
 ConstButtonFilter::from_string(const std::string& str)
 {
@@ -46,5 +48,7 @@ ConstButtonFilter::str() const
   os << "const:" << m_value;
   return os.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

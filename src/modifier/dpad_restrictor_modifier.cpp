@@ -23,6 +23,8 @@
 
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 DpadRestrictorModifier*
 DpadRestrictorModifier::from_string(const std::vector<std::string>& args)
 {
@@ -128,5 +130,7 @@ DpadRestrictorModifier::str() const
     default: assert(false && "never reached"); return {};
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

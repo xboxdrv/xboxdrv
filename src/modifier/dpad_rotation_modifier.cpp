@@ -25,6 +25,8 @@
 
 #include "controller_config.hpp"
 
+namespace xboxdrv {
+
 DpadRotationModifier*
 DpadRotationModifier::from_string(const std::vector<std::string>& args)
 {
@@ -179,5 +181,7 @@ DpadRotationModifier::str() const
   out << "dpad-rotation:" << m_dpad_rotation;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -21,6 +21,8 @@
 
 #include "button_event.hpp"
 
+namespace xboxdrv {
+
 class ExecButtonEventHandler : public ButtonEventHandler
 {
 public:
@@ -37,6 +39,8 @@ public:
 private:
   std::vector<std::string> m_args;
 };
+
+} // namespace xboxdrv
 
 #endif
 

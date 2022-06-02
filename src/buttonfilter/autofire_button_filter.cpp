@@ -24,6 +24,8 @@
 
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 AutofireButtonFilter*
 AutofireButtonFilter::from_string(const std::string& str)
 {
@@ -107,5 +109,7 @@ AutofireButtonFilter::str() const
   out << "auto:" << m_rate << ":" << m_delay;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

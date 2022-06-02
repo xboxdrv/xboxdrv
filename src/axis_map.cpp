@@ -23,6 +23,8 @@
 #include "axis_event_factory.hpp"
 #include "controller_message_descriptor.hpp"
 
+namespace xboxdrv {
+
 AxisMap::AxisMap(const AxisMapOptions& opts, uinpp::MultiDevice& uinput, int slot, bool extra_devices) :
   m_mappings(),
   m_map()
@@ -129,5 +131,7 @@ AxisMap::update(int msec_delta)
     }
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

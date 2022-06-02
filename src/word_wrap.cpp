@@ -24,6 +24,8 @@
 
 #include "util/string.hpp"
 
+namespace xboxdrv {
+
 WordWrap::WordWrap(int terminal_width) :
   m_terminal_width(terminal_width)
 {
@@ -68,5 +70,7 @@ WordWrap::para(const std::string& prefix, const std::string& str) const
   }
   std::cout << std::endl;
 }
+
+} // namespace xboxdrv
 
 /* EOF */

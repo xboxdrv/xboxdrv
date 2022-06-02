@@ -28,6 +28,8 @@
 #include "util/string.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 RelRepeatAxisEventHandler*
 RelRepeatAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
                                        const std::string& str)
@@ -108,5 +110,7 @@ RelRepeatAxisEventHandler::str() const
   out << "rel-repeat:" << m_value << ":" << m_repeat;
   return out.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

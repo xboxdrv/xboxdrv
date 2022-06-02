@@ -24,6 +24,8 @@
 #include "util/string.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 LatencyModifier*
 LatencyModifier::from_string(const std::vector<std::string>& args)
 {
@@ -73,5 +75,7 @@ LatencyModifier::str() const
 {
   return "latency";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

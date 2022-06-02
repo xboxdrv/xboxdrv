@@ -23,6 +23,8 @@
 
 #include <vector>
 
+namespace xboxdrv {
+
 class Acc2AxisModifier : public Modifier
 {
 public:
@@ -55,6 +57,8 @@ private:
   Acc2AxisModifier(const Acc2AxisModifier&);
   Acc2AxisModifier& operator=(const Acc2AxisModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

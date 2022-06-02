@@ -18,6 +18,8 @@
 
 #include "invert_button_filter.hpp"
 
+namespace xboxdrv {
+
 bool
 InvertButtonFilter::filter(bool value)
 {
@@ -29,5 +31,7 @@ InvertButtonFilter::str() const
 {
   return "invert";
 }
+
+} // namespace xboxdrv
 
 /* EOF */

@@ -23,6 +23,8 @@
 
 #include <vector>
 
+namespace xboxdrv {
+
 class KeyCopyModifier : public Modifier
 {
 public:
@@ -46,6 +48,8 @@ private:
   KeyCopyModifier(const KeyCopyModifier&);
   KeyCopyModifier& operator=(const KeyCopyModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 

@@ -20,6 +20,8 @@
 
 #include "unpack.hpp"
 
+using namespace xboxdrv;
+
 int main(int argc, char** argv)
 {
   uint8_t data[] = { 0x04, 0x03, 0x02, 0x01 };

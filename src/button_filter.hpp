@@ -22,6 +22,8 @@
 #include <memory>
 #include <string>
 
+namespace xboxdrv {
+
 class ButtonFilter;
 
 typedef std::shared_ptr<ButtonFilter> ButtonFilterPtr;
@@ -39,6 +41,8 @@ public:
   virtual void update(int msec_delta) {}
   virtual std::string str() const = 0;
 };
+
+} // namespace xboxdrv
 
 #endif
 

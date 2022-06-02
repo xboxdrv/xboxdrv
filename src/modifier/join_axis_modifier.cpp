@@ -23,6 +23,8 @@
 
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 JoinAxisModifier*
 JoinAxisModifier::from_string(const std::vector<std::string>& args)
 {
@@ -67,5 +69,7 @@ JoinAxisModifier::str() const
      << m_out.get_name();
   return os.str();
 }
+
+} // namespace xboxdrv
 
 /* EOF */

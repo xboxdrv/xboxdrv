@@ -28,6 +28,8 @@
 #include "util/string.hpp"
 #include "raise_exception.hpp"
 
+namespace xboxdrv {
+
 using namespace std::placeholders;
 
 Options* g_options;
@@ -456,5 +458,7 @@ Options::finish()
     config_toggle_button = "guide";
   }
 }
+
+} // namespace xboxdrv
 
 /* EOF */

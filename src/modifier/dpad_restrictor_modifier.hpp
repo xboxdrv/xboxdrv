@@ -25,6 +25,8 @@
 #include "key_port.hpp"
 #include "modifier.hpp"
 
+namespace xboxdrv {
+
 class DpadRestrictorModifier : public Modifier
 {
 private:
@@ -62,6 +64,8 @@ private:
   DpadRestrictorModifier(const DpadRestrictorModifier&);
   DpadRestrictorModifier& operator=(const DpadRestrictorModifier&);
 };
+
+} // namespace xboxdrv
 
 #endif
 
