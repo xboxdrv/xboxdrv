@@ -26,7 +26,7 @@
 namespace xboxdrv {
 
 KeyCopyModifier*
-KeyCopyModifier::from_string(const std::vector<std::string>& args)
+KeyCopyModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() != 2)
   {
@@ -38,7 +38,7 @@ KeyCopyModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-KeyCopyModifier::KeyCopyModifier(const std::string& from, const std::string& to) :
+KeyCopyModifier::KeyCopyModifier(std::string const& from, std::string const& to) :
   m_from(from),
   m_to(to),
   m_from_sym(-1),
@@ -54,7 +54,7 @@ KeyCopyModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-KeyCopyModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+KeyCopyModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   msg.set_key(m_to_sym, msg.get_key(m_from_sym));
 }

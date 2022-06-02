@@ -74,7 +74,7 @@ Xbox360WirelessController::set_led_real(uint8_t status)
 }
 
 bool
-Xbox360WirelessController::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
+Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage* msg_out)
 {
   if (len == 0)
   {
@@ -134,7 +134,7 @@ Xbox360WirelessController::parse(const uint8_t* data, int len, ControllerMessage
       }
       else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
       { // Event message
-        const uint8_t* ptr = data + 4;
+        uint8_t const* ptr = data + 4;
 
         msg_out->set_key(xbox.dpad_up,    unpack::bit(ptr+2, 0));
         msg_out->set_key(xbox.dpad_down,  unpack::bit(ptr+2, 1));

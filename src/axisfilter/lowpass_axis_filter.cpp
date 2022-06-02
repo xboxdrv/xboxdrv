@@ -24,7 +24,7 @@
 namespace xboxdrv {
 
 AxisFilterPtr
-LowpassAxisFilter::from_string(const std::string& str)
+LowpassAxisFilter::from_string(std::string const& str)
 {
   return AxisFilterPtr(new LowpassAxisFilter(str2float(str)));
 }

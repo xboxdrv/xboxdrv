@@ -52,8 +52,8 @@ USBGSource::USBGSource() :
                         NULL);
 
   // add pollfds to source
-  const libusb_pollfd** fds = libusb_get_pollfds(NULL);
-  for(const libusb_pollfd** i = fds; *i != NULL; ++i)
+  libusb_pollfd const** fds = libusb_get_pollfds(NULL);
+  for(libusb_pollfd const** i = fds; *i != NULL; ++i)
   {
     on_usb_pollfd_added((*i)->fd, (*i)->events);
   }

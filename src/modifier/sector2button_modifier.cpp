@@ -27,7 +27,7 @@
 namespace xboxdrv {
 
 Sector2ButtonModifier*
-Sector2ButtonModifier::from_string(const std::vector<std::string>& args)
+Sector2ButtonModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() != 10)
   {
@@ -40,8 +40,8 @@ Sector2ButtonModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-Sector2ButtonModifier::Sector2ButtonModifier(const std::string& xaxis, const std::string& yaxis,
-                                             const std::vector<std::string>& out_buttons_str) :
+Sector2ButtonModifier::Sector2ButtonModifier(std::string const& xaxis, std::string const& yaxis,
+                                             std::vector<std::string> const& out_buttons_str) :
   m_xaxis_str(xaxis),
   m_yaxis_str(yaxis),
   m_out_buttons_str(out_buttons_str),
@@ -65,7 +65,7 @@ Sector2ButtonModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-Sector2ButtonModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+Sector2ButtonModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   float x = msg.get_abs_float(m_xaxis);
   float y = msg.get_abs_float(m_yaxis);

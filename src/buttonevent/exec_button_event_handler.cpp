@@ -32,12 +32,12 @@
 namespace xboxdrv {
 
 ExecButtonEventHandler*
-ExecButtonEventHandler::from_string(const std::string& str)
+ExecButtonEventHandler::from_string(std::string const& str)
 {
   return new ExecButtonEventHandler(strut::split(str, ':'));
 }
 
-ExecButtonEventHandler::ExecButtonEventHandler(const std::vector<std::string>& args) :
+ExecButtonEventHandler::ExecButtonEventHandler(std::vector<std::string> const& args) :
   m_args(args)
 {
 }

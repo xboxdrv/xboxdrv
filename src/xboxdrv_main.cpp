@@ -49,7 +49,7 @@ using namespace std::placeholders;
 
 XboxdrvMain* XboxdrvMain::s_current = nullptr;
 
-XboxdrvMain::XboxdrvMain(USBSubsystem& usb_subsystem, const Options& opts) :
+XboxdrvMain::XboxdrvMain(USBSubsystem& usb_subsystem, Options const& opts) :
   m_usb_subsystem(usb_subsystem),
   m_opts(opts),
   m_gmain(),
@@ -132,7 +132,7 @@ XboxdrvMain::create_controller()
 }
 
 void
-XboxdrvMain::init_controller(const ControllerPtr& controller)
+XboxdrvMain::init_controller(ControllerPtr const& controller)
 {
   m_jsdev_number = uinpp::find_jsdev_number();
   m_evdev_number = uinpp::find_evdev_number();
@@ -247,7 +247,7 @@ XboxdrvMain::on_child_watch(GPid pid, gint status)
 }
 
 void
-XboxdrvMain::print_info(libusb_device* dev, const XPadDevice& dev_type, const Options& opts) const
+XboxdrvMain::print_info(libusb_device* dev, XPadDevice const& dev_type, Options const& opts) const
 {
   libusb_device_descriptor desc;
   int ret = libusb_get_device_descriptor(dev, &desc);

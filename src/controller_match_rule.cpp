@@ -34,15 +34,15 @@ private:
   std::string m_value;
 
 public:
-  ControllerMatchRuleProperty(const std::string& name,
-                              const std::string& value) :
+  ControllerMatchRuleProperty(std::string const& name,
+                              std::string const& value) :
     m_name(name),
     m_value(value)
   {}
 
   bool match(udev_device* device) const override
   {
-    const char* str = udev_device_get_property_value(device, m_name.c_str());
+    char const* str = udev_device_get_property_value(device, m_name.c_str());
 
     log_debug("matching property '{}' with value '{}' against '{}'", m_name, (str ? str : "(null)"), m_value);
 
@@ -68,7 +68,7 @@ ControllerMatchRuleGroup::add_rule(ControllerMatchRulePtr rule)
 }
 
 void
-ControllerMatchRuleGroup::add_rule_from_string(const std::string& lhs, const std::string& rhs)
+ControllerMatchRuleGroup::add_rule_from_string(std::string const& lhs, std::string const& rhs)
 {
   m_rules.push_back(ControllerMatchRule::from_string(lhs, rhs));
 }
@@ -93,7 +93,7 @@ ControllerMatchRule::match(udev_device* device) const
   assert(false && "implement me");
   return false;
 #if 0
-        const char* serial = udev_device_get_property_value(device, "ID_SERIAL_SHORT");
+        char const* serial = udev_device_get_property_value(device, "ID_SERIAL_SHORT");
 
 
   switch(m_type)
@@ -122,8 +122,8 @@ ControllerMatchRule::match(udev_device* device) const
 }
 
 ControllerMatchRulePtr
-ControllerMatchRule::from_string(const std::string& lhs,
-                                 const std::string& rhs)
+ControllerMatchRule::from_string(std::string const& lhs,
+                                 std::string const& rhs)
 {
   std::vector<std::string> args = strut::split(rhs, ':');
 

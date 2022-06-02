@@ -26,7 +26,7 @@
 namespace xboxdrv {
 
 IR2AxisModifier*
-IR2AxisModifier::from_string(const std::vector<std::string>& args)
+IR2AxisModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() != 2)
   {
@@ -38,7 +38,7 @@ IR2AxisModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-IR2AxisModifier::IR2AxisModifier(const std::string& xaxis, const std::string& yaxis) :
+IR2AxisModifier::IR2AxisModifier(std::string const& xaxis, std::string const& yaxis) :
   m_xaxis_str(xaxis),
   m_yaxis_str(yaxis),
   m_xaxis(-1),
@@ -54,7 +54,7 @@ IR2AxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-IR2AxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+IR2AxisModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
 #if 0
   // find center of two biggest points, return that as axis values

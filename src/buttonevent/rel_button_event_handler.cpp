@@ -28,7 +28,7 @@ namespace xboxdrv {
 
 RelButtonEventHandler*
 RelButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                   const std::string& str)
+                                   std::string const& str)
 {
   std::unique_ptr<RelButtonEventHandler> ev;
 
@@ -58,7 +58,7 @@ RelButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool ex
 }
 
 RelButtonEventHandler::RelButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                             const uinpp::Event& code) :
+                                             uinpp::Event const& code) :
   m_code(code),
   m_value(3),
   m_repeat(100),

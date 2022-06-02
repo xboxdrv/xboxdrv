@@ -32,7 +32,7 @@ namespace xboxdrv {
 
 RelRepeatAxisEventHandler*
 RelRepeatAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                       const std::string& str)
+                                       std::string const& str)
 {
   // split string at ':'
   std::vector<std::string> args = strut::split(str, ':');
@@ -51,7 +51,7 @@ RelRepeatAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, boo
 }
 
 RelRepeatAxisEventHandler::RelRepeatAxisEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                                     const uinpp::Event& code, int value, float repeat) :
+                                                     uinpp::Event const& code, int value, float repeat) :
   m_code(code),
   m_value(value),
   m_repeat(repeat),

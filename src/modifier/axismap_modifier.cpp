@@ -32,7 +32,7 @@ namespace xboxdrv {
 using namespace std::placeholders;
 
 AxisMappingPtr
-AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
+AxisMapping::from_string(std::string const& lhs_, std::string const& rhs)
 {
   std::string lhs = lhs_;
 
@@ -84,7 +84,7 @@ AxisMapping::init(ControllerMessageDescriptor& desc)
 
 
 AxismapModifier*
-AxismapModifier::from_string(const std::string& args)
+AxismapModifier::from_string(std::string const& args)
 {
   std::unique_ptr<AxismapModifier> modifier(new AxismapModifier);
 
@@ -95,7 +95,7 @@ AxismapModifier::from_string(const std::string& args)
 }
 
 AxismapModifier*
-AxismapModifier::from_option(const std::vector<AxisMappingOption>& mappings)
+AxismapModifier::from_option(std::vector<AxisMappingOption> const& mappings)
 {
   std::unique_ptr<AxismapModifier> modifier(new AxismapModifier);
 
@@ -122,7 +122,7 @@ AxismapModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-AxismapModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+AxismapModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   ControllerMessage newmsg = msg;
 

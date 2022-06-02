@@ -20,14 +20,14 @@
 
 namespace xboxdrv {
 
-Namespace::Namespace(const std::string& name) :
+Namespace::Namespace(std::string const& name) :
   m_name(name),
   m_symbols()
 {
 }
 
 SymbolPtr
-Namespace::lookup(const std::string& name)
+Namespace::lookup(std::string const& name)
 {
   Symbols::iterator it = m_symbols.find(name);
   if (it == m_symbols.end())
@@ -41,7 +41,7 @@ Namespace::lookup(const std::string& name)
 }
 
 SymbolPtr
-Namespace::add_symbol(const std::string& name)
+Namespace::add_symbol(std::string const& name)
 {
   log_debug(name);
 
@@ -59,7 +59,7 @@ Namespace::add_symbol(const std::string& name)
 }
 
 void
-Namespace::add_alias(const std::string& name, SymbolPtr sym)
+Namespace::add_alias(std::string const& name, SymbolPtr sym)
 {
   Symbols::iterator it = m_symbols.find(name);
   if (it != m_symbols.end())

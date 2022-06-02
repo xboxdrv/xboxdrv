@@ -45,7 +45,7 @@ Headset::~Headset()
 }
 
 void
-Headset::play_file(const std::string& filename)
+Headset::play_file(std::string const& filename)
 {
   m_fin.reset(new std::ifstream(filename.c_str(), std::ios::binary));
 
@@ -72,7 +72,7 @@ Headset::play_file(const std::string& filename)
 }
 
 void
-Headset::record_file(const std::string& filename)
+Headset::record_file(std::string const& filename)
 {
   m_fout.reset(new std::ofstream(filename.c_str(), std::ios::binary));
 

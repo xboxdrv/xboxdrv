@@ -90,12 +90,12 @@ UdevSubsystem::enumerate_udev_devices()
   udev_list_entry_foreach(dev_list_entry, devices)
   {
     // name is path, value is NULL
-    const char* path = udev_list_entry_get_name(dev_list_entry);
+    char const* path = udev_list_entry_get_name(dev_list_entry);
 
     struct udev_device* device = udev_device_new_from_syspath(m_udev, path);
 
     // manually filter for devtype, as udev enumerate can't do it by itself
-    const char* devtype = udev_device_get_devtype(device);
+    char const* devtype = udev_device_get_devtype(device);
     if (devtype && strcmp(devtype, "usb_device") == 0)
     {
       m_process_match_cb(device);
@@ -139,7 +139,7 @@ UdevSubsystem::on_udev_data(GIOChannel* channel, GIOCondition condition)
     }
     else
     {
-      const char* action = udev_device_get_action(device);
+      char const* action = udev_device_get_action(device);
 
       if (logmich::g_logger.get_log_level() >= logmich::LogLevel::DEBUG)
       {

@@ -25,7 +25,7 @@
 
 namespace xboxdrv {
 
-AxisMap::AxisMap(const AxisMapOptions& opts, uinpp::MultiDevice& uinput, int slot, bool extra_devices) :
+AxisMap::AxisMap(AxisMapOptions const& opts, uinpp::MultiDevice& uinput, int slot, bool extra_devices) :
   m_mappings(),
   m_map()
 {
@@ -55,7 +55,7 @@ AxisMap::AxisMap(const AxisMapOptions& opts, uinpp::MultiDevice& uinput, int slo
 }
 
 void
-AxisMap::init(const ControllerMessageDescriptor& desc)
+AxisMap::init(ControllerMessageDescriptor const& desc)
 {
   m_map.clear();
   m_map.resize(desc.get_abs_count());
@@ -67,7 +67,7 @@ AxisMap::init(const ControllerMessageDescriptor& desc)
       int abs = desc.abs().get(it->axis);
       m_map.at(abs).add(ButtonCombination(it->buttons), it->event);
     }
-    catch(const std::exception& err)
+    catch(std::exception const& err)
     {
       log_warn("{}: {}", err.what(), it->axis);
     }
@@ -92,7 +92,7 @@ AxisMap::send_clear()
 }
 
 void
-AxisMap::send(const std::bitset<256>& button_state,
+AxisMap::send(std::bitset<256> const& button_state,
               const std::array<int, 256>& axis_state,
               const std::array<int, 256>& axis_min,
               const std::array<int, 256>& axis_max)

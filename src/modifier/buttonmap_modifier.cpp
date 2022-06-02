@@ -35,10 +35,10 @@ using namespace std::placeholders;
 class ButtonMapping
 {
 public:
-  static ButtonMappingPtr from_string(const std::string& lhs, const std::string& rhs);
+  static ButtonMappingPtr from_string(std::string const& lhs, std::string const& rhs);
 
 public:
-  ButtonMapping(const std::string& lhs_str, const std::string& rhs_str) :
+  ButtonMapping(std::string const& lhs_str, std::string const& rhs_str) :
     lhs(lhs_str),
     rhs(rhs_str),
     filters()
@@ -53,7 +53,7 @@ public:
 };
 
 ButtonMappingPtr
-ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
+ButtonMapping::from_string(std::string const& lhs, std::string const& rhs)
 {
   std::vector<std::string> args = strut::split(lhs, '^');
 
@@ -91,7 +91,7 @@ ButtonMapping::init(ControllerMessageDescriptor& desc)
 }
 
 ButtonmapModifier*
-ButtonmapModifier::from_string(const std::string& args)
+ButtonmapModifier::from_string(std::string const& args)
 {
   std::unique_ptr<ButtonmapModifier> modifier(new ButtonmapModifier);
 
@@ -102,7 +102,7 @@ ButtonmapModifier::from_string(const std::string& args)
 }
 
 ButtonmapModifier*
-ButtonmapModifier::from_option(const std::vector<ButtonMappingOption>& mappings)
+ButtonmapModifier::from_option(std::vector<ButtonMappingOption> const& mappings)
 {
   std::unique_ptr<ButtonmapModifier> modifier(new ButtonmapModifier);
 
@@ -129,7 +129,7 @@ ButtonmapModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-ButtonmapModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+ButtonmapModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   // update all filters in all mappings
   for(std::vector<ButtonMappingPtr>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
@@ -166,7 +166,7 @@ ButtonmapModifier::add(ButtonMappingPtr mapping)
 }
 
 void
-ButtonmapModifier::add_filter(const std::string& btn, ButtonFilterPtr filter)
+ButtonmapModifier::add_filter(std::string const& btn, ButtonFilterPtr filter)
 {
   for(std::vector<ButtonMappingPtr>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {

@@ -22,7 +22,7 @@
 
 namespace xboxdrv {
 
-LogAxisEventHandler::LogAxisEventHandler(const std::string& format) :
+LogAxisEventHandler::LogAxisEventHandler(std::string const& format) :
   m_format(format)
 {
 }

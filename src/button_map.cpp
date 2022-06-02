@@ -24,7 +24,7 @@
 
 namespace xboxdrv {
 
-ButtonMap::ButtonMap(const ButtonMapOptions& opts, uinpp::MultiDevice& uinput, int slot, bool extra_devices) :
+ButtonMap::ButtonMap(ButtonMapOptions const& opts, uinpp::MultiDevice& uinput, int slot, bool extra_devices) :
   m_map()
 {
 #if 0
@@ -98,19 +98,19 @@ ButtonMap::ButtonMap(const ButtonMapOptions& opts, uinpp::MultiDevice& uinput, i
 }
 
 void
-ButtonMap::init(const ControllerMessageDescriptor& desc)
+ButtonMap::init(ControllerMessageDescriptor const& desc)
 {
   m_map.init(desc);
 }
 
 void
-ButtonMap::bind(const ButtonCombination& buttons, ButtonEventPtr event)
+ButtonMap::bind(ButtonCombination const& buttons, ButtonEventPtr event)
 {
   m_map.add(buttons, event);
 }
 
 void
-ButtonMap::send(const std::bitset<256>& button_state)
+ButtonMap::send(std::bitset<256> const& button_state)
 {
   m_map.update(button_state);
 

@@ -465,7 +465,7 @@ Chatpad::set_led(unsigned int led, bool state)
 }
 
 void
-Chatpad::process(const ChatpadKeyMsg& msg)
+Chatpad::process(ChatpadKeyMsg const& msg)
 {
   // save old state
   std::array<bool, 256> old_state = m_state;

@@ -28,7 +28,7 @@
 namespace xboxdrv {
 
 RelativeAxisFilter*
-RelativeAxisFilter::from_string(const std::string& str)
+RelativeAxisFilter::from_string(std::string const& str)
 {
   int speed = 20000;
 

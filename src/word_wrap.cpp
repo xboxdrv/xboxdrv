@@ -32,7 +32,7 @@ WordWrap::WordWrap(int terminal_width) :
 }
 
 void
-WordWrap::println(const std::string& str)
+WordWrap::println(std::string const& str)
 {
   std::cout << str << std::endl;
 }
@@ -44,13 +44,13 @@ WordWrap::newline()
 }
 
 void
-WordWrap::para(const std::string& str) const
+WordWrap::para(std::string const& str) const
 {
   para("", str);
 }
 
 void
-WordWrap::para(const std::string& prefix, const std::string& str) const
+WordWrap::para(std::string const& prefix, std::string const& str) const
 {
   auto tokens = strut::tokenize(str, ' ');
 

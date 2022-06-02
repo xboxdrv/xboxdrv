@@ -49,7 +49,7 @@ USBSubsystem::~USBSubsystem()
 }
 
 void
-USBSubsystem::find_controller(libusb_device** dev, XPadDevice& dev_type, const Options& opts)
+USBSubsystem::find_controller(libusb_device** dev, XPadDevice& dev_type, Options const& opts)
 {
   if (opts.busid[0] != '\0' && opts.devid[0] != '\0')
   {
@@ -108,7 +108,7 @@ USBSubsystem::find_controller(libusb_device** dev, XPadDevice& dev_type, const O
 }
 
 bool
-USBSubsystem::find_controller_by_path(const std::string& busid_str, const std::string& devid_str,
+USBSubsystem::find_controller_by_path(std::string const& busid_str, std::string const& devid_str,
                                  libusb_device** xbox_device)
 {
   int busid = str2int(busid_str);

@@ -28,7 +28,7 @@
 namespace xboxdrv {
 
 DpadRotationModifier*
-DpadRotationModifier::from_string(const std::vector<std::string>& args)
+DpadRotationModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() != 1)
   {
@@ -41,7 +41,7 @@ DpadRotationModifier::from_string(const std::vector<std::string>& args)
 }
 
 DpadRotationModifier*
-DpadRotationModifier::from_string(const std::string& value)
+DpadRotationModifier::from_string(std::string const& value)
 {
   int degree = str2int(value);
   degree /= 45;
@@ -77,7 +77,7 @@ DpadRotationModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-DpadRotationModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+DpadRotationModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   int up   = m_dpad_up.get(msg);
   int down = m_dpad_down.get(msg);

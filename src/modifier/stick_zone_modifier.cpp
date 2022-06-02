@@ -29,7 +29,7 @@
 namespace xboxdrv {
 
 StickZoneModifier*
-StickZoneModifier::from_string(const std::vector<std::string>& args)
+StickZoneModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() != 5)
   {
@@ -43,8 +43,8 @@ StickZoneModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-StickZoneModifier::StickZoneModifier(const std::string& x_axis, const std::string& y_axis,
-                                     const std::string& button,
+StickZoneModifier::StickZoneModifier(std::string const& x_axis, std::string const& y_axis,
+                                     std::string const& button,
                                      float range_start, float range_end) :
 
   m_x_axis(x_axis),
@@ -64,7 +64,7 @@ StickZoneModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-StickZoneModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+StickZoneModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   float x = m_x_axis.get_float(msg);
   float y = m_y_axis.get_float(msg);

@@ -104,7 +104,7 @@ HamaCruxController::set_led_real(uint8_t status)
 }
 
 bool
-HamaCruxController::parse(const uint8_t* data, int len, ControllerMessage* msg)
+HamaCruxController::parse(uint8_t const* data, int len, ControllerMessage* msg)
 {
   //std::cout << "HamaCruxController::parse(): " << raw2str(data, len) << std::endl;
   if (len != 0)

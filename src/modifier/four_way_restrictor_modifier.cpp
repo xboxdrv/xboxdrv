@@ -25,7 +25,7 @@
 namespace xboxdrv {
 
 FourWayRestrictorModifier*
-FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
+FourWayRestrictorModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() == 2)
   {
@@ -41,8 +41,8 @@ FourWayRestrictorModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-FourWayRestrictorModifier::FourWayRestrictorModifier(const std::string& xaxis_in, const std::string& yaxis_in,
-                                                     const std::string& xaxis_out, const std::string& yaxis_out) :
+FourWayRestrictorModifier::FourWayRestrictorModifier(std::string const& xaxis_in, std::string const& yaxis_in,
+                                                     std::string const& xaxis_out, std::string const& yaxis_out) :
   m_xaxis_in(xaxis_in),
   m_yaxis_in(yaxis_in),
   m_xaxis_out(xaxis_out),
@@ -60,7 +60,7 @@ FourWayRestrictorModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-FourWayRestrictorModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+FourWayRestrictorModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   if (fabsf(m_xaxis_in.get_float(msg)) > fabsf(m_yaxis_in.get_float(msg)))
   {

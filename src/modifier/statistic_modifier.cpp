@@ -26,7 +26,7 @@
 namespace xboxdrv {
 
 StatisticModifier*
-StatisticModifier::from_string(const std::vector<std::string>& args)
+StatisticModifier::from_string(std::vector<std::string> const& args)
 {
   return new StatisticModifier;
 }
@@ -64,7 +64,7 @@ StatisticModifier::print_stats()
 }
 
 void
-StatisticModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+StatisticModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   for(size_t btn = 0; btn < m_press_count.size(); ++btn)
   {

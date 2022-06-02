@@ -115,7 +115,7 @@ ControllerMessage::get_abs_max(int abs)
 }
 
 bool
-ControllerMessage::operator==(const ControllerMessage& rhs) const
+ControllerMessage::operator==(ControllerMessage const& rhs) const
 {
   return
     m_abs_state == rhs.m_abs_state &&
@@ -124,12 +124,12 @@ ControllerMessage::operator==(const ControllerMessage& rhs) const
 }
 
 bool
-ControllerMessage::operator!=(const ControllerMessage& rhs) const
+ControllerMessage::operator!=(ControllerMessage const& rhs) const
 {
   return !((*this) == rhs);
 }
 
-std::ostream& format_generic(std::ostream& out, const ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+std::ostream& format_generic(std::ostream& out, ControllerMessage const& msg, ControllerMessageDescriptor const& desc)
 {
   for(int i = 0; i < desc.get_key_count(); ++i)
   {

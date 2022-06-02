@@ -32,7 +32,7 @@ EvDevRelEnum evdev_rel_names;
 EvDevKeyEnum evdev_key_names;
 EvDevAbsEnum evdev_abs_names;
 
-const X11KeysymEnum& get_x11keysym_names()
+X11KeysymEnum const& get_x11keysym_names()
 {
   static X11KeysymEnum x11keysym_names;
   return x11keysym_names;
@@ -95,7 +95,7 @@ X11KeysymEnum::process_keymap(Display* dpy)
       // if (it != mapping.end())
       //   std::cout << "Duplicate keycode: " << i << std::endl;
 
-      const char* keysym_str = XKeysymToString(keysym);
+      char const* keysym_str = XKeysymToString(keysym);
       if (!keysym_str)
       {
         log_warn("couldn't convert keysym {} to string", keysym);
@@ -112,12 +112,12 @@ X11KeysymEnum::process_keymap(Display* dpy)
   XFree(keymap);
 }
 
-int xkeysym2keycode(const std::string& name)
+int xkeysym2keycode(std::string const& name)
 {
   return get_x11keysym_names()[name];
 }
 
-void str2event(const std::string& name, int& type, int& code)
+void str2event(std::string const& name, int& type, int& code)
 {
   if (name == "void" || name == "none")
   {
@@ -156,7 +156,7 @@ void str2event(const std::string& name, int& type, int& code)
   }
 }
 
-int get_event_type(const std::string& name)
+int get_event_type(std::string const& name)
 {
   if (name == "void" || name == "none")
   {
@@ -183,7 +183,7 @@ int get_event_type(const std::string& name)
   }
 }
 
-int str2abs(const std::string& name)
+int str2abs(std::string const& name)
 {
   if (name.compare(0, 5, "ABS_#") == 0)
   {
@@ -195,7 +195,7 @@ int str2abs(const std::string& name)
   }
 }
 
-int str2key(const std::string& name)
+int str2key(std::string const& name)
 {
   if (name.compare(0, 2, "XK") == 0)
   {
@@ -220,7 +220,7 @@ int str2key(const std::string& name)
   }
 }
 
-int str2rel(const std::string& name)
+int str2rel(std::string const& name)
 {
   if (name.compare(0, 5, "REL_#") == 0)
   {
@@ -232,7 +232,7 @@ int str2rel(const std::string& name)
   }
 }
 
-uinpp::Event str2key_event(const std::string& str)
+uinpp::Event str2key_event(std::string const& str)
 {
   int slot_id;
   int device_id;
@@ -241,7 +241,7 @@ uinpp::Event str2key_event(const std::string& str)
   return uinpp::Event::create(static_cast<uint16_t>(device_id), EV_KEY, str2key(rest));
 }
 
-uinpp::Event str2rel_event(const std::string& str)
+uinpp::Event str2rel_event(std::string const& str)
 {
   int slot_id;
   int device_id;
@@ -250,7 +250,7 @@ uinpp::Event str2rel_event(const std::string& str)
   return uinpp::Event::create(static_cast<uint16_t>(device_id), EV_REL, str2rel(rest));
 }
 
-uinpp::Event str2abs_event(const std::string& str)
+uinpp::Event str2abs_event(std::string const& str)
 {
   int slot_id;
   int device_id;
@@ -265,7 +265,7 @@ std::string key2str(int v)
   {
     return evdev_key_names[v];
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     std::ostringstream str;
     str << "KEY_#" << v;
@@ -279,7 +279,7 @@ std::string abs2str(int v)
   {
     return evdev_abs_names[v];
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     std::ostringstream str;
     str << "ABS_#" << v;
@@ -293,7 +293,7 @@ std::string rel2str(int v)
   {
     return evdev_rel_names[v];
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     std::ostringstream str;
     str << "REL_#" << v;

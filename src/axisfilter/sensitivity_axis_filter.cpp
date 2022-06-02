@@ -29,7 +29,7 @@
 namespace xboxdrv {
 
 SensitivityAxisFilter*
-SensitivityAxisFilter::from_string(const std::string& str)
+SensitivityAxisFilter::from_string(std::string const& str)
 {
   auto tokens = strut::split(str, ':');
 

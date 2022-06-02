@@ -26,7 +26,7 @@
 namespace xboxdrv {
 
 SplitAxisModifier*
-SplitAxisModifier::from_string(const std::vector<std::string>& args)
+SplitAxisModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() != 3)
   {
@@ -38,7 +38,7 @@ SplitAxisModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-SplitAxisModifier::SplitAxisModifier(const std::string& axis, const std::string& out_lhs, const std::string& out_rhs) :
+SplitAxisModifier::SplitAxisModifier(std::string const& axis, std::string const& out_lhs, std::string const& out_rhs) :
   m_axis(axis),
   m_out_lhs(out_lhs),
   m_out_rhs(out_rhs)
@@ -54,7 +54,7 @@ SplitAxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-SplitAxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+SplitAxisModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   float value = m_axis.get_float(msg);
   if (value < 0)

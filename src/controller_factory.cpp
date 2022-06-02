@@ -36,7 +36,7 @@
 namespace xboxdrv {
 
 ControllerPtr
-ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const Options& opts)
+ControllerFactory::create(XPadDevice const& dev_type, libusb_device* dev, Options const& opts)
 {
   switch (dev_type.type)
   {
@@ -109,7 +109,7 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
 }
 
 std::vector<ControllerPtr>
-ControllerFactory::create_multiple(const XPadDevice& dev_type, libusb_device* dev, const Options& opts)
+ControllerFactory::create_multiple(XPadDevice const& dev_type, libusb_device* dev, Options const& opts)
 {
   std::vector<ControllerPtr> lst;
 

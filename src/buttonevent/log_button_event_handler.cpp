@@ -22,7 +22,7 @@
 
 namespace xboxdrv {
 
-LogButtonEventHandler::LogButtonEventHandler(const std::string& format) :
+LogButtonEventHandler::LogButtonEventHandler(std::string const& format) :
   m_format(format)
 {
 }

@@ -30,7 +30,7 @@
 namespace xboxdrv {
 
 Acc2AxisModifier*
-Acc2AxisModifier::from_string(const std::vector<std::string>& args)
+Acc2AxisModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() != 5)
   {
@@ -43,8 +43,8 @@ Acc2AxisModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-Acc2AxisModifier::Acc2AxisModifier(const std::string& acc_x, const std::string& acc_y, const std::string& acc_z,
-                                   const std::string& axis_x, const std::string& axis_y) :
+Acc2AxisModifier::Acc2AxisModifier(std::string const& acc_x, std::string const& acc_y, std::string const& acc_z,
+                                   std::string const& axis_x, std::string const& axis_y) :
   m_acc_x_str(acc_x),
   m_acc_y_str(acc_y),
   m_acc_z_str(acc_z),
@@ -70,7 +70,7 @@ Acc2AxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-Acc2AxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+Acc2AxisModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   float ax = msg.get_abs_float(m_acc_x);
   float ay = msg.get_abs_float(m_acc_y);

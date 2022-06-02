@@ -32,7 +32,7 @@ namespace xboxdrv {
 
 KeyAxisEventHandler*
 KeyAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                 const std::string& str)
+                                 std::string const& str)
 {
   auto tokens = strut::split(str, ':');
 

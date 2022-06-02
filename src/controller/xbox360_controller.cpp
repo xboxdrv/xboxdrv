@@ -32,8 +32,8 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
                                      bool chatpad, bool chatpad_no_init, bool chatpad_debug,
                                      bool headset,
                                      bool headset_debug,
-                                     const std::string& headset_dump,
-                                     const std::string& headset_play,
+                                     std::string const& headset_dump,
+                                     std::string const& headset_play,
                                      bool try_detach) :
   USBController(dev),
   dev_type(),
@@ -106,7 +106,7 @@ Xbox360Controller::set_led_real(uint8_t status)
 }
 
 bool
-Xbox360Controller::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
+Xbox360Controller::parse(uint8_t const* data, int len, ControllerMessage* msg_out)
 {
   if (len == 0)
   {

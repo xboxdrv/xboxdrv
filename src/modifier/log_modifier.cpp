@@ -24,12 +24,12 @@
 namespace xboxdrv {
 
 LogModifier*
-LogModifier::from_string(const std::string& value)
+LogModifier::from_string(std::string const& value)
 {
   return new LogModifier(value);
 }
 
-LogModifier::LogModifier(const std::string& prefix) :
+LogModifier::LogModifier(std::string const& prefix) :
   m_prefix(prefix)
 {
 }
@@ -40,7 +40,7 @@ LogModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-LogModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+LogModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   std::cout << m_prefix << ": ";
   for(int i = 0; i < desc.get_key_count(); ++i)

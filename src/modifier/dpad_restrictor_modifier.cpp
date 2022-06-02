@@ -26,7 +26,7 @@
 namespace xboxdrv {
 
 DpadRestrictorModifier*
-DpadRestrictorModifier::from_string(const std::vector<std::string>& args)
+DpadRestrictorModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() != 1)
   {
@@ -86,7 +86,7 @@ DpadRestrictorModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-DpadRestrictorModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+DpadRestrictorModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
 #if 0
   switch(m_mode)

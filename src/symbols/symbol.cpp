@@ -21,7 +21,7 @@
 
 namespace xboxdrv {
 
-Symbol::Symbol(Namespace& ns, const std::string& name) :
+Symbol::Symbol(Namespace& ns, std::string const& name) :
   m_namespace(ns),
   m_name(name),
   m_provides()

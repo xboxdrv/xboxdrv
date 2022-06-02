@@ -53,7 +53,7 @@ void squarify_axis(float& x_inout, float& y_inout)
 
 
 SquareAxisModifier*
-SquareAxisModifier::from_string(const std::vector<std::string>& args)
+SquareAxisModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() == 2)
   {
@@ -69,8 +69,8 @@ SquareAxisModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-SquareAxisModifier::SquareAxisModifier(const std::string& x_axis_in,  const std::string& y_axis_in,
-                                       const std::string& x_axis_out, const std::string& y_axis_out) :
+SquareAxisModifier::SquareAxisModifier(std::string const& x_axis_in,  std::string const& y_axis_in,
+                                       std::string const& x_axis_out, std::string const& y_axis_out) :
   m_xaxis_in(x_axis_in),
   m_yaxis_in(y_axis_in),
   m_xaxis_out(x_axis_out),
@@ -89,7 +89,7 @@ SquareAxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-SquareAxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+SquareAxisModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   float x = m_xaxis_in.get_float(msg);
   float y = m_yaxis_in.get_float(msg);

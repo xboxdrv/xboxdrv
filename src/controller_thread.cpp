@@ -36,7 +36,7 @@ extern bool global_exit_xboxdrv;
 
 ControllerThread::ControllerThread(ControllerPtr controller,
                                    ControllerSlotConfigPtr config,
-                                   const Options& opts) :
+                                   Options const& opts) :
   m_controller(controller),
   m_processor(new MessageProcessor(config, m_controller->get_message_descriptor(), opts)),
   m_oldrealmsg(),
@@ -74,7 +74,7 @@ ControllerThread::on_timeout()
 }
 
 void
-ControllerThread::on_message(const ControllerMessage& msg)
+ControllerThread::on_message(ControllerMessage const& msg)
 {
   if (m_print_messages)
   {

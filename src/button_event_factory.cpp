@@ -48,10 +48,10 @@ ButtonEventFactory::create(ButtonEventHandler* handler)
 }
 
 ButtonEventPtr
-ButtonEventFactory::from_string(const std::string& str, const std::string& directory)
+ButtonEventFactory::from_string(std::string const& str, std::string const& directory)
 {
   std::string::size_type p = str.find(':');
-  const std::string& token = str.substr(0, p);
+  std::string const& token = str.substr(0, p);
   std::string rest;
 
   if (p != std::string::npos)

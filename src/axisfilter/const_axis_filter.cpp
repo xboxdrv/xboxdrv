@@ -25,7 +25,7 @@
 namespace xboxdrv {
 
 ConstAxisFilter*
-ConstAxisFilter::from_string(const std::string& rest)
+ConstAxisFilter::from_string(std::string const& rest)
 {
   return new ConstAxisFilter(str2int(rest));
 }

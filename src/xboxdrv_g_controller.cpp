@@ -125,7 +125,7 @@ xboxdrv_g_controller_set_config(XboxdrvGController* self, int config_num, GError
       msg_proc->set_config(config_num);
       return TRUE;
     }
-    catch(const std::exception& err)
+    catch(std::exception const& err)
     {
       g_set_error(error, XBOXDRV_CONTROLLER_ERROR, XBOXDRV_CONTROLLER_ERROR_FAILED,
                   "%s", err.what());

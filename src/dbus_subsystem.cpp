@@ -33,7 +33,7 @@
 
 namespace xboxdrv {
 
-DBusSubsystem::DBusSubsystem(const std::string& name, DBusBusType bus_type) :
+DBusSubsystem::DBusSubsystem(std::string const& name, DBusBusType bus_type) :
   m_connection()
 {
   GError* gerror = NULL;
@@ -57,7 +57,7 @@ DBusSubsystem::~DBusSubsystem()
 }
 
 void
-DBusSubsystem::request_name(const std::string& name)
+DBusSubsystem::request_name(std::string const& name)
 {
   DBusError error;
   dbus_error_init(&error);
@@ -92,7 +92,7 @@ DBusSubsystem::register_xboxdrv_daemon(XboxdrvDaemon* c_daemon)
 }
 
 void
-DBusSubsystem::register_controller_slots(const std::vector<ControllerSlotPtr>& slots)
+DBusSubsystem::register_controller_slots(std::vector<ControllerSlotPtr> const& slots)
 {
   for(std::vector<ControllerSlotPtr>::const_iterator i = slots.begin(); i != slots.end(); ++i)
   {

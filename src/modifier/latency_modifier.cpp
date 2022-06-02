@@ -27,7 +27,7 @@
 namespace xboxdrv {
 
 LatencyModifier*
-LatencyModifier::from_string(const std::vector<std::string>& args)
+LatencyModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() != 1)
   {
@@ -53,7 +53,7 @@ LatencyModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-LatencyModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+LatencyModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   m_time += msec_delta;
 

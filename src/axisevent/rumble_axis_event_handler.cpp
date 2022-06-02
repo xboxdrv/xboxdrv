@@ -23,7 +23,7 @@
 namespace xboxdrv {
 
 RumbleAxisEventHandler*
-RumbleAxisEventHandler::from_string(const std::string& args)
+RumbleAxisEventHandler::from_string(std::string const& args)
 {
   return new RumbleAxisEventHandler;
 }

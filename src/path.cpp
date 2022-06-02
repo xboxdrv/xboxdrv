@@ -22,7 +22,7 @@ namespace xboxdrv {
 
 namespace path {
 
-std::string dirname(const std::string& filename)
+std::string dirname(std::string const& filename)
 {
   std::string::size_type p = filename.rfind('/');
   if (p == std::string::npos)
@@ -35,7 +35,7 @@ std::string dirname(const std::string& filename)
   }
 }
 
-std::string join(const std::string& lhs, const std::string& rhs)
+std::string join(std::string const& lhs, std::string const& rhs)
 {
   if (lhs.empty())
   {

@@ -1058,34 +1058,34 @@ CommandLineParser::print_version() const
 }
 
 void
-CommandLineParser::set_modifier(const std::string& name, const std::string& value)
+CommandLineParser::set_modifier(std::string const& name, std::string const& value)
 {
   m_options->get_controller_options().modifier.push_back(ModifierOption(name, value));
 }
 
 void
-CommandLineParser::set_device_usbid(const std::string& name, const std::string& value)
+CommandLineParser::set_device_usbid(std::string const& name, std::string const& value)
 {
   uint32_t devid = uinpp::parse_device_id(name);
   m_options->uinput_device_usbids[devid] = uinpp::parse_input_id(value);
 }
 
 void
-CommandLineParser::set_device_name(const std::string& name, const std::string& value)
+CommandLineParser::set_device_name(std::string const& name, std::string const& value)
 {
   uint32_t devid = uinpp::parse_device_id(name);
   m_options->uinput_device_names[devid] = value;
 }
 
 void
-CommandLineParser::set_keymap(const std::string& name, const std::string& value)
+CommandLineParser::set_keymap(std::string const& name, std::string const& value)
 {
   set_keymap_helper(m_options->get_controller_options().uinput.get_btn_map(),
                     name, value);
 }
 
 void
-CommandLineParser::set_keymap_helper(ButtonMapOptions& btn_map, const std::string& name, const std::string& value)
+CommandLineParser::set_keymap_helper(ButtonMapOptions& btn_map, std::string const& name, std::string const& value)
 {
   std::vector<std::string> lst = strut::split(name, '^');
 
@@ -1106,14 +1106,14 @@ CommandLineParser::set_keymap_helper(ButtonMapOptions& btn_map, const std::strin
 }
 
 void
-CommandLineParser::set_absmap(const std::string& name, const std::string& value)
+CommandLineParser::set_absmap(std::string const& name, std::string const& value)
 {
   set_absmap_helper(m_options->get_controller_options().uinput.get_axis_map(),
                     name, value);
 }
 
 void
-CommandLineParser::set_absmap_helper(AxisMapOptions& axis_map, const std::string& name, const std::string& value)
+CommandLineParser::set_absmap_helper(AxisMapOptions& axis_map, std::string const& name, std::string const& value)
 {
   std::vector<std::string> lst = strut::split(name, '^');
 
@@ -1134,51 +1134,51 @@ CommandLineParser::set_absmap_helper(AxisMapOptions& axis_map, const std::string
 }
 
 void
-CommandLineParser::set_axismap(const std::string& name, const std::string& value)
+CommandLineParser::set_axismap(std::string const& name, std::string const& value)
 {
   m_options->get_controller_options().axismap.push_back(AxisMappingOption(name, value));
 }
 
 void
-CommandLineParser::set_buttonmap(const std::string& name, const std::string& value)
+CommandLineParser::set_buttonmap(std::string const& name, std::string const& value)
 {
   m_options->get_controller_options().buttonmap.push_back(ButtonMappingOption(name, value));
 }
 
 void
-CommandLineParser::set_evdev_absmap(const std::string& name, const std::string& value)
+CommandLineParser::set_evdev_absmap(std::string const& name, std::string const& value)
 {
   m_options->evdev_absmap[str2abs(name)] = value;
 }
 
 void
-CommandLineParser::set_evdev_keymap(const std::string& name, const std::string& value)
+CommandLineParser::set_evdev_keymap(std::string const& name, std::string const& value)
 {
   m_options->evdev_keymap[str2key(name)] = value;
 }
 
 void
-CommandLineParser::set_evdev_relmap(const std::string& name, const std::string& value)
+CommandLineParser::set_evdev_relmap(std::string const& name, std::string const& value)
 {
   m_options->evdev_relmap[str2rel(name)] = value;
 }
 
 void
-CommandLineParser::set_relative_axis(const std::string& name, const std::string& value)
+CommandLineParser::set_relative_axis(std::string const& name, std::string const& value)
 {
   m_options->get_controller_options().relative_axis_map[name]
     = AxisFilterPtr(new RelativeAxisFilter(str2int(value)));
 }
 
 void
-CommandLineParser::set_autofire(const std::string& name, const std::string& value)
+CommandLineParser::set_autofire(std::string const& name, std::string const& value)
 {
   m_options->get_controller_options().autofire_map[name]
     = ButtonFilterPtr(new AutofireButtonFilter(str2int(value), 0));
 }
 
 void
-CommandLineParser::set_calibration(const std::string& name, const std::string& value)
+CommandLineParser::set_calibration(std::string const& name, std::string const& value)
 {
   std::vector<std::string> args = strut::split(name, ':');
 
@@ -1196,20 +1196,20 @@ CommandLineParser::set_calibration(const std::string& name, const std::string& v
 }
 
 void
-CommandLineParser::set_axis_sensitivity(const std::string& name, const std::string& value)
+CommandLineParser::set_axis_sensitivity(std::string const& name, std::string const& value)
 {
   m_options->get_controller_options().sensitivity_map[name]
     = AxisFilterPtr(new SensitivityAxisFilter(str2float(value)));
 }
 
 void
-CommandLineParser::set_deadzone(const std::string& value)
+CommandLineParser::set_deadzone(std::string const& value)
 {
   m_options->get_controller_options().deadzone = to_number(32767, value);
 }
 
 void
-CommandLineParser::set_deadzone_trigger(const std::string& value)
+CommandLineParser::set_deadzone_trigger(std::string const& value)
 {
   m_options->get_controller_options().deadzone_trigger = to_number(255, value);
 }
@@ -1227,7 +1227,7 @@ CommandLineParser::set_four_way_restrictor()
 }
 
 void
-CommandLineParser::set_dpad_rotation(const std::string& value)
+CommandLineParser::set_dpad_rotation(std::string const& value)
 {
   int degree = str2int(value);
   degree /= 45;
@@ -1238,8 +1238,8 @@ CommandLineParser::set_dpad_rotation(const std::string& value)
 }
 
 void
-CommandLineParser::read_buildin_config_file(const std::string& filename,
-                                            const char* data, unsigned int data_len)
+CommandLineParser::read_buildin_config_file(std::string const& filename,
+                                            char const* data, unsigned int data_len)
 {
   log_info("reading 'buildin://{}'", filename);
 
@@ -1258,7 +1258,7 @@ CommandLineParser::read_buildin_config_file(const std::string& filename,
 }
 
 void
-CommandLineParser::read_config_file(const std::string& filename)
+CommandLineParser::read_config_file(std::string const& filename)
 {
   log_info("reading '{}'", filename);
 
@@ -1280,67 +1280,67 @@ CommandLineParser::read_config_file(const std::string& filename)
 }
 
 void
-CommandLineParser::read_alt_config_file(const std::string& filename)
+CommandLineParser::read_alt_config_file(std::string const& filename)
 {
   m_options->next_config();
   read_config_file(filename);
 }
 
 void
-CommandLineParser::set_keymap_n(int controller, int config, const std::string& name, const std::string& value)
+CommandLineParser::set_keymap_n(int controller, int config, std::string const& name, std::string const& value)
 {
   set_keymap_helper(m_options->controller_slots[controller].get_options(config).uinput.get_btn_map(),
                     name, value);
 }
 
 void
-CommandLineParser::set_absmap_n(int controller, int config, const std::string& name, const std::string& value)
+CommandLineParser::set_absmap_n(int controller, int config, std::string const& name, std::string const& value)
 {
   set_absmap_helper(m_options->controller_slots[controller].get_options(config).uinput.get_axis_map(),
                     name, value);
 }
 
 void
-CommandLineParser::set_modifier_n(int controller, int config, const std::string& name, const std::string& value)
+CommandLineParser::set_modifier_n(int controller, int config, std::string const& name, std::string const& value)
 {
   m_options->controller_slots[controller].get_options(config).modifier.push_back(ModifierOption(name, value));
 }
 
 void
-CommandLineParser::set_axismap_n(int controller, int config, const std::string& name, const std::string& value)
+CommandLineParser::set_axismap_n(int controller, int config, std::string const& name, std::string const& value)
 {
   m_options->controller_slots[controller].get_options(config).axismap.push_back(AxisMappingOption(name, value));
 }
 
 void
-CommandLineParser::set_buttonmap_n(int controller, int config, const std::string& name, const std::string& value)
+CommandLineParser::set_buttonmap_n(int controller, int config, std::string const& name, std::string const& value)
 {
   m_options->controller_slots[controller].get_options(config).buttonmap.push_back(ButtonMappingOption(name, value));
 }
 
 void
-CommandLineParser::set_relative_axis_n(int controller, int config, const std::string& name, const std::string& value)
+CommandLineParser::set_relative_axis_n(int controller, int config, std::string const& name, std::string const& value)
 {
   m_options->controller_slots[controller].get_options(config)
     .relative_axis_map[name] = AxisFilterPtr(new RelativeAxisFilter(str2int(value)));
 }
 
 void
-CommandLineParser::set_autofire_n(int controller, int config, const std::string& name, const std::string& value)
+CommandLineParser::set_autofire_n(int controller, int config, std::string const& name, std::string const& value)
 {
   m_options->controller_slots[controller].get_options(config)
     .autofire_map[name] = ButtonFilterPtr(new AutofireButtonFilter(str2int(value), 0));
 }
 
 void
-CommandLineParser::set_calibration_n(int controller, int config, const std::string& name, const std::string& value)
+CommandLineParser::set_calibration_n(int controller, int config, std::string const& name, std::string const& value)
 {
   // FIXME: not implemented
   assert(false && "implement me");
 }
 
 void
-CommandLineParser::set_axis_sensitivity_n(int controller, int config, const std::string& name, const std::string& value)
+CommandLineParser::set_axis_sensitivity_n(int controller, int config, std::string const& name, std::string const& value)
 {
   m_options->controller_slots[controller].get_options(config)
     .sensitivity_map[name] = AxisFilterPtr(new SensitivityAxisFilter(str2float(value)));
@@ -1355,7 +1355,7 @@ CommandLineParser::mouse()
 }
 
 void
-CommandLineParser::set_generic_usb_spec(const std::string& spec)
+CommandLineParser::set_generic_usb_spec(std::string const& spec)
 {
   m_options->m_generic_usb_specs.push_back(Options::GenericUSBSpec::from_string(spec));
 }

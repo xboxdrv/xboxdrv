@@ -320,17 +320,17 @@ USBController::usb_find_ep(int direction, uint8_t if_class, uint8_t if_subclass,
     int ret_endpoint = -1;
 
     // FIXME: no need to search all interfaces, could just check the one we acutally use
-    for(const libusb_interface* interface = config->interface;
+    for(libusb_interface const* interface = config->interface;
         interface != config->interface + config->bNumInterfaces;
         ++interface)
     {
-      for(const libusb_interface_descriptor* altsetting = interface->altsetting;
+      for(libusb_interface_descriptor const* altsetting = interface->altsetting;
           altsetting != interface->altsetting + interface->num_altsetting;
           ++altsetting)
       {
         log_debug("Interface: {}", static_cast<int>(altsetting->bInterfaceNumber));
 
-        for(const libusb_endpoint_descriptor* endpoint = altsetting->endpoint;
+        for(libusb_endpoint_descriptor const* endpoint = altsetting->endpoint;
             endpoint != altsetting->endpoint + altsetting->bNumEndpoints;
             ++endpoint)
         {

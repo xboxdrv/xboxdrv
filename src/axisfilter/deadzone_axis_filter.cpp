@@ -27,7 +27,7 @@
 namespace xboxdrv {
 
 DeadzoneAxisFilter*
-DeadzoneAxisFilter::from_string(const std::string& str)
+DeadzoneAxisFilter::from_string(std::string const& str)
 {
   int  min_deadzone = 0;
   int  max_deadzone = 0;

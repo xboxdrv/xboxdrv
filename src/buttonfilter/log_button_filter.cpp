@@ -24,12 +24,12 @@
 namespace xboxdrv {
 
 LogButtonFilter*
-LogButtonFilter::from_string(const std::string& str)
+LogButtonFilter::from_string(std::string const& str)
 {
   return new LogButtonFilter(str);
 }
 
-LogButtonFilter::LogButtonFilter(const std::string& name) :
+LogButtonFilter::LogButtonFilter(std::string const& name) :
   m_name(name)
 {
 }

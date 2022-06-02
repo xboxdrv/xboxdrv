@@ -30,7 +30,7 @@ namespace xboxdrv {
 
 RelAxisEventHandler*
 RelAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                 const std::string& str)
+                                 std::string const& str)
 {
   auto tokens = strut::split(str, ':');
 
@@ -70,7 +70,7 @@ RelAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extr
 }
 
 RelAxisEventHandler::RelAxisEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                         const uinpp::Event& code, int repeat, float value) :
+                                         uinpp::Event const& code, int repeat, float value) :
   m_code(code),
   m_value(value),
   m_repeat(repeat),

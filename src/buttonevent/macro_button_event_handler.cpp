@@ -39,7 +39,7 @@ namespace xboxdrv {
 
 MacroButtonEventHandler*
 MacroButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                     const std::string& str)
+                                     std::string const& str)
 {
   std::vector<MacroEvent> events;
   for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
@@ -73,7 +73,7 @@ MacroButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool 
 
 MacroButtonEventHandler*
 MacroButtonEventHandler::from_file(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                   const std::string& filename)
+                                   std::string const& filename)
 {
   std::vector<MacroEvent> events;
 
@@ -98,7 +98,7 @@ MacroButtonEventHandler::from_file(uinpp::MultiDevice& uinput, int slot, bool ex
 }
 
 MacroButtonEventHandler::MacroEvent
-MacroButtonEventHandler::macro_event_from_string(const std::string& str)
+MacroButtonEventHandler::macro_event_from_string(std::string const& str)
 {
   std::vector<std::string> args = strut::tokenize(str, ' ');
 
@@ -179,7 +179,7 @@ MacroButtonEventHandler::macro_event_from_string(const std::string& str)
 }
 
 MacroButtonEventHandler::MacroButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                                 const std::vector<MacroEvent>& events) :
+                                                 std::vector<MacroEvent> const& events) :
   m_events(events),
   m_send_in_progress(false),
   m_countdown(0),
@@ -269,7 +269,7 @@ MacroButtonEventHandler::~MacroButtonEventHandler()
 }
 
 uinpp::EventEmitter*
-MacroButtonEventHandler::get_emitter(uinpp::MultiDevice& uinput, const uinpp::Event& ev)
+MacroButtonEventHandler::get_emitter(uinpp::MultiDevice& uinput, uinpp::Event const& ev)
 {
   Emitter::iterator it = m_emitter.find(ev);
   if (it != m_emitter.end())

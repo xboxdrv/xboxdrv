@@ -23,7 +23,7 @@
 
 namespace xboxdrv {
 
-std::string gamepadtype_to_string(const GamepadType& type)
+std::string gamepadtype_to_string(GamepadType const& type)
 {
   switch (type)
   {
@@ -73,7 +73,7 @@ std::string gamepadtype_to_string(const GamepadType& type)
 }
 
 
-std::string gamepadtype_to_macro_string(const GamepadType& type)
+std::string gamepadtype_to_macro_string(GamepadType const& type)
 {
   switch (type)
   {
@@ -95,7 +95,7 @@ std::string gamepadtype_to_macro_string(const GamepadType& type)
   }
 }
 
-std::ostream& operator<<(std::ostream& out, const GamepadType& type)
+std::ostream& operator<<(std::ostream& out, GamepadType const& type)
 {
   switch (type)
   {

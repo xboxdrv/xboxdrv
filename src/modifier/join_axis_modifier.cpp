@@ -26,7 +26,7 @@
 namespace xboxdrv {
 
 JoinAxisModifier*
-JoinAxisModifier::from_string(const std::vector<std::string>& args)
+JoinAxisModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() != 3)
   {
@@ -38,7 +38,7 @@ JoinAxisModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-JoinAxisModifier::JoinAxisModifier(const std::string& lhs, const std::string& rhs, const std::string& out) :
+JoinAxisModifier::JoinAxisModifier(std::string const& lhs, std::string const& rhs, std::string const& out) :
   m_lhs(lhs),
   m_rhs(rhs),
   m_out(out)
@@ -54,7 +54,7 @@ JoinAxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-JoinAxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+JoinAxisModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   m_out.set_float(msg, (m_rhs.get_float(msg) - m_lhs.get_float(msg)) / 2.0f);
 }

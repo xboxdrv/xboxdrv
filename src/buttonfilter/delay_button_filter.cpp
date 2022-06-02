@@ -25,7 +25,7 @@
 namespace xboxdrv {
 
 DelayButtonFilter*
-DelayButtonFilter::from_string(const std::string& str)
+DelayButtonFilter::from_string(std::string const& str)
 {
   return new DelayButtonFilter(str2int(str));
 }

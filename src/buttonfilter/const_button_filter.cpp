@@ -25,7 +25,7 @@
 namespace xboxdrv {
 
 ConstButtonFilter*
-ConstButtonFilter::from_string(const std::string& str)
+ConstButtonFilter::from_string(std::string const& str)
 {
   return new ConstButtonFilter(str2bool(str));
 }

@@ -26,7 +26,7 @@ ControllerSlot::ControllerSlot(int id_,
                                ControllerSlotConfigPtr config_,
                                std::vector<ControllerMatchRulePtr> rules_,
                                int led_status_,
-                               const Options& opts) :
+                               Options const& opts) :
   m_id(id_),
   m_config(config_),
   m_rules(rules_),

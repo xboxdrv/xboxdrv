@@ -86,7 +86,7 @@ SaitekP2500Controller::set_led_real(uint8_t status)
 }
 
 bool
-SaitekP2500Controller::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
+SaitekP2500Controller::parse(uint8_t const* data, int len, ControllerMessage* msg_out)
 {
   if (len == 7)
   {

@@ -51,7 +51,7 @@ int usb_claim_n_detach_interface(libusb_device_handle* handle, int interface, bo
   }
 }
 
-const char* usb_strerror(int err)
+char const* usb_strerror(int err)
 {
   switch(err)
   {
@@ -73,7 +73,7 @@ const char* usb_strerror(int err)
   }
 }
 
-const char* usb_transfer_strerror(libusb_transfer_status err)
+char const* usb_transfer_strerror(libusb_transfer_status err)
 {
   switch(err)
   {

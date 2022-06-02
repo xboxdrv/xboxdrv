@@ -29,7 +29,7 @@
 namespace xboxdrv {
 
 ButtonCombination
-ButtonCombination::from_string(const std::string& str)
+ButtonCombination::from_string(std::string const& str)
 {
   if (str.empty() || str == "void")
   {
@@ -47,20 +47,20 @@ ButtonCombination::ButtonCombination() :
 {
 }
 
-ButtonCombination::ButtonCombination(const std::string& button) :
+ButtonCombination::ButtonCombination(std::string const& button) :
   m_buttons_str(1, button),
   m_buttons()
 {
 }
 
-ButtonCombination::ButtonCombination(const std::vector<std::string>& buttons) :
+ButtonCombination::ButtonCombination(std::vector<std::string> const& buttons) :
   m_buttons_str(buttons),
   m_buttons()
 {
 }
 
 void
-ButtonCombination::init(const ControllerMessageDescriptor& desc)
+ButtonCombination::init(ControllerMessageDescriptor const& desc)
 {
   m_buttons.clear();
   for(ButtonsStr::const_iterator it = m_buttons_str.begin(); it != m_buttons_str.end(); ++it)
@@ -77,7 +77,7 @@ ButtonCombination::has_button(int button) const
 }
 
 bool
-ButtonCombination::is_subset_of(const ButtonCombination& rhs) const
+ButtonCombination::is_subset_of(ButtonCombination const& rhs) const
 {
   // check if init() was called
   assert(m_buttons_str.size() == m_buttons.size());
@@ -100,7 +100,7 @@ ButtonCombination::size() const
 }
 
 bool
-ButtonCombination::match(const std::bitset<256>& button_state) const
+ButtonCombination::match(std::bitset<256> const& button_state) const
 {
   // check if init() was called
   assert(m_buttons_str.size() == m_buttons.size());
@@ -144,7 +144,7 @@ ButtonCombination::empty() const
 }
 
 bool
-ButtonCombination::operator==(const ButtonCombination& rhs) const
+ButtonCombination::operator==(ButtonCombination const& rhs) const
 {
   // check if init() was called
   assert(m_buttons_str.size() == m_buttons.size());
@@ -161,7 +161,7 @@ ButtonCombination::operator==(const ButtonCombination& rhs) const
   }
 }
 
-std::ostream& operator<<(std::ostream& os, const ButtonCombination& buttons)
+std::ostream& operator<<(std::ostream& os, ButtonCombination const& buttons)
 {
   buttons.print(os);
   return os;

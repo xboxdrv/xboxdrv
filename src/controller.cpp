@@ -44,7 +44,7 @@ Controller::~Controller()
 }
 
 void
-Controller::submit_msg(const ControllerMessage& msg, const ControllerMessageDescriptor& msg_desc)
+Controller::submit_msg(ControllerMessage const& msg, ControllerMessageDescriptor const& msg_desc)
 {
   if (m_msg_cb)
   {
@@ -84,7 +84,7 @@ Controller::set_udev_device(udev_device* udev_dev)
 }
 
 void
-Controller::set_message_cb(const std::function<void(const ControllerMessage&, const ControllerMessageDescriptor&)>& msg_cb)
+Controller::set_message_cb(std::function<void(const ControllerMessage&, const ControllerMessageDescriptor&)> const& msg_cb)
 {
   m_msg_cb = msg_cb;
 }

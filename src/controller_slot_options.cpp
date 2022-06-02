@@ -41,7 +41,7 @@ ControllerSlotOptions::get_options(int num)
   return m_options[num];
 }
 
-const ControllerOptions&
+ControllerOptions const&
 ControllerSlotOptions::get_options(int num) const
 {
   std::map<int, ControllerOptions>::const_iterator it = m_options.find(num);
@@ -61,7 +61,7 @@ ControllerSlotOptions::add_match_rule(ControllerMatchRulePtr rule)
   m_match_rules.push_back(rule);
 }
 
-const std::vector<ControllerMatchRulePtr>&
+std::vector<ControllerMatchRulePtr> const&
 ControllerSlotOptions::get_match_rules() const
 {
   return m_match_rules;
@@ -80,7 +80,7 @@ ControllerSlotOptions::get_ff_device() const
 }
 
 void
-ControllerSlotOptions::set_ff_device(const std::string& device)
+ControllerSlotOptions::set_ff_device(std::string const& device)
 {
   m_ff_device = uinpp::str2deviceid(device);
 }

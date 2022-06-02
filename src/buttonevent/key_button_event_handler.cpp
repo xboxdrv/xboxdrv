@@ -32,7 +32,7 @@ namespace xboxdrv {
 
 KeyButtonEventHandler*
 KeyButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                   const std::string& str)
+                                   std::string const& str)
 {
   //std::cout << " KeyButtonEventHandler::from_string: " << str << std::endl;
   uinpp::EventSequence codes;
@@ -79,8 +79,8 @@ KeyButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool ex
 }
 
 KeyButtonEventHandler::KeyButtonEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                             const uinpp::EventSequence& codes,
-                                             const uinpp::EventSequence& secondary_codes,
+                                             uinpp::EventSequence const& codes,
+                                             uinpp::EventSequence const& secondary_codes,
                                              int hold_threshold) :
   m_state(false),
   m_codes(codes),

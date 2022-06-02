@@ -31,7 +31,7 @@
 namespace xboxdrv {
 
 ButtonFilterPtr
-ButtonFilter::from_string(const std::string& str)
+ButtonFilter::from_string(std::string const& str)
 {
   std::string::size_type p = str.find(":");
   std::string filtername = str.substr(0, p);

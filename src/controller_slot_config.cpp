@@ -32,14 +32,14 @@ namespace xboxdrv {
 using namespace std::placeholders;
 
 ControllerSlotConfigPtr
-ControllerSlotConfig::create(uinpp::MultiDevice& uinput, int slot, bool extra_devices, const ControllerSlotOptions& opts)
+ControllerSlotConfig::create(uinpp::MultiDevice& uinput, int slot, bool extra_devices, ControllerSlotOptions const& opts)
 {
   ControllerSlotConfigPtr m_config(new ControllerSlotConfig);
 
   for(ControllerSlotOptions::Options::const_iterator i = opts.get_options().begin();
       i != opts.get_options().end(); ++i)
   {
-    const ControllerOptions& ctrl_opt = i->second;
+    ControllerOptions const& ctrl_opt = i->second;
 
     ControllerConfigPtr config(new ControllerConfig(uinput, slot, extra_devices, ctrl_opt));
     m_config->add_config(config);

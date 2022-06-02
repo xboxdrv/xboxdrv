@@ -25,7 +25,7 @@
 
 namespace xboxdrv {
 
-int hexstr2int(const std::string& str)
+int hexstr2int(std::string const& str)
 {
   unsigned int value = 0;
   if (sscanf(str.c_str(), "%x", &value) == 1)
@@ -42,7 +42,7 @@ int hexstr2int(const std::string& str)
   }
 }
 
-uint16_t hexstr2uint16(const std::string& str)
+uint16_t hexstr2uint16(std::string const& str)
 {
   return static_cast<uint16_t>(hexstr2int(str));
 }
@@ -96,7 +96,7 @@ float str2float(std::string const& str)
   }
 }
 
-std::string raw2str(const uint8_t* data, int len)
+std::string raw2str(uint8_t const* data, int len)
 {
   std::ostringstream out;
   out << "len: " << len
@@ -108,7 +108,7 @@ std::string raw2str(const uint8_t* data, int len)
   return out.str();
 }
 
-void process_name_value_string(const std::string& str, const std::function<void (const std::string&, const std::string&)>& func)
+void process_name_value_string(std::string const& str, const std::function<void (std::string const&, std::string const&)>& func)
 {
   int quote_count = 0;
   std::string res;
@@ -175,7 +175,7 @@ void process_name_value_string(const std::string& str, const std::function<void 
   }
 }
 
-bool is_number(const std::string& str)
+bool is_number(std::string const& str)
 {
   for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
     if (!isdigit(*i))
@@ -183,7 +183,7 @@ bool is_number(const std::string& str)
   return true;
 }
 
-bool is_float(const std::string& str)
+bool is_float(std::string const& str)
 {
   for(std::string::const_iterator i = str.begin(); i != str.end(); ++i)
     if (!isdigit(*i) && *i != '.')
@@ -191,7 +191,7 @@ bool is_float(const std::string& str)
   return true;
 }
 
-int to_number(int range, const std::string& str)
+int to_number(int range, std::string const& str)
 {
   if (str.empty())
   {

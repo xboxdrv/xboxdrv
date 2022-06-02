@@ -54,7 +54,7 @@ namespace {
 
 bool get_usb_id(udev_device* device, uint16_t* vendor_id, uint16_t* product_id)
 {
-  const char* vendor_id_str  = udev_device_get_property_value(device, "ID_VENDOR_ID");
+  char const* vendor_id_str  = udev_device_get_property_value(device, "ID_VENDOR_ID");
   if (!vendor_id_str)
   {
     return false;
@@ -64,7 +64,7 @@ bool get_usb_id(udev_device* device, uint16_t* vendor_id, uint16_t* product_id)
     *vendor_id = hexstr2uint16(vendor_id_str);
   }
 
-  const char* product_id_str = udev_device_get_property_value(device, "ID_MODEL_ID");
+  char const* product_id_str = udev_device_get_property_value(device, "ID_MODEL_ID");
   if (!product_id_str)
   {
     return false;
@@ -80,7 +80,7 @@ bool get_usb_id(udev_device* device, uint16_t* vendor_id, uint16_t* product_id)
 bool get_usb_path(udev_device* device, int* bus, int* dev)
 {
   // busnum:devnum are decimal, not hex
-  const char* busnum_str = udev_device_get_property_value(device, "BUSNUM");
+  char const* busnum_str = udev_device_get_property_value(device, "BUSNUM");
   if (!busnum_str)
   {
     return false;
@@ -90,7 +90,7 @@ bool get_usb_path(udev_device* device, int* bus, int* dev)
     *bus = str2int(busnum_str);
   }
 
-  const char* devnum_str = udev_device_get_property_value(device, "DEVNUM");
+  char const* devnum_str = udev_device_get_property_value(device, "DEVNUM");
   if (!devnum_str)
   {
     return false;
@@ -105,7 +105,7 @@ bool get_usb_path(udev_device* device, int* bus, int* dev)
 
 } // namespace
 
-XboxdrvDaemon::XboxdrvDaemon(USBSubsystem& usb_subsystem, const Options& opts) :
+XboxdrvDaemon::XboxdrvDaemon(USBSubsystem& usb_subsystem, Options const& opts) :
   m_usb_subsystem(usb_subsystem),
   m_opts(opts),
   m_gmain(),
@@ -202,7 +202,7 @@ XboxdrvDaemon::run()
     m_inactive_controllers.clear();
     m_controller_slots.clear();
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     log_error("fatal exception: {}", err.what());
   }
@@ -242,7 +242,7 @@ XboxdrvDaemon::process_match(struct udev_device* device)
         {
           launch_controller_thread(device, dev_type, static_cast<uint8_t>(bus), static_cast<uint8_t>(dev));
         }
-        catch(const std::exception& err)
+        catch(std::exception const& err)
         {
           log_error("failed to launch ControllerThread: {}", err.what());
         }
@@ -352,7 +352,7 @@ XboxdrvDaemon::find_free_slot(udev_device* dev)
 
 void
 XboxdrvDaemon::launch_controller_thread(udev_device* udev_dev,
-                                        const XPadDevice& dev_type,
+                                        XPadDevice const& dev_type,
                                         uint8_t busnum, uint8_t devnum)
 {
   // FIXME: results must be libusb_unref_device()'ed
@@ -436,7 +436,7 @@ XboxdrvDaemon::connect(ControllerSlotPtr slot, ControllerPtr controller)
       controller->set_led(static_cast<uint8_t>(slot->get_led_status()));
     }
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     log_error("failed to set led: {}", err.what());
   }

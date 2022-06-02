@@ -35,7 +35,7 @@ using namespace std::placeholders;
 Options* g_options;
 
 Options::GenericUSBSpec
-Options::GenericUSBSpec::from_string(const std::string& str)
+Options::GenericUSBSpec::from_string(std::string const& str)
 {
   GenericUSBSpec spec;
   process_name_value_string(str, std::bind(&GenericUSBSpec::apply_pair, std::ref(spec), _1, _2));
@@ -43,8 +43,8 @@ Options::GenericUSBSpec::from_string(const std::string& str)
 }
 
 void
-Options::GenericUSBSpec::apply_pair(const std::string& name,
-                                    const std::string& value)
+Options::GenericUSBSpec::apply_pair(std::string const& name,
+                                    std::string const& value)
 {
   if (name == "if" || name == "interface")
   {
@@ -131,7 +131,7 @@ Options::get_controller_slot()
   return controller_slots[controller_slot];
 }
 
-const ControllerSlotOptions&
+ControllerSlotOptions const&
 Options::get_controller_slot() const
 {
   ControllerSlots::const_iterator it = controller_slots.find(controller_slot);
@@ -152,7 +152,7 @@ Options::get_controller_options()
   return controller_slots[controller_slot].get_options(config_slot);
 }
 
-const ControllerOptions&
+ControllerOptions const&
 Options::get_controller_options() const
 {
   ControllerSlots::const_iterator it = controller_slots.find(controller_slot);
@@ -177,7 +177,7 @@ Options::get_controller_options() const
 }
 
 void
-Options::set_priority(const std::string& value)
+Options::set_priority(std::string const& value)
 {
   if (value == "realtime")
   {
@@ -238,7 +238,7 @@ Options::set_usb_debug()
 }
 
 void
-Options::set_dbus_mode(const std::string& value)
+Options::set_dbus_mode(std::string const& value)
 {
   if (value == "system")
   {
@@ -269,7 +269,7 @@ Options::set_dbus_mode(const std::string& value)
         dbus = kDBusDisabled;
       }
     }
-    catch(const std::exception& err)
+    catch(std::exception const& err)
     {
       // fallback failed, so assume that the user used the new way and
       // did a typing error
@@ -279,27 +279,27 @@ Options::set_dbus_mode(const std::string& value)
 }
 
 void
-Options::set_led(const std::string& value)
+Options::set_led(std::string const& value)
 {
   get_controller_slot().set_led_status(str2int(value));
 }
 
 void
-Options::set_device_name(const std::string& name)
+Options::set_device_name(std::string const& name)
 {
   uint32_t device_id = uinpp::create_device_id(static_cast<uint16_t>(controller_slot), uinpp::DEVICEID_AUTO);
   uinput_device_names[device_id] = name;
 }
 
 void
-Options::set_device_usbid(const std::string& name)
+Options::set_device_usbid(std::string const& name)
 {
   uint32_t device_id = uinpp::create_device_id(static_cast<uint16_t>(controller_slot), uinpp::DEVICEID_AUTO);
   uinput_device_usbids[device_id] = uinpp::parse_input_id(name);
 }
 
 void
-Options::set_toggle_button(const std::string& str)
+Options::set_toggle_button(std::string const& str)
 {
   if (str == "void")
   {
@@ -344,13 +344,13 @@ Options::set_dpad_only()
 }
 
 void
-Options::set_force_feedback(const std::string& value)
+Options::set_force_feedback(std::string const& value)
 {
   get_controller_slot().set_force_feedback(str2bool(value));
 }
 
 void
-Options::set_ff_device(const std::string& value)
+Options::set_ff_device(std::string const& value)
 {
   get_controller_slot().set_ff_device(value);
 }
@@ -407,19 +407,19 @@ Options::set_quiet()
 }
 
 void
-Options::add_match(const std::string& lhs, const std::string& rhs)
+Options::add_match(std::string const& lhs, std::string const& rhs)
 {
   get_controller_slot().add_match_rule(ControllerMatchRule::from_string(lhs, rhs));
 }
 
 void
-Options::set_match(const std::string& str)
+Options::set_match(std::string const& str)
 {
   process_name_value_string(str, std::bind(&Options::add_match, this, _1, _2));
 }
 
 void
-Options::set_match_group(const std::string& str)
+Options::set_match_group(std::string const& str)
 {
   std::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
 

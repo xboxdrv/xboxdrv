@@ -24,12 +24,12 @@
 namespace xboxdrv {
 
 LogAxisFilter*
-LogAxisFilter::from_string(const std::string& str)
+LogAxisFilter::from_string(std::string const& str)
 {
   return new LogAxisFilter(str);
 }
 
-LogAxisFilter::LogAxisFilter(const std::string& name) :
+LogAxisFilter::LogAxisFilter(std::string const& name) :
   m_name(name)
 {
 }

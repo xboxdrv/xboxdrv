@@ -37,7 +37,7 @@ ButtonEvent::ButtonEvent(ButtonEventHandler* handler) :
 }
 
 void
-ButtonEvent::add_filters(const std::vector<ButtonFilterPtr>& filters)
+ButtonEvent::add_filters(std::vector<ButtonFilterPtr> const& filters)
 {
   std::copy(filters.begin(), filters.end(), std::back_inserter(m_filters));
 }

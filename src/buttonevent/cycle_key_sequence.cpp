@@ -52,7 +52,7 @@ CycleKeySequence::from_range(uinpp::MultiDevice& uinput, int slot, bool extra_de
 }
 
 CycleKeySequence::CycleKeySequence(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                   const Keys& keys, bool wrap_around) :
+                                   Keys const& keys, bool wrap_around) :
   m_keys(keys),
   m_wrap_around(wrap_around),
   m_current_key(0),

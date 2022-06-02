@@ -28,7 +28,7 @@ Environment::Environment() :
 }
 
 NamespacePtr
-Environment::lookup_namespace(const std::string& ns)
+Environment::lookup_namespace(std::string const& ns)
 {
   Namespaces::iterator it = m_namespaces.find(ns);
   if (it == m_namespaces.end())
@@ -42,7 +42,7 @@ Environment::lookup_namespace(const std::string& ns)
 }
 
 SymbolPtr
-Environment::lookup_symbol(const std::string& ns, const std::string& symbol)
+Environment::lookup_symbol(std::string const& ns, std::string const& symbol)
 {
   log_debug("{} {}", ns, symbol);
 
@@ -58,7 +58,7 @@ Environment::lookup_symbol(const std::string& ns, const std::string& symbol)
 }
 
 NamespacePtr
-Environment::add_namespace(const std::string& name)
+Environment::add_namespace(std::string const& name)
 {
   log_debug(name);
 
@@ -76,7 +76,7 @@ Environment::add_namespace(const std::string& name)
 }
 
 void
-Environment::add_namespace_alias(const std::string& name, NamespacePtr ns)
+Environment::add_namespace_alias(std::string const& name, NamespacePtr ns)
 {
   Namespaces::iterator it = m_namespaces.find(name);
   if (it != m_namespaces.end())

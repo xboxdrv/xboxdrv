@@ -29,7 +29,7 @@
 
 namespace xboxdrv {
 
-ControllerConfig::ControllerConfig(uinpp::MultiDevice& uinput, int slot, bool extra_devices, const ControllerOptions& opts) :
+ControllerConfig::ControllerConfig(uinpp::MultiDevice& uinput, int slot, bool extra_devices, ControllerOptions const& opts) :
   m_modifier(),
   m_emitter(uinput, slot, extra_devices, opts.uinput)
 {

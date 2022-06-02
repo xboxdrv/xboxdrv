@@ -27,7 +27,7 @@
 namespace xboxdrv {
 
 ResponseCurveAxisFilter*
-ResponseCurveAxisFilter::from_string(const std::string& str)
+ResponseCurveAxisFilter::from_string(std::string const& str)
 {
   std::vector<int> samples;
 
@@ -41,7 +41,7 @@ ResponseCurveAxisFilter::from_string(const std::string& str)
   return new ResponseCurveAxisFilter(samples);
 }
 
-ResponseCurveAxisFilter::ResponseCurveAxisFilter(const std::vector<int>& samples) :
+ResponseCurveAxisFilter::ResponseCurveAxisFilter(std::vector<int> const& samples) :
   m_samples(samples)
 {
 }

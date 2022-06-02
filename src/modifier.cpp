@@ -51,7 +51,7 @@
 namespace xboxdrv {
 
 Modifier*
-Modifier::from_string(const std::string& name, const std::string& value)
+Modifier::from_string(std::string const& name, std::string const& value)
 {
   if (name == "axismap")
   {

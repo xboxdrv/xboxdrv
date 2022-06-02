@@ -62,7 +62,7 @@ XboxController::set_led_real(uint8_t status)
 }
 
 bool
-XboxController::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
+XboxController::parse(uint8_t const* data, int len, ControllerMessage* msg_out)
 {
   if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
   {

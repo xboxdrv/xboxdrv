@@ -38,7 +38,7 @@
 
 namespace xboxdrv {
 
-EvdevController::EvdevController(const std::string& filename,
+EvdevController::EvdevController(std::string const& filename,
                                  const std::map<int, std::string>& absmap,
                                  const std::map<int, std::string>& keymap,
                                  const std::map<int, std::string>& relmap,

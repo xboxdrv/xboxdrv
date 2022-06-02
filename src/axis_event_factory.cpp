@@ -46,12 +46,12 @@ AxisEventFactory::invalid()
 }
 
 AxisEventPtr
-AxisEventFactory::from_string(const std::string& str)
+AxisEventFactory::from_string(std::string const& str)
 {
   AxisEventPtr ev;
 
   std::string::size_type p = str.find(':');
-  const std::string& token = str.substr(0, p);
+  std::string const& token = str.substr(0, p);
   std::string rest;
 
   if (p != std::string::npos)

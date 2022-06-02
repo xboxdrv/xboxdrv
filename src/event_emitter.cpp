@@ -27,7 +27,7 @@
 
 namespace xboxdrv {
 
-EventEmitter::EventEmitter(uinpp::MultiDevice& uinput, int slot, bool extra_devices, const UInputOptions& opts) :
+EventEmitter::EventEmitter(uinpp::MultiDevice& uinput, int slot, bool extra_devices, UInputOptions const& opts) :
   m_uinput(uinput),
   m_btn_map(opts.get_btn_map(), uinput, slot, extra_devices),
   m_abs_map(opts.get_axis_map(), uinput, slot, extra_devices)
@@ -35,14 +35,14 @@ EventEmitter::EventEmitter(uinpp::MultiDevice& uinput, int slot, bool extra_devi
 }
 
 void
-EventEmitter::init(const ControllerMessageDescriptor& desc)
+EventEmitter::init(ControllerMessageDescriptor const& desc)
 {
   m_btn_map.init(desc);
   m_abs_map.init(desc);
 }
 
 void
-EventEmitter::send(const ControllerMessage& msg)
+EventEmitter::send(ControllerMessage const& msg)
 {
   m_btn_map.send(msg.get_key_state());
   m_abs_map.send(msg.get_key_state(), msg.get_abs_state(), msg.get_abs_min(), msg.get_abs_max());

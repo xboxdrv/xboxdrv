@@ -27,7 +27,7 @@
 namespace xboxdrv {
 
 AutofireButtonFilter*
-AutofireButtonFilter::from_string(const std::string& str)
+AutofireButtonFilter::from_string(std::string const& str)
 {
   int rate  = 50;
   int delay = 0;

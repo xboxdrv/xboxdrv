@@ -29,7 +29,7 @@ namespace xboxdrv {
 
 AbsAxisEventHandler*
 AbsAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                 const std::string& str)
+                                 std::string const& str)
 {
   auto tokens = strut::split(str, ':');
 
@@ -81,7 +81,7 @@ AbsAxisEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extr
 }
 
 AbsAxisEventHandler::AbsAxisEventHandler(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                         const uinpp::Event& code, int min, int max, int fuzz, int flat) :
+                                         uinpp::Event const& code, int min, int max, int fuzz, int flat) :
   m_code(code),
   m_min(min),
   m_max(max),

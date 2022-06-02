@@ -52,7 +52,7 @@ XboxOneWirelessController::~XboxOneWirelessController()
 }
 
 void
-XboxOneWirelessController::submit_command(uint8_t cmd1, uint8_t cmd2, const uint8_t* data, int len)
+XboxOneWirelessController::submit_command(uint8_t cmd1, uint8_t cmd2, uint8_t const* data, int len)
 {
   uint8_t cmd[4+32];
   assert(len <= 32);
@@ -81,7 +81,7 @@ XboxOneWirelessController::set_led_real(uint8_t status)
 }
 
 bool
-XboxOneWirelessController::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
+XboxOneWirelessController::parse(uint8_t const* data, int len, ControllerMessage* msg_out)
 {
   if (len == 0)
   {
@@ -116,7 +116,7 @@ XboxOneWirelessController::parse(const uint8_t* data, int len, ControllerMessage
   }
   else if (len == 18 && data[0] == 0x20 && data[1] == 0x00)
   { // Event message
-    const uint8_t* ptr = data+4;
+    uint8_t const* ptr = data+4;
 
     // msg.connect = unpack::bit(ptr+0, 0);
     msg_out->set_key(xbox.btn_start,   unpack::bit(ptr+0, 2));

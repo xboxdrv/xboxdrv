@@ -34,10 +34,10 @@
 namespace xboxdrv {
 
 AxisFilterPtr
-AxisFilter::from_string(const std::string& str)
+AxisFilter::from_string(std::string const& str)
 {
   std::string::size_type p = str.find(':');
-  const std::string& filtername = str.substr(0, p);
+  std::string const& filtername = str.substr(0, p);
   std::string rest;
 
   if (p != std::string::npos)

@@ -195,7 +195,7 @@ WiimoteController::disconnect()
   }
 }
 
-std::ostream& operator<<(std::ostream& os, const AccCalibration& cal)
+std::ostream& operator<<(std::ostream& os, AccCalibration const& cal)
 {
   return os << "("
             << static_cast<int>(cal.x) << " "
@@ -309,7 +309,7 @@ WiimoteController::set_led_real(uint8_t status)
 }
 
 void
-WiimoteController::on_status(const cwiid_status_mesg& msg)
+WiimoteController::on_status(cwiid_status_mesg const& msg)
 {
   log_tmp("Battery: " << static_cast<int>(msg.battery) << " Status: " << msg.ext_type);
 
@@ -337,13 +337,13 @@ WiimoteController::on_status(const cwiid_status_mesg& msg)
 }
 
 void
-WiimoteController::on_error(const cwiid_error_mesg& msg)
+WiimoteController::on_error(cwiid_error_mesg const& msg)
 {
   log_tmp_trace();
 }
 
 void
-WiimoteController::on_button(const cwiid_btn_mesg& msg)
+WiimoteController::on_button(cwiid_btn_mesg const& msg)
 {
   m_ctrl_msg.set_key(wiimote.minus, msg.buttons & CWIID_BTN_MINUS);
   m_ctrl_msg.set_key(wiimote.home,  msg.buttons & CWIID_BTN_HOME);
@@ -363,7 +363,7 @@ WiimoteController::on_button(const cwiid_btn_mesg& msg)
 }
 
 void
-WiimoteController::on_acc(const cwiid_acc_mesg& msg)
+WiimoteController::on_acc(cwiid_acc_mesg const& msg)
 {
   m_ctrl_msg.set_abs(wiimote.acc_x, msg.acc[0], 0, 255);
   m_ctrl_msg.set_abs(wiimote.acc_y, msg.acc[1], 0, 255);
@@ -373,7 +373,7 @@ WiimoteController::on_acc(const cwiid_acc_mesg& msg)
 }
 
 void
-WiimoteController::on_ir(const cwiid_ir_mesg& msg)
+WiimoteController::on_ir(cwiid_ir_mesg const& msg)
 {
   // size: 1-7
   // valid 0, 1
@@ -422,7 +422,7 @@ WiimoteController::on_ir(const cwiid_ir_mesg& msg)
 }
 
 // FIXME: use proper CalibrationAxisFilter instead of this hack, also CalibrationAxisFilter doesn't handle min/max properly
-int8_t calibrate(int value, const AccCalibration& cal)
+int8_t calibrate(int value, AccCalibration const& cal)
 {
   int m_center = cal.z;
   int m_max  = cal.x;
@@ -442,7 +442,7 @@ int8_t calibrate(int value, const AccCalibration& cal)
 }
 
 void
-WiimoteController::on_nunchuk(const cwiid_nunchuk_mesg& msg)
+WiimoteController::on_nunchuk(cwiid_nunchuk_mesg const& msg)
 {
   m_ctrl_msg.set_abs(wiimote.nunchuk_x, unpack::s8_to_s16(calibrate(msg.stick[0], m_nunchuk_x)), -32768, 32767);
   m_ctrl_msg.set_abs(wiimote.nunchuk_y, unpack::s16_invert(unpack::s8_to_s16(calibrate(msg.stick[1], m_nunchuk_y))), -32768, 32767);
@@ -458,13 +458,13 @@ WiimoteController::on_nunchuk(const cwiid_nunchuk_mesg& msg)
 }
 
 void
-WiimoteController::on_classic (const cwiid_classic_mesg& msg)
+WiimoteController::on_classic (cwiid_classic_mesg const& msg)
 {
   log_tmp_trace();
 }
 
 void
-WiimoteController::err_callback(cwiid_wiimote_t*, const char *s, va_list ap)
+WiimoteController::err_callback(cwiid_wiimote_t*, char const* s, va_list ap)
 {
   log_tmp("err_callback");
 }

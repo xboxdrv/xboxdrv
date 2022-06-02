@@ -25,14 +25,14 @@
 
 namespace xboxdrv {
 
-pid_t spawn_exe(const std::string& arg0)
+pid_t spawn_exe(std::string const& arg0)
 {
   std::vector<std::string> args;
   args.push_back(arg0);
   return spawn_exe(args);
 }
 
-pid_t spawn_exe(const std::vector<std::string>& args)
+pid_t spawn_exe(std::vector<std::string> const& args)
 {
   assert(!args.empty());
 

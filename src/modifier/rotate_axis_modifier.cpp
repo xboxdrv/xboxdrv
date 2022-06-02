@@ -28,7 +28,7 @@
 namespace xboxdrv {
 
 RotateAxisModifier*
-RotateAxisModifier::from_string(const std::vector<std::string>& args)
+RotateAxisModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() != 3 && args.size() != 4)
   {
@@ -42,7 +42,7 @@ RotateAxisModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-RotateAxisModifier::RotateAxisModifier(const std::string& xaxis, const std::string& yaxis, float angle, bool mirror) :
+RotateAxisModifier::RotateAxisModifier(std::string const& xaxis, std::string const& yaxis, float angle, bool mirror) :
   m_xaxis_str(xaxis),
   m_yaxis_str(yaxis),
   m_xaxis(-1),
@@ -60,7 +60,7 @@ RotateAxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-RotateAxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+RotateAxisModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   float x = msg.get_abs_float(m_xaxis);
   float y = msg.get_abs_float(m_yaxis);

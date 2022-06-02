@@ -43,13 +43,13 @@ UInputOptions::get_axis_map()
   return m_axis_map;
 }
 
-const ButtonMapOptions&
+ButtonMapOptions const&
 UInputOptions::get_btn_map() const
 {
   return m_btn_map;
 }
 
-const AxisMapOptions&
+AxisMapOptions const&
 UInputOptions::get_axis_map() const
 {
   return m_axis_map;

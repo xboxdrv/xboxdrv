@@ -33,7 +33,7 @@ std::map<std::string, CycleKeySequencePtr> CycleKeyButtonEventHandler::s_lookup_
 namespace {
 
 CycleKeyButtonEventHandler::Direction
-direction_from_string(const std::string& value)
+direction_from_string(std::string const& value)
 {
   if (value == "forward")
   {
@@ -57,7 +57,7 @@ direction_from_string(const std::string& value)
 
 CycleKeyButtonEventHandler*
 CycleKeyButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                        const std::string& value, bool wrap_around)
+                                        std::string const& value, bool wrap_around)
 {
   return from_string_named(uinput, slot, extra_devices,
                            ":" + value, wrap_around);
@@ -65,7 +65,7 @@ CycleKeyButtonEventHandler::from_string(uinpp::MultiDevice& uinput, int slot, bo
 
 CycleKeyButtonEventHandler*
 CycleKeyButtonEventHandler::from_string_named(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                              const std::string& value, bool wrap_around)
+                                              std::string const& value, bool wrap_around)
 {
   auto tokens = strut::split(value, ':');
   std::vector<std::string> args(tokens.begin(), tokens.end());
@@ -100,7 +100,7 @@ CycleKeyButtonEventHandler::from_string_named(uinpp::MultiDevice& uinput, int sl
 
 CycleKeyButtonEventHandler*
 CycleKeyButtonEventHandler::from_string_ref(uinpp::MultiDevice& uinput, int slot, bool extra_devices,
-                                            const std::string& value)
+                                            std::string const& value)
 {
   auto args = strut::split(value, ':');
 
@@ -128,7 +128,7 @@ CycleKeyButtonEventHandler::from_string_ref(uinpp::MultiDevice& uinput, int slot
 }
 
 CycleKeySequencePtr
-CycleKeyButtonEventHandler::lookup(const std::string& name)
+CycleKeyButtonEventHandler::lookup(std::string const& name)
 {
   std::map<std::string, CycleKeySequencePtr>::iterator it = s_lookup_table.find(name);
   if (it == s_lookup_table.end())

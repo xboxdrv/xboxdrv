@@ -52,7 +52,7 @@ GenericUSBController::GenericUSBController(libusb_device* dev,
     }
 
     // search for the given endpoint
-    const libusb_endpoint_descriptor* ep = nullptr;
+    libusb_endpoint_descriptor const* ep = nullptr;
     for(int i = 0; i < config->interface[m_interface].altsetting[0].bNumEndpoints; ++i)
     {
       ep = &(config->interface[m_interface].altsetting[0].endpoint[i]);
@@ -97,7 +97,7 @@ GenericUSBController::print(libusb_config_descriptor* cfg, std::ostream& out) co
       std::cout << "  AltSetting " << j << std::endl;
       for(int k = 0; k < cfg->interface[i].altsetting[j].bNumEndpoints; ++k)
       {
-        const libusb_endpoint_descriptor& ep = cfg->interface[i].altsetting[j].endpoint[k];
+        libusb_endpoint_descriptor const& ep = cfg->interface[i].altsetting[j].endpoint[k];
         std::cout << "    Endpoint " << k << " "
                   << static_cast<int>(ep.bEndpointAddress & LIBUSB_ENDPOINT_ADDRESS_MASK)
                   << ((ep.bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) ? " IN" : " OUT")
@@ -120,7 +120,7 @@ GenericUSBController::set_led_real(uint8_t status)
 }
 
 bool
-GenericUSBController::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
+GenericUSBController::parse(uint8_t const* data, int len, ControllerMessage* msg_out)
 {
   std::cout << "GenericUSBController:parse(): " << raw2str(data, len) << std::endl;
   return false;

@@ -26,7 +26,7 @@
 namespace xboxdrv {
 
 Button2AxisModifier*
-Button2AxisModifier::from_string(const std::vector<std::string>& args)
+Button2AxisModifier::from_string(std::vector<std::string> const& args)
 {
   if (args.size() != 3)
   {
@@ -38,9 +38,9 @@ Button2AxisModifier::from_string(const std::vector<std::string>& args)
   }
 }
 
-Button2AxisModifier::Button2AxisModifier(const std::string& lhs_btn,
-                                         const std::string& rhs_btn,
-                                         const std::string& axis) :
+Button2AxisModifier::Button2AxisModifier(std::string const& lhs_btn,
+                                         std::string const& rhs_btn,
+                                         std::string const& axis) :
   m_lhs_btn_str(lhs_btn),
   m_rhs_btn_str(rhs_btn),
   m_axis_str(axis),
@@ -59,7 +59,7 @@ Button2AxisModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-Button2AxisModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+Button2AxisModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   bool lhs = msg.get_key(m_lhs_btn);
   bool rhs = msg.get_key(m_rhs_btn);

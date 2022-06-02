@@ -126,7 +126,7 @@ Xboxdrv::run_list_supported_devices()
   }
 }
 
-bool xpad_device_sorter(const XPadDevice& lhs, const XPadDevice& rhs)
+bool xpad_device_sorter(XPadDevice const& lhs, XPadDevice const& rhs)
 {
   if (lhs.idVendor < rhs.idVendor)
   {
@@ -211,7 +211,7 @@ Xboxdrv::print_copyright() const
 }
 
 void
-Xboxdrv::run_main(const Options& opts)
+Xboxdrv::run_main(Options const& opts)
 {
   if (!opts.quiet)
   {
@@ -224,7 +224,7 @@ Xboxdrv::run_main(const Options& opts)
 }
 
 void
-Xboxdrv::run_daemon(const Options& opts)
+Xboxdrv::run_daemon(Options const& opts)
 {
   if (!opts.quiet)
   {
@@ -330,7 +330,7 @@ Xboxdrv::~Xboxdrv()
 }
 
 void
-Xboxdrv::set_scheduling(const Options& opts)
+Xboxdrv::set_scheduling(Options const& opts)
 {
   if (opts.priority == Options::kPriorityRealtime)
   {
@@ -410,7 +410,7 @@ Xboxdrv::main(int argc, char** argv)
         break;
     }
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     std::cout << "\n-- [ ERROR ] ------------------------------------------------------\n"
               << err.what() << std::endl;

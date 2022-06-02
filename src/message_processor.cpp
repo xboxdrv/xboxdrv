@@ -24,8 +24,8 @@
 namespace xboxdrv {
 
 MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config,
-                                   const ControllerMessageDescriptor& desc,
-                                   const Options& opts) :
+                                   ControllerMessageDescriptor const& desc,
+                                   Options const& opts) :
   m_config(config),
   m_desc(desc),
   m_oldmsg(),
@@ -57,8 +57,8 @@ MessageProcessor::~MessageProcessor()
 }
 
 void
-MessageProcessor::send(const ControllerMessage& msg_in,
-                       const ControllerMessageDescriptor& msg_desc,
+MessageProcessor::send(ControllerMessage const& msg_in,
+                       ControllerMessageDescriptor const& msg_desc,
                        int msec_delta)
 {
   if (m_config && !m_config->empty())

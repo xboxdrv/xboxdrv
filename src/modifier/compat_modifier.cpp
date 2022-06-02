@@ -78,7 +78,7 @@ CompatModifier::init(ControllerMessageDescriptor& desc)
 }
 
 void
-CompatModifier::update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc)
+CompatModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
   if (m_dpad)
   {
