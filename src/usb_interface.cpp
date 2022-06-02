@@ -24,7 +24,7 @@
 
 #include "usb_helper.hpp"
 
-namespace xboxdrv {
+namespace unsebu {
 
 struct USBReadCallback
 {
@@ -254,6 +254,6 @@ USBInterface::on_write_data_wrap(libusb_transfer* transfer)
   cb->iface->on_write_data(cb, transfer);
 }
 
-} // namespace xboxdrv
+} // namespace unsebu
 
 /* EOF */

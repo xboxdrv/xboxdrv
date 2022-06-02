@@ -16,14 +16,14 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_USB_INTERFACE_HPP
-#define HEADER_XBOXDRV_USB_INTERFACE_HPP
+#ifndef HEADER_UNSEBU_USB_INTERFACE_HPP
+#define HEADER_UNSEBU_USB_INTERFACE_HPP
 
 #include <libusb.h>
 #include <functional>
 #include <map>
 
-namespace xboxdrv {
+namespace unsebu {
 
 struct USBReadCallback;
 struct USBWriteCallback;
@@ -66,7 +66,7 @@ private:
   USBInterface& operator=(const USBInterface&);
 };
 
-} // namespace xboxdrv
+} // namespace unsebu
 
 #endif
 

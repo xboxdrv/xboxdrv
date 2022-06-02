@@ -105,7 +105,7 @@ bool get_usb_path(udev_device* device, int* bus, int* dev)
 
 } // namespace
 
-XboxdrvDaemon::XboxdrvDaemon(USBSubsystem& usb_subsystem, Options const& opts) :
+XboxdrvDaemon::XboxdrvDaemon(unsebu::USBSubsystem& usb_subsystem, Options const& opts) :
   m_usb_subsystem(usb_subsystem),
   m_opts(opts),
   m_gmain(),
@@ -356,7 +356,7 @@ XboxdrvDaemon::launch_controller_thread(udev_device* udev_dev,
                                         uint8_t busnum, uint8_t devnum)
 {
   // FIXME: results must be libusb_unref_device()'ed
-  libusb_device* dev = usb_find_device_by_path(busnum, devnum);
+  libusb_device* dev = unsebu::usb_find_device_by_path(busnum, devnum);
 
   if (!dev)
   {

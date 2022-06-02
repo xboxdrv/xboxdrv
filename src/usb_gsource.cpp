@@ -27,7 +27,7 @@
 
 #include "usb_helper.hpp"
 
-namespace xboxdrv {
+namespace unsebu {
 
 USBGSource::USBGSource() :
   m_source_funcs(),
@@ -181,6 +181,6 @@ USBGSource::on_source()
   return TRUE;
 }
 
-} // namespace xboxdrv
+} // namespace unsebu
 
 /* EOF */

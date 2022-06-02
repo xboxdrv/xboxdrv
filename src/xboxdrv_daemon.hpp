@@ -30,13 +30,9 @@ extern "C" {
 #include "controller_slot_config.hpp"
 #include "controller_slot_ptr.hpp"
 #include "controller_ptr.hpp"
+#include "fwd.hpp"
 
 namespace xboxdrv {
-
-class Options;
-class USBGSource;
-class USBSubsystem;
-struct XPadDevice;
 
 class XboxdrvDaemon
 {
@@ -44,7 +40,7 @@ private:
   static XboxdrvDaemon* s_current;
 
 private:
-  USBSubsystem& m_usb_subsystem;
+  unsebu::USBSubsystem& m_usb_subsystem;
   const Options& m_opts;
   GMainLoop* m_gmain;
 
@@ -62,7 +58,7 @@ private:
   static XboxdrvDaemon* current() { return s_current; }
 
 public:
-  XboxdrvDaemon(USBSubsystem& usb_subsystem, const Options& opts);
+  XboxdrvDaemon(unsebu::USBSubsystem& usb_subsystem, const Options& opts);
   ~XboxdrvDaemon();
 
   void run();

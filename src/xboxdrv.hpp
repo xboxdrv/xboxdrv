@@ -21,13 +21,10 @@
 
 #include <libusb.h>
 
+#include "fwd.hpp"
 #include "xboxmsg.hpp"
 
 namespace xboxdrv {
-
-struct XPadDevice;
-class Options;
-class Controller;
 
 class Xboxdrv
 {

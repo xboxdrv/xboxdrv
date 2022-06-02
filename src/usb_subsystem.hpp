@@ -16,13 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_USB_SUBSYSTEM_HPP
-#define HEADER_XBOXDRV_USB_SUBSYSTEM_HPP
+#ifndef HEADER_UNSEBU_USB_SUBSYSTEM_HPP
+#define HEADER_UNSEBU_USB_SUBSYSTEM_HPP
 
 #include <libusb.h>
 #include <memory>
 
-namespace xboxdrv {
+namespace unsebu {
 
 class USBGSource;
 class Options;
@@ -41,7 +41,7 @@ private:
   USBSubsystem& operator=(const USBSubsystem&);
 };
 
-} // namespace xboxdrv
+} // namespace unsebu
 
 #endif
 

@@ -18,7 +18,7 @@
 
 #include "usb_helper.hpp"
 
-namespace xboxdrv {
+namespace unsebu {
 
 int usb_claim_n_detach_interface(libusb_device_handle* handle, int interface, bool try_detach)
 {
@@ -74,6 +74,6 @@ libusb_device* usb_find_device_by_path(uint8_t busnum, uint8_t devnum)
   return ret_device;
 }
 
-} // namespace xboxdrv
+} // namespace unsebu
 
 /* EOF */

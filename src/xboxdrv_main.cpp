@@ -226,7 +226,7 @@ void find_controller(libusb_device** dev, XPadDevice& dev_type, Options const& o
 
 } // namespace
 
-XboxdrvMain::XboxdrvMain(USBSubsystem& usb_subsystem, Options const& opts) :
+XboxdrvMain::XboxdrvMain(unsebu::USBSubsystem& usb_subsystem, Options const& opts) :
   m_usb_subsystem(usb_subsystem),
   m_opts(opts),
   m_gmain(),

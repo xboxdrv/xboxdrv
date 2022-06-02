@@ -16,13 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_USB_GSOURCE_HPP
-#define HEADER_XBOXDRV_USB_GSOURCE_HPP
+#ifndef HEADER_UNSEBU_USB_GSOURCE_HPP
+#define HEADER_UNSEBU_USB_GSOURCE_HPP
 
 #include <glib.h>
 #include <list>
 
-namespace xboxdrv {
+namespace unsebu {
 
 class USBGSource;
 
@@ -75,7 +75,7 @@ private:
   USBGSource& operator=(const USBGSource&);
 };
 
-} // namespace xboxdrv
+} // namespace unsebu
 
 #endif
 

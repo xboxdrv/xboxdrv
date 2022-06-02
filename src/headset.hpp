@@ -31,7 +31,7 @@ class Headset
 {
 private:
   libusb_device_handle* m_handle;
-  std::unique_ptr<USBInterface> m_interface;
+  std::unique_ptr<unsebu::USBInterface> m_interface;
 
   std::unique_ptr<std::ofstream> m_fout;
   std::unique_ptr<std::ifstream> m_fin;

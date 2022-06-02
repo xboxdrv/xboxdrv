@@ -50,12 +50,18 @@ class Namespace;
 class Options;
 class Symbol;
 class UInputOptions;
-class USBGSource;
-class USBSubsystem;
 class Xboxdrv;
 class XboxdrvDaemon;
+struct XPadDevice;
 
 } // namespace xboxdrv
+
+namespace unsebu {
+
+class USBGSource;
+class USBSubsystem;
+
+} // namespace unsebu
 
 #endif
 

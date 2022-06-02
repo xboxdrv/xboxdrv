@@ -26,7 +26,7 @@
 #include "usb_gsource.hpp"
 #include "usb_helper.hpp"
 
-namespace xboxdrv {
+namespace unsebu {
 
 USBSubsystem::USBSubsystem() :
   m_usb_gsource()
@@ -49,6 +49,6 @@ USBSubsystem::~USBSubsystem()
   libusb_exit(NULL);
 }
 
-} // namespace xboxdrv
+} // namespace unsebu
 
 /* EOF */

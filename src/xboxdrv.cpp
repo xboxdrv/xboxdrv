@@ -218,7 +218,7 @@ Xboxdrv::run_main(Options const& opts)
     print_copyright();
   }
 
-  USBSubsystem usb_subsystem;
+  unsebu::USBSubsystem usb_subsystem;
   XboxdrvMain xboxdrv_main(usb_subsystem, opts);
   xboxdrv_main.run();
 }
@@ -238,7 +238,7 @@ Xboxdrv::run_daemon(Options const& opts)
 
   if (!opts.detach)
   {
-    USBSubsystem usb_subsystem;
+    unsebu::USBSubsystem usb_subsystem;
     XboxdrvDaemon daemon(usb_subsystem, opts);
     daemon.run();
   }
@@ -270,7 +270,7 @@ Xboxdrv::run_daemon(Options const& opts)
         }
         else
         {
-          USBSubsystem usb_subsystem;
+          unsebu::USBSubsystem usb_subsystem;
           XboxdrvDaemon daemon(usb_subsystem, opts);
           daemon.run();
         }

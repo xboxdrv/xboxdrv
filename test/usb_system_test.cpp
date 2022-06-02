@@ -82,7 +82,7 @@ int main()
 
   GMainLoop* m_gmain = g_main_loop_new(NULL, FALSE);
 
-  USBGSource usb_gsource;
+  unsebu::USBGSource usb_gsource;
   usb_gsource.attach(NULL);
 
   libusb_device* dev = get_controller_dev();

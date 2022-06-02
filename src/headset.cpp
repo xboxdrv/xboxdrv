@@ -33,7 +33,7 @@ using namespace std::placeholders;
 
 Headset::Headset(libusb_device_handle* handle, bool debug) :
   m_handle(handle),
-  m_interface(new USBInterface(m_handle, 1)),
+  m_interface(new unsebu::USBInterface(m_handle, 1)),
   m_fout(),
   m_fin()
 {

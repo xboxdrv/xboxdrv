@@ -295,7 +295,7 @@ USBController::usb_claim_interface(int ifnum, bool try_detach)
   assert(m_interfaces.find(ifnum) == m_interfaces.end());
   m_interfaces.insert(ifnum);
 
-  int err = usb_claim_n_detach_interface(m_handle, ifnum, try_detach);
+  int err = unsebu::usb_claim_n_detach_interface(m_handle, ifnum, try_detach);
   if (err != 0)
   {
     std::ostringstream out;

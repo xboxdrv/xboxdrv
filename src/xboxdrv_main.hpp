@@ -26,14 +26,11 @@
 
 #include <uinpp/fwd.hpp>
 
-#include "xpad_device.hpp"
 #include "controller_ptr.hpp"
+#include "fwd.hpp"
+#include "xpad_device.hpp"
 
 namespace xboxdrv {
-
-class Options;
-class USBGSource;
-class USBSubsystem;
 
 class XboxdrvMain
 {
@@ -44,10 +41,10 @@ public:
   static XboxdrvMain* current() { return s_current; }
 
 private:
-  USBSubsystem& m_usb_subsystem;
+  unsebu::USBSubsystem& m_usb_subsystem;
   const Options& m_opts;
   GMainLoop* m_gmain;
-  std::unique_ptr<USBGSource> m_usb_gsource;
+  std::unique_ptr<unsebu::USBGSource> m_usb_gsource;
 
   std::unique_ptr<uinpp::MultiDevice> m_uinput;
 
@@ -60,7 +57,7 @@ private:
   ControllerPtr m_controller;
 
 public:
-  XboxdrvMain(USBSubsystem& usb_subsystem, const Options& opts);
+  XboxdrvMain(unsebu::USBSubsystem& usb_subsystem, const Options& opts);
   ~XboxdrvMain();
 
   void run();
