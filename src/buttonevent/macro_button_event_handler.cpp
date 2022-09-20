@@ -205,7 +205,7 @@ MacroButtonEventHandler::MacroButtonEventHandler(uinpp::MultiDevice& uinput, int
             i->init.event.resolve_device_id(slot, extra_devices);
             i->init.emitter = uinput.add_abs(i->init.event.get_device_id(), i->init.event.code,
                                              i->init.minimum, i->init.maximum,
-                                             i->init.fuzz, i->init.flat);
+                                             i->init.fuzz, i->init.flat, 0);
             break;
 
           default:

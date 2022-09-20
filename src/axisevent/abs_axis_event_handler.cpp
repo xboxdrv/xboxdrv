@@ -91,7 +91,7 @@ AbsAxisEventHandler::AbsAxisEventHandler(uinpp::MultiDevice& uinput, int slot, b
 {
   m_code.resolve_device_id(slot, extra_devices);
   m_abs_emitter = uinput.add_abs(m_code.get_device_id(), m_code.code,
-                                 m_min, m_max, m_fuzz, m_flat);
+                                 m_min, m_max, m_fuzz, m_flat, 0);
 }
 
 void
