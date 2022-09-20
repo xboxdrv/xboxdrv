@@ -126,6 +126,11 @@ USBController::get_name() const
 void
 USBController::usb_submit_read(int endpoint, int len)
 {
+  if (m_is_disconnected)
+  {
+    return;
+  }
+
   libusb_transfer* transfer = libusb_alloc_transfer(0);
 
   uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
@@ -151,6 +156,11 @@ USBController::usb_submit_read(int endpoint, int len)
 void
 USBController::usb_write(int endpoint, uint8_t* data_in, int len)
 {
+  if (m_is_disconnected)
+  {
+    return;
+  }
+
   libusb_transfer* transfer = libusb_alloc_transfer(0);
   transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
 
@@ -182,6 +192,11 @@ USBController::usb_control(uint8_t  bmRequestType, uint8_t  bRequest,
                            uint16_t wValue, uint16_t wIndex,
                            uint8_t* data_in, uint16_t wLength)
 {
+  if (m_is_disconnected)
+  {
+    return;
+  }
+
   libusb_transfer* transfer = libusb_alloc_transfer(0);
   transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
 
