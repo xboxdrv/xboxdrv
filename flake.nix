@@ -56,8 +56,10 @@
         in
           project_version;
 
-      in rec {
-        packages = flake-utils.lib.flattenTree {
+      in {
+        packages = rec {
+          default = xboxdrv;
+
           xboxdrv = pkgs.stdenv.mkDerivation {
             pname = "xboxdrv";
             version = project_version_from_file;
@@ -94,16 +96,16 @@
               xorg.libXdmcp
               xorg.libXtst
             ] ++ [
-              argpp.defaultPackage.${system}
-              logmich.defaultPackage.${system}
-              strutcpp.defaultPackage.${system}
-              uinpp.defaultPackage.${system}
-              unsebu.defaultPackage.${system}
-              yaini.defaultPackage.${system}
-              tinycmmc.defaultPackage.${system}
+              argpp.packages.${system}.default
+              logmich.packages.${system}.default
+              strutcpp.packages.${system}.default
+              uinpp.packages.${system}.default
+              unsebu.packages.${system}.default
+              yaini.packages.${system}.default
+              tinycmmc.packages.${system}.default
             ];
           };
         };
-        defaultPackage = packages.xboxdrv;
-      });
+      }
+    );
 }
