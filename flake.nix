@@ -76,7 +76,7 @@
               bluez
               dbus-glib
               epoxy
-              fmt
+              fmt_8
               glib
               gobject-introspection
               gtest

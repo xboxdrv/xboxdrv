@@ -175,7 +175,7 @@ Xboxdrv::run_list_supported_devices_xpad()
         continue;
     }
 
-    fmt::print("{ 0x{:04x}, 0x{:04x}, \"{}\", 0, {} },\n",
+    fmt::print("{{ 0x{:04x}, 0x{:04x}, \"{}\", 0, {} }},\n",
                int(sorted_devices[i].idVendor),
                int(sorted_devices[i].idProduct),
                sorted_devices[i].name,

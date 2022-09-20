@@ -104,7 +104,7 @@ EvdevController::EvdevController(std::string const& filename,
         struct input_absinfo absinfo;
         ioctl(m_fd, EVIOCGABS(i), &absinfo);
 
-        log_debug(fmt::format("abs: {:-20s} min: {:6d} max: {:6d}", abs2str(i), absinfo.minimum, absinfo.maximum));
+        log_debug("abs: {:-20s} min: {:6d} max: {:6d}", abs2str(i), absinfo.minimum, absinfo.maximum);
         m_absinfo[i] = absinfo;
 
         std::map<int, std::string>::const_iterator it = absmap.find(i);
