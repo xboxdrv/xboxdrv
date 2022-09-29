@@ -556,6 +556,8 @@ start=KEY_ESC
               <listitem><para>firestorm</para></listitem>
               <listitem><para>firestorm-vsb</para></listitem>
               <listitem><para>saitek-p2500</para></listitem>
+              <listitem><para>steam</para></listitem>
+              <listitem><para>steam-wireless</para></listitem>
               <listitem><para>generic-usb</para></listitem>
             </itemizedlist>
             <para>
