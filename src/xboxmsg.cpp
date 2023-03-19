@@ -1283,13 +1283,13 @@ XboxButton string2btn(const std::string& str_)
   else if (str == "tr" || str == "r3")
     return XBOX_BTN_THUMB_R;
 
-  else if (str == "du" || str == "up")
+  else if (str == "du" || str == "up" || str == "dpad_up")
     return XBOX_DPAD_UP;
-  else if (str == "dd" || str == "down")
+  else if (str == "dd" || str == "down" || str == "dpad_down")
     return XBOX_DPAD_DOWN;
-  else if (str == "dl" || str == "left")
+  else if (str == "dl" || str == "left" || str == "dpad_left")
     return XBOX_DPAD_LEFT;
-  else if (str == "dr" || str == "right")
+  else if (str == "dr" || str == "right" || str == "dpad_right")
     return XBOX_DPAD_RIGHT;
 
   else
