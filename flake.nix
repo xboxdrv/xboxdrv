@@ -2,7 +2,7 @@
   description = "Xbox360 USB Gamepad Userspace Driver";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -11,28 +11,53 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
       in rec {
-        packages = flake-utils.lib.flattenTree {
+        packages = rec {
+          default = xboxdrv;
+
           xboxdrv = pkgs.stdenv.mkDerivation {
             pname = "xboxdrv";
             version = "0.8.8";
-            src = nixpkgs.lib.cleanSource ./.;
+
+            src = ./.;
+
             enableParallelBuilding = true;
-            nativeBuildInputs = [
-              pkgs.scons
-              pkgs.pkg-config
-            ];
+
             installPhase = ''
               make install PREFIX=$out
             '';
-            buildInputs = [
-              pkgs.xorg.libX11
-              pkgs.libusb1
-              pkgs.boost
-              pkgs.glib
-              pkgs.dbus-glib
+
+            nativeBuildInputs = with pkgs; [
+              pkg-config
+              scons
+            ];
+
+            buildInputs = with pkgs; [
+              boost
+              dbus-glib
+              glib
+              libusb1
+              xorg.libX11
+            ];
+
+            propagatedBuildInputs = with pkgs; [
+              python310Packages.dbus-python
             ];
           };
         };
-        defaultPackage = packages.xboxdrv;
-      });
+
+        apps = rec {
+          default = xboxdrv;
+
+          xboxdrv = flake-utils.lib.mkApp {
+            drv = packages.xboxdrv;
+            exePath = "/bin/xboxdrv";
+          };
+
+          xboxdrvctl = flake-utils.lib.mkApp {
+            drv = packages.xboxdrv;
+            exePath = "/bin/xboxdrvctl";
+          };
+        };
+      }
+    );
 }
