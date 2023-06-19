@@ -2,7 +2,7 @@
   description = "Xbox360 USB Gamepad Userspace Driver";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
     flake-utils.url = "github:numtide/flake-utils";
 
     argpp.url = "github:grumbel/argpp/stable";
@@ -16,28 +16,26 @@
 
     strutcpp.url = "github:grumbel/strutcpp";
     strutcpp.inputs.nixpkgs.follows = "nixpkgs";
-    strutcpp.inputs.flake-utils.follows = "flake-utils";
     strutcpp.inputs.tinycmmc.follows = "tinycmmc";
 
     logmich.url = "github:logmich/logmich";
     logmich.inputs.nixpkgs.follows = "nixpkgs";
-    logmich.inputs.flake-utils.follows = "flake-utils";
     logmich.inputs.tinycmmc.follows = "tinycmmc";
 
-    uinpp.url = "github:Grumbel/uinpp";
+    uinpp.url = "github:grumbel/uinpp";
     uinpp.inputs.nixpkgs.follows = "nixpkgs";
     uinpp.inputs.flake-utils.follows = "flake-utils";
     uinpp.inputs.strutcpp.follows = "strutcpp";
     uinpp.inputs.logmich.follows = "logmich";
     uinpp.inputs.tinycmmc.follows = "tinycmmc";
 
-    unsebu.url = "github:Grumbel/unsebu";
+    unsebu.url = "github:grumbel/unsebu";
     unsebu.inputs.nixpkgs.follows = "nixpkgs";
     unsebu.inputs.flake-utils.follows = "flake-utils";
     unsebu.inputs.tinycmmc.follows = "tinycmmc";
     unsebu.inputs.logmich.follows = "logmich";
 
-    yaini.url = "github:Grumbel/yaini";
+    yaini.url = "github:grumbel/yaini";
     yaini.inputs.nixpkgs.follows = "nixpkgs";
     yaini.inputs.flake-utils.follows = "flake-utils";
     yaini.inputs.tinycmmc.follows = "tinycmmc";
