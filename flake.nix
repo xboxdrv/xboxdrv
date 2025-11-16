@@ -2,7 +2,7 @@
   description = "Xbox360 USB Gamepad Userspace Driver";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
 
     argpp.url = "github:grumbel/argpp/stable";
@@ -73,8 +73,7 @@
               at-spi2-core
               bluez
               dbus-glib
-              epoxy
-              fmt_8
+              fmt
               glib
               gobject-introspection
               gtest

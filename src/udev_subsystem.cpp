@@ -122,7 +122,7 @@ UdevSubsystem::on_udev_data(GIOChannel* channel, GIOCondition condition)
   }
   else if (condition != G_IO_IN)
   {
-    log_error("unknown condition: {}", condition);
+    log_error("unknown condition: {}", static_cast<int>(condition));
   }
   else
   {
