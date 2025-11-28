@@ -40,7 +40,7 @@
             ];
 
             propagatedBuildInputs = with pkgs; [
-              python310Packages.dbus-python
+              python3Packages.dbus-python
             ];
           };
         };
