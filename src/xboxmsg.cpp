@@ -18,7 +18,7 @@
 
 #include "xboxmsg.hpp"
 
-#include <boost/format.hpp>
+#include <format>
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
@@ -168,111 +168,72 @@ std::ostream& operator<<(std::ostream& out, const XboxGenericMsg& msg)
 
 std::ostream& operator<<(std::ostream& out, const Playstation3USBMsg& msg)
 {
-  out << boost::format("X1:%3d Y1:%3d")
-    % int(msg.x1) % int(msg.y1);
+  out << std::format("X1:{:3} Y1:{:3} ", int(msg.x1), int(msg.y1));
+  out << std::format("X2:{:3} Y2:{:3} ", int(msg.x2), int(msg.y2));
 
-  out << boost::format("  X2:%3d Y2:%3d")
-    % int(msg.x2) % int(msg.y2);
+  out << std::format("du:{:3} dd:{:3} dl:{:3} dr:{:3} ",
+                     int(msg.a_dpad_up), int(msg.a_dpad_down),
+                     int(msg.a_dpad_left), int(msg.a_dpad_right));
 
-  out << boost::format("  du:%3d dd:%3d dl:%3d dr:%3d")
-    % int(msg.a_dpad_up)
-    % int(msg.a_dpad_down)
-    % int(msg.a_dpad_left)
-    % int(msg.a_dpad_right);
+  out << std::format("select:{} ps:{} start:{} ",
+                     msg.select, msg.playstation, msg.start);
 
-  out << "  select:" << msg.select;
-  out << " ps:" << msg.playstation;
-  out << " start:" << msg.start;
+  out << std::format("L3:{} R3:{} ",
+                     static_cast<int>(msg.l3), static_cast<int>(msg.r3));
 
-  out << boost::format("  L3:%d R3:%d") % static_cast<int>(msg.l3) % static_cast<int>(msg.r3);
+  out << std::format("/\\:{:3} O:{:3} X:{:3} []:{:3} L1:{:3} R1:{:3} ",
+                     static_cast<int>(msg.a_triangle), static_cast<int>(msg.a_circle),
+                     static_cast<int>(msg.a_cross), static_cast<int>(msg.a_square),
+                     static_cast<int>(msg.a_l1), static_cast<int>(msg.a_r1));
 
-  out << boost::format("  /\\:%3d O:%3d X:%3d []:%3d  L1:%3d R1:%3d")
-    % static_cast<int>(msg.a_triangle)
-    % static_cast<int>(msg.a_circle)
-    % static_cast<int>(msg.a_cross)
-    % static_cast<int>(msg.a_square)
-    % static_cast<int>(msg.a_l1)
-    % static_cast<int>(msg.a_r1);
-
-  out << boost::format("  L2:%3d R2:%3d")
-    % int(msg.a_l2) % int(msg.a_r2);
+  out << std::format("L2:{:3} R2:{:3}", int(msg.a_l2), int(msg.a_r2));
 
   return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const Xbox360Msg& msg)
 {
-  out << boost::format("X1:%6d Y1:%6d")
-    % int(msg.x1) % int(msg.y1);
+  out << std::format("X1:{:6} Y1:{:6} ", int(msg.x1), int(msg.y1));
+  out << std::format("X2:{:6} Y2:{:6} ", int(msg.x2), int(msg.y2));
 
-  out << boost::format("  X2:%6d Y2:%6d")
-    % int(msg.x2) % int(msg.y2);
+  out << std::format("du:{} dd:{} dl:{} dr:{} ",
+                     int(msg.dpad_up), int(msg.dpad_down),
+                     int(msg.dpad_left), int(msg.dpad_right));
 
-  out << boost::format("  du:%d dd:%d dl:%d dr:%d")
-    % int(msg.dpad_up)
-    % int(msg.dpad_down)
-    % int(msg.dpad_left)
-    % int(msg.dpad_right);
+  out << std::format("back:{} guide:{} start:{} ",
+                     msg.back, msg.guide, msg.start);
 
-  out << "  back:" << msg.back;
-  out << " guide:" << msg.guide;
-  out << " start:" << msg.start;
+  out << std::format("TL:{} TR:{} ", msg.thumb_l, msg.thumb_r);
 
-  out << "  TL:" << msg.thumb_l;
-  out << " TR:"  << msg.thumb_r;
+  out << std::format("A:{} B:{} X:{} Y:{} ",
+                     msg.a, msg.b, msg.x, msg.y);
 
-  out << "  A:" << msg.a;
-  out << " B:"  << msg.b;
-  out << " X:"  << msg.x;
-  out << " Y:"  << msg.y;
+  out << std::format("LB:{} RB:{} ", msg.lb, msg.rb);
 
-  out << "  LB:" << msg.lb;
-  out << " RB:" <<  msg.rb;
-
-  out << boost::format("  LT:%3d RT:%3d")
-    % int(msg.lt) % int(msg.rt);
-
-  // out << " Dummy: " << msg.dummy1 << " " << msg.dummy2 << " " << msg.dummy3;
+  out << std::format("LT:{:3} RT:{:3}", int(msg.lt), int(msg.rt));
 
   return out;
 }
 
+
 std::ostream& operator<<(std::ostream& out, const XboxMsg& msg)
 {
-  out << boost::format(" X1:%6d Y1:%6d  X2:%6d Y2:%6d "
-                       " du:%d dd:%d dl:%d dr:%d "
-                       " start:%d back:%d "
-                       " TL:%d TR:%d "
-                       " A:%3d B:%3d X:%3d Y:%3d "
-                       " black:%3d white:%3d "
-                       " LT:%3d RT:%3d ")
-    % int(msg.x1) % int(msg.y1)
-    % int(msg.x2) % int(msg.y2)
-
-    % int(msg.dpad_up)
-    % int(msg.dpad_down)
-    % int(msg.dpad_left)
-    % int(msg.dpad_right)
-
-    % int(msg.start)
-    % int(msg.back)
-
-    % int(msg.thumb_l)
-    % int(msg.thumb_r)
-
-    % int(msg.a)
-    % int(msg.b)
-    % int(msg.x)
-    % int(msg.y)
-
-    % int(msg.black)
-    % int(msg.white)
-
-    % int(msg.lt)
-    % int(msg.rt);
-
-  // out << " Dummy: " << msg.dummy;
-
+  out << std::format(" X1:{:6} Y1:{:6}  X2:{:6} Y2:{:6} "
+                     " du:{} dd:{} dl:{} dr:{} "
+                     " start:{} back:{} "
+                     " TL:{} TR:{} "
+                     " A:{:3} B:{:3} X:{:3} Y:{:3} "
+                     " black:{:3} white:{:3} "
+                     " LT:{:3} RT:{:3} ",
+                     int(msg.x1), int(msg.y1),
+                     int(msg.x2), int(msg.y2),
+                     int(msg.dpad_up), int(msg.dpad_down),
+                     int(msg.dpad_left), int(msg.dpad_right),
+                     int(msg.start), int(msg.back),
+                     int(msg.thumb_l), int(msg.thumb_r),
+                     int(msg.a), int(msg.b), int(msg.x), int(msg.y),
+                     int(msg.black), int(msg.white),
+                     int(msg.lt), int(msg.rt));
   return out;
 }
 

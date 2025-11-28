@@ -92,7 +92,7 @@ opts.Add('PKG_CONFIG', 'pkg-config helper tool', 'pkg-config')
 opts.Update(env)
 Help(opts.GenerateHelpText(env))
 
-env.Append(CPPFLAGS = ['-std=c++11'])
+env.Append(CPPFLAGS = ['-std=c++20'])
 env.Append(CPPPATH=["src/"])
 
 if 'BUILD' in env and env['BUILD'] == 'development':

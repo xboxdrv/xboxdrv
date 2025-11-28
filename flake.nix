@@ -32,7 +32,6 @@
             ];
 
             buildInputs = with pkgs; [
-              boost
               dbus-glib
               glib
               libusb1

@@ -18,7 +18,7 @@
 
 #include "playstation3_usb_controller.hpp"
 
-#include <boost/format.hpp>
+#include <format>
 #include <sstream>
 #include <string.h>
 
@@ -144,21 +144,21 @@ Playstation3USBController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
 
     if (false)
     {
-      log_debug(boost::format("X:%5d Y:%5d Z:%5d RZ:%5d\n")
-                % (static_cast<int>(msg_out->ps3usb.accl_x) - 512)
-                % (static_cast<int>(msg_out->ps3usb.accl_y) - 512)
-                % (static_cast<int>(msg_out->ps3usb.accl_z) - 512)
-                % (static_cast<int>(msg_out->ps3usb.rot_z)));
+      log_debug(std::format("X:{:5} Y:{:5} Z:{:5} RZ:{:5}\n",
+                                (static_cast<int>(msg_out->ps3usb.accl_x) - 512),
+                                (static_cast<int>(msg_out->ps3usb.accl_y) - 512),
+                                (static_cast<int>(msg_out->ps3usb.accl_z) - 512),
+                                (static_cast<int>(msg_out->ps3usb.rot_z))));
     }
 
     if (false)
     {
       // values are normalized to 1g (-116 is force by gravity)
-      log_debug(boost::format("X:%6.3f Y:%6.3f Z:%6.3f RZ:%6.3f\n")
-                % ((static_cast<int>(msg_out->ps3usb.accl_x) - 512) / 116.0f)
-                % ((static_cast<int>(msg_out->ps3usb.accl_y) - 512) / 116.0f)
-                % ((static_cast<int>(msg_out->ps3usb.accl_z) - 512) / 116.0f)
-                % ((static_cast<int>(msg_out->ps3usb.rot_z) - 5)));
+      log_debug(std::format("X:{:6.3f} Y:{:6.3f} Z:{:6.3f} RZ:{:6.3f}\n",
+                                ((static_cast<int>(msg_out->ps3usb.accl_x) - 512) / 116.0f),
+                                ((static_cast<int>(msg_out->ps3usb.accl_y) - 512) / 116.0f),
+                                ((static_cast<int>(msg_out->ps3usb.accl_z) - 512) / 116.0f),
+                                ((static_cast<int>(msg_out->ps3usb.rot_z) - 5.0f))));
     }
 
     if (false)
@@ -167,7 +167,7 @@ Playstation3USBController::parse(uint8_t* data, int len, XboxGenericMsg* msg_out
       str << len << ": ";
       for(int i = 0; i < len; ++i)
       {
-        str << boost::format("%02x ") % static_cast<int>(data[i]);
+        str << std::format("{:02x} ", static_cast<int>(data[i]));
       }
       str << std::endl;
       log_debug(str.str());

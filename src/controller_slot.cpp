@@ -18,7 +18,8 @@
 
 #include "controller_slot.hpp"
 
-#include <boost/format.hpp>
+#include <assert.h>
+#include <format>
 
 #include "uinput_message_processor.hpp"
 #include "dummy_message_processor.hpp"

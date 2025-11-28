@@ -21,7 +21,7 @@
 #include <fstream>
 #include <iostream>
 #include <functional>
-#include <boost/format.hpp>
+#include <format>
 
 #include "evdev_helper.hpp"
 #include "helper.hpp"
@@ -424,25 +424,25 @@ CommandLineParser::init_ini(Options* opts)
   {
     for(int config = 0; config <= 9; ++config)
     {
-      m_ini.section((boost::format("controller%d/config%d/modifier") % controller % config).str(),
+      m_ini.section(std::format("controller{}/config{}/modifier", controller, config),
                     std::bind(&CommandLineParser::set_modifier_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
-      m_ini.section((boost::format("controller%d/config%d/ui-buttonmap") % controller % config).str(),
+      m_ini.section(std::format("controller{}/config{}/ui-buttonmap", controller, config),
                     std::bind(&CommandLineParser::set_ui_buttonmap_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
-      m_ini.section((boost::format("controller%d/config%d/ui-axismap") % controller % config).str(),
+      m_ini.section(std::format("controller{}/config{}/ui-axismap", controller, config),
                     std::bind(&CommandLineParser::set_ui_axismap_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
 
-      m_ini.section((boost::format("controller%d/config%d/buttonmap") % controller % config).str(),
+      m_ini.section(std::format("controller{}/config{}/buttonmap", controller, config),
                     std::bind(&CommandLineParser::set_buttonmap_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
-      m_ini.section((boost::format("controller%d/config%d/axismap") % controller % config).str(),
+      m_ini.section(std::format("controller{}/config{}/axismap", controller, config),
                     std::bind(&CommandLineParser::set_axismap_n,   this, controller, config, std::placeholders::_1, std::placeholders::_2));
 
-      m_ini.section((boost::format("controller%d/config%d/autofire") % controller % config).str(),
+      m_ini.section(std::format("controller{}/config{}/autofire", controller, config),
                     std::bind(&CommandLineParser::set_autofire_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
-      m_ini.section((boost::format("controller%d/config%d/relative-axis") % controller % config).str(),
+      m_ini.section(std::format("controller{}/config{}/relative-axis", controller, config),
                     std::bind(&CommandLineParser::set_relative_axis_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
-      m_ini.section((boost::format("controller%d/config%d/calibration") % controller % config).str(),
+      m_ini.section(std::format("controller{}/config{}/calibration", controller, config),
                     std::bind(&CommandLineParser::set_calibration_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
-      m_ini.section((boost::format("controller%d/config%d/axis-sensitivity") % controller % config).str(),
+      m_ini.section(std::format("controller{}/config{}/axis-sensitivity", controller, config),
                     std::bind(&CommandLineParser::set_axis_sensitivity_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
     }
   }

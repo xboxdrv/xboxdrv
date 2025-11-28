@@ -18,8 +18,10 @@
 
 #include "firestorm_dual_controller.hpp"
 
+#include <assert.h>
+#include <string.h>
 #include <sstream>
-#include <boost/format.hpp>
+#include <format>
 
 #include "helper.hpp"
 #include "log.hpp"
