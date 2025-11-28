@@ -19,8 +19,11 @@
 #ifndef HEADER_HELPER_HPP
 #define HEADER_HELPER_HPP
 
-#include <boost/function.hpp>
+#include <assert.h>
+#include <unistd.h>
+#include <functional>
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 int hexstr2int(const std::string& str);
@@ -34,7 +37,7 @@ std::string to_lower(const std::string &str);
 bool is_number(const std::string& str);
 
 /** Splits apart a string of the form NAME=VALUE,... and calls func(NAME, VALUE) on each */
-void process_name_value_string(const std::string& str, const boost::function<void (const std::string&, const std::string&)>& func);
+void process_name_value_string(const std::string& str, const std::function<void (const std::string&, const std::string&)>& func);
 
 void split_string_at(const std::string& str, char c, std::string* lhs, std::string* rhs);
 

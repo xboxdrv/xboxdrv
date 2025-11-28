@@ -43,7 +43,7 @@ ControllerSlot::connect(ControllerPtr controller)
 {
   assert(!m_thread);
 
-  std::auto_ptr<MessageProcessor> message_proc;
+  std::unique_ptr<MessageProcessor> message_proc;
   if (m_uinput)
   {
     message_proc.reset(new UInputMessageProcessor(*m_uinput, m_config, m_opts));
@@ -52,7 +52,7 @@ ControllerSlot::connect(ControllerPtr controller)
   {
     message_proc.reset(new DummyMessageProcessor());
   }
-  m_thread.reset(new ControllerThread(controller, message_proc, m_opts));
+  m_thread.reset(new ControllerThread(controller, std::move(message_proc), m_opts));
 }
 
 ControllerPtr
@@ -69,7 +69,7 @@ ControllerSlot::disconnect()
 bool
 ControllerSlot::is_connected() const
 {
-  return m_thread;
+  return static_cast<bool>(m_thread);
 }
 
 /* EOF */

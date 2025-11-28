@@ -31,7 +31,7 @@ RelAxisEventHandler::from_string(const std::string& str)
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
 
-  std::auto_ptr<RelAxisEventHandler> ev(new RelAxisEventHandler);
+  std::unique_ptr<RelAxisEventHandler> ev(new RelAxisEventHandler);
 
   int j = 0;
   for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)

@@ -18,16 +18,19 @@
 
 #include "usb_interface.hpp"
 
+#include <assert.h>
+#include <string.h>
+
 #include "raise_exception.hpp"
 #include "usb_helper.hpp"
 
 struct USBReadCallback
 {
   USBInterface* iface;
-  boost::function<bool (uint8_t*, int)> callback;
+  std::function<bool (uint8_t*, int)> callback;
 
   USBReadCallback(USBInterface* iface_,
-                  boost::function<bool (uint8_t*, int)> callback_) :
+                  std::function<bool (uint8_t*, int)> callback_) :
     iface(iface_),
     callback(callback_)
   {}
@@ -40,10 +43,10 @@ private:
 struct USBWriteCallback
 {
   USBInterface* iface;
-  boost::function<bool (libusb_transfer*)> callback;
+  std::function<bool (libusb_transfer*)> callback;
 
   USBWriteCallback(USBInterface* iface_,
-                   boost::function<bool (libusb_transfer*)> callback_) :
+                   std::function<bool (libusb_transfer*)> callback_) :
     iface(iface_),
     callback(callback_)
   {}
@@ -106,7 +109,7 @@ USBInterface::~USBInterface()
 
 void
 USBInterface::submit_read(int endpoint, int len,
-                          const boost::function<bool (uint8_t*, int)>& callback)
+                          const std::function<bool (uint8_t*, int)>& callback)
 {
   assert(m_endpoints.find(endpoint) == m_endpoints.end());
   libusb_transfer* transfer = libusb_alloc_transfer(0);
@@ -136,7 +139,7 @@ USBInterface::submit_read(int endpoint, int len,
 
 void
 USBInterface::submit_write(int endpoint, uint8_t* data_in, int len,
-                           const boost::function<bool (libusb_transfer*)>& callback)
+                           const std::function<bool (libusb_transfer*)>& callback)
 {
   libusb_transfer* transfer = libusb_alloc_transfer(0);
   transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;

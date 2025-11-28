@@ -29,7 +29,7 @@ DummyMessageProcessor::send(const XboxGenericMsg& msg, int msec_delta)
 }
 
 void
-DummyMessageProcessor::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+DummyMessageProcessor::set_ff_callback(const std::function<void (uint8_t, uint8_t)>& callback)
 {
 }
 

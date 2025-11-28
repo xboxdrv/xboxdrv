@@ -20,6 +20,7 @@
 #define HEADER_SAITEK_P3600_CONTROLLER_HPP
 
 #include <libusb.h>
+#include <string.h>
 #include "xboxmsg.hpp"
 #include "usb_controller.hpp"
 

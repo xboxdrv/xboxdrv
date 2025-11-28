@@ -24,7 +24,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <boost/format.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 #include "controller_factory.hpp"
 #include "evdev_controller.hpp"
@@ -144,8 +144,8 @@ void
 XboxdrvMain::run()
 {
   m_controller = create_controller();
-  m_controller->set_disconnect_cb(boost::bind(&XboxdrvMain::on_controller_disconnect, this));
-  std::auto_ptr<MessageProcessor> message_proc;
+  m_controller->set_disconnect_cb(std::bind(&XboxdrvMain::on_controller_disconnect, this));
+  std::unique_ptr<MessageProcessor> message_proc;
   init_controller(m_controller);
 
   if (m_opts.instant_exit)
@@ -200,7 +200,7 @@ XboxdrvMain::run()
     }
 
     {
-      ControllerThread thread(m_controller, message_proc, m_opts);
+      ControllerThread thread(m_controller, std::move(message_proc), m_opts);
       log_debug("launching thread");
 
       pid_t pid = 0;

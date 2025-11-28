@@ -130,7 +130,7 @@ void split_string_at(const std::string& str, char c, std::string* lhs, std::stri
   }
 }
 
-void process_name_value_string(const std::string& str, const boost::function<void (const std::string&, const std::string&)>& func)
+void process_name_value_string(const std::string& str, const std::function<void (const std::string&, const std::string&)>& func)
 {
   typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
   tokenizer tokens(str, boost::char_separator<char>(",", "", boost::drop_empty_tokens));

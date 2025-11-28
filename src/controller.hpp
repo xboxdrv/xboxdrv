@@ -21,7 +21,8 @@
 
 #include <stdint.h>
 
-#include <boost/function.hpp>
+#include <string>
+#include <functional>
 #include <memory>
 
 extern "C" {
@@ -34,9 +35,9 @@ struct XboxGenericMsg;
 class Controller
 {
 protected:
-  boost::function<void (const XboxGenericMsg&)> m_msg_cb;
-  boost::function<void ()> m_disconnect_cb;
-  boost::function<void ()> m_activation_cb;
+  std::function<void (const XboxGenericMsg&)> m_msg_cb;
+  std::function<void ()> m_disconnect_cb;
+  std::function<void ()> m_activation_cb;
   bool m_is_disconnected;
   bool m_is_active;
   udev_device* m_udev_device;
@@ -63,19 +64,19 @@ public:
       inactive and vice versa. */
   virtual bool is_active() const { return m_is_active; }
   virtual void set_active(bool v);
-  virtual void set_activation_cb(const boost::function<void ()>& callback);
+  virtual void set_activation_cb(const std::function<void ()>& callback);
 
   /** Controllers with a disconnect status have been unplugged and are
       not coming back, thus the Controller object can be destroyed */
   virtual bool is_disconnected() const;
-  virtual void set_disconnect_cb(const boost::function<void ()>& callback);
+  virtual void set_disconnect_cb(const std::function<void ()>& callback);
   virtual void send_disconnect();
 
   virtual std::string get_usbpath() const { return "-1:-1"; }
   virtual std::string get_usbid() const   { return "-1:-1"; }
   virtual std::string get_name() const    { return "<not implemented>"; }
 
-  void set_message_cb(const boost::function<void(const XboxGenericMsg&)>& msg_cb);
+  void set_message_cb(const std::function<void(const XboxGenericMsg&)>& msg_cb);
 
   void set_udev_device(udev_device* udev_dev);
   udev_device* get_udev_device() const;

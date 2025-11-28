@@ -179,7 +179,7 @@ LinuxUinput::add_ff(uint16_t code)
 }
 
 void
-LinuxUinput::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+LinuxUinput::set_ff_callback(const std::function<void (uint8_t, uint8_t)>& callback)
 {
   m_ff_callback = callback;
 }

@@ -19,7 +19,7 @@
 #include "saitek_p2500_controller.hpp"
 
 #include <sstream>
-
+#include <string.h>
 #include "helper.hpp"
 #include "usb_helper.hpp"
 

@@ -92,12 +92,12 @@ opts.Add('PKG_CONFIG', 'pkg-config helper tool', 'pkg-config')
 opts.Update(env)
 Help(opts.GenerateHelpText(env))
 
+env.Append(CPPFLAGS = ['-std=c++11'])
 env.Append(CPPPATH=["src/"])
 
 if 'BUILD' in env and env['BUILD'] == 'development':
     env.Append(CXXFLAGS = [ "-O3",
                             "-g3",
-                            "-ansi",
                             "-pedantic",
                             "-Wall",
                             "-Wextra",
@@ -114,7 +114,7 @@ if 'BUILD' in env and env['BUILD'] == 'development':
 elif 'BUILD' in env and env['BUILD'] == 'custom':
     pass
 else:
-    env.Append(CPPFLAGS = ['-g', '-O3', '-Wall', '-ansi', '-pedantic'])
+    env.Append(CPPFLAGS = ['-g', '-O3', '-Wall', '-pedantic'])
 
 env.ParseConfig(env['PKG_CONFIG'] + " --cflags --libs dbus-glib-1 | sed 's/-I/-isystem/g'")
 env.ParseConfig(env['PKG_CONFIG'] + " --cflags --libs glib-2.0 | sed 's/-I/-isystem/g'")

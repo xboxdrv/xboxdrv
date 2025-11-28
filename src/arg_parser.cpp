@@ -18,6 +18,7 @@
 
 #include "arg_parser.hpp"
 
+#include <assert.h>
 #include <stdio.h>
 #include <ostream>
 

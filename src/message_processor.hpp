@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_MESSAGE_PROCESSOR_HPP
 #define HEADER_XBOXDRV_MESSAGE_PROCESSOR_HPP
 
-#include <boost/function.hpp>
+#include <functional>
 #include <stdint.h>
 
 struct XboxGenericMsg;
@@ -31,8 +31,8 @@ public:
   virtual ~MessageProcessor() {}
 
   virtual void send(const XboxGenericMsg& msg, int msec_delta) =0;
-  virtual void set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback
-                               = boost::function<void (uint8_t, uint8_t)>()) =0;
+  virtual void set_ff_callback(const std::function<void (uint8_t, uint8_t)>& callback
+                               = std::function<void (uint8_t, uint8_t)>()) =0;
 
 private:
   MessageProcessor(const MessageProcessor&);

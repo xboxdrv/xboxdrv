@@ -18,7 +18,7 @@
 
 #include "controller_slot_config.hpp"
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "raise_exception.hpp"
 #include "uinput.hpp"
@@ -99,7 +99,7 @@ ControllerSlotConfig::create(UInput& uinput, int slot, bool extra_devices, const
     // uinput.add_ff(ff_device, FF_DAMPER);
     // uinput.add_ff(ff_device, FF_INERTIA);
 
-    uinput.set_ff_callback(ff_device, boost::bind(&ControllerSlotConfig::set_rumble, m_config.get(), _1, _2));
+    uinput.set_ff_callback(ff_device, std::bind(&ControllerSlotConfig::set_rumble, m_config.get(), std::placeholders::_1, std::placeholders::_2));
   }
 
   return m_config;
@@ -312,7 +312,7 @@ ControllerSlotConfig::set_rumble(uint8_t strong, uint8_t weak)
 }
 
 void
-ControllerSlotConfig::set_ff_callback(const boost::function<void (uint8_t, uint8_t)>& callback)
+ControllerSlotConfig::set_ff_callback(const std::function<void (uint8_t, uint8_t)>& callback)
 {
   m_rumble_callback = callback;
 }

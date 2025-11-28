@@ -20,7 +20,7 @@
 
 #include <fstream>
 #include <iostream>
-#include <boost/bind.hpp>
+#include <functional>
 #include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -332,12 +332,12 @@ CommandLineParser::init_ini(Options* opts)
   m_ini.clear();
 
   m_ini.section("xboxdrv")
-    ("verbose", boost::bind(&Options::set_verbose, opts), boost::function<void ()>())
+    ("verbose", std::bind(&Options::set_verbose, opts), std::function<void ()>())
     ("silent", &opts->silent)
     ("quiet",  &opts->quiet)
     ("usb-debug",  &opts->usb_debug)
     ("rumble", &opts->rumble)
-    ("led", boost::bind(&Options::set_led, opts, _1))
+    ("led", std::bind(&Options::set_led, opts, std::placeholders::_1))
     ("rumble-l", &opts->rumble_l)
     ("rumble-r", &opts->rumble_r)
     ("rumble-gain", &opts->rumble_gain)
@@ -353,35 +353,35 @@ CommandLineParser::init_ini(Options* opts)
     ("evdev", &opts->evdev_device)
     ("evdev-grab", &opts->evdev_grab)
     ("evdev-debug", &opts->evdev_debug)
-    ("config", boost::bind(&CommandLineParser::read_config_file, this, _1))
-    ("alt-config", boost::bind(&CommandLineParser::read_alt_config_file, this, _1))
+    ("config", std::bind(&CommandLineParser::read_config_file, this, std::placeholders::_1))
+    ("alt-config", std::bind(&CommandLineParser::read_alt_config_file, this, std::placeholders::_1))
     ("timeout", &opts->timeout)
-    ("priority", boost::bind(&Options::set_priority, opts, _1))
-    ("next", boost::bind(&Options::next_config, opts), boost::function<void ()>())
-    ("next-controller", boost::bind(&Options::next_controller, opts), boost::function<void ()>())
+    ("priority", std::bind(&Options::set_priority, opts, std::placeholders::_1))
+    ("next", std::bind(&Options::next_config, opts), std::function<void ()>())
+    ("next-controller", std::bind(&Options::next_controller, opts), std::function<void ()>())
     ("extra-devices", &opts->extra_devices)
     ("extra-events", &opts->extra_events)
-    ("toggle", boost::bind(&Options::set_toggle_button, opts, _1))
-    ("ff-device", boost::bind(&Options::set_ff_device, opts, _1))
+    ("toggle", std::bind(&Options::set_toggle_button, opts, std::placeholders::_1))
+    ("ff-device", std::bind(&Options::set_ff_device, opts, std::placeholders::_1))
 
-    ("deadzone", boost::bind(&CommandLineParser::set_deadzone, this, _1))
-    ("deadzone-trigger", boost::bind(&CommandLineParser::set_deadzone_trigger, this, _1))
-    ("square-axis", boost::bind(&CommandLineParser::set_square_axis, this), boost::function<void ()>())
-    ("four-way-restrictor", boost::bind(&CommandLineParser::set_four_way_restrictor, this), boost::function<void ()>())
-    ("dpad-rotation", boost::bind(&CommandLineParser::set_dpad_rotation, this, _1))
+    ("deadzone", std::bind(&CommandLineParser::set_deadzone, this, std::placeholders::_1))
+    ("deadzone-trigger", std::bind(&CommandLineParser::set_deadzone_trigger, this, std::placeholders::_1))
+    ("square-axis", std::bind(&CommandLineParser::set_square_axis, this), std::function<void ()>())
+    ("four-way-restrictor", std::bind(&CommandLineParser::set_four_way_restrictor, this), std::function<void ()>())
+    ("dpad-rotation", std::bind(&CommandLineParser::set_dpad_rotation, this, std::placeholders::_1))
 
     // uinput stuff
-    ("device-name",       boost::bind(&Options::set_device_name, opts, _1))
-    ("device-usbid",      boost::bind(&Options::set_device_usbid, opts, _1))
-    ("mouse",             boost::bind(&CommandLineParser::mouse, this), boost::function<void ()>())
-    ("guitar",            boost::bind(&Options::set_guitar, opts),            boost::function<void ()>())
-    ("trigger-as-button", boost::bind(&Options::set_trigger_as_button, opts), boost::function<void ()>())
-    ("trigger-as-zaxis",  boost::bind(&Options::set_trigger_as_zaxis, opts),  boost::function<void ()>())
-    ("dpad-as-button",    boost::bind(&Options::set_dpad_as_button, opts),    boost::function<void ()>())
-    ("dpad-only",         boost::bind(&Options::set_dpad_only, opts),         boost::function<void ()>())
-    ("force-feedback",    boost::bind(&Options::set_force_feedback, opts, _1))
-    ("mimic-xpad",        boost::bind(&Options::set_mimic_xpad, opts),        boost::function<void ()>())
-    ("mimic-xpad-wireless", boost::bind(&Options::set_mimic_xpad_wireless, opts), boost::function<void ()>())
+    ("device-name",       std::bind(&Options::set_device_name, opts, std::placeholders::_1))
+    ("device-usbid",      std::bind(&Options::set_device_usbid, opts, std::placeholders::_1))
+    ("mouse",             std::bind(&CommandLineParser::mouse, this), std::function<void ()>())
+    ("guitar",            std::bind(&Options::set_guitar, opts),            std::function<void ()>())
+    ("trigger-as-button", std::bind(&Options::set_trigger_as_button, opts), std::function<void ()>())
+    ("trigger-as-zaxis",  std::bind(&Options::set_trigger_as_zaxis, opts),  std::function<void ()>())
+    ("dpad-as-button",    std::bind(&Options::set_dpad_as_button, opts),    std::function<void ()>())
+    ("dpad-only",         std::bind(&Options::set_dpad_only, opts),         std::function<void ()>())
+    ("force-feedback",    std::bind(&Options::set_force_feedback, opts, std::placeholders::_1))
+    ("mimic-xpad",        std::bind(&Options::set_mimic_xpad, opts),        std::function<void ()>())
+    ("mimic-xpad-wireless", std::bind(&Options::set_mimic_xpad_wireless, opts), std::function<void ()>())
 
     ("chatpad",         &opts->chatpad)
     ("chatpad-no-init", &opts->chatpad_no_init)
@@ -391,62 +391,64 @@ CommandLineParser::init_ini(Options* opts)
     ("headset-debug",   &opts->headset_debug)
     ("headset-dump",    &opts->headset_dump)
     ("headset-play",    &opts->headset_play)
-    ("ui-clear",        boost::bind(&Options::set_ui_clear, opts), boost::function<void ()>())
+    ("ui-clear",        std::bind(&Options::set_ui_clear, opts), std::function<void ()>())
     ;
 
   m_ini.section("xboxdrv-daemon")
     ("detach",
-     boost::bind(&Options::set_daemon_detach, opts, true),
-     boost::bind(&Options::set_daemon_detach, opts, false))
-    ("dbus", boost::bind(&Options::set_dbus_mode, opts, _1))
+     std::bind(&Options::set_daemon_detach, opts, true),
+     std::bind(&Options::set_daemon_detach, opts, false))
+    ("dbus", std::bind(&Options::set_dbus_mode, opts, std::placeholders::_1))
     ("pid-file",      &opts->pid_file)
     ("on-connect",    &opts->on_connect)
     ("on-disconnect", &opts->on_disconnect)
     ;
 
-  m_ini.section("modifier",     boost::bind(&CommandLineParser::set_modifier,     this, _1, _2));
-  m_ini.section("ui-buttonmap", boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
-  m_ini.section("ui-axismap",   boost::bind(&CommandLineParser::set_ui_axismap,   this, _1, _2));
+  m_ini.section("modifier",     std::bind(&CommandLineParser::set_modifier,     this, std::placeholders::_1, std::placeholders::_2));
+  m_ini.section("ui-buttonmap", std::bind(static_cast<void (CommandLineParser::*)(const std::string& name, const std::string& value)>
+                                          (&CommandLineParser::set_ui_buttonmap), this, std::placeholders::_1, std::placeholders::_2));
+  m_ini.section("ui-axismap",   std::bind(static_cast<void (CommandLineParser::*)(const std::string& name, const std::string& value)>
+                                          (&CommandLineParser::set_ui_axismap), this, std::placeholders::_1, std::placeholders::_2));
 
-  m_ini.section("buttonmap", boost::bind(&CommandLineParser::set_buttonmap, this, _1, _2));
-  m_ini.section("axismap",   boost::bind(&CommandLineParser::set_axismap,   this, _1, _2));
+  m_ini.section("buttonmap", std::bind(&CommandLineParser::set_buttonmap, this, std::placeholders::_1, std::placeholders::_2));
+  m_ini.section("axismap",   std::bind(&CommandLineParser::set_axismap,   this, std::placeholders::_1, std::placeholders::_2));
 
-  m_ini.section("autofire",   boost::bind(&CommandLineParser::set_autofire, this, _1, _2));
-  m_ini.section("relative-axis",   boost::bind(&CommandLineParser::set_relative_axis, this, _1, _2));
-  m_ini.section("calibration",   boost::bind(&CommandLineParser::set_calibration, this, _1, _2));
-  m_ini.section("axis-sensitivity",   boost::bind(&CommandLineParser::set_axis_sensitivity, this, _1, _2));
-  m_ini.section("device-name", boost::bind(&CommandLineParser::set_device_name, this, _1, _2));
-  m_ini.section("device-usbid", boost::bind(&CommandLineParser::set_device_usbid, this, _1, _2));
+  m_ini.section("autofire",   std::bind(&CommandLineParser::set_autofire, this, std::placeholders::_1, std::placeholders::_2));
+  m_ini.section("relative-axis",   std::bind(&CommandLineParser::set_relative_axis, this, std::placeholders::_1, std::placeholders::_2));
+  m_ini.section("calibration",   std::bind(&CommandLineParser::set_calibration, this, std::placeholders::_1, std::placeholders::_2));
+  m_ini.section("axis-sensitivity",   std::bind(&CommandLineParser::set_axis_sensitivity, this, std::placeholders::_1, std::placeholders::_2));
+  m_ini.section("device-name", std::bind(&CommandLineParser::set_device_name, this, std::placeholders::_1, std::placeholders::_2));
+  m_ini.section("device-usbid", std::bind(&CommandLineParser::set_device_usbid, this, std::placeholders::_1, std::placeholders::_2));
 
   for(int controller = 0; controller <= 9; ++controller)
   {
     for(int config = 0; config <= 9; ++config)
     {
       m_ini.section((boost::format("controller%d/config%d/modifier") % controller % config).str(),
-                    boost::bind(&CommandLineParser::set_modifier_n, this, controller, config, _1, _2));
+                    std::bind(&CommandLineParser::set_modifier_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
       m_ini.section((boost::format("controller%d/config%d/ui-buttonmap") % controller % config).str(),
-                    boost::bind(&CommandLineParser::set_ui_buttonmap_n, this, controller, config, _1, _2));
+                    std::bind(&CommandLineParser::set_ui_buttonmap_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
       m_ini.section((boost::format("controller%d/config%d/ui-axismap") % controller % config).str(),
-                    boost::bind(&CommandLineParser::set_ui_axismap_n, this, controller, config, _1, _2));
+                    std::bind(&CommandLineParser::set_ui_axismap_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
 
       m_ini.section((boost::format("controller%d/config%d/buttonmap") % controller % config).str(),
-                    boost::bind(&CommandLineParser::set_buttonmap_n, this, controller, config, _1, _2));
+                    std::bind(&CommandLineParser::set_buttonmap_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
       m_ini.section((boost::format("controller%d/config%d/axismap") % controller % config).str(),
-                    boost::bind(&CommandLineParser::set_axismap_n,   this, controller, config, _1, _2));
+                    std::bind(&CommandLineParser::set_axismap_n,   this, controller, config, std::placeholders::_1, std::placeholders::_2));
 
       m_ini.section((boost::format("controller%d/config%d/autofire") % controller % config).str(),
-                    boost::bind(&CommandLineParser::set_autofire_n, this, controller, config, _1, _2));
+                    std::bind(&CommandLineParser::set_autofire_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
       m_ini.section((boost::format("controller%d/config%d/relative-axis") % controller % config).str(),
-                    boost::bind(&CommandLineParser::set_relative_axis_n, this, controller, config, _1, _2));
+                    std::bind(&CommandLineParser::set_relative_axis_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
       m_ini.section((boost::format("controller%d/config%d/calibration") % controller % config).str(),
-                    boost::bind(&CommandLineParser::set_calibration_n, this, controller, config, _1, _2));
+                    std::bind(&CommandLineParser::set_calibration_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
       m_ini.section((boost::format("controller%d/config%d/axis-sensitivity") % controller % config).str(),
-                    boost::bind(&CommandLineParser::set_axis_sensitivity_n, this, controller, config, _1, _2));
+                    std::bind(&CommandLineParser::set_axis_sensitivity_n, this, controller, config, std::placeholders::_1, std::placeholders::_2));
     }
   }
 
-  m_ini.section("evdev-absmap", boost::bind(&CommandLineParser::set_evdev_absmap, this, _1, _2));
-  m_ini.section("evdev-keymap", boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
+  m_ini.section("evdev-absmap", std::bind(&CommandLineParser::set_evdev_absmap, this, std::placeholders::_1, std::placeholders::_2));
+  m_ini.section("evdev-keymap", std::bind(&CommandLineParser::set_evdev_keymap, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void
@@ -705,15 +707,15 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
       break;
 
     case OPTION_MODIFIER:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_modifier, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(&CommandLineParser::set_modifier, this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_BUTTONMAP:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_buttonmap, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(&CommandLineParser::set_buttonmap, this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_AXISMAP:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_axismap, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(&CommandLineParser::set_axismap, this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_DEVICE_USBID:
@@ -721,7 +723,7 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
       break;
 
     case OPTION_DEVICE_USBIDS:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_device_usbid, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(&CommandLineParser::set_device_usbid, this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_DEVICE_NAME:
@@ -729,7 +731,7 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
       break;
 
     case OPTION_DEVICE_NAMES:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_device_name, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(&CommandLineParser::set_device_name, this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_NEXT_CONFIG:
@@ -757,11 +759,13 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
       break;
 
     case OPTION_UI_AXISMAP:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_axismap, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(static_cast<void (CommandLineParser::*)(const std::string& name, const std::string& value)>
+                                                        (&CommandLineParser::set_ui_axismap), this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_UI_BUTTONMAP:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_ui_buttonmap, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(static_cast<void (CommandLineParser::*)(const std::string& name, const std::string& value)>
+                                                        (&CommandLineParser::set_ui_buttonmap), this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_MOUSE:
@@ -789,11 +793,11 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
       break;
 
     case OPTION_EVDEV_ABSMAP:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_evdev_absmap, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(&CommandLineParser::set_evdev_absmap, this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_EVDEV_KEYMAP:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_evdev_keymap, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(&CommandLineParser::set_evdev_keymap, this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_ID:
@@ -852,19 +856,19 @@ CommandLineParser::apply_opt(ArgParser::ParsedOption const& opt, Options& opts)
       break;
 
     case OPTION_AUTOFIRE:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_autofire, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(&CommandLineParser::set_autofire, this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_CALIBRARIOTION:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_calibration, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(&CommandLineParser::set_calibration, this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_RELATIVE_AXIS:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_relative_axis, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(&CommandLineParser::set_relative_axis, this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_AXIS_SENSITIVITY:
-      process_name_value_string(opt.argument, boost::bind(&CommandLineParser::set_axis_sensitivity, this, _1, _2));
+      process_name_value_string(opt.argument, std::bind(&CommandLineParser::set_axis_sensitivity, this, std::placeholders::_1, std::placeholders::_2));
       break;
 
     case OPTION_FOUR_WAY_RESTRICTOR:

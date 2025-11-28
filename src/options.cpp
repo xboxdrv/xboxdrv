@@ -18,7 +18,7 @@
 
 #include "options.hpp"
 
-#include <boost/bind.hpp>
+#include <functional>
 #include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -32,7 +32,7 @@ Options::GenericUSBSpec
 Options::GenericUSBSpec::from_string(const std::string& str)
 {
   GenericUSBSpec spec;
-  process_name_value_string(str, boost::bind(&GenericUSBSpec::apply_pair, boost::ref(spec), _1, _2));
+  process_name_value_string(str, std::bind(&GenericUSBSpec::apply_pair, std::ref(spec), std::placeholders::_1, std::placeholders::_2));
   return spec;
 }
 
@@ -404,7 +404,7 @@ Options::add_match(const std::string& lhs, const std::string& rhs)
 void
 Options::set_match(const std::string& str)
 {
-  process_name_value_string(str, boost::bind(&Options::add_match, this, _1, _2));
+  process_name_value_string(str, std::bind(&Options::add_match, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void
@@ -412,7 +412,7 @@ Options::set_match_group(const std::string& str)
 {
   boost::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
 
-  process_name_value_string(str, boost::bind(&ControllerMatchRuleGroup::add_rule_from_string, group, _1, _2));
+  process_name_value_string(str, std::bind(&ControllerMatchRuleGroup::add_rule_from_string, group, std::placeholders::_1, std::placeholders::_2));
 
   get_controller_slot().add_match_rule(group);
 }
