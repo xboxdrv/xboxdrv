@@ -20,7 +20,6 @@
 
 #include <assert.h>
 #include <boost/format.hpp>
-#include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 #include <stdio.h>
 #include <sys/time.h>
@@ -28,7 +27,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <iostream>
+#include <sstream>
 
+#include "tokenizer.hpp"
 #include "raise_exception.hpp"
 
 int hexstr2int(const std::string& str)
@@ -47,48 +48,46 @@ int hexstr2int(const std::string& str)
     raise_exception(std::runtime_error, "couldn't convert '" << str << "' to int");
   }
 }
+template <typename T>
+T stream_cast(std::string const& str, const char* func_name)
+{
+  T value;
+  std::stringstream ss(str);
+
+  ss >> value;
+
+  if (ss.fail() || !ss.eof())
+  {
+    std::ostringstream out;
+    out << func_name << "(): couldn't convert '" << str << "' to ";
+
+    // Determine type name for error message (e.g., bool, int, float)
+    if (std::is_same<T, bool>::value) out << "bool";
+    else if (std::is_same<T, int>::value) out << "int";
+    else if (std::is_same<T, float>::value) out << "float";
+    else out << "unknown type";
+
+    throw std::runtime_error(out.str());
+  }
+
+  return value;
+}
 
 bool str2bool(std::string const& str)
 {
-  try
-  {
-    return boost::lexical_cast<bool>(str);
-  }
-  catch(boost::bad_lexical_cast const& err)
-  {
-    std::ostringstream out;
-    out << "str2bool(): couldn't convert '" << str << "' to bool";
-    throw std::runtime_error(out.str());
-  }
+  return stream_cast<bool>(str, "str2bool");
 }
 
 int str2int(std::string const& str)
 {
-  try
-  {
-    return boost::lexical_cast<int>(str);
-  }
-  catch(boost::bad_lexical_cast const& err)
-  {
-    std::ostringstream out;
-    out << "str2int(): couldn't convert '" << str << "' to int";
-    throw std::runtime_error(out.str());
-  }
+  return stream_cast<int>(str, "str2int");
 }
 
 float str2float(std::string const& str)
 {
-  try
-  {
-    return boost::lexical_cast<float>(str);
-  }
-  catch(boost::bad_lexical_cast const& err)
-  {
-    std::ostringstream out;
-    out << "str2float(): couldn't convert '" << str << "' to float";
-    throw std::runtime_error(out.str());
-  }
+  return stream_cast<float>(str, "str2float");
 }
+
 
 std::string raw2str(uint8_t* data, int len)
 {
@@ -132,10 +131,8 @@ void split_string_at(const std::string& str, char c, std::string* lhs, std::stri
 
 void process_name_value_string(const std::string& str, const std::function<void (const std::string&, const std::string&)>& func)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(",", "", boost::drop_empty_tokens));
-
-  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i)
+  auto const tokens = split(str, ",");
+  for(auto i = tokens.begin(); i != tokens.end(); ++i)
   {
     std::string lhs, rhs;
     split_string_at(*i, '=', &lhs, &rhs);

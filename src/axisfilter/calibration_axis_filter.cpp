@@ -18,23 +18,22 @@
 
 #include "axisfilter/calibration_axis_filter.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <sstream>
 
 #include "helper.hpp"
+#include "tokenizer.hpp"
 
 CalibrationAxisFilter*
 CalibrationAxisFilter::from_string(const std::string& str)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  auto const tokens = split_keep_empty(str, ":");
 
   int min    = 0;
   int center = 0;
   int max    = 0;
 
   int j = 0;
-  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+  for(auto i = tokens.begin(); i != tokens.end(); ++i, ++j)
   {
     switch(j)
     {

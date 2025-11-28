@@ -18,22 +18,20 @@
 
 #include "key_axis_event_handler.hpp"
 
-#include <boost/tokenizer.hpp>
-
 #include "evdev_helper.hpp"
 #include "helper.hpp"
+#include "tokenizer.hpp"
 #include "uinput.hpp"
 
 KeyAxisEventHandler*
 KeyAxisEventHandler::from_string(const std::string& str)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  auto const tokens = split_keep_empty(str, ":");
 
   std::unique_ptr<KeyAxisEventHandler> ev(new KeyAxisEventHandler);
 
   int j = 0;
-  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+  for(auto i = tokens.begin(); i != tokens.end(); ++i, ++j)
   {
     switch(j)
     {

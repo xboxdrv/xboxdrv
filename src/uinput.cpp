@@ -18,7 +18,6 @@
 
 #include "uinput.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <iostream>
 #include <math.h>
 #include <stdexcept>
@@ -28,6 +27,7 @@
 #include "ui_key_event_collector.hpp"
 #include "ui_rel_event_collector.hpp"
 
+#include "tokenizer.hpp"
 #include "helper.hpp"
 #include "log.hpp"
 #include "raise_exception.hpp"
@@ -43,11 +43,7 @@ UInput::parse_input_id(const std::string& str)
   usbid.product = 0;
   usbid.version = 0;
 
-  // split string at ':'
-  boost::tokenizer<boost::char_separator<char> >
-    tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  std::vector<std::string> args;
-  std::copy(tokens.begin(), tokens.end(), std::back_inserter(args));
+  auto const args = split_keep_empty(str, ":");
 
   if (args.size() == 2)
   { // VENDOR:PRODUCT
@@ -314,8 +310,8 @@ UInput::create_uinput_device(uint32_t device_id)
     }
 
     std::string dev_name = get_device_name(device_id);
-    boost::shared_ptr<LinuxUinput> dev(new LinuxUinput(device_type, dev_name, get_device_usbid(device_id)));
-    m_uinput_devs.insert(std::pair<int, boost::shared_ptr<LinuxUinput> >(device_id, dev));
+    std::shared_ptr<LinuxUinput> dev(new LinuxUinput(device_type, dev_name, get_device_usbid(device_id)));
+    m_uinput_devs.insert(std::pair<int, std::shared_ptr<LinuxUinput> >(device_id, dev));
 
     log_debug("created uinput device: " << device_id << " - '" << dev_name << "'");
 

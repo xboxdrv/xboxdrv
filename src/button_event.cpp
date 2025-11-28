@@ -18,13 +18,14 @@
 
 #include "button_event.hpp"
 
-#include <boost/tokenizer.hpp>
+#include <assert.h>
 #include <errno.h>
 #include <fstream>
 
 #include "evdev_helper.hpp"
 #include "log.hpp"
 #include "path.hpp"
+#include "tokenizer.hpp"
 #include "uinput.hpp"
 
 #include "buttonevent/abs_button_event_handler.hpp"

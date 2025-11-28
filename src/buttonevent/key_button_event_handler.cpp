@@ -18,11 +18,11 @@
 
 #include "buttonevent/key_button_event_handler.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <linux/input.h>
 
 #include "evdev_helper.hpp"
 #include "helper.hpp"
+#include "tokenizer.hpp"
 #include "uinput.hpp"
 
 KeyButtonEventHandler*
@@ -32,10 +32,9 @@ KeyButtonEventHandler::from_string(const std::string& str)
 
   std::unique_ptr<KeyButtonEventHandler> ev;
 
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  auto const tokens = split_keep_empty(str, ":");
   int idx = 0;
-  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++idx)
+  for(auto i = tokens.begin(); i != tokens.end(); ++i, ++idx)
   {
     switch(idx)
     {

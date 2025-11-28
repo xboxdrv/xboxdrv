@@ -18,8 +18,9 @@
 
 #include "button_filter.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <sstream>
+
+#include "tokenizer.hpp"
 
 #include "buttonfilter/autofire_button_filter.hpp"
 #include "buttonfilter/click_button_filter.hpp"

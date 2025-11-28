@@ -18,10 +18,11 @@
 
 #include "dpad_restrictor_modifier.hpp"
 
-#include <boost/tokenizer.hpp>
+#include <assert.h>
 #include <stdexcept>
 
 #include "raise_exception.hpp"
+#include "tokenizer.hpp"
 
 DpadRestrictorModifier*
 DpadRestrictorModifier::from_string(const std::vector<std::string>& args)

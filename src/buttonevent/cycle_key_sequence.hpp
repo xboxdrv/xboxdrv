@@ -19,14 +19,14 @@
 #ifndef HEADER_XBOXDRV_BUTTONEVENT_CYCLE_KEY_SEQUENCE_HPP
 #define HEADER_XBOXDRV_BUTTONEVENT_CYCLE_KEY_SEQUENCE_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <vector>
 
 #include "ui_event_sequence.hpp"
 
 class CycleKeySequence;
 
-typedef boost::shared_ptr<CycleKeySequence> CycleKeySequencePtr;
+typedef std::shared_ptr<CycleKeySequence> CycleKeySequencePtr;
 
 class CycleKeySequence
 {

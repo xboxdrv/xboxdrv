@@ -18,20 +18,19 @@
 
 #include "abs_axis_event_handler.hpp"
 
-#include <boost/tokenizer.hpp>
+#include <assert.h>
 
+#include "tokenizer.hpp"
 #include "evdev_helper.hpp"
 #include "uinput.hpp"
 
 AbsAxisEventHandler*
 AbsAxisEventHandler::from_string(const std::string& str)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-
+  auto const tokens = split_keep_empty(str, ":");
   int j = 0;
   UIEvent code = UIEvent::invalid();
-  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++j)
+  for(auto i = tokens.begin(); i != tokens.end(); ++i, ++j)
   {
     switch(j)
     {

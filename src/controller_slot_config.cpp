@@ -18,6 +18,7 @@
 
 #include "controller_slot_config.hpp"
 
+#include <assert.h>
 #include <functional>
 
 #include "raise_exception.hpp"
@@ -110,7 +111,7 @@ ControllerSlotConfig::create_modifier(const ControllerOptions& opts, std::vector
 {
   if (!opts.calibration_map.empty())
   {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
     for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.calibration_map.begin();
         i != opts.calibration_map.end();
@@ -124,7 +125,7 @@ ControllerSlotConfig::create_modifier(const ControllerOptions& opts, std::vector
 
   if (opts.deadzone)
   {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
     XboxAxis axes[] = { XBOX_AXIS_X1,
                         XBOX_AXIS_Y1,
@@ -145,7 +146,7 @@ ControllerSlotConfig::create_modifier(const ControllerOptions& opts, std::vector
 
   if (opts.deadzone_trigger)
   {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
     XboxAxis axes[] = { XBOX_AXIS_LT,
                         XBOX_AXIS_RT };
@@ -169,7 +170,7 @@ ControllerSlotConfig::create_modifier(const ControllerOptions& opts, std::vector
 
   if (!opts.sensitivity_map.empty())
   {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
     for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.sensitivity_map.begin();
         i != opts.sensitivity_map.end(); ++i)
@@ -188,7 +189,7 @@ ControllerSlotConfig::create_modifier(const ControllerOptions& opts, std::vector
 
   if (!opts.relative_axis_map.empty())
   {
-    boost::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
 
     for(std::map<XboxAxis, AxisFilterPtr>::const_iterator i = opts.relative_axis_map.begin();
         i != opts.relative_axis_map.end(); ++i)
@@ -206,7 +207,7 @@ ControllerSlotConfig::create_modifier(const ControllerOptions& opts, std::vector
 
   if (!opts.autofire_map.empty())
   {
-    boost::shared_ptr<ButtonmapModifier> buttonmap(new ButtonmapModifier);
+    std::shared_ptr<ButtonmapModifier> buttonmap(new ButtonmapModifier);
 
     for(std::map<XboxButton, ButtonFilterPtr>::const_iterator i = opts.autofire_map.begin();
         i != opts.autofire_map.end(); ++i)

@@ -18,13 +18,13 @@
 
 #include "axis_event.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <math.h>
 
 #include "evdev_helper.hpp"
-#include "log.hpp"
 #include "helper.hpp"
+#include "log.hpp"
 #include "raise_exception.hpp"
+#include "tokenizer.hpp"
 #include "uinput.hpp"
 
 #include "axisevent/abs_axis_event_handler.hpp"

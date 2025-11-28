@@ -37,6 +37,7 @@
 #include "evdev_helper.hpp"
 #include "helper.hpp"
 #include "raise_exception.hpp"
+#include "tokenizer.hpp"
 #include "uinput_message_processor.hpp"
 #include "usb_gsource.hpp"
 #include "usb_helper.hpp"
@@ -146,7 +147,7 @@ bool xpad_device_sorter(const XPadDevice& lhs, const XPadDevice& rhs)
 void
 Xboxdrv::run_list_supported_devices_xpad()
 {
-  boost::scoped_array<XPadDevice> sorted_devices(new XPadDevice[xpad_devices_count]);
+  std::unique_ptr<XPadDevice[]> sorted_devices(new XPadDevice[xpad_devices_count]);
   memcpy(sorted_devices.get(), xpad_devices, sizeof(XPadDevice) * xpad_devices_count);
 
   std::sort(sorted_devices.get(), sorted_devices.get() + xpad_devices_count, xpad_device_sorter);
@@ -268,21 +269,21 @@ Xboxdrv::run_list_enums(uint32_t enums)
   if (enums & Options::LIST_ABS)
   {
     wrap.println("EV_ABS:");
-    wrap.para("  ", boost::algorithm::join(evdev_abs_names.get_names(), ", "));
+    wrap.para("  ", join(evdev_abs_names.get_names(), ", "));
     wrap.newline();
   }
 
   if (enums & Options::LIST_REL)
   {
     wrap.println("EV_REL:");
-    wrap.para("  ", boost::algorithm::join(evdev_rel_names.get_names(), ", "));
+    wrap.para("  ", join(evdev_rel_names.get_names(), ", "));
     wrap.newline();
   }
 
   if (enums & Options::LIST_KEY)
   {
     wrap.println("EV_KEY:");
-    wrap.para("  ", boost::algorithm::join(evdev_key_names.get_names(), ", "));
+    wrap.para("  ", join(evdev_key_names.get_names(), ", "));
     wrap.newline();
   }
 
@@ -295,7 +296,7 @@ Xboxdrv::run_list_enums(uint32_t enums)
       lst.push_back(i->second);
     }
     wrap.println("X11Keysym:");
-    wrap.para("  ", boost::algorithm::join(lst, ", "));
+    wrap.para("  ", join(lst, ", "));
     wrap.newline();
   }
 
@@ -307,7 +308,7 @@ Xboxdrv::run_list_enums(uint32_t enums)
       lst.push_back(axis2string(static_cast<XboxAxis>(i)));
     }
     wrap.println("XboxAxis:");
-    wrap.para("  ", boost::algorithm::join(lst, ", "));
+    wrap.para("  ", join(lst, ", "));
     wrap.newline();
   }
 
@@ -319,7 +320,7 @@ Xboxdrv::run_list_enums(uint32_t enums)
       lst.push_back(btn2string(static_cast<XboxButton>(i)));
     }
     wrap.println("XboxButton:");
-    wrap.para("  ", boost::algorithm::join(lst, ", "));
+    wrap.para("  ", join(lst, ", "));
     wrap.newline();
   }
 }

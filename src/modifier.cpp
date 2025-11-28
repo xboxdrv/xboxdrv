@@ -18,7 +18,7 @@
 
 #include "modifier.hpp"
 
-#include <boost/tokenizer.hpp>
+#include "tokenizer.hpp"
 
 #include "modifier/dpad_restrictor_modifier.hpp"
 #include "modifier/dpad_rotation_modifier.hpp"
@@ -42,10 +42,7 @@ Modifier::from_string(const std::string& name, const std::string& value)
   }
   else
   {
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-    tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-
-    std::vector<std::string> args(tokens.begin(), tokens.end());
+    auto const args = split_keep_empty(value, ":");
 
     if (name == "dpad-rotation" || name == "dpad-rotate")
     {

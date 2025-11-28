@@ -18,10 +18,9 @@
 
 #include "buttonevent/rel_button_event_handler.hpp"
 
-#include <boost/tokenizer.hpp>
-
 #include "evdev_helper.hpp"
 #include "helper.hpp"
+#include "tokenizer.hpp"
 #include "uinput.hpp"
 
 RelButtonEventHandler*
@@ -30,10 +29,9 @@ RelButtonEventHandler::from_string(const std::string& str)
   std::unique_ptr<RelButtonEventHandler> ev;
 
   int idx = 0;
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  auto const tokens = split_keep_empty(str, ":");
 
-  for(tokenizer::iterator i = tokens.begin(); i != tokens.end(); ++i, ++idx)
+  for(auto i = tokens.begin(); i != tokens.end(); ++i, ++idx)
   {
     switch(idx)
     {

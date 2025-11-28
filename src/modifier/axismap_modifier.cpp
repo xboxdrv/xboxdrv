@@ -18,11 +18,11 @@
 
 #include "axismap_modifier.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <sstream>
 
 #include "axisfilter/invert_axis_filter.hpp"
 #include "helper.hpp"
+#include "tokenizer.hpp"
 
 AxisMapping
 AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
@@ -40,10 +40,9 @@ AxisMapping::from_string(const std::string& lhs_, const std::string& rhs)
     lhs = lhs.substr(1);
   }
 
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(lhs, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  auto const tokens = split_keep_empty(lhs, "^");
   int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  for(auto t = tokens.begin(); t != tokens.end(); ++t, ++idx)
   {
     switch(idx)
     {

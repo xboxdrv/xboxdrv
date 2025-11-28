@@ -22,7 +22,6 @@
 #include <iostream>
 #include <functional>
 #include <boost/format.hpp>
-#include <boost/tokenizer.hpp>
 
 #include "evdev_helper.hpp"
 #include "helper.hpp"
@@ -31,6 +30,7 @@
 #include "options.hpp"
 #include "path.hpp"
 #include "raise_exception.hpp"
+#include "tokenizer.hpp"
 #include "ui_event.hpp"
 
 #include "axisfilter/relative_axis_filter.hpp"
@@ -1087,10 +1087,9 @@ CommandLineParser::set_ui_buttonmap(ButtonMap& btn_map, const std::string& name,
   XboxButton btn   = XBOX_BTN_UNKNOWN;
   std::vector<ButtonFilterPtr> filters;
 
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  auto const tokens = split_keep_empty(name, "^");
   int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  for(auto t = tokens.begin(); t != tokens.end(); ++t, ++idx)
   {
     switch(idx)
     {
@@ -1151,10 +1150,9 @@ CommandLineParser::set_ui_axismap(AxisMap& axis_map, const std::string& name, co
   XboxAxis   axis  = XBOX_AXIS_UNKNOWN;
   std::vector<AxisFilterPtr> filters;
 
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(name, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  auto const tokens = split_keep_empty(name, "^");
   int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  for(auto t = tokens.begin(); t != tokens.end(); ++t, ++idx)
   {
     switch(idx)
     {
@@ -1260,10 +1258,7 @@ CommandLineParser::set_autofire(const std::string& name, const std::string& valu
 void
 CommandLineParser::set_calibration(const std::string& name, const std::string& value)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  std::vector<std::string> args(tokens.begin(), tokens.end());
-
+  auto const args = split_keep_empty(value, ":");
   if (args.size() != 3)
   {
     throw std::runtime_error("calibration requires MIN:CENTER:MAX as argument");

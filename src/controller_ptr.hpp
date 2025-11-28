@@ -19,11 +19,11 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_PTR_HPP
 #define HEADER_XBOXDRV_CONTROLLER_PTR_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Controller;
 
-typedef boost::shared_ptr<Controller> ControllerPtr;
+typedef std::shared_ptr<Controller> ControllerPtr;
 
 #endif
 

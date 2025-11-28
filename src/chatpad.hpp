@@ -153,8 +153,6 @@ private:
 
 
   bool m_quit_thread;
-  //std::unique_ptr<boost::thread> m_read_thread;
-  //std::unique_ptr<boost::thread> m_keep_alive_thread;
   std::unique_ptr<LinuxUinput> m_uinput;
   int m_keymap[256];
   bool m_state[256];

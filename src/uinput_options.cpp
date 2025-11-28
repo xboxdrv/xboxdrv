@@ -18,8 +18,9 @@
 
 #include "uinput_options.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <linux/input.h>
+
+#include "tokenizer.hpp"
 
 UInputOptions::UInputOptions() :
   m_btn_map(),

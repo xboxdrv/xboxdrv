@@ -18,12 +18,12 @@
 
 #include "buttonevent/cycle_key_button_event_handler.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <stdexcept>
 
 #include "helper.hpp"
-#include "ui_event_sequence.hpp"
 #include "raise_exception.hpp"
+#include "tokenizer.hpp"
+#include "ui_event_sequence.hpp"
 
 std::map<std::string, CycleKeySequencePtr> CycleKeyButtonEventHandler::s_lookup_table;
 
@@ -61,10 +61,7 @@ CycleKeyButtonEventHandler::from_string(const std::string& value, bool wrap_arou
 CycleKeyButtonEventHandler*
 CycleKeyButtonEventHandler::from_string_named(const std::string& value, bool wrap_around)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  std::vector<std::string> args(tokens.begin(), tokens.end());
-
+  std::vector<std::string> const args = split_keep_empty(value, ":");
   if (args.size() < 2)
   {
     raise_exception(std::runtime_error, "need at least two arguments");
@@ -94,9 +91,7 @@ CycleKeyButtonEventHandler::from_string_named(const std::string& value, bool wra
 CycleKeyButtonEventHandler*
 CycleKeyButtonEventHandler::from_string_ref(const std::string& value)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(value, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  std::vector<std::string> args(tokens.begin(), tokens.end());
+  std::vector<std::string> const args = split_keep_empty(value, ":");
 
   if (args.size() > 0)
   {

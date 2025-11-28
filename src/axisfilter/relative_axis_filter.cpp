@@ -18,20 +18,20 @@
 
 #include "axisfilter/relative_axis_filter.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <sstream>
 
 #include "helper.hpp"
+#include "tokenizer.hpp"
+
 
 RelativeAxisFilter*
 RelativeAxisFilter::from_string(const std::string& str)
 {
   int speed = 20000;
 
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
+  auto const tokens = split_keep_empty(str, ":");
   int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  for(auto t = tokens.begin(); t != tokens.end(); ++t, ++idx)
   {
     switch(idx)
     {

@@ -18,24 +18,20 @@
 
 #include "axisevent/rel_repeat_axis_event_handler.hpp"
 
-#include <boost/tokenizer.hpp>
+#include <assert.h>
 #include <math.h>
 #include <sstream>
 
 #include "evdev_helper.hpp"
 #include "helper.hpp"
 #include "raise_exception.hpp"
+#include "tokenizer.hpp"
 #include "uinput.hpp"
 
 RelRepeatAxisEventHandler*
 RelRepeatAxisEventHandler::from_string(const std::string& str)
 {
-  // split string at ':'
-  boost::tokenizer<boost::char_separator<char> >
-    tokens(str, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  std::vector<std::string> args;
-  std::copy(tokens.begin(), tokens.end(), std::back_inserter(args));
-
+  std::vector<std::string> const args = split_keep_empty(str, ":");
   if (args.size() == 3)
   {
     return new RelRepeatAxisEventHandler(str2rel_event(args[0]),

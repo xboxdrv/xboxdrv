@@ -18,6 +18,8 @@
 
 #include "buttonfilter/click_button_filter.hpp"
 
+#include <assert.h>
+
 ClickButtonFilter::ClickButtonFilter(Mode mode) :
   m_mode(mode),
   m_last_value(false)

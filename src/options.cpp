@@ -20,10 +20,10 @@
 
 #include <functional>
 #include <boost/format.hpp>
-#include <boost/tokenizer.hpp>
 
 #include "helper.hpp"
 #include "raise_exception.hpp"
+#include "tokenizer.hpp"
 #include "uinput.hpp"
 
 Options* g_options;
@@ -410,7 +410,7 @@ Options::set_match(const std::string& str)
 void
 Options::set_match_group(const std::string& str)
 {
-  boost::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
+  std::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
 
   process_name_value_string(str, std::bind(&ControllerMatchRuleGroup::add_rule_from_string, group, std::placeholders::_1, std::placeholders::_2));
 

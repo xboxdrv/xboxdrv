@@ -18,8 +18,10 @@
 
 #include "buttonmap_modifier.hpp"
 
-#include <boost/tokenizer.hpp>
 #include <sstream>
+
+#include "tokenizer.hpp"
+
 
 ButtonMapping
 ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
@@ -29,10 +31,9 @@ ButtonMapping::from_string(const std::string& lhs, const std::string& rhs)
   mapping.lhs = XBOX_BTN_UNKNOWN;
   mapping.rhs = XBOX_BTN_UNKNOWN;
 
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(lhs, boost::char_separator<char>("^", "", boost::keep_empty_tokens));
+  auto const tokens = split_keep_empty(lhs, "^");
   int idx = 0;
-  for(tokenizer::iterator t = tokens.begin(); t != tokens.end(); ++t, ++idx)
+  for(auto t = tokens.begin(); t != tokens.end(); ++t, ++idx)
   {
     switch(idx)
     {

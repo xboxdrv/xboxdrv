@@ -19,8 +19,8 @@
 #include "controller_match_rule.hpp"
 
 #include <assert.h>
-#include <boost/tokenizer.hpp>
 
+#include "tokenizer.hpp"
 #include "raise_exception.hpp"
 
 class ControllerMatchRuleProperty : public ControllerMatchRule
@@ -122,9 +122,7 @@ ControllerMatchRulePtr
 ControllerMatchRule::from_string(const std::string& lhs,
                                  const std::string& rhs)
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  tokenizer tokens(rhs, boost::char_separator<char>(":", "", boost::keep_empty_tokens));
-  std::vector<std::string> args(tokens.begin(), tokens.end());
+  auto const args = split_keep_empty(rhs, ":");
 
   if (lhs == "usbid")
   {
@@ -134,7 +132,7 @@ ControllerMatchRule::from_string(const std::string& lhs,
     }
     else
     {
-      boost::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
+      std::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
 
       group->add_rule(ControllerMatchRulePtr(new ControllerMatchRuleProperty("ID_VENDOR_ID", args[0])));
       group->add_rule(ControllerMatchRulePtr(new ControllerMatchRuleProperty("ID_MODEL_ID", args[1])));
@@ -183,7 +181,7 @@ ControllerMatchRule::from_string(const std::string& lhs,
     }
     else
     {
-      boost::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
+      std::shared_ptr<ControllerMatchRuleGroup> group(new ControllerMatchRuleGroup);
 
       group->add_rule(ControllerMatchRulePtr(new ControllerMatchRuleProperty("BUSNUM", args[0])));
       group->add_rule(ControllerMatchRulePtr(new ControllerMatchRuleProperty("DEVNUM", args[1])));

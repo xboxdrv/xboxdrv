@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_XBOXDRV_THREAD_HPP
 #define HEADER_XBOXDRV_XBOXDRV_THREAD_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <glib.h>
 
 #include "controller_slot_config.hpp"
@@ -30,7 +30,7 @@ class Options;
 class MessageProcessor;
 class ControllerThread;
 
-typedef boost::shared_ptr<ControllerThread> ControllerThreadPtr;
+typedef std::shared_ptr<ControllerThread> ControllerThreadPtr;
 
 /** ControllerThread handles a single Controller, reads it messages
     and passes it to the MessageProcessor */
