@@ -92,7 +92,7 @@ else:
                 slot.SetLed(options.led)
 
             if options.rumble:
-                m = re.match('^(\d+):(\d+)$', options.rumble)
+                m = re.match(r'^(\d+):(\d+)$', options.rumble)
                 if not m:
                     print("Error: invalid argument to --rumble")
                     exit()
