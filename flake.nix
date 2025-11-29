@@ -86,8 +86,9 @@
               libusb1
               libxkbcommon
               pcre
-              python3
-              python3Packages.dbus-python
+              (pkgs.python3.withPackages (p: [
+                p.dbus-python
+              ]))
               util-linux
               xorg.libX11
               xorg.libXdmcp
