@@ -1,3 +1,7 @@
+<div style="background-color: #f8d7da; color: #721c24; padding: 15px; border: 1px solid #f5c6cb; border-radius: 4px; margin-bottom: 15px;">
+  <strong>Warning:</strong> xboxdrv mostly obsolete, use the kernel driver Steam Input instead.
+</div>
+
 Xbox/Xbox360 USB Gamepad Driver for Userspace
 =============================================
 
@@ -18,12 +22,7 @@ works for you there is no need to try this driver.
 
 Newest version of the driver can be found at:
 
- * http://pingus.seul.org/~grumbel/xboxdrv/
-
-The development version can be optained via:
-
- * git clone http://pingus.seul.org/~grumbel/xboxdrv.git
-
+ * https://github.com/xboxdrv/xboxdrv
 
 Compilation
 -----------
@@ -34,8 +33,7 @@ Required libraries and tools:
  * libusb-1.0
  * pkg-config
  * libudev
- * boost
- * scons
+ * cmake
  * uinput (userspace input kernel module)
  * git (only to download the development version)
  * X11
@@ -44,29 +42,15 @@ Required libraries and tools:
 
 Once everything installed, you can compile by typing:
 
-    scons
-
-On Ubuntu 10.10 you can install all the required libraries via:
-
-    sudo apt-get install \
-     g++ \
-     libboost1.42-dev \
-     scons \
-     pkg-config \
-     libusb-1.0-0-dev \
-     git-core \
-     libx11-dev \
-     libudev-dev \
-     x11proto-core-dev \
-     libdbus-glib-1-dev
+    mkdir build
+    cd build
+    cmake ..
+    cmake --build .
 
 To load the uinput kernel module automatically on boot add it
 /etc/modules, to load it manually type:
 
     sudo modprobe uinput
-
-On other distributions exact install instructions might be
-slightly different.
 
 
 Installation
@@ -74,11 +58,11 @@ Installation
 
 Once the compilation process is complete you can install xboxdrv with:
 
-    make install
+    cmake --install .
 
 You can also change the install PREFIX and DESTDIR as usual with:
 
-    make install PREFIX=/usr DESTDIR=/tmp
+    cmake -DCMAKE_INSTALL_PREFIX=/path/to/my/install/location ..
 
 Note that there is no need to install xboxdrv, you can run it directly
 from the source directory if you prefer.
