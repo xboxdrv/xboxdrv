@@ -1,6 +1,5 @@
-<div style="background-color: #f8d7da; color: #721c24; padding: 15px; border: 1px solid #f5c6cb; border-radius: 4px; margin-bottom: 15px;">
-  <strong>Warning:</strong> xboxdrv mostly obsolete, use the kernel driver Steam Input instead.
-</div>
+> [!WARNING]
+> **xboxdrv is mostly obsolete — use the kernel driver / Steam Input instead.**
 
 Xbox/Xbox360 USB Gamepad Driver for Userspace
 =============================================
