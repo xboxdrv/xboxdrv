@@ -33,10 +33,9 @@
               glib
               libusb1
               xorg.libX11
-            ];
-
-            propagatedBuildInputs = with pkgs; [
-              python3Packages.dbus-python
+              (pkgs.python3.withPackages (p: [
+                p.dbus-python
+              ]))
             ];
           };
         };
