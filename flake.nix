@@ -22,13 +22,10 @@
 
             enableParallelBuilding = true;
 
-            installPhase = ''
-              make install PREFIX=$out
-            '';
-
             nativeBuildInputs = with pkgs; [
               pkg-config
-              scons
+              cmake
+              python3
             ];
 
             buildInputs = with pkgs; [

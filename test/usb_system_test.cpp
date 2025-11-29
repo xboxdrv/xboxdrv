@@ -19,6 +19,7 @@
 #include <libusb.h>
 #include <glib.h>
 #include <stdexcept>
+#include <assert.h>
 
 #include "log.hpp"
 #include "raise_exception.hpp"

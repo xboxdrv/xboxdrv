@@ -71,7 +71,7 @@ UInputConfig::send(XboxGenericMsg& msg)
       break;
 
     default:
-      assert(!"never reached");
+      __builtin_unreachable();
   }
 
   m_uinput.sync();

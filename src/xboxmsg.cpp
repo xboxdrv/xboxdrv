@@ -77,7 +77,7 @@ std::string gamepadtype_to_string(const GamepadType& type)
       return "generic-usb";
 
     default:
-      assert(!"Unknown gamepad type supplied");
+      __builtin_unreachable();
   }
 }
 
@@ -99,7 +99,7 @@ std::string gamepadtype_to_macro_string(const GamepadType& type)
     case GAMEPAD_PLAYSTATION3_USB: return "GAMEPAD_PLAYSTATION3_USB";
     case GAMEPAD_GENERIC_USB: return "GAMEPAD_GENERIC_USB";
     default:
-      assert(!"Unknown gamepad type supplied");
+      __builtin_unreachable();
   }
 }
 
@@ -1394,7 +1394,7 @@ int get_axis_min(XboxAxis axis)
     case XBOX_AXIS_BLACK: return 0;
     case XBOX_AXIS_WHITE: return 0;
 
-    default: assert(!"never reached");
+    default: __builtin_unreachable();
   }
 }
 
@@ -1422,9 +1422,8 @@ int get_axis_max(XboxAxis axis)
     case XBOX_AXIS_Y:     return 255;
     case XBOX_AXIS_BLACK: return 255;
     case XBOX_AXIS_WHITE: return 255;
-
-    default: assert(!"never reached");
   }
+  __builtin_unreachable();
 }
 
 /* EOF */

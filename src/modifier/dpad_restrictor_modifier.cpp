@@ -98,8 +98,8 @@ DpadRestrictorModifier::str() const
     case kRestrictFourWay: return "dpad-restrictor:four-way";
     case kRestrictXAxis:   return "dpad-restrictor:x-axis";
     case kRestrictYAxis:   return "dpad-restrictor:y-axis";
-    default: assert(!"never reached");
   }
+  __builtin_unreachable();
 }
 
 /* EOF */

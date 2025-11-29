@@ -132,8 +132,8 @@ ButtonEvent::from_string(const std::string& str, const std::string& directory)
       case EV_REL: return ButtonEvent::create(RelButtonEventHandler::from_string(str));
       case EV_ABS: return ButtonEvent::create(AbsButtonEventHandler::from_string(str));
       case     -1: return ButtonEvent::invalid(); // void
-      default: assert(!"unknown type");
     }
+    __builtin_unreachable();
   }
 }
 

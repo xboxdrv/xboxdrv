@@ -366,8 +366,7 @@ Chatpad::on_timeout()
       return false;
 
     default:
-      assert(!"invalid state");
-      break;
+      __builtin_unreachable();
   }
 }
 
@@ -606,7 +605,7 @@ Chatpad::send_init()
       }
       else
       {
-        assert(!"never reached");
+        __builtin_unreachable();
       }
 
       ret = libusb_control_transfer(m_handle, 0x40, 0xa1, 0x0000, 0xe416, buf, 2, 0); // (send 2 bytes, data must be 0x09 0x00)

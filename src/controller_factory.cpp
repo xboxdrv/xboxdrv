@@ -82,10 +82,8 @@ ControllerFactory::create(const XPadDevice& dev_type, libusb_device* dev, const 
         return ControllerPtr(new GenericUSBController(dev, spec.m_interface, spec.m_endpoint,
                                                       opts.detach_kernel_driver));
       }
-
-    default:
-      assert(!"unknown gamepad type");
   }
+  __builtin_unreachable();
 }
 
 std::vector<ControllerPtr>

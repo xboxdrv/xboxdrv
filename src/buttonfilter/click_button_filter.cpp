@@ -60,11 +60,8 @@ ClickButtonFilter::filter(bool value)
       case kBoth:
         return true;
         break;
-
-      default:
-        assert(!"never reached");
-        break;
     }
+    __builtin_unreachable();
   }
   else
   {
@@ -85,11 +82,9 @@ ClickButtonFilter::str() const
 
     case kBoth:
       return "both";
-
-    default:
-      assert(!"never reached");
-      break;
   }
+
+  __builtin_unreachable();
 }
 
 /* EOF */

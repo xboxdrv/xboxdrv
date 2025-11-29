@@ -254,8 +254,7 @@ MacroButtonEventHandler::update(UInput& uinput, int msec_delta)
             break;
 
           default:
-            assert(!"never reached");
-            break;
+            __builtin_unreachable();
         }
 
         m_event_counter += 1;

@@ -27,7 +27,7 @@ AbsButtonEventHandler*
 AbsButtonEventHandler::from_string(const std::string& str)
 {
   // FIXME: Need magic to detect min/max of the axis
-  assert(!"not implemented");
+  __builtin_unreachable();
 }
 
 AbsButtonEventHandler::AbsButtonEventHandler(int code) :

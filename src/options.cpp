@@ -129,7 +129,7 @@ Options::get_controller_slot() const
   ControllerSlots::const_iterator it = controller_slots.find(controller_slot);
   if (it == controller_slots.end())
   {
-    assert(!"shouldn't happen");
+    __builtin_unreachable();
   }
   else
   {
@@ -149,14 +149,14 @@ Options::get_controller_options() const
   ControllerSlots::const_iterator it = controller_slots.find(controller_slot);
   if (it == controller_slots.end())
   {
-    assert(!"shouldn't happen");
+    __builtin_unreachable();
   }
   else
   {
     ControllerSlotOptions::Options::const_iterator cfg = it->second.get_options().find(config_slot);
     if (cfg == it->second.get_options().end())
     {
-      assert(!"shouldn't happen either");
+      __builtin_unreachable();
     }
     else
     {

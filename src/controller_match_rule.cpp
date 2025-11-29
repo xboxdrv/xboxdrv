@@ -110,11 +110,8 @@ ControllerMatchRule::match(udev_device* device) const
     case kMatchEvdevPath:
       assert(!"not implemented");
       return false;
-
-    default:
-      assert(!"never reached");
-      return false;
   }
+  __builtin_unreachable();
 #endif
 }
 

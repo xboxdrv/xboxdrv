@@ -101,7 +101,7 @@ AxisEvent::from_string(const std::string& str)
         break;
 
       default:
-        assert(!"should never be reached");
+        __builtin_unreachable();
     }
   }
 
