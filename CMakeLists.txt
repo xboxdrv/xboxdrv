@@ -91,6 +91,14 @@ function(build_dependencies)
 endfunction()
 build_dependencies()
 
+set(_xboxdrv_symbols_generated
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/symbols/init_key.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/symbols/init_abs.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/symbols/init_rel.cpp)
+
+set_source_files_properties(${_xboxdrv_symbols_generated} PROPERTIES
+  COMPILE_OPTIONS "-Wno-error=disabled-optimization;-fno-var-tracking-assignments")
+
 file(GLOB XBOXDRV_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/*.cpp
   src/axisevent/*.cpp
