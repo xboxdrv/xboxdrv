@@ -177,12 +177,12 @@ architecture, daemon + hotplug concept.
 
 ### Phase 1 — Symbols
 
-- [ ] Map remaining `KeyName` / `AbsName` / `RelName` / `Environment` uses.
-- [ ] Replace with a small static table or descriptor-local string ids.
-- [ ] Keep the public evdev/X11 name language (`evdev_helper`) working.
-- [ ] Delete YAML, Ruby generators, and generated `init_*.cpp`.
-- [ ] Fix the Wiimote nunchuk accel copy-paste while touching that file.
-- [ ] Small test that important names still resolve.
+- [x] Map remaining `KeyName` / `AbsName` / `RelName` / `Environment` uses.
+- [x] Replace with `SymbolTable<std::string>` and short config-facing names.
+- [x] Keep the public evdev/X11 name language (`evdev_helper`) working.
+- [x] Delete `src/symbols/` (YAML, Ruby generators, generated `init_*.cpp`).
+- [x] Fix the Wiimote nunchuk accel copy-paste.
+- [ ] Small test that important names still resolve (follow-up).
 
 ### Phase 2 — Chatpad and dead weight
 
