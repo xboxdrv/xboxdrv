@@ -19,31 +19,29 @@
 #ifndef HEADER_XBOXDRV_CONTROLLER_MESSAGE_DESCRIPTOR_HPP
 #define HEADER_XBOXDRV_CONTROLLER_MESSAGE_DESCRIPTOR_HPP
 
-#include <map>
 #include <string>
 
 #include "symbol_table.hpp"
-#include "symbols/name.hpp"
 
 namespace xboxdrv {
 
 class ControllerMessageDescriptor
 {
 private:
-  SymbolTable<AbsName> m_abs;
-  SymbolTable<KeyName> m_key;
-  SymbolTable<RelName> m_rel;
+  SymbolTable<std::string> m_abs;
+  SymbolTable<std::string> m_key;
+  SymbolTable<std::string> m_rel;
 
 public:
   ControllerMessageDescriptor();
 
-  SymbolTable<AbsName>& abs() { return m_abs; }
-  SymbolTable<KeyName>& key() { return m_key; }
-  SymbolTable<RelName>& rel() { return m_rel; }
+  SymbolTable<std::string>& abs() { return m_abs; }
+  SymbolTable<std::string>& key() { return m_key; }
+  SymbolTable<std::string>& rel() { return m_rel; }
 
-  const SymbolTable<AbsName>& abs() const { return m_abs; }
-  const SymbolTable<KeyName>& key() const { return m_key; }
-  const SymbolTable<RelName>& rel() const { return m_rel; }
+  const SymbolTable<std::string>& abs() const { return m_abs; }
+  const SymbolTable<std::string>& key() const { return m_key; }
+  const SymbolTable<std::string>& rel() const { return m_rel; }
 
   int get_key_count() const { return static_cast<int>(m_key.size()); }
   int get_abs_count() const { return static_cast<int>(m_abs.size()); }

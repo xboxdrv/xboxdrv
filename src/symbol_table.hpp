@@ -90,6 +90,12 @@ public:
     return m_name2int.find(name) != m_name2int.end();
   }
 
+  /** Register an alternate name for an existing id (does not grow the table). */
+  void alias(const T& name, int symbol)
+  {
+    m_name2int[name] = symbol;
+  }
+
   int size() const { return static_cast<int>(m_int2name.size()); }
 };
 
