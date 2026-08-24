@@ -16,11 +16,9 @@
 
     strutcpp.url = "github:grumbel/strutcpp";
     strutcpp.inputs.nixpkgs.follows = "nixpkgs";
-    strutcpp.inputs.tinycmmc.follows = "tinycmmc";
 
     logmich.url = "github:logmich/logmich";
     logmich.inputs.nixpkgs.follows = "nixpkgs";
-    logmich.inputs.tinycmmc.follows = "tinycmmc";
 
     uinpp.url = "github:grumbel/uinpp";
     uinpp.inputs.nixpkgs.follows = "nixpkgs";
@@ -89,9 +87,9 @@
                 p.dbus-python
               ]))
               util-linux
-              xorg.libX11
-              xorg.libXdmcp
-              xorg.libXtst
+              libx11
+              libxdmcp
+              libxtst
             ] ++ [
               argpp.packages.${system}.default
               logmich.packages.${system}.default
