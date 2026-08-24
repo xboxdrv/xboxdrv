@@ -19,7 +19,7 @@
 #include "controller/xbox360_wireless_controller.hpp"
 
 #include <sstream>
-#include <fmt/format.h>
+#include <format>
 
 #include <unsebu/usb_helper.hpp>
 
@@ -121,7 +121,7 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
 
       if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
       { // Initial Announc Message
-        m_serial = fmt::format("{:2x}:{:2x}:{:2x}:{:2x}:{:2x}:{:2x}:{:2x}",
+        m_serial = std::format("{:2x}:{:2x}:{:2x}:{:2x}:{:2x}:{:2x}:{:2x}",
                                int(data[7]),
                                int(data[8]),
                                int(data[9]),

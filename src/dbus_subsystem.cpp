@@ -18,7 +18,7 @@
 
 #include "dbus_subsystem.hpp"
 
-#include <fmt/format.h>
+#include <format>
 #include <dbus/dbus-glib-lowlevel.h>
 //#include <dbus/dbus-glib-binding.h>
 #include <dbus/dbus.h>
@@ -99,7 +99,7 @@ DBusSubsystem::register_controller_slots(std::vector<ControllerSlotPtr> const& s
     XboxdrvGController* controller = xboxdrv_g_controller_new(i->get());
     dbus_g_object_type_install_info(XBOXDRV_TYPE_G_CONTROLLER, &dbus_glib_xboxdrv_controller_object_info);
     dbus_g_connection_register_g_object(m_connection,
-                                        fmt::format("/org/seul/Xboxdrv/ControllerSlots/{}", (i - slots.begin())).c_str(),
+                                        std::format("/org/seul/Xboxdrv/ControllerSlots/{}", (i - slots.begin())).c_str(),
                                         G_OBJECT(controller));
   }
 }

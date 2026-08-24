@@ -24,7 +24,7 @@
 #include <libusb.h>
 #include <stdexcept>
 #include <iostream>
-#include <fmt/format.h>
+#include <format>
 #include <functional>
 
 #include <uinpp/multi_device.hpp>
@@ -204,7 +204,7 @@ void find_controller(libusb_device** dev, XPadDevice& dev_type, Options const& o
       if (!find_controller_by_id(opts.controller_id, opts.vendor_id, opts.product_id, dev))
       {
         raise_exception(std::runtime_error, "couldn't find device with "
-                        << fmt::format("{:04x}:{:04x}", opts.vendor_id, opts.product_id));
+                        << std::format("{:04x}:{:04x}", opts.vendor_id, opts.product_id));
       }
       else
       {
@@ -434,10 +434,10 @@ XboxdrvMain::print_info(libusb_device* dev, XPadDevice const& dev_type, Options 
   }
 
   std::cout << "Controller:        " << dev_type.name << std::endl;
-  std::cout << "Vendor/Product:    " << fmt::format("{:04x}:{:04x}",
+  std::cout << "Vendor/Product:    " << std::format("{:04x}:{:04x}",
                                                     uint16_t(desc.idVendor),
                                                     uint16_t(desc.idProduct)) << std::endl;
-  std::cout << "USB Path:          " << fmt::format("{:03d}:{:03d}",
+  std::cout << "USB Path:          " << std::format("{:03d}:{:03d}",
                                                     static_cast<int>(libusb_get_bus_number(dev)),
                                                     static_cast<int>(libusb_get_device_address(dev))) << std::endl;
   if (dev_type.type == GAMEPAD_XBOX360_WIRELESS)

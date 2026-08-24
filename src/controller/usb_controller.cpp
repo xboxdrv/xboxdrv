@@ -20,7 +20,7 @@
 
 #include <assert.h>
 #include <string.h>
-#include <fmt/format.h>
+#include <format>
 
 #include <logmich/log.hpp>
 #include <unsebu/usb_helper.hpp>
@@ -48,7 +48,7 @@ USBController::USBController(libusb_device* dev) :
   else
   {
     // get usbpath, usbid and name
-    m_usbpath = fmt::format("{:03d}:{:03d}",
+    m_usbpath = std::format("{:03d}:{:03d}",
                             static_cast<int>(libusb_get_bus_number(dev)),
                             static_cast<int>(libusb_get_device_address(dev)));
 
@@ -56,7 +56,7 @@ USBController::USBController(libusb_device* dev) :
     ret = libusb_get_device_descriptor(dev, &desc);
     if (ret == LIBUSB_SUCCESS)
     {
-      m_usbid = fmt::format("%04x:%04x",
+      m_usbid = std::format("{:04x}:{:04x}",
                             static_cast<int>(desc.idVendor),
                             static_cast<int>(desc.idProduct));
 

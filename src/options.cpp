@@ -20,7 +20,7 @@
 
 #include <assert.h>
 #include <functional>
-#include <fmt/format.h>
+#include <format>
 
 #include <uinpp/multi_device.hpp>
 #include <uinpp/parse.hpp>
@@ -444,7 +444,7 @@ Options::find_generic_usb_spec(int vendor_id_, int product_id_) const
   }
 
   raise_exception(std::runtime_error, "no matching GenericUSBSpec found for "
-                  << fmt::format("{:04x}:{:04x}", static_cast<int>(vendor_id_), static_cast<int>(product_id_)));
+                  << std::format("{:04x}:{:04x}", static_cast<int>(vendor_id_), static_cast<int>(product_id_)));
 }
 
 void

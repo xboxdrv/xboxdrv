@@ -20,7 +20,6 @@
 
 #include <sstream>
 #include <string.h>
-#include <fmt/format.h>
 
 #include <unsebu/usb_helper.hpp>
 

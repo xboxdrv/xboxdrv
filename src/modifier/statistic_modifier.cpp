@@ -18,7 +18,7 @@
 
 #include "statistic_modifier.hpp"
 
-#include <fmt/format.h>
+#include <format>
 #include <iostream>
 
 #include "../xboxmsg.hpp"
@@ -55,11 +55,11 @@ StatisticModifier::print_stats()
   std::cout << "Button Press Statistics\n"
             << "=======================\n\n";
 
-  std::cout << fmt::format("{:12s} | {:5s}", "Name", "Count") << std::endl;
+  std::cout << std::format("{:12s} | {:5s}", "Name", "Count") << std::endl;
   std::cout << "-------------+---------" << std::endl;
   for(size_t i = 0; i < m_press_count.size(); ++i)
   {
-    std::cout << fmt::format("{:12d} : {:5d}\n", i, m_press_count[i]);
+    std::cout << std::format("{:12d} : {:5d}\n", i, m_press_count[i]);
   }
 }
 

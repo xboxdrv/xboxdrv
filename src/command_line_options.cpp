@@ -20,7 +20,7 @@
 
 #include <assert.h>
 #include <functional>
-#include <fmt/format.h>
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -429,25 +429,25 @@ CommandLineParser::init_ini(Options* opts)
   {
     for(int config = 0; config <= 9; ++config)
     {
-      m_ini.section(fmt::format("controller{}/config{}/modifier", controller, config),
+      m_ini.section(std::format("controller{}/config{}/modifier", controller, config),
                     std::bind(&CommandLineParser::set_modifier_n, this, controller, config, _1, _2));
-      m_ini.section(fmt::format("controller{}/config{}/keymap", controller, config),
+      m_ini.section(std::format("controller{}/config{}/keymap", controller, config),
                     std::bind(&CommandLineParser::set_keymap_n, this, controller, config, _1, _2));
-      m_ini.section(fmt::format("controller{}/config{}/absmap", controller, config),
+      m_ini.section(std::format("controller{}/config{}/absmap", controller, config),
                     std::bind(&CommandLineParser::set_absmap_n, this, controller, config, _1, _2));
 
-      m_ini.section(fmt::format("controller{}/config{}/buttonmap", controller, config),
+      m_ini.section(std::format("controller{}/config{}/buttonmap", controller, config),
                     std::bind(&CommandLineParser::set_buttonmap_n, this, controller, config, _1, _2));
-      m_ini.section(fmt::format("controller{}/config{}/axismap", controller, config),
+      m_ini.section(std::format("controller{}/config{}/axismap", controller, config),
                     std::bind(&CommandLineParser::set_axismap_n,   this, controller, config, _1, _2));
 
-      m_ini.section(fmt::format("controller{}/config{}/autofire", controller, config),
+      m_ini.section(std::format("controller{}/config{}/autofire", controller, config),
                     std::bind(&CommandLineParser::set_autofire_n, this, controller, config, _1, _2));
-      m_ini.section(fmt::format("controller{}/config{}/relative-axis", controller, config),
+      m_ini.section(std::format("controller{}/config{}/relative-axis", controller, config),
                     std::bind(&CommandLineParser::set_relative_axis_n, this, controller, config, _1, _2));
-      m_ini.section(fmt::format("controller{}/config{}/calibration", controller, config),
+      m_ini.section(std::format("controller{}/config{}/calibration", controller, config),
                     std::bind(&CommandLineParser::set_calibration_n, this, controller, config, _1, _2));
-      m_ini.section(fmt::format("controller{}/config{}/axis-sensitivity", controller, config),
+      m_ini.section(std::format("controller{}/config{}/axis-sensitivity", controller, config),
                     std::bind(&CommandLineParser::set_axis_sensitivity_n, this, controller, config, _1, _2));
     }
   }

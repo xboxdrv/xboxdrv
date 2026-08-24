@@ -21,7 +21,7 @@
 #include <assert.h>
 #include <iterator>
 #include <functional>
-#include <fmt/format.h>
+#include <format>
 #include <memory>
 #include <fstream>
 #include <dbus/dbus-glib.h>
@@ -580,12 +580,12 @@ XboxdrvDaemon::status()
 {
   std::string out;
 
-  fmt::format_to(std::back_inserter(out), "SLOT  CFG  NCFG    USBID    USBPATH  NAME\n");
+  std::format_to(std::back_inserter(out), "SLOT  CFG  NCFG    USBID    USBPATH  NAME\n");
   for(ControllerSlots::iterator i = m_controller_slots.begin(); i != m_controller_slots.end(); ++i)
   {
     if ((*i)->get_controller())
     {
-      fmt::format_to(std::back_inserter(out),
+      std::format_to(std::back_inserter(out),
                      "{:4d}  {:3d}  {:4d}  {:5s}  {:7s}  {}\n",
                      (i - m_controller_slots.begin()),
                      (*i)->get_config()->get_current_config(),
@@ -596,7 +596,7 @@ XboxdrvDaemon::status()
     }
     else
     {
-      fmt::format_to(std::back_inserter(out),
+      std::format_to(std::back_inserter(out),
                      "{:4d}  {:3d}  {:4d}      -         -\n",
                      (i - m_controller_slots.begin()),
                      (*i)->get_config()->get_current_config(),
@@ -606,7 +606,7 @@ XboxdrvDaemon::status()
 
   for(Controllers::iterator i = m_inactive_controllers.begin(); i != m_inactive_controllers.end(); ++i)
   {
-    fmt::format_to(std::back_inserter(out),
+    std::format_to(std::back_inserter(out),
                    "   -             {:5s}  {:7s}  {}\n",
                    (*i)->get_usbid(),
                    (*i)->get_usbpath(),

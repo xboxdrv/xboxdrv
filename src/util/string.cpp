@@ -18,7 +18,7 @@
 
 #include "util/string.hpp"
 
-#include <fmt/format.h>
+#include <format>
 #include <strut/split.hpp>
 
 #include "raise_exception.hpp"
@@ -63,12 +63,12 @@ bool str2bool(std::string const& str)
     }
     else
     {
-      throw std::runtime_error(fmt::format("str2bool(): couldn't convert '{}' to bool", str));
+      throw std::runtime_error(std::format("str2bool(): couldn't convert '{}' to bool", str));
     }
   }
   catch(...)
   {
-    std::throw_with_nested(std::runtime_error(fmt::format("str2bool(): couldn't convert '{}' to bool", str)));
+    std::throw_with_nested(std::runtime_error(std::format("str2bool(): couldn't convert '{}' to bool", str)));
   }
 }
 
@@ -80,7 +80,7 @@ int str2int(std::string const& str)
   }
   catch(...)
   {
-    std::throw_with_nested(std::runtime_error(fmt::format("str2int(): couldn't convert '{}' to int", str)));
+    std::throw_with_nested(std::runtime_error(std::format("str2int(): couldn't convert '{}' to int", str)));
   }
 }
 
@@ -92,7 +92,7 @@ float str2float(std::string const& str)
   }
   catch(...)
   {
-    std::throw_with_nested(std::runtime_error(fmt::format("str2float(): couldn't convert '{}' to float", str)));
+    std::throw_with_nested(std::runtime_error(std::format("str2float(): couldn't convert '{}' to float", str)));
   }
 }
 
@@ -103,7 +103,7 @@ std::string raw2str(uint8_t const* data, int len)
       << " data: ";
 
   for(int i = 0; i < len; ++i)
-    out << fmt::format("{:02x} ", int(data[i]));
+    out << std::format("{:02x} ", int(data[i]));
 
   return out.str();
 }

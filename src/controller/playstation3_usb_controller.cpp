@@ -18,7 +18,7 @@
 
 #include "controller/playstation3_usb_controller.hpp"
 
-#include <fmt/format.h>
+#include <format>
 #include <sstream>
 #include <string.h>
 
@@ -238,7 +238,7 @@ Playstation3USBController::parse(uint8_t const* data, int len, ControllerMessage
 #if 0
     if (false)
     {
-      log_debug(fmt::format("X:{:5d} Y:{:5d} Z:{:5d} RZ:{:5d}\n",
+      log_debug(std::format("X:{:5d} Y:{:5d} Z:{:5d} RZ:{:5d}\n",
                             (static_cast<int>(msg_out->ps3usb.accl_x) - 512),
                             (static_cast<int>(msg_out->ps3usb.accl_y) - 512),
                             (static_cast<int>(msg_out->ps3usb.accl_z) - 512),
@@ -248,7 +248,7 @@ Playstation3USBController::parse(uint8_t const* data, int len, ControllerMessage
     if (false)
     {
       // values are normalized to 1g (-116 is force by gravity)
-      log_debug(fmt::format("X:{:6.3f} Y:{:6.3f} Z:{:6.3f} RZ:{:6.3f}\n",
+      log_debug(std::format("X:{:6.3f} Y:{:6.3f} Z:{:6.3f} RZ:{:6.3f}\n",
                             (static_cast<int>(msg_out->ps3usb.accl_x) - 512) / 116.0f,
                             (static_cast<int>(msg_out->ps3usb.accl_y) - 512) / 116.0f,
                             (static_cast<int>(msg_out->ps3usb.accl_z) - 512) / 116.0f,
@@ -261,7 +261,7 @@ Playstation3USBController::parse(uint8_t const* data, int len, ControllerMessage
       str << len << ": ";
       for(int i = 0; i < len; ++i)
       {
-        str << fmt::format("{:02x} ", static_cast<int>(data[i]));
+        str << std::format("{:02x} ", static_cast<int>(data[i]));
       }
       str << std::endl;
       log_debug(str.str());
