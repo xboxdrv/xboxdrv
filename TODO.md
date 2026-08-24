@@ -172,10 +172,10 @@ architecture, daemon + hotplug concept.
 
 ### Phase 0 — Housekeeping
 
-- [ ] This file + `AGENTS.md` (this bundle).
-- [ ] Remove `.gitattributes` / `export-subst`.
-- [ ] Plain `VERSION` with `-dev` suffix; CMake + flake per `AGENTS.md`.
-- [ ] `--version` prints `PROJECT_VERSION_FULL`.
+- [x] This file + `AGENTS.md` (bundle `xboxdrv-001`).
+- [x] Remove `.gitattributes` / `export-subst`.
+- [x] Plain `VERSION` with `-dev` suffix; CMake + flake per `AGENTS.md`.
+- [x] `--version` prints `PROJECT_VERSION_FULL` (`PACKAGE_VERSION` is defined from it).
 - [ ] Sanity-check a plain CMake configure *and* a flake evaluation for
       the version string.
 
