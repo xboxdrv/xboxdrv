@@ -127,15 +127,11 @@ driver. Do not expand wireless Chatpad in this milestone.
 `VERSION` a plain `x.y.z-dev` file. Implement the CMake + flake scheme in
 `AGENTS.md`.
 
-### 4. Still using `{fmt}` — switch to `std::format()`
+### 4. `{fmt}` replaced with `std::format` / `std::print`
 
-C++20 is already required. `{fmt}` is a `find_package(fmt REQUIRED)` plus
-flake `buildInputs`. Includes of `<fmt/format.h>` and `fmt::format` /
-`fmt::format_to` appear in ~13 translation units (controllers, daemon,
-options, util/string, dbus, …).
-
-Replace with `<format>` / `std::format` / `std::format_to` and drop the
-fmt dependency from CMake and the flake.
+C++23 is required. `{fmt}` has been dropped from CMake and the flake.
+Watch remaining printf-style leftovers if any new format strings are added
+(`usb_controller.cpp` had `"%04x:%04x"` mixed with fmt).
 
 ### 5. Dual dependency story (`external/` vs flake inputs)
 
@@ -199,10 +195,10 @@ architecture, daemon + hotplug concept.
 
 ### Phase 3 — `std::format`
 
-- [ ] Replace `fmt::format` / `fmt::format_to` with `std::format`.
-- [ ] Drop `find_package(fmt)` and flake `fmt` input.
-- [ ] Keep format strings equivalent (watch `%04x` leftovers mixed with
-      `{:04x}` — `usb_controller.cpp` still has a printf-style fmt string).
+- [x] Replace `fmt::format` / `fmt::format_to` / `fmt::print` with
+      `std::format` / `std::format_to` / `std::print`.
+- [x] Drop `find_package(fmt)` and flake `fmt` input.
+- [x] Fix the `%04x` leftover in `usb_controller.cpp`.
 
 ### Phase 4 — Stability vs `stable`
 

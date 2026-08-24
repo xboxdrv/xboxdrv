@@ -160,7 +160,8 @@ metadata and can fail when `revCount` is missing.
 
 ## Build notes
 
-- Primary build: CMake. C++20 is already required (`CXX_STANDARD 20`).
+- Primary build: CMake. C++23 is required (`CXX_STANDARD 23`) so
+  `std::format` / `std::print` can be used without `{fmt}`.
 - Nix flake exists; later work may convert most flake inputs into vendored
   `external/` git subtrees (can wait).
 - `external/` already has git submodules (argpp, logmich, strutcpp, tinycmmc,
