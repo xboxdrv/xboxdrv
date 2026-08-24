@@ -50,7 +50,6 @@ find_package(X11 REQUIRED)
 
 find_package(PkgConfig)
 find_package(Python REQUIRED)
-find_package(fmt REQUIRED)
 pkg_search_module(GTK REQUIRED gtk+-3.0 IMPORTED_TARGET)
 pkg_search_module(USB REQUIRED libusb-1.0 IMPORTED_TARGET)
 pkg_search_module(UDEV REQUIRED libudev IMPORTED_TARGET)
@@ -140,7 +139,7 @@ add_custom_command(
 add_library(libxboxdrv STATIC ${XBOXDRV_SOURCES_CXX})
 set_target_properties(libxboxdrv PROPERTIES OUTPUT_NAME xboxdrv)
 set_target_properties(libxboxdrv PROPERTIES
-  CXX_STANDARD 20
+  CXX_STANDARD 23
   CXX_STANDARD_REQUIRED ON
   CXX_EXTENSIONS OFF)
 target_include_directories(libxboxdrv PUBLIC src/ ${CMAKE_CURRENT_BINARY_DIR}/src/)
@@ -153,7 +152,6 @@ target_link_libraries(libxboxdrv PUBLIC
   uinpp::uinpp
   unsebu::unsebu
   yaini::yaini
-  fmt::fmt
   PkgConfig::DBUSGLIB
   PkgConfig::USB
   PkgConfig::UDEV
@@ -161,7 +159,7 @@ target_link_libraries(libxboxdrv PUBLIC
 
 add_executable(xboxdrv src/main/main.cpp)
 set_target_properties(xboxdrv PROPERTIES
-  CXX_STANDARD 20
+  CXX_STANDARD 23
   CXX_STANDARD_REQUIRED ON
   CXX_EXTENSIONS OFF)
 target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
@@ -177,7 +175,7 @@ if(BUILD_TESTS)
   #   test/*_gtest.cpp)
   # add_executable(test_xboxdrv ${XBOXDRV_TEST_SOURCES})
   # set_target_properties(test_xboxdrv PROPERTIES
-  #   CXX_STANDARD 20
+  #   CXX_STANDARD 23
   #   CXX_STANDARD_REQUIRED ON
   #   CXX_EXTENSIONS OFF)
   # target_compile_options(test_xboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
@@ -194,7 +192,7 @@ if(BUILD_TESTS)
     get_filename_component(SOURCE_BASENAME ${SOURCE} NAME_WE)
     add_executable(${SOURCE_BASENAME} ${SOURCE})
     set_target_properties(${SOURCE_BASENAME} PROPERTIES
-      CXX_STANDARD 20
+      CXX_STANDARD 23
       CXX_STANDARD_REQUIRED ON
       CXX_EXTENSIONS OFF)
     target_compile_options(${SOURCE_BASENAME} PRIVATE ${WARNINGS_CXX_FLAGS})

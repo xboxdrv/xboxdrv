@@ -73,7 +73,6 @@
               at-spi2-core
               bluez
               dbus-glib
-              fmt
               glib
               gobject-introspection
               gtest
