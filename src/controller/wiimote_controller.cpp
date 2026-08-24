@@ -77,49 +77,49 @@ WiiNames::WiiNames(ControllerMessageDescriptor& desc) :
   nunchuk_acc_y(-1),
   nunchuk_acc_z(-1)
 {
-  minus = desc.key().put(KeyName("wiimote.minus"));
-  home  = desc.key().put(KeyName("wiimote.home"));
-  plus  = desc.key().put(KeyName("wiimote.plus"));
+  minus = desc.key().put("minus");
+  home  = desc.key().put("home");
+  plus  = desc.key().put("plus");
 
-  a = desc.key().put(KeyName("wiimote.a"));
-  b = desc.key().put(KeyName("wiimote.b"));
-  btn1 = desc.key().put(KeyName("wiimote.1"));
-  btn2 = desc.key().put(KeyName("wiimote.2"));
+  a = desc.key().put("a");
+  b = desc.key().put("b");
+  btn1 = desc.key().put("1");
+  btn2 = desc.key().put("2");
 
-  dpad_up    = desc.key().put(KeyName("wiimote.dpad_up"));
-  dpad_down  = desc.key().put(KeyName("wiimote.dpad_down"));
-  dpad_left  = desc.key().put(KeyName("wiimote.dpad_left"));
-  dpad_right = desc.key().put(KeyName("wiimote.dpad_right"));
+  dpad_up    = desc.key().put("dpad_up");
+  dpad_down  = desc.key().put("dpad_down");
+  dpad_left  = desc.key().put("dpad_left");
+  dpad_right = desc.key().put("dpad_right");
 
-  acc_x = desc.abs().put(AbsName("wiimote.acc_x"));
-  acc_y = desc.abs().put(AbsName("wiimote.acc_y"));
-  acc_z = desc.abs().put(AbsName("wiimote.acc_z"));
+  acc_x = desc.abs().put("acc_x");
+  acc_y = desc.abs().put("acc_y");
+  acc_z = desc.abs().put("acc_z");
 
-  ir1_x = desc.abs().put(AbsName("wiimote.ir1_x"));
-  ir1_y = desc.abs().put(AbsName("wiimote.ir1_y"));
-  ir1_size = desc.abs().put(AbsName("wiimote.ir1_size"));
+  ir1_x = desc.abs().put("ir1_x");
+  ir1_y = desc.abs().put("ir1_y");
+  ir1_size = desc.abs().put("ir1_size");
 
-  ir2_x = desc.abs().put(AbsName("wiimote.ir2_x"));
-  ir2_y = desc.abs().put(AbsName("wiimote.ir2_y"));
-  ir2_size = desc.abs().put(AbsName("wiimote.ir2_size"));
+  ir2_x = desc.abs().put("ir2_x");
+  ir2_y = desc.abs().put("ir2_y");
+  ir2_size = desc.abs().put("ir2_size");
 
-  ir3_x = desc.abs().put(AbsName("wiimote.ir3_x"));
-  ir3_y = desc.abs().put(AbsName("wiimote.ir3_y"));
-  ir3_size = desc.abs().put(AbsName("wiimote.ir3_size"));
+  ir3_x = desc.abs().put("ir3_x");
+  ir3_y = desc.abs().put("ir3_y");
+  ir3_size = desc.abs().put("ir3_size");
 
-  ir4_x = desc.abs().put(AbsName("wiimote.ir4_x"));
-  ir4_y = desc.abs().put(AbsName("wiimote.ir4_y"));
-  ir4_size = desc.abs().put(AbsName("wiimote.ir4_size"));
+  ir4_x = desc.abs().put("ir4_x");
+  ir4_y = desc.abs().put("ir4_y");
+  ir4_size = desc.abs().put("ir4_size");
 
-  nunchuk_x = desc.abs().put(AbsName("nunchuk.x1"));
-  nunchuk_y = desc.abs().put(AbsName("nunchuk.y1"));
+  nunchuk_x = desc.abs().put("x1");
+  nunchuk_y = desc.abs().put("y1");
 
-  nunchuk_c = desc.key().put(KeyName("nunchuk.c"));
-  nunchuk_z = desc.key().put(KeyName("nunchuk.z"));
+  nunchuk_c = desc.key().put("c");
+  nunchuk_z = desc.key().put("z");
 
-  nunchuk_acc_x = desc.abs().put(AbsName("nunchuk.acc_x"));
-  nunchuk_acc_y = desc.abs().put(AbsName("nunchuk.acc_x"));
-  nunchuk_acc_z = desc.abs().put(AbsName("nunchuk.acc_y"));
+  nunchuk_acc_x = desc.abs().put("acc_x");
+  nunchuk_acc_y = desc.abs().put("acc_y");
+  nunchuk_acc_z = desc.abs().put("acc_z");
 }
 
 WiimoteController::WiimoteController() :

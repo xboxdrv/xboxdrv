@@ -58,44 +58,67 @@ Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& desc) :
     return XBOX_AXIS_TRIGGER;
 #endif
 
-  btn_a = desc.key().put(KeyName("xbox.a"));
-  btn_b = desc.key().put(KeyName("xbox.b"));
-  btn_x = desc.key().put(KeyName("xbox.x"));
-  btn_y = desc.key().put(KeyName("xbox.y"));
+  btn_a = desc.key().put("a");
+  btn_b = desc.key().put("b");
+  btn_x = desc.key().put("x");
+  btn_y = desc.key().put("y");
 
-  btn_start = desc.key().put(KeyName("xbox.start"));
-  btn_guide = desc.key().put(KeyName("xbox.guide"));
-  btn_back  = desc.key().put(KeyName("xbox.back"));
+  btn_start = desc.key().put("start");
+  btn_guide = desc.key().put("guide");
+  btn_back  = desc.key().put("back");
 
-  btn_lb = desc.key().put(KeyName("xbox.lb"));
-  btn_rb = desc.key().put(KeyName("xbox.rb"));
+  btn_lb = desc.key().put("lb");
+  btn_rb = desc.key().put("rb");
 
-  btn_lt = desc.key().put(KeyName("xbox.lt"));
-  btn_rt = desc.key().put(KeyName("xbox.rt"));
+  btn_lt = desc.key().put("lt");
+  btn_rt = desc.key().put("rt");
 
-  btn_thumb_l = desc.key().put(KeyName("xbox.thumb_l"));
-  btn_thumb_r = desc.key().put(KeyName("xbox.thumb_r"));
+  btn_thumb_l = desc.key().put("thumb_l");
+  btn_thumb_r = desc.key().put("thumb_r");
 
-  dpad_up    = desc.key().put(KeyName("xbox.dpad_up"));
-  dpad_down  = desc.key().put(KeyName("xbox.dpad_down"));
-  dpad_left  = desc.key().put(KeyName("xbox.dpad_left"));
-  dpad_right = desc.key().put(KeyName("xbox.dpad_right"));
+  dpad_up    = desc.key().put("dpad_up");
+  dpad_down  = desc.key().put("dpad_down");
+  dpad_left  = desc.key().put("dpad_left");
+  dpad_right = desc.key().put("dpad_right");
 
-  abs_x1 = desc.abs().put(AbsName("xbox.x1"));
-  abs_y1 = desc.abs().put(AbsName("xbox.y1"));
-  abs_x2 = desc.abs().put(AbsName("xbox.x2"));
-  abs_y2 = desc.abs().put(AbsName("xbox.y2"));
+  abs_x1 = desc.abs().put("x1");
+  abs_y1 = desc.abs().put("y1");
+  abs_x2 = desc.abs().put("x2");
+  abs_y2 = desc.abs().put("y2");
 
-  abs_lt = desc.abs().put(AbsName("xbox.lt"));
-  abs_rt = desc.abs().put(AbsName("xbox.rt"));
+  abs_lt = desc.abs().put("lt");
+  abs_rt = desc.abs().put("rt");
 
-  abs_a = desc.abs().put(AbsName("xbox.a"));
-  abs_b = desc.abs().put(AbsName("xbox.b"));
-  abs_x = desc.abs().put(AbsName("xbox.x"));
-  abs_y = desc.abs().put(AbsName("xbox.y"));
+  abs_a = desc.abs().put("a");
+  abs_b = desc.abs().put("b");
+  abs_x = desc.abs().put("x");
+  abs_y = desc.abs().put("y");
 
-  abs_black = desc.abs().put(AbsName("xbox.black"));
-  abs_white = desc.abs().put(AbsName("xbox.white"));
+  abs_black = desc.abs().put("black");
+  abs_white = desc.abs().put("white");
+
+  // Config-facing aliases (examples use A=..., du=..., tl=..., ...)
+  desc.key().alias("A", btn_a);
+  desc.key().alias("B", btn_b);
+  desc.key().alias("X", btn_x);
+  desc.key().alias("Y", btn_y);
+  desc.key().alias("LB", btn_lb);
+  desc.key().alias("RB", btn_rb);
+  desc.key().alias("LT", btn_lt);
+  desc.key().alias("RT", btn_rt);
+  desc.key().alias("tl", btn_thumb_l);
+  desc.key().alias("tr", btn_thumb_r);
+  desc.key().alias("du", dpad_up);
+  desc.key().alias("dd", dpad_down);
+  desc.key().alias("dl", dpad_left);
+  desc.key().alias("dr", dpad_right);
+
+  desc.abs().alias("X1", abs_x1);
+  desc.abs().alias("Y1", abs_y1);
+  desc.abs().alias("X2", abs_x2);
+  desc.abs().alias("Y2", abs_y2);
+  desc.abs().alias("LT", abs_lt);
+  desc.abs().alias("RT", abs_rt);
 }
 
 } // namespace xboxdrv

@@ -44,12 +44,12 @@ CompatModifier::init(ControllerMessageDescriptor& desc)
 
 #if 0
   // have a dpad, but no dpad axis
-  if (!desc.abs().has(AbsName("gamepad.dpad_x")) &&
-      !desc.abs().has(AbsName("gamepad.dpad_y")) &&
-      desc.key().has(KeyName("gamepad.dpad_up")) &&
-      desc.key().has(KeyName("gamepad.dpad_down")) &&
-      desc.key().has(KeyName("gamepad.dpad_left")) &&
-      desc.key().has(KeyName("gamepad.dpad_right")))
+  if (!desc.abs().has("dpad_x") &&
+      !desc.abs().has("dpad_y") &&
+      desc.key().has("dpad_up") &&
+      desc.key().has("dpad_down") &&
+      desc.key().has("dpad_left") &&
+      desc.key().has("dpad_right"))
   {
     log_tmp("CompatModifier: DPAD");
     m_dpad_x = desc.abs().put("dpad_x");
