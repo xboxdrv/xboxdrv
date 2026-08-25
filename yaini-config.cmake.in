@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/yaini-config-version.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/yaini-targets.cmake")
+
+check_required_components(yaini)
+
+# EOF #
