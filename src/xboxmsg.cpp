@@ -57,6 +57,9 @@ std::string gamepadtype_to_string(GamepadType const& type)
     case GAMEPAD_SAITEK_P2500:
       return "saitek-p2500";
 
+    case GAMEPAD_SAITEK_P3600:
+      return "saitek-p3600";
+
     case GAMEPAD_LOGITECH_F310:
       return "logitech-f310";
 
@@ -87,6 +90,7 @@ std::string gamepadtype_to_macro_string(GamepadType const& type)
     case GAMEPAD_FIRESTORM: return "GAMEPAD_FIRESTORM";
     case GAMEPAD_FIRESTORM_VSB: return "GAMEPAD_FIRESTORM_VSB";
     case GAMEPAD_SAITEK_P2500: return "GAMEPAD_SAITEK_P2500";
+    case GAMEPAD_SAITEK_P3600: return "GAMEPAD_SAITEK_P3600";
     case GAMEPAD_PLAYSTATION3_USB: return "GAMEPAD_PLAYSTATION3_USB";
     case GAMEPAD_GENERIC_USB: return "GAMEPAD_GENERIC_USB";
     default:
@@ -128,6 +132,9 @@ std::ostream& operator<<(std::ostream& out, GamepadType const& type)
 
     case GAMEPAD_SAITEK_P2500:
       return out << "Saitek P2500";
+
+    case GAMEPAD_SAITEK_P3600:
+      return out << "Saitek P3600 (Cyborg Rumble)";
 
     case GAMEPAD_PLAYSTATION3_USB:
       return out << "Playstation 3 USB";
