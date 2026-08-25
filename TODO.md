@@ -78,8 +78,7 @@ architecture rewrite; some were not.
 
 | Item | Evidence | Notes |
 |------|----------|--------|
-| **Saitek P3600 controller** | `stable` has `saitek_p3600_controller.{cpp,hpp}`, factory cases, `GAMEPAD_SAITEK_P3600`, VID/PID `0x06a3:0xf51a` | Completely absent from `develop` (`src/controller/` and factory). Only clear missing device backend found so far. |
-| **Saitek P3600 VID/PID row** | Only ID pair present on `stable` and absent on `develop` in `xpad_device.cpp` | Develop added Xbox One / PowerA / Hama Crux rows that stable lacks; otherwise lists largely match via parallel commits. |
+| **Saitek P3600 controller** | ~~missing~~ | **Ported** — `src/controller/saitek_p3600_controller.{cpp,hpp}`, factory, enum, VID/PID `0x06a3:0xf51a`. Report layout and trigger/stick mapping preserved from stable (no debug printf). |
 
 ### Stable fixes already present (rewritten) on `develop`
 
@@ -118,7 +117,7 @@ From FIXMEs, recent commits, and parity goals:
    - Wireless Chatpad remains out of scope (same as stable).
    - Decide for the milestone: default on vs flag vs leave optional.
 
-2. **Saitek P3600** — missing entirely (see table above).
+2. **Saitek P3600** — ported from stable.
 
 3. **Daemon / multi-controller / hotplug**
    - Multiple FIXMEs in `xboxdrv_daemon.cpp` (thread cleanup, libusb ref,
@@ -168,8 +167,7 @@ From FIXMEs, recent commits, and parity goals:
 
 ### Recommended parity work order
 
-1. **Port Saitek P3600** from stable into `src/controller/` + factory +
-   `xpad_device` + msg enum (small, concrete gap).
+1. ~~Port Saitek P3600~~ (done).
 2. **Resolve fmt vs std::format** in CMake + flake (docs claim done; flake
    still pulls fmt).
 3. **README + manpage** aligned with develop (obsolescence note, deps,
@@ -239,7 +237,7 @@ CMake derives numeric `project(VERSION …)`; flake appends
 
 - [x] USB disconnect/teardown hardening.
 - [x] Wired Chatpad claim + soft-fail paths.
-- [ ] **Port Saitek P3600 controller + VID/PID from stable.**
+- [x] **Port Saitek P3600 controller + VID/PID from stable.**
 - [ ] Triage historical `TODO`; move remaining actionable items here.
 - [ ] Multi-controller UInput update / threading.
 - [ ] Daemon hotplug, basic FF, LED — behavioural check vs stable.
@@ -262,5 +260,4 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - One logical change per commit where practical.
 - Public config compatibility: preserve or document the break.
 - Prefer evidence from code and `git log` over README/TODO claims.
-- Next concrete code step for parity: **Saitek P3600** port from `stable`,
-  then fmt/flake consistency, then README.
+- Next concrete code step for parity: **fmt/flake consistency**, then README.
