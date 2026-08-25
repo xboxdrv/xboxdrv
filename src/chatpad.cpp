@@ -660,12 +660,13 @@ Chatpad::process(ChatpadKeyMsg const& msg)
 
   // One-shot sticky arm on tap (Xbox: mode armed until next text key).
   // Physical hold already keeps the modifier active via m_state.
+  // Second tap while already armed clears the sticky (cancel without typing).
   if (!caps_combo)
   {
-    if (rise_green)  m_sticky_green  = true;
-    if (rise_orange) m_sticky_orange = true;
-    if (rise_people) m_sticky_people = true;
-    if (rise_shift)  m_sticky_shift  = true;
+    if (rise_green)  m_sticky_green  = !m_sticky_green;
+    if (rise_orange) m_sticky_orange = !m_sticky_orange;
+    if (rise_people) m_sticky_people = !m_sticky_people;
+    if (rise_shift)  m_sticky_shift  = !m_sticky_shift;
   }
 
   // Any non-modifier key press consumes one-shot stickies after this report

@@ -29,8 +29,9 @@ placeholder until compose/XKB):
 
 - **Shift / Green / Orange / People** are **one-shot sticky**: a tap arms
   the mode and lights the LED; the next non-modifier key is sent with that
-  modifier held, then the sticky mode and LED clear. Holding the key keeps
-  the modifier active for as long as it is down.
+  modifier held, then the sticky mode and LED clear. A second tap while
+  armed clears the mode (cancel without typing). Holding the key keeps the
+  modifier active for as long as it is down.
 - **Orange + Shift** (either order) toggles **CAPS lock**. While CAPS is on,
   Shift stays effectively down and the Shift LED stays lit until the same
   combo is pressed again.
