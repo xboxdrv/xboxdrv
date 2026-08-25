@@ -21,92 +21,110 @@
 
 #include <logmich/log.hpp>
 
-std::ostream& operator<<(std::ostream& out, const struct ff_envelope& envelope)
-{
-  out << "Envelope(attack_length:" << envelope.attack_length
-      << ", attack_level:" << envelope.attack_level
-      << ", fade_length:" << envelope.fade_length
-      << ", fade_level:" << envelope.fade_level << ")";
-  return out;
-}
+#include <format>
+#include <string>
 
-std::ostream& operator<<(std::ostream& out, const struct ff_replay& replay)
-{
-  out << "Replay(length:" << replay.length << ", delay:" << replay.delay << ")";
-  return out;
-}
+// Assuming the structs and enums (FF_CONSTANT, etc.) are already defined.
+template <>
+struct std::formatter<ff_envelope> {
+  constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
 
-std::ostream& operator<<(std::ostream& out, const struct ff_trigger& trigger)
-{
-  out << "Trigger(button:" << trigger.button << ", interval:" << trigger.interval << ")";
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const struct ff_effect& effect)
-{
-  out << "Effect(";
-  switch (effect.type)
-  {
-    case FF_CONSTANT:
-      out << "FF_CONSTANT("
-          << "level:" << effect.u.constant.level
-          << ", envelope:" << effect.u.constant.envelope << ")";
-      break;
-
-    case FF_PERIODIC:
-      out << "FF_PERIODIC("
-          << ", waveform:" << effect.u.periodic.waveform
-          << ", period:" << effect.u.periodic.period
-          << ", magnitude:" << effect.u.periodic.magnitude
-          << ", offset:" << effect.u.periodic.offset
-          << ", phase:" << effect.u.periodic.phase
-          << ", envelope:" << effect.u.periodic.envelope << ")";
-      break;
-
-    case FF_RAMP:
-      out << "FF_RAMP("
-          << "start_level:" << effect.u.ramp.start_level
-          << ", end_level:" << effect.u.ramp.end_level
-          << ", envelope:" <<  effect.u.ramp.envelope << ")";
-      break;
-
-    case FF_SPRING:
-      out << "FF_SPRING()";
-      break;
-
-    case FF_FRICTION:
-      out << "FF_FRICTION()";
-      break;
-
-    case FF_DAMPER:
-      out << "FF_DAMPER()";
-      break;
-
-    case FF_RUMBLE:
-      out << "FF_RUMBLE("
-          << "strong_magnitude:" << effect.u.rumble.strong_magnitude
-          << ", weak_magnitude:" << effect.u.rumble.weak_magnitude << ")";
-      break;
-
-    case FF_INERTIA:
-      out << "FF_INERTIA()";
-      break;
-
-    case FF_CUSTOM:
-      out << "FF_CUSTOM()";
-      break;
-
-    default:
-      out << "FF_<unknown>()";
-      break;
+  auto format(const ff_envelope& envelope, std::format_context& ctx) const {
+    return std::format_to(ctx.out(),
+      "Envelope(attack_length:{}, attack_level:{}, fade_length:{}, fade_level:{})",
+      envelope.attack_length,
+      envelope.attack_level,
+      envelope.fade_length,
+      envelope.fade_level);
   }
+};
 
-  out << ", direction:" << effect.direction
-      << ", replay:" << effect.replay
-      << ", trigger:" << effect.trigger << ")";
+template <>
+struct std::formatter<ff_replay> {
+  constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
 
-  return out;
-}
+  auto format(const ff_replay& replay, std::format_context& ctx) const {
+    return std::format_to(ctx.out(),
+      "Replay(length:{}, delay:{})",
+      replay.length,
+      replay.delay);
+  }
+};
+
+template <>
+struct std::formatter<ff_trigger> {
+  constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
+
+  auto format(const ff_trigger& trigger, std::format_context& ctx) const {
+    return std::format_to(ctx.out(),
+      "Trigger(button:{}, interval:{})",
+      trigger.button,
+      trigger.interval);
+  }
+};
+
+template <>
+struct std::formatter<ff_effect> {
+  constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
+
+  auto format(const ff_effect& effect, std::format_context& ctx) const {
+    std::string type_str;
+
+    switch (effect.type) {
+      case FF_CONSTANT:
+        type_str = std::format("FF_CONSTANT(level:{}, envelope:{})",
+                               effect.u.constant.level,
+                               effect.u.constant.envelope);
+        break;
+      case FF_PERIODIC:
+        type_str = std::format(
+          "FF_PERIODIC(waveform:{}, period:{}, magnitude:{}, offset:{}, phase:{}, envelope:{})",
+          effect.u.periodic.waveform,
+          effect.u.periodic.period,
+          effect.u.periodic.magnitude,
+          effect.u.periodic.offset,
+          effect.u.periodic.phase,
+          effect.u.periodic.envelope);
+        break;
+      case FF_RAMP:
+        type_str = std::format("FF_RAMP(start_level:{}, end_level:{}, envelope:{})",
+                               effect.u.ramp.start_level,
+                               effect.u.ramp.end_level,
+                               effect.u.ramp.envelope);
+        break;
+      case FF_SPRING:
+        type_str = "FF_SPRING()";
+        break;
+      case FF_FRICTION:
+        type_str = "FF_FRICTION()";
+        break;
+      case FF_DAMPER:
+        type_str = "FF_DAMPER()";
+        break;
+      case FF_RUMBLE:
+        type_str = std::format("FF_RUMBLE(strong_magnitude:{}, weak_magnitude:{})",
+                               effect.u.rumble.strong_magnitude,
+                               effect.u.rumble.weak_magnitude);
+        break;
+      case FF_INERTIA:
+        type_str = "FF_INERTIA()";
+        break;
+      case FF_CUSTOM:
+        type_str = "FF_CUSTOM()";
+        break;
+      default:
+        type_str = "FF_<unknown>()";
+        break;
+    }
+
+    return std::format_to(ctx.out(),
+      "Effect({}, direction:{}, replay:{}, trigger:{})",
+      type_str,
+      effect.direction,
+      effect.replay,
+      effect.trigger);
+  }
+};
 
 namespace uinpp {
 
