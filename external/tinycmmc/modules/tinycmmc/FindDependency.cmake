@@ -17,21 +17,31 @@
 # 3. This notice may not be removed or altered from any source distribution.
 
 macro(tinycmmc_find_dependency _NAME)
-  find_package(${_NAME} QUIET)
-  if(${${_NAME}_FOUND})
-    message(STATUS "Found ${_NAME}: ${${_NAME}_DIR}")
+  if(TARGET ${_NAME}::${_NAME} OR TARGET ${_NAME})
+    message(STATUS "Found ${_NAME}: (already available as target)")
   else()
-    message(STATUS "Package ${_NAME} not found, trying external/${_NAME}")
-
-    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/${_NAME}/CMakeLists.txt")
-      message(FATAL_ERROR
-        "The git submodule \"external/${_NAME}\" could not be found. "
-        "To retrieve it, run:\n"
-        "    git submodule update --init --recursive\n")
+    find_package(${_NAME} QUIET)
+    if(${_NAME}_FOUND)
+      message(STATUS "Found ${_NAME}: ${${_NAME}_DIR}")
     else()
-      set(BUILD_TESTS OFF)
-      add_subdirectory(external/${_NAME} EXCLUDE_FROM_ALL)
-      message(STATUS "Found ${_NAME}: external/${_NAME}")
+      message(STATUS "Package ${_NAME} not found, trying external/${_NAME}")
+
+      if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/${_NAME}/CMakeLists.txt")
+        set(BUILD_TESTS OFF)
+        add_subdirectory(external/${_NAME} EXCLUDE_FROM_ALL)
+        message(STATUS "Found ${_NAME}: external/${_NAME}")
+      elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../${_NAME}/CMakeLists.txt")
+        # Sibling under external/ when vendored as parallel trees
+        set(BUILD_TESTS OFF)
+        add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../${_NAME}"
+                         "${CMAKE_CURRENT_BINARY_DIR}/${_NAME}_dep"
+                         EXCLUDE_FROM_ALL)
+        message(STATUS "Found ${_NAME}: ../${_NAME}")
+      else()
+        message(FATAL_ERROR
+          "Dependency \"${_NAME}\" could not be found. Install it, or place "
+          "it at external/${_NAME} (or as a sibling ../${_NAME}).")
+      endif()
     endif()
   endif()
 endmacro()
