@@ -44,10 +44,8 @@ kernel xpad + Steam Input are preferred for most users.
 | `TODO` | years of accumulated notes — triage later |
 | `flake.nix` | Nix flake (helpers vendored under `external/`) |
 
-CMake requires modern C++ (C++23 intended for `std::format` / `std::print`).
-README on `develop` is still stale (Boost, Gtk+2, Ubuntu 15.04, old homepage).
-`stable` README has an obsolescence warning and updated CMake-centric build
-notes.
+CMake requires C++23 (`std::format` / `std::print`). README on `develop` is
+aligned with the current build (CMake, libevdev, no Boost/{fmt}).
 
 ---
 
@@ -146,10 +144,9 @@ From FIXMEs, recent commits, and parity goals:
      for the cleanup line).
    - ~~Flake/fmt inconsistency~~ resolved: logmich + unsebu on `<format>`;
      flake no longer pulls `fmt`.
-   - README on develop still advertises Boost, Gtk+2, old homepage; stable
-     README is closer to current reality (CMake, obsolescence warning).
-   - Manpage / examples need a pass against actual option names and
-     behaviour.
+   - ~~Stale README~~ updated (obsolescence warning, current deps, cmake
+     build, repo URLs). Manpage issue URL pointed at xboxdrv/xboxdrv;
+     full manpage content review still optional later.
 
 8. **Historical `TODO` file**
    - Still a large untriaged dump; actionable items should move here
@@ -169,8 +166,7 @@ From FIXMEs, recent commits, and parity goals:
 
 1. ~~Port Saitek P3600~~ (done).
 2. ~~Resolve fmt vs std::format~~ (done).
-3. **README + manpage** aligned with develop (obsolescence note, deps,
-   build, option names).
+3. ~~README + manpage~~ (README done; manpage issue URL fixed).
 4. **Daemon / hotplug / multi-slot** smoke-test vs stable behaviour; close
    or ticket the remaining FIXMEs that affect replaceability.
 5. **FF / LED** smoke-test on wired 360 + wireless receiver.
@@ -242,7 +238,7 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - [ ] Multi-controller UInput update / threading.
 - [ ] Daemon hotplug, basic FF, LED — behavioural check vs stable.
 - [ ] Drop log noise / temporary debug helpers.
-- [ ] README + manpage pass (develop is stale; stable is closer).
+- [x] README + manpage pass (obsolescence note, deps, build, repo URLs).
 - [ ] Confirm `develop` builds and behaves at least as well as `stable`
       for supported controllers.
 
@@ -260,4 +256,5 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - One logical change per commit where practical.
 - Public config compatibility: preserve or document the break.
 - Prefer evidence from code and `git log` over README/TODO claims.
-- Next concrete code step for parity: **README + manpage** pass.
+- Next: daemon/hotplug/FF smoke vs stable, or make GTK optional in CMake
+  (still REQUIRED but not linked).
