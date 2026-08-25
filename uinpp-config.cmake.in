@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(logmich)
+find_dependency(strut)
+
+include("${CMAKE_CURRENT_LIST_DIR}/uinpp-config-version.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/uinpp-targets.cmake")
+
+check_required_components(uinpp)
+
+# EOF #
