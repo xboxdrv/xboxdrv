@@ -1,32 +1,5 @@
 {
   "nodes": {
-    "argpp": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "tinycmmc": [
-          "tinycmmc"
-        ]
-      },
-      "locked": {
-        "lastModified": 1786345023,
-        "narHash": "sha256-1eb34jKAsTy12Stz8UQze0J7lH+JzhJwnJTTC0qoAe4=",
-        "owner": "grumbel",
-        "repo": "argpp",
-        "rev": "8cac52fee6a3ad152659500e5ce6396c87a3c2eb",
-        "type": "github"
-      },
-      "original": {
-        "owner": "grumbel",
-        "ref": "stable",
-        "repo": "argpp",
-        "type": "github"
-      }
-    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -42,63 +15,6 @@
       "original": {
         "owner": "numtide",
         "repo": "flake-utils",
-        "type": "github"
-      }
-    },
-    "flake-utils_2": {
-      "inputs": {
-        "systems": "systems_2"
-      },
-      "locked": {
-        "lastModified": 1731533236,
-        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
-      }
-    },
-    "flake-utils_3": {
-      "inputs": {
-        "systems": "systems_3"
-      },
-      "locked": {
-        "lastModified": 1731533236,
-        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
-      }
-    },
-    "logmich": {
-      "inputs": {
-        "flake-utils": "flake-utils_2",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1787239001,
-        "narHash": "sha256-p3BHIMo/2SaN5eyfhn8XUysO5+DY0F98wAK8WYMDceY=",
-        "owner": "logmich",
-        "repo": "logmich",
-        "rev": "8f8774b30c70b820e079484df638fd2667615a47",
-        "type": "github"
-      },
-      "original": {
-        "owner": "logmich",
-        "repo": "logmich",
         "type": "github"
       }
     },
@@ -120,36 +36,8 @@
     },
     "root": {
       "inputs": {
-        "argpp": "argpp",
         "flake-utils": "flake-utils",
-        "logmich": "logmich",
-        "nixpkgs": "nixpkgs",
-        "strutcpp": "strutcpp",
-        "tinycmmc": "tinycmmc",
-        "uinpp": "uinpp",
-        "unsebu": "unsebu",
-        "yaini": "yaini"
-      }
-    },
-    "strutcpp": {
-      "inputs": {
-        "flake-utils": "flake-utils_3",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1786385206,
-        "narHash": "sha256-HyZl9g1wnk3QFqQuawtTe29LXgSWq92zMZcCi6zg584=",
-        "owner": "grumbel",
-        "repo": "strutcpp",
-        "rev": "81bbd72b9a5ecc67dbcf18ffa9117cdf6f21262a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "grumbel",
-        "repo": "strutcpp",
-        "type": "github"
+        "nixpkgs": "nixpkgs"
       }
     },
     "systems": {
@@ -164,146 +52,6 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
-        "type": "github"
-      }
-    },
-    "systems_2": {
-      "locked": {
-        "lastModified": 1681028828,
-        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
-        "owner": "nix-systems",
-        "repo": "default",
-        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default",
-        "type": "github"
-      }
-    },
-    "systems_3": {
-      "locked": {
-        "lastModified": 1681028828,
-        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
-        "owner": "nix-systems",
-        "repo": "default",
-        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default",
-        "type": "github"
-      }
-    },
-    "tinycmmc": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1787260639,
-        "narHash": "sha256-fKg/K22LM5QVIUn6E7DC3c1g9B9vnXNZK6ZZJAR0+4Q=",
-        "owner": "grumbel",
-        "repo": "tinycmmc",
-        "rev": "7bb25c7bb0229e717c0de963ac80f3e923500d88",
-        "type": "github"
-      },
-      "original": {
-        "owner": "grumbel",
-        "repo": "tinycmmc",
-        "type": "github"
-      }
-    },
-    "uinpp": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "logmich": [
-          "logmich"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "strutcpp": [
-          "strutcpp"
-        ],
-        "tinycmmc": [
-          "tinycmmc"
-        ]
-      },
-      "locked": {
-        "lastModified": 1787590286,
-        "narHash": "sha256-B8IYp4rTBgrE7hkQ5dtsCm85yPaZZcwHYApat7KdXZ0=",
-        "owner": "grumbel",
-        "repo": "uinpp",
-        "rev": "b79894e63df0d2f9bc265571b7cea741d0d01c97",
-        "type": "github"
-      },
-      "original": {
-        "owner": "grumbel",
-        "repo": "uinpp",
-        "type": "github"
-      }
-    },
-    "unsebu": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "logmich": [
-          "logmich"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "tinycmmc": [
-          "tinycmmc"
-        ]
-      },
-      "locked": {
-        "lastModified": 1787589843,
-        "narHash": "sha256-k7RBVXQWJhq6Lqdvn4sXfP6LZbSK3wVizPvFxovHgmY=",
-        "owner": "grumbel",
-        "repo": "unsebu",
-        "rev": "0398ac32f2e4926da3308870f739b79a24b6805c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "grumbel",
-        "repo": "unsebu",
-        "type": "github"
-      }
-    },
-    "yaini": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "tinycmmc": [
-          "tinycmmc"
-        ]
-      },
-      "locked": {
-        "lastModified": 1763251987,
-        "narHash": "sha256-2eJzaBO1H7n3NSmNc9svDyjiYpanP+AtSVWCYDTycTY=",
-        "owner": "grumbel",
-        "repo": "yaini",
-        "rev": "34bb32a097007f0c5332666562fdb4c56002b9b3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "grumbel",
-        "repo": "yaini",
         "type": "github"
       }
     }
