@@ -144,6 +144,11 @@ CMake builds the helpers from the vendored trees via `add_subdirectory`.
 To update a dependency later:
   git subtree pull --prefix=external/NAME URL REF --squash
 
+**tinycmmc** is still required by logmich, strutcpp, uinpp, yaini and
+unsebu (MaximumWarnings / ClangTidy / ExportAndInstallLibrary modules).
+argpp no longer needs it. Removing tinycmmc entirely is blocked until
+those helpers are updated upstream or patched to be self-contained.
+
 ### 6. Other mess (not blocking the first cleanups)
 
 - CMake `file(GLOB … src/uinput/*.cpp)` — **that directory does not exist**.
