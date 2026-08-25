@@ -125,7 +125,7 @@ private:
       uint8_t unknown2;
       uint8_t count1;
       uint8_t count2;
-    } __attribute__((__packed__));
+    };
 
     struct KeyMsg {
       uint8_t zero1;
@@ -133,13 +133,13 @@ private:
       uint8_t scancode1;
       uint8_t scancode2;
       uint8_t zero3;
-    } __attribute__((__packed__));
+    };
 
     union {
       ClockMsg clock;
       KeyMsg key;
     };
-  } __attribute__((__packed__));
+  };
 
   struct ChatpadKeyMsg {
     uint8_t zero1;
@@ -147,7 +147,7 @@ private:
     uint8_t scancode1;
     uint8_t scancode2;
     uint8_t zero3;
-  } __attribute__((__packed__));
+  };
 
 private:
   libusb_device_handle* m_handle;
