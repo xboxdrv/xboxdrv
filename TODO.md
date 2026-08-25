@@ -32,7 +32,7 @@ kernel xpad + Steam Input are preferred for most users.
 | `examples/` | `.xboxdrv` configs + macros — still valuable |
 | `doc/` | manpage sources, plots |
 | `data/` | D-Bus policy, virtualkeyboard assets |
-| `external/` | git submodules (argpp, logmich, strutcpp, tinycmmc, uinpp, unsebu, yaini) |
+| `external/` | vendored git subtrees (argpp, logmich, strutcpp, tinycmmc, uinpp, unsebu, yaini); see REVISIONS |
 | `PROTOCOL` | USB protocol notes — keep |
 | `TODO` | years of accumulated notes — triage later |
 | `flake.nix` + `.gitmodules` | **two** ways to get the same C++ helper libs |
@@ -133,17 +133,16 @@ C++23 is required. `{fmt}` has been dropped from CMake and the flake.
 Watch remaining printf-style leftovers if any new format strings are added
 (`usb_controller.cpp` had `"%04x:%04x"` mixed with fmt).
 
-### 5. Dual dependency story (`external/` vs flake inputs)
+### 5. Dual dependency story (`external/` vs flake inputs) — resolved
 
-Git submodules **and** flake inputs both pull argpp, logmich, strutcpp,
-tinycmmc, uinpp, unsebu, yaini. CMake `build_dependencies()` uses
-`find_package` then `add_subdirectory(external/…)`.
+Former git submodules and flake github inputs for argpp, logmich,
+strutcpp, tinycmmc, uinpp, unsebu, yaini are now **vendored git subtrees**
+under `external/`. Revisions are recorded in `external/REVISIONS` and in
+the squash-commit messages. Flake inputs reduced to nixpkgs + flake-utils;
+CMake builds the helpers from the vendored trees via `add_subdirectory`.
 
-Vendoring flake-only bits into `external/` subtrees can wait. When we do
-it, pick **one** mechanism (submodules *or* subtrees), not a third.
-
-Shallow clones without `git submodule update` will fail CMake unless the
-flake-provided packages satisfy `find_package`.
+To update a dependency later:
+  git subtree pull --prefix=external/NAME URL REF --squash
 
 ### 6. Other mess (not blocking the first cleanups)
 
@@ -218,8 +217,8 @@ architecture, daemon + hotplug concept.
 
 ### Phase 5 — Later
 
-- [ ] Vendor selected flake dependencies into `external/` subtrees
-      (single mechanism).
+- [x] Vendor selected flake dependencies into `external/` subtrees
+      (single mechanism: git subtree).
 - [ ] Drop ancient Travis if unused; refresh GitLab CI.
 - [ ] Further architecture (In/Out ports, half-axis) only after the above.
 

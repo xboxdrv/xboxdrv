@@ -162,11 +162,10 @@ metadata and can fail when `revCount` is missing.
 
 - Primary build: CMake. C++23 is required (`CXX_STANDARD 23`) so
   `std::format` / `std::print` can be used without `{fmt}`.
-- Nix flake exists; later work may convert most flake inputs into vendored
-  `external/` git subtrees (can wait).
-- `external/` already has git submodules (argpp, logmich, strutcpp, tinycmmc,
-  uinpp, unsebu, yaini) **and** the flake pulls the same projects as flake
-  inputs. Keep that dual story in mind; do not invent a third.
+- Nix flake exists; the former github flake inputs for the C++ helpers
+  are now vendored as git subtrees under `external/` (see
+  `external/REVISIONS`). Only nixpkgs and flake-utils remain as flake
+  inputs. CMake builds the helpers from the vendored trees.
 - Required at build time today: libusb-1.0, udev, fmt, X11, dbus-glib, GTK3,
   Python (dbus glue / bin2h). Optional: CWiid.
 - Runtime: uinput kernel module.
