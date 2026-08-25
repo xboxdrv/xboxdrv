@@ -81,6 +81,7 @@
               libthai
               udev
               libusb1
+              libevdev
               libxkbcommon
               pcre
               (pkgs.python3.withPackages (p: [

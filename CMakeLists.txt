@@ -53,6 +53,7 @@ find_package(Python REQUIRED)
 pkg_search_module(GTK REQUIRED gtk+-3.0 IMPORTED_TARGET)
 pkg_search_module(USB REQUIRED libusb-1.0 IMPORTED_TARGET)
 pkg_search_module(UDEV REQUIRED libudev IMPORTED_TARGET)
+pkg_search_module(LIBEVDEV REQUIRED libevdev IMPORTED_TARGET)
 pkg_search_module(DBUSGLIB REQUIRED dbus-glib-1 IMPORTED_TARGET)
 pkg_search_module(CWIID OPTIONAL cwiid IMPORTED_TARGET)
 # FIXME: define -DHAVE_CWIID when found
@@ -154,6 +155,7 @@ target_link_libraries(libxboxdrv PUBLIC
   PkgConfig::DBUSGLIB
   PkgConfig::USB
   PkgConfig::UDEV
+  PkgConfig::LIBEVDEV
   X11::X11)
 
 add_executable(xboxdrv src/main/main.cpp)

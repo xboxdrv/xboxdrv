@@ -19,6 +19,9 @@
 #ifndef HEADER_EVDEV_HELPER_HPP
 #define HEADER_EVDEV_HELPER_HPP
 
+#include <string>
+#include <vector>
+
 #include <X11/Xlib.h>
 
 #include <uinpp/event.hpp>
@@ -42,23 +45,10 @@ uinpp::Event str2key_event(const std::string& str);
 uinpp::Event str2rel_event(const std::string& str);
 uinpp::Event str2abs_event(const std::string& str);
 
-class EvDevRelEnum : public EnumBox<int>
-{
-public:
-  EvDevRelEnum();
-};
-
-class EvDevAbsEnum : public EnumBox<int>
-{
-public:
-  EvDevAbsEnum();
-};
-
-class EvDevKeyEnum : public EnumBox<int>
-{
-public:
-  EvDevKeyEnum();
-};
+/** Names known to libevdev for EV_KEY / EV_ABS / EV_REL (for --list-enums). */
+std::vector<std::string> list_evdev_key_names();
+std::vector<std::string> list_evdev_abs_names();
+std::vector<std::string> list_evdev_rel_names();
 
 class X11KeysymEnum : public EnumBox<int>
 {
@@ -69,9 +59,6 @@ private:
   void process_keymap(Display* dpy);
 };
 
-extern EvDevRelEnum  evdev_rel_names;
-extern EvDevKeyEnum  evdev_key_names;
-extern EvDevAbsEnum  evdev_abs_names;
 const X11KeysymEnum& get_x11keysym_names();
 
 } // namespace xboxdrv

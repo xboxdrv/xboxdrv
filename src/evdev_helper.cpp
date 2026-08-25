@@ -18,43 +18,61 @@
 
 #include "evdev_helper.hpp"
 
+#include <format>
 #include <linux/input.h>
+#include <libevdev/libevdev.h>
 
 #include <logmich/log.hpp>
 #include <uinpp/parse.hpp>
 
-#include "util/math.hpp"
+#include "raise_exception.hpp"
 #include "util/string.hpp"
 
 namespace xboxdrv {
 
-EvDevRelEnum evdev_rel_names;
-EvDevKeyEnum evdev_key_names;
-EvDevAbsEnum evdev_abs_names;
+namespace {
+
+int code_from_name(unsigned int type, std::string const& name)
+{
+  int code = libevdev_event_code_from_name(type, name.c_str());
+  if (code < 0)
+  {
+    raise_exception(std::runtime_error,
+                    "unknown " << libevdev_event_type_get_name(type)
+                    << " name: '" << name << "'");
+  }
+  return code;
+}
+
+std::string name_from_code(unsigned int type, int code, char const* hash_prefix)
+{
+  char const* name = libevdev_event_code_get_name(type, code);
+  if (name)
+  {
+    return name;
+  }
+  return std::format("{}#{}", hash_prefix, code);
+}
+
+std::vector<std::string> list_names(unsigned int type, int max_code)
+{
+  std::vector<std::string> names;
+  for (int code = 0; code <= max_code; ++code)
+  {
+    if (char const* name = libevdev_event_code_get_name(type, code))
+    {
+      names.emplace_back(name);
+    }
+  }
+  return names;
+}
+
+} // namespace
 
 X11KeysymEnum const& get_x11keysym_names()
 {
   static X11KeysymEnum x11keysym_names;
   return x11keysym_names;
-}
-
-EvDevRelEnum::EvDevRelEnum() :
-  EnumBox<int>("EV_REL")
-{
-#  include "rel_list.x"
-}
-
-EvDevAbsEnum::EvDevAbsEnum() :
-    EnumBox<int>("EV_ABS")
-{
-#  include "abs_list.x"
-}
-
-
-EvDevKeyEnum::EvDevKeyEnum() :
-  EnumBox<int>("EV_KEY")
-{
-#  include "key_list.x"
 }
 
 X11KeysymEnum::X11KeysymEnum() :
@@ -89,11 +107,6 @@ X11KeysymEnum::process_keymap(Display* dpy)
     if (keymap[i*keysyms_per_keycode] != NoSymbol)
     {
       KeySym keysym = keymap[i*keysyms_per_keycode];
-
-      // FIXME: Duplicate entries confuse the conversion
-      // std::map<KeySym, int>::iterator it = mapping.find(keysym);
-      // if (it != mapping.end())
-      //   std::cout << "Duplicate keycode: " << i << std::endl;
 
       char const* keysym_str = XKeysymToString(keysym);
       if (!keysym_str)
@@ -189,10 +202,7 @@ int str2abs(std::string const& name)
   {
     return str2int(name.substr(5));
   }
-  else
-  {
-    return evdev_abs_names[name];
-  }
+  return code_from_name(EV_ABS, name);
 }
 
 int str2key(std::string const& name)
@@ -212,7 +222,7 @@ int str2key(std::string const& name)
   else if (name.compare(0, 3, "KEY") == 0 ||
            name.compare(0, 3, "BTN") == 0)
   {
-    return evdev_key_names[name];
+    return code_from_name(EV_KEY, name);
   }
   else
   {
@@ -226,10 +236,7 @@ int str2rel(std::string const& name)
   {
     return str2int(name.substr(5));
   }
-  else
-  {
-    return evdev_rel_names[name];
-  }
+  return code_from_name(EV_REL, name);
 }
 
 uinpp::Event str2key_event(std::string const& str)
@@ -261,44 +268,32 @@ uinpp::Event str2abs_event(std::string const& str)
 
 std::string key2str(int v)
 {
-  try
-  {
-    return evdev_key_names[v];
-  }
-  catch(std::exception const& err)
-  {
-    std::ostringstream str;
-    str << "KEY_#" << v;
-    return str.str();
-  }
+  return name_from_code(EV_KEY, v, "KEY_");
 }
 
 std::string abs2str(int v)
 {
-  try
-  {
-    return evdev_abs_names[v];
-  }
-  catch(std::exception const& err)
-  {
-    std::ostringstream str;
-    str << "ABS_#" << v;
-    return str.str();
-  }
+  return name_from_code(EV_ABS, v, "ABS_");
 }
 
 std::string rel2str(int v)
 {
-  try
-  {
-    return evdev_rel_names[v];
-  }
-  catch(std::exception const& err)
-  {
-    std::ostringstream str;
-    str << "REL_#" << v;
-    return str.str();
-  }
+  return name_from_code(EV_REL, v, "REL_");
+}
+
+std::vector<std::string> list_evdev_key_names()
+{
+  return list_names(EV_KEY, KEY_MAX);
+}
+
+std::vector<std::string> list_evdev_abs_names()
+{
+  return list_names(EV_ABS, ABS_MAX);
+}
+
+std::vector<std::string> list_evdev_rel_names()
+{
+  return list_names(EV_REL, REL_MAX);
 }
 
 } // namespace xboxdrv

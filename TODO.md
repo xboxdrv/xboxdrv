@@ -193,6 +193,12 @@ architecture, daemon + hotplug concept.
 - [ ] Make D-Bus optional if it is still a hard dependency for the
       non-daemon path.
 
+### Phase 1b — libevdev for uinput names
+
+- [x] Replace hand-rolled `*_list.x` / EnumBox tables in `evdev_helper` with libevdev.
+- [x] Keep `KEY_#N` / `JS_N` / X11 `XK_*` special cases.
+- [ ] Drop X11 keysym path later if unused.
+
 ### Phase 3 — `std::format`
 
 - [x] Replace `fmt::format` / `fmt::format_to` / `fmt::print` with

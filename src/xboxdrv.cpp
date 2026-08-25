@@ -289,21 +289,21 @@ Xboxdrv::run_list_enums(uint32_t enums)
   if (enums & Options::LIST_ABS)
   {
     wrap.println("EV_ABS:");
-    wrap.para("  ", strut::join(evdev_abs_names.get_names(), ", "));
+    wrap.para("  ", strut::join(list_evdev_abs_names(), ", "));
     wrap.newline();
   }
 
   if (enums & Options::LIST_REL)
   {
     wrap.println("EV_REL:");
-    wrap.para("  ", strut::join(evdev_rel_names.get_names(), ", "));
+    wrap.para("  ", strut::join(list_evdev_rel_names(), ", "));
     wrap.newline();
   }
 
   if (enums & Options::LIST_KEY)
   {
     wrap.println("EV_KEY:");
-    wrap.para("  ", strut::join(evdev_key_names.get_names(), ", "));
+    wrap.para("  ", strut::join(list_evdev_key_names(), ", "));
     wrap.newline();
   }
 
