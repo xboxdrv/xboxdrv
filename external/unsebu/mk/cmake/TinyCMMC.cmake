@@ -16,21 +16,27 @@
 
 # Bootstrap file that is looking for where tinycmmc is installed
 
-find_package(tinycmmc CONFIG)
+find_package(tinycmmc CONFIG QUIET)
 if(tinycmmc_FOUND)
   message(STATUS "tinycmmc module path: ${TINYCMMC_MODULE_PATH}")
   list(APPEND CMAKE_MODULE_PATH ${TINYCMMC_MODULE_PATH})
+elseif(TINYCMMC_MODULE_PATH)
+  # Parent project (e.g. xboxdrv) already provided the module path
+  message(STATUS "tinycmmc module path: ${TINYCMMC_MODULE_PATH}")
+  list(APPEND CMAKE_MODULE_PATH ${TINYCMMC_MODULE_PATH})
+elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/tinycmmc/CMakeLists.txt")
+  set(TINYCMMC_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/tinycmmc/modules/")
+  message(STATUS "tinycmmc module path: ${TINYCMMC_MODULE_PATH}")
+  list(APPEND CMAKE_MODULE_PATH "${TINYCMMC_MODULE_PATH}")
+elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../tinycmmc/CMakeLists.txt")
+  # Sibling under external/ when vendored as parallel trees
+  set(TINYCMMC_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../tinycmmc/modules/")
+  message(STATUS "tinycmmc module path: ${TINYCMMC_MODULE_PATH}")
+  list(APPEND CMAKE_MODULE_PATH "${TINYCMMC_MODULE_PATH}")
 else()
-  if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/tinycmmc/CMakeLists.txt")
-    message(FATAL_ERROR
-      "The git submodule \"external/tinycmmc\" could not be found. "
-      "To retrieve it, run:\n"
-      "    git submodule update --init --recursive\n")
-  else()
-    set(TINYCMMC_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/tinycmmc/modules/")
-    message(STATUS "tinycmmc module path: ${TINYCMMC_MODULE_PATH}")
-    list(APPEND CMAKE_MODULE_PATH "${TINYCMMC_MODULE_PATH}")
-  endif()
+  message(FATAL_ERROR
+    "tinycmmc could not be found. Either install it, set TINYCMMC_MODULE_PATH, "
+    "or place it at external/tinycmmc (or as a sibling ../tinycmmc).")
 endif()
 
 include(TinyCMMC)
