@@ -1,22 +1,22 @@
-# TODO.md — xboxdrv (`develop`)
+# TODO.md — xboxdrv (`master`)
 
 Cleanup roadmap and analysis of the current tree. Historical notes remain
 in `TODO` (no suffix); this file is the working list.
 
 **Analysed revision:** `04e87e64f0b5afa26c43a330e58604aee4f29b02`
 (`Document German Chatpad layout; Shift LED follows held state`) on
-**`develop`**.
+**`master`**.
 
 **Branches**
 
-- `stable`: working and good — leave it alone.
-- `develop`: cleanup target. Goal = `develop` can replace `stable`.
+- `0.8.x` (formerly `stable`): maintenance line for the 0.8 series.
+- `master` (formerly `develop`): active development; default branch.
 
 **Merge-base (fork point):** `27cdd9c6a994f3059b8ae683adb711169341ffa5`
 (2012-12-19, “Added additional bookkeeping to USBController…”).
 
-- `develop` has ~548 commits not in `stable`.
-- `stable` has ~120 commits not in `develop` (mostly post-2012 device IDs,
+- `master` has ~548 commits not in `stable`.
+- `stable` has ~120 commits not in `master` (mostly post-2012 device IDs,
   bugfixes, and later CMake / Python3 / flake work on the stable line).
 
 ---
@@ -44,24 +44,24 @@ kernel xpad + Steam Input are preferred for most users.
 | `TODO` | years of accumulated notes — triage later |
 | `flake.nix` | Nix flake (helpers vendored under `external/`) |
 
-CMake requires C++23 (`std::format` / `std::print`). README on `develop` is
+CMake requires C++23 (`std::format` / `std::print`). README on `master` is
 aligned with the current build (CMake, libevdev, no Boost/{fmt}).
 
 ---
 
-## Investigation: `develop` vs `stable` (feature parity)
+## Investigation: `master` vs `stable` (feature parity)
 
-Goal: `develop` must completely replace `stable`. Investigation focuses on
+Goal: `master` must completely replace `stable`. Investigation focuses on
 code, not outdated docs. Many practical fixes that landed on `stable` after
-the 2012 fork were re-implemented independently on `develop` during the
+the 2012 fork were re-implemented independently on `master` during the
 architecture rewrite; some were not.
 
 ### Divergent history (unusual / notable)
 
-- Fork is very old (2012). `develop` was a long-running rewrite (threads →
+- Fork is very old (2012). `master` was a long-running rewrite (threads →
   GLib main loop, ControllerMessage / ports, symbols work, C++ modernisation,
   Chatpad async, USB teardown hardening, subtree vendoring). Intermediate
-  states on `develop` were known-broken (see historical log messages about
+  states on `master` were known-broken (see historical log messages about
   “most controllers still broken”).
 - `stable` continued to receive community device IDs, mapping fixes, and
   build-system updates (SCons → CMake, Python3, flake) with far less
@@ -72,13 +72,13 @@ architecture rewrite; some were not.
 - No evidence of force-push weirdness needed for parity analysis; the
   important signal is the set of functional commits only on `stable`.
 
-### Missing on `develop` (must port or re-implement)
+### Missing on `master` (must port or re-implement)
 
 | Item | Evidence | Notes |
 |------|----------|--------|
 | **Saitek P3600 controller** | ~~missing~~ | **Ported** — `src/controller/saitek_p3600_controller.{cpp,hpp}`, factory, enum, VID/PID `0x06a3:0xf51a`. Report layout and trigger/stick mapping preserved from stable (no debug printf). |
 
-### Stable fixes already present (rewritten) on `develop`
+### Stable fixes already present (rewritten) on `master`
 
 Checked by content, not by shared SHA (SHAs differ):
 
@@ -92,7 +92,7 @@ Checked by content, not by shared SHA (SHAs differ):
 - Daemon `set_device_usbids` for virtual devices.
 - INI `\r` treated as whitespace (now in vendored `external/yaini`).
 - Sensitivity spelling, regex escape for xboxdrvctl, many device ID rows
-  (parallel history on `develop`).
+  (parallel history on `master`).
 
 ### CLI / public config surface
 
@@ -103,7 +103,7 @@ Checked by content, not by shared SHA (SHAs differ):
 - No missing public option names identified that would break typical
   `stable` configs, aside from behaviour of missing device backends.
 
-### Still incomplete / broken / risky on `develop` (code-level)
+### Still incomplete / broken / risky on `master` (code-level)
 
 From FIXMEs, recent commits, and parity goals:
 
@@ -170,7 +170,7 @@ From FIXMEs, recent commits, and parity goals:
    or ticket the remaining FIXMEs that affect replaceability.
 5. **FF / LED** smoke-test on wired 360 + wireless receiver.
 6. Triage historical `TODO` into this file or discard.
-7. Confirm `develop` builds (plain CMake and flake) and runs at least as
+7. Confirm `master` builds (plain CMake and flake) and runs at least as
    well as `stable` for the device set both claim to support.
 
 ---
@@ -242,7 +242,7 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - [x] Replace remaining live `log_tmp` with `log_debug` (wiimote/main).
 - [x] README + manpage pass (obsolescence note, deps, build, repo URLs).
 - [x] Drop unused GTK CMake requirement; define/link HAVE_CWIID when cwiid found.
-- [x] Confirm `develop` builds (user-verified).
+- [x] Confirm `master` builds (user-verified).
 - [ ] Behavioural parity vs `stable` for supported controllers (hardware).
 
 ### Phase 5 — Later

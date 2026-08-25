@@ -27,16 +27,19 @@
 #include "util/string.hpp"
 #include "raise_exception.hpp"
 #include "unpack.hpp"
+#include "wireless_chatpad.hpp"
 
 namespace xboxdrv {
 
 Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int controller_id,
+                                                     bool chatpad, bool chatpad_no_init, bool chatpad_debug,
                                                      bool try_detach) :
   USBController(dev),
   m_endpoint(),
   m_interface(),
   m_battery_status(),
   m_serial(),
+  m_chatpad(),
   xbox(m_message_descriptor)
 {
   // FIXME: A little bit of a hack
@@ -50,6 +53,16 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
 
   usb_claim_interface(m_interface, try_detach);
   usb_submit_read(m_endpoint, 32);
+
+  if (chatpad)
+  {
+    m_chatpad = std::make_unique<WirelessChatpad>(
+      [this](uint8_t* data, int len) {
+        usb_write(m_endpoint, data, len);
+      },
+      chatpad_no_init,
+      chatpad_debug);
+  }
 }
 
 Xbox360WirelessController::~Xbox360WirelessController()
@@ -77,6 +90,11 @@ Xbox360WirelessController::set_led_real(uint8_t status)
 bool
 Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage* msg_out)
 {
+  if (m_chatpad && m_chatpad->handle_input(data, len))
+  {
+    return false; // chatpad consumed; no gamepad message
+  }
+
   if (len == 0)
   {
     return false;
@@ -92,6 +110,10 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
         // reset the controller into neutral position on disconnect
         msg_out->clear();
         set_active(false);
+        if (m_chatpad)
+        {
+          m_chatpad->set_controller_present(false);
+        }
 
         return true;
       }
@@ -100,6 +122,10 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
         log_info("connection status: controller connected");
         set_led_real(get_led());
         set_active(true);
+        if (m_chatpad)
+        {
+          m_chatpad->set_controller_present(true);
+        }
       }
       else if (data[1] == 0x40)
       {

@@ -6,20 +6,13 @@
 **  it under the terms of the GNU General Public License as published by
 **  the Free Software Foundation, either version 3 of the License, or
 **  (at your option) any later version.
-**
-**  This program is distributed in the hope that it will be useful,
-**  but WITHOUT ANY WARRANTY; without even the implied warranty of
-**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**  GNU General Public License for more details.
-**
-**  You should have received a copy of the GNU General Public License
-**  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef HEADER_XBOX360_WIRELESS_CONTROLLER_HPP
 #define HEADER_XBOX360_WIRELESS_CONTROLLER_HPP
 
 #include <libusb.h>
+#include <memory>
 #include <string>
 
 #include "controller/usb_controller.hpp"
@@ -28,6 +21,7 @@
 namespace xboxdrv {
 
 class ControllerMessage;
+class WirelessChatpad;
 
 class Xbox360WirelessController : public USBController
 {
@@ -36,11 +30,14 @@ private:
   int  m_interface;
   int  m_battery_status;
   std::string m_serial;
+  std::unique_ptr<WirelessChatpad> m_chatpad;
 
   Xbox360DefaultNames xbox;
 
 public:
-  Xbox360WirelessController(libusb_device* dev, int controller_id, bool try_detach);
+  Xbox360WirelessController(libusb_device* dev, int controller_id,
+                            bool chatpad, bool chatpad_no_init, bool chatpad_debug,
+                            bool try_detach);
   virtual ~Xbox360WirelessController();
 
   bool parse(const uint8_t* data, int len, ControllerMessage* msg_out) override;

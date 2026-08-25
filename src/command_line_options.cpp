@@ -230,7 +230,7 @@ CommandLineParser::init_argp(int argc, char** argv)
     .add_option(OPTION_QUIT,    'q', "quit",   "",    "only set led and rumble status then quit");
 
   m_argp.add_group("Chatpad Options (experimental): ")
-    .add_option(OPTION_CHATPAD,       NUL, "chatpad", "",  "Enable Chatpad support for Xbox360 USB controller")
+    .add_option(OPTION_CHATPAD,       NUL, "chatpad", "",  "Enable Chatpad support (wired USB interface 2, or wireless receiver multiplexing)")
     .add_option(OPTION_CHATPAD_NO_INIT,NUL, "chatpad-no-init", "",  "To not send init code to the Chatpad")
     .add_option(OPTION_CHATPAD_DEBUG,NUL, "chatpad-debug", "",  "To not send init code to the Chatpad");
 

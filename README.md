@@ -12,9 +12,9 @@ Xbox 360 USB and wireless receivers, plus a number of third-party and
 related devices (see `src/xpad_device.cpp`). Optional backends include
 PlayStation 3 (USB), Wiimote (when built with CWiid), and generic USB.
 
-Basic support for the Xbox 360 Chatpad on **wired** USB controllers is
-included; Chatpad on wireless receivers is not supported. The headset is
-not supported beyond optional raw dumps.
+Chatpad support: **wired** USB controllers (interface 2) and experimental
+**wireless** receiver multiplexing (`--chatpad`). The headset is not
+supported beyond optional raw dumps.
 
 Use this driver when you need more configurability than `xpad`, or when
 `xpad` does not work for a particular device. For most games, the kernel
