@@ -1,4 +1,4 @@
-# Xbox360 USB Gamepad Userspace Driver
+# ArgParse - A Command Line Argument Parser for C++
 # Copyright (C) 2015 Ingo Ruhnke <grumbel@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,23 +17,42 @@
 cmake_minimum_required(VERSION 3.10)
 project(argpp VERSION 1.0.0)
 
-if(NOT TINYCMMC_MODULE_PATH)
-  set(TINYCMMC_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/external/cmake-modules/modules/")
-endif()
-find_package(tinycmmc CONFIG)
-message(STATUS "tinycmmc module path: ${TINYCMMC_MODULE_PATH}")
-list(APPEND CMAKE_MODULE_PATH ${TINYCMMC_MODULE_PATH})
-
 include(GNUInstallDirs)
-include(MaximumWarnings)
-include(ClangTidy)
+include(CMakePackageConfigHelpers)
 
 option(BUILD_TESTS "Build tests" OFF)
+option(WARNINGS "Enable extra compiler warnings" OFF)
+option(WERROR "Treat warnings as errors" OFF)
+option(CLANG_TIDY "Enable clang-tidy" OFF)
+option(CLANG_TIDY_FIX "Apply clang-tidy fixes to source code" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+# Optional extra warnings (replaces tinycmmc MaximumWarnings)
+set(WARNINGS_CXX_FLAGS "")
+if(WERROR)
+  list(APPEND WARNINGS_CXX_FLAGS -Werror)
+endif()
+if(WARNINGS)
+  list(APPEND WARNINGS_CXX_FLAGS -Wall -Wextra -Wpedantic)
+endif()
+
+# Optional clang-tidy (replaces tinycmmc ClangTidy)
+if(CLANG_TIDY AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.6)
+  find_program(CLANG_TIDY_EXE NAMES clang-tidy DOC "Path to clang-tidy executable")
+  if(NOT CLANG_TIDY_EXE)
+    message(FATAL_ERROR "clang-tidy not found.")
+  endif()
+  message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
+  if(CLANG_TIDY_FIX)
+    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}" "-fix")
+  else()
+    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
+  endif()
+endif()
 
 add_library(argpp STATIC
   src/parser.cpp
@@ -49,7 +68,11 @@ target_include_directories(argpp PUBLIC
 target_include_directories(argpp PRIVATE
   src/)
 target_compile_options(argpp PRIVATE ${WARNINGS_CXX_FLAGS})
-set_target_properties(argpp PROPERTIES PUBLIC_HEADER "include/argpp/argpp.hpp")
+set_target_properties(argpp PROPERTIES
+  PUBLIC_HEADER "include/argpp/argpp.hpp"
+  EXPORT_NAME argpp)
+
+add_library(argpp::argpp ALIAS argpp)
 
 if(BUILD_TESTS)
   enable_testing()
@@ -69,6 +92,35 @@ if(BUILD_TESTS)
   endforeach()
 endif()
 
-include(ExportAndInstallLibrary)
+# Install & package config (replaces tinycmmc ExportAndInstallLibrary)
+install(TARGETS argpp
+  EXPORT argpp
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+
+configure_package_config_file(
+  argpp-config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/argpp-config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/argpp)
+
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/argpp-config-version.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMinorVersion)
+
+export(EXPORT argpp
+  NAMESPACE argpp::
+  FILE ${CMAKE_CURRENT_BINARY_DIR}/argpp-targets.cmake)
+
+install(EXPORT argpp
+  FILE argpp-targets.cmake
+  NAMESPACE argpp::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/argpp)
+
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/argpp-config.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/argpp-config-version.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/argpp)
 
 # EOF #

@@ -5,7 +5,7 @@
 #   git subtree pull --prefix=external/NAME URL REF --squash
 #
 # name          upstream                                      revision
-argpp           https://github.com/grumbel/argpp.git          8cac52fee6a3ad152659500e5ce6396c87a3c2eb
+argpp           https://github.com/grumbel/argpp.git          e3303dc00d847b7445822f9d8f61006fd79f3795
 logmich         https://github.com/logmich/logmich.git        5924b2beabd2169a077ae57401bdd3cd8ebfba7d
 strutcpp        https://github.com/grumbel/strutcpp.git       7bf070c08e4234cd51426b6f319fa474692f9ef4
 tinycmmc        https://github.com/grumbel/tinycmmc.git       01fe277570a290837726de6eb3c16d617bfda28c

@@ -4,20 +4,16 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-
-    tinycmmc.url = "github:grumbel/tinycmmc";
-    tinycmmc.inputs.nixpkgs.follows = "nixpkgs";
-    tinycmmc.inputs.flake-utils.follows = "flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils, tinycmmc }:
-    tinycmmc.lib.eachSystemWithPkgs (pkgs:
-      {
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in {
         packages = rec {
           default = argpp;
-          argpp = pkgs.callPackage ./argpp.nix {
-            tinycmmc = tinycmmc.packages.${pkgs.stdenv.hostPlatform.system}.default;
-          };
+          argpp = pkgs.callPackage ./argpp.nix { };
         };
       }
     );
