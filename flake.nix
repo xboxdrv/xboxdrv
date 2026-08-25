@@ -60,8 +60,7 @@
               libxtst
               # Vendored C++ helpers under external/ are built via
               # CMake add_subdirectory (see build_dependencies()).
-              # fmt is still required by some of those helpers.
-              fmt
+              # Formatting uses C++20/23 <format> (no {fmt}).
             ];
           };
         };

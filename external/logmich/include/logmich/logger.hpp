@@ -19,11 +19,9 @@
 #ifndef HEADER_LOGMICH_LOGGER_HPP
 #define HEADER_LOGMICH_LOGGER_HPP
 
+#include <format>
 #include <iostream>
 #include <string_view>
-
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 
 namespace logmich {
 namespace detail {
@@ -81,7 +79,8 @@ public:
   void append_format(LogLevel level, std::string_view file, int line, std::string_view fmt, Args&&... args)
   {
     try {
-      append(level, file, line, fmt::format(fmt::runtime(fmt), args...));
+      // Named rvalue-ref parameters are lvalues; make_format_args requires lvalues.
+      append(level, file, line, std::vformat(fmt, std::make_format_args(args...)));
     } catch (std::exception const& err) {
       std::cerr << "[LOG ERROR] " << file << ":" << line << ": " << err.what() << ": \"" << fmt << "\"" << std::endl;
     } catch (...) {

@@ -29,8 +29,7 @@ include(GNUInstallDirs)
 include(ClangTidy)
 include(MaximumWarnings)
 
-# Dependencies
-find_package(fmt REQUIRED)
+# Dependencies: formatting via C++20 <format> (no {fmt})
 
 # Build tinycmmc
 set(TINYCMMC_HEADERS
@@ -49,7 +48,6 @@ target_compile_options(logmich PUBLIC ${WARNINGS_CXX_FLAGS})
 target_include_directories(logmich PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-target_link_libraries(logmich PUBLIC fmt::fmt)
 
 if(BUILD_TESTS)
   add_executable(test_logmich test/test_logmich.cpp)

@@ -20,7 +20,7 @@
 
 #include <stdexcept>
 
-#include <fmt/format.h>
+#include <format>
 
 #include "usb_gsource.hpp"
 #include "usb_helper.hpp"
@@ -32,7 +32,7 @@ USBSubsystem::USBSubsystem() :
 {
   int ret = libusb_init(NULL);
   if (ret != LIBUSB_SUCCESS) {
-    throw std::runtime_error(fmt::format("libusb_init() failed: {}", libusb_strerror(ret)));
+    throw std::runtime_error(std::format("libusb_init() failed: {}", libusb_strerror(ret)));
   }
 
   m_usb_gsource = std::make_unique<USBGSource>();

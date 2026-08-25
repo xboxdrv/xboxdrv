@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <fmt/format.h>
+#include <format>
 #include <signal.h>
 #include <usb.h>
 #include <sstream>

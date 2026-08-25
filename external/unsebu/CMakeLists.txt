@@ -20,7 +20,6 @@ project(unsebu VERSION 0.1.0)
 include(mk/cmake/TinyCMMC.cmake)
 
 find_package(PkgConfig)
-find_package(fmt REQUIRED)
 pkg_search_module(USB REQUIRED libusb-1.0 IMPORTED_TARGET)
 pkg_search_module(UDEV REQUIRED libudev IMPORTED_TARGET)
 pkg_search_module(DBUSGLIB REQUIRED dbus-glib-1 IMPORTED_TARGET)
@@ -33,6 +32,10 @@ file(GLOB UNSEBU_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/*.cpp)
 
 add_library(unsebu STATIC ${UNSEBU_SOURCES})
+set_target_properties(unsebu PROPERTIES
+  CXX_STANDARD 20
+  CXX_STANDARD_REQUIRED ON
+  CXX_EXTENSIONS OFF)
 set_target_properties(unsebu PROPERTIES PUBLIC_HEADER "${UNSEBU_HEADER_SOURCES}")
 target_compile_options(unsebu PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 # Public: include/ so consumers can #include <unsebu/usb_helper.hpp>
@@ -44,7 +47,6 @@ target_include_directories(unsebu PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/include/unsebu)
 target_link_libraries(unsebu PUBLIC
   logmich::logmich
-  fmt::fmt
   PkgConfig::DBUSGLIB
   PkgConfig::USB
   PkgConfig::UDEV)

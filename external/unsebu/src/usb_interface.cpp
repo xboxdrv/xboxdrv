@@ -23,7 +23,7 @@
 #include <string.h>
 #include <stdexcept>
 
-#include <fmt/format.h>
+#include <format>
 
 #include "usb_helper.hpp"
 
@@ -57,7 +57,7 @@ USBInterface::USBInterface(libusb_device_handle* handle, int interface, bool try
     err = libusb_detach_kernel_driver(handle, interface);
     if (err != LIBUSB_SUCCESS)
     {
-      throw std::runtime_error(fmt::format("error detaching kernel driver: {}: {}", interface, libusb_strerror(err)));
+      throw std::runtime_error(std::format("error detaching kernel driver: {}: {}", interface, libusb_strerror(err)));
     }
     else
     {
@@ -65,13 +65,13 @@ USBInterface::USBInterface(libusb_device_handle* handle, int interface, bool try
       err = libusb_claim_interface(handle, interface);
       if (err != LIBUSB_SUCCESS)
       {
-        throw std::runtime_error(fmt::format("error claiming interface: {}: {}", interface, libusb_strerror(err)));
+        throw std::runtime_error(std::format("error claiming interface: {}: {}", interface, libusb_strerror(err)));
       }
     }
   }
   else
   {
-    throw std::runtime_error(fmt::format("error claiming interface: {}: {}", interface, libusb_strerror(err)));
+    throw std::runtime_error(std::format("error claiming interface: {}: {}", interface, libusb_strerror(err)));
   }
 }
 
@@ -136,7 +136,7 @@ USBInterface::submit_read(int endpoint, int len,
   {
     libusb_free_transfer(transfer);
 
-    throw std::runtime_error(fmt::format("libusb_submit_transfer(): ", libusb_strerror(err)));
+    throw std::runtime_error(std::format("libusb_submit_transfer(): {}", libusb_strerror(err)));
   }
   else
   {
@@ -171,7 +171,7 @@ USBInterface::submit_write(int endpoint, uint8_t* data_in, int len,
   {
     libusb_free_transfer(transfer);
 
-    throw std::runtime_error(fmt::format("libusb_submit_transfer(): ", libusb_strerror(err)));
+    throw std::runtime_error(std::format("libusb_submit_transfer(): {}", libusb_strerror(err)));
   }
   else
   {
@@ -185,14 +185,14 @@ USBInterface::cancel_transfer(int endpoint)
   auto const it = m_endpoints.find(endpoint);
   if (it == m_endpoints.end())
   {
-    throw std::runtime_error(fmt::format("endpoint {} not found", (endpoint & LIBUSB_ENDPOINT_ADDRESS_MASK)));
+    throw std::runtime_error(std::format("endpoint {} not found", (endpoint & LIBUSB_ENDPOINT_ADDRESS_MASK)));
   }
 
   libusb_transfer* transfer = it->second;
   int ret = libusb_cancel_transfer(transfer);
   if (ret != LIBUSB_SUCCESS && ret != LIBUSB_ERROR_NOT_FOUND)
   {
-    throw std::runtime_error(fmt::format("libusb_cancel_transfer(): {}", libusb_strerror(ret)));
+    throw std::runtime_error(std::format("libusb_cancel_transfer(): {}", libusb_strerror(ret)));
   }
 
   // Completion callback removes the entry from m_endpoints and frees the
