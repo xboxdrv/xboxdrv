@@ -84,16 +84,26 @@ XboxController::parse(uint8_t const* data, int len, ControllerMessage* msg_out)
 
     //unsigned int dummy       :8;
 
+    // Pressure-sensitive face/shoulder bytes: keep analog and drive digital
+    // keys (uinput maps gamepad.a → BTN_A, etc.).
     msg_out->set_abs(xbox.abs_a, data[4], 0, 255);
     msg_out->set_abs(xbox.abs_b, data[5], 0, 255);
     msg_out->set_abs(xbox.abs_x, data[6], 0, 255);
     msg_out->set_abs(xbox.abs_y, data[7], 0, 255);
+    msg_out->set_key(xbox.btn_a, data[4] != 0);
+    msg_out->set_key(xbox.btn_b, data[5] != 0);
+    msg_out->set_key(xbox.btn_x, data[6] != 0);
+    msg_out->set_key(xbox.btn_y, data[7] != 0);
 
     msg_out->set_abs(xbox.abs_black, data[8], 0, 255);
     msg_out->set_abs(xbox.abs_white, data[9], 0, 255);
+    msg_out->set_key(xbox.btn_lb, data[8] != 0);
+    msg_out->set_key(xbox.btn_rb, data[9] != 0);
 
     msg_out->set_abs(xbox.abs_lt, data[10], 0, 255);
     msg_out->set_abs(xbox.abs_rt, data[11], 0, 255);
+    msg_out->set_key(xbox.btn_lt, data[10] != 0);
+    msg_out->set_key(xbox.btn_rt, data[11] != 0);
 
 
     // Stick layout matches kernel xpad: LE int16 at +12,+14,+16,+18; Y inverted.

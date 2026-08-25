@@ -31,14 +31,14 @@ driver is preferable.
 
 ### Build
 
-* C++23 compiler (GCC or Clang)
+* C++23 compiler (GCC ≥ 13 or recent Clang)
 * CMake ≥ 3.14
 * pkg-config
 * libusb-1.0
 * libudev
 * libevdev
 * X11 (libX11)
-* dbus-glib-1 / GLib
+* dbus-glib-1 / GLib (includes `dbus-binding-tool` for glue generation)
 * Python 3 (D-Bus glue and `bin2h` generation)
 
 Optional:
@@ -83,8 +83,8 @@ sudo apt-get install \
   libusb-1.0-0-dev libudev-dev libevdev-dev \
   libx11-dev libdbus-glib-1-dev libglib2.0-dev \
   python3
-# optional:
-# sudo apt-get install libcwiid-dev
+# optional Wiimote:
+# sudo apt-get install libcwiid-dev libbluetooth-dev
 ```
 
 Load uinput:

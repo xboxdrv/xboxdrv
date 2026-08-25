@@ -18,7 +18,7 @@
 
 #include "xboxdrv.hpp"
 
-#include <print>
+#include <format>
 #include <errno.h>
 #include <iostream>
 #include <sched.h>
@@ -82,7 +82,7 @@ Xboxdrv::run_list_controller()
           {
             for(int wid = 0; wid < 4; ++wid)
             {
-              std::print(" {:2d} |  {:2d} |   0x{:04x} |    0x{:04x} | {} (Port: {})\n",
+              std::cout << std::format(" {:2d} |  {:2d} |   0x{:04x} |    0x{:04x} | {} (Port: {})\n",
                          id,
                          wid,
                          int(xpad_devices[i].idVendor),
@@ -93,7 +93,7 @@ Xboxdrv::run_list_controller()
           }
           else
           {
-            std::print(" {:2d} |  {:2d} |   0x{:04x} |    0x{:04x} | {}\n",
+            std::cout << std::format(" {:2d} |  {:2d} |   0x{:04x} |    0x{:04x} | {}\n",
                        id,
                        0,
                        int(xpad_devices[i].idVendor),
@@ -118,7 +118,7 @@ Xboxdrv::run_list_supported_devices()
 {
   for(int i = 0; i < xpad_devices_count; ++i)
   {
-    std::print("{} 0x{:04x} 0x{:04x} {}\n",
+    std::cout << std::format("{} 0x{:04x} 0x{:04x} {}\n",
                gamepadtype_to_string(xpad_devices[i].type),
                int(xpad_devices[i].idVendor),
                int(xpad_devices[i].idProduct),
@@ -175,7 +175,7 @@ Xboxdrv::run_list_supported_devices_xpad()
         continue;
     }
 
-    std::print("{{ 0x{:04x}, 0x{:04x}, \"{}\", 0, {} }},\n",
+    std::cout << std::format("{{ 0x{:04x}, 0x{:04x}, \"{}\", 0, {} }},\n",
                int(sorted_devices[i].idVendor),
                int(sorted_devices[i].idProduct),
                sorted_devices[i].name,
@@ -190,7 +190,7 @@ Xboxdrv::run_help_devices()
   std::cout << "----------+-----------+---------------------------------" << std::endl;
   for(int i = 0; i < xpad_devices_count; ++i)
   {
-    std::print("   0x{:04x} |    0x{:04x} | {}\n",
+    std::cout << std::format("   0x{:04x} |    0x{:04x} | {}\n",
                int(xpad_devices[i].idVendor),
                int(xpad_devices[i].idProduct),
                xpad_devices[i].name);
