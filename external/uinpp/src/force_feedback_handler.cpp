@@ -222,7 +222,7 @@ ForceFeedbackEffect::ForceFeedbackEffect(const struct ff_effect& effect) :
       // case FF_FRICTION:
       // case FF_DAMPER
       // case FF_INERTIA:
-      log_info("unsupported effect: {}", effect);
+      log_info("unsupported effect: {}", std::format("{}", effect));
       start_weak_magnitude   = 0;
       start_strong_magnitude = 0;
       end_weak_magnitude     = 0;
@@ -313,7 +313,7 @@ void
 ForceFeedbackHandler::upload(const struct ff_effect& effect)
 {
   log_debug("FF_UPLOAD(effect_id: {}, effect_type: {}, effect: {})",
-            effect.id, effect.type, effect);
+            effect.id, effect.type, std::format("{}", effect));
 
   auto const i = effects.find(effect.id);
   if (i == effects.end())
