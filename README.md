@@ -1,108 +1,155 @@
-Xbox/Xbox360 USB Gamepad Driver for Userspace
-=============================================
+> [!WARNING]
+> **xboxdrv is mostly obsolete for everyday use.** Prefer the in-kernel
+> `xpad` driver and/or Steam Input. This tree remains useful for heavy
+> remapping, userspace experimentation, PROTOCOL notes, and as a cleanup
+> exercise on the `develop` branch.
 
-Xboxdrv is a Xbox/Xbox360 gamepad driver for Linux that works in
-userspace. It is an alternative to the xpad kernel driver and has
-support for Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless
-gamepads. The Xbox360 guitar and some Xbox1 dancemats might work too.
-The Xbox 360 racing wheel is not supported, but shouldn't be to hard
-to add if somebody is interested.
+# Xbox/Xbox360 USB Gamepad Driver for Userspace
 
-Some basic support for the Xbox360 Chatpad on USB controller is
-provided, Chatpad on wireless ones is not supported. The headset is
-not supported, but you can dump raw data from it.
+Xboxdrv is a userspace Xbox / Xbox 360 gamepad driver for Linux. It is an
+alternative to the `xpad` kernel driver and supports Xbox classic pads,
+Xbox 360 USB and wireless receivers, plus a number of third-party and
+related devices (see `src/xpad_device.cpp`). Optional backends include
+PlayStation 3 (USB), Wiimote (when built with CWiid), and generic USB.
 
-This driver is only of interest if the xpad kernel driver doesn't work
-for you or if you want more configurabity. If the xpad kernel driver
-works for you there is no need to try this driver.
+Basic support for the Xbox 360 Chatpad on **wired** USB controllers is
+included; Chatpad on wireless receivers is not supported. The headset is
+not supported beyond optional raw dumps.
 
-The drivers homepage can be found at:
+Use this driver when you need more configurability than `xpad`, or when
+`xpad` does not work for a particular device. For most games, the kernel
+driver is preferable.
 
-* http://pingus.seul.org/~grumbel/xboxdrv/
+## Source
 
-The source code is hosted on GitHub:
+* GitHub: https://github.com/xboxdrv/xboxdrv
+* Default development branch: `develop` (cleanup target)
+* Production / packaging reference: `stable`
 
-* https://github.com/Grumbel/xboxdrv
+## Requirements
 
+### Build
 
-Compilation
------------
-
-Required libraries and tools:
-
-* g++ - GNU C++ Compiler
-* libusb-1.0
+* C++23 compiler (GCC or Clang)
+* CMake ≥ 3.14
 * pkg-config
+* libusb-1.0
 * libudev
-* boost
-* cmake
-* uinput (userspace input kernel module)
-* git (only to download the development version)
-* X11
-* libdbus
-* glib
-* Gtk+ (optional, for VirtualKeyboard)
-* CWiid (optional, for Wiimote support)
+* libevdev
+* X11 (libX11)
+* dbus-glib-1 / GLib
+* Python 3 (D-Bus glue and `bin2h` generation)
+* GTK 3 development files (still required by the current CMake
+  configuration; not linked into the binary)
 
-Once everything installed, you can compile by typing:
+Optional:
 
-    $ mkdir build
-    $ cd build
-    $ cmake ..
-    $ make
+* libcwiid — Wiimote support (`HAVE_CWIID` when detected)
 
-On Ubuntu 15.04 you can install all the required libraries via:
+Vendored C++ helpers live under `external/` (argpp, logmich, strutcpp,
+tinycmmc, uinpp, unsebu, yaini) and are built via CMake
+`add_subdirectory`; they are not separate system packages.
 
-    $ sudo apt-get install \
-        g++ \
-        libboost-dev \
-        cmake \
-        pkg-config \
-        libusb-1.0-0-dev \
-        git-core \
-        libx11-dev \
-        libudev-dev \
-        x11proto-core-dev \
-        libdbus-glib-1-dev \
-        libgtk2.0-dev \
-        libcwiid-dev
+### Runtime
 
-To load the uinput kernel module automatically on boot add it
-`/etc/modules`, to load it manually type:
+* `uinput` kernel module
+* For daemon mode with a system bus name: D-Bus policy from
+  `data/org.seul.Xboxdrv.conf`
 
-    $ sudo modprobe uinput
+### Nix
 
-On other distributions exact install instructions might be
-slightly different.
+A flake is provided (`flake.nix`). Example:
 
+```bash
+nix build
+```
 
-Installation
-------------
+## Compilation
 
-Once the compilation process is complete you can install xboxdrv with:
+```bash
+mkdir build
+cd build
+cmake ..
+cmake --build .
+```
 
-    $ cd build
-    $ make install
+Development builds with a stricter warning set can use your usual
+CMake/toolchain flags; the project sets `CXX_STANDARD 23`.
 
-You can also change the install PREFIX and DESTDIR as usual with:
+Example package set on Debian/Ubuntu-style systems:
 
-    $ cmake .. -DCMAKE_INSTALL_PREFIX:PATH=...
-    $ make install DESTDIR=/tmp
+```bash
+sudo apt-get install \
+  g++ cmake pkg-config \
+  libusb-1.0-0-dev libudev-dev libevdev-dev \
+  libx11-dev libdbus-glib-1-dev libglib2.0-dev \
+  libgtk-3-dev python3
+# optional:
+# sudo apt-get install libcwiid-dev
+```
 
-Note that there is no need to install xboxdrv, you can run it directly
-from the source directory if you prefer.
+Load uinput:
 
-If you want to run xboxdrv in daemon mode on boot, copy
-`data/org.seul.Xboxdrv.conf` into `/etc/dbus-1/system.d/`, otherwise xboxdrv will complain with:
+```bash
+sudo modprobe uinput
+```
 
-    [ERROR] XboxdrvDaemon::run(): fatal exception: failed to get unique dbus name: Connection ":1.135" is not allowed to own the service "org.seul.Xboxdrv" due to security policies in the configuration file
+To load it on boot, add `uinput` to `/etc/modules` (or the equivalent for
+your distribution).
 
+## Installation
 
-Running
--------
+```bash
+cmake --install build
+```
 
-Extensive documentation on running xboxdrv can be found in the RUNNING
-XBOXDRV section of the xboxdrv manpage. When you haven't installed
-xboxdrv the man page can be found in doc/xboxdrv.1 and be read with:
+Prefix and DESTDIR work as usual:
 
-    $ man -l doc/xboxdrv.1
+```bash
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
+cmake --build .
+DESTDIR=/tmp/stage cmake --install .
+```
+
+Running from the build tree without installing is fine for testing.
+
+### Daemon / D-Bus policy
+
+If you run xboxdrv as a daemon that owns `org.seul.Xboxdrv` on the system
+bus, install the policy file:
+
+```bash
+sudo cp data/org.seul.Xboxdrv.conf /etc/dbus-1/system.d/
+```
+
+Without it, startup may fail with a D-Bus security policy error.
+
+## Running
+
+Detailed options are documented in the man page:
+
+```bash
+man -l doc/xboxdrv.1
+```
+
+Example configs live in `examples/`. USB protocol notes are in
+`PROTOCOL`.
+
+## Versioning
+
+The top-level `VERSION` file is the single source of truth (e.g.
+`0.9.0-dev` on `develop`). CMake and the Nix flake derive display and
+package versions from it; see `AGENTS.md` for the full scheme.
+
+## Status and branches
+
+* **`stable`** — packaging-oriented line; leave it alone unless fixing
+  regressions there.
+* **`develop`** — cleanup and modernization target; goal is for `develop`
+  to fully replace `stable`.
+
+See `TODO.md` for the current parity and cleanup roadmap.
+
+## License
+
+GPL-3.0-or-later. See `COPYING`.
