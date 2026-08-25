@@ -27,6 +27,8 @@ historical `NEWS` file.
 * Refresh GitLab CI (Ubuntu 24.04); remove Travis CI
 * README / man-page link updates; build-time D-Bus glue deprecation noise
   reduced
+* Chatpad: one-shot sticky Shift/Green/Orange/People (LEDs show mode);
+  Orange+Shift toggles CAPS; still maps to left Shift/Alt/Ctrl/Meta for desktop
 
 ## xboxdrv 0.8.4 (24/Jan/2012)
 

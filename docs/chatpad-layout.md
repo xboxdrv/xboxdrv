@@ -17,16 +17,26 @@ Reference photo: German / Western-European QWERTZ Messenger Kit chatpad
 | 2 | `0x04` | **Orange circle** (bottom-right, lights orange) | Selects orange legends; with Shift → CAPS lock behaviour on console. |
 | 3 | `0x08` | **People** (two-person icon) | People / messenger key (LED lock-style in xboxdrv today). |
 
-xboxdrv currently emits:
+xboxdrv emits Linux key codes useful on the desktop (layers are still
+placeholder until compose/XKB):
 
-- Shift → `KEY_LEFTSHIFT` while held  
-- Green → `KEY_LEFTALT`  
-- Orange → `KEY_LEFTCTRL`  
-- People → `KEY_LEFTMETA`  
+- Shift → `KEY_LEFTSHIFT`
+- Green → `KEY_LEFTALT`
+- Orange → `KEY_LEFTCTRL`
+- People → `KEY_LEFTMETA`
 
-and toggles the matching pad LED on press. That is a **placeholder** until
-proper layer / compose handling exists. True character output for orange/green
-legends needs either compose tables or an XKB keymap (see `chatpad.xkb`).
+**Modifier / LED policy** (aligned with the Xbox 360 console manual):
+
+- **Shift / Green / Orange / People** are **one-shot sticky**: a tap arms
+  the mode and lights the LED; the next non-modifier key is sent with that
+  modifier held, then the sticky mode and LED clear. Holding the key keeps
+  the modifier active for as long as it is down.
+- **Orange + Shift** (either order) toggles **CAPS lock**. While CAPS is on,
+  Shift stays effectively down and the Shift LED stays lit until the same
+  combo is pressed again.
+- People is treated like the other modifiers on PC (no Messenger
+  notification LED). True orange/green legend characters still need compose
+  tables or an XKB keymap (see `chatpad.xkb`).
 
 ## Physical grid → scancode (hex)
 
@@ -122,23 +132,24 @@ on this photo (no extra colour legends).
 
 | Control | Scancode / mod | Linux (current xboxdrv) |
 |---------|----------------|-------------------------|
-| Green square | mod `0x02` | `KEY_LEFTALT` + LED |
-| People | mod `0x08` | `KEY_LEFTMETA` + LED |
+| Green square | mod `0x02` | `KEY_LEFTALT` + one-shot sticky LED |
+| People | mod `0x08` | `KEY_LEFTMETA` + one-shot sticky LED |
 | Left | `0x55` | `KEY_LEFT` |
 | Space | `0x54` | `KEY_SPACE` |
 | Right | `0x51` | `KEY_RIGHT` |
 | Backspace | `0x71` | `KEY_BACKSPACE` |
-| Orange circle | mod `0x04` | `KEY_LEFTCTRL` + LED |
-| Shift | mod `0x01` | `KEY_LEFTSHIFT` + LED |
+| Orange circle | mod `0x04` | `KEY_LEFTCTRL` + one-shot sticky LED |
+| Shift | mod `0x01` | `KEY_LEFTSHIFT` + one-shot / CAPS LED |
 | Enter | `0x63` | `KEY_ENTER` |
 
 ## Implementation status in xboxdrv
 
 - [x] Base Latin layer via scancode → `KEY_*` (US letter names in code).
-- [x] Modifier bits → left Shift/Alt/Ctrl/Meta (placeholder).
+- [x] Modifier bits → left Shift/Alt/Ctrl/Meta (desktop placeholder).
+- [x] One-shot sticky Shift/Green/Orange/People + LEDs (console-style).
+- [x] Orange+Shift CAPS lock toggle (Shift LED latched while CAPS on).
 - [ ] QWERTZ vs QWERTY letter labels (Y/Z) selectable by layout.
 - [ ] Orange / green character layers (need compose table or XKB).
-- [ ] Orange+Shift CAPS sticky behaviour matching console.
 - [ ] Other regional keycaps (UK, FR, …) documented the same way.
 
 Other regions ship different keycaps; capture a photo and extend this file
