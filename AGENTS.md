@@ -87,8 +87,11 @@ Roughly semver-compatible: `0.8.8-dev.1615` is a pre-release;
   `write_basic_package_version_file` and similar.
 - Keep `PROJECT_VERSION_FULL` for display / compile definitions.
 - Expose the full version via `--version`.
-- Prefer defining e.g. `PACKAGE_VERSION` / `XBOXDRV_VERSION` from
-  `PROJECT_VERSION_FULL`.
+- Prefer defining e.g. `PACKAGE_VERSION` only on `src/xboxdrv_version.cpp`
+  (via `set_source_files_properties`), not as a **PUBLIC** target compile
+  definition. A PUBLIC `-DPACKAGE_VERSION=…` with git rev/dirty rebuilds
+  the entire library on every version bump. Call sites use
+  `xboxdrv_version()`.
 - Do not hardcode `project(xboxdrv VERSION 0.x.y)`; always derive from
   `VERSION` / `PROJECT_VERSION_FULL`.
 
@@ -107,7 +110,8 @@ endif()
 string(REGEX MATCH "^[0-9]+(\\.[0-9]+)*" _project_version_cmake "${PROJECT_VERSION_FULL}")
 project(xboxdrv VERSION ${_project_version_cmake} LANGUAGES CXX)
 
-# target_compile_definitions(libxboxdrv PUBLIC PACKAGE_VERSION="${PROJECT_VERSION_FULL}")
+# set_source_files_properties(src/xboxdrv_version.cpp PROPERTIES
+#   COMPILE_DEFINITIONS "PACKAGE_VERSION=\"${PROJECT_VERSION_FULL}\"")
 ```
 
 ### Nix flake

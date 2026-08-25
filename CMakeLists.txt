@@ -191,7 +191,10 @@ set_target_properties(libxboxdrv PROPERTIES
   CXX_STANDARD_REQUIRED ON
   CXX_EXTENSIONS OFF)
 target_include_directories(libxboxdrv PUBLIC src/ ${CMAKE_CURRENT_BINARY_DIR}/src/)
-target_compile_definitions(libxboxdrv PUBLIC -DPACKAGE_VERSION="${PROJECT_VERSION_FULL}")
+# Isolate PACKAGE_VERSION to one TU so git-rev / dirty version bumps only
+# recompile xboxdrv_version.cpp, not the entire static library.
+set_source_files_properties(src/xboxdrv_version.cpp PROPERTIES
+  COMPILE_DEFINITIONS "PACKAGE_VERSION=\"${PROJECT_VERSION_FULL}\"")
 if(HAVE_CWIID)
   target_compile_definitions(libxboxdrv PUBLIC -DHAVE_CWIID)
 endif()

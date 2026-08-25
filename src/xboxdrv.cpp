@@ -17,8 +17,10 @@
 */
 
 #include "xboxdrv.hpp"
+#include "xboxdrv_version.hpp"
 
 #include <format>
+#include <string>
 #include <errno.h>
 #include <iostream>
 #include <sched.h>
@@ -201,7 +203,7 @@ void
 Xboxdrv::print_copyright() const
 {
   strut::Layout wrap(std::cout, get_terminal_width());
-  wrap.para("xboxdrv " PACKAGE_VERSION " - http://pingus.seul.org/~grumbel/xboxdrv/");
+  wrap.para(std::string("xboxdrv ") + xboxdrv_version() + " - http://pingus.seul.org/~grumbel/xboxdrv/");
   wrap.para("Copyright © 2008-2012 Ingo Ruhnke <grumbel@gmail.com>");
   wrap.para("Licensed under GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>");
   wrap.para("This program comes with ABSOLUTELY NO WARRANTY.");
