@@ -135,6 +135,11 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
       {
         log_info("Connection status: controller and headset connected");
         set_led_real(get_led());
+        set_active(true);
+        if (m_chatpad)
+        {
+          m_chatpad->set_controller_present(true);
+        }
       }
       else
       {
@@ -144,6 +149,12 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
     else if (len == 29)
     {
       set_active(true);
+      // Controller already paired (no 0x08/0x80 connect event this session):
+      // still start chatpad init/keep-alive so keys stream without a battery cycle.
+      if (m_chatpad)
+      {
+        m_chatpad->set_controller_present(true);
+      }
 
       if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
       { // Initial Announc Message

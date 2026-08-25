@@ -172,6 +172,11 @@ WirelessChatpad::on_timeout_wrap(gpointer data)
 bool
 WirelessChatpad::on_timeout()
 {
+  // Source has fired; clear id so stop_timeout / send_timeout stay consistent.
+  // Always return false and re-arm with send_timeout() when we want another tick
+  // (returning TRUE after g_source_remove is undefined and caused flaky keep-alives).
+  m_timeout_source = 0;
+
   if (!m_present)
   {
     return false;
@@ -181,16 +186,16 @@ WirelessChatpad::on_timeout()
   {
     send_cmd(0x1B); // Chatpad enable / init
     m_need_init = false;
-    // Keep-alives start after init
+    // Keep-alives start after init (~1 Hz alternating 1E/1F).
     send_timeout(1000);
-    return true;
+    return false;
   }
 
   // Alternate keep-alive codes; chatpad stops streaming without them.
   send_cmd(m_keepalive_toggle ? 0x1F : 0x1E);
   m_keepalive_toggle = !m_keepalive_toggle;
   send_timeout(1000);
-  return true;
+  return false;
 }
 
 void
@@ -198,6 +203,14 @@ WirelessChatpad::set_controller_present(bool present)
 {
   if (m_present == present)
   {
+    // Already present: ensure the keep-alive timer is actually running
+    // (e.g. after a failed schedule or handshake-driven re-init).
+    if (present && m_timeout_source == 0)
+    {
+      log_info("wireless-chatpad: restarting keep-alive timer");
+      m_need_init = m_need_init || !m_no_init;
+      send_timeout(m_need_init && !m_no_init ? 100 : 1000);
+    }
     return;
   }
   m_present = present;
@@ -212,7 +225,7 @@ WirelessChatpad::set_controller_present(bool present)
     }
     else
     {
-      // Small delay then init
+      // Small delay then init (0x1B), then alternating 1E/1F
       send_timeout(100);
     }
   }
@@ -246,6 +259,11 @@ WirelessChatpad::handle_input(uint8_t const* data, int len)
         log_info("wireless-chatpad: handshake request, will re-init");
       }
       m_need_init = !m_no_init;
+      // Ensure init/keep-alive runs even if we were already "present".
+      if (m_present)
+      {
+        set_controller_present(true);
+      }
     }
     else if (payload[1] == 0x04 && m_debug)
     {
