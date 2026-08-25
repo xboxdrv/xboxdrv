@@ -3,13 +3,21 @@
 Cleanup roadmap and analysis of the current tree. Historical notes remain
 in `TODO` (no suffix); this file is the working list.
 
-**Analysed revision:** `56ffb143e047bb38609c39c80a1f49d80d3fb3dd`
-(`Fix regex issue in xboxdrvctl`) on **`develop`**.
+**Analysed revision:** `04e87e64f0b5afa26c43a330e58604aee4f29b02`
+(`Document German Chatpad layout; Shift LED follows held state`) on
+**`develop`**.
 
 **Branches**
 
 - `stable`: working and good — leave it alone.
 - `develop`: cleanup target. Goal = `develop` can replace `stable`.
+
+**Merge-base (fork point):** `27cdd9c6a994f3059b8ae683adb711169341ffa5`
+(2012-12-19, “Added additional bookkeeping to USBController…”).
+
+- `develop` has ~548 commits not in `stable`.
+- `stable` has ~120 commits not in `develop` (mostly post-2012 device IDs,
+  bugfixes, and later CMake / Python3 / flake work on the stable line).
 
 ---
 
@@ -24,10 +32,9 @@ kernel xpad + Steam Input are preferred for most users.
 
 | Path | Role |
 |------|------|
-| `src/` | C++ core (~118 `.cpp` files) |
+| `src/` | C++ core |
 | `src/controller/` | Device-specific USB/evdev/Wiimote backends |
 | `src/axisevent/` `axisfilter/` `buttonevent/` `buttonfilter/` `modifier/` | Pipeline |
-| `src/symbols/` | Unfinished name tables (see below) |
 | `src/util/` | string/math/exec helpers |
 | `examples/` | `.xboxdrv` configs + macros — still valuable |
 | `doc/` | manpage sources, plots |
@@ -35,200 +42,215 @@ kernel xpad + Steam Input are preferred for most users.
 | `external/` | vendored git subtrees (argpp, logmich, strutcpp, tinycmmc, uinpp, unsebu, yaini); see REVISIONS |
 | `PROTOCOL` | USB protocol notes — keep |
 | `TODO` | years of accumulated notes — triage later |
-| `flake.nix` + `.gitmodules` | **two** ways to get the same C++ helper libs |
+| `flake.nix` | Nix flake (helpers vendored under `external/`) |
 
-CMake already requires **C++20**. README is stale (Boost, Gtk+2, Ubuntu 15.04,
-old homepage).
-
----
-
-## Findings
-
-### 1. Two naming systems (the `src/symbols/` mess)
-
-This is the biggest structural problem.
-
-**Old, still used for the public config language**
-
-- `src/evdev_helper.{hpp,cpp}` + `EnumBox`
-- generated-looking `src/key_list.x`, `abs_list.x`, `rel_list.x`
-  (from `src/gen_event_lists.rb`)
-- Maps `KEY_*` / `BTN_*` / `ABS_*` / `REL_*` / X11 keysyms for
-  `--ui-buttonmap`, `--ui-axismap`, evdev input, etc.
-
-**New, unfinished, compiled in, only used internally**
-
-- `src/symbols/*.yaml` (evdev dump ~1646 lines, plus `gamepad`, `xbox`,
-  `classic`, `guitar`, `hama-crux`, `joystick`, `nunchuk`, `playstation`,
-  `wiimote`)
-- Ruby 1.8 generators: `gen_symbols.rb`, `gen_evdev_yaml.rb`
-- Generated C++: `init_key.cpp` (~2763 lines), `init_abs.cpp`, `init_rel.cpp`
-- Runtime: `Environment` / `Namespace` / `Symbol` / `Name<>` → `KeyName`,
-  `AbsName`, `RelName`
-
-Call sites of `KeyName` / `AbsName` today:
-
-- `src/xbox360_default_names.cpp` (`xbox.a`, `xbox.start`, …)
-- `src/controller/hama_crux_controller.cpp`
-- `src/controller/wiimote_controller.cpp` (also has a copy-paste bug:
-  nunchuk accel Y/Z use `nunchuk.acc_x` / `nunchuk.acc_y` twice)
-- `src/modifier/compat_modifier.cpp` (`gamepad.dpad_*`)
-
-`Name<>` **requires a dotted name**. Unqualified names throw
-`"user variables not implemented yet"`. YAML `evdev:` fields are **not**
-wired into the generated C++ (the generator only emits names, aliases, and
-`provides`). So the “new” system does not actually bind to Linux event
-codes.
-
-The old `TODO` already records:
-
-```text
-SymbolTable<T>::get(): lookup failure for: 'gamepad.start'
-```
-
-(`xbox360_default_names` uses `xbox.start`; `gamepad.start` is a different
-namespace.)
-
-**Recommendation:** `src/symbols/` should go, or shrink to a small static
-alias table. Do **not** keep YAML + Ruby + 3k-line generated init files.
-Controller-local names (`xbox.a`, `hama-crux.crouch`) can be plain string
-ids in `ControllerMessageDescriptor` without a global symbol environment.
-Linux codes stay in `evdev_helper` (or a thin wrapper over `<linux/input.h>`).
-
-### 2. Chatpad is unfinished
-
-- USB Chatpad only (`src/chatpad.{cpp,hpp}`, `chatpad.xkb`). Wireless is
-  explicitly unsupported.
-- Init is a multi-state USB control-transfer machine (`kStateInit1` …).
-- Known issues:
-  - `FIMXE: must keep track of sources and destroy them in ~Chatpad()` —
-    GLib `g_timeout_add` leak / use-after-free risk on destroy.
-  - Historical: no `0x1b` when Chatpad is plugged after xboxdrv is already
-    running.
-  - `xbox360_controller.cpp`: `FIXME: maybe a proper indicator for the
-    activity on the chatpad`.
-- Headset is dump-only (`src/headset.cpp`).
-
-For “replace `stable`”: either finish the timeout ownership and document
-USB-only, or disable Chatpad behind a clear flag so it cannot crash the
-driver. Do not expand wireless Chatpad in this milestone.
-
-### 3. Versioning is the old `export-subst` scheme
-
-- `VERSION` currently contains `$Format:%(describe)$`.
-- `.gitattributes`: `/VERSION export-subst`.
-- CMake: `include(GetProjectVersion)` from **tinycmmc** (submodule), then
-  `PACKAGE_VERSION="${PROJECT_VERSION}"`.
-- Flake: if `VERSION` does not start with `v`, it invents
-  `${lastModifiedDate}-${shortRev}` and **rewrites** `VERSION` in
-  `postPatch`. That is incompatible with the new rules in `AGENTS.md`.
-
-**Do:** delete `.gitattributes` (or stop using it for version). Make
-`VERSION` a plain `x.y.z-dev` file. Implement the CMake + flake scheme in
-`AGENTS.md`.
-
-### 4. `{fmt}` replaced with `std::format` / `std::print`
-
-C++23 is required. `{fmt}` has been dropped from CMake and the flake.
-Watch remaining printf-style leftovers if any new format strings are added
-(`usb_controller.cpp` had `"%04x:%04x"` mixed with fmt).
-
-### 5. Dual dependency story (`external/` vs flake inputs) — resolved
-
-Former git submodules and flake github inputs for argpp, logmich,
-strutcpp, tinycmmc, uinpp, unsebu, yaini are now **vendored git subtrees**
-under `external/`. Revisions are recorded in `external/REVISIONS` and in
-the squash-commit messages. Flake inputs reduced to nixpkgs + flake-utils;
-CMake builds the helpers from the vendored trees via `add_subdirectory`.
-
-To update a dependency later:
-  git subtree pull --prefix=external/NAME URL REF --squash
-
-**tinycmmc** is still required by logmich, strutcpp, uinpp, yaini and
-unsebu (MaximumWarnings / ClangTidy / ExportAndInstallLibrary modules).
-argpp no longer needs it. Removing tinycmmc entirely is blocked until
-those helpers are updated upstream or patched to be self-contained.
-
-### 6. Other mess (not blocking the first cleanups)
-
-- CMake `file(GLOB … src/uinput/*.cpp)` — **that directory does not exist**.
-- GTK3 is **required** (`pkg_search_module(GTK REQUIRED gtk+-3.0)`);
-  virtual keyboard looks unused/unfinished. CWiid is optional but Wiimote
-  code is compiled in.
-- Tests: GTest block is commented out; `BUILD_TESTS` only builds old
-  `test/*_test.cpp` binaries. `src/symbols/test.cpp` is a leftover main().
-- `dbus-glib` is ancient; making D-Bus optional is still desirable.
-- ~69 `FIXME` / `TODO` / `#if 0` / `implement me` hits under `src/`.
-- README lists Boost; CMake does not use Boost.
-- Daemon / multi-controller UInput update issues remain in the old `TODO`.
-- `xboxdrvctl` is a Python script; last commit was a regex fix.
-
-**Still valuable:** `PROTOCOL`, `examples/`, the filter/modifier/event
-architecture, daemon + hotplug concept.
+CMake requires modern C++ (C++23 intended for `std::format` / `std::print`).
+README on `develop` is still stale (Boost, Gtk+2, Ubuntu 15.04, old homepage).
+`stable` README has an obsolescence warning and updated CMake-centric build
+notes.
 
 ---
 
-## Roadmap (ordered for “`develop` can replace `stable`”)
+## Investigation: `develop` vs `stable` (feature parity)
 
-### Phase 0 — Housekeeping
+Goal: `develop` must completely replace `stable`. Investigation focuses on
+code, not outdated docs. Many practical fixes that landed on `stable` after
+the 2012 fork were re-implemented independently on `develop` during the
+architecture rewrite; some were not.
 
-- [x] This file + `AGENTS.md` (bundle `xboxdrv-001`).
-- [x] Remove `.gitattributes` / `export-subst`.
-- [x] Plain `VERSION` with `-dev` suffix; CMake + flake per `AGENTS.md`.
-- [x] `--version` prints `PROJECT_VERSION_FULL` (`PACKAGE_VERSION` is defined from it).
-- [ ] Sanity-check a plain CMake configure *and* a flake evaluation for
-      the version string.
+### Divergent history (unusual / notable)
 
-### Phase 1 — Symbols
+- Fork is very old (2012). `develop` was a long-running rewrite (threads →
+  GLib main loop, ControllerMessage / ports, symbols work, C++ modernisation,
+  Chatpad async, USB teardown hardening, subtree vendoring). Intermediate
+  states on `develop` were known-broken (see historical log messages about
+  “most controllers still broken”).
+- `stable` continued to receive community device IDs, mapping fixes, and
+  build-system updates (SCons → CMake, Python3, flake) with far less
+  architectural change.
+- Authors on `stable` after the fork: almost entirely Ingo Ruhnke, plus a
+  handful of one-off contributors (device IDs, Saitek P3600, F710, PS4
+  example, double-fork, cross-compile, typo fixes).
+- No evidence of force-push weirdness needed for parity analysis; the
+  important signal is the set of functional commits only on `stable`.
 
-- [x] Map remaining `KeyName` / `AbsName` / `RelName` / `Environment` uses.
-- [x] Replace with `SymbolTable<std::string>` and short config-facing names.
-- [x] Keep the public evdev/X11 name language (`evdev_helper`) working.
-- [x] Delete `src/symbols/` (YAML, Ruby generators, generated `init_*.cpp`).
-- [x] Fix the Wiimote nunchuk accel copy-paste.
-- [ ] Small test that important names still resolve (follow-up).
+### Missing on `develop` (must port or re-implement)
 
-### Phase 2 — Chatpad and dead weight
+| Item | Evidence | Notes |
+|------|----------|--------|
+| **Saitek P3600 controller** | `stable` has `saitek_p3600_controller.{cpp,hpp}`, factory cases, `GAMEPAD_SAITEK_P3600`, VID/PID `0x06a3:0xf51a` | Completely absent from `develop` (`src/controller/` and factory). Only clear missing device backend found so far. |
+| **Saitek P3600 VID/PID row** | Only ID pair present on `stable` and absent on `develop` in `xpad_device.cpp` | Develop added Xbox One / PowerA / Hama Crux rows that stable lacks; otherwise lists largely match via parallel commits. |
 
-- [x] Own GLib timeouts in `Chatpad` destructor (or stop using them).
-- [ ] Decide: USB Chatpad on by default vs flag vs remove for the
-      milestone. Wireless stays out of scope.
-- [ ] Quarantine or drop virtual keyboard if it is not wired up.
-- [ ] Make D-Bus optional if it is still a hard dependency for the
-      non-daemon path.
+### Stable fixes already present (rewritten) on `develop`
+
+Checked by content, not by shared SHA (SHAs differ):
+
+- `--mimic-xpad` / `--mimic-xpad-wireless` BACK → `BTN_SELECT` (not `BTN_BACK`).
+- `FourWayRestrictorModifier` uses configured axes (AbsPort / float), not
+  hard-coded X1/Y1 then X2/Y2.
+- USB disconnect / `LIBUSB_TRANSFER_NO_DEVICE` / cancel drain / idempotent
+  `send_disconnect` (recent Chatpad + USB hardening commits go further than
+  stable’s 2015 fixes).
+- Exec button double-fork + `waitpid` (zombie avoidance).
+- Daemon `set_device_usbids` for virtual devices.
+- INI `\r` treated as whitespace (now in vendored `external/yaini`).
+- Sensitivity spelling, regex escape for xboxdrvctl, many device ID rows
+  (parallel history on `develop`).
+
+### CLI / public config surface
+
+- `--ui-buttonmap` / `--ui-axismap` still registered (map to internal
+  KEYMAP / ABSMAP); INI sections keep backward-compat aliases.
+- Help lists: `help-abs` / `help-key` / … (stable used similar names).
+- Develop-only options of note: Wiimote-related, `evdev-relmap`, etc.
+- No missing public option names identified that would break typical
+  `stable` configs, aside from behaviour of missing device backends.
+
+### Still incomplete / broken / risky on `develop` (code-level)
+
+From FIXMEs, recent commits, and parity goals:
+
+1. **Chatpad**
+   - Wired USB path has been actively fixed (claim interface 2, keep-alive
+     STALL noise, modifiers/backspace via keyboard device, German layout
+     docs, Shift LED follows held state).
+   - CAPS sticky (Orange+Shift) still “not implemented”.
+   - Wireless Chatpad remains out of scope (same as stable).
+   - Decide for the milestone: default on vs flag vs leave optional.
+
+2. **Saitek P3600** — missing entirely (see table above).
+
+3. **Daemon / multi-controller / hotplug**
+   - Multiple FIXMEs in `xboxdrv_daemon.cpp` (thread cleanup, libusb ref,
+     sleep hacks, “dirty hack” comments).
+   - udev “devices twice” and “newer libudev only” comments remain.
+   - Multi-controller UInput update / threading still listed as open.
+
+4. **Force feedback / LED**
+   - Code paths exist (rumble axis handler, per-controller `set_rumble` /
+     `set_led`, skip after disconnect).
+   - PS3 rumble “254 isn’t quite right / right motor on/off only”.
+   - Xbox One wireless: serial/battery/LED mapping still FIXME.
+   - Need explicit behavioural comparison vs stable for common pads
+     (wired 360, wireless 360 receiver).
+
+5. **Wiimote**
+   - Thread vs main-loop safety, calibration hack, “valid in size” encoding
+     still FIXME.
+   - Optional CWiid dependency.
+
+6. **Evdev controller**
+   - Several “not implemented” stubs; extra event types ignored with FIXME.
+
+7. **Build / packaging drift**
+   - `VERSION` is `0.9.0-dev` on develop vs `0.8.8` on stable (intentional
+     for the cleanup line).
+   - Flake still lists `fmt` in `buildInputs` while Phase 3 claims fmt was
+     dropped in favour of `std::format` — **inconsistency to resolve**.
+   - README on develop still advertises Boost, Gtk+2, old homepage; stable
+     README is closer to current reality (CMake, obsolescence warning).
+   - Manpage / examples need a pass against actual option names and
+     behaviour.
+
+8. **Historical `TODO` file**
+   - Still a large untriaged dump; actionable items should move here
+     incrementally.
+
+### Features develop has that stable does not (keep)
+
+- Hardened USB teardown / disconnect (GitHub #239 class of bugs).
+- Substantial Chatpad USB improvements.
+- C++ modernisation, vendored `external/` subtrees, libevdev-based name
+  tables, yaini, uinpp/unsebu layout, CMake + flake as primary build.
+- Symbols / naming cleanup (old parallel `src/symbols/` system removed;
+  public evdev/X11 language retained).
+- Xbox One wireless controller backend entries and related rows.
+
+### Recommended parity work order
+
+1. **Port Saitek P3600** from stable into `src/controller/` + factory +
+   `xpad_device` + msg enum (small, concrete gap).
+2. **Resolve fmt vs std::format** in CMake + flake (docs claim done; flake
+   still pulls fmt).
+3. **README + manpage** aligned with develop (obsolescence note, deps,
+   build, option names).
+4. **Daemon / hotplug / multi-slot** smoke-test vs stable behaviour; close
+   or ticket the remaining FIXMEs that affect replaceability.
+5. **FF / LED** smoke-test on wired 360 + wireless receiver.
+6. Triage historical `TODO` into this file or discard.
+7. Confirm `develop` builds (plain CMake and flake) and runs at least as
+   well as `stable` for the device set both claim to support.
+
+---
+
+## Findings (structural — carried forward)
+
+### 1. Two naming systems (the `src/symbols/` mess) — largely done
+
+Old public config language (`evdev_helper` + libevdev) kept; unfinished
+parallel YAML/Ruby `src/symbols/` system deleted in earlier work. Follow-up:
+small test that important names still resolve.
+
+### 2. Chatpad / virtual keyboard / D-Bus — in progress
+
+See parity section. Virtual keyboard still optional/quarantine candidate.
+D-Bus still effectively required for daemon path.
+
+### 3. Versioning scheme
+
+See AGENTS.md. `VERSION` is source of truth (`0.9.0-dev` on develop).
+CMake derives numeric `project(VERSION …)`; flake appends
+`.revCount+g…` when `-dev`. Keep that contract.
+
+---
+
+## Phases (status)
+
+### Phase 1 — symbols / naming
+
+- [x] Replace unfinished symbols system; keep public evdev/X11 language.
+- [x] Delete `src/symbols/`.
+- [x] Fix Wiimote nunchuk accel copy-paste (historical).
+- [ ] Small test that important names still resolve.
 
 ### Phase 1b — libevdev for uinput names
 
-- [x] Replace hand-rolled `*_list.x` / EnumBox tables in `evdev_helper` with libevdev.
+- [x] Replace hand-rolled tables with libevdev.
 - [x] Keep `KEY_#N` / `JS_N` / X11 `XK_*` special cases.
 - [ ] Drop X11 keysym path later if unused.
 
+### Phase 2 — Chatpad and dead weight
+
+- [x] Own GLib timeouts in `Chatpad` destructor.
+- [x] Wired Chatpad claim interface + keep-alive / modifier fixes (ongoing polish).
+- [ ] CAPS sticky (Orange+Shift) still unimplemented.
+- [ ] Decide: USB Chatpad on by default vs flag vs remove for the milestone.
+- [ ] Quarantine or drop virtual keyboard if not wired up.
+- [ ] Make D-Bus optional if still hard dependency for non-daemon path.
+
 ### Phase 3 — `std::format`
 
-- [x] Replace `fmt::format` / `fmt::format_to` / `fmt::print` with
-      `std::format` / `std::format_to` / `std::print`.
-- [x] Drop `find_package(fmt)` and flake `fmt` input.
-- [x] Fix the `%04x` leftover in `usb_controller.cpp`.
+- [x] Replace most `fmt::` usage with `std::format` / `std::print`.
+- [ ] **Verify**: flake still lists `fmt` in `buildInputs`; drop if truly unused,
+      or document residual dependency from a vendored helper.
+- [x] Fix `%04x` leftover in `usb_controller.cpp` (historical note).
 
-### Phase 4 — Stability vs `stable`
+### Phase 4 — Stability vs `stable` (parity)
 
-- [x] USB disconnect/teardown: idempotent `send_disconnect`, timed cancel
-      drain in `USBController` dtor, treat read errors as disconnect
-      (GitHub #239).
-- [x] Wired Chatpad: claim interface 2, soft-fail control transfers,
-      skip unmapped scancodes, keep-alive state machine continues on error.
-- [ ] Triage the historical `TODO`; move remaining actionable items here.
+- [x] USB disconnect/teardown hardening.
+- [x] Wired Chatpad claim + soft-fail paths.
+- [ ] **Port Saitek P3600 controller + VID/PID from stable.**
+- [ ] Triage historical `TODO`; move remaining actionable items here.
 - [ ] Multi-controller UInput update / threading.
-- [ ] Daemon hotplug, basic FF, LED, common examples.
+- [ ] Daemon hotplug, basic FF, LED — behavioural check vs stable.
 - [ ] Drop log noise / temporary debug helpers.
-- [ ] README + manpage pass.
+- [ ] README + manpage pass (develop is stale; stable is closer).
 - [ ] Confirm `develop` builds and behaves at least as well as `stable`
       for supported controllers.
 
 ### Phase 5 — Later
 
-- [x] Vendor selected flake dependencies into `external/` subtrees
-      (single mechanism: git subtree).
+- [x] Vendor selected flake dependencies into `external/` subtrees.
 - [ ] Drop ancient Travis if unused; refresh GitLab CI.
 - [ ] Further architecture (In/Out ports, half-axis) only after the above.
 
@@ -239,5 +261,6 @@ architecture, daemon + hotplug concept.
 - Clean solution over a quick hack.
 - One logical change per commit where practical.
 - Public config compatibility: preserve or document the break.
-- Next bundle after this one: versioning (`.gitattributes` + `VERSION` +
-  CMake/flake) is the natural first *code* change; symbols next.
+- Prefer evidence from code and `git log` over README/TODO claims.
+- Next concrete code step for parity: **Saitek P3600** port from `stable`,
+  then fmt/flake consistency, then README.
