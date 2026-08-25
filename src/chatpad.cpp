@@ -90,6 +90,8 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_keymap[CHATPAD_KEY_E] = KEY_E;
   m_keymap[CHATPAD_KEY_R] = KEY_R;
   m_keymap[CHATPAD_KEY_T] = KEY_T;
+  // Scancode 0x22 is physical "Y" position on US keycaps, "Z" on German QWERTZ
+  // (see docs/chatpad-layout.md). Default map follows US labels.
   m_keymap[CHATPAD_KEY_Y] = KEY_Y;
   m_keymap[CHATPAD_KEY_U] = KEY_U;
   m_keymap[CHATPAD_KEY_I] = KEY_I;
@@ -105,6 +107,7 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_keymap[CHATPAD_KEY_K] = KEY_K;
   m_keymap[CHATPAD_KEY_L] = KEY_L;
   m_keymap[CHATPAD_KEY_COMMA] = KEY_COMMA;
+  // Scancode 0x46 is physical "Z" on US, "Y" on German QWERTZ.
   m_keymap[CHATPAD_KEY_Z] = KEY_Z;
   m_keymap[CHATPAD_KEY_X] = KEY_X;
   m_keymap[CHATPAD_KEY_C] = KEY_C;
@@ -625,6 +628,12 @@ Chatpad::process(ChatpadKeyMsg const& msg)
   if (msg.scancode1) m_state[msg.scancode1] = true;
   if (msg.scancode2) m_state[msg.scancode2] = true;
 
+  // Shift LED tracks the held modifier bit (not sticky).
+  if (m_state[CHATPAD_MOD_SHIFT] != old_state[CHATPAD_MOD_SHIFT])
+  {
+    set_led(CHATPAD_LED_SHIFT, m_state[CHATPAD_MOD_SHIFT]);
+  }
+
   auto emit = [this](size_t i, bool down) {
     if (m_keymap[i] == 0)
     {
@@ -643,17 +652,17 @@ Chatpad::process(ChatpadKeyMsg const& msg)
   {
     if (m_state[i] && !old_state[i])
     {
-      // rising edge: optional LED toggle for lock-style feedback
+      // LED policy (see docs/chatpad-layout.md):
+      // - Shift is momentary; LED follows held state (updated below).
+      // - Green / Orange / People: toggle on press for now (console-style
+      //   lock feedback). Orange+Shift CAPS sticky is not implemented yet.
       if (i == CHATPAD_MOD_PEOPLE)
         set_led(CHATPAD_LED_PEOPLE, !get_led(CHATPAD_LED_PEOPLE));
       else if (i == CHATPAD_MOD_ORANGE)
         set_led(CHATPAD_LED_ORANGE, !get_led(CHATPAD_LED_ORANGE));
       else if (i == CHATPAD_MOD_GREEN)
         set_led(CHATPAD_LED_GREEN, !get_led(CHATPAD_LED_GREEN));
-      else if (i == CHATPAD_MOD_SHIFT)
-        set_led(CHATPAD_LED_SHIFT, !get_led(CHATPAD_LED_SHIFT));
 
-      // Only emit modifier presses in the first pass
       if (i == CHATPAD_MOD_SHIFT || i == CHATPAD_MOD_GREEN ||
           i == CHATPAD_MOD_ORANGE || i == CHATPAD_MOD_PEOPLE)
       {
