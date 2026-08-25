@@ -1,78 +1,46 @@
 # Xbox360 USB Gamepad Userspace Driver
-# Copyright (C) 2018 Ingo Ruhnke <grumbel@gmail.com>
+# Copyright (C) 2018-2026 Ingo Ruhnke <grumbel@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-image: ubuntu:latest
+image: ubuntu:24.04
 
 variables:
+  DEBIAN_FRONTEND: noninteractive
   GIT_SUBMODULE_STRATEGY: recursive
 
 before_script:
-  - export DEBIAN_FRONTEND=noninteractive
   - apt-get -qq update
-  - apt-get -qq -y install lsb-release
-  - lsb_release -a
   - apt-get -qq -y install
-    clang-10
-    g++-10
+    g++
     cmake
-    build-essential
-    libc++-dev
-    libcwiid-dev
-    libdbus-glib-1-dev
-    libfmt-dev
-    libgtest-dev
-    libgtk-3-dev
-    libgtk2.0-dev
-    libudev-dev
-    libusb-1.0-0-dev
-    libx11-dev
     pkg-config
-    x11proto-core-dev
+    libusb-1.0-0-dev
+    libudev-dev
+    libevdev-dev
+    libx11-dev
+    libdbus-glib-1-dev
+    libglib2.0-dev
+    python3
+    # optional Wiimote:
+    # libcwiid-dev libbluetooth-dev
 
 .build_xboxdrv_template: &build_xboxdrv
   stage: build
   script:
-    - mkdir build
-    - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWARNINGS=ON -DWERROR=ON -DBUILD_TESTS=ON
-    - make VERBOSE=1
-    # - make test VERBOSE=1 ARGS="-V"
+    - mkdir -p build && cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=Release
+    - cmake --build . -j"$(nproc)"
 
-build:gcc:release:
+gcc:
   <<: *build_xboxdrv
-  variables:
-    CXX: g++-10
-    BUILD_TYPE: Release
 
-build:clang:release:
+gcc_warnings:
   <<: *build_xboxdrv
-  variables:
-    CXX: clang++-10
-    BUILD_TYPE: Release
-
-build:gcc:debug:
-  <<: *build_xboxdrv
-  variables:
-    CXX: g++-10
-    BUILD_TYPE: Debug
-
-build:clang:debug:
-  <<: *build_xboxdrv
-  variables:
-    CXX: clang++-10
-    BUILD_TYPE: Debug
-
-# EOF #
+  script:
+    - mkdir -p build && cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=Debug -DWARNINGS=ON -DWERROR=ON
+    - cmake --build . -j"$(nproc)"

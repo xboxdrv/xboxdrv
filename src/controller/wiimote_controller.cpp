@@ -259,8 +259,8 @@ WiimoteController::read_nunchuk_calibration()
     m_nunchuk_y.y = buf[12]; // min
     m_nunchuk_y.z = buf[13]; // center
 
-    log_tmp("X: " << m_nunchuk_x);
-    log_tmp("Y: " << m_nunchuk_y);
+    log_debug("nunchuk calib X max={} min={} center={}", m_nunchuk_x.x, m_nunchuk_x.y, m_nunchuk_x.z);
+    log_debug("nunchuk calib Y max={} min={} center={}", m_nunchuk_y.x, m_nunchuk_y.y, m_nunchuk_y.z);
   }
 }
 
@@ -311,7 +311,7 @@ WiimoteController::set_led_real(uint8_t status)
 void
 WiimoteController::on_status(cwiid_status_mesg const& msg)
 {
-  log_tmp("Battery: " << static_cast<int>(msg.battery) << " Status: " << msg.ext_type);
+  log_debug("Battery: {} Status: {}", static_cast<int>(msg.battery), static_cast<int>(msg.ext_type));
 
   switch(msg.ext_type)
   {
@@ -339,7 +339,7 @@ WiimoteController::on_status(cwiid_status_mesg const& msg)
 void
 WiimoteController::on_error(cwiid_error_mesg const& msg)
 {
-  log_tmp_trace();
+  log_debug("wiimote trace");
 }
 
 void
@@ -380,11 +380,9 @@ WiimoteController::on_ir(cwiid_ir_mesg const& msg)
   // x 0,1024
   // y 0,768
   if (false)
-    log_tmp("IR: " <<
-            msg.src[0].pos[0] << " " << msg.src[0].pos[1] << " " << static_cast<int>(msg.src[0].size) << " " << static_cast<int>(msg.src[0].valid) << " - " <<
-            msg.src[1].pos[0] << " " << msg.src[1].pos[1] << " " << static_cast<int>(msg.src[1].size) << " " << static_cast<int>(msg.src[1].valid) << " - " <<
-            msg.src[2].pos[0] << " " << msg.src[2].pos[1] << " " << static_cast<int>(msg.src[2].size) << " " << static_cast<int>(msg.src[2].valid) << " - " <<
-            msg.src[3].pos[0] << " " << msg.src[3].pos[1] << " " << static_cast<int>(msg.src[3].size) << " " << static_cast<int>(msg.src[3].valid));
+  {
+    log_debug("IR sample present");
+  }
 
   // size and valid are not handled
 
@@ -460,13 +458,13 @@ WiimoteController::on_nunchuk(cwiid_nunchuk_mesg const& msg)
 void
 WiimoteController::on_classic (cwiid_classic_mesg const& msg)
 {
-  log_tmp_trace();
+  log_debug("wiimote trace");
 }
 
 void
 WiimoteController::err_callback(cwiid_wiimote_t*, char const* s, va_list ap)
 {
-  log_tmp("err_callback");
+  log_debug("wiimote err_callback");
 }
 
 void

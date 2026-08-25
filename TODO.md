@@ -239,16 +239,16 @@ CMake derives numeric `project(VERSION …)`; flake appends
       libusb_ref/unref for shared devices; quieter udev monitor logs.
 - [x] FF/LED code paths reviewed (uinpp callback → ControllerSlotConfig::set_rumble
       → Controller::set_rumble); hardware smoke still recommended.
-- [ ] Drop log noise / temporary debug helpers.
+- [x] Replace remaining live `log_tmp` with `log_debug` (wiimote/main).
 - [x] README + manpage pass (obsolescence note, deps, build, repo URLs).
 - [x] Drop unused GTK CMake requirement; define/link HAVE_CWIID when cwiid found.
-- [ ] Confirm `develop` builds and behaves at least as well as `stable`
-      for supported controllers.
+- [x] Confirm `develop` builds (user-verified).
+- [ ] Behavioural parity vs `stable` for supported controllers (hardware).
 
 ### Phase 5 — Later
 
 - [x] Vendor selected flake dependencies into `external/` subtrees.
-- [ ] Drop ancient Travis if unused; refresh GitLab CI.
+- [x] Drop ancient Travis; refresh GitLab CI (Ubuntu 24.04, no fmt/gtk).
 - [ ] Further architecture (In/Out ports, half-axis) only after the above.
 
 ---
@@ -259,5 +259,6 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - One logical change per commit where practical.
 - Public config compatibility: preserve or document the break.
 - Prefer evidence from code and `git log` over README/TODO claims.
-- Next: confirm builds (nix/cmake); hardware FF/LED smoke when available;
-  multi-controller UInput threading still open.
+- Build confirmed (plain CMake with WARNINGS/WERROR path in CI).
+- Next: hardware FF/LED smoke when available; multi-controller UInput
+  threading still open; optional deeper historical TODO triage.
