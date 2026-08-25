@@ -163,14 +163,13 @@ private:
   std::unique_ptr<uinpp::GlibDevice> m_glib_uinput;
   std::array<uint16_t, 256> m_keymap;
   std::array<bool, 256> m_state;
-  // One-shot sticky modes (Xbox console policy): arm on modifier tap, clear
-  // after the next non-modifier key. CAPS is Orange+Shift toggle.
+  // One-shot sticky: arm on modifier tap, clear after next non-modifier key
+  // (or second tap). Plain desktop Shift/Alt/Ctrl/Meta — no CAPS special case.
   bool m_sticky_shift;
   bool m_sticky_green;
   bool m_sticky_orange;
   bool m_sticky_people;
-  bool m_caps_lock;
-  // Last emitted effective modifier state (physical | sticky | caps).
+  // Last emitted effective modifier state (physical | sticky).
   bool m_eff_shift;
   bool m_eff_green;
   bool m_eff_orange;

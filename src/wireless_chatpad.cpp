@@ -38,7 +38,6 @@ WirelessChatpad::WirelessChatpad(WriteFn write, bool no_init, bool debug) :
   m_sticky_green(false),
   m_sticky_orange(false),
   m_sticky_people(false),
-  m_caps_lock(false),
   m_eff_shift(false),
   m_eff_green(false),
   m_eff_orange(false),
@@ -317,35 +316,25 @@ WirelessChatpad::process_key(KeyMsg const& msg)
   const bool rise_orange = m_state[CHATPAD_MOD_ORANGE] && !old_phys[CHATPAD_MOD_ORANGE];
   const bool rise_people = m_state[CHATPAD_MOD_PEOPLE] && !old_phys[CHATPAD_MOD_PEOPLE];
 
-  // Orange+Shift (either order) toggles CAPS lock, matching console policy.
-  // The combo is consumed for CAPS and does not also arm one-shot stickies.
-  bool caps_combo = false;
-  if ((rise_shift && (m_state[CHATPAD_MOD_ORANGE] || m_sticky_orange)) ||
-      (rise_orange && (m_state[CHATPAD_MOD_SHIFT] || m_sticky_shift || m_caps_lock)))
-  {
-    m_caps_lock = !m_caps_lock;
-    m_sticky_shift  = false;
-    m_sticky_orange = false;
-    caps_combo = true;
-    if (m_debug)
-    {
-      log_info("wireless chatpad CAPS lock {}", m_caps_lock ? "on" : "off");
-    }
-  }
+  // One-shot sticky: tap arms, second tap clears, next text key consumes.
+  // No CAPS / Orange+Shift special case — modifiers are plain desktop keys.
+  if (rise_green)  m_sticky_green  = !m_sticky_green;
+  if (rise_orange) m_sticky_orange = !m_sticky_orange;
+  if (rise_people) m_sticky_people = !m_sticky_people;
+  if (rise_shift)  m_sticky_shift  = !m_sticky_shift;
 
-  // One-shot sticky arm on tap (Xbox: mode armed until next text key).
-  // Physical hold already keeps the modifier active via m_state.
-  // Second tap while already armed clears the sticky (cancel without typing).
-  if (!caps_combo)
-  {
-    if (rise_green)  m_sticky_green  = !m_sticky_green;
-    if (rise_orange) m_sticky_orange = !m_sticky_orange;
-    if (rise_people) m_sticky_people = !m_sticky_people;
-    if (rise_shift)  m_sticky_shift  = !m_sticky_shift;
-  }
+  // Update LEDs as soon as sticky state changes (before key emit / USB noise).
+  const bool eff_shift  = m_state[CHATPAD_MOD_SHIFT]  || m_sticky_shift;
+  const bool eff_green  = m_state[CHATPAD_MOD_GREEN]  || m_sticky_green;
+  const bool eff_orange = m_state[CHATPAD_MOD_ORANGE] || m_sticky_orange;
+  const bool eff_people = m_state[CHATPAD_MOD_PEOPLE] || m_sticky_people;
 
-  // Any non-modifier key press consumes one-shot stickies after this report
-  // has emitted the key with mods still active (console one-shot behaviour).
+  set_led(CHATPAD_LED_SHIFT,  eff_shift);
+  set_led(CHATPAD_LED_GREEN,  eff_green);
+  set_led(CHATPAD_LED_ORANGE, eff_orange);
+  set_led(CHATPAD_LED_PEOPLE, eff_people);
+
+  // Text key press consumes stickies after this report emits with mods down.
   bool text_key_pressed = false;
   for (size_t i = 0; i < m_state.size(); ++i)
   {
@@ -359,18 +348,6 @@ WirelessChatpad::process_key(KeyMsg const& msg)
     }
   }
 
-  // Effective modifier down state: physical hold OR one-shot sticky OR CAPS.
-  const bool eff_shift  = m_state[CHATPAD_MOD_SHIFT]  || m_sticky_shift  || m_caps_lock;
-  const bool eff_green  = m_state[CHATPAD_MOD_GREEN]  || m_sticky_green;
-  const bool eff_orange = m_state[CHATPAD_MOD_ORANGE] || m_sticky_orange;
-  const bool eff_people = m_state[CHATPAD_MOD_PEOPLE] || m_sticky_people;
-
-  // LEDs show software mode (armed / CAPS), not merely finger-down.
-  set_led(CHATPAD_LED_SHIFT,  eff_shift);
-  set_led(CHATPAD_LED_GREEN,  eff_green);
-  set_led(CHATPAD_LED_ORANGE, eff_orange);
-  set_led(CHATPAD_LED_PEOPLE, eff_people);
-
   auto emit = [this](size_t i, bool down) {
     if (m_keymap[i] == 0)
     {
@@ -383,17 +360,12 @@ WirelessChatpad::process_key(KeyMsg const& msg)
     m_uinput->send(EV_KEY, m_keymap[i], down ? 1 : 0);
   };
 
-  // Previous effective state from last report (physical + sticky + caps).
-  // We recompute old effective from old_phys and the sticky flags *before*
-  // this report's arm/clear side effects where needed.
-  // For emit edges, track what we last sent via dedicated previous-eff vars
-  // stored in members updated at end of process.
   const bool old_eff_shift  = m_eff_shift;
   const bool old_eff_green  = m_eff_green;
   const bool old_eff_orange = m_eff_orange;
   const bool old_eff_people = m_eff_people;
 
-  // Press order: modifiers first, then keys (so Shift+A capitalises).
+  // Press order: modifiers first, then keys.
   if (eff_shift  && !old_eff_shift)  emit(CHATPAD_MOD_SHIFT,  true);
   if (eff_green  && !old_eff_green)  emit(CHATPAD_MOD_GREEN,  true);
   if (eff_orange && !old_eff_orange) emit(CHATPAD_MOD_ORANGE, true);
@@ -410,7 +382,6 @@ WirelessChatpad::process_key(KeyMsg const& msg)
       emit(i, false);
   }
 
-  // Consume one-shot stickies after the text key was emitted with mods down.
   if (text_key_pressed)
   {
     m_sticky_shift  = false;
@@ -419,19 +390,17 @@ WirelessChatpad::process_key(KeyMsg const& msg)
     m_sticky_people = false;
   }
 
-  // Recompute effective after sticky clear (physical + CAPS remain).
-  const bool post_shift  = m_state[CHATPAD_MOD_SHIFT]  || m_sticky_shift  || m_caps_lock;
+  const bool post_shift  = m_state[CHATPAD_MOD_SHIFT]  || m_sticky_shift;
   const bool post_green  = m_state[CHATPAD_MOD_GREEN]  || m_sticky_green;
   const bool post_orange = m_state[CHATPAD_MOD_ORANGE] || m_sticky_orange;
   const bool post_people = m_state[CHATPAD_MOD_PEOPLE] || m_sticky_people;
 
-  // Release order: keys first (already done), then modifiers.
+  // Release order: keys first (done), then modifiers.
   if (!post_shift  && old_eff_shift)  emit(CHATPAD_MOD_SHIFT,  false);
   if (!post_green  && old_eff_green)  emit(CHATPAD_MOD_GREEN,  false);
   if (!post_orange && old_eff_orange) emit(CHATPAD_MOD_ORANGE, false);
   if (!post_people && old_eff_people) emit(CHATPAD_MOD_PEOPLE, false);
 
-  // If stickies were cleared, refresh LEDs to post-clear effective state.
   if (text_key_pressed)
   {
     set_led(CHATPAD_LED_SHIFT,  post_shift);

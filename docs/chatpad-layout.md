@@ -12,10 +12,10 @@ Reference photo: German / Western-European QWERTZ Messenger Kit chatpad
 
 | Bit | Mask | Key (photo) | Role |
 |-----|------|-------------|------|
-| 0 | `0x01` | **shift** (bottom-left of letter block; also printed CAPS in orange) | Momentary Shift for the base layer. **CAPS / sticky Shift is Orange+Shift**, not Shift alone. |
-| 1 | `0x02` | **Green square** (bottom-left, lights green) | Selects green legends on keycaps. |
-| 2 | `0x04` | **Orange circle** (bottom-right, lights orange) | Selects orange legends; with Shift → CAPS lock behaviour on console. |
-| 3 | `0x08` | **People** (two-person icon) | People / messenger key (LED lock-style in xboxdrv today). |
+| 0 | `0x01` | **shift** (bottom-left of letter block; also printed CAPS in orange) | Sticky `KEY_LEFTSHIFT` (one-shot). Console CAPS is Orange+Shift; **not** implemented in xboxdrv. |
+| 1 | `0x02` | **Green square** (bottom-left, lights green) | Sticky `KEY_LEFTALT` (one-shot). |
+| 2 | `0x04` | **Orange circle** (bottom-right, lights orange) | Sticky `KEY_LEFTCTRL` (one-shot). |
+| 3 | `0x08` | **People** (two-person icon) | Sticky `KEY_LEFTMETA` (one-shot). |
 
 xboxdrv emits Linux key codes useful on the desktop (layers are still
 placeholder until compose/XKB):
@@ -32,9 +32,8 @@ placeholder until compose/XKB):
   modifier held, then the sticky mode and LED clear. A second tap while
   armed clears the mode (cancel without typing). Holding the key keeps the
   modifier active for as long as it is down.
-- **Orange + Shift** (either order) toggles **CAPS lock**. While CAPS is on,
-  Shift stays effectively down and the Shift LED stays lit until the same
-  combo is pressed again.
+- No CAPS lock special case: Orange+Shift is just both modifiers sticky if
+  tapped (desktop Ctrl+Shift), not a latching caps mode.
 - People is treated like the other modifiers on PC (no Messenger
   notification LED). True orange/green legend characters still need compose
   tables or an XKB keymap (see `chatpad.xkb`).
@@ -147,8 +146,8 @@ on this photo (no extra colour legends).
 
 - [x] Base Latin layer via scancode → `KEY_*` (US letter names in code).
 - [x] Modifier bits → left Shift/Alt/Ctrl/Meta (desktop placeholder).
-- [x] One-shot sticky Shift/Green/Orange/People + LEDs (console-style).
-- [x] Orange+Shift CAPS lock toggle (Shift LED latched while CAPS on).
+- [x] One-shot sticky Shift/Green/Orange/People + LEDs (desktop modifiers).
+- [ ] Orange+Shift CAPS lock (console behaviour; intentionally not implemented).
 - [ ] QWERTZ vs QWERTY letter labels (Y/Z) selectable by layout.
 - [ ] Orange / green character layers (need compose table or XKB).
 - [ ] Other regional keycaps (UK, FR, …) documented the same way.

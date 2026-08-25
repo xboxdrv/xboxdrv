@@ -59,12 +59,11 @@ private:
   std::unique_ptr<uinpp::GlibDevice> m_glib_uinput;
   std::array<uint16_t, 256> m_keymap;
   std::array<bool, 256> m_state;
-  // One-shot sticky + CAPS (same policy as wired Chatpad).
+  // One-shot sticky (same policy as wired Chatpad); no CAPS special case.
   bool m_sticky_shift;
   bool m_sticky_green;
   bool m_sticky_orange;
   bool m_sticky_people;
-  bool m_caps_lock;
   bool m_eff_shift;
   bool m_eff_green;
   bool m_eff_orange;
