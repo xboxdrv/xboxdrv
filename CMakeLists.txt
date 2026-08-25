@@ -17,11 +17,47 @@
 cmake_minimum_required(VERSION 3.14)
 
 # Source of truth: top-level VERSION (e.g. "0.9.0-dev"), or
-# -DPROJECT_VERSION_FULL=... from packaging (Nix may append .<revCount>+g<rev>).
+# -DPROJECT_VERSION_FULL=... from packaging (Nix passes the full
+# "0.9.0-dev.<revCount>+g<shortRev>" string when building from a flake).
 if(NOT DEFINED PROJECT_VERSION_FULL)
   file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" PROJECT_VERSION_FULL LIMIT_COUNT 1)
 endif()
 string(STRIP "${PROJECT_VERSION_FULL}" PROJECT_VERSION_FULL)
+
+# Development builds: append .<revCount>+g<shortRev>[-dirty] when VERSION
+# ends in -dev and packaging has not already supplied the full form.
+if(PROJECT_VERSION_FULL MATCHES "-dev$" AND NOT PROJECT_VERSION_FULL MATCHES "\\+g")
+  find_package(Git QUIET)
+  if(Git_FOUND)
+    execute_process(
+      COMMAND ${GIT_EXECUTABLE} -C "${CMAKE_CURRENT_SOURCE_DIR}" rev-list --count HEAD
+      OUTPUT_VARIABLE _xboxdrv_rev_count
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET)
+    execute_process(
+      COMMAND ${GIT_EXECUTABLE} -C "${CMAKE_CURRENT_SOURCE_DIR}" rev-parse --short=7 HEAD
+      OUTPUT_VARIABLE _xboxdrv_short_rev
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET)
+    execute_process(
+      COMMAND ${GIT_EXECUTABLE} -C "${CMAKE_CURRENT_SOURCE_DIR}" status --porcelain
+      OUTPUT_VARIABLE _xboxdrv_git_status
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET)
+    if(_xboxdrv_rev_count STREQUAL "")
+      set(_xboxdrv_rev_count "0")
+    endif()
+    if(_xboxdrv_short_rev STREQUAL "")
+      set(_xboxdrv_short_rev "dirty")
+    endif()
+    set(_xboxdrv_dirty "")
+    if(NOT _xboxdrv_git_status STREQUAL "")
+      set(_xboxdrv_dirty "-dirty")
+    endif()
+    set(PROJECT_VERSION_FULL
+      "${PROJECT_VERSION_FULL}.${_xboxdrv_rev_count}+g${_xboxdrv_short_rev}${_xboxdrv_dirty}")
+  endif()
+endif()
 
 # project() needs a numeric version; strip -dev / +git / similar suffixes.
 string(REGEX MATCH "^[0-9]+(\\.[0-9]+)*" _project_version_cmake "${PROJECT_VERSION_FULL}")

@@ -10,7 +10,11 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        # VERSION is the only source of truth (e.g. "0.9.0-dev").
+        # Dev builds: 0.9.0-dev.<revCount>+g<shortRev>[-dirty]
+        # Release builds: use VERSION as-is (no git metadata).
         versionBase = nixpkgs.lib.fileContents ./VERSION;
+        # shortRev on clean trees; dirtyShortRev already includes "-dirty".
         gitRev = "${self.shortRev or self.dirtyShortRev or "dirty"}";
         isDev = nixpkgs.lib.strings.hasInfix "-dev" versionBase;
         version =
