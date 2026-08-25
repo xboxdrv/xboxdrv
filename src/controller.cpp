@@ -55,6 +55,11 @@ Controller::submit_msg(ControllerMessage const& msg, ControllerMessageDescriptor
 void
 Controller::set_rumble(uint8_t left, uint8_t right)
 {
+  if (m_is_disconnected)
+  {
+    return;
+  }
+
   if (m_rumble_left  != left ||
       m_rumble_right != right)
   {
@@ -68,6 +73,11 @@ Controller::set_rumble(uint8_t left, uint8_t right)
 void
 Controller::set_led(uint8_t status)
 {
+  if (m_is_disconnected)
+  {
+    return;
+  }
+
   if (m_led_status != status)
   {
     m_led_status = status;

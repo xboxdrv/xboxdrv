@@ -164,6 +164,12 @@ USBController::get_name() const
 void
 USBController::usb_submit_read(int endpoint, int len)
 {
+  if (m_shutting_down || is_disconnected() || !m_handle)
+  {
+    log_debug("usb_submit_read skipped: controller shutting down or disconnected");
+    return;
+  }
+
   libusb_transfer* transfer = libusb_alloc_transfer(0);
 
   uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
@@ -189,10 +195,16 @@ USBController::usb_submit_read(int endpoint, int len)
 void
 USBController::usb_write(int endpoint, uint8_t* data_in, int len)
 {
+  // Soft-fail after unplug so set_led/set_rumble during shutdown do not throw.
+  if (m_shutting_down || is_disconnected() || !m_handle)
+  {
+    log_debug("usb_write skipped: controller shutting down or disconnected");
+    return;
+  }
+
   libusb_transfer* transfer = libusb_alloc_transfer(0);
   transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
 
-  // copy data into a newly allocated buffer
   uint8_t* data = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * len));
   memcpy(data, data_in, len);
 
@@ -202,11 +214,15 @@ USBController::usb_write(int endpoint, uint8_t* data_in, int len)
                                  &USBController::on_write_data_wrap, this,
                                  0); // timeout
 
-  int ret;
-  ret = libusb_submit_transfer(transfer);
+  int ret = libusb_submit_transfer(transfer);
   if (ret != LIBUSB_SUCCESS)
   {
     libusb_free_transfer(transfer);
+    if (ret == LIBUSB_ERROR_NO_DEVICE)
+    {
+      send_disconnect();
+      return;
+    }
     raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
   }
   else
@@ -220,6 +236,12 @@ USBController::usb_control(uint8_t  bmRequestType, uint8_t  bRequest,
                            uint16_t wValue, uint16_t wIndex,
                            uint8_t* data_in, uint16_t wLength)
 {
+  if (m_shutting_down || is_disconnected() || !m_handle)
+  {
+    log_debug("usb_control skipped: controller shutting down or disconnected");
+    return;
+  }
+
   libusb_transfer* transfer = libusb_alloc_transfer(0);
   transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
 
@@ -236,6 +258,11 @@ USBController::usb_control(uint8_t  bmRequestType, uint8_t  bRequest,
   if (ret != LIBUSB_SUCCESS)
   {
     libusb_free_transfer(transfer);
+    if (ret == LIBUSB_ERROR_NO_DEVICE)
+    {
+      send_disconnect();
+      return;
+    }
     raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
   }
   else
@@ -243,6 +270,7 @@ USBController::usb_control(uint8_t  bmRequestType, uint8_t  bRequest,
     m_transfers.insert(transfer);
   }
 }
+
 
 void
 USBController::on_control(libusb_transfer* transfer)
