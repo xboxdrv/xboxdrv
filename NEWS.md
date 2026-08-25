@@ -27,6 +27,9 @@ historical `NEWS` file.
 * Refresh GitLab CI (Ubuntu 24.04); remove Travis CI
 * README / man-page link updates; build-time D-Bus glue deprecation noise
   reduced
+* Wireless 360 receiver: accept variable report lengths and xpad-style
+  input detection (byte1==0x01); activate on any live pad traffic so
+  already-paired controllers work without a battery cycle
 * Chatpad: one-shot sticky Shift/Green/Orange/People (LEDs show mode);
   maps to left Shift/Alt/Ctrl/Meta (wired and experimental wireless); no CAPS
   special case

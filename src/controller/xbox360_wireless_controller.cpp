@@ -95,69 +95,75 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
     return false; // chatpad consumed; no gamepad message
   }
 
-  if (len == 0)
+  if (len <= 0)
   {
     return false;
   }
-  else
-  {
-    if (len == 2 && data[0] == 0x08)
-    { // Connection Status Message
-      if (data[1] == 0x00)
-      {
-        log_info("connection status: nothing");
 
-        // reset the controller into neutral position on disconnect
-        msg_out->clear();
-        set_active(false);
-        if (m_chatpad)
-        {
-          m_chatpad->set_controller_present(false);
-        }
-
-        return true;
-      }
-      else if (data[1] == 0x80)
-      {
-        log_info("connection status: controller connected");
-        set_led_real(get_led());
-        set_active(true);
-        if (m_chatpad)
-        {
-          m_chatpad->set_controller_present(true);
-        }
-      }
-      else if (data[1] == 0x40)
-      {
-        log_info("Connection status: headset connected");
-      }
-      else if (data[1] == 0xc0)
-      {
-        log_info("Connection status: controller and headset connected");
-        set_led_real(get_led());
-        set_active(true);
-        if (m_chatpad)
-        {
-          m_chatpad->set_controller_present(true);
-        }
-      }
-      else
-      {
-        log_info("Connection status: unknown");
-      }
-    }
-    else if (len == 29)
+  auto mark_present = [this]() {
+    // Any sign of a live pad: attach to a daemon slot (if still inactive)
+    // and start chatpad keep-alives. Battery-cycle was often needed only
+    // because we required a fresh 0x08/0x80 and exact len==29 reports.
+    set_active(true);
+    if (m_chatpad)
     {
-      set_active(true);
-      // Controller already paired (no 0x08/0x80 connect event this session):
-      // still start chatpad init/keep-alive so keys stream without a battery cycle.
+      m_chatpad->set_controller_present(true);
+    }
+  };
+
+  // Connection status (xpad: data[0] & 0x08). Short 2-byte form is common;
+  // accept the presence nibble on longer frames too.
+  if (len >= 2 && (data[0] & 0x08) != 0)
+  {
+    uint8_t st = data[1];
+    if ((st & 0x80) == 0 && (st & 0x40) == 0)
+    {
+      log_info("connection status: nothing");
+      msg_out->clear();
+      set_active(false);
       if (m_chatpad)
       {
-        m_chatpad->set_controller_present(true);
+        m_chatpad->set_controller_present(false);
       }
+      return true;
+    }
 
-      if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
-      { // Initial Announc Message
+    if (st & 0x80)
+    {
+      if (st & 0x40)
+        log_info("connection status: controller and headset connected");
+      else
+        log_info("connection status: controller connected");
+      // LED is also set when the daemon assigns a slot; nudge here so the
+      // pad is awake even before the idle activation callback runs.
+      set_led_real(get_led());
+      mark_present();
+      // Fall through: a longer frame may also carry pad data.
+      if (len <= 2)
+      {
+        return false;
+      }
+    }
+    else if (st & 0x40)
+    {
+      log_info("connection status: headset connected");
+      if (len <= 2)
+      {
+        return false;
+      }
+    }
+  }
+
+  // Gamepad / status payloads (xpad: data[1] == 0x01 for pad data).
+  // Do not require exact len==29: receivers report 20–32 byte actual lengths.
+  if (len >= 18)
+  {
+    // Announce / presence meta (serial + battery)
+    if (data[0] == 0x00 && data[1] == 0x0f && data[2] == 0x00 && data[3] == 0xf0)
+    {
+      mark_present();
+      if (len >= 18)
+      {
         m_serial = std::format("{:2x}:{:2x}:{:2x}:{:2x}:{:2x}:{:2x}:{:2x}",
                                int(data[7]),
                                int(data[8]),
@@ -170,62 +176,64 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
         log_info("Serial: {}", m_serial);
         log_info("Battery Status: {}", m_battery_status);
       }
-      else if (data[0] == 0x00 && data[1] == 0x01 && data[2] == 0x00 && data[3] == 0xf0 && data[4] == 0x00 && data[5] == 0x13)
-      { // Event message
-        uint8_t const* ptr = data + 4;
-
-        msg_out->set_key(xbox.dpad_up,    unpack::bit(ptr+2, 0));
-        msg_out->set_key(xbox.dpad_down,  unpack::bit(ptr+2, 1));
-        msg_out->set_key(xbox.dpad_left,  unpack::bit(ptr+2, 2));
-        msg_out->set_key(xbox.dpad_right, unpack::bit(ptr+2, 3));
-
-        msg_out->set_key(xbox.btn_start,   unpack::bit(ptr+2, 4));
-        msg_out->set_key(xbox.btn_back,    unpack::bit(ptr+2, 5));
-        msg_out->set_key(xbox.btn_thumb_l, unpack::bit(ptr+2, 6));
-        msg_out->set_key(xbox.btn_thumb_r, unpack::bit(ptr+2, 7));
-
-        msg_out->set_key(xbox.btn_lb, unpack::bit(ptr+3, 0));
-        msg_out->set_key(xbox.btn_rb, unpack::bit(ptr+3, 1));
-        msg_out->set_key(xbox.btn_guide, unpack::bit(ptr+3, 2));
-        //msg_out->dummy1 = unpack::bit(ptr+3, 3);
-
-        msg_out->set_key(xbox.btn_a, unpack::bit(ptr+3, 4));
-        msg_out->set_key(xbox.btn_b, unpack::bit(ptr+3, 5));
-        msg_out->set_key(xbox.btn_x, unpack::bit(ptr+3, 6));
-        msg_out->set_key(xbox.btn_y, unpack::bit(ptr+3, 7));
-
-        msg_out->set_abs(xbox.abs_lt, ptr[4], 0, 255);
-        msg_out->set_abs(xbox.abs_rt, ptr[5], 0, 255);
-
-        msg_out->set_abs(xbox.abs_x1, unpack::int16le(ptr+6), -32768, 32767);
-        msg_out->set_abs(xbox.abs_y1, unpack::s16_invert(unpack::int16le(ptr+8)), -32768, 32767);
-
-        msg_out->set_abs(xbox.abs_x2, unpack::int16le(ptr+10), -32768, 32767);
-        msg_out->set_abs(xbox.abs_y2, unpack::s16_invert(unpack::int16le(ptr+12)), -32768, 32767);
-
-        return true;
-      }
-      else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
-      { // Battery status
-        m_battery_status = data[4];
-        log_info("battery status: {}", m_battery_status);
-      }
-      else if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0xf0)
-      {
-        // 0x00 0x00 0x00 0xf0 0x00 ... is send after each button
-        // press, doesn't seem to contain any information
-      }
-      else
-      {
-        log_debug("unknown: {}", raw2str(data, len));
-      }
+      return false;
     }
-    else
+
+    // Input report: match xpad (byte1 == 0x01). Payload starts at offset 4.
+    // Previously required data[4]==0x00 && data[5]==0x13 which dropped some
+    // firmware/receiver variants → LED on (slot active) but no events.
+    if (data[1] == 0x01)
     {
-      log_debug("unknown: {}", raw2str(data, len));
+      mark_present();
+
+      uint8_t const* ptr = data + 4;
+
+      msg_out->set_key(xbox.dpad_up,    unpack::bit(ptr+2, 0));
+      msg_out->set_key(xbox.dpad_down,  unpack::bit(ptr+2, 1));
+      msg_out->set_key(xbox.dpad_left,  unpack::bit(ptr+2, 2));
+      msg_out->set_key(xbox.dpad_right, unpack::bit(ptr+2, 3));
+
+      msg_out->set_key(xbox.btn_start,   unpack::bit(ptr+2, 4));
+      msg_out->set_key(xbox.btn_back,    unpack::bit(ptr+2, 5));
+      msg_out->set_key(xbox.btn_thumb_l, unpack::bit(ptr+2, 6));
+      msg_out->set_key(xbox.btn_thumb_r, unpack::bit(ptr+2, 7));
+
+      msg_out->set_key(xbox.btn_lb, unpack::bit(ptr+3, 0));
+      msg_out->set_key(xbox.btn_rb, unpack::bit(ptr+3, 1));
+      msg_out->set_key(xbox.btn_guide, unpack::bit(ptr+3, 2));
+
+      msg_out->set_key(xbox.btn_a, unpack::bit(ptr+3, 4));
+      msg_out->set_key(xbox.btn_b, unpack::bit(ptr+3, 5));
+      msg_out->set_key(xbox.btn_x, unpack::bit(ptr+3, 6));
+      msg_out->set_key(xbox.btn_y, unpack::bit(ptr+3, 7));
+
+      msg_out->set_abs(xbox.abs_lt, ptr[4], 0, 255);
+      msg_out->set_abs(xbox.abs_rt, ptr[5], 0, 255);
+
+      msg_out->set_abs(xbox.abs_x1, unpack::int16le(ptr+6), -32768, 32767);
+      msg_out->set_abs(xbox.abs_y1, unpack::s16_invert(unpack::int16le(ptr+8)), -32768, 32767);
+
+      msg_out->set_abs(xbox.abs_x2, unpack::int16le(ptr+10), -32768, 32767);
+      msg_out->set_abs(xbox.abs_y2, unpack::s16_invert(unpack::int16le(ptr+12)), -32768, 32767);
+
+      return true;
+    }
+
+    if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
+    {
+      m_battery_status = data[4];
+      log_info("battery status: {}", m_battery_status);
+      return false;
+    }
+
+    if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0xf0)
+    {
+      // Trailer after some button presses; ignore.
+      return false;
     }
   }
 
+  log_debug("unknown wireless report len={}: {}", len, raw2str(data, len));
   return false;
 }
 
