@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 project(argpp VERSION 1.0.0)
 
 set(TINYCMMC_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/external/cmake-modules/modules/")
@@ -36,9 +36,14 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 add_library(argpp STATIC
   src/parser.cpp
   src/prettyprinter.cpp)
+# Public BUILD_INTERFACE needs both roots:
+#   include/       → #include <argpp/argpp.hpp>
+#   include/argpp/ → #include <argpp.hpp> / "argpp.hpp"
+# Install layout is include/argpp/argpp.hpp, so INSTALL_INTERFACE is include/.
 target_include_directories(argpp PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/argpp/>
-  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/argpp>
+  $<INSTALL_INTERFACE:include>)
 target_include_directories(argpp PRIVATE
   src/)
 target_compile_options(argpp PRIVATE ${WARNINGS_CXX_FLAGS})
