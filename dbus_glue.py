@@ -31,24 +31,39 @@ def build_dbus_glue(target, source, dbus_prefix):
     conversion.
     """
     # dbus-binding-tool shells out to glib-genmarshal with the deprecated
-    # "--header --body" pair. Put a small wrapper first on PATH that rewrites
-    # those flags to "--body --prototypes" (see tools/glib-genmarshal-wrapper).
+    # "--header --body" pair. Prefer a PATH shim that rewrites the flags to
+    # "--body --prototypes". Also filter the known deprecation warning from
+    # stderr in case the tool invokes genmarshal by absolute path (nix) and
+    # bypasses PATH.
     env = os.environ.copy()
     tools_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools")
-    shim_dir = os.path.join(os.path.dirname(target) if target else ".", ".dbus-shim")
+    shim_dir = os.path.join(os.path.dirname(os.path.abspath(target)) if target else ".",
+                            ".dbus-shim")
     os.makedirs(shim_dir, exist_ok=True)
     shim = os.path.join(shim_dir, "glib-genmarshal")
-    wrapper = os.path.join(tools_dir, "glib-genmarshal-wrapper")
-    if not os.path.exists(shim):
-        os.symlink(os.path.abspath(wrapper), shim)
+    wrapper = os.path.abspath(os.path.join(tools_dir, "glib-genmarshal-wrapper"))
+    if os.path.lexists(shim):
+        os.unlink(shim)
+    os.symlink(wrapper, shim)
+    os.chmod(wrapper, 0o755)
     env["PATH"] = shim_dir + os.pathsep + env.get("PATH", "")
 
-    xml = subprocess.Popen(["dbus-binding-tool",
-                            "--mode=glib-server",
-                            "--prefix=" + dbus_prefix, source],
-                           stdout=subprocess.PIPE,
-                           env=env).communicate()[0]
-    xml = xml.decode()
+    proc = subprocess.Popen(["dbus-binding-tool",
+                             "--mode=glib-server",
+                             "--prefix=" + dbus_prefix, source],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            env=env)
+    out, err = proc.communicate()
+    if proc.returncode != 0:
+        sys.stderr.write(err.decode(errors="replace"))
+        raise subprocess.CalledProcessError(proc.returncode, "dbus-binding-tool")
+    for line in err.decode(errors="replace").splitlines():
+        if "Using --header and --body at the same time is deprecated" in line:
+            continue
+        if line.strip():
+            sys.stderr.write(line + "\n")
+    xml = out.decode()
     xml = re.sub(r"callback = \(([A-Za-z_]+)\) \(marshal_data \? marshal_data : cc->callback\);",
                  r"union { \1 fn; void* obj; } conv;\n  "
                  "conv.obj = (marshal_data ? marshal_data : cc->callback);\n  "
