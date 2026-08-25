@@ -262,3 +262,5 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - Build confirmed (plain CMake with WARNINGS/WERROR path in CI).
 - Next: hardware FF/LED smoke when available; multi-controller UInput
   threading still open; optional deeper historical TODO triage.
+- [x] Sync missing kernel xpad XTYPE_XBOX360 IDs into xpad_device
+  (Xbox One/Series left out until testable).
