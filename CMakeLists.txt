@@ -43,7 +43,11 @@ include(GNUInstallDirs)
 include(MaximumWarnings)
 include(ClangTidy)
 
+# -Wpacked is noisy: uint8_t-only structs legitimately need no packing, and
+# bitfield USB report layouts still use packed where it matters. Drop the
+# warning and force -Wno-packed so -Werror cannot revive it.
 list(REMOVE_ITEM WARNINGS_CXX_FLAGS -Wpacked)
+list(APPEND WARNINGS_CXX_FLAGS -Wno-packed)
 
 find_package(Threads REQUIRED)
 find_package(X11 REQUIRED)
