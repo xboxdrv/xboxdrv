@@ -21,9 +21,10 @@
 #include <fcntl.h>
 #include <sstream>
 #include <stdexcept>
+#include <string.h>
 #include <unistd.h>
 
-#include <fmt/format.h>
+#include <format>
 #include <logmich/log.hpp>
 
 #include "force_feedback_handler.hpp"
@@ -99,7 +100,7 @@ Device::set_phys(std::string_view phys)
 {
   std::string phys_str(phys);
   if (ioctl(m_fd, UI_SET_PHYS, phys_str.c_str()) < 0) {
-    throw std::runtime_error(fmt::format("Device::set_phys() failed: ", strerror(errno)));
+    throw std::runtime_error(std::format("Device::set_phys() failed: ", strerror(errno)));
   }
 }
 
@@ -107,7 +108,7 @@ void
 Device::set_prop(int value)
 {
   if (ioctl(m_fd, UI_SET_PROPBIT, value) < 0) {
-    throw std::runtime_error(fmt::format("Device::set_prop() failed: ", strerror(errno)));
+    throw std::runtime_error(std::format("Device::set_prop() failed: ", strerror(errno)));
   }
 }
 
@@ -137,7 +138,7 @@ Device::add_abs(uint16_t code, int min, int max, int fuzz, int flat, int resolut
     abs_setup.absinfo.resolution = resolution;
 
     if (ioctl(m_fd, UI_ABS_SETUP, &abs_setup) < 0) {
-      throw std::runtime_error(fmt::format("UI_ABS_SETUP failed: {}", strerror(errno)));
+      throw std::runtime_error(std::format("UI_ABS_SETUP failed: {}", strerror(errno)));
     }
   }
 }
@@ -266,7 +267,7 @@ Device::finish()
     log_debug("'{}' {}:{}", setup.name, setup.id.vendor, setup.id.product);
 
     if (ioctl(m_fd, UI_DEV_SETUP, &setup) < 0) {
-      throw std::runtime_error(fmt::format("UI_DEV_SETUP failed: {}", strerror(errno)));
+      throw std::runtime_error(std::format("UI_DEV_SETUP failed: {}", strerror(errno)));
     }
   }
 
@@ -276,7 +277,7 @@ Device::finish()
   log_debug("finish");
   if (ioctl(m_fd, UI_DEV_CREATE))
   {
-    throw std::runtime_error(fmt::format("unable to create uinput device: '{}': ", m_name, strerror(errno)));
+    throw std::runtime_error(std::format("unable to create uinput device: '{}': ", m_name, strerror(errno)));
   }
 
   m_finished = true;

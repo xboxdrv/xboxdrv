@@ -20,7 +20,7 @@
 #include <sstream>
 #include <vector>
 
-#include <fmt/format.h>
+#include <format>
 #include <strut/split.hpp>
 
 #include "event.hpp"
@@ -145,7 +145,7 @@ uint16_t str2deviceid(std::string const& device)
     int result = std::stoi(device);
     if (result < 0 || result > std::numeric_limits<uint16_t>::max())
     {
-      throw std::runtime_error(fmt::format("str2deviceid(): out of range: '{}'", device));
+      throw std::runtime_error(std::format("str2deviceid(): out of range: '{}'", device));
     }
     else
     {
@@ -165,7 +165,7 @@ uint16_t str2slotid(std::string const& slot)
     int result = std::stoi(slot);
     if (result < 0 || result > std::numeric_limits<uint16_t>::max())
     {
-      throw std::runtime_error(fmt::format("str2deviceid(): out of range: '{}'", slot));
+      throw std::runtime_error(std::format("str2deviceid(): out of range: '{}'", slot));
     }
     else
     {

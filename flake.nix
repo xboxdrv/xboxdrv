@@ -2,7 +2,7 @@
   description = "Uinput helper library for C++";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
 
     tinycmmc.url = "github:grumbel/tinycmmc";
@@ -11,11 +11,9 @@
 
     strutcpp.url = "github:grumbel/strutcpp";
     strutcpp.inputs.nixpkgs.follows = "nixpkgs";
-    strutcpp.inputs.tinycmmc.follows = "tinycmmc";
 
     logmich.url = "github:logmich/logmich";
     logmich.inputs.nixpkgs.follows = "nixpkgs";
-    logmich.inputs.tinycmmc.follows = "tinycmmc";
   };
 
   outputs = { self, nixpkgs, flake-utils, tinycmmc, strutcpp, logmich }:
@@ -34,7 +32,7 @@
             doCheck = true;
             nativeBuildInputs = [
               pkgs.cmake
-              pkgs.pkgconfig
+              pkgs.pkg-config
             ];
             buildInputs = [
               tinycmmc.packages.${system}.default
@@ -43,7 +41,6 @@
 
               pkgs.util-linux
               pkgs.gtest
-              pkgs.fmt_8
             ];
            };
         };

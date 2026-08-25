@@ -17,7 +17,7 @@
 #include "event.hpp"
 
 #include <cassert>
-#include <fmt/format.h>
+#include <format>
 
 #include "linux.hpp"
 #include "multi_device.hpp"
