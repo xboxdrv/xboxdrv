@@ -32,18 +32,34 @@ list(APPEND WARNINGS_CXX_FLAGS
   -Wno-stringop-overread # produces bogus warnings
   )
 
-# Build dependencies
+# Build dependencies (prefer targets already provided by the parent)
 function(build_dependencies)
   set(BUILD_TESTS OFF)
 
   find_package(strut QUIET)
-  if(NOT TARGET strut::strut)
-    add_subdirectory(external/strutcpp/ EXCLUDE_FROM_ALL)
+  if(NOT TARGET strut::strut AND NOT TARGET strut)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/strutcpp/CMakeLists.txt")
+      add_subdirectory(external/strutcpp/ EXCLUDE_FROM_ALL)
+    elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../strutcpp/CMakeLists.txt")
+      add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../strutcpp"
+                       "${CMAKE_CURRENT_BINARY_DIR}/strutcpp_dep"
+                       EXCLUDE_FROM_ALL)
+    else()
+      message(FATAL_ERROR "strut not found (need strut::strut target or external/strutcpp)")
+    endif()
   endif()
 
   find_package(logmich QUIET)
-  if(NOT TARGET logmich::logmich)
-    add_subdirectory(external/logmich/ EXCLUDE_FROM_ALL)
+  if(NOT TARGET logmich::logmich AND NOT TARGET logmich)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/logmich/CMakeLists.txt")
+      add_subdirectory(external/logmich/ EXCLUDE_FROM_ALL)
+    elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../logmich/CMakeLists.txt")
+      add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../logmich"
+                       "${CMAKE_CURRENT_BINARY_DIR}/logmich_dep"
+                       EXCLUDE_FROM_ALL)
+    else()
+      message(FATAL_ERROR "logmich not found (need logmich::logmich target or external/logmich)")
+    endif()
   endif()
 endfunction()
 build_dependencies()
@@ -58,6 +74,7 @@ set_target_properties(uinpp PROPERTIES
 set_target_properties(uinpp PROPERTIES PUBLIC_HEADER "${UINPP_HEADER_SOURCES}")
 target_compile_options(uinpp PRIVATE ${WARNINGS_CXX_FLAGS})
 target_link_libraries(uinpp PUBLIC
+  strut::strut
   logmich::logmich
   )
 target_include_directories(uinpp SYSTEM PUBLIC
