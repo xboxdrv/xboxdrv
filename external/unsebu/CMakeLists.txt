@@ -35,9 +35,13 @@ file(GLOB UNSEBU_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 add_library(unsebu STATIC ${UNSEBU_SOURCES})
 set_target_properties(unsebu PROPERTIES PUBLIC_HEADER "${UNSEBU_HEADER_SOURCES}")
 target_compile_options(unsebu PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
+# Public: include/ so consumers can #include <unsebu/usb_helper.hpp>
+# Private: include/unsebu so the library sources can #include "usb_helper.hpp"
 target_include_directories(unsebu PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/unsebu/>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
+target_include_directories(unsebu PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/unsebu)
 target_link_libraries(unsebu PUBLIC
   logmich::logmich
   fmt::fmt
