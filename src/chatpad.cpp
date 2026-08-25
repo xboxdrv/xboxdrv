@@ -55,6 +55,7 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_no_init(no_init),
   m_debug(debug),
   m_interface_claimed(false),
+  m_keepalive_stalls(0),
   m_quit_thread(false),
   m_uinput(),
   m_glib_uinput(),
@@ -143,19 +144,20 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
     // Skip the heavy init sequence (safer when restarting xboxdrv without
     // unplugging the pad — full init can lock up some firmwares).
     m_init_state = kStateKeepAlive_1e;
+    if (m_bcdDevice == 0x0110)
+    {
+      usb_submit_read(6, 32);
+    }
+    else if (m_bcdDevice == 0x0114)
+    {
+      usb_submit_read(4, 32);
+    }
+    log_info("chatpad: skipping init (--chatpad-no-init), listening for key reports");
   }
 
+  // Start the init / keep-alive state machine. Full init starts interrupt
+  // reads only after the 0x1b enable step (see on_control).
   send_command();
-
-  // Interrupt IN endpoint for key reports (bcdDevice-dependent addressing).
-  if (m_bcdDevice == 0x0110)
-  {
-    usb_submit_read(6, 32);
-  }
-  else if (m_bcdDevice == 0x0114)
-  {
-    usb_submit_read(4, 32);
-  }
 }
 
 Chatpad::~Chatpad()
@@ -382,19 +384,49 @@ Chatpad::send_command()
 void
 Chatpad::on_control(libusb_transfer* transfer)
 {
-  //log_tmp(m_init_state << " " << usb_transfer_strerror(transfer->status) << " len: " << transfer->actual_length);
-  if (transfer->actual_length != 0)
+  State const state = m_init_state;
+  bool const ok = (transfer->status == LIBUSB_TRANSFER_COMPLETED);
+
+  if (!ok)
   {
-    //log_tmp(" PAYLOAD: " << raw2str(transfer->buffer, transfer->actual_length));
+    // STALL is common when the pad is already initialised or mid-reinit.
+    // Clear the control pipe and continue; do not spam ERROR every second.
+    if (transfer->status == LIBUSB_TRANSFER_STALL)
+    {
+      libusb_clear_halt(m_handle, 0);
+      if (state == kStateKeepAlive_1e || state == kStateKeepAlive_1f)
+      {
+        ++m_keepalive_stalls;
+        if (m_keepalive_stalls <= 3 || (m_keepalive_stalls % 30) == 0)
+        {
+          log_warn("chatpad keep-alive STALL (count={}); cleared halt — "
+                   "try --chatpad-no-init if this persists after a restart",
+                   m_keepalive_stalls);
+        }
+      }
+      else
+      {
+        log_warn("chatpad init control STALL in state {}: {}",
+                 static_cast<int>(state), libusb_error_name(transfer->status));
+      }
+    }
+    else
+    {
+      log_error("chatpad control transfer status: {}", libusb_error_name(transfer->status));
+    }
+  }
+  else if (state == kStateKeepAlive_1e || state == kStateKeepAlive_1f)
+  {
+    m_keepalive_stalls = 0;
   }
 
-  switch(m_init_state)
+  switch(state)
   {
     case kStateInit1:
     case kStateInit2:
     case kStateInit3:
-      // fail ok
-      m_init_state = static_cast<State>(m_init_state + 1);
+      // These probes often fail; continue regardless.
+      m_init_state = static_cast<State>(state + 1);
       send_command();
       break;
 
@@ -403,16 +435,32 @@ Chatpad::on_control(libusb_transfer* transfer)
     case kStateInit6:
     case kStateInit_1e:
     case kStateInit_1f:
+      // Advance even on STALL so we still reach keep-alive / read start.
+      m_init_state = static_cast<State>(state + 1);
+      send_command();
+      break;
+
     case kStateInit_1b:
+      // After enable (0x1b), start interrupt reads then keep-alive loop.
+      m_init_state = kStateKeepAlive_1e;
+      if (!m_read_transfer)
+      {
+        if (m_bcdDevice == 0x0110)
+        {
+          usb_submit_read(6, 32);
+        }
+        else if (m_bcdDevice == 0x0114)
+        {
+          usb_submit_read(4, 32);
+        }
+        log_info("chatpad: init done, listening for key reports");
+      }
+      send_command();
+      break;
+
     case kStateKeepAlive_1e:
     case kStateKeepAlive_1f:
-      // Always advance: a single failed keep-alive must not freeze the state
-      // machine (device still usable after a transient STALL/timeout).
-      if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
-      {
-        log_error("chatpad control transfer status: {}", libusb_error_name(transfer->status));
-      }
-      m_init_state = static_cast<State>(m_init_state + 1);
+      m_init_state = static_cast<State>(state + 1);
       if (m_init_state == kStateLoop)
       {
         m_init_state = kStateKeepAlive_1e;

@@ -155,6 +155,7 @@ private:
   bool m_no_init;
   bool m_debug;
   bool m_interface_claimed;
+  int m_keepalive_stalls;
 
 
   bool m_quit_thread;
