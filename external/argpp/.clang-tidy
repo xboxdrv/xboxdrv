@@ -1,0 +1,20 @@
+---
+Checks: >
+  readability-*,
+  clang-*,
+  portability-*,
+  performance-*,
+  bugprone-*,
+  misc-*,
+  modernize-*,
+  -misc-unused-parameters,
+  -modernize-deprecated-headers,
+  -modernize-use-trailing-return-type,
+  -readability-else-after-return,
+  -readability-implicit-bool-conversion,
+  -readability-magic-numbers,
+  -readability-redundant-member-init,
+WarningsAsErrors: '*'
+HeaderFilterRegex: 'src/.*hpp'
+AnalyzeTemporaryDtors: true
+...

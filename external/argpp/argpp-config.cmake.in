@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/argpp-config-version.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/argpp-targets.cmake")
+
+check_required_components(argpp)
+
+# EOF #

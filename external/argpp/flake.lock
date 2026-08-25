@@ -1,0 +1,67 @@
+{
+  "nodes": {
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1659877975,
+        "narHash": "sha256-zllb8aq3YO3h8B/U0/J1WBgAL8EX5yWf5pMj3G0NAmc=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "c0e246b9b83f637f4681389ecabcb2681b4f3af0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1660406417,
+        "narHash": "sha256-ekKl2IWxAEjwrAtE//PgR95UcvqFK+FaT4kR5XFcdjQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "d816f474aa79d020a75cc3e69113759e32aabc2e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-22.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": "nixpkgs",
+        "tinycmmc": "tinycmmc"
+      }
+    },
+    "tinycmmc": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1660502431,
+        "narHash": "sha256-y8/oijBPvI74DSmOULeNuG0Y0+S6c7sx8yKSULI82As=",
+        "owner": "grumbel",
+        "repo": "tinycmmc",
+        "rev": "fe10bcbb5ba1a3f9a3cc58bd07ab3f6320c24648",
+        "type": "github"
+      },
+      "original": {
+        "owner": "grumbel",
+        "repo": "tinycmmc",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
