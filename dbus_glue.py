@@ -18,6 +18,7 @@
 
 
 import sys
+import os
 import argparse
 import subprocess
 import re
@@ -29,10 +30,24 @@ def build_dbus_glue(target, source, dbus_prefix):
     thus we have to change the code to use a union to do the
     conversion.
     """
+    # dbus-binding-tool shells out to glib-genmarshal with the deprecated
+    # "--header --body" pair. Put a small wrapper first on PATH that rewrites
+    # those flags to "--body --prototypes" (see tools/glib-genmarshal-wrapper).
+    env = os.environ.copy()
+    tools_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools")
+    shim_dir = os.path.join(os.path.dirname(target) if target else ".", ".dbus-shim")
+    os.makedirs(shim_dir, exist_ok=True)
+    shim = os.path.join(shim_dir, "glib-genmarshal")
+    wrapper = os.path.join(tools_dir, "glib-genmarshal-wrapper")
+    if not os.path.exists(shim):
+        os.symlink(os.path.abspath(wrapper), shim)
+    env["PATH"] = shim_dir + os.pathsep + env.get("PATH", "")
+
     xml = subprocess.Popen(["dbus-binding-tool",
                             "--mode=glib-server",
                             "--prefix=" + dbus_prefix, source],
-                           stdout=subprocess.PIPE).communicate()[0]
+                           stdout=subprocess.PIPE,
+                           env=env).communicate()[0]
     xml = xml.decode()
     xml = re.sub(r"callback = \(([A-Za-z_]+)\) \(marshal_data \? marshal_data : cc->callback\);",
                  r"union { \1 fn; void* obj; } conv;\n  "
