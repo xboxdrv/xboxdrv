@@ -130,8 +130,16 @@ Controller::set_disconnect_cb(const std::function<void ()>& callback)
 void
 Controller::send_disconnect()
 {
+  // Idempotent: multiple USB transfers can fail at once on unplug.
+  if (m_is_disconnected)
+  {
+    return;
+  }
   m_is_disconnected = true;
-  m_disconnect_cb();
+  if (m_disconnect_cb)
+  {
+    m_disconnect_cb();
+  }
 }
 
 } // namespace xboxdrv

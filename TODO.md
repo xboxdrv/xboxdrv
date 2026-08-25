@@ -212,6 +212,9 @@ architecture, daemon + hotplug concept.
 
 ### Phase 4 — Stability vs `stable`
 
+- [x] USB disconnect/teardown: idempotent `send_disconnect`, timed cancel
+      drain in `USBController` dtor, treat read errors as disconnect
+      (GitHub #239).
 - [ ] Triage the historical `TODO`; move remaining actionable items here.
 - [ ] Multi-controller UInput update / threading.
 - [ ] Daemon hotplug, basic FF, LED, common examples.

@@ -19,6 +19,7 @@
 #include "controller/usb_controller.hpp"
 
 #include <assert.h>
+#include <sys/time.h>
 #include <string.h>
 #include <format>
 
@@ -36,6 +37,7 @@ USBController::USBController(libusb_device* dev) :
   m_handle(nullptr),
   m_transfers(),
   m_interfaces(),
+  m_shutting_down(false),
   m_usbpath(),
   m_usbid(),
   m_name()
@@ -85,30 +87,60 @@ USBController::USBController(libusb_device* dev) :
 
 USBController::~USBController()
 {
-  // cancel all transfers
-  for(std::set<libusb_transfer*>::iterator it = m_transfers.begin(); it != m_transfers.end(); ++it)
-  {
-    libusb_cancel_transfer(*it);
-  }
+  m_shutting_down = true;
 
-  // wait for cancel to succeed
-  while (!m_transfers.empty())
+  // Cancel outstanding transfers. Completion callbacks remove them from
+  // m_transfers; do not free here (libusb owns the transfer until the
+  // callback runs or cancel fails).
+  for (libusb_transfer* transfer : m_transfers)
   {
-    int ret = libusb_handle_events(NULL);
-    if (ret != 0)
+    int ret = libusb_cancel_transfer(transfer);
+    if (ret != LIBUSB_SUCCESS && ret != LIBUSB_ERROR_NOT_FOUND)
     {
-      log_error("libusb_handle_events() failure: {}", ret);
+      log_error("libusb_cancel_transfer() failed: {}", libusb_strerror(ret));
     }
   }
 
-  // release all claimed interfaces
-  for(std::set<int>::iterator it = m_interfaces.begin(); it != m_interfaces.end(); ++it)
+  // Drain cancellations with a timeout so a dead device cannot hang
+  // the process forever (see GitHub #239 / historical libusb teardown crashes).
+  const int max_iterations = 100;
+  for (int i = 0; !m_transfers.empty() && i < max_iterations; ++i)
   {
-    libusb_release_interface(m_handle, *it);
+    timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 10000; // 10ms
+    int ret = libusb_handle_events_timeout_completed(nullptr, &tv, nullptr);
+    if (ret != LIBUSB_SUCCESS && ret != LIBUSB_ERROR_INTERRUPTED)
+    {
+      log_error("libusb_handle_events_timeout_completed() failure: {}", libusb_strerror(ret));
+      break;
+    }
   }
 
-  // read and write transfers might still be going on and might need to be canceled
-  libusb_close(m_handle);
+  if (!m_transfers.empty())
+  {
+    log_error("USBController teardown: {} transfer(s) still pending after cancel; "
+              "abandoning (device likely already gone)", m_transfers.size());
+    // Do not libusb_free_transfer here: the transfer may still be referenced
+    // inside libusb. Abandon the set; process exit or libusb_close will drop them.
+    m_transfers.clear();
+  }
+
+  for (int ifnum : m_interfaces)
+  {
+    int ret = libusb_release_interface(m_handle, ifnum);
+    if (ret != LIBUSB_SUCCESS)
+    {
+      log_debug("libusb_release_interface({}) failed: {}", ifnum, libusb_strerror(ret));
+    }
+  }
+  m_interfaces.clear();
+
+  if (m_handle)
+  {
+    libusb_close(m_handle);
+    m_handle = nullptr;
+  }
 }
 
 std::string
@@ -215,7 +247,12 @@ USBController::usb_control(uint8_t  bmRequestType, uint8_t  bRequest,
 void
 USBController::on_control(libusb_transfer* transfer)
 {
-  log_debug("control transfer");
+  log_debug("control transfer status={}", libusb_error_name(transfer->status));
+
+  if (transfer->status == LIBUSB_TRANSFER_NO_DEVICE && !m_shutting_down)
+  {
+    send_disconnect();
+  }
 
   m_transfers.erase(transfer);
   libusb_free_transfer(transfer);
@@ -224,17 +261,17 @@ USBController::on_control(libusb_transfer* transfer)
 void
 USBController::on_write_data(libusb_transfer* transfer)
 {
-  if (transfer->status == LIBUSB_TRANSFER_COMPLETED)
-  {
-    // ok
-  }
-  else if (transfer->status == LIBUSB_TRANSFER_CANCELLED)
+  if (transfer->status == LIBUSB_TRANSFER_COMPLETED ||
+      transfer->status == LIBUSB_TRANSFER_CANCELLED)
   {
     // ok
   }
   else if (transfer->status == LIBUSB_TRANSFER_NO_DEVICE)
   {
-    send_disconnect();
+    if (!m_shutting_down)
+    {
+      send_disconnect();
+    }
   }
   else
   {
@@ -252,16 +289,21 @@ USBController::on_read_data(libusb_transfer* transfer)
 
   if (transfer->status == LIBUSB_TRANSFER_COMPLETED)
   {
-    // process data
+    if (m_shutting_down || is_disconnected())
+    {
+      m_transfers.erase(transfer);
+      libusb_free_transfer(transfer);
+      return;
+    }
+
     ControllerMessage msg;
     if (parse(transfer->buffer, transfer->actual_length, &msg))
     {
       submit_msg(msg, m_message_descriptor);
     }
 
-    int ret;
-    ret = libusb_submit_transfer(transfer);
-    if (ret != LIBUSB_SUCCESS) // could also check for LIBUSB_ERROR_NO_DEVICE
+    int ret = libusb_submit_transfer(transfer);
+    if (ret != LIBUSB_SUCCESS)
     {
       log_error("failed to resubmit USB transfer: {}", libusb_strerror(ret));
       m_transfers.erase(transfer);
@@ -278,13 +320,22 @@ USBController::on_read_data(libusb_transfer* transfer)
   {
     m_transfers.erase(transfer);
     libusb_free_transfer(transfer);
-    send_disconnect();
+    if (!m_shutting_down)
+    {
+      send_disconnect();
+    }
   }
   else
   {
+    // STALL / ERROR / TIMED_OUT: the continuous read loop is dead; treat as disconnect
+    // so the slot is freed (GitHub #239) instead of leaving a zombie controller.
     log_error("USB read failure: {}: {}", transfer->length, libusb_error_name(transfer->status));
     m_transfers.erase(transfer);
     libusb_free_transfer(transfer);
+    if (!m_shutting_down)
+    {
+      send_disconnect();
+    }
   }
 }
 

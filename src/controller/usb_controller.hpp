@@ -36,6 +36,7 @@ protected:
 
   std::set<libusb_transfer*> m_transfers;
   std::set<int> m_interfaces;
+  bool m_shutting_down;
 
   std::string m_usbpath;
   std::string m_usbid;
