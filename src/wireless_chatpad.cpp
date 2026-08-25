@@ -451,6 +451,12 @@ WirelessChatpad::process_key(KeyMsg const& msg)
 void
 WirelessChatpad::set_led(unsigned int led, bool state)
 {
+  const bool currently_on = (m_led_state & led) != 0;
+  if (state == currently_on)
+  {
+    return;
+  }
+
   // Wireless LED codes from Kytech / issue #209 (ON / OFF pairs).
   uint8_t on = 0;
   uint8_t off = 0;

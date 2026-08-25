@@ -566,6 +566,15 @@ Chatpad::get_led(unsigned int led)
 void
 Chatpad::set_led(unsigned int led, bool state)
 {
+  // Only talk to the device on transitions. Spamming OFF codes for LEDs that
+  // are already off (every key report) can clear the Shift/CAPS LED that we
+  // just armed for sticky mode.
+  const bool currently_on = (m_led_state & led) != 0;
+  if (state == currently_on)
+  {
+    return;
+  }
+
   if (state)
   {
     m_led_state |= led;
