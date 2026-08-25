@@ -19,6 +19,7 @@
 #include "chatpad.hpp"
 
 #include <assert.h>
+#include <linux/input.h>
 #include <sys/time.h>
 
 #include <uinpp/device.hpp>
@@ -216,12 +217,14 @@ Chatpad::init_uinput()
 {
   struct input_id usbid;
 
-  usbid.bustype = 0;
-  usbid.vendor  = 0;
-  usbid.product = 0;
-  usbid.version = 0;
+  // Present as a real USB keyboard so compositors apply Shift/modifiers
+  // to this device's key events (GENERIC is often ignored for text input).
+  usbid.bustype = BUS_USB;
+  usbid.vendor  = 0x045e; // Microsoft
+  usbid.product = 0x028e; // same family as the wired pad
+  usbid.version = m_bcdDevice;
 
-  m_uinput = std::make_unique<uinpp::Device>(uinpp::DeviceType::GENERIC, "Xbox360 Chatpad", usbid);
+  m_uinput = std::make_unique<uinpp::Device>(uinpp::DeviceType::KEYBOARD, "Xbox360 Chatpad", usbid);
 
   for(int i = 0; i < 256; ++i)
   {
@@ -281,11 +284,21 @@ Chatpad::on_read_data(libusb_transfer* transfer)
     return;
   }
 
-  if (transfer->actual_length == 5 && transfer->buffer[0] == 0x00)
+  // Key reports are 5 bytes: 00 | mod | key1 | key2 | 00 (Cliffle/MS layout).
+  if (transfer->actual_length >= 5 && transfer->buffer[0] == 0x00)
   {
-    struct ChatpadKeyMsg msg;
-    memcpy(&msg, transfer->buffer, transfer->actual_length);
+    ChatpadKeyMsg msg{};
+    msg.zero1     = transfer->buffer[0];
+    msg.modifier  = transfer->buffer[1];
+    msg.scancode1 = transfer->buffer[2];
+    msg.scancode2 = transfer->buffer[3];
+    msg.zero3     = transfer->buffer[4];
     process(msg);
+  }
+  else if (m_debug)
+  {
+    log_info("chatpad ignored transfer len={} status={}",
+             transfer->actual_length, libusb_error_name(transfer->status));
   }
 
   int ret = libusb_submit_transfer(transfer);
@@ -593,52 +606,82 @@ Chatpad::set_led(unsigned int led, bool state)
 void
 Chatpad::process(ChatpadKeyMsg const& msg)
 {
-  // save old state
+  if (m_debug)
+  {
+    log_info("chatpad report: mod={:02x} key1={:02x} key2={:02x}",
+             msg.modifier, msg.scancode1, msg.scancode2);
+  }
+
   std::array<bool, 256> old_state = m_state;
+  std::fill(m_state.begin(), m_state.end(), false);
 
-  // generate new state
-  std::fill(m_state.begin(), m_state.end(), 0);
-
-  m_state[CHATPAD_MOD_PEOPLE] = msg.modifier & CHATPAD_MOD_PEOPLE;
-  m_state[CHATPAD_MOD_ORANGE] = msg.modifier & CHATPAD_MOD_ORANGE;
-  m_state[CHATPAD_MOD_GREEN]  = msg.modifier & CHATPAD_MOD_GREEN;
-  m_state[CHATPAD_MOD_SHIFT]  = msg.modifier & CHATPAD_MOD_SHIFT;
+  // Modifier nibble (Cliffle / MS protocol): bit0=Shift, bit1=Green,
+  // bit2=Orange, bit3=People. Store as pure bools (not the bit value).
+  m_state[CHATPAD_MOD_SHIFT]  = (msg.modifier & CHATPAD_MOD_SHIFT)  != 0;
+  m_state[CHATPAD_MOD_GREEN]  = (msg.modifier & CHATPAD_MOD_GREEN)  != 0;
+  m_state[CHATPAD_MOD_ORANGE] = (msg.modifier & CHATPAD_MOD_ORANGE) != 0;
+  m_state[CHATPAD_MOD_PEOPLE] = (msg.modifier & CHATPAD_MOD_PEOPLE) != 0;
 
   if (msg.scancode1) m_state[msg.scancode1] = true;
   if (msg.scancode2) m_state[msg.scancode2] = true;
 
-  // check for changes
-  for(size_t i = 0; i < m_state.size(); ++i)
-  {
-    if (m_state[i] != old_state[i])
+  auto emit = [this](size_t i, bool down) {
+    if (m_keymap[i] == 0)
     {
-      if (m_state[i])
+      if (m_debug && down)
       {
-        if (i == CHATPAD_MOD_PEOPLE)
-        {
-          set_led(CHATPAD_LED_PEOPLE, !get_led(CHATPAD_LED_PEOPLE));
-        }
-        else if (i == CHATPAD_MOD_ORANGE)
-        {
-          set_led(CHATPAD_LED_ORANGE, !get_led(CHATPAD_LED_ORANGE));
-        }
-        else if (i == CHATPAD_MOD_GREEN)
-        {
-          set_led(CHATPAD_LED_GREEN, !get_led(CHATPAD_LED_GREEN));
-        }
-        else if (i == CHATPAD_MOD_SHIFT)
-        {
-          set_led(CHATPAD_LED_SHIFT, !get_led(CHATPAD_LED_SHIFT));
-        }
+        log_info("chatpad unmapped scancode {:02x}", static_cast<unsigned>(i));
       }
+      return;
+    }
+    m_uinput->send(EV_KEY, m_keymap[i], down ? 1 : 0);
+  };
 
-      if (m_keymap[i] == 0)
+  // Press order: modifiers first, then keys (so Shift+A capitalises).
+  // Release order: keys first, then modifiers.
+  for (size_t i = 0; i < m_state.size(); ++i)
+  {
+    if (m_state[i] && !old_state[i])
+    {
+      // rising edge: optional LED toggle for lock-style feedback
+      if (i == CHATPAD_MOD_PEOPLE)
+        set_led(CHATPAD_LED_PEOPLE, !get_led(CHATPAD_LED_PEOPLE));
+      else if (i == CHATPAD_MOD_ORANGE)
+        set_led(CHATPAD_LED_ORANGE, !get_led(CHATPAD_LED_ORANGE));
+      else if (i == CHATPAD_MOD_GREEN)
+        set_led(CHATPAD_LED_GREEN, !get_led(CHATPAD_LED_GREEN));
+      else if (i == CHATPAD_MOD_SHIFT)
+        set_led(CHATPAD_LED_SHIFT, !get_led(CHATPAD_LED_SHIFT));
+
+      // Only emit modifier presses in the first pass
+      if (i == CHATPAD_MOD_SHIFT || i == CHATPAD_MOD_GREEN ||
+          i == CHATPAD_MOD_ORANGE || i == CHATPAD_MOD_PEOPLE)
       {
-        continue; // unmapped scancode (e.g. orange/green letter variants)
+        emit(i, true);
       }
-      m_uinput->send(EV_KEY, m_keymap[i], m_state[i] ? 1 : 0);
     }
   }
+
+  for (size_t i = 0; i < m_state.size(); ++i)
+  {
+    bool is_mod = (i == CHATPAD_MOD_SHIFT || i == CHATPAD_MOD_GREEN ||
+                   i == CHATPAD_MOD_ORANGE || i == CHATPAD_MOD_PEOPLE);
+    if (is_mod) continue;
+    if (m_state[i] && !old_state[i])
+      emit(i, true);
+    else if (!m_state[i] && old_state[i])
+      emit(i, false);
+  }
+
+  for (size_t i = 0; i < m_state.size(); ++i)
+  {
+    bool is_mod = (i == CHATPAD_MOD_SHIFT || i == CHATPAD_MOD_GREEN ||
+                   i == CHATPAD_MOD_ORANGE || i == CHATPAD_MOD_PEOPLE);
+    if (!is_mod) continue;
+    if (!m_state[i] && old_state[i])
+      emit(i, false);
+  }
+
   m_uinput->sync();
 }
 
