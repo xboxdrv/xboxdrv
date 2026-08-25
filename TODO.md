@@ -118,18 +118,17 @@ From FIXMEs, recent commits, and parity goals:
 2. **Saitek P3600** — ported from stable.
 
 3. **Daemon / multi-controller / hotplug**
-   - Multiple FIXMEs in `xboxdrv_daemon.cpp` (thread cleanup, libusb ref,
-     sleep hacks, “dirty hack” comments).
-   - udev “devices twice” and “newer libudev only” comments remain.
-   - Multi-controller UInput update / threading still listed as open.
+   - ~~libusb device leak on hotplug~~ fixed via `libusb_ref_device` /
+     `unref` in `USBController` (shared wireless receiver safe).
+   - ~~stale cleanup_threads FIXME~~ → `on_controller_disconnect()` on match.
+   - udev monitor log noise reduced; double-match race documented.
+   - Multi-controller UInput update / threading still open.
 
 4. **Force feedback / LED**
-   - Code paths exist (rumble axis handler, per-controller `set_rumble` /
-     `set_led`, skip after disconnect).
-   - PS3 rumble “254 isn’t quite right / right motor on/off only”.
-   - Xbox One wireless: serial/battery/LED mapping still FIXME.
-   - Need explicit behavioural comparison vs stable for common pads
-     (wired 360, wireless 360 receiver).
+   - Wiring intact: uinpp FF callback → slot `set_rumble` → controller.
+   - Skip after disconnect already present.
+   - PS3 rumble quantisation and Xbox One wireless LED/battery still FIXME.
+   - Hardware smoke vs stable still recommended when a pad is available.
 
 5. **Wiimote**
    - Thread vs main-loop safety, calibration hack, “valid in size” encoding
@@ -235,8 +234,11 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - [x] Wired Chatpad claim + soft-fail paths.
 - [x] **Port Saitek P3600 controller + VID/PID from stable.**
 - [ ] Triage historical `TODO`; move remaining actionable items here.
-- [ ] Multi-controller UInput update / threading.
-- [ ] Daemon hotplug, basic FF, LED — behavioural check vs stable.
+- [ ] Multi-controller UInput update / threading (still open).
+- [x] Daemon hotplug: process_match runs on_controller_disconnect; USBController
+      libusb_ref/unref for shared devices; quieter udev monitor logs.
+- [x] FF/LED code paths reviewed (uinpp callback → ControllerSlotConfig::set_rumble
+      → Controller::set_rumble); hardware smoke still recommended.
 - [ ] Drop log noise / temporary debug helpers.
 - [x] README + manpage pass (obsolescence note, deps, build, repo URLs).
 - [x] Drop unused GTK CMake requirement; define/link HAVE_CWIID when cwiid found.
@@ -257,4 +259,5 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - One logical change per commit where practical.
 - Public config compatibility: preserve or document the break.
 - Prefer evidence from code and `git log` over README/TODO claims.
-- Next: daemon/hotplug/FF smoke vs stable; confirm builds.
+- Next: confirm builds (nix/cmake); hardware FF/LED smoke when available;
+  multi-controller UInput threading still open.
