@@ -18,6 +18,8 @@
 
 #include "bluetooth.hpp"
 
+#ifdef HAVE_CWIID
+
 namespace xboxdrv {
 
 const bdaddr_t Bluetooth::addr_any   = {{0, 0, 0, 0, 0, 0}};
@@ -25,5 +27,7 @@ const bdaddr_t Bluetooth::addr_all   = {{0xff, 0xff, 0xff, 0xff, 0xff, 0xff}};
 const bdaddr_t Bluetooth::addr_local = {{0, 0, 0, 0xff, 0xff, 0xff}};
 
 } // namespace xboxdrv
+
+#endif /* HAVE_CWIID */
 
 /* EOF */

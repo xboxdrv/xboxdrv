@@ -19,6 +19,10 @@
 #ifndef HEADER_XBOXDRV_BLUETOOTH_HPP
 #define HEADER_XBOXDRV_BLUETOOTH_HPP
 
+// Only used by the Wiimote backend (cwiid). Without HAVE_CWIID this
+// header is a no-op so the tree builds without bluez headers.
+#ifdef HAVE_CWIID
+
 #include <bluetooth/bluetooth.h>
 
 namespace xboxdrv {
@@ -39,6 +43,8 @@ private:
 };
 
 } // namespace xboxdrv
+
+#endif /* HAVE_CWIID */
 
 #endif
 
