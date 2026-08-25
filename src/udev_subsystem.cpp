@@ -59,8 +59,9 @@ UdevSubsystem::set_device_callback(const std::function<void (udev_device*)>& pro
   udev_monitor_filter_add_match_subsystem_devtype(m_monitor, "usb", "usb_device");
   udev_monitor_enable_receiving(m_monitor);
 
-  // FIXME: won't we get devices twice that have been plugged in at
-  // this point? once from the enumeration, once from the monitor
+  // Enable the monitor first, then enumerate already-present devices.
+  // Devices that appear during the scan can race (monitor + enumerate);
+  // process_match / slot matching tolerate a duplicate connect attempt.
   enumerate_udev_devices();
 
   GIOChannel* udev_channel = g_io_channel_unix_new(udev_monitor_get_fd(m_monitor));
@@ -126,11 +127,8 @@ UdevSubsystem::on_udev_data(GIOChannel* channel, GIOCondition condition)
   }
   else
   {
-    log_info("trying to read data from udev");
-
-    log_info("trying to read data from udev monitor");
+    log_debug("udev monitor readable");
     struct udev_device* device = udev_monitor_receive_device(m_monitor);
-    log_info("got data from udev monitor");
 
     if (!device)
     {

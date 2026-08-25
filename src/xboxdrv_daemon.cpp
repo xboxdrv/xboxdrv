@@ -211,8 +211,9 @@ XboxdrvDaemon::run()
 void
 XboxdrvDaemon::process_match(struct udev_device* device)
 {
-  // FIXME: bad place?!
-  // FIXME: cleanup_threads();
+  // Drop slots whose controllers already reported disconnect before binding
+  // a newly plugged device (frees slots for reuse).
+  on_controller_disconnect();
 
   uint16_t vendor;
   uint16_t product;
@@ -355,7 +356,8 @@ XboxdrvDaemon::launch_controller_thread(udev_device* udev_dev,
                                         XPadDevice const& dev_type,
                                         uint8_t busnum, uint8_t devnum)
 {
-  // FIXME: results must be libusb_unref_device()'ed
+  // Ownership: each USBController refs the device in its ctor and unrefs in
+  // its dtor (safe when create_multiple shares one libusb_device*).
   libusb_device* dev = unsebu::usb_find_device_by_path(busnum, devnum);
 
   if (!dev)
@@ -629,7 +631,7 @@ XboxdrvDaemon::shutdown()
   }
 
   // give the LED message a few msec to reach the controller
-  g_usleep(10 * 1000); // FIXME: what is a good time to wait?
+  g_usleep(10 * 1000); // brief settle after status query before shutdown
 
   assert(m_gmain);
   g_main_loop_quit(m_gmain);

@@ -287,7 +287,7 @@ XboxdrvMain::create_controller()
   else
   { // regular USB Xbox360-like controller
 
-    // FIXME: this must be libusb_unref_device()'ed, child code must not keep a copy around
+    // USBController refs the device; unrefs in its destructor
     libusb_device* dev = nullptr;
 
     find_controller(&dev, m_dev_type, m_opts);

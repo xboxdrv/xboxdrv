@@ -42,6 +42,10 @@ USBController::USBController(libusb_device* dev) :
   m_usbid(),
   m_name()
 {
+  // Own a ref so shared devices (e.g. wireless receiver → 4 slots) and the
+  // daemon's usb_find_device_by_path() result are released safely.
+  libusb_ref_device(m_dev);
+
   int ret = libusb_open(dev, &m_handle);
   if (ret != LIBUSB_SUCCESS)
   {
@@ -140,6 +144,12 @@ USBController::~USBController()
   {
     libusb_close(m_handle);
     m_handle = nullptr;
+  }
+
+  if (m_dev)
+  {
+    libusb_unref_device(m_dev);
+    m_dev = nullptr;
   }
 }
 
