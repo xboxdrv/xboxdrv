@@ -1,0 +1,4 @@
+[submodule "external/tinycmmc"]
+	path = external/tinycmmc
+	url = https://gitlab.com/grumbel/tinycmmc.git
+
