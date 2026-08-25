@@ -29,6 +29,7 @@ historical `NEWS` file.
   reduced
 * Chatpad: one-shot sticky Shift/Green/Orange/People (LEDs show mode);
   Orange+Shift toggles CAPS; still maps to left Shift/Alt/Ctrl/Meta for desktop
+  (wired and experimental wireless paths)
 
 ## xboxdrv 0.8.4 (24/Jan/2012)
 
