@@ -1,0 +1,21 @@
+[INFO ] test/test_logmich.cpp:38: -
+[WARN ] test/test_logmich.cpp:39: -
+[ERROR] test/test_logmich.cpp:40: -
+[FATAL] test/test_logmich.cpp:44: unreachable code reached
+[ERROR] test/test_logmich.cpp:45: not implemented
+[ERROR] test/test_logmich.cpp:48: error level log message
+[WARN ] test/test_logmich.cpp:49: warring level log message
+[INFO ] test/test_logmich.cpp:50: info level log message
+[ERROR] test/test_logmich.cpp:55: error level log message with format: 5
+[WARN ] test/test_logmich.cpp:56: warring level log message with format: 10
+[INFO ] test/test_logmich.cpp:57: info level log message with format: Hello World
+[DEBUG] test/test_logmich.cpp:58: debug level log message with format: 1 2 3 4
+[TRACE] test/test_logmich.cpp:59: tmp level log message 42
+[DEBUG] test/test_logmich.cpp:64: this should be visible
+[TRACE] test/test_logmich.cpp:65: this should be visible
+[WARN ] test/test_logmich.cpp:67: format test 1
+[WARN ] test/test_logmich.cpp:68: format test 1 2 1
+[WARN ] test/test_logmich.cpp:69: format test 1
+[WARN ] test/test_logmich.cpp:70: format test 1
+[WARN ] test/test_logmich.cpp:71: format test <custom-type>
+[NONE ] test/test_logmich.cpp:77: none will always show up
