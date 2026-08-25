@@ -51,6 +51,10 @@ target_link_libraries(unsebu PUBLIC
   PkgConfig::USB
   PkgConfig::UDEV)
 
-tinycmmc_export_and_install_library(unsebu)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  tinycmmc_export_and_install_library(unsebu)
+else()
+  add_library(unsebu::unsebu ALIAS unsebu)
+endif()
 
 # EOF #

@@ -82,6 +82,11 @@ if(BUILD_TESTS)
     COMMAND test_yaini)
 endif()
 
-include(ExportAndInstallLibrary)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  include(ExportAndInstallLibrary)
+else()
+  # Subproject of xboxdrv (or similar): expose namespaced alias only
+  add_library(yaini::yaini ALIAS yaini)
+endif()
 
 # EOF #

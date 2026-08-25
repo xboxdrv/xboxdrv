@@ -69,10 +69,20 @@ std::string gamepadtype_to_string(GamepadType const& type)
     case GAMEPAD_GENERIC_USB:
       return "generic-usb";
 
-    default:
-      assert(false && "Unknown gamepad type supplied");
-      return {};
+    case GAMEPAD_PLAYSTATION3_BLUETOOTH:
+      return "playstation3-bluetooth";
+
+    case GAMEPAD_WIIMOTE:
+      return "wiimote";
+
+    case GAMEPAD_HAMA_CRUX:
+      return "hama-crux";
+
+    case GAMEPAD_UNKNOWN:
+      return "unknown";
   }
+  assert(false && "Unknown gamepad type supplied");
+  return {};
 }
 
 
@@ -92,11 +102,15 @@ std::string gamepadtype_to_macro_string(GamepadType const& type)
     case GAMEPAD_SAITEK_P2500: return "GAMEPAD_SAITEK_P2500";
     case GAMEPAD_SAITEK_P3600: return "GAMEPAD_SAITEK_P3600";
     case GAMEPAD_PLAYSTATION3_USB: return "GAMEPAD_PLAYSTATION3_USB";
+    case GAMEPAD_PLAYSTATION3_BLUETOOTH: return "GAMEPAD_PLAYSTATION3_BLUETOOTH";
+    case GAMEPAD_LOGITECH_F310: return "GAMEPAD_LOGITECH_F310";
     case GAMEPAD_GENERIC_USB: return "GAMEPAD_GENERIC_USB";
-    default:
-      assert(false && "Unknown gamepad type supplied");
-      return {};
+    case GAMEPAD_WIIMOTE: return "GAMEPAD_WIIMOTE";
+    case GAMEPAD_HAMA_CRUX: return "GAMEPAD_HAMA_CRUX";
+    case GAMEPAD_UNKNOWN: return "GAMEPAD_UNKNOWN";
   }
+  assert(false && "Unknown gamepad type supplied");
+  return {};
 }
 
 std::ostream& operator<<(std::ostream& out, GamepadType const& type)

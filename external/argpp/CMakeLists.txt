@@ -92,6 +92,7 @@ if(BUILD_TESTS)
   endforeach()
 endif()
 
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 # Install & package config (replaces tinycmmc ExportAndInstallLibrary)
 install(TARGETS argpp
   EXPORT argpp
@@ -122,5 +123,7 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/argpp-config.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/argpp-config-version.cmake
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/argpp)
+
+endif()
 
 # EOF #

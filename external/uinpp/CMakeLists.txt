@@ -116,6 +116,11 @@ if(BUILD_TESTS)
     COMMAND test_uinpp)
 endif()
 
-include(ExportAndInstallLibrary)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  include(ExportAndInstallLibrary)
+else()
+  # Subproject of xboxdrv (or similar): expose namespaced alias only
+  add_library(uinpp::uinpp ALIAS uinpp)
+endif()
 
 # EOF #
