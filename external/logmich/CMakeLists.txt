@@ -18,7 +18,9 @@ cmake_minimum_required(VERSION 3.6)
 project(logmich VERSION 0.2.0)
 
 # CMake modules
-set(TINYCMMC_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/external/cmake-modules/modules/")
+if(NOT TINYCMMC_MODULE_PATH)
+  set(TINYCMMC_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/external/cmake-modules/modules/")
+endif()
 find_package(tinycmmc CONFIG)
 message(STATUS "tinycmmc module path: ${TINYCMMC_MODULE_PATH}")
 list(APPEND CMAKE_MODULE_PATH ${TINYCMMC_MODULE_PATH})

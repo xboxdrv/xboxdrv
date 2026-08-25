@@ -1,0 +1,14 @@
+# Vendored external dependency revisions (git subtree)
+
+# These were converted from submodules. The squash commits in history
+# also record the upstream SHA. To update later:
+#   git subtree pull --prefix=external/NAME URL REF --squash
+#
+# name          upstream                                      revision
+argpp           https://github.com/grumbel/argpp.git          9e1d54f8ed20af0aa5857e6653ab605b2ab63d5c
+logmich         https://github.com/logmich/logmich.git        5924b2beabd2169a077ae57401bdd3cd8ebfba7d
+strutcpp        https://github.com/grumbel/strutcpp.git       7bf070c08e4234cd51426b6f319fa474692f9ef4
+tinycmmc        https://github.com/grumbel/tinycmmc.git       01fe277570a290837726de6eb3c16d617bfda28c
+uinpp           https://github.com/Grumbel/uinpp.git          40b4ee54283f77203b1719e3dca152fcd95763dc
+unsebu          https://github.com/Grumbel/unsebu.git         c1c0370e9e653e2275667b5a6b13f1b13281fa22
+yaini           https://github.com/Grumbel/yaini.git          26c46fd28ace4592f930b1228a7dd2c9d3347c53

@@ -72,7 +72,7 @@ function(build_dependencies)
 
   find_package(strut)
   if(NOT TARGET strut::strut)
-    add_subdirectory(external/strut/)
+    add_subdirectory(external/strutcpp/)
   endif()
 
   find_package(uinpp)
