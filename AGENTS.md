@@ -166,7 +166,7 @@ metadata and can fail when `revCount` is missing.
   are now vendored as git subtrees under `external/` (see
   `external/REVISIONS`). Only nixpkgs and flake-utils remain as flake
   inputs. CMake builds the helpers from the vendored trees.
-- Required at build time today: libusb-1.0, udev, libevdev, X11, dbus-glib, GTK3,
+- Required at build time today: libusb-1.0, udev, libevdev, X11, dbus-glib,
   Python (dbus glue / bin2h). Optional: CWiid.
 - Runtime: uinput kernel module.
 - Do not add Boost; README still mentions it, CMake does not.

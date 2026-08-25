@@ -239,6 +239,7 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - [ ] Daemon hotplug, basic FF, LED — behavioural check vs stable.
 - [ ] Drop log noise / temporary debug helpers.
 - [x] README + manpage pass (obsolescence note, deps, build, repo URLs).
+- [x] Drop unused GTK CMake requirement; define/link HAVE_CWIID when cwiid found.
 - [ ] Confirm `develop` builds and behaves at least as well as `stable`
       for supported controllers.
 
@@ -256,5 +257,4 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - One logical change per commit where practical.
 - Public config compatibility: preserve or document the break.
 - Prefer evidence from code and `git log` over README/TODO claims.
-- Next: daemon/hotplug/FF smoke vs stable, or make GTK optional in CMake
-  (still REQUIRED but not linked).
+- Next: daemon/hotplug/FF smoke vs stable; confirm builds.
