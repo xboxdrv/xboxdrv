@@ -186,7 +186,7 @@ architecture, daemon + hotplug concept.
 
 ### Phase 2 — Chatpad and dead weight
 
-- [ ] Own GLib timeouts in `Chatpad` destructor (or stop using them).
+- [x] Own GLib timeouts in `Chatpad` destructor (or stop using them).
 - [ ] Decide: USB Chatpad on by default vs flag vs remove for the
       milestone. Wireless stays out of scope.
 - [ ] Quarantine or drop virtual keyboard if it is not wired up.

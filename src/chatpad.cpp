@@ -58,7 +58,8 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_keymap(),
   m_state(),
   m_led_state(0),
-  m_read_transfer(nullptr)
+  m_read_transfer(nullptr),
+  m_timeout_source(0)
 {
   if (m_bcdDevice != 0x0110 && m_bcdDevice != 0x0114)
   {
@@ -139,6 +140,12 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
 
 Chatpad::~Chatpad()
 {
+  if (m_timeout_source)
+  {
+    g_source_remove(m_timeout_source);
+    m_timeout_source = 0;
+  }
+
   if (m_read_transfer)
   {
     libusb_cancel_transfer(m_read_transfer);
@@ -230,10 +237,12 @@ Chatpad::on_read_data(libusb_transfer* transfer)
 void
 Chatpad::send_timeout(int msec)
 {
-  // FIMXE: must keep track of sources and destroy them in ~Chatpad()
-  //assert(m_timeout_id == -1);
-  //m_timeout_id =
-  g_timeout_add(1000, &Chatpad::on_timeout_wrap, this);
+  if (m_timeout_source)
+  {
+    g_source_remove(m_timeout_source);
+    m_timeout_source = 0;
+  }
+  m_timeout_source = g_timeout_add(msec, &Chatpad::on_timeout_wrap, this);
 }
 
 void
@@ -360,7 +369,7 @@ Chatpad::on_control(libusb_transfer* transfer)
 bool
 Chatpad::on_timeout()
 {
-  //m_timeout_id = -1;
+  m_timeout_source = 0;
   switch(m_init_state)
   {
     case kStateInit_1e:

@@ -163,6 +163,7 @@ private:
   std::array<bool, 256> m_state;
   unsigned int m_led_state;
   libusb_transfer* m_read_transfer;
+  guint m_timeout_source;
 
 public:
   Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
