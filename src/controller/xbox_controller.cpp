@@ -96,11 +96,12 @@ XboxController::parse(uint8_t const* data, int len, ControllerMessage* msg_out)
     msg_out->set_abs(xbox.abs_rt, data[11], 0, 255);
 
 
+    // Stick layout matches kernel xpad: LE int16 at +12,+14,+16,+18; Y inverted.
     msg_out->set_abs(xbox.abs_x1, unpack::int16le(data+12), -32768, 32767);
-    msg_out->set_abs(xbox.abs_y1, unpack::int16le(data+13), -32768, 32767);
+    msg_out->set_abs(xbox.abs_y1, unpack::s16_invert(unpack::int16le(data+14)), -32768, 32767);
 
-    msg_out->set_abs(xbox.abs_x2, unpack::int16le(data+14), -32768, 32767);
-    msg_out->set_abs(xbox.abs_y2, unpack::int16le(data+15), -32768, 32767);
+    msg_out->set_abs(xbox.abs_x2, unpack::int16le(data+16), -32768, 32767);
+    msg_out->set_abs(xbox.abs_y2, unpack::s16_invert(unpack::int16le(data+18)), -32768, 32767);
 
     return true;
   }

@@ -152,12 +152,11 @@ Xbox360Controller::parse(uint8_t const* data, int len, ControllerMessage* msg_ou
       log_info("peripheral: unknown: {}", int(data[2]));
     }
   }
-  else if (len == 20 && data[0] == 0x00 && data[1] == 0x14)
+  else if (len >= 18 && data[0] == 0x00)
   {
-    //Xbox360Msg& msg = msg_out->xbox360;
-
-    //msg.type   = data[0];
-    //msg.length = data[1];
+    // Wired 360 input report: type byte 0x00. Official pads use length 0x14
+    // (20 bytes); kernel xpad only checks data[0]==0, so accept len>=18 for
+    // clones that omit or alter the length byte.
 
     msg_out->set_key(xbox.dpad_up,    unpack::bit(data+2, 0));
     msg_out->set_key(xbox.dpad_down,  unpack::bit(data+2, 1));
@@ -183,7 +182,7 @@ Xbox360Controller::parse(uint8_t const* data, int len, ControllerMessage* msg_ou
     msg_out->set_abs(xbox.abs_rt, data[5], 0, 255);
 
     msg_out->set_abs(xbox.abs_x1, unpack::int16le(data+6), -32768, 32767);
-    msg_out->set_abs(xbox.abs_x1, unpack::s16_invert(unpack::int16le(data+8)), -32768, 32767);
+    msg_out->set_abs(xbox.abs_y1, unpack::s16_invert(unpack::int16le(data+8)), -32768, 32767);
 
     msg_out->set_abs(xbox.abs_x2, unpack::int16le(data+10), -32768, 32767);
     msg_out->set_abs(xbox.abs_y2, unpack::s16_invert(unpack::int16le(data+12)), -32768, 32767);
