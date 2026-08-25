@@ -35,29 +35,17 @@
               pkg-config
             ];
             buildInputs = with pkgs; [
-              at-spi2-core
-              bluez
               dbus-glib
               glib
-              gobject-introspection
-              gtest
-              gtk3
-              libdatrie
-              libselinux
-              libsepol
-              libthai
               udev
               libusb1
               libevdev
-              libxkbcommon
-              pcre
+              libx11
               (pkgs.python3.withPackages (p: [
                 p.dbus-python
               ]))
-              util-linux
-              libx11
-              libxdmcp
-              libxtst
+              # Optional Wiimote support (HAVE_CWIID when present):
+              # cwiid bluez
               # Vendored C++ helpers under external/ are built via
               # CMake add_subdirectory (see build_dependencies()).
               # Formatting uses C++20/23 <format> (no {fmt}).

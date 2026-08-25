@@ -50,13 +50,18 @@ find_package(X11 REQUIRED)
 
 find_package(PkgConfig)
 find_package(Python REQUIRED)
-pkg_search_module(GTK REQUIRED gtk+-3.0 IMPORTED_TARGET)
 pkg_search_module(USB REQUIRED libusb-1.0 IMPORTED_TARGET)
 pkg_search_module(UDEV REQUIRED libudev IMPORTED_TARGET)
 pkg_search_module(LIBEVDEV REQUIRED libevdev IMPORTED_TARGET)
 pkg_search_module(DBUSGLIB REQUIRED dbus-glib-1 IMPORTED_TARGET)
 pkg_search_module(CWIID OPTIONAL cwiid IMPORTED_TARGET)
-# FIXME: define -DHAVE_CWIID when found
+if(CWIID_FOUND)
+  set(HAVE_CWIID TRUE)
+  message(STATUS "cwiid found — Wiimote support enabled")
+else()
+  set(HAVE_CWIID FALSE)
+  message(STATUS "cwiid not found — Wiimote support disabled")
+endif()
 
 function(build_dependencies)
   set(BUILD_TESTS OFF)
@@ -144,6 +149,9 @@ set_target_properties(libxboxdrv PROPERTIES
   CXX_EXTENSIONS OFF)
 target_include_directories(libxboxdrv PUBLIC src/ ${CMAKE_CURRENT_BINARY_DIR}/src/)
 target_compile_definitions(libxboxdrv PUBLIC -DPACKAGE_VERSION="${PROJECT_VERSION_FULL}")
+if(HAVE_CWIID)
+  target_compile_definitions(libxboxdrv PUBLIC -DHAVE_CWIID)
+endif()
 target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 
 target_link_libraries(libxboxdrv PUBLIC
@@ -157,6 +165,9 @@ target_link_libraries(libxboxdrv PUBLIC
   PkgConfig::UDEV
   PkgConfig::LIBEVDEV
   X11::X11)
+if(HAVE_CWIID)
+  target_link_libraries(libxboxdrv PUBLIC PkgConfig::CWIID)
+endif()
 
 add_executable(xboxdrv src/main/main.cpp)
 set_target_properties(xboxdrv PROPERTIES

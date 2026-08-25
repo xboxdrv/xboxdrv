@@ -39,8 +39,6 @@ driver is preferable.
 * X11 (libX11)
 * dbus-glib-1 / GLib
 * Python 3 (D-Bus glue and `bin2h` generation)
-* GTK 3 development files (still required by the current CMake
-  configuration; not linked into the binary)
 
 Optional:
 
@@ -83,7 +81,7 @@ sudo apt-get install \
   g++ cmake pkg-config \
   libusb-1.0-0-dev libudev-dev libevdev-dev \
   libx11-dev libdbus-glib-1-dev libglib2.0-dev \
-  libgtk-3-dev python3
+  python3
 # optional:
 # sudo apt-get install libcwiid-dev
 ```
