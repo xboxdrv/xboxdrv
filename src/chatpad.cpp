@@ -54,6 +54,7 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_bcdDevice(bcdDevice),
   m_no_init(no_init),
   m_debug(debug),
+  m_interface_claimed(false),
   m_quit_thread(false),
   m_uinput(),
   m_glib_uinput(),
@@ -121,15 +122,32 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_keymap[CHATPAD_MOD_ORANGE] = KEY_LEFTCTRL;
   m_keymap[CHATPAD_MOD_PEOPLE] = KEY_LEFTMETA;
 
+  // Chatpad lives on interface 2 (vendor-specific). The gamepad claims
+  // interface 0; headset uses 1. Without claiming 2, control and interrupt
+  // transfers fail or race with the kernel.
+  {
+    int err = unsebu::usb_claim_n_detach_interface(m_handle, 2, true);
+    if (err != 0)
+    {
+      raise_exception(std::runtime_error,
+                      "couldn't claim chatpad USB interface 2: " << libusb_strerror(err)
+                      << " (try --detach-kernel-driver)");
+    }
+    m_interface_claimed = true;
+  }
+
   init_uinput();
 
   if (no_init)
   {
+    // Skip the heavy init sequence (safer when restarting xboxdrv without
+    // unplugging the pad — full init can lock up some firmwares).
     m_init_state = kStateKeepAlive_1e;
   }
 
   send_command();
 
+  // Interrupt IN endpoint for key reports (bcdDevice-dependent addressing).
   if (m_bcdDevice == 0x0110)
   {
     usb_submit_read(6, 32);
@@ -179,6 +197,16 @@ Chatpad::~Chatpad()
 
   m_glib_uinput.reset();
   m_uinput.reset();
+
+  if (m_interface_claimed)
+  {
+    int ret = libusb_release_interface(m_handle, 2);
+    if (ret != LIBUSB_SUCCESS)
+    {
+      log_debug("chatpad: release interface 2 failed: {}", libusb_strerror(ret));
+    }
+    m_interface_claimed = false;
+  }
 }
 
 void
@@ -224,7 +252,9 @@ Chatpad::usb_submit_read(int endpoint, int len)
   ret = libusb_submit_transfer(m_read_transfer);
   if (ret != LIBUSB_SUCCESS)
   {
-    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
+    libusb_free_transfer(m_read_transfer);
+    m_read_transfer = nullptr;
+    raise_exception(std::runtime_error, "chatpad libusb_submit_transfer(): " << libusb_strerror(ret));
   }
 }
 
@@ -376,19 +406,18 @@ Chatpad::on_control(libusb_transfer* transfer)
     case kStateInit_1b:
     case kStateKeepAlive_1e:
     case kStateKeepAlive_1f:
+      // Always advance: a single failed keep-alive must not freeze the state
+      // machine (device still usable after a transient STALL/timeout).
       if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
       {
-        log_error("stuff went wrong");
+        log_error("chatpad control transfer status: {}", libusb_error_name(transfer->status));
       }
-      else
+      m_init_state = static_cast<State>(m_init_state + 1);
+      if (m_init_state == kStateLoop)
       {
-        m_init_state = static_cast<State>(m_init_state + 1);
-        if (m_init_state == kStateLoop)
-        {
-          m_init_state = kStateKeepAlive_1e;
-        }
-        send_command();
+        m_init_state = kStateKeepAlive_1e;
       }
+      send_command();
       break;
 
     default:
@@ -426,23 +455,32 @@ Chatpad::send_ctrl(uint8_t request_type, uint8_t request, uint16_t value, uint16
                    uint8_t* data_in, uint16_t length,
                    libusb_transfer_cb_fn callback, void* userdata)
 {
+  if (!m_handle || !m_interface_claimed)
+  {
+    log_debug("chatpad: send_ctrl skipped (no handle/interface)");
+    return;
+  }
+
   libusb_transfer* transfer = libusb_alloc_transfer(0);
   transfer->flags |= LIBUSB_TRANSFER_FREE_BUFFER;
   transfer->flags |= LIBUSB_TRANSFER_FREE_TRANSFER;
 
-  // create and fill control buffer
   uint8_t* data = static_cast<uint8_t*>(malloc(length + 8));
   libusb_fill_control_setup(data, request_type, request, value, index, length);
-  memcpy(data + 8, data_in, length);
+  if (length && data_in)
+  {
+    memcpy(data + 8, data_in, length);
+  }
   libusb_fill_control_transfer(transfer, m_handle, data,
                                callback, userdata,
                                0);
 
-  int ret;
-  ret = libusb_submit_transfer(transfer);
+  int ret = libusb_submit_transfer(transfer);
   if (ret != LIBUSB_SUCCESS)
   {
-    raise_exception(std::runtime_error, "libusb_submit_transfer(): " << libusb_strerror(ret));
+    // Keep-alives and LED toggles must not throw during unplug/shutdown.
+    log_error("chatpad control transfer failed: {}", libusb_strerror(ret));
+    libusb_free_transfer(transfer);
   }
 }
 
@@ -546,7 +584,11 @@ Chatpad::process(ChatpadKeyMsg const& msg)
         }
       }
 
-      m_uinput->send(EV_KEY, m_keymap[i], m_state[i]);
+      if (m_keymap[i] == 0)
+      {
+        continue; // unmapped scancode (e.g. orange/green letter variants)
+      }
+      m_uinput->send(EV_KEY, m_keymap[i], m_state[i] ? 1 : 0);
     }
   }
   m_uinput->sync();

@@ -154,6 +154,7 @@ private:
   uint16_t m_bcdDevice;
   bool m_no_init;
   bool m_debug;
+  bool m_interface_claimed;
 
 
   bool m_quit_thread;

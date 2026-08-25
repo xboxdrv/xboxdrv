@@ -215,6 +215,8 @@ architecture, daemon + hotplug concept.
 - [x] USB disconnect/teardown: idempotent `send_disconnect`, timed cancel
       drain in `USBController` dtor, treat read errors as disconnect
       (GitHub #239).
+- [x] Wired Chatpad: claim interface 2, soft-fail control transfers,
+      skip unmapped scancodes, keep-alive state machine continues on error.
 - [ ] Triage the historical `TODO`; move remaining actionable items here.
 - [ ] Multi-controller UInput update / threading.
 - [ ] Daemon hotplug, basic FF, LED, common examples.
