@@ -42,23 +42,21 @@ CompatModifier::init(ControllerMessageDescriptor& desc)
 {
   log_none("CompatModifier");
 
-#if 0
+#if 1
   // have a dpad, but no dpad axis
-  if (!desc.abs().has("dpad_x") &&
-      !desc.abs().has("dpad_y") &&
-      desc.key().has("dpad_up") &&
+  if (desc.key().has("dpad_up") &&
       desc.key().has("dpad_down") &&
       desc.key().has("dpad_left") &&
       desc.key().has("dpad_right"))
   {
-    log_tmp("CompatModifier: DPAD");
-    m_dpad_x = desc.abs().put("dpad_x");
-    m_dpad_y = desc.abs().put("dpad_y");
+    log_debug("CompatModifier: synthesize dpad_x/dpad_y from dpad buttons");
+    m_dpad_x = desc.abs().getput("dpad_x");
+    m_dpad_y = desc.abs().getput("dpad_y");
 
-    m_dpad_up    = desc.key().get("du");
-    m_dpad_down  = desc.key().get("dd");
-    m_dpad_left  = desc.key().get("dl");
-    m_dpad_right = desc.key().get("dr");
+    m_dpad_up    = desc.key().get("dpad_up");
+    m_dpad_down  = desc.key().get("dpad_down");
+    m_dpad_left  = desc.key().get("dpad_left");
+    m_dpad_right = desc.key().get("dpad_right");
 
     m_dpad = true;
   }

@@ -113,12 +113,45 @@ Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& desc) :
   desc.key().alias("dl", dpad_left);
   desc.key().alias("dr", dpad_right);
 
+  // Default uinput maps (UInputOptions::set_defaults / mimic_xpad) use the
+  // "gamepad." prefix; register those names so ButtonMap::init() can resolve.
+  desc.key().alias("gamepad.a", btn_a);
+  desc.key().alias("gamepad.b", btn_b);
+  desc.key().alias("gamepad.x", btn_x);
+  desc.key().alias("gamepad.y", btn_y);
+  desc.key().alias("gamepad.start", btn_start);
+  desc.key().alias("gamepad.guide", btn_guide);
+  desc.key().alias("gamepad.back", btn_back);
+  desc.key().alias("gamepad.lb", btn_lb);
+  desc.key().alias("gamepad.rb", btn_rb);
+  desc.key().alias("gamepad.lt", btn_lt);
+  desc.key().alias("gamepad.rt", btn_rt);
+  desc.key().alias("gamepad.tl", btn_thumb_l);
+  desc.key().alias("gamepad.tr", btn_thumb_r);
+  desc.key().alias("gamepad.dpad_up", dpad_up);
+  desc.key().alias("gamepad.dpad_down", dpad_down);
+  desc.key().alias("gamepad.dpad_left", dpad_left);
+  desc.key().alias("gamepad.dpad_right", dpad_right);
+
   desc.abs().alias("X1", abs_x1);
   desc.abs().alias("Y1", abs_y1);
   desc.abs().alias("X2", abs_x2);
   desc.abs().alias("Y2", abs_y2);
   desc.abs().alias("LT", abs_lt);
   desc.abs().alias("RT", abs_rt);
+
+  desc.abs().alias("gamepad.x1", abs_x1);
+  desc.abs().alias("gamepad.y1", abs_y1);
+  desc.abs().alias("gamepad.x2", abs_x2);
+  desc.abs().alias("gamepad.y2", abs_y2);
+  desc.abs().alias("gamepad.lt", abs_lt);
+  desc.abs().alias("gamepad.rt", abs_rt);
+  // dpad_x / dpad_y are created by CompatModifier when missing; alias once present
+  // is handled there. Pre-register names so default axis maps can resolve early.
+  int dpad_x = desc.abs().getput("dpad_x");
+  int dpad_y = desc.abs().getput("dpad_y");
+  desc.abs().alias("gamepad.dpad_x", dpad_x);
+  desc.abs().alias("gamepad.dpad_y", dpad_y);
 }
 
 } // namespace xboxdrv
