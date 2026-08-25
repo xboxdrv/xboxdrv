@@ -19,6 +19,7 @@
 #include "usb_interface.hpp"
 
 #include <assert.h>
+#include <sys/time.h>
 #include <string.h>
 #include <stdexcept>
 
@@ -76,15 +77,34 @@ USBInterface::USBInterface(libusb_device_handle* handle, int interface, bool try
 
 USBInterface::~USBInterface()
 {
-  // cancel all transfer that might still be running
-  for(auto it = m_endpoints.begin(); it != m_endpoints.end(); ++it)
+  // Cancel outstanding transfers and drain completion callbacks. Do not
+  // free_transfer immediately after cancel — libusb still owns the transfer
+  // until the callback runs.
+  for (auto& [endpoint, transfer] : m_endpoints)
   {
-    if (it->second)
+    if (transfer)
     {
-      libusb_cancel_transfer(it->second);
-      libusb_free_transfer(it->second);
+      int ret = libusb_cancel_transfer(transfer);
+      if (ret != LIBUSB_SUCCESS && ret != LIBUSB_ERROR_NOT_FOUND)
+      {
+        // best-effort
+      }
     }
   }
+
+  for (int i = 0; !m_endpoints.empty() && i < 100; ++i)
+  {
+    timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 10000;
+    int ret = libusb_handle_events_timeout_completed(nullptr, &tv, nullptr);
+    if (ret != LIBUSB_SUCCESS && ret != LIBUSB_ERROR_INTERRUPTED)
+    {
+      break;
+    }
+  }
+
+  // Abandon any transfers that never completed (device gone).
   m_endpoints.clear();
 
   libusb_release_interface(m_handle, m_interface);
@@ -167,11 +187,31 @@ USBInterface::cancel_transfer(int endpoint)
   {
     throw std::runtime_error(fmt::format("endpoint {} not found", (endpoint & LIBUSB_ENDPOINT_ADDRESS_MASK)));
   }
-  else
+
+  libusb_transfer* transfer = it->second;
+  int ret = libusb_cancel_transfer(transfer);
+  if (ret != LIBUSB_SUCCESS && ret != LIBUSB_ERROR_NOT_FOUND)
   {
-    libusb_cancel_transfer(it->second);
-    libusb_free_transfer(it->second);
-    m_endpoints.erase(it);
+    throw std::runtime_error(fmt::format("libusb_cancel_transfer(): {}", libusb_strerror(ret)));
+  }
+
+  // Completion callback removes the entry from m_endpoints and frees the
+  // transfer. Drain briefly so callers can rely on the cancel finishing.
+  for (int i = 0; m_endpoints.count(endpoint) && i < 100; ++i)
+  {
+    timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 10000;
+    ret = libusb_handle_events_timeout_completed(nullptr, &tv, nullptr);
+    if (ret != LIBUSB_SUCCESS && ret != LIBUSB_ERROR_INTERRUPTED)
+    {
+      break;
+    }
+  }
+
+  if (m_endpoints.count(endpoint))
+  {
+    m_endpoints.erase(endpoint);
   }
 }
 
@@ -190,48 +230,76 @@ USBInterface::cancel_write(int endpoint)
 void
 USBInterface::on_read_data(USBReadData* userdata, libusb_transfer* transfer)
 {
+  if (transfer->status == LIBUSB_TRANSFER_CANCELLED ||
+      transfer->status == LIBUSB_TRANSFER_NO_DEVICE)
+  {
+    delete userdata;
+    m_endpoints.erase(transfer->endpoint);
+    libusb_free_transfer(transfer);
+    return;
+  }
+
+  if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
+  {
+    delete userdata;
+    m_endpoints.erase(transfer->endpoint);
+    libusb_free_transfer(transfer);
+    return;
+  }
+
   if (userdata->callback(transfer->buffer, transfer->actual_length))
   {
-    // callback returned true, thus resend the transfer
-    int err;
-    err = libusb_submit_transfer(transfer);
+    int err = libusb_submit_transfer(transfer);
     if (err != LIBUSB_SUCCESS)
     {
+      delete userdata;
+      m_endpoints.erase(transfer->endpoint);
       libusb_free_transfer(transfer);
-
-      throw std::runtime_error(fmt::format("libusb_submit_transfer(): {}", libusb_strerror(err)));
     }
   }
   else
   {
-    // callback returned false, thus doing cleanup
     delete userdata;
-    libusb_free_transfer(transfer);
     m_endpoints.erase(transfer->endpoint);
+    libusb_free_transfer(transfer);
   }
 }
 
 void
 USBInterface::on_write_data(USBWriteData* userdata, libusb_transfer* transfer)
 {
+  if (transfer->status == LIBUSB_TRANSFER_CANCELLED ||
+      transfer->status == LIBUSB_TRANSFER_NO_DEVICE)
+  {
+    delete userdata;
+    m_endpoints.erase(transfer->endpoint);
+    libusb_free_transfer(transfer);
+    return;
+  }
+
+  if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
+  {
+    delete userdata;
+    m_endpoints.erase(transfer->endpoint);
+    libusb_free_transfer(transfer);
+    return;
+  }
+
   if (userdata->callback(transfer))
   {
-    // callback returned true, thus resend the transfer (user is free
-    // to fill it with new data)
     int err = libusb_submit_transfer(transfer);
     if (err != LIBUSB_SUCCESS)
     {
+      delete userdata;
+      m_endpoints.erase(transfer->endpoint);
       libusb_free_transfer(transfer);
-
-      throw std::runtime_error(fmt::format("libusb_submit_transfer(): ", libusb_strerror(err)));
     }
   }
   else
   {
-    // callback returned false, thus doing cleanup
     delete userdata;
-    libusb_free_transfer(transfer);
     m_endpoints.erase(transfer->endpoint);
+    libusb_free_transfer(transfer);
   }
 }
 

@@ -19,8 +19,10 @@
 #include "chatpad.hpp"
 
 #include <assert.h>
+#include <sys/time.h>
 
 #include <uinpp/device.hpp>
+#include <logmich/log.hpp>
 #include <unsebu/usb_helper.hpp>
 
 #include "raise_exception.hpp"
@@ -148,8 +150,31 @@ Chatpad::~Chatpad()
 
   if (m_read_transfer)
   {
-    libusb_cancel_transfer(m_read_transfer);
-    libusb_free_transfer(m_read_transfer);
+    // Cancel and wait for the completion callback; do not free here.
+    int ret = libusb_cancel_transfer(m_read_transfer);
+    if (ret != LIBUSB_SUCCESS && ret != LIBUSB_ERROR_NOT_FOUND)
+    {
+      log_error("chatpad: libusb_cancel_transfer failed: {}", libusb_strerror(ret));
+    }
+
+    for (int i = 0; m_read_transfer && i < 100; ++i)
+    {
+      timeval tv;
+      tv.tv_sec = 0;
+      tv.tv_usec = 10000;
+      ret = libusb_handle_events_timeout_completed(nullptr, &tv, nullptr);
+      if (ret != LIBUSB_SUCCESS && ret != LIBUSB_ERROR_INTERRUPTED)
+      {
+        log_error("chatpad: event drain failed: {}", libusb_strerror(ret));
+        break;
+      }
+    }
+
+    if (m_read_transfer)
+    {
+      log_error("chatpad: read transfer still pending after cancel; abandoning");
+      m_read_transfer = nullptr;
+    }
   }
 
   m_glib_uinput.reset();
@@ -207,30 +232,36 @@ void
 Chatpad::on_read_data(libusb_transfer* transfer)
 {
   assert(transfer);
+  assert(transfer == m_read_transfer);
+
+  if (transfer->status == LIBUSB_TRANSFER_CANCELLED)
+  {
+    libusb_free_transfer(transfer);
+    m_read_transfer = nullptr;
+    return;
+  }
 
   if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
   {
-    log_error("usb transfer failed: {}", libusb_error_name(transfer->status));
+    log_error("chatpad usb transfer failed: {}", libusb_error_name(transfer->status));
+    libusb_free_transfer(transfer);
+    m_read_transfer = nullptr;
+    return;
   }
-  else
+
+  if (transfer->actual_length == 5 && transfer->buffer[0] == 0x00)
   {
-    //log_tmp("chatpad data: " << usb_transfer_strerror(transfer->status) << " "
-    //        << raw2str(transfer->buffer, transfer->actual_length));
+    struct ChatpadKeyMsg msg;
+    memcpy(&msg, transfer->buffer, transfer->actual_length);
+    process(msg);
+  }
 
-    if (transfer->actual_length == 5 && transfer->buffer[0] == 0x00)
-    {
-      struct ChatpadKeyMsg msg;
-      memcpy(&msg, transfer->buffer, transfer->actual_length);
-      process(msg);
-    }
-
-    int ret;
-    ret = libusb_submit_transfer(transfer);
-    if (ret != LIBUSB_SUCCESS)
-    {
-      log_error("failed to resubmit USB transfer: {}", libusb_strerror(ret));
-      libusb_free_transfer(transfer);
-    }
+  int ret = libusb_submit_transfer(transfer);
+  if (ret != LIBUSB_SUCCESS)
+  {
+    log_error("chatpad failed to resubmit USB transfer: {}", libusb_strerror(ret));
+    libusb_free_transfer(transfer);
+    m_read_transfer = nullptr;
   }
 }
 
