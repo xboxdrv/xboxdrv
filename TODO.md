@@ -144,8 +144,8 @@ From FIXMEs, recent commits, and parity goals:
 7. **Build / packaging drift**
    - `VERSION` is `0.9.0-dev` on develop vs `0.8.8` on stable (intentional
      for the cleanup line).
-   - Flake still lists `fmt` in `buildInputs` while Phase 3 claims fmt was
-     dropped in favour of `std::format` — **inconsistency to resolve**.
+   - ~~Flake/fmt inconsistency~~ resolved: logmich + unsebu on `<format>`;
+     flake no longer pulls `fmt`.
    - README on develop still advertises Boost, Gtk+2, old homepage; stable
      README is closer to current reality (CMake, obsolescence warning).
    - Manpage / examples need a pass against actual option names and
@@ -168,8 +168,7 @@ From FIXMEs, recent commits, and parity goals:
 ### Recommended parity work order
 
 1. ~~Port Saitek P3600~~ (done).
-2. **Resolve fmt vs std::format** in CMake + flake (docs claim done; flake
-   still pulls fmt).
+2. ~~Resolve fmt vs std::format~~ (done).
 3. **README + manpage** aligned with develop (obsolescence note, deps,
    build, option names).
 4. **Daemon / hotplug / multi-slot** smoke-test vs stable behaviour; close
@@ -228,9 +227,10 @@ CMake derives numeric `project(VERSION …)`; flake appends
 
 ### Phase 3 — `std::format`
 
-- [x] Replace most `fmt::` usage with `std::format` / `std::print`.
-- [ ] **Verify**: flake still lists `fmt` in `buildInputs`; drop if truly unused,
-      or document residual dependency from a vendored helper.
+- [x] Replace `fmt::` in main tree and vendored logmich/unsebu with
+      `std::format` / `std::vformat` / `<format>`.
+- [x] Drop `fmt` from flake `buildInputs` and from logmich/unsebu CMake.
+- [x] Fix missing `{}` in two unsebu `libusb_submit_transfer` error strings.
 - [x] Fix `%04x` leftover in `usb_controller.cpp` (historical note).
 
 ### Phase 4 — Stability vs `stable` (parity)
@@ -260,4 +260,4 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - One logical change per commit where practical.
 - Public config compatibility: preserve or document the break.
 - Prefer evidence from code and `git log` over README/TODO claims.
-- Next concrete code step for parity: **fmt/flake consistency**, then README.
+- Next concrete code step for parity: **README + manpage** pass.

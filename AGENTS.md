@@ -166,7 +166,7 @@ metadata and can fail when `revCount` is missing.
   are now vendored as git subtrees under `external/` (see
   `external/REVISIONS`). Only nixpkgs and flake-utils remain as flake
   inputs. CMake builds the helpers from the vendored trees.
-- Required at build time today: libusb-1.0, udev, fmt, X11, dbus-glib, GTK3,
+- Required at build time today: libusb-1.0, udev, libevdev, X11, dbus-glib, GTK3,
   Python (dbus glue / bin2h). Optional: CWiid.
 - Runtime: uinput kernel module.
 - Do not add Boost; README still mentions it, CMake does not.
@@ -178,7 +178,7 @@ metadata and can fail when `revCount` is missing.
 2. `src/symbols/`: unfinished parallel naming system; likely replace or
    delete in favour of a smaller table (see TODO.md).
 3. Unfinished Chatpad (USB only, leaky GLib timeouts, wireless unsupported).
-4. `{fmt}` → `std::format()` (C++20 is already on).
+4. ~~`{fmt}` → `std::format()`~~ (done in tree + vendored logmich/unsebu).
 5. Bring `develop` to a state that can replace `stable`.
 
 ## Working practices
