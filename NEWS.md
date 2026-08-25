@@ -1,29 +1,39 @@
-xboxdrv 0.9.0 - (??/Aug/2011)
-=============================
+# Changelog
 
-* added virtual on-screen keyboard
-* added PDP AFTERGLOW AX.1 Xbox360 controller support
-* added Logitech Gamepad F310 support
-* added support for unbound button events, i.e. "--ui-buttonmap =KEY_ESC"
-* added delay button filter
-* added Xbox Airflo wired controller support
-* added Razer Onza support
-* added Descent configuration
-* added Wing Commander configuration
-* added Duke Nukem 3D configuration
-* fixed incorrect axis being used in 4wayrest modifier
-* added Hori Real Arcade Pro VX-SA support
+Development changes toward the next release live under the
+`0.9.0-dev` heading. Older entries are preserved from the
+historical `NEWS` file.
 
+## xboxdrv 0.9.0-dev (develop)
 
-xboxdrv 0.8.4 - (24/Jan/2012)
-=============================
+* Modern C++ toolchain: C++23, CMake, vendored helpers under
+  `external/` (no Boost, no `{fmt}`; formatting via `<format>`)
+* Versioning from top-level `VERSION`; development builds append
+  `.<revCount>+g<shortRev>` (CMake and Nix flake)
+* Port Saitek P3600 (Cyborg Rumble) from `stable`
+* Sync many additional Xbox 360-compatible USB IDs from kernel `xpad`
+  (Xbox One / Series IDs still omitted until that path is testable)
+* Fix classic Xbox stick axis offsets and Y invert (align with `xpad`)
+* Fix wired Xbox 360 left-stick Y (`abs_y1`); accept reports without a
+  strict `0x14` length byte
+* libusb device lifetime: ref/unref in `USBController` (shared wireless
+  receivers)
+* Daemon hotplug: clean disconnected slots before binding a new device
+* Optional Wiimote only when both cwiid and bluez are present; bluetooth
+  helpers gated on `HAVE_CWIID`
+* Prefer vendored `external/` over installed helper packages; do not
+  install helper libraries from the xboxdrv build
+* Drop unused GTK dependency; quieter udev monitor logging
+* Refresh GitLab CI (Ubuntu 24.04); remove Travis CI
+* README / man-page link updates; build-time D-Bus glue deprecation noise
+  reduced
+
+## xboxdrv 0.8.4 (24/Jan/2012)
 
 * readded man-page that had gone missing
 * added documentation for --dbus and --ff-device
 
-
-xboxdrv 0.8.3 - (23/Jan/2012)
-=============================
+## xboxdrv 0.8.3 (23/Jan/2012)
 
 * added --dbus option to switch between system and session bus
 * added sequence-key, same as cycle-key but doesn't wrap around
@@ -32,9 +42,7 @@ xboxdrv 0.8.3 - (23/Jan/2012)
 * fixed force feedback getting on the wrong evdev
 * fixed Xbox360 wireless LED not getting properly set on late plugin
 
-
-xboxdrv 0.8.2 - (07/Aug/2011)
-=============================
+## xboxdrv 0.8.2 (07/Aug/2011)
 
 * added click-press, click-release, click-both button filter
 * added delay button filter
@@ -42,9 +50,7 @@ xboxdrv 0.8.2 - (07/Aug/2011)
 * added PDF Afterglow AX.1 Xbox360 controller support
 * fixed swapped keys in KeyAxisEventHandler
 
-
-xboxdrv 0.8.1 - (20/Jul/2011)
-=============================
+## xboxdrv 0.8.1 (20/Jul/2011)
 
 * added const axis and button filter
 * added 'generic-usb' controller type for debugging
@@ -58,9 +64,7 @@ xboxdrv 0.8.1 - (20/Jul/2011)
 * fixed rumble messages getting delayed
 * reenabled --priority realtime
 
-
-xboxdrv 0.8.0 - (26/May/2011)
-=============================
+## xboxdrv 0.8.0 (26/May/2011)
 
 * added --no-dbus option
 * added ABS/axis support to macros
@@ -78,9 +82,7 @@ xboxdrv 0.8.0 - (26/May/2011)
 * removed boost::thread dependency
 * switched from threads to asynchronous USB handling and glib
 
-
-xboxdrv 0.7.3 - (16/Mar/2011)
-=============================
+## xboxdrv 0.7.3 (16/Mar/2011)
 
 * fixed installation of xboxdrvctl
 * added special REL repeat value '-1' to avoid jaggy mouse emulation movement
@@ -91,9 +93,7 @@ xboxdrv 0.7.3 - (16/Mar/2011)
 * reenabled USBReadThread to work around ignored input events
 * '--daemon' is broken in this release
 
-
-xboxdrv 0.7.2 - (06/Mar/2011)
-=============================
+## xboxdrv 0.7.2 (06/Mar/2011)
 
 * added --mimic-xpad-wireless
 * added --device-usbid and --device-usbids
@@ -113,9 +113,7 @@ xboxdrv 0.7.2 - (06/Mar/2011)
 * renamed --device-name to --device-names
 * renamed --name to --device-name
 
-
-xboxdrv 0.7.1 - (30/Jan/2011)
-=============================
+## xboxdrv 0.7.1 (30/Jan/2011)
 
 * added --match-group
 * added --on-connect and --on-disconnect to xboxdrv --daemon
@@ -140,9 +138,7 @@ xboxdrv 0.7.1 - (30/Jan/2011)
 * man-page updates and cleanup
 * new version of runxboxdrv
 
-
-xboxdrv 0.7.0 - (28/Jan/2011)
-=============================
+## xboxdrv 0.7.0 (28/Jan/2011)
 
 * switched to libusb-1.0
 * -D, --daemon replaces xboxdrv-daemon
@@ -164,25 +160,19 @@ xboxdrv 0.7.0 - (28/Jan/2011)
   available symbolic name
 * changed device_id syntax from 1-BTN_A to now BTN_A@1
 
-
-xboxdrv 0.6.5 - (22/Jan/2011)
-=============================
+## xboxdrv 0.6.5 (22/Jan/2011)
 
 * fixed incorrect variable initalisation, leading to button presses
   getting lost sometimes
 * fixed initialisation issue for Chatpad connected to controllers with
   bcdDevice 0x0114
 
-
-xboxdrv 0.6.4 - (13/Jan/2011)
-=============================
+## xboxdrv 0.6.4 (13/Jan/2011)
 
 * fixed bug that disabled all axis when a button was pressed
 * fixed some missing include
 
-
-xboxdrv 0.6.3 - (10/Jan/2011)
-=============================
+## xboxdrv 0.6.3 (10/Jan/2011)
 
 * chatpad support (still rough), special thanks to Jani Virta, Andy
   Kirkham, dwomac and GAFBlizzard who helped make it possible
@@ -196,9 +186,7 @@ xboxdrv 0.6.3 - (10/Jan/2011)
 * fixed axis getting stuck when using a shift key
 * fixed incorrect error handling on fork()/exec()
 
-
-xboxdrv 0.6.2 - (31/Dec/2010)
-=============================
+## xboxdrv 0.6.2 (31/Dec/2010)
 
 * merged Xbox360 guitar handling into the regular Xbox360 controller
   handling, use --guitar to get the old mapping back
@@ -229,16 +217,12 @@ xboxdrv 0.6.2 - (31/Dec/2010)
   X, Y, black, white
 * give proper error message when the Play&Charge kit is used
 
-
-xboxdrv 0.6.1 - (21/Dec/2010)
-==============================
+## xboxdrv 0.6.1 (21/Dec/2010)
 
 * fixed bug in axis to key mapping
 * removed debugging output
 
-
-xboxdrv 0.6.0 - (18/Dec/2010)
-==============================
+## xboxdrv 0.6.0 (18/Dec/2010)
 
 * support for reading from evdev, this allows the use of regular
   regular PC joysticks or the Playstation 3 controllers with xboxdrv,
@@ -259,9 +243,7 @@ xboxdrv 0.6.0 - (18/Dec/2010)
 * Saitek Cyborg Rumble Pad support added
 * Gamestop Xbox 360 Controller support added
 
-
-xboxdrv 0.5.0 - (26/May/2010)
-==============================
+## xboxdrv 0.5.0 (26/May/2010)
 
 * added device_id handling to --ui-buttonmap and --ui-axismap, allows
   the creation of multiple input devices from a single controller
@@ -273,24 +255,18 @@ xboxdrv 0.5.0 - (26/May/2010)
   by the kernel without messing with hal
 * auto-detect USB endpoints on Xbox1 controller
 
-
-xboxdrv 0.4.13 - (13/May/2010)
-==============================
+## xboxdrv 0.4.13 (13/May/2010)
 
 * added --mimic-xpad
 * added --no-extra-devices
 
-
-xboxdrv 0.4.12 - (08/May/2010)
-==============================
+## xboxdrv 0.4.12 (08/May/2010)
 
 * added --four-way-restrictor
 * added --dpad-rotation
 * added proper man pages for xboxdrv and xboxdrv-daemon
 
-
-xboxdrv 0.4.11 - (01/May/2010)
-==============================
+## xboxdrv 0.4.11 (01/May/2010)
 
 * added --axis-sensitivity
 * added number aliases for button names
@@ -299,34 +275,26 @@ xboxdrv 0.4.11 - (01/May/2010)
 * confusing uinput error messages got cleaned up
 * fixed missing 'report sync' event that broke keyboard emulation
 
-
-xboxdrv 0.4.10 - (17/Feb/2010)
-==============================
+## xboxdrv 0.4.10 (17/Feb/2010)
 
 * fixed mouse emulation a bit, still somewhat broken
 * Mad Catz Xbox 360 controller support
 * Harmonix controller support
 * minor compile fix (missing string.h)
 
-
-xboxdrv 0.4.9 - (01/Nov/2009)
-=============================
+## xboxdrv 0.4.9 (01/Nov/2009)
 
 * Saitek P2500 support (no rumble, untested)
 * Hori Real Arcade Pro Ex support
 * changes in the thread handling to reduce latency
 * include fixes for g++-4.4
 
-
-xboxdrv 0.4.8 - (30/Jul/2009)
-=============================
+## xboxdrv 0.4.8 (30/Jul/2009)
 
 * usb reading in separate thread, should fix missed events and stuck buttons
 * some SCons configuration magic for better compatibility
 
-
-xboxdrv 0.4.7 - (29/Jul/2009)
-=============================
+## xboxdrv 0.4.7 (29/Jul/2009)
 
 * support for Pelican TSZ360 pad
 * support for Saitek P3200 pad
@@ -334,17 +302,13 @@ xboxdrv 0.4.7 - (29/Jul/2009)
 * deadzone support for trigger via --deadzone-trigger NUM
 * some documentation improvements
 
-
-xboxdrv 0.4.6 - (21/Feb/2009)
-=============================
+## xboxdrv 0.4.6 (21/Feb/2009)
 
 * --calibration AXIS=MIN,CENTER,MAX option to workaround broken controller
 * xboxdrv-daemon.py to launch xboxdrv automatically when device gets
   plugged in
 
-
-xboxdrv 0.4.5 - (15/Feb/2009)
-=============================
+## xboxdrv 0.4.5 (15/Feb/2009)
 
 * fixed mixup between strong and weak rumble
 * added Harmonix Drum Kit for Xbox 360 support
@@ -352,9 +316,7 @@ xboxdrv 0.4.5 - (15/Feb/2009)
 * added evsend tool to send events to /dev/input/eventX
 * Y-Axis for Firestorm gamepad fixed
 
-
-xboxdrv 0.4.4 - (24/Jan/2009)
-=============================
+## xboxdrv 0.4.4 (24/Jan/2009)
 
 * auto-detect USB endpoints
 * rumble support, enabled via --force-feedback
@@ -362,9 +324,7 @@ xboxdrv 0.4.4 - (24/Jan/2009)
 * --deadzone accepts values in percentage
 * DDR Universe 2 Mat added
 
-
-xboxdrv 0.4.3 - (17/Jan/2009)
-=============================
+## xboxdrv 0.4.3 (17/Jan/2009)
 
 * added support for X11 keysym in --ui-buttonmap
 * added --ui-clear and 'void' mappings to unmap buttons and axis
@@ -376,21 +336,15 @@ xboxdrv 0.4.3 - (17/Jan/2009)
 * fixed issue with multiple wireless controller
 * some preparation for rumble (prints FF events)
 
-
-xboxdrv 0.4.2 - (11/Jan/2009)
-=============================
+## xboxdrv 0.4.2 (11/Jan/2009)
 
 * fixed --dpad-only
 
-
-xboxdrv 0.4.1 - (08/Jan/2009)
-=============================
+## xboxdrv 0.4.1 (08/Jan/2009)
 
 * workaround for KEY_MEDIA_REPEAT
 
-
-xboxdrv 0.4 - (07/Jan/2009)
-===========================
+## xboxdrv 0.4 (07/Jan/2009)
 
 * added --square-axis option
 * added --autofire option
@@ -399,9 +353,7 @@ xboxdrv 0.4 - (07/Jan/2009)
 * support for keyboard events
 * support for mouse emulation
 
-
-xboxdrv 0.3 - (06/Nov/2008)
-============================
+## xboxdrv 0.3 (06/Nov/2008)
 
 * added short note when the USB device is busy
 * added note to README about running it via sudo
@@ -409,9 +361,7 @@ xboxdrv 0.3 - (06/Nov/2008)
 * added new third party controller to the auto-detection
 * minor other small bug fixes
 
-
-xboxdrv 0.2 - (03/May/2008)
-===========================
+## xboxdrv 0.2 (03/May/2008)
 
 * added support for Xbox360 wireless gamepads
 * added support for the Xbox360 guitar controller
@@ -425,11 +375,7 @@ xboxdrv 0.2 - (03/May/2008)
 * switched from usb_bulk_read() to usb_interrupt_read(), this fixes
   problems with some controller
 
-
-xboxdrv 0.1 - (13/Apr/2008)
-===========================
+## xboxdrv 0.1 (13/Apr/2008)
 
   * initial release
 
-
-# EOF #

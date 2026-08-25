@@ -25,6 +25,7 @@ driver is preferable.
 * GitHub: https://github.com/xboxdrv/xboxdrv
 * Default development branch: `develop` (cleanup target)
 * Production / packaging reference: `stable`
+* Changelog: [`NEWS.md`](NEWS.md)
 
 ## Requirements
 
@@ -136,8 +137,15 @@ Example configs live in `examples/`. USB protocol notes are in
 ## Versioning
 
 The top-level `VERSION` file is the single source of truth (e.g.
-`0.9.0-dev` on `develop`). CMake and the Nix flake derive display and
-package versions from it; see `AGENTS.md` for the full scheme.
+`0.9.0-dev` on `develop`). Development builds append
+`.<revCount>+g<shortRev>` (and `-dirty` when the tree is dirty) so
+`--version` matches the Nix package name. CMake and the flake both
+implement this; see `AGENTS.md` for the full scheme.
+
+## Changelog
+
+See [`NEWS.md`](NEWS.md) for user-visible changes. The `0.9.0-dev`
+section tracks work on `develop` toward the next release.
 
 ## Status and branches
 
@@ -145,6 +153,12 @@ package versions from it; see `AGENTS.md` for the full scheme.
   regressions there.
 * **`develop`** — cleanup and modernization target; goal is for `develop`
   to fully replace `stable`.
+
+Recent `develop` work includes Saitek P3600 support, a large sync of
+Xbox 360-compatible IDs from kernel `xpad`, classic Xbox and wired 360
+report parsing fixes, stricter dependency handling (vendored helpers,
+optional CWiid/bluez), and CI refresh. Xbox One / Series protocol support
+remains limited compared to in-kernel `xpad`.
 
 See `TODO.md` for the current parity and cleanup roadmap.
 
