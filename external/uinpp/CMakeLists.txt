@@ -77,13 +77,11 @@ target_link_libraries(uinpp PUBLIC
   strut::strut
   logmich::logmich
   )
-# Public: include/ so consumers can #include <uinpp/event.hpp>
-# Private: include/uinpp so the library sources can #include "event.hpp"
+# Public: both roots so consumers can use <uinpp/event.hpp> or "event.hpp"
 target_include_directories(uinpp SYSTEM PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/uinpp>
   $<INSTALL_INTERFACE:include>)
-target_include_directories(uinpp PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/uinpp)
 
 file(GLOB UINPP_UTIL_SOURCES extra/*.cpp)
 add_executable(uinpp-util ${UINPP_UTIL_SOURCES})
