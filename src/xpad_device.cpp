@@ -132,7 +132,7 @@ XPadDevice xpad_devices[] = {
 
   // Additional Xbox 360-compatible devices from kernel xpad (synced 2026-08)
   // XTYPE_XBOX360 only — Xbox One/Series IDs intentionally omitted until tested.
-  { GAMEPAD_XBOX360,          0x0079, 0x18d4, "GPD Win 2 X-Box Controller" },
+  { GAMEPAD_XBOX360,          0x0079, 0x18d4, "GPD Win 2" },
   { GAMEPAD_XBOX360,          0x0351, 0x1000, "CRKD LP Blueberry Burst Pro Edition (Xbox)" },
   { GAMEPAD_XBOX360,          0x0351, 0x2000, "CRKD LP Black Tribal Edition (Xbox)" },
   { GAMEPAD_XBOX360,          0x03eb, 0xff01, "Wooting One (Legacy)" },
