@@ -42,6 +42,7 @@ private:
   std::chrono::steady_clock::time_point m_guide_down_ts;
   bool m_guide_held;
   guint m_guide_timeout_source;
+  guint m_presence_timeout_source;
 
   Xbox360DefaultNames xbox;
 
@@ -64,8 +65,18 @@ public:
   void power_off();
 
 private:
-  /** Same presence inquiry as kernel xpad360w_start_input / xpad_inquiry_pad_presence. */
+  /**
+   * Presence inquiry (xpad_inquiry_pad_presence / Windows checkStatus first
+   * half). Forces the receiver to resend connection packets.
+   */
   void inquire_presence();
+  /** Battery/status poll used by Windows ~2s checkStatus when pad is linked. */
+  void inquire_battery();
+  void start_presence_timer();
+  void stop_presence_timer();
+  bool on_presence_timeout();
+  static gboolean on_presence_timeout_wrap(gpointer data);
+
   void maybe_guide_poweroff(bool guide_down);
   void stop_guide_timeout();
   bool on_guide_timeout();

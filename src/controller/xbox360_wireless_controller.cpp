@@ -52,6 +52,7 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   m_guide_down_ts(),
   m_guide_held(false),
   m_guide_timeout_source(0),
+  m_presence_timeout_source(0),
   xbox(m_message_descriptor)
 {
   // FIXME: A little bit of a hack
@@ -66,11 +67,12 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   usb_claim_interface(m_interface, try_detach);
   usb_submit_read(m_endpoint, 32);
 
-  // Kernel xpad360w_start_input sends a presence inquiry so the receiver
-  // resends connection packets when the driver starts after the pad was
-  // already linked. Without this, a restart while the pad is awake leaves
-  // LEDs/slot looking fine but no input reports until a battery cycle.
+  // Windows host drivers poll presence (~2s). xpad only inquires once at
+  // start. A single fire-and-forget OUT at claim time is easy to lose and
+  // does not keep a half-open radio session alive after a userspace restart
+  // (LED still works, pad reports stop until a battery cycle).
   inquire_presence();
+  start_presence_timer();
 
   if (chatpad)
   {
@@ -85,6 +87,7 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
 
 Xbox360WirelessController::~Xbox360WirelessController()
 {
+  stop_presence_timer();
   stop_guide_timeout();
 
   // Mirror kernel xpad auto_poweroff on suspend: if the pad is still
@@ -99,10 +102,9 @@ Xbox360WirelessController::~Xbox360WirelessController()
 void
 Xbox360WirelessController::inquire_presence()
 {
-  // Same 12-byte packet as kernel xpad_inquiry_pad_presence().
-  // Forces the receiver/controller to resend connection status so a
-  // restart of the driver can attach an already-awake pad without a
-  // battery cycle.
+  // Same packet as kernel xpad_inquiry_pad_presence() and the first half of
+  // the Windows ~2s checkStatus() poll (USB Host Shield XBOXRECV::checkStatus).
+  // Forces the receiver to resend connection status.
   uint8_t cmd[] = {
     0x08, 0x00, 0x0f, 0xc0,
     0x00, 0x00, 0x00, 0x00,
@@ -110,6 +112,68 @@ Xbox360WirelessController::inquire_presence()
   };
   log_debug("wireless presence inquiry");
   usb_write(m_endpoint, cmd, sizeof(cmd));
+}
+
+void
+Xbox360WirelessController::inquire_battery()
+{
+  // Second half of Windows checkStatus(): battery / status request when the
+  // pad is already linked. Not required by xpad, but observed on Windows at
+  // the same interval as presence.
+  uint8_t cmd[] = {
+    0x00, 0x00, 0x00, 0x40,
+    0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00
+  };
+  log_debug("wireless battery inquiry");
+  usb_write(m_endpoint, cmd, sizeof(cmd));
+}
+
+void
+Xbox360WirelessController::start_presence_timer()
+{
+  if (m_presence_timeout_source)
+  {
+    return;
+  }
+  // ~2s matches the Windows host poll interval documented via BusHound
+  // captures (USB Host Shield XBOXRECV::checkStatus).
+  m_presence_timeout_source = g_timeout_add_seconds(
+    2, &Xbox360WirelessController::on_presence_timeout_wrap, this);
+}
+
+void
+Xbox360WirelessController::stop_presence_timer()
+{
+  if (m_presence_timeout_source)
+  {
+    g_source_remove(m_presence_timeout_source);
+    m_presence_timeout_source = 0;
+  }
+}
+
+gboolean
+Xbox360WirelessController::on_presence_timeout_wrap(gpointer data)
+{
+  return static_cast<Xbox360WirelessController*>(data)->on_presence_timeout()
+    ? TRUE : FALSE;
+}
+
+bool
+Xbox360WirelessController::on_presence_timeout()
+{
+  if (is_disconnected() || m_shutting_down)
+  {
+    m_presence_timeout_source = 0;
+    return false;
+  }
+
+  inquire_presence();
+  if (m_pad_present)
+  {
+    inquire_battery();
+  }
+  return true; // keep the ~2s cadence
 }
 
 void
