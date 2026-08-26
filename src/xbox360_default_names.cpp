@@ -112,6 +112,16 @@ Xbox360DefaultNames::Xbox360DefaultNames(ControllerMessageDescriptor& desc) :
   desc.key().alias("dd", dpad_down);
   desc.key().alias("dl", dpad_left);
   desc.key().alias("dr", dpad_right);
+  // Historical string2btn names (PR #227 / issue #225): btn2string used to
+  // print DPAD_*; short up/down/left/right were also accepted.
+  desc.key().alias("up", dpad_up);
+  desc.key().alias("down", dpad_down);
+  desc.key().alias("left", dpad_left);
+  desc.key().alias("right", dpad_right);
+  desc.key().alias("DPAD_UP", dpad_up);
+  desc.key().alias("DPAD_DOWN", dpad_down);
+  desc.key().alias("DPAD_LEFT", dpad_left);
+  desc.key().alias("DPAD_RIGHT", dpad_right);
 
   // Default uinput maps (UInputOptions::set_defaults / mimic_xpad) use the
   // "gamepad." prefix; register those names so ButtonMap::init() can resolve.
