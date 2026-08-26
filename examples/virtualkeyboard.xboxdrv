@@ -2,9 +2,8 @@
 # ================
 #
 # This configuration file needs to be used together with the
-# virtualkeyboard application, that has to be started manually after
-# xboxdrv has launched, as this configuration file will only set the
-# inputs that virtualkeyboard needs.
+# Historical config for the old GTK virtualkeyboard helper (no longer
+# built; see issue #208). Kept only as a mapping sketch.
 
 [xboxdrv]
 ui-clear = true

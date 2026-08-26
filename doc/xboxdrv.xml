@@ -3549,10 +3549,6 @@ EndSection]]></programlisting>
       <citerefentry>
         <refentrytitle>xboxdrvctl</refentrytitle>
         <manvolnum>1</manvolnum>
-      </citerefentry>, 
-      <citerefentry>
-        <refentrytitle>virtualkeyboard</refentrytitle>
-        <manvolnum>1</manvolnum>
       </citerefentry>,
       <citerefentry>
         <refentrytitle>evtest</refentrytitle>

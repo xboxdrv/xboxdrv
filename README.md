@@ -37,7 +37,12 @@ driver is preferable.
 * libusb-1.0
 * libudev
 * libevdev
-* X11 (libX11)
+* X11 (libX11) — only for optional `--help-x11keysym` key names
+
+The old optional **VirtualKeyboard** GTK helper is **not built** (and is not
+part of the CMake tree). No GTK dependency is required (issue #208).
+The example `examples/virtualkeyboard.xboxdrv` is retained only as a
+historical config sketch.
 * dbus-glib-1 / GLib (includes `dbus-binding-tool` for glue generation)
 * Python 3 (D-Bus glue and `bin2h` generation)
 

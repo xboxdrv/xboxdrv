@@ -1,4 +1,4 @@
-all: xboxdrv.1 virtualkeyboard.1
+all: xboxdrv.1
 
 %.1: %.xml Makefile
 	echo "<!ENTITY xboxdrv_version \"$$(cat ../VERSION)\">" > xboxdrv.ent
