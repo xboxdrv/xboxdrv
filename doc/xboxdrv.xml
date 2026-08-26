@@ -493,6 +493,43 @@ start=KEY_ESC
         </varlistentry>
 
         <varlistentry>
+          <term><option>--no-auto-poweroff</option></term>
+          <listitem>
+            <para>
+              Do not power off an Xbox 360 wireless controller when xboxdrv
+              exits or the slot is torn down. By default xboxdrv mirrors the
+              kernel <literal>xpad</literal> behaviour and sends a power-off
+              packet on teardown if the pad is still linked, which avoids a
+              flashing LED and battery drain while the pad searches for a
+              missing host. Use this when testing configs so the pad stays on
+              between runs.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--no-guide-poweroff</option></term>
+          <listitem>
+            <para>
+              Disable power-off when the Guide button is held on an Xbox 360
+              wireless controller (enabled by default, same idea as
+              <literal>xpad</literal>).
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--guide-poweroff-timeout</option> <replaceable class="parameter">SEC</replaceable></term>
+          <listitem>
+            <para>
+              Seconds to hold Guide before powering off a wireless 360 pad
+              (default: 5). Use <literal>0</literal> to disable (same as
+              <option>--no-guide-poweroff</option>).
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>--device-by-path</option> <replaceable class="parameter">BUS:DEV</replaceable></term>
           <listitem>
             <para>
