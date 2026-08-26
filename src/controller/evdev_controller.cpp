@@ -31,6 +31,7 @@
 
 #include "controller_message.hpp"
 #include "evdev_helper.hpp"
+#include "xbox360_default_names.hpp"
 #include "raise_exception.hpp"
 #include "util/string.hpp"
 
@@ -110,7 +111,7 @@ EvdevController::parse_key_binding(std::string const& value)
     }
 
     EvdevKeyBinding::Abs abs;
-    abs.abs = m_message_descriptor.abs().put(name);
+    abs.abs = m_message_descriptor.abs().getput(name);
     abs.press = str2int(parts[1]);
     if (parts.size() == 3)
     {
@@ -141,7 +142,7 @@ EvdevController::parse_key_binding(std::string const& value)
       raise_exception(std::runtime_error,
                       "evdev-keymap: empty button name in \"" + value + "\"");
     }
-    binding.keys.push_back(m_message_descriptor.key().put(name));
+    binding.keys.push_back(m_message_descriptor.key().getput(name));
   }
 
   return binding;
@@ -189,6 +190,11 @@ EvdevController::EvdevController(std::string const& filename,
     }
   }
 
+  // Register standard Xbox pad symbols and gamepad.* aliases so default
+  // uinput / mimic-xpad maps (gamepad.start, gamepad.x1, …) resolve.
+  Xbox360DefaultNames xbox_names(m_message_descriptor);
+  (void)xbox_names;
+
   { // Read in how many btn/abs/rel the device has
     unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
     memset(bit, 0, sizeof(bit));
@@ -225,7 +231,7 @@ EvdevController::EvdevController(std::string const& filename,
         else
         {
           // user mapping → canonical name (x1, y1, lt, …)
-          m_absmap[i] = m_message_descriptor.abs().put(normalize_target_name(it->second));
+          m_absmap[i] = m_message_descriptor.abs().getput(normalize_target_name(it->second));
         }
       }
     }
@@ -243,7 +249,7 @@ EvdevController::EvdevController(std::string const& filename,
         }
         else
         {
-          m_relmap[i] = m_message_descriptor.rel().put(normalize_target_name(it->second));
+          m_relmap[i] = m_message_descriptor.rel().getput(normalize_target_name(it->second));
         }
       }
     }
