@@ -88,7 +88,9 @@ AutofireButtonFilter::update(int msec_delta)
     case kDelay:
       if (m_counter >= m_delay)
       {
-        m_phase = kHigh;
+        // Release before the pulse train so the initial solid hold does not
+        // merge with the first HIGH into one long press.
+        m_phase = kLow;
         m_counter = 0;
       }
       break;

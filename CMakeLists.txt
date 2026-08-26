@@ -191,10 +191,25 @@ set_target_properties(libxboxdrv PROPERTIES
   CXX_STANDARD_REQUIRED ON
   CXX_EXTENSIONS OFF)
 target_include_directories(libxboxdrv PUBLIC src/ ${CMAKE_CURRENT_BINARY_DIR}/src/)
-# Isolate PACKAGE_VERSION to one TU so git-rev / dirty version bumps only
-# recompile xboxdrv_version.cpp, not the entire static library.
+# Isolate PACKAGE_VERSION to one generated header included only by
+# xboxdrv_version.cpp. Write only when content changes so a version/git-rev
+# bump does not force a full libxboxdrv rebuild (and does not touch a global
+# -D that could invalidate more of the ninja graph than needed).
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/src")
+set(_xboxdrv_version_def "${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_version_def.hpp")
+set(_xboxdrv_version_def_content
+  "#pragma once\n#define PACKAGE_VERSION \"${PROJECT_VERSION_FULL}\"\n")
+if(EXISTS "${_xboxdrv_version_def}")
+  file(READ "${_xboxdrv_version_def}" _xboxdrv_version_def_old)
+else()
+  set(_xboxdrv_version_def_old "")
+endif()
+if(NOT "${_xboxdrv_version_def_old}" STREQUAL "${_xboxdrv_version_def_content}")
+  file(WRITE "${_xboxdrv_version_def}" "${_xboxdrv_version_def_content}")
+endif()
+# Explicit dep so Ninja rebuilds the one TU when the header changes.
 set_source_files_properties(src/xboxdrv_version.cpp PROPERTIES
-  COMPILE_DEFINITIONS "PACKAGE_VERSION=\"${PROJECT_VERSION_FULL}\"")
+  OBJECT_DEPENDS "${_xboxdrv_version_def}")
 if(HAVE_CWIID)
   target_compile_definitions(libxboxdrv PUBLIC -DHAVE_CWIID)
 endif()

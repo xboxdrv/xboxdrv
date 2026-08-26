@@ -6,6 +6,8 @@ historical `NEWS` file.
 
 ## xboxdrv 0.9.0-dev (develop)
 
+* Autofire: after DELAY, release before first pulse so initial hold does not merge with first shot
+* Build: version string via generated header for xboxdrv_version.cpp only (write-if-changed)
 * Autofire: real pulse high/low phases (min ~50ms high); was one-tick pulses that games missed
 * `--autofire A=RATE` accepts `RATE:DELAY` (start delay ms); not duty cycle
 * ui-buttonmap: later binding for the same key combo overrides earlier (so `A^autofire=BTN_A` replaces default `gamepad.a`)

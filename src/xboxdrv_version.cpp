@@ -10,9 +10,9 @@
 
 #include "xboxdrv_version.hpp"
 
-// PACKAGE_VERSION is supplied only for this translation unit via
-// set_source_files_properties in CMakeLists.txt so a version/git-rev
-// change does not force a full libxboxdrv rebuild.
+// PACKAGE_VERSION comes from the generated xboxdrv_version_def.hpp
+// (build dir). Only this TU includes it so version bumps rebuild one object.
+#include "xboxdrv_version_def.hpp"
 #ifndef PACKAGE_VERSION
 #  define PACKAGE_VERSION "unknown"
 #endif
