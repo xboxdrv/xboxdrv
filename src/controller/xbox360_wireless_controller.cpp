@@ -142,9 +142,8 @@ Xbox360WirelessController::on_zombie_check()
   }
   // LED may still work; neither xboxdrv nor xpad can recover this session.
   char const* msg =
-    "Wireless controller is linked but not sending input (pad was likely "
-    "powered on before xboxdrv). Power-cycle the controller (hold Guide "
-    "until it turns off, then turn it on again).";
+    "No input from wireless controller yet. Power the controller on, or "
+    "power-cycle it (remove batteries / battery pack briefly), then try again.";
   log_info("{}", msg);
   if (!m_quiet)
   {

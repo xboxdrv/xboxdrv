@@ -3342,10 +3342,10 @@ $ export SDL_JOYSTICK_DEVICE]]></programlisting>
         (or the kernel <literal>xpad</literal> driver) started, the pad may
         show a solid LED and still accept LED commands, but never send button
         or axis reports. Neither xboxdrv nor <literal>xpad</literal> can
-        recover that session reliably. Power-cycle the controller: hold the
-        Guide button until it turns off, then turn it on again (or remove and
-        reinsert the batteries). Prefer starting xboxdrv first, then powering
-        the pad on.
+        recover that session reliably. Power the controller on, or power-cycle
+        it by removing the batteries or battery pack briefly. Prefer starting
+        xboxdrv first, then powering the pad on. (Holding Guide does not help
+        here: Guide power-off is handled in software and needs input reports.)
       </para>
     </refsect2>
 
