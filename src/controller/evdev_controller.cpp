@@ -400,7 +400,7 @@ EvdevController::set_rumble_real(uint8_t left, uint8_t right)
   struct ff_effect effect;
   memset(&effect, 0, sizeof(effect));
   effect.type = FF_RUMBLE;
-  effect.id = m_ff_effect_id; // -1 uploads a new effect; else update in place
+  effect.id = static_cast<__s16>(m_ff_effect_id); // -1 = new effect; else update
   // xboxdrv uses 0..255; kernel magnitudes are 0..0xffff
   effect.u.rumble.strong_magnitude = static_cast<__u16>(left)  * 257;
   effect.u.rumble.weak_magnitude   = static_cast<__u16>(right) * 257;

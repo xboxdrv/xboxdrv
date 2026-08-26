@@ -36,7 +36,7 @@ namespace xboxdrv {
 struct EvdevKeyBinding
 {
   /** Button channels to set true on press / false on release. */
-  std::vector<int> keys;
+  std::vector<int> keys{};
 
   struct Abs
   {
@@ -46,7 +46,7 @@ struct EvdevKeyBinding
     /** If false, key-up does not change the axis (PR #101 KEY_DOWN style). */
     bool on_release = false;
   };
-  std::optional<Abs> abs;
+  std::optional<Abs> abs{};
 };
 
 class EvdevController : public Controller
