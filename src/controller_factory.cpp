@@ -69,7 +69,7 @@ ControllerFactory::create(XPadDevice const& dev_type, libusb_device* dev, Option
       break;
 
     case GAMEPAD_XBOX360_WIRELESS:
-      return ControllerPtr(new Xbox360WirelessController(dev, opts.wireless_id, opts.chatpad, opts.chatpad_no_init, opts.chatpad_debug, opts.detach_kernel_driver, opts.wireless_auto_poweroff, opts.guide_poweroff_timeout_sec));
+      return ControllerPtr(new Xbox360WirelessController(dev, opts.wireless_id, opts.chatpad, opts.chatpad_no_init, opts.chatpad_debug, opts.detach_kernel_driver, opts.wireless_auto_poweroff, opts.guide_poweroff_timeout_sec, opts.quiet));
 
     case GAMEPAD_XBOXONE_WIRELESS:
       return ControllerPtr(new XboxOneWirelessController(dev, opts.detach_kernel_driver));
@@ -163,7 +163,7 @@ ControllerFactory::create_multiple(XPadDevice const& dev_type, libusb_device* de
     case GAMEPAD_XBOX360_WIRELESS:
       for(int wireless_id = 0; wireless_id < 4; ++wireless_id)
       {
-        lst.push_back(ControllerPtr(new Xbox360WirelessController(dev, wireless_id, opts.chatpad, opts.chatpad_no_init, opts.chatpad_debug, opts.detach_kernel_driver, opts.wireless_auto_poweroff, opts.guide_poweroff_timeout_sec)));
+        lst.push_back(ControllerPtr(new Xbox360WirelessController(dev, wireless_id, opts.chatpad, opts.chatpad_no_init, opts.chatpad_debug, opts.detach_kernel_driver, opts.wireless_auto_poweroff, opts.guide_poweroff_timeout_sec, opts.quiet)));
       }
       break;
 

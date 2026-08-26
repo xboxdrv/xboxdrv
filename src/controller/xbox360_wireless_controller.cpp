@@ -21,6 +21,7 @@
 #include <chrono>
 #include <sstream>
 #include <format>
+#include <iostream>
 
 #include <unsebu/usb_helper.hpp>
 
@@ -36,7 +37,8 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
                                                      bool chatpad, bool chatpad_no_init, bool chatpad_debug,
                                                      bool try_detach,
                                                      bool auto_poweroff,
-                                                     int guide_poweroff_timeout_sec) :
+                                                     int guide_poweroff_timeout_sec,
+                                                     bool quiet) :
   USBController(dev),
   m_endpoint(),
   m_interface(),
@@ -45,9 +47,11 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   m_chatpad(),
   m_auto_poweroff(auto_poweroff),
   m_guide_poweroff_timeout_sec(guide_poweroff_timeout_sec),
+  m_quiet(quiet),
   m_pad_present(false),
   m_guide_down_ts(),
   m_guide_held(false),
+  m_guide_timeout_source(0),
   xbox(m_message_descriptor)
 {
   // FIXME: A little bit of a hack
@@ -62,6 +66,12 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   usb_claim_interface(m_interface, try_detach);
   usb_submit_read(m_endpoint, 32);
 
+  // Kernel xpad360w_start_input sends a presence inquiry so the receiver
+  // resends connection packets when the driver starts after the pad was
+  // already linked. Without this, a restart while the pad is awake leaves
+  // LEDs/slot looking fine but no input reports until a battery cycle.
+  inquire_presence();
+
   if (chatpad)
   {
     m_chatpad = std::make_unique<WirelessChatpad>(
@@ -75,6 +85,8 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
 
 Xbox360WirelessController::~Xbox360WirelessController()
 {
+  stop_guide_timeout();
+
   // Mirror kernel xpad auto_poweroff on suspend: if the pad is still
   // linked when we tear down the slot, power it down so it does not
   // flash and drain batteries while searching for a missing receiver.
@@ -82,6 +94,22 @@ Xbox360WirelessController::~Xbox360WirelessController()
   {
     power_off();
   }
+}
+
+void
+Xbox360WirelessController::inquire_presence()
+{
+  // Same 12-byte packet as kernel xpad_inquiry_pad_presence().
+  // Forces the receiver/controller to resend connection status so a
+  // restart of the driver can attach an already-awake pad without a
+  // battery cycle.
+  uint8_t cmd[] = {
+    0x08, 0x00, 0x0f, 0xc0,
+    0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00
+  };
+  log_debug("wireless presence inquiry");
+  usb_write(m_endpoint, cmd, sizeof(cmd));
 }
 
 void
@@ -93,10 +121,52 @@ Xbox360WirelessController::power_off()
     0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00
   };
+  stop_guide_timeout();
   log_info("wireless power-off");
+  if (!m_quiet)
+  {
+    std::cout << "Wireless controller powered off" << std::endl;
+  }
   usb_write(m_endpoint, cmd, sizeof(cmd));
   m_pad_present = false;
   m_guide_held = false;
+}
+
+void
+Xbox360WirelessController::stop_guide_timeout()
+{
+  if (m_guide_timeout_source)
+  {
+    g_source_remove(m_guide_timeout_source);
+    m_guide_timeout_source = 0;
+  }
+}
+
+gboolean
+Xbox360WirelessController::on_guide_timeout_wrap(gpointer data)
+{
+  return static_cast<Xbox360WirelessController*>(data)->on_guide_timeout()
+    ? TRUE : FALSE;
+}
+
+bool
+Xbox360WirelessController::on_guide_timeout()
+{
+  // One-shot: clear id first (same pattern as WirelessChatpad keep-alives).
+  m_guide_timeout_source = 0;
+  if (!m_guide_held || !m_pad_present)
+  {
+    return false;
+  }
+  log_info("guide held {}s — powering off wireless controller",
+           m_guide_poweroff_timeout_sec);
+  power_off();
+  set_active(false);
+  if (m_chatpad)
+  {
+    m_chatpad->set_controller_present(false);
+  }
+  return false;
 }
 
 void
@@ -104,36 +174,31 @@ Xbox360WirelessController::maybe_guide_poweroff(bool guide_down)
 {
   if (m_guide_poweroff_timeout_sec <= 0)
   {
+    stop_guide_timeout();
     m_guide_held = false;
     return;
   }
 
-  using clock = std::chrono::steady_clock;
   if (guide_down)
   {
     if (!m_guide_held)
     {
+      // Arm a real timer. Relying only on subsequent input reports is
+      // unreliable: while the Guide button is held the pad may stop
+      // streaming pad data, so the old "check elapsed on each report"
+      // path never fired.
       m_guide_held = true;
-      m_guide_down_ts = clock::now();
-    }
-    else
-    {
-      auto held = std::chrono::duration_cast<std::chrono::seconds>(
-        clock::now() - m_guide_down_ts).count();
-      if (held >= m_guide_poweroff_timeout_sec)
-      {
-        log_info("guide held {}s — powering off wireless controller", held);
-        power_off();
-        set_active(false);
-        if (m_chatpad)
-        {
-          m_chatpad->set_controller_present(false);
-        }
-      }
+      m_guide_down_ts = std::chrono::steady_clock::now();
+      stop_guide_timeout();
+      m_guide_timeout_source = g_timeout_add_seconds(
+        static_cast<guint>(m_guide_poweroff_timeout_sec),
+        &Xbox360WirelessController::on_guide_timeout_wrap,
+        this);
     }
   }
   else
   {
+    stop_guide_timeout();
     m_guide_held = false;
   }
 }

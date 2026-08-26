@@ -16,6 +16,8 @@
 #include <memory>
 #include <string>
 
+#include <glib.h>
+
 #include "controller/usb_controller.hpp"
 #include "xbox360_default_names.hpp"
 
@@ -35,9 +37,11 @@ private:
 
   bool m_auto_poweroff;
   int  m_guide_poweroff_timeout_sec; // 0 = disabled
+  bool m_quiet;
   bool m_pad_present;
   std::chrono::steady_clock::time_point m_guide_down_ts;
   bool m_guide_held;
+  guint m_guide_timeout_source;
 
   Xbox360DefaultNames xbox;
 
@@ -46,7 +50,8 @@ public:
                             bool chatpad, bool chatpad_no_init, bool chatpad_debug,
                             bool try_detach,
                             bool auto_poweroff = true,
-                            int guide_poweroff_timeout_sec = 5);
+                            int guide_poweroff_timeout_sec = 5,
+                            bool quiet = false);
   ~Xbox360WirelessController() override;
 
   bool parse(const uint8_t* data, int len, ControllerMessage* msg_out) override;
@@ -59,7 +64,12 @@ public:
   void power_off();
 
 private:
+  /** Same presence inquiry as kernel xpad360w_start_input / xpad_inquiry_pad_presence. */
+  void inquire_presence();
   void maybe_guide_poweroff(bool guide_down);
+  void stop_guide_timeout();
+  bool on_guide_timeout();
+  static gboolean on_guide_timeout_wrap(gpointer data);
 
   Xbox360WirelessController (const Xbox360WirelessController&);
   Xbox360WirelessController& operator= (const Xbox360WirelessController&);
