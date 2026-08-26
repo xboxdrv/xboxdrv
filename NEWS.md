@@ -21,6 +21,7 @@ historical `NEWS` file.
 * Replace dead pingus.seul.org homepage links with GitHub (issue #258)
 * Hyperkin X91 (2e24:1688) device ID on Xbox One path (issue #247; protocol support still limited)
 * Recognize Play&Charge 045e:028f and explain it cannot transmit input (issue #218)
+* Clarify USB transfer failure logs (status vs length; issue #230)
 * Sync many additional Xbox 360-compatible USB IDs from kernel `xpad`
   (Xbox One / Series IDs still omitted until that path is testable)
 * Fix classic Xbox stick axis offsets and Y invert (align with `xpad`)

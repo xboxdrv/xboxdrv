@@ -325,7 +325,8 @@ USBController::on_write_data(libusb_transfer* transfer)
   }
   else
   {
-    log_error("USB write failure: {}: {}", transfer->length, libusb_error_name(transfer->status));
+    log_error("USB write failure: status={} actual_length={} length={}",
+              libusb_error_name(transfer->status), transfer->actual_length, transfer->length);
   }
 
   m_transfers.erase(transfer);
@@ -379,7 +380,8 @@ USBController::on_read_data(libusb_transfer* transfer)
   {
     // STALL / ERROR / TIMED_OUT: the continuous read loop is dead; treat as disconnect
     // so the slot is freed (GitHub #239) instead of leaving a zombie controller.
-    log_error("USB read failure: {}: {}", transfer->length, libusb_error_name(transfer->status));
+    log_error("USB read failure: status={} actual_length={} length={}",
+              libusb_error_name(transfer->status), transfer->actual_length, transfer->length);
     m_transfers.erase(transfer);
     libusb_free_transfer(transfer);
     if (!m_shutting_down)
