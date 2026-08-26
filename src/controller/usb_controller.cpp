@@ -37,6 +37,7 @@ USBController::USBController(libusb_device* dev) :
   m_handle(nullptr),
   m_transfers(),
   m_interfaces(),
+  m_detached_interfaces(),
   m_shutting_down(false),
   m_usbpath(),
   m_usbid(),
@@ -137,8 +138,25 @@ USBController::~USBController()
     {
       log_debug("libusb_release_interface({}) failed: {}", ifnum, libusb_strerror(ret));
     }
+    // Hand the interface back to the kernel driver (e.g. xpad) when we
+    // detached it with --detach-kernel-driver. Must run after release.
+    if (m_handle && m_detached_interfaces.count(ifnum))
+    {
+      ret = libusb_attach_kernel_driver(m_handle, ifnum);
+      if (ret == LIBUSB_SUCCESS)
+      {
+        log_info("reattached kernel driver on interface {}", ifnum);
+      }
+      else if (ret != LIBUSB_ERROR_NOT_FOUND &&
+               ret != LIBUSB_ERROR_NO_DEVICE &&
+               ret != LIBUSB_ERROR_NOT_SUPPORTED)
+      {
+        log_debug("libusb_attach_kernel_driver({}): {}", ifnum, libusb_strerror(ret));
+      }
+    }
   }
   m_interfaces.clear();
+  m_detached_interfaces.clear();
 
   if (m_handle)
   {
@@ -399,6 +417,14 @@ USBController::usb_claim_interface(int ifnum, bool try_detach)
   assert(m_interfaces.find(ifnum) == m_interfaces.end());
   m_interfaces.insert(ifnum);
 
+  // Remember if a kernel driver was bound so we can reattach on exit.
+  bool kernel_driver_was_active = false;
+  if (try_detach)
+  {
+    int active = libusb_kernel_driver_active(m_handle, ifnum);
+    kernel_driver_was_active = (active == 1);
+  }
+
   int err = unsebu::usb_claim_n_detach_interface(m_handle, ifnum, try_detach);
   if (err != 0)
   {
@@ -406,6 +432,11 @@ USBController::usb_claim_interface(int ifnum, bool try_detach)
     out << " Error couldn't claim the USB interface: " << libusb_strerror(err) << std::endl
         << "Try to run 'rmmod xpad' and then xboxdrv again or start xboxdrv with the option --detach-kernel-driver.";
     throw std::runtime_error(out.str());
+  }
+
+  if (kernel_driver_was_active)
+  {
+    m_detached_interfaces.insert(ifnum);
   }
 }
 

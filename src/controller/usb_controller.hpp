@@ -36,6 +36,8 @@ protected:
 
   std::set<libusb_transfer*> m_transfers;
   std::set<int> m_interfaces;
+  /** Interfaces where we called libusb_detach_kernel_driver (reattach on exit). */
+  std::set<int> m_detached_interfaces;
   bool m_shutting_down;
 
   std::string m_usbpath;
