@@ -1280,16 +1280,34 @@ start=KEY_ESC
       <variablelist>
 
         <varlistentry>
-          <term><option>--autofire BUTTON=FREQUENCY,...</option></term>
+          <term><option>--autofire BUTTON=RATE,...</option> or <option>BUTTON=RATE:DELAY</option></term>
           <listitem>
-            <para>Autofire mapping allows you to let a button automatically fire with a
-              given frequency in miliseconds:</para>
-            
-            <programlisting>$ xboxdrv --autofire A=250</programlisting>
-
-            <para>Combining <option>--autofire</option> with button map allows you to have one button act
-              as autofire while another one, emitting the same signal, acts normally.</para>
-
+            <para>
+              While the given button is held, emit a pulse train instead of a
+              continuous press. <replaceable>RATE</replaceable> is the full
+              period in milliseconds (pressed + released). While autofiring,
+              the button is held for about half that period (at least 50&nbsp;ms)
+              and released for the rest.
+            </para>
+            <para>
+              Optional <replaceable>DELAY</replaceable> (milliseconds) is a
+              solid normal press before pulsing starts. After the delay the
+              button is released briefly, then the pulse train runs. The second
+              number is <emphasis>not</emphasis> pulse width or duty cycle.
+            </para>
+            <programlisting>$ xboxdrv --autofire A=250
+$ xboxdrv --autofire A=250:100</programlisting>
+            <para>
+              The same filter is available on
+              <option>--ui-buttonmap</option> (filter on the Xbox button, left
+              of <literal>=</literal>):
+            </para>
+            <programlisting>$ xboxdrv --ui-buttonmap 'A^autofire:250=BTN_A'</programlisting>
+            <para>
+              Combining <option>--autofire</option> with
+              <option>--buttonmap</option> allows one button to autofire while
+              another still emits the same signal normally:
+            </para>
             <programlisting>$ xboxdrv --autofire B=250 --buttonmap B=A</programlisting>
           </listitem>
         </varlistentry>
@@ -2305,18 +2323,25 @@ send KEY_LEFTSHIFT 0]]></programlisting>
           <term><option>auto</option>, <option>autofire</option>:<replaceable>RATE</replaceable>:<replaceable>DELAY</replaceable></term>
           <listitem>
             <para>
-              The autofire filter allows to repeatatly send button
-              press events when the button is held down. It takes two
-              optional parameters:
+              While the button is held, emit a repeating pulse train instead of
+              a continuous press. Parameters are optional
+              (<literal>autofire</literal>, <literal>autofire:RATE</literal>,
+              or <literal>autofire:RATE:DELAY</literal>).
             </para>
             <para>
-              <replaceable>RATE</replaceable> is the number of
-              miliseconds between button press events.
+              <replaceable>RATE</replaceable> is the full pulse period in
+              milliseconds (default 50). Each shot is pressed for about half
+              that period (at least 50&nbsp;ms) and released for the remainder.
             </para>
             <para>
-              <replaceable>DELAY</replaceable> the amount of
-              miliseconds till the autofire will start, before that
-              delay the button will act as normal.
+              <replaceable>DELAY</replaceable> is milliseconds of normal solid
+              press before pulsing starts (default 0). After the delay the
+              button releases briefly, then the pulse train runs. This is not
+              duty cycle.
+            </para>
+            <para>
+              Apply the filter on the Xbox button name (left-hand side), e.g.
+              <literal>A^autofire:250=BTN_A</literal>, not on the Linux key name.
             </para>
           </listitem>
         </varlistentry>
