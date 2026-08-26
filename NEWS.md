@@ -6,6 +6,7 @@ historical `NEWS` file.
 
 ## xboxdrv 0.9.0-dev (develop)
 
+* Autofire: real pulse high/low phases (min ~50ms high); was one-tick pulses that games missed
 * `--autofire A=RATE` accepts `RATE:DELAY` (start delay ms); not duty cycle
 * ui-buttonmap: later binding for the same key combo overrides earlier (so `A^autofire=BTN_A` replaces default `gamepad.a`)
 * Fix `--autofire`: in-place button filters can clear the held bit (was `value || state`, so pulses never went low)

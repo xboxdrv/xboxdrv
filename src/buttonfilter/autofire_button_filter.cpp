@@ -18,6 +18,7 @@
 
 #include "buttonfilter/autofire_button_filter.hpp"
 
+#include <algorithm>
 #include <sstream>
 
 #include <strut/split.hpp>
@@ -40,65 +41,108 @@ AutofireButtonFilter::from_string(std::string const& str)
     {
       case 0: rate  = str2int(*t); break;
       case 1: delay = str2int(*t); break;
-      default: throw std::runtime_error("to many arguments"); break;
+      default: throw std::runtime_error("autofire filter: too many arguments (RATE or RATE:DELAY)");
     }
+  }
+
+  if (rate <= 0)
+  {
+    throw std::runtime_error("autofire filter: RATE must be > 0");
   }
 
   return new AutofireButtonFilter(rate, delay);
 }
 
 AutofireButtonFilter::AutofireButtonFilter(int rate, int delay) :
-  m_state(false),
-  m_autofire(false),
-  m_rate(rate),
-  m_delay(delay),
+  m_held(false),
+  m_phase(kIdle),
+  m_rate(std::max(1, rate)),
+  m_delay(std::max(0, delay)),
+  m_high(0),
+  m_low(0),
   m_counter(0)
 {
+  // One-tick pulses are invisible to many games and get collapsed when
+  // filter() runs more than once per loop. Keep the button high long enough
+  // to register, then low for the rest of the period.
+  m_high = std::max(50, m_rate / 2);
+  if (m_high >= m_rate)
+  {
+    m_high = std::max(1, m_rate - 1);
+  }
+  m_low = m_rate - m_high;
 }
 
 void
 AutofireButtonFilter::update(int msec_delta)
 {
-  if (m_state)
+  if (!m_held || m_phase == kIdle)
   {
-    m_counter += msec_delta;
+    return;
+  }
 
-    if (m_counter > m_delay)
-    {
-      m_autofire = true;
-    }
+  m_counter += msec_delta;
+
+  switch (m_phase)
+  {
+    case kDelay:
+      if (m_counter >= m_delay)
+      {
+        m_phase = kHigh;
+        m_counter = 0;
+      }
+      break;
+
+    case kHigh:
+      if (m_counter >= m_high)
+      {
+        m_phase = kLow;
+        m_counter = 0;
+      }
+      break;
+
+    case kLow:
+      if (m_counter >= m_low)
+      {
+        m_phase = kHigh;
+        m_counter = 0;
+      }
+      break;
+
+    case kIdle:
+      break;
   }
 }
 
 bool
 AutofireButtonFilter::filter(bool value)
 {
-  m_state = value;
-
   if (!value)
   {
-    m_counter  = 0;
-    m_autofire = false;
+    m_held = false;
+    m_phase = kIdle;
+    m_counter = 0;
     return false;
   }
-  else
-  { // auto fire
-    if (m_autofire)
-    {
-      if (m_counter > m_rate)
-      {
-        m_counter = 0;
-        return true;
-      }
-      else
-      {
-        return false;
-      }
-    }
-    else
-    {
+
+  if (!m_held)
+  {
+    // rising edge
+    m_held = true;
+    m_counter = 0;
+    m_phase = (m_delay > 0) ? kDelay : kHigh;
+  }
+
+  switch (m_phase)
+  {
+    case kDelay:
+    case kHigh:
       return true;
-    }
+    case kLow:
+      return false;
+    case kIdle:
+    default:
+      return true;
   }
 }
 
