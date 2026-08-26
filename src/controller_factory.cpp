@@ -45,10 +45,11 @@ ControllerFactory::create(XPadDevice const& dev_type, libusb_device* dev, Option
   {
     case GAMEPAD_XBOX360_PLAY_N_CHARGE:
       // FIXME: only trigger this error message in single-instance mode, not in daemon mode
-      throw std::runtime_error("The Xbox360 Play&Charge cable is for recharging only, it does not transmit data, "
-                               "thus xboxdrv can't support it. You have to get a wireless receiver:\n"
-                               "\n"
-                               "  * http://www.xbox.com/en-ca/hardware/x/xbox360wirelessgamingreceiver/");
+      throw std::runtime_error(
+        "USB id 045e:028f is the Xbox 360 Play&Charge path: charging only, no gamepad data. "
+        "Use a wireless gaming receiver (045e:0719, 0291, or 02a9) for wireless pads, "
+        "or a wired Xbox 360 controller (045e:028e). Forcing --type xbox360 will fail with "
+        "'couldn't find matching endpoint' because this interface has no input endpoints.");
       break;
 
     case GAMEPAD_XBOX:
@@ -129,10 +130,11 @@ ControllerFactory::create_multiple(XPadDevice const& dev_type, libusb_device* de
   {
     case GAMEPAD_XBOX360_PLAY_N_CHARGE:
       // FIXME: only trigger this error message in single-instance mode, not in daemon mode
-      throw std::runtime_error("The Xbox360 Play&Charge cable is for recharging only, it does not transmit data, "
-                               "thus xboxdrv can't support it. You have to get a wireless receiver:\n"
-                               "\n"
-                               "  * http://www.xbox.com/en-ca/hardware/x/xbox360wirelessgamingreceiver/");
+      throw std::runtime_error(
+        "USB id 045e:028f is the Xbox 360 Play&Charge path: charging only, no gamepad data. "
+        "Use a wireless gaming receiver (045e:0719, 0291, or 02a9) for wireless pads, "
+        "or a wired Xbox 360 controller (045e:028e). Forcing --type xbox360 will fail with "
+        "'couldn't find matching endpoint' because this interface has no input endpoints.");
       break;
 
     case GAMEPAD_XBOX:
