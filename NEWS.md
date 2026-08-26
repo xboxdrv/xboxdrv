@@ -19,6 +19,7 @@ historical `NEWS` file.
 * Unofficial Xbox 360 wireless receiver 045e:02a9 (PR #244)
 * Wireless 360: power-off on slot teardown and long Guide hold (issue #237; disable with --no-auto-poweroff / --no-guide-poweroff)
 * Replace dead pingus.seul.org homepage links with GitHub (issue #258)
+* Hyperkin X91 (2e24:1688) device ID on Xbox One path (issue #247; protocol support still limited)
 * Sync many additional Xbox 360-compatible USB IDs from kernel `xpad`
   (Xbox One / Series IDs still omitted until that path is testable)
 * Fix classic Xbox stick axis offsets and Y invert (align with `xpad`)

@@ -235,6 +235,7 @@ XPadDevice xpad_devices[] = {
 
   { GAMEPAD_XBOXONE_WIRELESS, 0x045e, 0x02d1, "Microsoft X-Box One pad" },
   { GAMEPAD_XBOXONE_WIRELESS, 0x045e, 0x02dd, "Microsoft X-Box One pad" },
+  { GAMEPAD_XBOXONE_WIRELESS, 0x2e24, 0x1688, "Hyperkin X91" },  // issue #247; Xbox One protocol (xpad XTYPE_XBOXONE)
   { GAMEPAD_FIRESTORM,        0x044f, 0xb304, "ThrustMaster, Inc. Firestorm Dual Power" },
   { GAMEPAD_FIRESTORM_VSB,    0x044f, 0xb312, "ThrustMaster, Inc. Firestorm Dual Power (vs b)" },
   { GAMEPAD_T_WIRELESS,       0x044f, 0xd007, "ThrustMaster, Inc. T-Wireless" },
