@@ -11,6 +11,7 @@
 #ifndef HEADER_XBOX360_WIRELESS_CONTROLLER_HPP
 #define HEADER_XBOX360_WIRELESS_CONTROLLER_HPP
 
+#include <chrono>
 #include <libusb.h>
 #include <memory>
 #include <string>
@@ -32,21 +33,34 @@ private:
   std::string m_serial;
   std::unique_ptr<WirelessChatpad> m_chatpad;
 
+  bool m_auto_poweroff;
+  int  m_guide_poweroff_timeout_sec; // 0 = disabled
+  bool m_pad_present;
+  std::chrono::steady_clock::time_point m_guide_down_ts;
+  bool m_guide_held;
+
   Xbox360DefaultNames xbox;
 
 public:
   Xbox360WirelessController(libusb_device* dev, int controller_id,
                             bool chatpad, bool chatpad_no_init, bool chatpad_debug,
-                            bool try_detach);
-  virtual ~Xbox360WirelessController();
+                            bool try_detach,
+                            bool auto_poweroff = true,
+                            int guide_poweroff_timeout_sec = 5);
+  ~Xbox360WirelessController() override;
 
   bool parse(const uint8_t* data, int len, ControllerMessage* msg_out) override;
 
   void set_rumble_real(uint8_t left, uint8_t right) override;
   void set_led_real(uint8_t status) override;
-  uint8_t get_battery_status() const;
+  uint8_t get_battery_status() const { return static_cast<uint8_t>(m_battery_status); }
+
+  /** Send the wireless power-off packet (same as kernel xpad). */
+  void power_off();
 
 private:
+  void maybe_guide_poweroff(bool guide_down);
+
   Xbox360WirelessController (const Xbox360WirelessController&);
   Xbox360WirelessController& operator= (const Xbox360WirelessController&);
 };

@@ -99,6 +99,8 @@ Options::Options() :
   chatpad(false),
   chatpad_no_init(false),
   chatpad_debug(false),
+  wireless_auto_poweroff(true),
+  guide_poweroff_timeout_sec(5),
   headset(false),
   headset_debug(false),
   headset_dump(),

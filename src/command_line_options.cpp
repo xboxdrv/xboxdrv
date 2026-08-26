@@ -233,7 +233,10 @@ CommandLineParser::init_argp(int argc, char** argv)
   m_argp.add_group("Chatpad Options (experimental): ")
     .add_option(OPTION_CHATPAD,       NUL, "chatpad", "",  "Enable Chatpad support (wired USB interface 2, or wireless receiver multiplexing)")
     .add_option(OPTION_CHATPAD_NO_INIT,NUL, "chatpad-no-init", "",  "To not send init code to the Chatpad")
-    .add_option(OPTION_CHATPAD_DEBUG,NUL, "chatpad-debug", "",  "To not send init code to the Chatpad");
+    .add_option(OPTION_CHATPAD_DEBUG,NUL, "chatpad-debug", "",  "To not send init code to the Chatpad")
+    .add_option(OPTION_NO_AUTO_POWEROFF, NUL, "no-auto-poweroff", "", "Do not power off wireless 360 pads when the slot is destroyed")
+    .add_option(OPTION_NO_GUIDE_POWEROFF, NUL, "no-guide-poweroff", "", "Disable power-off on long Guide button hold (wireless 360)")
+    .add_option(OPTION_GUIDE_POWEROFF_TIMEOUT, NUL, "guide-poweroff-timeout", "SEC", "Seconds to hold Guide before wireless power-off (default: 5; 0 disables)");
 
   m_argp.add_group("Headset Options (experimental, Xbox360 USB only): ")
     .add_option(OPTION_HEADSET,       NUL, "headset", "",  "Enable Headset support for Xbox360 USB controller (not working)")
@@ -390,6 +393,8 @@ CommandLineParser::init_ini(Options* opts)
     ("chatpad",         &opts->chatpad)
     ("chatpad-no-init", &opts->chatpad_no_init)
     ("chatpad-debug",   &opts->chatpad_debug)
+    ("wireless-auto-poweroff", &opts->wireless_auto_poweroff)
+    ("guide-poweroff-timeout", &opts->guide_poweroff_timeout_sec)
 
     ("headset",         &opts->headset)
     ("headset-debug",   &opts->headset_debug)
@@ -702,6 +707,22 @@ CommandLineParser::apply_opt(argpp::ParsedOption const& opt, Options& opts)
 
       case OPTION_CHATPAD_DEBUG:
         opts.chatpad_debug = true;
+        break;
+
+      case OPTION_NO_AUTO_POWEROFF:
+        opts.wireless_auto_poweroff = false;
+        break;
+
+      case OPTION_NO_GUIDE_POWEROFF:
+        opts.guide_poweroff_timeout_sec = 0;
+        break;
+
+      case OPTION_GUIDE_POWEROFF_TIMEOUT:
+        opts.guide_poweroff_timeout_sec = str2int(opt.argument);
+        if (opts.guide_poweroff_timeout_sec < 0)
+        {
+          throw std::runtime_error("--guide-poweroff-timeout must be >= 0");
+        }
         break;
 
       case OPTION_HEADSET:

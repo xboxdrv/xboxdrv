@@ -101,6 +101,10 @@ public:
   bool chatpad_no_init;
   bool chatpad_debug;
 
+  // wireless 360 power-off (kernel xpad parity)
+  bool wireless_auto_poweroff;       // power off on slot teardown if pad present
+  int  guide_poweroff_timeout_sec;   // long Guide hold; 0 = disabled
+
   // headset options
   bool headset;
   bool headset_debug;

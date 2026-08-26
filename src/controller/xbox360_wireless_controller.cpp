@@ -18,6 +18,7 @@
 
 #include "controller/xbox360_wireless_controller.hpp"
 
+#include <chrono>
 #include <sstream>
 #include <format>
 
@@ -33,13 +34,20 @@ namespace xboxdrv {
 
 Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int controller_id,
                                                      bool chatpad, bool chatpad_no_init, bool chatpad_debug,
-                                                     bool try_detach) :
+                                                     bool try_detach,
+                                                     bool auto_poweroff,
+                                                     int guide_poweroff_timeout_sec) :
   USBController(dev),
   m_endpoint(),
   m_interface(),
   m_battery_status(),
   m_serial(),
   m_chatpad(),
+  m_auto_poweroff(auto_poweroff),
+  m_guide_poweroff_timeout_sec(guide_poweroff_timeout_sec),
+  m_pad_present(false),
+  m_guide_down_ts(),
+  m_guide_held(false),
   xbox(m_message_descriptor)
 {
   // FIXME: A little bit of a hack
@@ -67,6 +75,67 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
 
 Xbox360WirelessController::~Xbox360WirelessController()
 {
+  // Mirror kernel xpad auto_poweroff on suspend: if the pad is still
+  // linked when we tear down the slot, power it down so it does not
+  // flash and drain batteries while searching for a missing receiver.
+  if (m_auto_poweroff && m_pad_present && !is_disconnected())
+  {
+    power_off();
+  }
+}
+
+void
+Xbox360WirelessController::power_off()
+{
+  // Same 12-byte packet as kernel xpad360w_poweroff_controller().
+  uint8_t cmd[] = {
+    0x00, 0x00, 0x08, 0xc0,
+    0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00
+  };
+  log_info("wireless power-off");
+  usb_write(m_endpoint, cmd, sizeof(cmd));
+  m_pad_present = false;
+  m_guide_held = false;
+}
+
+void
+Xbox360WirelessController::maybe_guide_poweroff(bool guide_down)
+{
+  if (m_guide_poweroff_timeout_sec <= 0)
+  {
+    m_guide_held = false;
+    return;
+  }
+
+  using clock = std::chrono::steady_clock;
+  if (guide_down)
+  {
+    if (!m_guide_held)
+    {
+      m_guide_held = true;
+      m_guide_down_ts = clock::now();
+    }
+    else
+    {
+      auto held = std::chrono::duration_cast<std::chrono::seconds>(
+        clock::now() - m_guide_down_ts).count();
+      if (held >= m_guide_poweroff_timeout_sec)
+      {
+        log_info("guide held {}s — powering off wireless controller", held);
+        power_off();
+        set_active(false);
+        if (m_chatpad)
+        {
+          m_chatpad->set_controller_present(false);
+        }
+      }
+    }
+  }
+  else
+  {
+    m_guide_held = false;
+  }
 }
 
 void
@@ -104,6 +173,7 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
     // Any sign of a live pad: attach to a daemon slot (if still inactive)
     // and start chatpad keep-alives. Battery-cycle was often needed only
     // because we required a fresh 0x08/0x80 and exact len==29 reports.
+    m_pad_present = true;
     set_active(true);
     if (m_chatpad)
     {
@@ -120,6 +190,8 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
     {
       log_info("connection status: nothing");
       msg_out->clear();
+      m_pad_present = false;
+      m_guide_held = false;
       set_active(false);
       if (m_chatpad)
       {
@@ -200,7 +272,9 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
 
       msg_out->set_key(xbox.btn_lb, unpack::bit(ptr+3, 0));
       msg_out->set_key(xbox.btn_rb, unpack::bit(ptr+3, 1));
-      msg_out->set_key(xbox.btn_guide, unpack::bit(ptr+3, 2));
+      bool const guide_down = unpack::bit(ptr+3, 2);
+      msg_out->set_key(xbox.btn_guide, guide_down);
+      maybe_guide_poweroff(guide_down);
 
       msg_out->set_key(xbox.btn_a, unpack::bit(ptr+3, 4));
       msg_out->set_key(xbox.btn_b, unpack::bit(ptr+3, 5));

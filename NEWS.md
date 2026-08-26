@@ -17,6 +17,7 @@ historical `NEWS` file.
 * Accept dpad aliases up/down/left/right and DPAD_* (PR #227; canonical name is already dpad_up)
 * GPD Win 2 controller ID 0079:18d4 (PR #251; also present via xpad sync)
 * Unofficial Xbox 360 wireless receiver 045e:02a9 (PR #244)
+* Wireless 360: power-off on slot teardown and long Guide hold (issue #237; disable with --no-auto-poweroff / --no-guide-poweroff)
 * Sync many additional Xbox 360-compatible USB IDs from kernel `xpad`
   (Xbox One / Series IDs still omitted until that path is testable)
 * Fix classic Xbox stick axis offsets and Y invert (align with `xpad`)
