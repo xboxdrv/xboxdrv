@@ -159,6 +159,8 @@ EvdevController::EvdevController(std::string const& filename,
   m_name(),
   m_grab(grab),
   m_debug(debug),
+  m_ff_supported(false),
+  m_ff_effect_id(-1),
   m_absmap(),
   m_relmap(),
   m_keymap(),
@@ -166,7 +168,13 @@ EvdevController::EvdevController(std::string const& filename,
   m_event_buffer(),
   m_msg()
 {
-  m_fd = open(filename.c_str(), O_RDONLY | O_NONBLOCK);
+  // Prefer O_RDWR so FF effects can be uploaded to the source device
+  // (issue #243). Fall back to read-only when the node rejects write.
+  m_fd = open(filename.c_str(), O_RDWR | O_NONBLOCK);
+  if (m_fd == -1)
+  {
+    m_fd = open(filename.c_str(), O_RDONLY | O_NONBLOCK);
+  }
 
   if (m_fd == -1)
   {
@@ -276,6 +284,36 @@ EvdevController::EvdevController(std::string const& filename,
     }
   }
 
+  { // Probe force-feedback on the source device (rumble forwarding)
+    unsigned long ev_bits[NBITS(EV_MAX)];
+    unsigned long ff_bits[NBITS(FF_MAX)];
+    memset(ev_bits, 0, sizeof(ev_bits));
+    memset(ff_bits, 0, sizeof(ff_bits));
+
+    if (ioctl(m_fd, EVIOCGBIT(0, EV_MAX), ev_bits) >= 0 &&
+        test_bit(EV_FF, ev_bits) &&
+        ioctl(m_fd, EVIOCGBIT(EV_FF, FF_MAX), ff_bits) >= 0 &&
+        test_bit(FF_RUMBLE, ff_bits))
+    {
+      // Need write access; O_RDONLY fallback leaves m_ff_supported false.
+      int flags = fcntl(m_fd, F_GETFL);
+      if (flags >= 0 && (flags & O_ACCMODE) != O_RDONLY)
+      {
+        m_ff_supported = true;
+        log_info("evdev: source device supports FF_RUMBLE, will forward rumble");
+      }
+      else
+      {
+        log_info("evdev: source device has FF_RUMBLE but fd is read-only; "
+                 "rumble forwarding disabled");
+      }
+    }
+    else if (m_debug)
+    {
+      log_debug("evdev: source device has no FF_RUMBLE (rumble will not be forwarded)");
+    }
+  }
+
   { // start g_io_channel
     m_io_channel = g_io_channel_unix_new(m_fd);
 
@@ -296,20 +334,103 @@ EvdevController::EvdevController(std::string const& filename,
 
 EvdevController::~EvdevController()
 {
+  remove_ff_effect();
+
+  if (m_grab)
+  {
+    ioctl(m_fd, EVIOCGRAB, 0);
+  }
+
   g_io_channel_unref(m_io_channel);
   close(m_fd);
 }
 
 void
+EvdevController::stop_ff_effect()
+{
+  if (m_ff_effect_id < 0)
+  {
+    return;
+  }
+
+  struct input_event stop;
+  memset(&stop, 0, sizeof(stop));
+  stop.type  = EV_FF;
+  stop.code  = static_cast<__u16>(m_ff_effect_id);
+  stop.value = 0;
+  if (write(m_fd, &stop, sizeof(stop)) < 0 && m_debug)
+  {
+    log_debug("evdev: FF stop write failed: {}", strerror(errno));
+  }
+}
+
+void
+EvdevController::remove_ff_effect()
+{
+  if (m_ff_effect_id < 0)
+  {
+    return;
+  }
+
+  stop_ff_effect();
+  if (ioctl(m_fd, EVIOCRMFF, m_ff_effect_id) < 0 && m_debug)
+  {
+    log_debug("evdev: EVIOCRMFF failed: {}", strerror(errno));
+  }
+  m_ff_effect_id = -1;
+}
+
+void
 EvdevController::set_rumble_real(uint8_t left, uint8_t right)
 {
-  // not implemented
+  // Forward uinput FF (via ControllerSlotConfig callback) to the real
+  // hardware node. Requires --force-feedback on the virtual device and
+  // FF_RUMBLE on the source (issue #243).
+  if (!m_ff_supported)
+  {
+    return;
+  }
+
+  if (left == 0 && right == 0)
+  {
+    stop_ff_effect();
+    return;
+  }
+
+  struct ff_effect effect;
+  memset(&effect, 0, sizeof(effect));
+  effect.type = FF_RUMBLE;
+  effect.id = m_ff_effect_id; // -1 uploads a new effect; else update in place
+  // xboxdrv uses 0..255; kernel magnitudes are 0..0xffff
+  effect.u.rumble.strong_magnitude = static_cast<__u16>(left)  * 257;
+  effect.u.rumble.weak_magnitude   = static_cast<__u16>(right) * 257;
+  // Long replay; magnitude updates arrive as new set_rumble_real calls.
+  effect.replay.length = 0xffff;
+  effect.replay.delay  = 0;
+
+  if (ioctl(m_fd, EVIOCSFF, &effect) < 0)
+  {
+    log_warn("evdev: EVIOCSFF failed: {} (rumble not forwarded)", strerror(errno));
+    return;
+  }
+  m_ff_effect_id = effect.id;
+
+  struct input_event play;
+  memset(&play, 0, sizeof(play));
+  play.type  = EV_FF;
+  play.code  = static_cast<__u16>(m_ff_effect_id);
+  play.value = 1; // play
+  if (write(m_fd, &play, sizeof(play)) < 0)
+  {
+    log_warn("evdev: FF play write failed: {}", strerror(errno));
+  }
 }
 
 void
 EvdevController::set_led_real(uint8_t status)
 {
-  // not implemented
+  // LED forwarding is device-specific (EV_LED codes differ); leave unset.
+  (void)status;
 }
 
 bool

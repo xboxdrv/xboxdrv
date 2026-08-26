@@ -897,6 +897,12 @@ start=KEY_ESC
               controller slots you have to enable force feedback for
               each slot separately.
             </para>
+            <para>
+              With <option>--evdev</option>, force feedback on the virtual
+              device is forwarded to the source event node when that device
+              advertises <constant>FF_RUMBLE</constant> (issue #243). Devices
+              without rumble support are unaffected.
+            </para>
           </listitem>
         </varlistentry>
 

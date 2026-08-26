@@ -6,6 +6,8 @@ historical `NEWS` file.
 
 ## xboxdrv 0.9.0-dev (develop)
 
+* Evdev: forward rumble (FF_RUMBLE) to the source device when
+  `--force-feedback` is enabled (issue #243)
 * Modern C++ toolchain: C++23, CMake, vendored helpers under
   `external/` (no Boost, no `{fmt}`; formatting via `<format>`)
 * Versioning from top-level `VERSION`; development builds append

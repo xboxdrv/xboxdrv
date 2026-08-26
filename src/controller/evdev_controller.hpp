@@ -59,6 +59,12 @@ private:
   bool m_grab;
   bool m_debug;
 
+  /** True when the source device advertises EV_FF + FF_RUMBLE and the
+      fd was opened read-write so effects can be uploaded. */
+  bool m_ff_supported;
+  /** Kernel effect id from EVIOCSFF, or -1 if none uploaded yet. */
+  int m_ff_effect_id;
+
   typedef std::map<int, int> EvMap;
   EvMap m_absmap;
   EvMap m_relmap;
@@ -88,6 +94,8 @@ private:
 
   bool parse(const struct input_event& ev, ControllerMessage& msg_inout) const;
   void read_data_to_buffer();
+  void stop_ff_effect();
+  void remove_ff_effect();
 
   gboolean on_read_data(GIOChannel* source,
                         GIOCondition condition);

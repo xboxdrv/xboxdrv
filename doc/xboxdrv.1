@@ -646,6 +646,12 @@ to get rid of.
 When using xboxdrv in daemon mode with multiple
 controller slots you have to enable force feedback for
 each slot separately.
+
+With \*(T<\fB\-\-evdev\fR\*(T>, force feedback on the
+virtual device is forwarded to the source event node when
+that device advertises FF_RUMBLE (issue #243). Devices
+without rumble support are unaffected.
+
 .TP 
 \*(T<\fB\-\-ff\-device\fR\*(T> \fIDEVICEID\fR
 Select to which virtual device the force-feedback
