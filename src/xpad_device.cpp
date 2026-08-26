@@ -246,6 +246,8 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_LOGITECH_F310,    0x046d, 0xc21d, "Logitech Gamepad F310" },
 
   { GAMEPAD_PLAYSTATION3_USB, 0x054c, 0x0268, "PLAYSTATION(R)3 Controller" },
+  { GAMEPAD_STEAM,            0x28de, 0x1102, "Valve Software Steam Controller" },  // experimental PR #222
+  { GAMEPAD_STEAM_WIRELESS,   0x28de, 0x1142, "Valve Software Steam Controller (wireless)" },
 
   { GAMEPAD_HAMA_CRUX,        0x1038, 0x0310, "Hama cruX Gaming Keyboard" }
 };

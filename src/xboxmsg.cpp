@@ -72,6 +72,12 @@ std::string gamepadtype_to_string(GamepadType const& type)
     case GAMEPAD_PLAYSTATION3_USB:
       return "playstation3-usb";
 
+    case GAMEPAD_STEAM:
+      return "steam";
+
+    case GAMEPAD_STEAM_WIRELESS:
+      return "steam-wireless";
+
     case GAMEPAD_GENERIC_USB:
       return "generic-usb";
 
@@ -110,6 +116,8 @@ std::string gamepadtype_to_macro_string(GamepadType const& type)
     case GAMEPAD_SAITEK_P3600: return "GAMEPAD_SAITEK_P3600";
     case GAMEPAD_XEOX: return "GAMEPAD_XEOX";
     case GAMEPAD_PLAYSTATION3_USB: return "GAMEPAD_PLAYSTATION3_USB";
+    case GAMEPAD_STEAM: return "GAMEPAD_STEAM";
+    case GAMEPAD_STEAM_WIRELESS: return "GAMEPAD_STEAM_WIRELESS";
     case GAMEPAD_PLAYSTATION3_BLUETOOTH: return "GAMEPAD_PLAYSTATION3_BLUETOOTH";
     case GAMEPAD_LOGITECH_F310: return "GAMEPAD_LOGITECH_F310";
     case GAMEPAD_GENERIC_USB: return "GAMEPAD_GENERIC_USB";
@@ -166,6 +174,10 @@ std::ostream& operator<<(std::ostream& out, GamepadType const& type)
 
     case GAMEPAD_PLAYSTATION3_USB:
       return out << "Playstation 3 USB";
+    case GAMEPAD_STEAM:
+      return out << "Steam Controller";
+    case GAMEPAD_STEAM_WIRELESS:
+      return out << "Steam Controller (wireless)";
 
     case GAMEPAD_PLAYSTATION3_BLUETOOTH:
       return out << "Playstation 3 Bluetooth";

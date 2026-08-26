@@ -26,6 +26,7 @@ historical `NEWS` file.
 * Man page: --evdev note about hiding source /dev/input/eventX (issue #205)
 * examples: DualShock 4 Bluetooth --evdev config (PR #75, Lauri Niskanen)
 * evdev-keymap: button chords and key→axis for keyboard→pad (inspired by PR #101)
+* Experimental Steam Controller backend (wired 28de:1102, wireless 28de:1142; PR #222)
 * Sync many additional Xbox 360-compatible USB IDs from kernel `xpad`
   (Xbox One / Series IDs still omitted until that path is testable)
 * Fix classic Xbox stick axis offsets and Y invert (align with `xpad`)

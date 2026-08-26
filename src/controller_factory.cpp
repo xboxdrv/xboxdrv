@@ -29,6 +29,7 @@
 #include "controller/saitek_p2500_controller.hpp"
 #include "controller/t_wireless_controller.hpp"
 #include "controller/saitek_p3600_controller.hpp"
+#include "controller/steam_controller.hpp"
 #include "controller/xeox_controller.hpp"
 #include "controller/wiimote_controller.hpp"
 #include "controller/xbox360_controller.hpp"
@@ -96,6 +97,12 @@ ControllerFactory::create(XPadDevice const& dev_type, libusb_device* dev, Option
 
     case GAMEPAD_PLAYSTATION3_USB:
       return ControllerPtr(new Playstation3USBController(dev, opts.detach_kernel_driver));
+
+    case GAMEPAD_STEAM:
+      return ControllerPtr(new SteamController(dev, 0, opts.detach_kernel_driver));
+
+    case GAMEPAD_STEAM_WIRELESS:
+      return ControllerPtr(new SteamController(dev, static_cast<uint8_t>(opts.wireless_id + 1), opts.detach_kernel_driver));
 
 #ifdef HAVE_CWIID
     case GAMEPAD_WIIMOTE:
@@ -194,6 +201,15 @@ ControllerFactory::create_multiple(XPadDevice const& dev_type, libusb_device* de
 
     case GAMEPAD_PLAYSTATION3_USB:
       lst.push_back(ControllerPtr(new Playstation3USBController(dev, opts.detach_kernel_driver)));
+      break;
+
+    case GAMEPAD_STEAM:
+      lst.push_back(ControllerPtr(new SteamController(dev, 0, opts.detach_kernel_driver)));
+      break;
+
+    case GAMEPAD_STEAM_WIRELESS:
+      for (int id = 1; id <= 4; ++id)
+        lst.push_back(ControllerPtr(new SteamController(dev, static_cast<uint8_t>(id), opts.detach_kernel_driver)));
       break;
 
 #ifdef HAVE_CWIID
