@@ -21,12 +21,18 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <string.h>
 
+#include <strut/split.hpp>
+#include <logmich/log.hpp>
+
 #include "controller_message.hpp"
 #include "evdev_helper.hpp"
-#include <logmich/log.hpp>
+#include "raise_exception.hpp"
+#include "util/string.hpp"
 
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
@@ -36,6 +42,110 @@
 #define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
 
 namespace xboxdrv {
+
+namespace {
+
+/** Short aliases used in configs and older examples. */
+std::string expand_button_alias(std::string name)
+{
+  if (name == "du") return "dpad_up";
+  if (name == "dd") return "dpad_down";
+  if (name == "dl") return "dpad_left";
+  if (name == "dr") return "dpad_right";
+  if (name == "tl") return "thumb_l";
+  if (name == "tr") return "thumb_r";
+  if (name == "lb" || name == "white") return name == "white" ? "lb" : name;
+  if (name == "rb" || name == "black") return name == "black" ? "rb" : name;
+  return name;
+}
+
+} // namespace
+
+std::string
+EvdevController::normalize_target_name(std::string name)
+{
+  // trim
+  auto not_space = [](unsigned char c) { return !std::isspace(c); };
+  name.erase(name.begin(), std::find_if(name.begin(), name.end(), not_space));
+  name.erase(std::find_if(name.rbegin(), name.rend(), not_space).base(), name.end());
+
+  // strip common Linux-style prefixes from the RHS
+  auto starts_with = [&](char const* p) {
+    size_t n = strlen(p);
+    return name.size() >= n && name.compare(0, n, p) == 0;
+  };
+  if (starts_with("BTN_") || starts_with("btn_"))
+    name = name.substr(4);
+  else if (starts_with("ABS_") || starts_with("abs_"))
+    name = name.substr(4);
+  else if (starts_with("KEY_") || starts_with("key_"))
+    name = name.substr(4);
+
+  std::transform(name.begin(), name.end(), name.begin(),
+                 [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+  return expand_button_alias(name);
+}
+
+EvdevKeyBinding
+EvdevController::parse_key_binding(std::string const& value)
+{
+  EvdevKeyBinding binding;
+
+  // Axis form: name:press[:release]  (no '+' in the value)
+  if (value.find('+') == std::string::npos && value.find(':') != std::string::npos)
+  {
+    std::vector<std::string> parts = strut::split(value, ':');
+    if (parts.size() < 2 || parts.size() > 3)
+    {
+      raise_exception(std::runtime_error,
+                      "evdev-keymap axis binding must be name:press or name:press:release, got \""
+                      + value + "\"");
+    }
+
+    std::string name = normalize_target_name(parts[0]);
+    if (name.empty())
+    {
+      raise_exception(std::runtime_error, "evdev-keymap: empty axis name in \"" + value + "\"");
+    }
+
+    EvdevKeyBinding::Abs abs;
+    abs.abs = m_message_descriptor.abs().put(name);
+    abs.press = str2int(parts[1]);
+    if (parts.size() == 3)
+    {
+      abs.release = str2int(parts[2]);
+      abs.on_release = true;
+    }
+    else
+    {
+      abs.release = 0;
+      abs.on_release = false;
+    }
+    binding.abs = abs;
+    return binding;
+  }
+
+  // Button chord: name or name+name+...
+  std::vector<std::string> tokens = strut::split(value, '+');
+  if (tokens.empty())
+  {
+    raise_exception(std::runtime_error, "evdev-keymap: empty binding");
+  }
+
+  for (std::string const& token : tokens)
+  {
+    std::string name = normalize_target_name(token);
+    if (name.empty())
+    {
+      raise_exception(std::runtime_error,
+                      "evdev-keymap: empty button name in \"" + value + "\"");
+    }
+    binding.keys.push_back(m_message_descriptor.key().put(name));
+  }
+
+  return binding;
+}
 
 EvdevController::EvdevController(std::string const& filename,
                                  const std::map<int, std::string>& absmap,
@@ -49,8 +159,8 @@ EvdevController::EvdevController(std::string const& filename,
   m_grab(grab),
   m_debug(debug),
   m_absmap(),
-  m_keymap(),
   m_relmap(),
+  m_keymap(),
   m_absinfo(ABS_MAX),
   m_event_buffer(),
   m_msg()
@@ -114,8 +224,8 @@ EvdevController::EvdevController(std::string const& filename,
         }
         else
         {
-          // install custom user supplied mapping
-          m_absmap[i] = m_message_descriptor.abs().put("evdev." + it->second);
+          // user mapping → canonical name (x1, y1, lt, …)
+          m_absmap[i] = m_message_descriptor.abs().put(normalize_target_name(it->second));
         }
       }
     }
@@ -129,13 +239,11 @@ EvdevController::EvdevController(std::string const& filename,
         std::map<int, std::string>::const_iterator it = relmap.find(i);
         if (it == relmap.end())
         {
-          // install default mapping
           m_relmap[i] = m_message_descriptor.rel().put("evdev." + rel2str(i));
         }
         else
         {
-          // install custom user supplied mapping
-          m_relmap[i] = m_message_descriptor.rel().put("evdev." + it->second);
+          m_relmap[i] = m_message_descriptor.rel().put(normalize_target_name(it->second));
         }
       }
     }
@@ -149,13 +257,14 @@ EvdevController::EvdevController(std::string const& filename,
         std::map<int, std::string>::const_iterator it = keymap.find(i);
         if (it == keymap.end())
         {
-          // install default mapping
-          m_keymap[i] = m_message_descriptor.key().put("evdev." + key2str(i));
+          // default: one button channel named after the Linux key
+          EvdevKeyBinding b;
+          b.keys.push_back(m_message_descriptor.key().put("evdev." + key2str(i)));
+          m_keymap[i] = b;
         }
         else
         {
-          // install custom user supplied mapping
-          m_keymap[i] = m_message_descriptor.key().put("evdev." + it->second);
+          m_keymap[i] = parse_key_binding(it->second);
         }
       }
     }
@@ -164,7 +273,6 @@ EvdevController::EvdevController(std::string const& filename,
   { // start g_io_channel
     m_io_channel = g_io_channel_unix_new(m_fd);
 
-    // set encoding to binary
     GError* error = NULL;
     if (g_io_channel_set_encoding(m_io_channel, NULL, &error) != G_IO_STATUS_NORMAL)
     {
@@ -222,8 +330,6 @@ EvdevController::parse(const struct input_event& ev, ControllerMessage& msg_inou
         break;
 
       case EV_MSC:
-        // FIXME: no idea what those are good for, but they pop up
-        // after key presses (something with scancodes maybe?!)
         break;
 
       default:
@@ -236,18 +342,51 @@ EvdevController::parse(const struct input_event& ev, ControllerMessage& msg_inou
   {
     case EV_KEY:
       {
-        EvMap::const_iterator it = m_keymap.find(ev.code);
-        if (it != m_keymap.end())
-        {
-          msg_inout.set_key(it->second, static_cast<bool>(ev.value));
-          return true;
-        }
-        else
+        auto it = m_keymap.find(ev.code);
+        if (it == m_keymap.end())
         {
           return false;
         }
+
+        EvdevKeyBinding const& b = it->second;
+        // Linux: 0 = release, 1 = press, 2 = autorepeat — treat non-zero as down
+        bool const pressed = (ev.value != 0);
+
+        for (int key : b.keys)
+        {
+          msg_inout.set_key(key, pressed);
+        }
+
+        if (b.abs)
+        {
+          EvdevKeyBinding::Abs const& a = *b.abs;
+          if (pressed)
+          {
+            // stick range matches wired 360 reports; triggers often 0..255
+            int amin = -32768;
+            int amax = 32767;
+            if (a.press >= 0 && a.press <= 255 && a.release >= 0 && a.release <= 255)
+            {
+              amin = 0;
+              amax = 255;
+            }
+            msg_inout.set_abs(a.abs, a.press, amin, amax);
+          }
+          else if (a.on_release)
+          {
+            int amin = -32768;
+            int amax = 32767;
+            if (a.press >= 0 && a.press <= 255 && a.release >= 0 && a.release <= 255)
+            {
+              amin = 0;
+              amax = 255;
+            }
+            msg_inout.set_abs(a.abs, a.release, amin, amax);
+          }
+        }
+
+        return true;
       }
-      break;
 
     case EV_ABS:
       {
@@ -258,11 +397,7 @@ EvdevController::parse(const struct input_event& ev, ControllerMessage& msg_inou
           msg_inout.set_abs(it->second, ev.value, absinfo.minimum, absinfo.maximum);
           return true;
         }
-        else
-        {
-          return false;
-        }
-        break;
+        return false;
       }
 
     case EV_REL:
@@ -273,24 +408,17 @@ EvdevController::parse(const struct input_event& ev, ControllerMessage& msg_inou
           msg_inout.set_rel(it->second, ev.value);
           return true;
         }
-        else
-        {
-          return false;
-        }
+        return false;
       }
-      break;
 
     default:
-      // not supported event
       return false;
-      break;
   }
 }
 
 gboolean
 EvdevController::on_read_data(GIOChannel* source, GIOCondition condition)
 {
-  // read data
   struct input_event ev[128];
   ssize_t rd = 0;
   while((rd = ::read(m_fd, ev, sizeof(struct input_event) * 128)) > 0)

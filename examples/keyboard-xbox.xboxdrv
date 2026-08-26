@@ -1,0 +1,47 @@
+# Keyboard → Xbox 360 pad (evdev)
+# ================================
+#
+# Emulate a gamepad from a keyboard for games that ignore key input.
+# Requires the enhanced evdev-keymap grammar (button chords and key→axis).
+#
+#   xboxdrv --evdev /dev/input/by-id/…-event-kbd \
+#           --config examples/keyboard-xbox.xboxdrv
+#
+# Hide the real keyboard from the game if needed (grab is on by default).
+# See man xboxdrv (--evdev / --evdev-keymap).
+
+[xboxdrv]
+evdev-debug = false
+evdev-grab = true
+mimic-xpad = true
+
+[evdev-keymap]
+# Face / shoulders / menu
+KEY_ENTER      = a
+KEY_BACKSPACE  = b
+KEY_Q          = x
+KEY_E          = y
+KEY_LEFTSHIFT = lb
+KEY_LEFTCTRL   = rb
+KEY_TAB        = back
+KEY_ESC        = start
+KEY_SPACE      = guide
+
+# D-pad (optional chord example: keypad 1 = down+left)
+KEY_UP         = dpad_up
+KEY_DOWN       = dpad_down
+KEY_LEFT       = dpad_left
+KEY_RIGHT      = dpad_right
+KEY_KP1        = dpad_down+dpad_left
+
+# Left stick via WASD (press value : release value)
+KEY_W          = y1:-32768:0
+KEY_S          = y1:32767:0
+KEY_A          = x1:-32768:0
+KEY_D          = x1:32767:0
+
+# Triggers as axes 0..255
+KEY_Z          = lt:255:0
+KEY_C          = rt:255:0
+
+# EOF #

@@ -442,13 +442,34 @@ left trigger and the downward movement to the right
 trigger. 
 .TP 
 \*(T<\fB\-\-evdev\-keymap\fR\*(T> \fIKEYMAP\fR
-Sets how evdev events are mapped to Xbox controller
-events. An example configuration would look like this:
+Sets how Linux key events are mapped into the internal
+Xbox controller message. Simple 1:1 example:
 
 .nf
 \*(T<\-\-evdev\-keymap BTN_TRIGGER=a,BTN_THUMB=b,BTN_THUMB2=x\*(T>
 .fi
 
+Extended forms (keyboard as pad):
+
+.IP \(bu 2
+\fIname\fR or \fIname+name+…\fR — one key sets one or more
+buttons (chord). Names are xboxdrv symbols (\*(T<\fIa\fR\*(T>,
+\*(T<\fIdpad_up\fR\*(T>, …), case-insensitive; optional
+\*(T<\fIBTN_\fR\*(T>/\*(T<\fIABS_\fR\*(T> prefixes are stripped.
+.IP \(bu 2
+\fIname:press\fR — on key down set axis \fIname\fR to
+\fIpress\fR; key up leaves the axis unchanged.
+.IP \(bu 2
+\fIname:press:release\fR — also set the axis to
+\fIrelease\fR on key up (use \*(T<\fI0\fR\*(T> to center).
+
+.nf
+\*(T<KEY_S=dpad_up+dpad_left\*(T>
+\*(T<KEY_W=y1:\-32768:0\*(T>
+\*(T<KEY_Z=lt:255:0\*(T>
+.fi
+
+See \*(T<\fIexamples/keyboard\-xbox.xboxdrv\fR\*(T>.
 \fBxboxdrv\fR will output on start a full
 list of event names that the given event device
 supports.

@@ -22,12 +22,32 @@
 #include <linux/input.h>
 #include <string>
 #include <glib.h>
+#include <map>
+#include <optional>
 #include <queue>
+#include <vector>
 
 #include "controller.hpp"
 #include "controller_message.hpp"
 
 namespace xboxdrv {
+
+/** How a single Linux EV_KEY event is applied to the internal message. */
+struct EvdevKeyBinding
+{
+  /** Button channels to set true on press / false on release. */
+  std::vector<int> keys;
+
+  struct Abs
+  {
+    int abs = -1;
+    int press = 0;
+    int release = 0;
+    /** If false, key-up does not change the axis (PR #101 KEY_DOWN style). */
+    bool on_release = false;
+  };
+  std::optional<Abs> abs;
+};
 
 class EvdevController : public Controller
 {
@@ -41,8 +61,8 @@ private:
 
   typedef std::map<int, int> EvMap;
   EvMap m_absmap;
-  EvMap m_keymap;
   EvMap m_relmap;
+  std::map<int, EvdevKeyBinding> m_keymap;
 
   std::vector<struct input_absinfo> m_absinfo;
   typedef std::queue<struct input_event> EventBuffer;
@@ -63,6 +83,9 @@ public:
   void set_led_real(uint8_t status) override;
 
 private:
+  static std::string normalize_target_name(std::string name);
+  EvdevKeyBinding parse_key_binding(std::string const& value);
+
   bool parse(const struct input_event& ev, ControllerMessage& msg_inout) const;
   void read_data_to_buffer();
 
