@@ -1,6 +1,7 @@
 /*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmail.com>
+**  Copyright (C) 2014 Jan Hambrecht <jaham@gmx.net>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,45 +17,38 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXMSG_HPP
-#define HEADER_XBOXMSG_HPP
+#ifndef HEADER_XBOXDRV_XEOX_CONTROLLER_HPP
+#define HEADER_XBOXDRV_XEOX_CONTROLLER_HPP
 
-#include <iosfwd>
+#include <libusb.h>
+
+#include "controller/usb_controller.hpp"
+#include "xbox360_default_names.hpp"
 
 namespace xboxdrv {
 
-enum GamepadType {
-  GAMEPAD_UNKNOWN,
-  GAMEPAD_XBOX,
-  GAMEPAD_XBOX_MAT,
-  GAMEPAD_XBOX360,
-  GAMEPAD_XBOX360_WIRELESS,
-  GAMEPAD_XBOX360_PLAY_N_CHARGE,
-  GAMEPAD_XBOX360_GUITAR,
-  GAMEPAD_XBOXONE_WIRELESS,
-  GAMEPAD_FIRESTORM,
-  GAMEPAD_FIRESTORM_VSB,
-  GAMEPAD_SAITEK_P2500,
-  GAMEPAD_SAITEK_P3600,
-  GAMEPAD_XEOX,
-  GAMEPAD_PLAYSTATION3_USB,
-  GAMEPAD_PLAYSTATION3_BLUETOOTH,
-  GAMEPAD_LOGITECH_F310,
-  GAMEPAD_GENERIC_USB,
-  GAMEPAD_WIIMOTE,
-  GAMEPAD_HAMA_CRUX
+/** Speedlink Xeox USB (SL-6555-SBK-A), USB ID 1a34:0802 — ACRUX HID report. */
+class XeoxController : public USBController
+{
+private:
+  int m_endpoint_in;
+  int m_endpoint_out;
+
+  Xbox360DefaultNames xbox;
+
+public:
+  XeoxController(libusb_device* dev, bool try_detach);
+  ~XeoxController() override;
+
+  void set_rumble_real(uint8_t left, uint8_t right) override;
+  void set_led_real(uint8_t status) override;
+
+  bool parse(uint8_t const* data, int len, ControllerMessage* msg_out) override;
+
+private:
+  XeoxController(const XeoxController&);
+  XeoxController& operator=(const XeoxController&);
 };
-
-enum XboxMsgType {
-  XBOX_MSG_XBOX,
-  XBOX_MSG_XBOX360,
-  XBOX_MSG_PS3USB
-};
-
-std::ostream& operator<<(std::ostream& out, const GamepadType& type);
-
-std::string gamepadtype_to_string(const GamepadType& type);
-std::string gamepadtype_to_macro_string(const GamepadType& type);
 
 } // namespace xboxdrv
 
