@@ -171,7 +171,7 @@ historical `NEWS` file.
 
 ## xboxdrv 0.6.5 (22/Jan/2011)
 
-* fixed incorrect variable initalisation, leading to button presses
+* fixed incorrect variable initialisation, leading to button presses
   getting lost sometimes
 * fixed initialisation issue for Chatpad connected to controllers with
   bcdDevice 0x0114

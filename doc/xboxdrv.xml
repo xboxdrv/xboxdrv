@@ -105,7 +105,7 @@
         <varlistentry>
           <term><option>--debug</option></term>
           <listitem>
-            <para>Print even more verbose messages then <option>--verbose</option>.</para>
+            <para>Print even more verbose messages than <option>--verbose</option>.</para>
           </listitem>
         </varlistentry>
 
@@ -147,7 +147,7 @@
             <para>
               This option is deprecated,
               use <citerefentry><refentrytitle>chrt</refentrytitle><manvolnum>1</manvolnum></citerefentry>
-              instead to achive the same effect.
+              instead to achieve the same effect.
             </para>
           </listitem>
         </varlistentry>
@@ -267,7 +267,7 @@
               Key names have for most part the same name as command
               line options. Command line options that take a list of
               input mappings (--ui-buttonmap, --ui-axismap,
-              --evdev-absmap, ...) can be split of into their own
+              --evdev-absmap, ...) can be split off into their own
               section for better readability.
             </para>
             <para>
@@ -752,7 +752,7 @@ start=KEY_ESC
             <programlisting>$ xboxdrv --rumble-gain 50%</programlisting>
 
             <para>
-              Values larger then 100% are possible as well and will
+              Values larger than 100% are possible as well and will
               amplify small rumble commands, rumble commands already
               at the maximum will stay unchanged.
             </para>
@@ -1284,8 +1284,8 @@ start=KEY_ESC
 
             <para>
               A value of 0 gives you the default linear sensitivity,
-              values larger then 0 will give you higher sensitivity,
-              while values smaller then 0 will give you lower
+              values larger than 0 will give you higher sensitivity,
+              while values smaller than 0 will give you lower
               sensitivity. Sensitivity values in the range of [-1, 1]
               will generally give good results, everything beyond that
               won't be of much practical use.
@@ -1427,7 +1427,7 @@ pos = (1.0f - (1.0f - pos) ** t) ** (1 / t);]]></programlisting>
               beyond 1. This means that when you have the controller
               at the top/left the value reported is (0.7, 0.7)
               (i.e. length 1, angle 45) instead of (1,1). This
-              behaviour is different then most classic PC joysticks,
+              behaviour is different than most classic PC joysticks,
               which had a square range and would report (1,1) when
               hold in the top/left corner.
             </para>
@@ -1712,7 +1712,7 @@ DEVICEID     = NUMBER ;]]></programlisting>
               the advantage that they map directly to the key you
               expect, while a <keysym>KEY_</keysym> name gets mangled
               by the X11 keymap and will often not report what you
-              expect in case you use a keymap that is different then
+              expect in case you use a keymap that is different than
               your keyboard (i.e. dvorak on a qwerty keyboard).
             </para>
             <para>
@@ -1731,7 +1731,7 @@ DEVICEID     = NUMBER ;]]></programlisting>
             </para>
             <para>
               You can also map a button to a <keysym>REL_</keysym>
-              event. In that case you can supply additional paramaters in the form of:
+              event. In that case you can supply additional parameters in the form of:
             </para>
             <programlisting>$ xboxdrv --ui-buttonmap X=REL_???:VALUE:REPEAT</programlisting>
             <para>
@@ -1756,7 +1756,7 @@ DEVICEID     = NUMBER ;]]></programlisting>
               keyboard events to a keyboard device and mouse events to
               a mouse device. Other possible values are 'mouse' and
               'keyboard'. A device_id of '0' refers to the first
-              joystick device, values larger then 0 to the second,
+              joystick device, values larger than 0 to the second,
               third, etc. 
             </para>
             <para>
@@ -1859,7 +1859,7 @@ NAME       = STRING ;]]></programlisting>
               The value of -1 has a special meaning, it will result in
               the REL event being fired as soon as possible (i.e.
               every <replaceable>timeout</replaceable> miliseconds).
-              This is the recomment way for handling mouse emulation,
+              This is the recommended way for handling mouse emulation,
               as it will keep REL events syncronized and thus avoid
               jaggies in the movement, that will result from manually
               specifying a timeout.
@@ -2199,7 +2199,7 @@ send KEY_LEFTSHIFT 0]]></programlisting>
               The value of -1 has a special meaning, it will result in
               the REL event being fired as soon as possible (i.e.
               every <replaceable>timeout</replaceable> miliseconds).
-              This is the recomment way for handling mouse emulation,
+              This is the recommended way for handling mouse emulation,
               as it will keep REL events syncronized and thus avoid
               jaggies in the movement, that will result from manually
               specifying a timeout.
@@ -2351,7 +2351,7 @@ send KEY_LEFTSHIFT 0]]></programlisting>
           <listitem>
             <para>
               A button has to be held down for TIME miliseconds before
-              it will emit an event, press events shorter then that will
+              it will emit an event, press events shorter than that will
               be ignored.
             </para>
           </listitem>
@@ -2407,7 +2407,7 @@ send KEY_LEFTSHIFT 0]]></programlisting>
               argument is 1, smooth filtering will be applied so that
               the end of the deadzone is 0. Setting the argument to 0
               will apply a simple cut-off filter, where all events
-              smaller then the threshold are ignored.
+              smaller than the threshold are ignored.
             </para>
           </listitem>
         </varlistentry>
@@ -2697,7 +2697,7 @@ $ modprobe joydev]]></programlisting>
         By default xboxdrv will echo all controller events to the
         console, this makes it easy to see if things are properly
         working, but will eat a lot of CPU, thus it is strongly
-        recomment to disabled that output with
+        recommended to disable that output with
         the <option>--silent</option> option.
       </para>
 
@@ -2706,7 +2706,7 @@ $ modprobe joydev]]></programlisting>
         giving you analog feedback, while this reproduces the Xbox360
         controller the most accurately, it will confuse many and only
         be useful in a few, racing games mainly. So in the majority of
-        cases it is recomment to change the triggers to regular buttons via:
+        cases it is recommended to change the triggers to regular buttons via:
       </para>
       <programlisting>$ xboxdrv --trigger-as-button</programlisting>
     </refsect2>
@@ -2845,7 +2845,7 @@ dbus-send --session --type=method_call --print-reply \
       configuration in a game is most often not helpful, since you won't see
       the true cause beyond endless layers of abstraction between you and
       the actual events. Luckily there are a few tools you can use to test,
-      all of these are command line based and it is recomment that you get
+      all of these are command line based and it is recommended that you get
       familar with them when you want to do any more complex configuration.
     </para>
 
@@ -3062,7 +3062,7 @@ joysticktype = ch]]></programlisting>
     <refsect2>
       <title>Mapping every button multiple</title>
       <para>
-        Some games might require more buttons then your gamepad has,
+        Some games might require more buttons than your gamepad has,
         in those situation it can be useful to map a button twice by
         using shifted buttons:
       </para>
@@ -3276,7 +3276,7 @@ $ export SDL_JOYSTICK_DEVICE]]></programlisting>
       <title>The wireless controller doesn't work</title>
       <para>
         You have to sync the controller befor it can be used, restart of the
-        driver isn't needed and the driver should let you now when it recieves
+        driver isn't needed and the driver should let you know when it receives
         a connection after you sync the controller.
       </para>
     </refsect2>
@@ -3288,7 +3288,7 @@ $ export SDL_JOYSTICK_DEVICE]]></programlisting>
         via <option>--ui-buttonmap</option>
         or <option>--ui-axismap</option> Xorg must register the device
         as keyboard device to work properly. This seems to work
-        automatically when you bind more then two keyboard keys, if you
+        automatically when you bind more than two keyboard keys, if you
         bind less you need to create the
         file <filename>/etc/hal/fdi/preprobe/xboxdrv.fdi</filename>
         containing:

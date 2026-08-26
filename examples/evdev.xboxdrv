@@ -4,7 +4,7 @@
 # Xboxdrv allows to not only the use of Xbox1 and Xbox360 controllers,
 # but also every other controller supported by Linux. To use them they
 # have however to be remapped to the Xbox360 button layout. While this
-# process is a bit chumbersome, such a configuration can be reused and
+# process is a bit cumbersome, such a configuration can be reused and
 # layout on top of regular xboxdrv configuration, i.e. if you store
 # your evdev to Xbox360 in the file evdev.xboxdrv and your custom
 # xboxdrv configuration in xbox360.xboxdrv you can use them both at
@@ -16,7 +16,7 @@
 # joystick.
 
 [xboxdrv]
-# Using the 'by-id' name is recomment, as it is static, while an
+# Using the 'by-id' name is recommended, as it is static, while an
 # /dev/input/eventX name can change depending on what other USB
 # devices you use.
 evdev = /dev/input/by-id/usb-Microsoft_SideWinder_Precision_2_Joystick-event-joystick

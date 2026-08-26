@@ -7,7 +7,7 @@
 # regular means.
 #
 # Unbound events are useful in cases where an application uses the
-# existance of specific events to determine how to handle an device,
+# existence of specific events to determine how to handle a device,
 # both the kernel and SDL for example decide if a virtual device is a
 # joystick by the present of ABS_X, ABS_Y and BTN_JOYSTICK.
 #

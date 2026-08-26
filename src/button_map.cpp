@@ -61,7 +61,7 @@ ButtonMap::ButtonMap(ButtonMapOptions const& opts, uinpp::MultiDevice& uinput, i
 
   ButtonEventFactory button_event_factory(uinput, slot, extra_devices);
 
-  // BROKEN: Events must not be overriden after creation, as that messes up UInput
+  // BROKEN: Events must not be overridden after creation, as that messes up UInput
   for(ButtonMapOptions::const_iterator it = opts.begin(); it != opts.end(); ++it)
   {
     ButtonCombination buttons = ButtonCombination::from_string(it->get_combo());

@@ -100,7 +100,7 @@ LogitechF310Controller::parse(uint8_t const* data, int len, ControllerMessage* m
     // and unpack::int16le in order to define the axes.  doing so is
     // problematic, however, because of the way that logitech manipulates
     // the MSB for each byte of the byte pair.  ultimately, only 7 bits
-    // of information are availble for each half axis, so the code below
+    // of information are available for each half axis, so the code below
     // makes the most of it.
 
     msg_out->set_abs(xbox.abs_x1, unpack::u8_to_s16(data[6]), -32768, 32767);

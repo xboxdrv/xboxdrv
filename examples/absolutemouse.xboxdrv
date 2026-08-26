@@ -16,7 +16,7 @@ dpad-as-button=true
 
 # an absolute pointing device must have at least ABS_X, ABS_Y and
 # BTN_LEFT in a single device, as those would be sorted into separate
-# devices by the auto device creator, we have to disabled it to get
+# devices by the auto device creator, we have to disable it to get
 # them all in a single one
 extra-devices=false
 
