@@ -23,6 +23,7 @@ historical `NEWS` file.
 * Recognize Play&Charge 045e:028f and explain it cannot transmit input (issue #218)
 * Clarify USB transfer failure logs (status vs length; issue #230)
 * Document that VirtualKeyboard is not built; no GTK required (issue #208)
+* Man page: --evdev note about hiding source /dev/input/eventX (issue #205)
 * Sync many additional Xbox 360-compatible USB IDs from kernel `xpad`
   (Xbox One / Series IDs still omitted until that path is testable)
 * Fix classic Xbox stick axis offsets and Y invert (align with `xpad`)

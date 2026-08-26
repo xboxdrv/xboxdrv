@@ -386,6 +386,17 @@ use udev, this operation should be harmless and
 automatically reverse itself when you remove the
 controller and plug it back in or when you reboot the
 computer.
+.PP
+Some games (and many SDL-based titles) enumerate joysticks via
+the evdev nodes under \*(T<\fI/dev/input/eventX\fR\*(T>
+rather than \*(T<\fI/dev/input/jsX\fR\*(T>. In that case
+you may also need to hide or remove the original hardware's
+\*(T<\fIeventX\fR\*(T> node so the game only sees the
+uinput device created by \fBxboxdrv\fR. With
+\*(T<\fB\-\-evdev\-no\-grab\fR\*(T> the kernel continues to
+deliver events to both paths; grabbing (the default) prevents
+other clients from reading the source device, but the node
+may still appear in device lists.
 .TP 
 \*(T<\fB\-\-evdev\-debug\fR\*(T>
 The evdev event handler will print all received events

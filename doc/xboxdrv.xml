@@ -626,6 +626,18 @@ start=KEY_ESC
               controller and plug it back in or when you reboot the
               computer.
             </para>
+            <para>
+              Some games (and many SDL-based titles) enumerate joysticks via
+              the evdev nodes under <filename>/dev/input/eventX</filename>
+              rather than <filename>/dev/input/jsX</filename>. In that case
+              you may also need to hide or remove the original hardware's
+              <filename>eventX</filename> node so the game only sees the
+              uinput device created by <command>xboxdrv</command>. With
+              <option>--evdev-no-grab</option> the kernel continues to
+              deliver events to both paths; grabbing (the default) prevents
+              other clients from reading the source device, but the node
+              may still appear in device lists. Issue #205.
+            </para>
           </listitem>
         </varlistentry>
 
