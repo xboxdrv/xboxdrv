@@ -210,7 +210,7 @@ CommandLineParser::init_argp(int argc, char** argv)
     .add_option(OPTION_WID,          'w', "wid",     "N", "use wireless controller with wid N (default: 0)")
     .add_option(OPTION_DEVICE_BY_PATH,NUL, "device-by-path", "BUS:DEV", "Use device BUS:DEV, do not do any scanning")
     .add_option(OPTION_DEVICE_BY_ID,  NUL, "device-by-id",   "VENDOR:PRODUCT", "Use device that matches VENDOR:PRODUCT (as returned by lsusb)")
-    .add_option(OPTION_TYPE,          NUL, "type",    "TYPE", "Ignore autodetection and enforce controller type (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar, xeox)")
+    .add_option(OPTION_TYPE,          NUL, "type",    "TYPE", "Ignore autodetection and enforce controller type (xbox, xbox-mat, xbox360, xbox360-wireless, xbox360-guitar, t-wireless, xeox)")
     .add_option(OPTION_DETACH_KERNEL_DRIVER, 'd', "detach-kernel-driver", "", "Detaches the kernel driver currently associated with the device")
     .add_option(OPTION_GENERIC_USB_SPEC,NUL, "generic-usb-spec", "SPEC", "Specification for generic USB device");
 
@@ -649,6 +649,10 @@ CommandLineParser::apply_opt(argpp::ParsedOption const& opt, Options& opts)
         {
           opts.gamepad_type = GAMEPAD_FIRESTORM_VSB;
         }
+        else if (opt.argument == "t-wireless")
+        {
+          opts.gamepad_type = GAMEPAD_T_WIRELESS;
+        }
         else if (opt.argument == "saitek-p2500")
         {
           opts.gamepad_type = GAMEPAD_SAITEK_P2500;
@@ -680,6 +684,7 @@ CommandLineParser::apply_opt(argpp::ParsedOption const& opt, Options& opts)
                           << " * xbox360-wireless\n"
                           << " * firestorm\n"
                           << " * firestorm-vsb\n"
+                          << " * t-wireless\n"
                           << " * saitek-p2500\n * xeox\n"
                           << " * logitech-f310\n"
                           << " * generic-usb\n");

@@ -27,6 +27,7 @@
 #include "controller/logitech_f310_controller.hpp"
 #include "controller/playstation3_usb_controller.hpp"
 #include "controller/saitek_p2500_controller.hpp"
+#include "controller/t_wireless_controller.hpp"
 #include "controller/saitek_p3600_controller.hpp"
 #include "controller/xeox_controller.hpp"
 #include "controller/wiimote_controller.hpp"
@@ -76,6 +77,9 @@ ControllerFactory::create(XPadDevice const& dev_type, libusb_device* dev, Option
 
     case GAMEPAD_FIRESTORM_VSB:
       return ControllerPtr(new FirestormDualController(dev, true, opts.detach_kernel_driver));
+
+    case GAMEPAD_T_WIRELESS:
+      return ControllerPtr(new TWirelessController(dev, opts.detach_kernel_driver));
 
     case GAMEPAD_SAITEK_P2500:
       return ControllerPtr(new SaitekP2500Controller(dev, opts.detach_kernel_driver));
@@ -164,6 +168,10 @@ ControllerFactory::create_multiple(XPadDevice const& dev_type, libusb_device* de
 
     case GAMEPAD_FIRESTORM_VSB:
       lst.push_back(ControllerPtr(new FirestormDualController(dev, true, opts.detach_kernel_driver)));
+      break;
+
+    case GAMEPAD_T_WIRELESS:
+      lst.push_back(ControllerPtr(new TWirelessController(dev, opts.detach_kernel_driver)));
       break;
 
     case GAMEPAD_SAITEK_P2500:
