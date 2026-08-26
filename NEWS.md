@@ -6,6 +6,7 @@ historical `NEWS` file.
 
 ## xboxdrv 0.9.0-dev (develop)
 
+* Document wireless Chatpad protocol (PROTOCOL, man --chatpad; issue #209)
 * Autofire: optional SUSTAIN (`RATE:DELAY:SUSTAIN`) for pulse high time
 * Autofire: after DELAY, release before first pulse so initial hold does not merge with first shot
 * Build: version string via generated header for xboxdrv_version.cpp only (write-if-changed)

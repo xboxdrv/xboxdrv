@@ -443,6 +443,75 @@ len: 28 data: 0x01 0x00 0x67 0x00 0x0c 0xfd 0x0d 0xf6 0x10 0xd2 0x11 0xe2 0xb0 0
 http://www.mp3car.com/vbulletin/input-devices/108554-xbox360-chatpad-awsome-backlit-mini-keyboard-10.html
 http://www.youtube.com/watch?v=qWWIuh1vsoM
 
+Wireless Chatpad protocol (summary)
+-----------------------------------
+
+The notes below are the working recipe used by xboxdrv's WirelessChatpad
+(src/wireless_chatpad.cpp). They originate from reverse-engineering notes
+originally filed as GAFBlizzard/chatpad-super-driver#46 and restated in
+xboxdrv issue #209 (Kytech Windows driver LED codes overlap).
+
+Unlike the wired pad (Chatpad on USB interface 2, separate endpoints), the
+wireless receiver multiplexes pad + chatpad on the *same* controller
+endpoint:
+
+  Controller 1: Interface 0, Endpoint 1 (IN and OUT)
+  Controller 2: Endpoint 3, etc.
+
+All chatpad control traffic is 12-byte OUT payloads on that endpoint.
+Chatpad key data returns on the same IN endpoint as normal pad reports.
+
+OUT command shape (12 bytes):
+
+  00 00 0C <cmd> 00 00 00 00 00 00 00 00
+
+Enable / init chatpad events:
+
+  cmd = 0x1B
+
+Keep-alives (required ~1 Hz or the chatpad stops streaming):
+
+  cmd = 0x1E and 0x1F alternating
+
+Optional controller power-off (not used by xboxdrv chatpad path):
+
+  00 00 08 C0 00 00 00 00 00 00 00 00
+
+IN: after enable + keep-alives, reports with a chatpad marker appear
+(e.g. leading bytes 00 02 00 F0 ...). The *wired-style* chatpad key
+payload is at offset 0x18 within the wireless report (same scancodes /
+modifier bits as the USB Chatpad).
+
+LED commands (same 00 00 0C <cmd> ... form, OUT on endpoint 1):
+
+  0x08  capslock / shift on
+  0x09  square (green) on
+  0x0A  circle (orange) on
+  0x0B  people / messenger on
+  0x0C  backlight
+  0x00  shift off   (paired with 0x08)
+  0x01  green off
+  0x02  orange off
+  0x03  people off
+
+Combination LED codes (optional; not required for basic sticky modes):
+
+  0x11  capslock
+  0x12  square
+  0x13  square + capslock
+  0x14  circle
+  0x15  capslock + circle
+  0x16  circle + square
+  0x17  circle + square + capslock
+  0x1B  backlight on keypress (note: same byte as enable when used as
+        the sole <cmd> in the enable packet — context is the full 12-byte
+        transfer and host state machine)
+
+xboxdrv enables with 0x1B, keeps 1E/1F alive, maps keys like the wired
+Chatpad, and drives LEDs with the simple on/off pairs above. Combination
+codes and backlight are documented for completeness.
+
+
 Pluggin in a headphone without chatpat:
 ---------------------------------------
 

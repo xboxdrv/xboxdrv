@@ -786,26 +786,33 @@ start=KEY_ESC
     <refsect2>
       <title>Chatpad Options (experimental)</title>
       <para>
-        Chatpad support is still experimental. Basic keyboard usage
-        will work, there is however currently no support for
-        customization or the green and orange key modifiers.
-      </para>
-      <para>
-        Starting xboxdrv multiple times in a row with
-        the <option>--chatpad</option> option can crash the
-        controller. Unplugging it and plugging it back in should reset
-        it.
+        Chatpad support is experimental. Basic keyboard usage works;
+        green/orange modifiers and non-US layouts are limited.
       </para>
       <variablelist>
         <varlistentry>
           <term><option>--chatpad</option></term>
           <listitem>
             <para>
-              Enables the support for the Xbox360 Chatpad. WARNING:
-              This is preliminary code, it will crash your gamepad
-              when xboxdrv is started multiple times and won't provide
-              proper keymapping for any of the umlauts and special
-              characters.
+              Enables Xbox 360 Chatpad support.
+            </para>
+            <para>
+              <emphasis>Wired</emphasis> controllers use USB interface 2
+              (separate chatpad endpoints). Starting xboxdrv repeatedly
+              with init enabled can upset some pads; use
+              <option>--chatpad-no-init</option> or unplug/replug if that
+              happens. Green/orange modifiers and non-US layouts are
+              limited.
+            </para>
+            <para>
+              <emphasis>Wireless</emphasis> (receiver) is experimental:
+              chatpad traffic is multiplexed on the same endpoint as the
+              pad (endpoint 1 for controller 1). xboxdrv sends enable
+              <literal>0x1B</literal>, alternating keep-alives
+              <literal>0x1E</literal>/<literal>0x1F</literal>, and parses
+              key data at report offset <literal>0x18</literal>. See
+              <filename>PROTOCOL</filename> (“Wireless Chatpad protocol”)
+              and issues #209 / GAFBlizzard chatpad-super-driver#46.
             </para>
           </listitem>
         </varlistentry>

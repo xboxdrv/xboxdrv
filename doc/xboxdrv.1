@@ -590,21 +590,22 @@ at the maximum will stay unchanged.
 \*(T<\fB\-q\fR\*(T>, \*(T<\fB\-\-quit\fR\*(T>
 Exit xboxdrv after setting LED or rumble values.
 .SS "CHATPAD OPTIONS (EXPERIMENTAL)"
-Chatpad support is still experimental. Basic keyboard usage
-will work, there is however currently no support for
-customization or the green and orange key modifiers.
+Chatpad support is experimental. Basic keyboard usage works;
+green/orange modifiers and non-US layouts are limited.
 .PP
-Starting xboxdrv multiple times in a row with
-the \*(T<\fB\-\-chatpad\fR\*(T> option can crash the
-controller. Unplugging it and plugging it back in should reset
-it.
+\fIWired\fR controllers use USB interface 2. Starting xboxdrv
+repeatedly with init enabled can upset some pads; use
+\*(T<\fB\-\-chatpad\-no\-init\fR\*(T> or unplug/replug if needed.
+.PP
+\fIWireless\fR (receiver) multiplexes chatpad on the same endpoint
+as the pad (endpoint 1 for controller 1). xboxdrv sends enable
+0x1B, alternating keep-alives 0x1E/0x1F, and parses key data at
+report offset 0x18. See PROTOCOL (“Wireless Chatpad protocol”)
+and issue #209.
 .TP 
 \*(T<\fB\-\-chatpad\fR\*(T>
-Enables the support for the Xbox360 Chatpad. WARNING:
-This is preliminary code, it will crash your gamepad
-when xboxdrv is started multiple times and won't provide
-proper keymapping for any of the umlauts and special
-characters.
+Enable Xbox 360 Chatpad support (wired interface 2, or experimental
+wireless multiplexing on the receiver).
 .TP 
 \*(T<\fB\-\-chatpad\-no\-init\fR\*(T>
 This will start chatpad support with out sending the
