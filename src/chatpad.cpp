@@ -56,6 +56,7 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_no_init(no_init),
   m_debug(debug),
   m_interface_claimed(false),
+  m_detached_kernel_driver(false),
   m_keepalive_stalls(0),
   m_quit_thread(false),
   m_uinput(),
@@ -139,6 +140,10 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   // interface 0; headset uses 1. Without claiming 2, control and interrupt
   // transfers fail or race with the kernel.
   {
+    if (libusb_kernel_driver_active(m_handle, 2) == 1)
+    {
+      m_detached_kernel_driver = true;
+    }
     int err = unsebu::usb_claim_n_detach_interface(m_handle, 2, true);
     if (err != 0)
     {
@@ -219,7 +224,22 @@ Chatpad::~Chatpad()
     {
       log_debug("chatpad: release interface 2 failed: {}", libusb_strerror(ret));
     }
+    if (m_handle && m_detached_kernel_driver)
+    {
+      ret = libusb_attach_kernel_driver(m_handle, 2);
+      if (ret == LIBUSB_SUCCESS)
+      {
+        log_info("chatpad: reattached kernel driver on interface 2");
+      }
+      else if (ret != LIBUSB_ERROR_NOT_FOUND &&
+               ret != LIBUSB_ERROR_NO_DEVICE &&
+               ret != LIBUSB_ERROR_NOT_SUPPORTED)
+      {
+        log_debug("chatpad: attach_kernel_driver(2): {}", libusb_strerror(ret));
+      }
+    }
     m_interface_claimed = false;
+    m_detached_kernel_driver = false;
   }
 }
 

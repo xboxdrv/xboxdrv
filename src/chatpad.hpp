@@ -155,6 +155,7 @@ private:
   bool m_no_init;
   bool m_debug;
   bool m_interface_claimed;
+  bool m_detached_kernel_driver; // reattach xpad (etc.) on interface 2 at exit
   int m_keepalive_stalls;
 
 

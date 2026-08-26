@@ -593,11 +593,13 @@ start=KEY_ESC
               unloading it.
             </para>
             <para>
-              On a clean exit xboxdrv releases the interfaces and calls
-              <literal>libusb_attach_kernel_driver</literal> so
+              On a clean exit xboxdrv releases each interface it claimed and
+              calls <literal>libusb_attach_kernel_driver</literal> so
               <literal>xpad</literal> (or another bound driver) is restored
-              automatically. If xboxdrv is killed hard, reattach manually —
-              see Troubleshooting.
+              automatically. That covers wired pads (interface 0, and 2 when
+              Chatpad is enabled) and each wireless receiver slot (interfaces
+              0/2/4/6). Interfaces that were never claimed are left alone. If
+              xboxdrv is killed hard, reattach manually — see Troubleshooting.
             </para>
           </listitem>
         </varlistentry>
