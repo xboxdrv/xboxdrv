@@ -53,8 +53,7 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   m_guide_down_ts(),
   m_guide_held(false),
   m_guide_timeout_source(0),
-  m_presence_timeout_source(0),
-  m_presence_retries_left(0),
+  m_zombie_check_source(0),
   xbox(m_message_descriptor)
 {
   // FIXME: A little bit of a hack
@@ -69,10 +68,13 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   usb_claim_interface(m_interface, try_detach);
   usb_submit_read(m_endpoint, 32);
 
-  // Pad powered on before the host never re-sends connection status until the
-  // host asks (xpad_inquiry_pad_presence). LED flash matches console slot assign.
-  wake_slot();
-  start_presence_retries();
+  // Same one-shot as kernel xpad360w_start_input. Does not recover a pad that
+  // was powered on before the host and stopped streaming input (see man page).
+  inquire_presence();
+
+  // One advisory if we never see a real pad report (zombie session).
+  m_zombie_check_source = g_timeout_add_seconds(
+    5, &Xbox360WirelessController::on_zombie_check_wrap, this);
 
   if (chatpad)
   {
@@ -87,7 +89,7 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
 
 Xbox360WirelessController::~Xbox360WirelessController()
 {
-  stop_presence_timer();
+  stop_zombie_check();
   stop_guide_timeout();
 
   // Mirror kernel xpad auto_poweroff on suspend: if the pad is still
@@ -99,12 +101,11 @@ Xbox360WirelessController::~Xbox360WirelessController()
   }
 }
 
+
 void
 Xbox360WirelessController::inquire_presence()
 {
-  // Same packet as kernel xpad_inquiry_pad_presence() and Windows checkStatus.
-  // Forces the receiver to resend connection status for a pad that was already
-  // linked before this process claimed the interface.
+  // Same 12-byte packet as kernel xpad_inquiry_pad_presence().
   uint8_t cmd[] = {
     0x08, 0x00, 0x0f, 0xc0,
     0x00, 0x00, 0x00, 0x00,
@@ -115,80 +116,39 @@ Xbox360WirelessController::inquire_presence()
 }
 
 void
-Xbox360WirelessController::wake_slot()
+Xbox360WirelessController::stop_zombie_check()
 {
-  // Do not clear_halt here: the continuous IN URB is already queued, and the
-  // kernel refuses CLEAR_HALT on a non-empty endpoint ("EP not empty, refuse
-  // reset" / "CLEAR_HALT for active endpoint 0x81").
-  inquire_presence();
-
-  // Console-style slot assign: flash player N then on (values 2..5).
-  uint8_t led = get_led();
-  if (led == 0)
+  if (m_zombie_check_source)
   {
-    led = static_cast<uint8_t>(2 + (m_interface / 2) % 4);
+    g_source_remove(m_zombie_check_source);
+    m_zombie_check_source = 0;
   }
-  set_led_real(led);
-}
-
-void
-Xbox360WirelessController::start_presence_retries()
-{
-  stop_presence_timer();
-  m_presence_retries_left = 4;
-  // First retry soon after claim; further retries spread over ~2s.
-  m_presence_timeout_source = g_timeout_add(
-    200, &Xbox360WirelessController::on_presence_timeout_wrap, this);
-}
-
-void
-Xbox360WirelessController::stop_presence_timer()
-{
-  if (m_presence_timeout_source)
-  {
-    g_source_remove(m_presence_timeout_source);
-    m_presence_timeout_source = 0;
-  }
-  m_presence_retries_left = 0;
 }
 
 gboolean
-Xbox360WirelessController::on_presence_timeout_wrap(gpointer data)
+Xbox360WirelessController::on_zombie_check_wrap(gpointer data)
 {
-  return static_cast<Xbox360WirelessController*>(data)->on_presence_timeout()
+  return static_cast<Xbox360WirelessController*>(data)->on_zombie_check()
     ? TRUE : FALSE;
 }
 
 bool
-Xbox360WirelessController::on_presence_timeout()
+Xbox360WirelessController::on_zombie_check()
 {
-  m_presence_timeout_source = 0;
-
-  if (is_disconnected() || m_shutting_down)
+  m_zombie_check_source = 0;
+  if (m_got_pad_report || is_disconnected() || m_shutting_down)
   {
-    m_presence_retries_left = 0;
     return false;
   }
-
-  // Already receiving pad data — no further inquiries needed.
-  if (m_pad_present && m_got_pad_report)
+  // LED may still work; neither xboxdrv nor xpad can recover this session.
+  char const* msg =
+    "Wireless controller is linked but not sending input (pad was likely "
+    "powered on before xboxdrv). Power-cycle the controller (hold Guide "
+    "until it turns off, then turn it on again).";
+  log_info("{}", msg);
+  if (!m_quiet)
   {
-    m_presence_retries_left = 0;
-    return false;
-  }
-
-  log_info("wireless slot {}: wake retry (pad_present={} got_pad_report={})",
-           m_interface / 2, m_pad_present, m_got_pad_report);
-  wake_slot();
-  if (m_presence_retries_left > 0)
-  {
-    m_presence_retries_left -= 1;
-  }
-
-  if (m_presence_retries_left > 0)
-  {
-    m_presence_timeout_source = g_timeout_add(
-      500, &Xbox360WirelessController::on_presence_timeout_wrap, this);
+    std::cout << msg << std::endl;
   }
   return false;
 }
@@ -360,15 +320,9 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
         log_info("connection status: controller and headset connected");
       else
         log_info("connection status: controller connected");
-      // LED is also set when the daemon assigns a slot. Prefer a flash-then-on
-      // pattern when no LED has been chosen yet — matches console slot assign
-      // and has been observed to help after a late host start.
-      {
-        uint8_t led = get_led();
-        if (led == 0)
-          led = static_cast<uint8_t>(2 + (m_interface / 2) % 4);
-        set_led_real(led);
-      }
+      // LED is also set when the daemon assigns a slot; nudge here so the
+      // pad is awake even before the idle activation callback runs.
+      set_led_real(get_led());
       mark_present();
       // Fall through: a longer frame may also carry pad data.
       if (len <= 2)
@@ -418,7 +372,7 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
     {
       mark_present();
       m_got_pad_report = true;
-      stop_presence_timer(); // real pad stream — stop startup inquiries
+      stop_zombie_check();
 
       uint8_t const* ptr = data + 4;
 

@@ -43,8 +43,7 @@ private:
   std::chrono::steady_clock::time_point m_guide_down_ts;
   bool m_guide_held;
   guint m_guide_timeout_source;
-  guint m_presence_timeout_source;
-  int   m_presence_retries_left;
+  guint m_zombie_check_source;
 
   Xbox360DefaultNames xbox;
 
@@ -67,22 +66,17 @@ public:
   void power_off();
 
 private:
-  /**
-   * Presence inquiry (xpad_inquiry_pad_presence / Windows checkStatus first
-   * half). Forces the receiver to resend connection packets.
-   */
+  /** Same presence inquiry as kernel xpad_inquiry_pad_presence(). */
   void inquire_presence();
-  /** presence + connect-style LED (pad already on before host). */
-  void wake_slot();
-  void start_presence_retries();
-  void stop_presence_timer();
-  bool on_presence_timeout();
-  static gboolean on_presence_timeout_wrap(gpointer data);
 
   void maybe_guide_poweroff(bool guide_down);
   void stop_guide_timeout();
   bool on_guide_timeout();
   static gboolean on_guide_timeout_wrap(gpointer data);
+
+  void stop_zombie_check();
+  bool on_zombie_check();
+  static gboolean on_zombie_check_wrap(gpointer data);
 
   Xbox360WirelessController (const Xbox360WirelessController&);
   Xbox360WirelessController& operator= (const Xbox360WirelessController&);

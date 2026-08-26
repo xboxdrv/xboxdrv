@@ -3333,9 +3333,19 @@ $ export SDL_JOYSTICK_DEVICE]]></programlisting>
     <refsect2>
       <title>The wireless controller doesn't work</title>
       <para>
-        You have to sync the controller befor it can be used, restart of the
-        driver isn't needed and the driver should let you know when it receives
+        You have to sync the controller before it can be used. A restart of the
+        driver is not needed and the driver should let you know when it receives
         a connection after you sync the controller.
+      </para>
+      <para>
+        If the controller was powered on <emphasis>before</emphasis> xboxdrv
+        (or the kernel <literal>xpad</literal> driver) started, the pad may
+        show a solid LED and still accept LED commands, but never send button
+        or axis reports. Neither xboxdrv nor <literal>xpad</literal> can
+        recover that session reliably. Power-cycle the controller: hold the
+        Guide button until it turns off, then turn it on again (or remove and
+        reinsert the batteries). Prefer starting xboxdrv first, then powering
+        the pad on.
       </para>
     </refsect2>
 
@@ -3553,6 +3563,19 @@ EndSection]]></programlisting>
         whenever a new keyboard is detected, in cases of custom
         Xmodmaps this might confuse xboxdrv and make the XK_ style
         names unusable. No workaround for that is known right now.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>Xbox 360 wireless pad on before the host</title>
+      <para>
+        When an Xbox 360 wireless controller is already linked to the PC
+        receiver before any host driver is running, LED control may work while
+        input reports never arrive until the pad is power-cycled. The same
+        behaviour is seen with the in-kernel <literal>xpad</literal> driver.
+        xboxdrv sends the same presence inquiry as <literal>xpad</literal> on
+        start; that is not sufficient to restore input in this state. See
+        Troubleshooting above.
       </para>
     </refsect2>
 
