@@ -592,6 +592,13 @@ start=KEY_ESC
               xpad module loaded and want to use xboxdrv without
               unloading it.
             </para>
+            <para>
+              On a clean exit xboxdrv releases the interfaces and calls
+              <literal>libusb_attach_kernel_driver</literal> so
+              <literal>xpad</literal> (or another bound driver) is restored
+              automatically. If xboxdrv is killed hard, reattach manually —
+              see Troubleshooting.
+            </para>
           </listitem>
         </varlistentry>
 
@@ -3383,6 +3390,44 @@ $ export SDL_JOYSTICK_DEVICE]]></programlisting>
         it by removing the batteries or battery pack briefly. Prefer starting
         xboxdrv first, then powering the pad on. (Holding Guide does not help
         here: Guide power-off is handled in software and needs input reports.)
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>Reattaching the kernel driver (xpad) after xboxdrv</title>
+      <para>
+        With <option>--detach-kernel-driver</option>, a normal exit hands the
+        USB interfaces back to the kernel driver. If xboxdrv did not exit
+        cleanly, or you unbound drivers by hand, restore
+        <literal>xpad</literal> like this (adjust the sysfs id from
+        <command>lsusb</command> / <filename>/sys/bus/usb/devices/</filename>;
+        example device <literal>1-7.1.2</literal>):
+      </para>
+      <programlisting><![CDATA[
+# See which driver owns each interface
+ls -l /sys/bus/usb/devices/1-7.1.2:*/driver
+
+# Unbind whatever is bound (if needed)
+for d in /sys/bus/usb/devices/1-7.1.2:*/driver; do
+  [ -e "$d" ] || continue
+  iface=$(basename "$(dirname "$d")")
+  echo "$iface" | sudo tee "$(readlink -f "$d")/unbind"
+done
+
+# Bind controller interfaces to xpad (even numbers: :1.0 :1.2 :1.4 :1.6)
+for iface in 1-7.1.2:1.0 1-7.1.2:1.2 1-7.1.2:1.4 1-7.1.2:1.6; do
+  echo "$iface" | sudo tee /sys/bus/usb/drivers/xpad/bind
+done
+
+# Or reset the whole USB device and let udev/xpad probe again
+echo 1-7.1.2 | sudo tee /sys/bus/usb/drivers/usb/unbind
+sleep 1
+echo 1-7.1.2 | sudo tee /sys/bus/usb/drivers/usb/bind
+]]></programlisting>
+      <para>
+        Note: <literal>xpad</literal> binds <emphasis>interfaces</emphasis>
+        (e.g. <literal>1-7.1.2:1.0</literal>), not the parent device name
+        alone.
       </para>
     </refsect2>
 
