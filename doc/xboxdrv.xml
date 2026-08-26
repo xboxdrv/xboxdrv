@@ -3517,17 +3517,17 @@ EndSection]]></programlisting>
     <refsect2>
       <title>Questions, Bug Reports and Feature Requests</title>
       <para>
-        Bug reports and feature request can be report to the xboxdrv issue tracker at:
+        Bug reports, feature requests, and configuration questions can be
+        reported at the project issue tracker:
       </para>
       <para>
-        <ulink url="https://github.com/xboxdrv/xboxdrv/issues/new" />
+        <ulink url="https://github.com/xboxdrv/xboxdrv/issues" />
       </para>
       <para>
-        General questions and requests for configuration help should
-        be directed to the xboxdrv mailing list at:
+        Project home:
       </para>
       <para>
-        <ulink url="http://groups.google.com/group/xboxdrv" />
+        <ulink url="https://github.com/xboxdrv/xboxdrv" />
       </para>
     </refsect2>
   </refsect1>
