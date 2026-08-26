@@ -1215,8 +1215,10 @@ CommandLineParser::set_relative_axis(std::string const& name, std::string const&
 void
 CommandLineParser::set_autofire(std::string const& name, std::string const& value)
 {
+  // value is RATE or RATE:DELAY (ms). DELAY is time before autofire starts,
+  // not pulse width / duty cycle. std::stoi("250:50") would silently read 250.
   m_options->get_controller_options().autofire_map[name]
-    = ButtonFilterPtr(new AutofireButtonFilter(str2int(value), 0));
+    = ButtonFilterPtr(AutofireButtonFilter::from_string(value));
 }
 
 void
@@ -1371,7 +1373,7 @@ void
 CommandLineParser::set_autofire_n(int controller, int config, std::string const& name, std::string const& value)
 {
   m_options->controller_slots[controller].get_options(config)
-    .autofire_map[name] = ButtonFilterPtr(new AutofireButtonFilter(str2int(value), 0));
+    .autofire_map[name] = ButtonFilterPtr(AutofireButtonFilter::from_string(value));
 }
 
 void

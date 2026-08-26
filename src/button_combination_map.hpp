@@ -73,7 +73,28 @@ public:
       it->m_supersets.clear();
     }
 
-    // BROKEN: need to filter out duplicate bindings
+    // Drop earlier bindings that resolve to the same key set so a later
+    // --ui-buttonmap (e.g. A^autofire=BTN_A) overrides defaults (gamepad.a=BTN_A).
+    for (typename Mappings::size_type i = 0; i < m_mappings.size(); )
+    {
+      bool superseded = false;
+      for (typename Mappings::size_type j = i + 1; j < m_mappings.size(); ++j)
+      {
+        if (*m_mappings[i].m_combo == *m_mappings[j].m_combo)
+        {
+          superseded = true;
+          break;
+        }
+      }
+      if (superseded)
+      {
+        m_mappings.erase(m_mappings.begin() + static_cast<std::ptrdiff_t>(i));
+      }
+      else
+      {
+        ++i;
+      }
+    }
 
     // regenerate superset mappings
     for(typename Mappings::iterator it = m_mappings.begin(); it != m_mappings.end(); ++it)

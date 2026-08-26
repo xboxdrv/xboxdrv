@@ -6,6 +6,8 @@ historical `NEWS` file.
 
 ## xboxdrv 0.9.0-dev (develop)
 
+* `--autofire A=RATE` accepts `RATE:DELAY` (start delay ms); not duty cycle
+* ui-buttonmap: later binding for the same key combo overrides earlier (so `A^autofire=BTN_A` replaces default `gamepad.a`)
 * Fix `--autofire`: in-place button filters can clear the held bit (was `value || state`, so pulses never went low)
 * Re-enable `--autofire` (was compiled out behind `#if 0` on develop)
 * ButtonmapModifier::add_filter: return after matching an existing binding
