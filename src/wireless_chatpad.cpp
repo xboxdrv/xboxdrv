@@ -427,16 +427,10 @@ WirelessChatpad::process_key(KeyMsg const& msg)
 void
 WirelessChatpad::reassert_leds()
 {
-  // Force send even if m_led_state already matches: the firmware may have
-  // lost the previous LED command when a keep-alive was in flight.
-  auto force = [this](unsigned int led, uint8_t on_cmd, uint8_t off_cmd) {
-    if (m_led_state & led)
-      send_cmd(on_cmd);
-    else
-      send_cmd(off_cmd);
-  };
-  // Only push ON codes for active LEDs — blasting all OFF codes every
-  // second is unnecessary traffic and can race with a just-armed sticky.
+  // Force-send ON codes even if m_led_state already matches: the firmware
+  // may have lost the previous LED command when a keep-alive was in flight.
+  // Only push ON for active LEDs — blasting OFF every second is unnecessary
+  // traffic and can race with a just-armed sticky.
   if (m_led_state & CHATPAD_LED_SHIFT)  send_cmd(0x08);
   if (m_led_state & CHATPAD_LED_GREEN)  send_cmd(0x09);
   if (m_led_state & CHATPAD_LED_ORANGE) send_cmd(0x0A);
