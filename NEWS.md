@@ -6,6 +6,7 @@ historical `NEWS` file.
 
 ## xboxdrv 0.9.0-dev (develop)
 
+* Fix `--autofire`: in-place button filters can clear the held bit (was `value || state`, so pulses never went low)
 * Re-enable `--autofire` (was compiled out behind `#if 0` on develop)
 * ButtonmapModifier::add_filter: return after matching an existing binding
 * Add Speedlink RAIT Gamepad (2f24:008f) as Xbox 360 (issue #253)

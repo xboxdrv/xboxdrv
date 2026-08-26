@@ -144,6 +144,7 @@ ButtonmapModifier::update(int msec_delta, ControllerMessage& msg, ControllerMess
 
   for(std::vector<ButtonMappingPtr>::iterator i = m_buttonmap.begin(); i != m_buttonmap.end(); ++i)
   {
+    int key_in  = (*i)->lhs.get_key();
     int key_out = (*i)->rhs.get_key();
     bool value  = (*i)->lhs.get(msg);
 
@@ -153,7 +154,17 @@ ButtonmapModifier::update(int msec_delta, ControllerMessage& msg, ControllerMess
       value = (*j)->filter(value);
     }
 
-    state[key_out] = value || state[key_out];
+    // In-place filter (e.g. --autofire A=250 → A=A^autofire): must assign so
+    // the filter can clear the bit while the physical button stays held.
+    // Remap onto a different key keeps OR so multiple sources can share a target.
+    if (key_in == key_out)
+    {
+      state[key_out] = value;
+    }
+    else
+    {
+      state[key_out] = value || state[key_out];
+    }
   }
 
   msg.set_key_state(state);
