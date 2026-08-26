@@ -185,6 +185,8 @@ WirelessChatpad::on_timeout()
   {
     send_cmd(0x1B); // Chatpad enable / init
     m_need_init = false;
+    // Init can clear firmware LED state; restore stickies if any.
+    reassert_leds();
     // Keep-alives start after init (~1 Hz alternating 1E/1F).
     send_timeout(1000);
     return false;
@@ -193,6 +195,11 @@ WirelessChatpad::on_timeout()
   // Alternate keep-alive codes; chatpad stops streaming without them.
   send_cmd(m_keepalive_toggle ? 0x1F : 0x1E);
   m_keepalive_toggle = !m_keepalive_toggle;
+  // Keep-alives share the OUT endpoint with LED cmds. Firmware can drop
+  // or ignore a sticky LED that was just armed until the next key report;
+  // re-assert current LED state after each keep-alive so sticky LEDs
+  // light without waiting for another key event.
+  reassert_leds();
   send_timeout(1000);
   return false;
 }
@@ -415,6 +422,25 @@ WirelessChatpad::process_key(KeyMsg const& msg)
   m_eff_people = post_people;
 
   m_uinput->sync();
+}
+
+void
+WirelessChatpad::reassert_leds()
+{
+  // Force send even if m_led_state already matches: the firmware may have
+  // lost the previous LED command when a keep-alive was in flight.
+  auto force = [this](unsigned int led, uint8_t on_cmd, uint8_t off_cmd) {
+    if (m_led_state & led)
+      send_cmd(on_cmd);
+    else
+      send_cmd(off_cmd);
+  };
+  // Only push ON codes for active LEDs — blasting all OFF codes every
+  // second is unnecessary traffic and can race with a just-armed sticky.
+  if (m_led_state & CHATPAD_LED_SHIFT)  send_cmd(0x08);
+  if (m_led_state & CHATPAD_LED_GREEN)  send_cmd(0x09);
+  if (m_led_state & CHATPAD_LED_ORANGE) send_cmd(0x0A);
+  if (m_led_state & CHATPAD_LED_PEOPLE) send_cmd(0x0B);
 }
 
 void

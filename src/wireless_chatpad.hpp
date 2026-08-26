@@ -89,6 +89,7 @@ public:
 private:
   void init_uinput();
   void send_cmd(uint8_t cmd);
+  void reassert_leds();
   void send_timeout(int msec);
   void stop_timeout();
   bool on_timeout();
