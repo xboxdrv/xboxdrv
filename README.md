@@ -1,8 +1,7 @@
 > [!WARNING]
 > **xboxdrv is mostly obsolete for everyday use.** Prefer the in-kernel
 > `xpad` driver and/or Steam Input. This tree remains useful for heavy
-> remapping, userspace experimentation, PROTOCOL notes, and as a cleanup
-> exercise on the `develop` branch.
+> remapping, userspace experimentation, and PROTOCOL notes.
 
 # Xbox/Xbox360 USB Gamepad Driver for Userspace
 
@@ -10,7 +9,8 @@ Xboxdrv is a userspace Xbox / Xbox 360 gamepad driver for Linux. It is an
 alternative to the `xpad` kernel driver and supports Xbox classic pads,
 Xbox 360 USB and wireless receivers, plus a number of third-party and
 related devices (see `src/xpad_device.cpp`). Optional backends include
-PlayStation 3 (USB), Wiimote (when built with CWiid), and generic USB.
+PlayStation 3 (USB), Wiimote (when built with CWiid), generic USB, and an
+experimental Steam Controller backend.
 
 Chatpad support: **wired** USB controllers (interface 2) and experimental
 **wireless** receiver multiplexing (`--chatpad`). The headset is not
@@ -23,8 +23,7 @@ driver is preferable.
 ## Source
 
 * GitHub: https://github.com/xboxdrv/xboxdrv
-* Default development branch: `develop` (cleanup target)
-* Production / packaging reference: `stable`
+* Default branch: `master`
 * Changelog: [`NEWS.md`](NEWS.md)
 
 ## Requirements
@@ -38,11 +37,6 @@ driver is preferable.
 * libudev
 * libevdev
 * X11 (libX11) — only for optional `--help-x11keysym` key names
-
-The old optional **VirtualKeyboard** GTK helper is **not built** (and is not
-part of the CMake tree). No GTK dependency is required (issue #208).
-The example `examples/virtualkeyboard.xboxdrv` is retained only as a
-historical config sketch.
 * dbus-glib-1 / GLib (includes `dbus-binding-tool` for glue generation)
 * Python 3 (D-Bus glue and `bin2h` generation)
 
@@ -50,9 +44,8 @@ Optional:
 
 * libcwiid — Wiimote support (`HAVE_CWIID` when detected)
 
-Vendored C++ helpers live under `external/` (argpp, logmich, strutcpp,
-tinycmmc, uinpp, unsebu, yaini) and are built via CMake
-`add_subdirectory`; they are not separate system packages.
+Vendored C++ helpers live under `external/` and are built via CMake; they
+are not separate system packages. No GTK or Boost dependency is required.
 
 ### Runtime
 
@@ -62,7 +55,7 @@ tinycmmc, uinpp, unsebu, yaini) and are built via CMake
 
 ### Nix
 
-A flake is provided (`flake.nix`). Example:
+A flake is provided (`flake.nix`):
 
 ```bash
 nix build
@@ -76,9 +69,6 @@ cd build
 cmake ..
 cmake --build .
 ```
-
-Development builds with a stricter warning set can use your usual
-CMake/toolchain flags; the project sets `CXX_STANDARD 23`.
 
 Example package set on Debian/Ubuntu-style systems:
 
@@ -138,34 +128,6 @@ man -l doc/xboxdrv.1
 
 Example configs live in `examples/`. USB protocol notes are in
 `PROTOCOL`.
-
-## Versioning
-
-The top-level `VERSION` file is the single source of truth (e.g.
-`0.9.0-dev` on `develop`). Development builds append
-`.<revCount>+g<shortRev>` (and `-dirty` when the tree is dirty) so
-`--version` matches the Nix package name. CMake and the flake both
-implement this; see `AGENTS.md` for the full scheme.
-
-## Changelog
-
-See [`NEWS.md`](NEWS.md) for user-visible changes. The `0.9.0-dev`
-section tracks work on `develop` toward the next release.
-
-## Status and branches
-
-* **`stable`** — packaging-oriented line; leave it alone unless fixing
-  regressions there.
-* **`develop`** — cleanup and modernization target; goal is for `develop`
-  to fully replace `stable`.
-
-Recent `develop` work includes Saitek P3600 support, a large sync of
-Xbox 360-compatible IDs from kernel `xpad`, classic Xbox and wired 360
-report parsing fixes, stricter dependency handling (vendored helpers,
-optional CWiid/bluez), and CI refresh. Xbox One / Series protocol support
-remains limited compared to in-kernel `xpad`.
-
-See `TODO.md` for the current parity and cleanup roadmap.
 
 ## License
 
