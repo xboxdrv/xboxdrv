@@ -69,9 +69,8 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   usb_claim_interface(m_interface, try_detach);
   usb_submit_read(m_endpoint, 32);
 
-  // Pad powered on before the host never re-sends connection/input until the
-  // host asks (xpad_inquiry_pad_presence). clear_halt covers a dead previous
-  // userspace process; LED flash is what the console does on slot assign.
+  // Pad powered on before the host never re-sends connection status until the
+  // host asks (xpad_inquiry_pad_presence). LED flash matches console slot assign.
   wake_slot();
   start_presence_retries();
 
@@ -118,22 +117,12 @@ Xbox360WirelessController::inquire_presence()
 void
 Xbox360WirelessController::wake_slot()
 {
-  if (m_handle && !is_disconnected())
-  {
-    // Stale halt from a previous process can leave IN silent while OUT (LED)
-    // still appears to work.
-    int rin = libusb_clear_halt(m_handle, static_cast<unsigned char>(m_endpoint | LIBUSB_ENDPOINT_IN));
-    int rout = libusb_clear_halt(m_handle, static_cast<unsigned char>(m_endpoint | LIBUSB_ENDPOINT_OUT));
-    if (rin != LIBUSB_SUCCESS)
-      log_debug("clear_halt IN: {}", libusb_strerror(rin));
-    if (rout != LIBUSB_SUCCESS)
-      log_debug("clear_halt OUT: {}", libusb_strerror(rout));
-  }
-
+  // Do not clear_halt here: the continuous IN URB is already queued, and the
+  // kernel refuses CLEAR_HALT on a non-empty endpoint ("EP not empty, refuse
+  // reset" / "CLEAR_HALT for active endpoint 0x81").
   inquire_presence();
 
-  // Console-style slot assign: flash player N then on (values 2..5). A solid
-  // LED alone does not always re-open input streaming after a late host start.
+  // Console-style slot assign: flash player N then on (values 2..5).
   uint8_t led = get_led();
   if (led == 0)
   {
