@@ -234,42 +234,66 @@ ForceFeedbackEffect::ForceFeedbackEffect(const struct ff_effect& effect) :
 void
 ForceFeedbackEffect::update(int msec_delta)
 {
-  if (playing)
+  if (!playing)
   {
-    count += msec_delta;
+    return;
+  }
 
-    if (count > delay)
+  count += msec_delta;
+  if (count <= delay)
+  {
+    return;
+  }
+
+  int t = count - delay;
+
+  // Linux FF: replay.length == 0 means infinite (until FF_STOP / effect removal).
+  // Timed path would treat t < 0 / t < length as finished and stop() immediately.
+  if (length == 0)
+  {
+    if (envelope.attack_length > 0 && t < envelope.attack_length)
     {
-      int t = count - delay;
-      if (t < envelope.attack_length)
-      { // attack
-        strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
-        weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
-
-        // apply envelope
-        strong_magnitude = ((envelope.attack_level * t) + strong_magnitude * (envelope.attack_length - t)) / envelope.attack_length;
-        weak_magnitude   = ((envelope.attack_level * t) + weak_magnitude   * (envelope.attack_length - t)) / envelope.attack_length;
-      }
-      else if  (t < length - envelope.fade_length)
-      { // sustain
-        strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
-        weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
-      }
-      else if (t < length)
-      { // fade
-        strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
-        weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
-
-        // apply envelope
-        int dt = t - (length - envelope.fade_length);
-        strong_magnitude = ((envelope.fade_level * dt) + strong_magnitude * (envelope.fade_length - dt)) / envelope.fade_length;
-        weak_magnitude   = ((envelope.fade_level * dt) + weak_magnitude   * (envelope.fade_length - dt)) / envelope.fade_length;
-      }
-      else
-      { // effect ended
-        stop();
-      }
+      // One-shot attack into the steady level, then hold forever.
+      strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, envelope.attack_length);
+      weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, envelope.attack_length);
+      strong_magnitude = ((envelope.attack_level * t) + strong_magnitude * (envelope.attack_length - t)) / envelope.attack_length;
+      weak_magnitude   = ((envelope.attack_level * t) + weak_magnitude   * (envelope.attack_length - t)) / envelope.attack_length;
     }
+    else
+    {
+      strong_magnitude = end_strong_magnitude;
+      weak_magnitude   = end_weak_magnitude;
+    }
+    return;
+  }
+
+  if (t < envelope.attack_length)
+  { // attack
+    strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
+    weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
+
+    // apply envelope
+    strong_magnitude = ((envelope.attack_level * t) + strong_magnitude * (envelope.attack_length - t)) / envelope.attack_length;
+    weak_magnitude   = ((envelope.attack_level * t) + weak_magnitude   * (envelope.attack_length - t)) / envelope.attack_length;
+  }
+  else if (t < length - envelope.fade_length)
+  { // sustain
+    strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
+    weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
+  }
+  else if (t < length)
+  { // fade
+    strong_magnitude = get_pos(start_strong_magnitude, end_strong_magnitude, t, length);
+    weak_magnitude   = get_pos(start_weak_magnitude,   end_weak_magnitude,   t, length);
+
+    // apply envelope
+    int dt = t - (length - envelope.fade_length);
+    strong_magnitude = ((envelope.fade_level * dt) + strong_magnitude * (envelope.fade_length - dt)) / envelope.fade_length;
+    weak_magnitude   = ((envelope.fade_level * dt) + weak_magnitude   * (envelope.fade_length - dt)) / envelope.fade_length;
+  }
+  else
+  { // effect ended
+    stop();
   }
 }
 

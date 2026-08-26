@@ -27,6 +27,8 @@ historical `NEWS` file.
 * Refresh GitLab CI (Ubuntu 24.04); remove Travis CI
 * README / man-page link updates; build-time D-Bus glue deprecation noise
   reduced
+* Force feedback: honour Linux FF length 0 as infinite (until stop);
+  port of the idea from PR #137 without the per-tick stop() hack
 * Speedlink Xeox USB Gamepad (1a34:0802) support, ported from PR #99
 * Wireless 360 receiver: accept variable report lengths and xpad-style
   input detection (byte1==0x01); activate on any live pad traffic so
