@@ -24,6 +24,7 @@ historical `NEWS` file.
 * Clarify USB transfer failure logs (status vs length; issue #230)
 * Document that VirtualKeyboard is not built; no GTK required (issue #208)
 * Man page: --evdev note about hiding source /dev/input/eventX (issue #205)
+* examples: DualShock 4 Bluetooth --evdev config (PR #75, Lauri Niskanen)
 * Sync many additional Xbox 360-compatible USB IDs from kernel `xpad`
   (Xbox One / Series IDs still omitted until that path is testable)
 * Fix classic Xbox stick axis offsets and Y invert (align with `xpad`)
