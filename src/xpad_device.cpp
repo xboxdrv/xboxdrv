@@ -212,6 +212,7 @@ XPadDevice xpad_devices[] = {
   { GAMEPAD_XBOX360,          0x2dc8, 0x310a, "8BitDo Ultimate 2C Wireless Controller" },
   { GAMEPAD_XBOX360,          0x2dc8, 0x310b, "8BitDo Ultimate 2 Wireless Controller" },
   { GAMEPAD_XBOX360,          0x2dc8, 0x6001, "8BitDo SN30 Pro" },
+  { GAMEPAD_XBOX360,          0x2f24, 0x008f, "Speedlink RAIT Gamepad" },  // issue #253; X-Input mode
   { GAMEPAD_XBOX360,          0x31e3, 0x1100, "Wooting One" },
   { GAMEPAD_XBOX360,          0x31e3, 0x1200, "Wooting Two" },
   { GAMEPAD_XBOX360,          0x31e3, 0x1210, "Wooting Lekker" },
