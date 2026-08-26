@@ -178,7 +178,14 @@ USBGSource::on_source_dispatch(GSource* source, GSourceFunc callback, gpointer u
 gboolean
 USBGSource::on_source()
 {
-  libusb_handle_events(NULL);
+  // Zero timeout: libusb_handle_events() can block for a long time (~60s)
+  // when no transfers are pending, stalling the GLib main loop (issue #144 /
+  // PR #214). Non-blocking drain matches how other call sites use
+  // libusb_handle_events_timeout_completed.
+  struct timeval to;
+  to.tv_sec = 0;
+  to.tv_usec = 0;
+  libusb_handle_events_timeout_completed(nullptr, &to, nullptr);
   return TRUE;
 }
 
