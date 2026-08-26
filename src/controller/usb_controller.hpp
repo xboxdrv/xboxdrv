@@ -50,7 +50,8 @@ public:
   std::string get_usbid() const override;
   std::string get_name() const override;
 
-  virtual bool parse(const uint8_t* data, int len, ControllerMessage* msg_out) =0;
+  /** Default no-op: safe if called while the derived class is already destroyed. */
+  virtual bool parse(const uint8_t* data, int len, ControllerMessage* msg_out);
 
   int  usb_find_ep(int direction, uint8_t if_class, uint8_t if_subclass, uint8_t if_protocol);
 

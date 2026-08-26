@@ -13,6 +13,7 @@ historical `NEWS` file.
 * Port Saitek P3600 (Cyborg Rumble) from `stable`
 * Add Thrustmaster T-Wireless 3-in-1 support (044f:d007; from PR #206)
 * Razer Sabertooth IDs: keep 1689:fe00 (PR #217), label 24c6:5d04 as Elite, drop 1532:0037 (DeathAdder mouse)
+* USBController::parse() non-pure default to avoid pure-virtual calls during teardown (PR #220)
 * Sync many additional Xbox 360-compatible USB IDs from kernel `xpad`
   (Xbox One / Series IDs still omitted until that path is testable)
 * Fix classic Xbox stick axis offsets and Y invert (align with `xpad`)

@@ -171,6 +171,18 @@ USBController::get_name() const
   return m_name;
 }
 
+bool
+USBController::parse(const uint8_t* data, int len, ControllerMessage* msg_out)
+{
+  // Dummy default for the pure-virtual-in-destructor case (PR #220):
+  // on_read_data can still run while ~USBController drains cancellations
+  // after the derived class has already been destroyed.
+  (void)data;
+  (void)len;
+  (void)msg_out;
+  return false;
+}
+
 void
 USBController::usb_submit_read(int endpoint, int len)
 {
