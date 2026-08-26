@@ -72,6 +72,8 @@ private:
    * half). Forces the receiver to resend connection packets.
    */
   void inquire_presence();
+  /** clear_halt + presence + connect-style LED (pad already on before host). */
+  void wake_slot();
   void start_presence_retries();
   void stop_presence_timer();
   bool on_presence_timeout();

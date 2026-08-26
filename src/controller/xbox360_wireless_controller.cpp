@@ -69,11 +69,10 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   usb_claim_interface(m_interface, try_detach);
   usb_submit_read(m_endpoint, 32);
 
-  // Presence inquiry (xpad / Windows checkStatus). Retry a few times over
-  // the first seconds: a single async OUT right after claim is easy to lose,
-  // and a continuous 2s poll was observed to emit empty pad messages without
-  // restoring real input.
-  inquire_presence();
+  // Pad powered on before the host never re-sends connection/input until the
+  // host asks (xpad_inquiry_pad_presence). clear_halt covers a dead previous
+  // userspace process; LED flash is what the console does on slot assign.
+  wake_slot();
   start_presence_retries();
 
   if (chatpad)
@@ -104,9 +103,9 @@ Xbox360WirelessController::~Xbox360WirelessController()
 void
 Xbox360WirelessController::inquire_presence()
 {
-  // Same packet as kernel xpad_inquiry_pad_presence() and the first half of
-  // the Windows ~2s checkStatus() poll (USB Host Shield XBOXRECV::checkStatus).
-  // Forces the receiver to resend connection status.
+  // Same packet as kernel xpad_inquiry_pad_presence() and Windows checkStatus.
+  // Forces the receiver to resend connection status for a pad that was already
+  // linked before this process claimed the interface.
   uint8_t cmd[] = {
     0x08, 0x00, 0x0f, 0xc0,
     0x00, 0x00, 0x00, 0x00,
@@ -114,6 +113,33 @@ Xbox360WirelessController::inquire_presence()
   };
   log_debug("wireless presence inquiry");
   usb_write(m_endpoint, cmd, sizeof(cmd));
+}
+
+void
+Xbox360WirelessController::wake_slot()
+{
+  if (m_handle && !is_disconnected())
+  {
+    // Stale halt from a previous process can leave IN silent while OUT (LED)
+    // still appears to work.
+    int rin = libusb_clear_halt(m_handle, static_cast<unsigned char>(m_endpoint | LIBUSB_ENDPOINT_IN));
+    int rout = libusb_clear_halt(m_handle, static_cast<unsigned char>(m_endpoint | LIBUSB_ENDPOINT_OUT));
+    if (rin != LIBUSB_SUCCESS)
+      log_debug("clear_halt IN: {}", libusb_strerror(rin));
+    if (rout != LIBUSB_SUCCESS)
+      log_debug("clear_halt OUT: {}", libusb_strerror(rout));
+  }
+
+  inquire_presence();
+
+  // Console-style slot assign: flash player N then on (values 2..5). A solid
+  // LED alone does not always re-open input streaming after a late host start.
+  uint8_t led = get_led();
+  if (led == 0)
+  {
+    led = static_cast<uint8_t>(2 + (m_interface / 2) % 4);
+  }
+  set_led_real(led);
 }
 
 void
@@ -162,7 +188,9 @@ Xbox360WirelessController::on_presence_timeout()
     return false;
   }
 
-  inquire_presence();
+  log_info("wireless slot {}: wake retry (pad_present={} got_pad_report={})",
+           m_interface / 2, m_pad_present, m_got_pad_report);
+  wake_slot();
   if (m_presence_retries_left > 0)
   {
     m_presence_retries_left -= 1;
@@ -343,9 +371,15 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
         log_info("connection status: controller and headset connected");
       else
         log_info("connection status: controller connected");
-      // LED is also set when the daemon assigns a slot; nudge here so the
-      // pad is awake even before the idle activation callback runs.
-      set_led_real(get_led());
+      // LED is also set when the daemon assigns a slot. Prefer a flash-then-on
+      // pattern when no LED has been chosen yet — matches console slot assign
+      // and has been observed to help after a late host start.
+      {
+        uint8_t led = get_led();
+        if (led == 0)
+          led = static_cast<uint8_t>(2 + (m_interface / 2) % 4);
+        set_led_real(led);
+      }
       mark_present();
       // Fall through: a longer frame may also carry pad data.
       if (len <= 2)
