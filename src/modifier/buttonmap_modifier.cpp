@@ -173,7 +173,7 @@ ButtonmapModifier::add_filter(std::string const& btn, ButtonFilterPtr filter)
     if ((*i)->lhs.str() == btn)
     {
       (*i)->filters.push_back(filter);
-      break;
+      return;
     }
   }
 

@@ -140,7 +140,6 @@ ControllerConfig::ControllerConfig(uinpp::MultiDevice& uinput, int slot, bool ex
     m_modifier.push_back(ModifierPtr(new DpadRotationModifier(opts.dpad_rotation)));
   }
 
-#if 0
   if (!opts.autofire_map.empty())
   {
     std::shared_ptr<ButtonmapModifier> buttonmap(new ButtonmapModifier);
@@ -153,7 +152,6 @@ ControllerConfig::ControllerConfig(uinpp::MultiDevice& uinput, int slot, bool ex
 
     m_modifier.push_back(buttonmap);
   }
-#endif
 
   // axismap, buttonmap comes last, as otherwise they would mess up the button and axis names
   for(std::vector<ButtonMappingOption>::const_iterator i = opts.buttonmap.begin(); i != opts.buttonmap.end(); ++i)
