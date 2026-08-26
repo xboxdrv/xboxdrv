@@ -39,10 +39,12 @@ private:
   int  m_guide_poweroff_timeout_sec; // 0 = disabled
   bool m_quiet;
   bool m_pad_present;
+  bool m_got_pad_report; // true once a data[1]==0x01 pad report was parsed
   std::chrono::steady_clock::time_point m_guide_down_ts;
   bool m_guide_held;
   guint m_guide_timeout_source;
   guint m_presence_timeout_source;
+  int   m_presence_retries_left;
 
   Xbox360DefaultNames xbox;
 
@@ -70,9 +72,7 @@ private:
    * half). Forces the receiver to resend connection packets.
    */
   void inquire_presence();
-  /** Battery/status poll used by Windows ~2s checkStatus when pad is linked. */
-  void inquire_battery();
-  void start_presence_timer();
+  void start_presence_retries();
   void stop_presence_timer();
   bool on_presence_timeout();
   static gboolean on_presence_timeout_wrap(gpointer data);

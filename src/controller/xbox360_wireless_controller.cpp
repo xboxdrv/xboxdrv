@@ -49,10 +49,12 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   m_guide_poweroff_timeout_sec(guide_poweroff_timeout_sec),
   m_quiet(quiet),
   m_pad_present(false),
+  m_got_pad_report(false),
   m_guide_down_ts(),
   m_guide_held(false),
   m_guide_timeout_source(0),
   m_presence_timeout_source(0),
+  m_presence_retries_left(0),
   xbox(m_message_descriptor)
 {
   // FIXME: A little bit of a hack
@@ -67,12 +69,12 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   usb_claim_interface(m_interface, try_detach);
   usb_submit_read(m_endpoint, 32);
 
-  // Windows host drivers poll presence (~2s). xpad only inquires once at
-  // start. A single fire-and-forget OUT at claim time is easy to lose and
-  // does not keep a half-open radio session alive after a userspace restart
-  // (LED still works, pad reports stop until a battery cycle).
+  // Presence inquiry (xpad / Windows checkStatus). Retry a few times over
+  // the first seconds: a single async OUT right after claim is easy to lose,
+  // and a continuous 2s poll was observed to emit empty pad messages without
+  // restoring real input.
   inquire_presence();
-  start_presence_timer();
+  start_presence_retries();
 
   if (chatpad)
   {
@@ -115,31 +117,13 @@ Xbox360WirelessController::inquire_presence()
 }
 
 void
-Xbox360WirelessController::inquire_battery()
+Xbox360WirelessController::start_presence_retries()
 {
-  // Second half of Windows checkStatus(): battery / status request when the
-  // pad is already linked. Not required by xpad, but observed on Windows at
-  // the same interval as presence.
-  uint8_t cmd[] = {
-    0x00, 0x00, 0x00, 0x40,
-    0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00
-  };
-  log_debug("wireless battery inquiry");
-  usb_write(m_endpoint, cmd, sizeof(cmd));
-}
-
-void
-Xbox360WirelessController::start_presence_timer()
-{
-  if (m_presence_timeout_source)
-  {
-    return;
-  }
-  // ~2s matches the Windows host poll interval documented via BusHound
-  // captures (USB Host Shield XBOXRECV::checkStatus).
-  m_presence_timeout_source = g_timeout_add_seconds(
-    2, &Xbox360WirelessController::on_presence_timeout_wrap, this);
+  stop_presence_timer();
+  m_presence_retries_left = 4;
+  // First retry soon after claim; further retries spread over ~2s.
+  m_presence_timeout_source = g_timeout_add(
+    200, &Xbox360WirelessController::on_presence_timeout_wrap, this);
 }
 
 void
@@ -150,6 +134,7 @@ Xbox360WirelessController::stop_presence_timer()
     g_source_remove(m_presence_timeout_source);
     m_presence_timeout_source = 0;
   }
+  m_presence_retries_left = 0;
 }
 
 gboolean
@@ -162,18 +147,33 @@ Xbox360WirelessController::on_presence_timeout_wrap(gpointer data)
 bool
 Xbox360WirelessController::on_presence_timeout()
 {
+  m_presence_timeout_source = 0;
+
   if (is_disconnected() || m_shutting_down)
   {
-    m_presence_timeout_source = 0;
+    m_presence_retries_left = 0;
+    return false;
+  }
+
+  // Already receiving pad data — no further inquiries needed.
+  if (m_pad_present && m_got_pad_report)
+  {
+    m_presence_retries_left = 0;
     return false;
   }
 
   inquire_presence();
-  if (m_pad_present)
+  if (m_presence_retries_left > 0)
   {
-    inquire_battery();
+    m_presence_retries_left -= 1;
   }
-  return true; // keep the ~2s cadence
+
+  if (m_presence_retries_left > 0)
+  {
+    m_presence_timeout_source = g_timeout_add(
+      500, &Xbox360WirelessController::on_presence_timeout_wrap, this);
+  }
+  return false;
 }
 
 void
@@ -317,16 +317,24 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
     uint8_t st = data[1];
     if ((st & 0x80) == 0 && (st & 0x40) == 0)
     {
-      log_info("connection status: nothing");
-      msg_out->clear();
-      m_pad_present = false;
-      m_guide_held = false;
-      set_active(false);
-      if (m_chatpad)
+      // Presence inquiry can elicit this status repeatedly. Only react on a
+      // real present→absent transition; never submit an empty ControllerMessage
+      // (that showed up as all-zero "msg:" lines every poll without any pad
+      // activity).
+      if (m_pad_present)
       {
-        m_chatpad->set_controller_present(false);
+        log_info("connection status: nothing");
+        m_pad_present = false;
+        m_got_pad_report = false;
+        m_guide_held = false;
+        stop_guide_timeout();
+        set_active(false);
+        if (m_chatpad)
+        {
+          m_chatpad->set_controller_present(false);
+        }
       }
-      return true;
+      return false;
     }
 
     if (st & 0x80)
@@ -386,6 +394,8 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
     if (data[1] == 0x01)
     {
       mark_present();
+      m_got_pad_report = true;
+      stop_presence_timer(); // real pad stream — stop startup inquiries
 
       uint8_t const* ptr = data + 4;
 
