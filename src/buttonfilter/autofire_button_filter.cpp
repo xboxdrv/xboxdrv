@@ -30,8 +30,9 @@ namespace xboxdrv {
 AutofireButtonFilter*
 AutofireButtonFilter::from_string(std::string const& str)
 {
-  int rate  = 50;
-  int delay = 0;
+  int rate    = 50;
+  int delay   = 0;
+  int sustain = -1; // default: max(50, rate/2)
 
   auto tokens = strut::split(str, ':');
   int idx = 0;
@@ -39,9 +40,12 @@ AutofireButtonFilter::from_string(std::string const& str)
   {
     switch(idx)
     {
-      case 0: rate  = str2int(*t); break;
-      case 1: delay = str2int(*t); break;
-      default: throw std::runtime_error("autofire filter: too many arguments (RATE or RATE:DELAY)");
+      case 0: rate    = str2int(*t); break;
+      case 1: delay   = str2int(*t); break;
+      case 2: sustain = str2int(*t); break;
+      default:
+        throw std::runtime_error(
+          "autofire filter: too many arguments (RATE, RATE:DELAY, or RATE:DELAY:SUSTAIN)");
     }
   }
 
@@ -50,10 +54,10 @@ AutofireButtonFilter::from_string(std::string const& str)
     throw std::runtime_error("autofire filter: RATE must be > 0");
   }
 
-  return new AutofireButtonFilter(rate, delay);
+  return new AutofireButtonFilter(rate, delay, sustain);
 }
 
-AutofireButtonFilter::AutofireButtonFilter(int rate, int delay) :
+AutofireButtonFilter::AutofireButtonFilter(int rate, int delay, int sustain) :
   m_held(false),
   m_phase(kIdle),
   m_rate(std::max(1, rate)),
@@ -62,12 +66,23 @@ AutofireButtonFilter::AutofireButtonFilter(int rate, int delay) :
   m_low(0),
   m_counter(0)
 {
-  // One-tick pulses are invisible to many games and get collapsed when
-  // filter() runs more than once per loop. Keep the button high long enough
-  // to register, then low for the rest of the period.
-  m_high = std::max(50, m_rate / 2);
+  if (sustain < 0)
+  {
+    // Default: long enough for games to see the press; not a one-tick pulse.
+    m_high = std::max(50, m_rate / 2);
+  }
+  else
+  {
+    m_high = sustain;
+  }
+
+  if (m_high < 1)
+  {
+    m_high = 1;
+  }
   if (m_high >= m_rate)
   {
+    // Need a non-zero low phase so the output actually toggles.
     m_high = std::max(1, m_rate - 1);
   }
   m_low = m_rate - m_high;
@@ -152,7 +167,7 @@ std::string
 AutofireButtonFilter::str() const
 {
   std::ostringstream out;
-  out << "auto:" << m_rate << ":" << m_delay;
+  out << "auto:" << m_rate << ":" << m_delay << ":" << m_high;
   return out.str();
 }
 

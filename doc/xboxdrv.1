@@ -877,26 +877,29 @@ Unlike \*(T<\fB\-\-modifier\fR\*(T> they are not order
 depended, but have a predefined order that is used no matter
 the order in which the options are given.
 .TP 
-\*(T<\fB\-\-autofire BUTTON=RATE,...\fR\*(T> or \*(T<\fBBUTTON=RATE:DELAY\fR\*(T>
+\*(T<\fB\-\-autofire BUTTON=RATE,...\fR\*(T>, \*(T<\fBRATE:DELAY\fR\*(T>, or \*(T<\fBRATE:DELAY:SUSTAIN\fR\*(T>
 While the given button is held, emit a pulse train instead of a continuous
 press. \fIRATE\fR is the full period in milliseconds (pressed + released).
-While autofiring, the button is held for about half that period (at least
-50 ms) and released for the rest.
 .PP
 Optional \fIDELAY\fR (milliseconds) is a solid normal press before pulsing
 starts. After the delay the button is released briefly, then the pulse train
-runs. The second number is \fInot\fR pulse width or duty cycle.
+runs.
+.PP
+Optional \fISUSTAIN\fR (milliseconds) is how long each pulse stays pressed.
+Must be >= 1 and < RATE. Default is half of RATE (at least 50 ms). DELAY is
+not pulse width; use SUSTAIN for that.
 
 .nf
 \*(T<$ xboxdrv \-\-autofire A=250\*(T>
 \*(T<$ xboxdrv \-\-autofire A=250:100\*(T>
+\*(T<$ xboxdrv \-\-autofire A=250:0:50\*(T>
 .fi
 .PP
 The same filter is available on \*(T<\fB\-\-ui\-buttonmap\fR\*(T> (filter on the Xbox
 button, left of \*(T<\fB=\fR\*(T>):
 
 .nf
-\*(T<$ xboxdrv \-\-ui\-buttonmap \(aqA^autofire:250=BTN_A\(aq\*(T>
+\*(T<$ xboxdrv \-\-ui\-buttonmap \(aqA^autofire:250:0:50=BTN_A\(aq\*(T>
 .fi
 .PP
 Combining \*(T<\fB\-\-autofire\fR\*(T> with \*(T<\fB\-\-buttonmap\fR\*(T> allows one button to
@@ -1175,7 +1178,7 @@ BTNSPEC      = [ DEVICEID "\-" ] ( ( "BTN_" NAME ) | ( "KEY_" NAME ) ) { "+" BTN
 EXECSPEC     = PROGRAM { ":" ARGUMENT } ;
 XBOXBUTTON   = "a" | "b" | "x" | "y" | "lb" | "rb" | "lt" | "rt" | 
                "tl" | "tr" | "start" | "select" | "back" | "guide" | "black" | "white" ;
-FILTER       = "toggle" | "invert" | "autofire" [ ":" RATE ] [ ":" DELAY ] | log [ ":" STRING ] ;
+FILTER       = "toggle" | "invert" | "autofire" [ ":" RATE ] [ ":" DELAY ] [ ":" SUSTAIN ] | log [ ":" STRING ] ;
 NAME         = STRING ;
 VALUE        = NUMBER ;
 REPEAT       = NUMBER ;
@@ -1651,21 +1654,22 @@ The invert filter will keep the button in pressed state
 when it is not pressed and in unpressed state when it is
 pressed.
 .TP 
-\*(T<\fBauto\fR\*(T>, \*(T<\fBautofire\fR\*(T>:\fIRATE\fR:\fIDELAY\fR
+\*(T<\fBauto\fR\*(T>, \*(T<\fBautofire\fR\*(T>:\fIRATE\fR:\fIDELAY\fR:\fISUSTAIN\fR
 While the button is held, emit a repeating pulse train instead of a continuous
 press. Parameters are optional (\*(T<\fBautofire\fR\*(T>, \*(T<\fBautofire:RATE\fR\*(T>,
-or \*(T<\fBautofire:RATE:DELAY\fR\*(T>).
+\*(T<\fBautofire:RATE:DELAY\fR\*(T>, or \*(T<\fBautofire:RATE:DELAY:SUSTAIN\fR\*(T>).
 .PP
-\fIRATE\fR is the full pulse period in milliseconds (default 50). Each shot is
-pressed for about half that period (at least 50 ms) and released for the
-remainder.
+\fIRATE\fR is the full pulse period in milliseconds (default 50).
 .PP
 \fIDELAY\fR is milliseconds of normal solid press before pulsing starts
 (default 0). After the delay the button releases briefly, then the pulse train
-runs. This is not duty cycle.
+runs.
+.PP
+\fISUSTAIN\fR is milliseconds each pulse stays pressed (default half of RATE, at
+least 50 ms). Must be < RATE.
 .PP
 Apply the filter on the Xbox button name (left-hand side), e.g.
-\*(T<\fBA^autofire:250=BTN_A\fR\*(T>, not on the Linux key name.
+\*(T<\fBA^autofire:250:0:50=BTN_A\fR\*(T>, not on the Linux key name.
 .TP 
 \*(T<\fBclick\-press\fR\*(T>
 The \*(T<\fBclick\-press\fR\*(T> filter will transmit a single button

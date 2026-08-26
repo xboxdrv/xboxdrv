@@ -272,7 +272,7 @@ CommandLineParser::init_argp(int argc, char** argv)
     .add_option(OPTION_AXISMAP,           'a', "axismap",        "MAP",   "Remap the axis as specified by MAP (example: -Y1=Y1,X1=X2)");
 
   m_argp.add_group("Modifier Preset Options: ")
-    .add_option(OPTION_AUTOFIRE,          NUL, "autofire",         "MAP",  "Cause the given buttons to act as autofire (example: A=250)")
+    .add_option(OPTION_AUTOFIRE,          NUL, "autofire",         "MAP",  "Autofire buttons (example: A=250 or A=250:0:50 for RATE:DELAY:SUSTAIN)")
     .add_option(OPTION_AXIS_SENSITIVITY,  NUL, "axis-sensitivity", "MAP",  "Adjust the axis sensitivity (example: X1=2.0,Y1=1.0)")
     .add_option(OPTION_CALIBRARIOTION,    NUL, "calibration",      "MAP",  "Changes the calibration for the given axis (example: X2=-32768:0:32767)")
     .add_option(OPTION_DEADZONE,          NUL, "deadzone",         "INT",  "Threshold under which axis events are ignored (default: 0)")
@@ -320,7 +320,7 @@ CommandLineParser::init_argp(int argc, char** argv)
   m_argp.add_group("Button Filter:")
     .add_pseudo("  tog, toggle", "Turn button into a toggle button")
     .add_pseudo("  inv, invert", "Invert the button value")
-    .add_pseudo("  auto, autofire:RATE:DELAY", "Enable automatic button press repetition")
+    .add_pseudo("  auto, autofire:RATE:DELAY:SUSTAIN", "Pulse while held (SUSTAIN = press length, optional)")
     .add_pseudo("  log:STRING", "Print button value to stdout");
 
   m_argp.add_group("Modifier:")
@@ -1215,8 +1215,8 @@ CommandLineParser::set_relative_axis(std::string const& name, std::string const&
 void
 CommandLineParser::set_autofire(std::string const& name, std::string const& value)
 {
-  // value is RATE or RATE:DELAY (ms). DELAY is time before autofire starts,
-  // not pulse width / duty cycle. std::stoi("250:50") would silently read 250.
+  // value is RATE, RATE:DELAY, or RATE:DELAY:SUSTAIN (ms).
+  // DELAY = solid hold before pulsing; SUSTAIN = each pulse high time.
   m_options->get_controller_options().autofire_map[name]
     = ButtonFilterPtr(AutofireButtonFilter::from_string(value));
 }

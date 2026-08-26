@@ -29,9 +29,9 @@ public:
   static AutofireButtonFilter* from_string(const std::string& str);
 
 public:
-  /** rate: full pulse period in ms (high + low). delay: solid hold before
-      pulsing starts. Pulse high time is at least 50ms or rate/2. */
-  AutofireButtonFilter(int rate, int delay);
+  /** rate: full pulse period in ms. delay: solid hold before pulsing.
+      sustain: ms pressed each shot; -1 = default max(50, rate/2). */
+  AutofireButtonFilter(int rate, int delay, int sustain = -1);
 
   void update(int msec_delta) override;
   bool filter(bool value) override;
