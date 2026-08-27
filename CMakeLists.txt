@@ -189,17 +189,24 @@ add_custom_command(
   DEPENDS ${SOURCE}
   COMMAND ${DBUS_GLUE} -o ${TARGET} ${SOURCE} --dbus-prefix=xboxdrv_daemon)
 
-add_library(libxboxdrv STATIC ${XBOXDRV_SOURCES_CXX} ${G72X_SOURCES})
-set_source_files_properties(${G72X_SOURCES} PROPERTIES
-  LANGUAGE C
-  # Vendored Sun CCITT reference code; keep third-party sources quiet.
-  COMPILE_OPTIONS "-w")
+# Vendored Sun CCITT G.72x reference: isolate so project -Werror / C++-only
+# flags never reach this ancient C code.
+add_library(g72x STATIC ${G72X_SOURCES})
+set_target_properties(g72x PROPERTIES
+  C_STANDARD 90
+  C_STANDARD_REQUIRED OFF
+  C_EXTENSIONS ON
+  POSITION_INDEPENDENT_CODE ON)
+target_include_directories(g72x PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/g72x)
+target_compile_options(g72x PRIVATE -w)
+
+add_library(libxboxdrv STATIC ${XBOXDRV_SOURCES_CXX})
 set_target_properties(libxboxdrv PROPERTIES OUTPUT_NAME xboxdrv)
 set_target_properties(libxboxdrv PROPERTIES
   CXX_STANDARD 23
   CXX_STANDARD_REQUIRED ON
   CXX_EXTENSIONS OFF)
-target_include_directories(libxboxdrv PUBLIC src/ ${CMAKE_CURRENT_BINARY_DIR}/src/ external/g72x)
+target_include_directories(libxboxdrv PUBLIC src/ ${CMAKE_CURRENT_BINARY_DIR}/src/)
 # Isolate PACKAGE_VERSION to one generated header included only by
 # xboxdrv_version.cpp. Write only when content changes so a version/git-rev
 # bump does not force a full libxboxdrv rebuild (and does not touch a global
@@ -225,6 +232,7 @@ endif()
 target_compile_options(libxboxdrv PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${WARNINGS_CXX_FLAGS}>)
 
 target_link_libraries(libxboxdrv PUBLIC
+  g72x
   argpp::argpp
   strut::strut
   uinpp::uinpp
