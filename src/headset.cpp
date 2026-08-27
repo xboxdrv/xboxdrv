@@ -27,6 +27,7 @@
 
 #include "raise_exception.hpp"
 #include "util/string.hpp"
+#include <logmich/log.hpp>
 
 namespace xboxdrv {
 
@@ -35,8 +36,11 @@ using namespace std::placeholders;
 Headset::Headset(libusb_device_handle* handle, bool debug) :
   m_handle(handle),
   m_interface(new unsebu::USBInterface(m_handle, 1)),
-  m_fout(),
-  m_fin()
+  m_fout_raw(),
+  m_fout_pcm(),
+  m_fin(),
+  m_decoder(),
+  m_debug(debug)
 {
 }
 
@@ -75,14 +79,30 @@ Headset::play_file(std::string const& filename)
 void
 Headset::record_file(std::string const& filename)
 {
-  m_fout.reset(new std::ofstream(filename.c_str(), std::ios::binary));
+  m_fout_raw.reset(new std::ofstream(filename.c_str(), std::ios::binary));
 
-  if (!*m_fout)
+  if (!*m_fout_raw)
   {
     raise_exception(std::runtime_error, filename << ": " << strerror(errno));
   }
   else
   {
+    m_interface->submit_read(3, 32, std::bind(&Headset::receive_data, this, _1, _2));
+  }
+}
+
+void
+Headset::record_pcm(std::string const& filename)
+{
+  m_fout_pcm.reset(new std::ofstream(filename.c_str(), std::ios::binary));
+
+  if (!*m_fout_pcm)
+  {
+    raise_exception(std::runtime_error, filename << ": " << strerror(errno));
+  }
+  else
+  {
+    // Ensure the read is submitted (idempotent if already done by record_file)
     m_interface->submit_read(3, 32, std::bind(&Headset::receive_data, this, _1, _2));
   }
 }
@@ -107,11 +127,24 @@ Headset::send_data(libusb_transfer* transfer)
 bool
 Headset::receive_data(uint8_t* data, int len)
 {
-  if (m_fout.get())
+  if (m_fout_raw.get())
   {
-    m_fout->write(reinterpret_cast<char*>(data), len);
+    m_fout_raw->write(reinterpret_cast<char*>(data), len);
   }
-  log_debug(raw2str(data, len));
+
+  if (m_fout_pcm.get() && len > 0)
+  {
+    std::vector<int16_t> samples;
+    m_decoder.decode(data, len, samples);
+    m_fout_pcm->write(reinterpret_cast<const char*>(samples.data()),
+                      samples.size() * sizeof(int16_t));
+    m_fout_pcm->flush(); // important for FIFO consumers
+  }
+
+  if (m_debug)
+  {
+    log_debug(raw2str(data, len));
+  }
 
   return true;
 }

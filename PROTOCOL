@@ -914,3 +914,12 @@ struct
 
 
 # EOF #
+
+Headset audio (interface 1, EP 3 IN):
+  32-byte interrupt packets at ~256 Hz => 8192 bytes/s.
+  Codec: G.721 / G.726 4-bit ADPCM run at 16 kHz (not the standard 8 kHz).
+  32 bytes = 64 samples of 4-bit codes. Decode with g721_decoder to S16LE mono @ 16 kHz.
+  Use --headset-pcm /path/to/fifo to get live PCM suitable for:
+    pactl load-module module-pipe-source source_name=xbox-headset file=/path/to/fifo format=s16le rate=16000 channels=1
+  or PipeWire equivalents / pw-cat --record ...
+

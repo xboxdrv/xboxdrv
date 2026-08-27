@@ -22,8 +22,12 @@
 #include <libusb.h>
 #include <memory>
 #include <string>
+#include <fstream>
+#include <vector>
 
 #include <unsebu/usb_interface.hpp>
+
+#include "g72x_decoder.hpp"
 
 namespace xboxdrv {
 
@@ -33,8 +37,12 @@ private:
   libusb_device_handle* m_handle;
   std::unique_ptr<unsebu::USBInterface> m_interface;
 
-  std::unique_ptr<std::ofstream> m_fout;
+  std::unique_ptr<std::ofstream> m_fout_raw;
+  std::unique_ptr<std::ofstream> m_fout_pcm;
   std::unique_ptr<std::ifstream> m_fin;
+
+  G72xDecoder m_decoder;
+  bool m_debug;
 
 public:
   Headset(libusb_device_handle* handle, bool debug);
@@ -42,6 +50,8 @@ public:
 
   void play_file(const std::string& play_filename);
   void record_file(const std::string& dump_filename);
+  /** Write decoded 16 kHz mono S16LE PCM to FILE (regular file or FIFO). */
+  void record_pcm(const std::string& pcm_filename);
 
 private:
   bool send_data(libusb_transfer* transfer);

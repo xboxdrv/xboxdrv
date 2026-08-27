@@ -151,6 +151,11 @@ file(GLOB XBOXDRV_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/uinput/*.cpp
   src/util/*.cpp)
 
+set(G72X_SOURCES
+  external/g72x/g72x.c
+  external/g72x/g721.c
+  external/g72x/g711.c)
+
 list(APPEND XBOXDRV_SOURCES_CXX
   ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_controller_glue.hpp
   ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_daemon_glue.hpp
@@ -184,13 +189,14 @@ add_custom_command(
   DEPENDS ${SOURCE}
   COMMAND ${DBUS_GLUE} -o ${TARGET} ${SOURCE} --dbus-prefix=xboxdrv_daemon)
 
-add_library(libxboxdrv STATIC ${XBOXDRV_SOURCES_CXX})
+add_library(libxboxdrv STATIC ${XBOXDRV_SOURCES_CXX} ${G72X_SOURCES})
+set_source_files_properties(${G72X_SOURCES} PROPERTIES LANGUAGE C)
 set_target_properties(libxboxdrv PROPERTIES OUTPUT_NAME xboxdrv)
 set_target_properties(libxboxdrv PROPERTIES
   CXX_STANDARD 23
   CXX_STANDARD_REQUIRED ON
   CXX_EXTENSIONS OFF)
-target_include_directories(libxboxdrv PUBLIC src/ ${CMAKE_CURRENT_BINARY_DIR}/src/)
+target_include_directories(libxboxdrv PUBLIC src/ ${CMAKE_CURRENT_BINARY_DIR}/src/ external/g72x)
 # Isolate PACKAGE_VERSION to one generated header included only by
 # xboxdrv_version.cpp. Write only when content changes so a version/git-rev
 # bump does not force a full libxboxdrv rebuild (and does not touch a global

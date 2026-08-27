@@ -110,6 +110,7 @@ public:
   bool headset_debug;
   std::string headset_dump;
   std::string headset_play;
+  std::string headset_pcm;
 
   // daemon options
   bool detach;
