@@ -10,6 +10,10 @@
 
 #include "headset.hpp"
 
+#ifdef HAVE_PIPEWIRE
+#include "headset_pipewire.hpp"
+#endif
+
 #include <fstream>
 #include <functional>
 #include <errno.h>
@@ -89,6 +93,13 @@ Headset::Headset(libusb_device_handle* handle, bool debug) :
 Headset::~Headset()
 {
   finalize_wav();
+#ifdef HAVE_PIPEWIRE
+  if (m_pw)
+  {
+    m_pw->shutdown();
+    m_pw.reset();
+  }
+#endif
   if (m_pulse_play_fd >= 0)
   {
     ::close(m_pulse_play_fd);
@@ -457,6 +468,26 @@ Headset::send_data(libusb_transfer* transfer)
     return true;
   }
 
+#ifdef HAVE_PIPEWIRE
+  if (m_pw && m_pw->running())
+  {
+    int16_t samples[SAMPLES_PER_PACKET];
+    if (!m_pw->pull_speaker(samples, SAMPLES_PER_PACKET))
+    {
+      std::memset(samples, 0, sizeof(samples));
+    }
+    std::vector<uint8_t> packet;
+    encode_packet(samples, packet);
+    if (packet.size() != PLAY_PACKET_BYTES)
+    {
+      return false;
+    }
+    std::memcpy(transfer->buffer, packet.data(), PLAY_PACKET_BYTES);
+    transfer->length = static_cast<int>(PLAY_PACKET_BYTES);
+    return true;
+  }
+#endif
+
   // module-pipe-sink PCM → encode → OUT
   if (m_pulse_play_fd >= 0)
   {
@@ -503,7 +534,11 @@ Headset::receive_data(uint8_t* data, int len)
     m_fout_raw->write(reinterpret_cast<char*>(data), len);
   }
 
-  if ((m_fout_pcm.get() || m_fout_wav.get()) && len > 0)
+  bool need_decode = m_fout_pcm.get() || m_fout_wav.get();
+#ifdef HAVE_PIPEWIRE
+  need_decode = need_decode || (m_pw && m_pw->running());
+#endif
+  if (need_decode && len > 0)
   {
     std::vector<int16_t> samples;
     m_decoder.decode(data, len, samples);
@@ -515,6 +550,12 @@ Headset::receive_data(uint8_t* data, int len)
       m_fout_pcm->write(bytes, nbytes);
       m_fout_pcm->flush();
     }
+#ifdef HAVE_PIPEWIRE
+    if (m_pw && m_pw->running())
+    {
+      m_pw->push_mic(samples.data(), samples.size());
+    }
+#endif
     if (m_fout_wav.get())
     {
       m_fout_wav->write(bytes, nbytes);
@@ -723,6 +764,50 @@ Headset::enable_pulse_audio()
     }
   }
 }
+
+
+void
+Headset::enable_pipewire_audio()
+{
+#ifdef HAVE_PIPEWIRE
+  m_pw = std::make_unique<HeadsetPipeWire>();
+  m_pw->start();
+  if (!m_fout_pcm && !m_fout_raw && !m_fout_wav)
+  {
+    m_interface->submit_read(3, 32, std::bind(&Headset::receive_data, this, _1, _2));
+  }
+  start_pipewire_playback();
+#else
+  raise_exception(std::runtime_error,
+                  "--headset-pipewire requires xboxdrv built with libpipewire-0.3 "
+                  "(HAVE_PIPEWIRE)");
+#endif
+}
+
+#ifdef HAVE_PIPEWIRE
+void
+Headset::start_pipewire_playback()
+{
+  m_encoder.reset();
+  m_play_left_pack = false;
+  m_play_pcm.clear();
+  m_play_pos = 0;
+  m_fin.reset();
+
+  int16_t silence[SAMPLES_PER_PACKET];
+  std::memset(silence, 0, sizeof(silence));
+  std::vector<uint8_t> packet;
+  encode_packet(silence, packet);
+  if (packet.size() != PLAY_PACKET_BYTES)
+  {
+    log_error("[headset] pipewire: bad silence packet");
+    return;
+  }
+  m_interface->submit_write(4, packet.data(), static_cast<int>(PLAY_PACKET_BYTES),
+                            std::bind(&Headset::send_data, this, _1));
+  log_info("[headset] speaker USB stream started (8 kHz from PipeWire sink)");
+}
+#endif
 
 } // namespace xboxdrv
 

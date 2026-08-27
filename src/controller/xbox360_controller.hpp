@@ -60,6 +60,7 @@ public:
                     const std::string& headset_play_wav,
                     bool headset_play_left_pack,
                     bool headset_pulse,
+                    bool headset_pipewire,
                     bool try_detach);
   ~Xbox360Controller();
 

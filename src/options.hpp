@@ -116,6 +116,7 @@ public:
   bool headset_play_left_pack;
   /** Auto FIFOs + pactl module-pipe-source/sink (PulseAudio / PipeWire pulse). */
   bool headset_pulse;
+  bool headset_pipewire;
 
   // daemon options
   bool detach;

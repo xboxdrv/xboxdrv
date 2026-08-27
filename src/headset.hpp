@@ -61,6 +61,8 @@ public:
 
   /** Expose mic/speaker via pactl module-pipe-source/sink (PipeWire pulse or PulseAudio). */
   void enable_pulse_audio();
+  /** Expose mic/speaker as native PipeWire Audio/Source + Audio/Sink (libpipewire). */
+  void enable_pipewire_audio();
 
 private:
   bool send_data(libusb_transfer* transfer);
@@ -76,6 +78,11 @@ private:
   static void pactl_unload_module(int index);
   void start_pulse_playback();
   bool fill_play_samples_from_pulse(int16_t* out, size_t count);
+
+#ifdef HAVE_PIPEWIRE
+  std::unique_ptr<class HeadsetPipeWire> m_pw;
+  void start_pipewire_playback();
+#endif
 
 private:
   Headset(const Headset&);

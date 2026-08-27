@@ -974,6 +974,9 @@ CLI
   --headset-play FILE          stream pre-encoded 32-byte G.726 dump to EP 4
   --headset-play-wav FILE      PCM WAV → 8 kHz mono → G.726-32 right-pack → EP 4
   --headset-play-left-pack     alternate nibble order for play-wav (sounds worse)
+  --headset-pipewire           native libpipewire Audio/Source + Audio/Sink
+                                 (param/state handlers, no AUTOCONNECT).
+                                 Build with libpipewire-0.3 (HAVE_PIPEWIRE).
   --headset-pulse              pactl module-pipe-source + module-pipe-sink:
                                  source xboxdrv-headset-mic     (S16LE 16 kHz)
                                  sink   xboxdrv-headset-speaker (S16LE  8 kHz)

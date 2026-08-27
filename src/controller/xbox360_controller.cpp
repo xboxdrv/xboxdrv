@@ -40,6 +40,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
                                      std::string const& headset_play_wav,
                                      bool headset_play_left_pack,
                                      bool headset_pulse,
+                                     bool headset_pipewire,
                                      bool try_detach) :
   USBController(dev),
   dev_type(),
@@ -109,6 +110,10 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
     if (headset_pulse)
     {
       m_headset->enable_pulse_audio();
+    }
+    if (headset_pipewire)
+    {
+      m_headset->enable_pipewire_audio();
     }
   }
 }

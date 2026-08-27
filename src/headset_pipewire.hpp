@@ -7,7 +7,14 @@
 
 namespace xboxdrv {
 
-/** PipeWire graph nodes for --headset-pulse (client-owned; removed on shutdown). */
+/**
+ * Native PipeWire virtual devices for the Xbox 360 headset.
+ *
+ *   xboxdrv-headset-mic     — Audio/Source, 16 kHz mono S16LE (USB mic → graph)
+ *   xboxdrv-headset-speaker — Audio/Sink,    8 kHz mono S16LE (graph → USB phone)
+ *
+ * Requires HAVE_PIPEWIRE (libpipewire-0.3). Used by --headset-pipewire.
+ */
 class HeadsetPipeWire
 {
 public:
@@ -18,7 +25,6 @@ public:
   HeadsetPipeWire& operator=(const HeadsetPipeWire&) = delete;
 
   void start();
-  /** Idempotent: drop streams/core immediately so nodes do not linger. */
   void shutdown();
 
   void push_mic(const int16_t* samples, size_t count);

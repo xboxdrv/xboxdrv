@@ -18,6 +18,7 @@
 
 #include <pipewire/pipewire.h>
 #include <spa/param/audio/format-utils.h>
+#include <spa/param/latency-utils.h>
 
 #include <logmich/log.hpp>
 
@@ -25,14 +26,11 @@ namespace xboxdrv {
 
 namespace {
 
-/** SPSC ring. On overflow, drops the oldest samples so latency cannot grow without bound. */
 class SampleRing
 {
 public:
   explicit SampleRing(size_t capacity) :
     m_buf(capacity), m_cap(capacity), m_r(0), m_w(0) {}
-
-  size_t capacity() const { return m_cap; }
 
   size_t available() const
   {
@@ -41,23 +39,19 @@ public:
     return (w - r + m_cap) % m_cap;
   }
 
-  /** Discard up to n oldest samples (used to catch up when lag builds). */
   void discard(size_t n)
   {
     size_t r = m_r.load(std::memory_order_relaxed);
     size_t w = m_w.load(std::memory_order_acquire);
     size_t avail = (w - r + m_cap) % m_cap;
-    size_t drop = std::min(n, avail);
-    m_r.store(r + drop, std::memory_order_release);
+    m_r.store(r + std::min(n, avail), std::memory_order_release);
   }
 
   void clear()
   {
-    size_t w = m_w.load(std::memory_order_relaxed);
-    m_r.store(w, std::memory_order_release);
+    m_r.store(m_w.load(std::memory_order_relaxed), std::memory_order_release);
   }
 
-  /** Write; if full, drop oldest to make room (prefer glitch over growing delay). */
   size_t write(const int16_t* data, size_t n)
   {
     size_t done = 0;
@@ -68,9 +62,7 @@ public:
       size_t free = m_cap - 1 - ((w - r + m_cap) % m_cap);
       if (free == 0)
       {
-        // Drop about 1/4 of the buffer of oldest audio to catch up.
-        size_t drop = std::max<size_t>(1, m_cap / 4);
-        discard(drop);
+        discard(std::max<size_t>(1, m_cap / 8));
         continue;
       }
       size_t chunk = std::min(n - done, free);
@@ -119,12 +111,13 @@ private:
   std::atomic<size_t> m_r, m_w;
 };
 
-// Enough slack for USB ↔ graph jitter; still bounded so lag cannot run away.
-constexpr size_t MIC_RING_SAMPLES = 16000 / 2;   // ~500 ms @ 16 kHz
-constexpr size_t SPK_RING_SAMPLES = 8000 / 2;    // ~500 ms @ 8 kHz
-constexpr size_t SPK_HIGH_WATER   = 8000 / 3;    // ~333 ms — only then drop lag
-constexpr size_t SPK_TARGET       = 8000 / 10;   // ~100 ms target after catch-up
-constexpr size_t SPK_PREBUFFER    = 8000 / 20;   // ~50 ms before pulling real audio
+constexpr size_t MIC_RATE = 16000;
+constexpr size_t SPK_RATE = 8000;
+constexpr size_t MIC_RING = MIC_RATE / 2;  // 500 ms
+constexpr size_t SPK_RING = SPK_RATE / 2;
+constexpr size_t SPK_HIGH = SPK_RATE / 3;
+constexpr size_t SPK_TARGET = SPK_RATE / 10;
+constexpr size_t SPK_PREBUF = SPK_RATE / 20;
 
 } // namespace
 
@@ -137,13 +130,93 @@ struct HeadsetPipeWire::Impl
   pw_stream* spk_stream = nullptr;
   spa_hook mic_listener{};
   spa_hook spk_listener{};
-  SampleRing mic_ring{MIC_RING_SAMPLES};
-  SampleRing spk_ring{SPK_RING_SAMPLES};
+  SampleRing mic_ring{MIC_RING};
+  SampleRing spk_ring{SPK_RING};
   std::atomic<bool> stopping{false};
+  uint32_t mic_stride = sizeof(int16_t);
+  uint32_t spk_stride = sizeof(int16_t);
 
   static void on_mic_process(void* data);
   static void on_spk_process(void* data);
+  static void on_mic_state(void* data, pw_stream_state old, pw_stream_state state, const char* error);
+  static void on_spk_state(void* data, pw_stream_state old, pw_stream_state state, const char* error);
+  static void on_mic_param(void* data, uint32_t id, const spa_pod* param);
+  static void on_spk_param(void* data, uint32_t id, const spa_pod* param);
 };
+
+void HeadsetPipeWire::Impl::on_mic_state(void* data, pw_stream_state /*old*/,
+                                         pw_stream_state state, const char* error)
+{
+  auto* self = static_cast<Impl*>(data);
+  log_info("[headset] pipewire mic state: {}{}",
+           pw_stream_state_as_string(state),
+           error ? std::string(" — ") + error : std::string());
+  if (state == PW_STREAM_STATE_ERROR && error)
+  {
+    log_error("[headset] pipewire mic error: {}", error);
+  }
+  (void)self;
+}
+
+void HeadsetPipeWire::Impl::on_spk_state(void* data, pw_stream_state /*old*/,
+                                         pw_stream_state state, const char* error)
+{
+  auto* self = static_cast<Impl*>(data);
+  log_info("[headset] pipewire speaker state: {}{}",
+           pw_stream_state_as_string(state),
+           error ? std::string(" — ") + error : std::string());
+  if (state == PW_STREAM_STATE_ERROR && error)
+  {
+    log_error("[headset] pipewire speaker error: {}", error);
+  }
+  (void)self;
+}
+
+void HeadsetPipeWire::Impl::on_mic_param(void* data, uint32_t id, const spa_pod* param)
+{
+  auto* self = static_cast<Impl*>(data);
+  if (param == nullptr || id != SPA_PARAM_Format)
+  {
+    return;
+  }
+  spa_audio_info info{};
+  if (spa_format_parse(param, &info.media_type, &info.media_subtype) < 0)
+  {
+    return;
+  }
+  if (info.media_type != SPA_MEDIA_TYPE_audio ||
+      info.media_subtype != SPA_MEDIA_SUBTYPE_raw)
+  {
+    return;
+  }
+  spa_format_audio_raw_parse(param, &info.info.raw);
+  self->mic_stride = sizeof(int16_t) * std::max(1u, info.info.raw.channels);
+  log_info("[headset] pipewire mic format: rate={} channels={}",
+           info.info.raw.rate, info.info.raw.channels);
+}
+
+void HeadsetPipeWire::Impl::on_spk_param(void* data, uint32_t id, const spa_pod* param)
+{
+  auto* self = static_cast<Impl*>(data);
+  if (param == nullptr || id != SPA_PARAM_Format)
+  {
+    return;
+  }
+  spa_audio_info info{};
+  if (spa_format_parse(param, &info.media_type, &info.media_subtype) < 0)
+  {
+    return;
+  }
+  if (info.media_type != SPA_MEDIA_TYPE_audio ||
+      info.media_subtype != SPA_MEDIA_SUBTYPE_raw)
+  {
+    return;
+  }
+  spa_format_audio_raw_parse(param, &info.info.raw);
+  self->spk_stride = sizeof(int16_t) * std::max(1u, info.info.raw.channels);
+  log_info("[headset] pipewire speaker format: rate={} channels={}",
+           info.info.raw.rate, info.info.raw.channels);
+}
 
 void HeadsetPipeWire::Impl::on_mic_process(void* data)
 {
@@ -162,24 +235,31 @@ void HeadsetPipeWire::Impl::on_mic_process(void* data)
     }
     return;
   }
+
   spa_data* d = &b->buffer->datas[0];
-  size_t max_samples = d->maxsize / sizeof(int16_t);
-  // Prefer short quanta: only fill what we have, do not pad a whole large buffer
-  // with silence (that invents time and desyncs the graph).
-  size_t avail = self->mic_ring.available();
-  size_t want = std::min(max_samples, std::max(avail, size_t(1)));
-  // Cap single process fill so we do not dump the entire ring in one quantum.
-  want = std::min(want, size_t(320)); // 20 ms @ 16 kHz
-  size_t n = self->mic_ring.read(static_cast<int16_t*>(d->data), want);
-  if (n == 0)
+  // Requested size from the graph; fall back to maxsize.
+  uint32_t n_bytes = d->maxsize;
+  if (b->requested > 0)
   {
-    // True underrun: one silent quantum, size 1 period-ish
-    n = std::min(max_samples, size_t(160));
-    std::memset(d->data, 0, n * sizeof(int16_t));
+    n_bytes = std::min(d->maxsize,
+                       static_cast<uint32_t>(b->requested * self->mic_stride));
+  }
+  size_t n_samp = n_bytes / self->mic_stride;
+  if (n_samp == 0)
+  {
+    pw_stream_queue_buffer(self->mic_stream, b);
+    return;
+  }
+
+  auto* out = static_cast<int16_t*>(d->data);
+  size_t got = self->mic_ring.read(out, n_samp);
+  if (got < n_samp)
+  {
+    std::memset(out + got, 0, (n_samp - got) * sizeof(int16_t));
   }
   d->chunk->offset = 0;
-  d->chunk->stride = sizeof(int16_t);
-  d->chunk->size = static_cast<uint32_t>(n * sizeof(int16_t));
+  d->chunk->stride = static_cast<int32_t>(self->mic_stride);
+  d->chunk->size = static_cast<uint32_t>(n_samp * self->mic_stride);
   pw_stream_queue_buffer(self->mic_stream, b);
 }
 
@@ -191,16 +271,27 @@ void HeadsetPipeWire::Impl::on_spk_process(void* data)
     return;
   }
 
-  // Drain every available buffer; one process cycle may queue several.
   while (pw_buffer* b = pw_stream_dequeue_buffer(self->spk_stream))
   {
     spa_data* d = &b->buffer->datas[0];
     if (d->data && d->chunk && d->chunk->size > 0)
     {
-      size_t n = d->chunk->size / sizeof(int16_t);
+      size_t n = d->chunk->size / self->spk_stride;
       auto* samples = reinterpret_cast<const int16_t*>(
         static_cast<uint8_t*>(d->data) + d->chunk->offset);
-      self->spk_ring.write(samples, n);
+      // Mono sink: take first channel sample of each frame if channels>1
+      if (self->spk_stride == sizeof(int16_t))
+      {
+        self->spk_ring.write(samples, n);
+      }
+      else
+      {
+        uint32_t ch = self->spk_stride / sizeof(int16_t);
+        for (size_t i = 0; i < n; ++i)
+        {
+          self->spk_ring.write(&samples[i * ch], 1);
+        }
+      }
     }
     pw_stream_queue_buffer(self->spk_stream, b);
   }
@@ -208,23 +299,32 @@ void HeadsetPipeWire::Impl::on_spk_process(void* data)
 
 namespace {
 
-void connect_audio_stream(pw_stream* stream, uint32_t rate, spa_direction direction)
+void connect_device_stream(pw_stream* stream, uint32_t rate, spa_direction direction)
 {
   uint8_t buffer[1024];
   spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
-  const spa_pod* params[1];
+  const spa_pod* params[2];
+
   spa_audio_info_raw info = {};
   info.format = SPA_AUDIO_FORMAT_S16;
   info.channels = 1;
   info.rate = rate;
   params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
 
-  // No AUTOCONNECT: with it, OUTPUT becomes a *player* on the default sink and
-  // INPUT a *recorder* on the default source — the opposite of exporting devices.
-  // As Audio/Source + Audio/Sink nodes, other clients connect to us instead.
-  if (pw_stream_connect(stream, direction, PW_ID_ANY,
-                        PW_STREAM_FLAG_MAP_BUFFERS,
-                        params, 1) < 0)
+  // Advertise latency so the session links us as a real endpoint.
+  spa_latency_info latency = SPA_LATENCY_INFO(
+    direction == SPA_DIRECTION_INPUT ? SPA_DIRECTION_INPUT : SPA_DIRECTION_OUTPUT);
+  latency.min_ns = latency.max_ns = 20 * SPA_NSEC_PER_MSEC;
+  params[1] = spa_latency_build(&b, SPA_PARAM_Latency, &latency);
+
+  // No AUTOCONNECT: we *are* the device; apps connect to us.
+  int res = pw_stream_connect(
+    stream, direction, PW_ID_ANY,
+    static_cast<pw_stream_flags>(
+      PW_STREAM_FLAG_MAP_BUFFERS |
+      PW_STREAM_FLAG_RT_PROCESS),
+    params, 2);
+  if (res < 0)
   {
     throw std::runtime_error("pw_stream_connect failed");
   }
@@ -244,30 +344,22 @@ HeadsetPipeWire::~HeadsetPipeWire()
   shutdown();
 }
 
-void
-HeadsetPipeWire::shutdown()
+void HeadsetPipeWire::shutdown()
 {
   if (!m_impl)
   {
     return;
   }
-
-  // Make process callbacks no-ops before we tear the graph down.
   m_impl->stopping.store(true, std::memory_order_release);
   m_running = false;
   m_impl->mic_ring.clear();
   m_impl->spk_ring.clear();
-
   if (!m_impl->loop)
   {
     return;
   }
 
-  // Drop client objects while the loop is still running so PipeWire can
-  // process destroy events; then disconnect the core (removes any leftover
-  // client-owned nodes) and stop the thread.
   pw_thread_loop_lock(m_impl->loop);
-
   if (m_impl->mic_stream)
   {
     pw_stream_set_active(m_impl->mic_stream, false);
@@ -282,9 +374,6 @@ HeadsetPipeWire::shutdown()
     pw_stream_destroy(m_impl->spk_stream);
     m_impl->spk_stream = nullptr;
   }
-
-  // Disconnecting the core is what guarantees the session drops our nodes
-  // even if a stream destroy raced; do this before stopping the thread.
   if (m_impl->core)
   {
     pw_core_disconnect(m_impl->core);
@@ -295,14 +384,12 @@ HeadsetPipeWire::shutdown()
     pw_context_destroy(m_impl->context);
     m_impl->context = nullptr;
   }
-
   pw_thread_loop_unlock(m_impl->loop);
   pw_thread_loop_stop(m_impl->loop);
   pw_thread_loop_destroy(m_impl->loop);
   m_impl->loop = nullptr;
-
   pw_deinit();
-  log_info("[headset] PipeWire nodes released");
+  log_info("[headset] pipewire nodes released");
 }
 
 void HeadsetPipeWire::start()
@@ -311,8 +398,6 @@ void HeadsetPipeWire::start()
   {
     return;
   }
-
-  // Clean up a previous partial start, if any.
   shutdown();
   m_impl->stopping.store(false, std::memory_order_release);
 
@@ -325,13 +410,11 @@ void HeadsetPipeWire::start()
     {
       throw std::runtime_error("pw_thread_loop_new failed");
     }
-
     m_impl->context = pw_context_new(pw_thread_loop_get_loop(m_impl->loop), nullptr, 0);
     if (!m_impl->context)
     {
       throw std::runtime_error("pw_context_new failed");
     }
-
     if (pw_thread_loop_start(m_impl->loop) < 0)
     {
       throw std::runtime_error("pw_thread_loop_start failed");
@@ -345,6 +428,19 @@ void HeadsetPipeWire::start()
       throw std::runtime_error("pw_context_connect failed (is PipeWire running?)");
     }
 
+    static const pw_stream_events mic_events = {
+      .version = PW_VERSION_STREAM_EVENTS,
+      .state_changed = Impl::on_mic_state,
+      .param_changed = Impl::on_mic_param,
+      .process = Impl::on_mic_process,
+    };
+    static const pw_stream_events spk_events = {
+      .version = PW_VERSION_STREAM_EVENTS,
+      .state_changed = Impl::on_spk_state,
+      .param_changed = Impl::on_spk_param,
+      .process = Impl::on_spk_process,
+    };
+
     {
       pw_properties* props = pw_properties_new(
         PW_KEY_MEDIA_TYPE, "Audio",
@@ -354,9 +450,7 @@ void HeadsetPipeWire::start()
         PW_KEY_NODE_NAME, "xboxdrv-headset-mic",
         PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset microphone",
         PW_KEY_NODE_VIRTUAL, "true",
-        PW_KEY_NODE_LATENCY, "256/16000",
-        "node.force-rate", "16000",
-        "node.force-quantum", "256",
+        PW_KEY_NODE_RATE, "1/16000",
         "node.linger", "false",
         nullptr);
       m_impl->mic_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-mic", props);
@@ -365,12 +459,8 @@ void HeadsetPipeWire::start()
         pw_thread_loop_unlock(m_impl->loop);
         throw std::runtime_error("pw_stream_new (mic) failed");
       }
-      static const pw_stream_events mic_events = {
-        .version = PW_VERSION_STREAM_EVENTS,
-        .process = Impl::on_mic_process,
-      };
       pw_stream_add_listener(m_impl->mic_stream, &m_impl->mic_listener, &mic_events, m_impl.get());
-      connect_audio_stream(m_impl->mic_stream, 16000, SPA_DIRECTION_OUTPUT);
+      connect_device_stream(m_impl->mic_stream, MIC_RATE, SPA_DIRECTION_OUTPUT);
     }
 
     {
@@ -382,9 +472,7 @@ void HeadsetPipeWire::start()
         PW_KEY_NODE_NAME, "xboxdrv-headset-speaker",
         PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset speaker",
         PW_KEY_NODE_VIRTUAL, "true",
-        PW_KEY_NODE_LATENCY, "128/8000",
-        "node.force-rate", "8000",
-        "node.force-quantum", "64",
+        PW_KEY_NODE_RATE, "1/8000",
         "node.linger", "false",
         nullptr);
       m_impl->spk_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-speaker", props);
@@ -393,22 +481,17 @@ void HeadsetPipeWire::start()
         pw_thread_loop_unlock(m_impl->loop);
         throw std::runtime_error("pw_stream_new (speaker) failed");
       }
-      static const pw_stream_events spk_events = {
-        .version = PW_VERSION_STREAM_EVENTS,
-        .process = Impl::on_spk_process,
-      };
       pw_stream_add_listener(m_impl->spk_stream, &m_impl->spk_listener, &spk_events, m_impl.get());
-      connect_audio_stream(m_impl->spk_stream, 8000, SPA_DIRECTION_INPUT);
+      connect_device_stream(m_impl->spk_stream, SPK_RATE, SPA_DIRECTION_INPUT);
     }
 
     pw_thread_loop_unlock(m_impl->loop);
     m_running = true;
-    log_info("[headset] PipeWire devices: xboxdrv-headset-mic (Audio/Source 16 kHz), "
+    log_info("[headset] pipewire: xboxdrv-headset-mic (Audio/Source 16 kHz), "
              "xboxdrv-headset-speaker (Audio/Sink 8 kHz)");
   }
   catch (...)
   {
-    // Drop any half-created client objects so we never leave orphan sinks.
     shutdown();
     throw;
   }
@@ -429,22 +512,16 @@ bool HeadsetPipeWire::pull_speaker(int16_t* out, size_t count)
     std::memset(out, 0, count * sizeof(int16_t));
     return false;
   }
-
   size_t avail = m_impl->spk_ring.available();
-
-  // Prebuffer: avoid start-of-stream underrun stutter until we have ~50 ms.
-  if (avail < SPK_PREBUFFER)
+  if (avail < SPK_PREBUF)
   {
     std::memset(out, 0, count * sizeof(int16_t));
     return false;
   }
-
-  // Bound latency only when clearly stuck ahead of the USB clock.
-  if (avail > SPK_HIGH_WATER)
+  if (avail > SPK_HIGH)
   {
     m_impl->spk_ring.discard(avail - SPK_TARGET);
   }
-
   size_t n = m_impl->spk_ring.read(out, count);
   if (n < count)
   {
