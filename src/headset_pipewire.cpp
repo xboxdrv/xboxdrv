@@ -28,30 +28,29 @@ namespace xboxdrv {
 namespace {
 
 /**
- * PipeWire's graph is built around ~48 kHz quanta. Advertising 8 kHz / 16 kHz
- * endpoints forces continuous non-integer-friendly conversion in the adapter
- * and is a common source of stutter. We run both nodes at 48 kHz and convert
- * to/from the headset rates with exact integer ratios:
- *   mic  16 kHz → 48 kHz  (×3)
- *   spk  48 kHz →  8 kHz  (÷6)
+ * Rates must match the USB / G.726 paths exactly:
+ *   mic  IN  — G.726-32 decode → S16LE @ 16 kHz (same as --headset-pulse)
+ *   spk  OUT — S16LE @ 8 kHz encode (USB phone)
  *
- * One USB speaker packet is 64 samples @ 8 kHz = 8 ms = 384 samples @ 48 kHz.
- * Align the graph quantum to that so each driver cycle covers one USB period.
+ * Speaker Sink runs at 48 kHz (graph-friendly) with exact ÷6 downsample to 8 kHz.
+ * Mic Source stays native 16 kHz; PipeWire resamples for clients that need more.
+ * Always upsampling mic into a 48 kHz ring while the stream can negotiate 16 kHz
+ * made capture sound slow and heavily distorted.
  */
-constexpr uint32_t PW_RATE = 48000;
-constexpr uint32_t MIC_USB_RATE = 16000;
+constexpr uint32_t SPK_GRAPH_RATE = 48000;
+constexpr uint32_t MIC_RATE = 16000;
 constexpr uint32_t SPK_USB_RATE = 8000;
-constexpr uint32_t MIC_UPSAMPLE = PW_RATE / MIC_USB_RATE; // 3
-constexpr uint32_t SPK_DOWNSAMPLE = PW_RATE / SPK_USB_RATE; // 6
-constexpr uint32_t SPK_QUANTUM_48 = 384; // 8 ms @ 48 kHz = one USB speaker packet
-/** One USB mic packet is 64 samples @ 16 kHz = 4 ms = 192 samples @ 48 kHz. */
-constexpr uint32_t MIC_QUANTUM_48 = 192;
+constexpr uint32_t SPK_DOWNSAMPLE = SPK_GRAPH_RATE / SPK_USB_RATE; // 6
+/** One USB speaker packet: 64 samples @ 8 kHz = 8 ms = 384 samples @ 48 kHz. */
+constexpr uint32_t SPK_QUANTUM = 384;
+/** One USB mic packet: 64 samples @ 16 kHz = 4 ms. */
+constexpr uint32_t MIC_QUANTUM = 64;
 
-constexpr size_t MIC_RING = PW_RATE / 2;  // 500 ms @ 48 kHz
-constexpr size_t SPK_RING = PW_RATE / 2;
-constexpr size_t SPK_HIGH = PW_RATE / 4;     // drop only when > ~250 ms deep
-constexpr size_t SPK_TARGET = PW_RATE / 10;  // leave ~100 ms after catch-up
-constexpr size_t SPK_PREBUFFER = SPK_QUANTUM_48 * 2; // ~16 ms before real audio
+constexpr size_t MIC_RING = MIC_RATE / 2;       // 500 ms @ 16 kHz
+constexpr size_t SPK_RING = SPK_GRAPH_RATE / 2; // 500 ms @ 48 kHz
+constexpr size_t SPK_HIGH = SPK_GRAPH_RATE / 4;
+constexpr size_t SPK_TARGET = SPK_GRAPH_RATE / 10;
+constexpr size_t SPK_PREBUFFER = SPK_QUANTUM * 2;
 
 class SampleRing
 {
@@ -151,7 +150,7 @@ struct HeadsetPipeWire::Impl
   spa_hook mic_listener{};
   spa_hook spk_listener{};
   spa_source* drive_timer = nullptr;
-  SampleRing mic_ring{MIC_RING}; // 48 kHz samples
+  SampleRing mic_ring{MIC_RING}; // 16 kHz samples
   SampleRing spk_ring{SPK_RING}; // 48 kHz samples
   std::atomic<bool> stopping{false};
   std::atomic<bool> mic_streaming{false};
@@ -248,7 +247,7 @@ void HeadsetPipeWire::Impl::on_mic_param(void* data, uint32_t id, const spa_pod*
   self->mic_stride = sizeof(int16_t) * std::max(1u, info.info.raw.channels);
   log_info("[headset] pipewire mic format: rate={} channels={}",
            info.info.raw.rate, info.info.raw.channels);
-  finish_buffers(self->mic_stream, self->mic_stride, MIC_QUANTUM_48);
+  finish_buffers(self->mic_stream, self->mic_stride, MIC_QUANTUM);
 }
 
 void HeadsetPipeWire::Impl::on_spk_param(void* data, uint32_t id, const spa_pod* param)
@@ -272,7 +271,7 @@ void HeadsetPipeWire::Impl::on_spk_param(void* data, uint32_t id, const spa_pod*
   self->spk_stride = sizeof(int16_t) * std::max(1u, info.info.raw.channels);
   log_info("[headset] pipewire speaker format: rate={} channels={}",
            info.info.raw.rate, info.info.raw.channels);
-  finish_buffers(self->spk_stream, self->spk_stride, SPK_QUANTUM_48);
+  finish_buffers(self->spk_stream, self->spk_stride, SPK_QUANTUM);
 }
 
 void HeadsetPipeWire::Impl::on_mic_process(void* data)
@@ -466,7 +465,8 @@ void HeadsetPipeWire::Impl::request_cycles(bool mic, bool spk)
 
 namespace {
 
-void connect_device_stream(pw_stream* stream, pw_direction direction, bool driver)
+void connect_device_stream(pw_stream* stream, pw_direction direction,
+                           uint32_t rate, bool driver)
 {
   uint8_t buffer[1024];
   spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
@@ -475,18 +475,18 @@ void connect_device_stream(pw_stream* stream, pw_direction direction, bool drive
   spa_audio_info_raw info = {};
   info.format = SPA_AUDIO_FORMAT_S16;
   info.channels = 1;
-  info.rate = PW_RATE;
+  info.rate = rate;
   params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
 
   int flags = PW_STREAM_FLAG_MAP_BUFFERS;
   if (driver)
   {
-    // USB is the clock for the speaker path: we drive graph cycles so linked
-    // clients are dequeued on our schedule (not the other way around).
+    // USB is the clock: we drive graph cycles so clients are served on our
+    // schedule (not the other way around).
     flags |= PW_STREAM_FLAG_DRIVER;
   }
-  // No RT_PROCESS: process only does lock-free ring I/O, but we also arm a
-  // timer and invoke from non-RT contexts; keep the callback on the loop thread.
+  // No RT_PROCESS: process only does lock-free ring I/O; timer/invoke run on
+  // the loop thread.
 
   int res = pw_stream_connect(
     stream, direction, PW_ID_ANY,
@@ -616,9 +616,11 @@ void HeadsetPipeWire::start()
 
     {
       char latency[32];
-      std::snprintf(latency, sizeof(latency), "%u/%u", MIC_QUANTUM_48, PW_RATE);
+      std::snprintf(latency, sizeof(latency), "%u/%u", MIC_QUANTUM, MIC_RATE);
       char quantum[16];
-      std::snprintf(quantum, sizeof(quantum), "%u", MIC_QUANTUM_48);
+      std::snprintf(quantum, sizeof(quantum), "%u", MIC_QUANTUM);
+      char rate[16];
+      std::snprintf(rate, sizeof(rate), "%u", MIC_RATE);
 
       pw_properties* props = pw_properties_new(
         PW_KEY_MEDIA_TYPE, "Audio",
@@ -629,7 +631,7 @@ void HeadsetPipeWire::start()
         PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset microphone",
         PW_KEY_NODE_VIRTUAL, "true",
         PW_KEY_NODE_LATENCY, latency,
-        "node.force-rate", "48000",
+        "node.force-rate", rate,
         "node.force-quantum", quantum,
         "node.driver", "true",
         "node.linger", "false",
@@ -641,16 +643,17 @@ void HeadsetPipeWire::start()
         throw std::runtime_error("pw_stream_new (mic) failed");
       }
       pw_stream_add_listener(m_impl->mic_stream, &m_impl->mic_listener, &mic_events, m_impl.get());
-      // Mic is a DRIVER Source: USB clock schedules process so capture clients
-      // receive samples when the headset produces them.
-      connect_device_stream(m_impl->mic_stream, PW_DIRECTION_OUTPUT, true);
+      // Native 16 kHz DRIVER Source — matches USB decode and --headset-pulse.
+      connect_device_stream(m_impl->mic_stream, PW_DIRECTION_OUTPUT, MIC_RATE, true);
     }
 
     {
       char latency[32];
-      std::snprintf(latency, sizeof(latency), "%u/%u", SPK_QUANTUM_48, PW_RATE);
+      std::snprintf(latency, sizeof(latency), "%u/%u", SPK_QUANTUM, SPK_GRAPH_RATE);
       char quantum[16];
-      std::snprintf(quantum, sizeof(quantum), "%u", SPK_QUANTUM_48);
+      std::snprintf(quantum, sizeof(quantum), "%u", SPK_QUANTUM);
+      char rate[16];
+      std::snprintf(rate, sizeof(rate), "%u", SPK_GRAPH_RATE);
 
       pw_properties* props = pw_properties_new(
         PW_KEY_MEDIA_TYPE, "Audio",
@@ -661,7 +664,7 @@ void HeadsetPipeWire::start()
         PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset speaker",
         PW_KEY_NODE_VIRTUAL, "true",
         PW_KEY_NODE_LATENCY, latency,
-        "node.force-rate", "48000",
+        "node.force-rate", rate,
         "node.force-quantum", quantum,
         "node.driver", "true",
         "node.linger", "false",
@@ -673,16 +676,14 @@ void HeadsetPipeWire::start()
         throw std::runtime_error("pw_stream_new (speaker) failed");
       }
       pw_stream_add_listener(m_impl->spk_stream, &m_impl->spk_listener, &spk_events, m_impl.get());
-      // Speaker is a DRIVER Sink: USB clock schedules graph cycles so clients
-      // are drained on time (prevents A/V stall when video is linked here).
-      connect_device_stream(m_impl->spk_stream, PW_DIRECTION_INPUT, true);
+      // DRIVER Sink at 48 kHz; USB path downsamples to 8 kHz.
+      connect_device_stream(m_impl->spk_stream, PW_DIRECTION_INPUT, SPK_GRAPH_RATE, true);
     }
 
     pw_thread_loop_unlock(m_impl->loop);
     m_running = true;
-    log_info("[headset] pipewire @ {} Hz (mic quantum {} / spk quantum {}; USB {}/{} kHz)",
-             PW_RATE, MIC_QUANTUM_48, SPK_QUANTUM_48,
-             MIC_USB_RATE / 1000, SPK_USB_RATE / 1000);
+    log_info("[headset] pipewire mic {} Hz quantum {} / spk {} Hz quantum {} (USB phone {} kHz)",
+             MIC_RATE, MIC_QUANTUM, SPK_GRAPH_RATE, SPK_QUANTUM, SPK_USB_RATE / 1000);
   }
   catch (...)
   {
@@ -697,16 +698,8 @@ void HeadsetPipeWire::push_mic(const int16_t* samples, size_t count)
   {
     return;
   }
-  // 16 kHz → 48 kHz: repeat each sample ×3
-  std::vector<int16_t> up(count * MIC_UPSAMPLE);
-  for (size_t i = 0; i < count; ++i)
-  {
-    for (uint32_t k = 0; k < MIC_UPSAMPLE; ++k)
-    {
-      up[i * MIC_UPSAMPLE + k] = samples[i];
-    }
-  }
-  m_impl->mic_ring.write(up.data(), up.size());
+  // Ring is native 16 kHz S16LE — same rate as G.726 decode / --headset-pulse.
+  m_impl->mic_ring.write(samples, count);
   // USB produced mic data: ask the driver Source to push to any capture clients.
   m_impl->request_cycles(true, false);
 }
