@@ -374,10 +374,16 @@ void HeadsetPipeWire::Impl::on_spk_process(void* data)
     return;
   }
 
-  // Drain every available buffer so linked clients never block on a full queue
-  // (that path is what stalls video players when A/V is tied to the sink).
-  while (pw_buffer* b = pw_stream_dequeue_buffer(self->spk_stream))
+  // USB is the speaker clock (~8 ms / packet). Only pull from clients while the
+  // ring is below target. Draining every buffer on every timer tick made the
+  // graph consume audio (and linked video) several times real-time.
+  while (self->spk_ring.available() < SPK_TARGET)
   {
+    pw_buffer* b = pw_stream_dequeue_buffer(self->spk_stream);
+    if (!b)
+    {
+      break;
+    }
     spa_data* d = &b->buffer->datas[0];
     if (d->data && d->chunk && d->chunk->size > 0)
     {
@@ -415,9 +421,11 @@ void HeadsetPipeWire::Impl::on_drive_timer(void* data, uint64_t /*expirations*/)
   {
     pw_stream_trigger_process(self->mic_stream);
   }
-  // Speaker: keep draining linked clients on a steady cadence.
+  // Speaker: only pull from clients when the USB side has room in the ring.
+  // Unconditional triggers drained the graph faster than real-time (video raced).
   if (self->spk_stream && self->spk_streaming.load(std::memory_order_acquire) &&
-      pw_stream_is_driving(self->spk_stream))
+      pw_stream_is_driving(self->spk_stream) &&
+      self->spk_ring.available() < SPK_TARGET)
   {
     pw_stream_trigger_process(self->spk_stream);
   }
@@ -447,7 +455,8 @@ int HeadsetPipeWire::Impl::invoke_triggers(struct spa_loop* /*loop*/, bool /*asy
   }
   if ((mask & 2u) && self->spk_stream &&
       self->spk_streaming.load(std::memory_order_acquire) &&
-      pw_stream_is_driving(self->spk_stream))
+      pw_stream_is_driving(self->spk_stream) &&
+      self->spk_ring.available() < SPK_TARGET)
   {
     pw_stream_trigger_process(self->spk_stream);
   }
@@ -460,13 +469,13 @@ void HeadsetPipeWire::Impl::arm_drive_timer()
   {
     return;
   }
-  // 4 ms ticks (USB mic period) on the PipeWire thread. USB is the ultimate
-  // clock; the timer keeps drivers scheduled between packets.
+  // 8 ms ticks match one USB speaker packet; mic still gates on ring depth.
+  // USB is the ultimate clock — the timer only tops up when rings need it.
   drive_timer = pw_loop_add_timer(pw_thread_loop_get_loop(loop), on_drive_timer, this);
   if (drive_timer)
   {
-    timespec value{0, 4 * 1000 * 1000};
-    timespec interval{0, 4 * 1000 * 1000};
+    timespec value{0, 8 * 1000 * 1000};
+    timespec interval{0, 8 * 1000 * 1000};
     pw_loop_update_timer(pw_thread_loop_get_loop(loop), drive_timer, &value, &interval, false);
   }
 }
