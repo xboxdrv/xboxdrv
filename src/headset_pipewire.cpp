@@ -208,16 +208,6 @@ void HeadsetPipeWire::Impl::on_spk_process(void* data)
 
 namespace {
 
-const pw_stream_events mic_events = {
-  .version = PW_VERSION_STREAM_EVENTS,
-  .process = HeadsetPipeWire::Impl::on_mic_process,
-};
-
-const pw_stream_events spk_events = {
-  .version = PW_VERSION_STREAM_EVENTS,
-  .process = HeadsetPipeWire::Impl::on_spk_process,
-};
-
 void connect_audio_stream(pw_stream* stream, uint32_t rate, spa_direction direction)
 {
   uint8_t buffer[1024];
@@ -338,6 +328,11 @@ void HeadsetPipeWire::start()
       pw_thread_loop_unlock(m_impl->loop);
       throw std::runtime_error("pw_stream_new (mic) failed");
     }
+    // Event tables live here so they may name private nested Impl::callbacks.
+    static const pw_stream_events mic_events = {
+      .version = PW_VERSION_STREAM_EVENTS,
+      .process = Impl::on_mic_process,
+    };
     pw_stream_add_listener(m_impl->mic_stream, &m_impl->mic_listener, &mic_events, m_impl.get());
     connect_audio_stream(m_impl->mic_stream, 16000, SPA_DIRECTION_OUTPUT);
   }
@@ -359,6 +354,10 @@ void HeadsetPipeWire::start()
       pw_thread_loop_unlock(m_impl->loop);
       throw std::runtime_error("pw_stream_new (speaker) failed");
     }
+    static const pw_stream_events spk_events = {
+      .version = PW_VERSION_STREAM_EVENTS,
+      .process = Impl::on_spk_process,
+    };
     pw_stream_add_listener(m_impl->spk_stream, &m_impl->spk_listener, &spk_events, m_impl.get());
     connect_audio_stream(m_impl->spk_stream, 8000, SPA_DIRECTION_INPUT);
   }
