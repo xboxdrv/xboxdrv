@@ -941,4 +941,8 @@ Headset audio (interface 1, EP 3 IN / EP 4 OUT) — experimental:
   path reuses transfer->buffer for the next packet (same continuous-stream pattern
   as the IN path). Encoding at 16 kHz made speech ~half speed; 8 kHz matches the
   documented 360 render rate (Xbox One is 24 kHz = 3× render).
+  Residual grain after correct speed is partly inherent to G.726-32 (4-bit) at
+  8 kHz; also try --headset-play-left-pack if the OUT path uses the opposite
+  nibble order from the mic. play-wav attenuates ~1 dB and primes ~100 ms of
+  silence so the ADPCM predictor is not cold on the first phoneme.
 

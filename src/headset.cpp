@@ -66,6 +66,7 @@ Headset::Headset(libusb_device_handle* handle, bool debug) :
   m_fin(),
   m_play_pcm(),
   m_play_pos(0),
+  m_play_left_pack(false),
   m_encoder(),
   m_decoder(),
   m_debug(debug)
@@ -256,9 +257,21 @@ Headset::load_wav_as_pcm(const std::string& filename)
     }
   }
 
+  // Mild attenuation avoids ADPCM overload crackle on peaks
+  for (auto& s : m_play_pcm)
+  {
+    s = static_cast<int16_t>((static_cast<int>(s) * 7) / 8);
+  }
+
+  // ~100 ms of silence so the predictor settles before speech
+  const size_t prime = static_cast<size_t>(PLAY_SAMPLE_RATE / 10);
+  std::vector<int16_t> primed(prime + m_play_pcm.size(), 0);
+  std::copy(m_play_pcm.begin(), m_play_pcm.end(), primed.begin() + static_cast<std::ptrdiff_t>(prime));
+  m_play_pcm = std::move(primed);
+
   m_play_pos = 0;
-  log_info("[headset] play-wav: {} frames @ {} Hz → {} frames @ {} Hz",
-           num_frames, sample_rate, m_play_pcm.size(), PLAY_SAMPLE_RATE);
+  log_info("[headset] play-wav: {} frames @ {} Hz → {} frames @ {} Hz (incl. {} silence prime)",
+           num_frames, sample_rate, m_play_pcm.size(), PLAY_SAMPLE_RATE, prime);
 }
 
 void
@@ -291,9 +304,17 @@ Headset::play_file(std::string const& filename)
 }
 
 void
-Headset::play_wav(std::string const& filename)
+Headset::encode_packet(const int16_t* samples, std::vector<uint8_t>& out)
+{
+  m_encoder.encode(samples, SAMPLES_PER_PACKET, out, m_play_left_pack);
+}
+
+void
+Headset::play_wav(std::string const& filename, bool left_pack)
 {
   m_fin.reset(); // not using raw file mode
+  m_play_left_pack = left_pack;
+  m_encoder.reset();
   load_wav_as_pcm(filename);
 
   if (m_play_pcm.size() < SAMPLES_PER_PACKET)
@@ -301,9 +322,11 @@ Headset::play_wav(std::string const& filename)
     raise_exception(std::runtime_error, filename << ": audio too short for one packet");
   }
 
+  log_info("[headset] play-wav packing: {}", left_pack ? "left (high nibble first)" : "right (low nibble first)");
+
   // Encode first packet and kick off the interrupt OUT stream
   std::vector<uint8_t> packet;
-  m_encoder.encode(m_play_pcm.data(), SAMPLES_PER_PACKET, packet);
+  encode_packet(m_play_pcm.data(), packet);
   m_play_pos = SAMPLES_PER_PACKET;
 
   if (packet.size() != 32)
@@ -375,7 +398,7 @@ Headset::send_data(libusb_transfer* transfer)
     }
 
     std::vector<uint8_t> packet;
-    m_encoder.encode(m_play_pcm.data() + m_play_pos, SAMPLES_PER_PACKET, packet);
+    encode_packet(m_play_pcm.data() + m_play_pos, packet);
     m_play_pos += SAMPLES_PER_PACKET;
 
     if (packet.size() != 32)

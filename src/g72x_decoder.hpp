@@ -47,8 +47,8 @@ public:
   }
 };
 
-/** Matching encoder: S16LE samples → right-packed G.726-32 bytes.
-    Same state machine and packing as G72xDecoder so a round-trip is clean.
+/** Matching encoder: S16LE samples → packed G.726-32 bytes.
+    Same state machine as G72xDecoder. Packing selectable for OUT experiments.
  */
 class G72xEncoder
 {
@@ -62,20 +62,35 @@ public:
     g72x_init_state(&m_state);
   }
 
+  void reset()
+  {
+    g72x_init_state(&m_state);
+  }
+
   /** Encode even number of S16LE samples to packed bytes (2 samples → 1 byte).
-      out is cleared and filled; size = samples.size() / 2.
+      left_pack: high nibble first (opposite of mic/right-packed).
       Odd trailing sample is dropped. */
-  void encode(const int16_t* samples, size_t count, std::vector<uint8_t>& out)
+  void encode(const int16_t* samples, size_t count, std::vector<uint8_t>& out,
+              bool left_pack = false)
   {
     out.clear();
     out.reserve(count / 2);
     for (size_t i = 0; i + 1 < count; i += 2)
     {
-      // g721_encoder expects 16-bit linear; returns 4-bit code in low nibble
       int code1 = g721_encoder(samples[i],     AUDIO_ENCODING_LINEAR, &m_state);
       int code2 = g721_encoder(samples[i + 1], AUDIO_ENCODING_LINEAR, &m_state);
-      // Right-packed: low nibble first
-      out.push_back(static_cast<uint8_t>((code1 & 0x0f) | ((code2 & 0x0f) << 4)));
+      code1 &= 0x0f;
+      code2 &= 0x0f;
+      if (left_pack)
+      {
+        // high nibble first
+        out.push_back(static_cast<uint8_t>((code1 << 4) | code2));
+      }
+      else
+      {
+        // Right-packed: low nibble first (matches mic decoder)
+        out.push_back(static_cast<uint8_t>(code1 | (code2 << 4)));
+      }
     }
   }
 };

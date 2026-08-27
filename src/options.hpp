@@ -113,6 +113,7 @@ public:
   std::string headset_pcm;
   std::string headset_wav;
   std::string headset_play_wav;
+  bool headset_play_left_pack;
 
   // daemon options
   bool detach;
