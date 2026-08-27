@@ -65,7 +65,7 @@ if(NOT _project_version_cmake)
   set(_project_version_cmake "0.0.0")
 endif()
 
-project(xboxdrv VERSION ${_project_version_cmake} LANGUAGES CXX)
+project(xboxdrv VERSION ${_project_version_cmake} LANGUAGES CXX C)
 message(STATUS "Project version: ${PROJECT_VERSION_FULL} (CMake ${PROJECT_VERSION})")
 
 set(TINYCMMC_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/external/tinycmmc/modules/")

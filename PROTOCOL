@@ -915,11 +915,18 @@ struct
 
 # EOF #
 
-Headset audio (interface 1, EP 3 IN):
-  32-byte interrupt packets at ~256 Hz => 8192 bytes/s.
-  Codec: G.721 / G.726 4-bit ADPCM run at 16 kHz (not the standard 8 kHz).
-  32 bytes = 64 samples of 4-bit codes. Decode with g721_decoder to S16LE mono @ 16 kHz.
-  Use --headset-pcm /path/to/fifo to get live PCM suitable for:
-    pactl load-module module-pipe-source source_name=xbox-headset file=/path/to/fifo format=s16le rate=16000 channels=1
-  or PipeWire equivalents / pw-cat --record ...
+Headset audio (interface 1, EP 3 IN / EP 4 OUT) — experimental:
+  32-byte interrupt packets at ~256 Hz => 8192 bytes/s (see earlier notes).
+  Codec is still uncertain. One hypothesis (from an old g72x/decode-g72x
+  pipeline that played at 16 kHz S16LE) is 4-bit G.721/G.726-style ADPCM at
+  16 kHz rather than the telephone 8 kHz rate. That may actually apply to
+  the wireless headset path, not the 2.5 mm jack on the wired controller;
+  treat the decoder as a best-effort guess until a verified capture exists.
+  --headset-pcm FILE writes the decoded stream (S16LE mono 16 kHz) so it can
+  be fed to PulseAudio/PipeWire without a custom sound server:
+    mkfifo /tmp/xbox-hs.pcm
+    pactl load-module module-pipe-source source_name=xbox-headset \
+      file=/tmp/xbox-hs.pcm format=s16le rate=16000 channels=1
+    xboxdrv --headset --headset-pcm /tmp/xbox-hs.pcm ...
+  Raw dumps remain available via --headset-dump.
 

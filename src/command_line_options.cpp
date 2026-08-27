@@ -243,10 +243,9 @@ CommandLineParser::init_argp(int argc, char** argv)
     .add_option(OPTION_GUIDE_POWEROFF_TIMEOUT, NUL, "guide-poweroff-timeout", "SEC", "Seconds to hold Guide before wireless power-off (default: 5; 0 disables)");
 
   m_argp.add_group("Headset Options (experimental, Xbox360 USB only): ")
-    .add_option(OPTION_HEADSET,       NUL, "headset", "",  "Enable Headset support for Xbox360 USB controller (not working)")
+    .add_option(OPTION_HEADSET,       NUL, "headset", "",  "Enable Headset support for Xbox360 USB controller (experimental)")
     .add_option(OPTION_HEADSET_DUMP,  NUL, "headset-dump", "FILE",  "Dump headset data to FILE")
-    .add_option(OPTION_HEADSET_PLAY,
-  OPTION_HEADSET_PCM,  NUL, "headset-play", "FILE",  "Play FILE on the headset")
+    .add_option(OPTION_HEADSET_PLAY,  NUL, "headset-play", "FILE",  "Play FILE on the headset")
     .add_option(OPTION_HEADSET_PCM,   NUL, "headset-pcm", "FILE",  "Write decoded 16kHz S16LE PCM from headset mic to FILE (FIFO or regular)");
 
   m_argp.add_group("Force Feedback: ")
