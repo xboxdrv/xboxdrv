@@ -932,13 +932,13 @@ Headset audio (interface 1, EP 3 IN / EP 4 OUT) — experimental:
 
   Playback:
   --headset-play FILE     streams a pre-encoded 32-byte-packet G.726 dump to EP 4.
-  --headset-play-wav FILE loads a 16-bit PCM WAV (mono/stereo), resamples to 16 kHz
-                          mono, encodes with the same Sun g721 right-packed path used
-                          by the mic decoder, and streams continuous 32-byte packets.
-                          Encoder state is kept across packets (no per-packet reset).
+  --headset-play-wav FILE loads a 16-bit PCM WAV (mono/stereo), resamples to 8 kHz
+                          mono (Xbox 360 render rate; capture stays at 16 kHz), encodes
+                          with the same Sun g721 right-packed path used by the mic
+                          decoder, and streams continuous 32-byte packets. Encoder
+                          state is kept across packets (no per-packet reset).
   IN and OUT both use 32-byte interrupt transfers on interface 1; the OUT completion
   path reuses transfer->buffer for the next packet (same continuous-stream pattern
-  as the IN path). Residual noise after nibble-swap experiments points more at
-  rate / framing / state than at packing alone — play-wav exists so the encoder
-  matches the decoder bit-for-bit for further testing.
+  as the IN path). Encoding at 16 kHz made speech ~half speed; 8 kHz matches the
+  documented 360 render rate (Xbox One is 24 kHz = 3× render).
 

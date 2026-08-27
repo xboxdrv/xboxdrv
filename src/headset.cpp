@@ -31,7 +31,10 @@ using namespace std::placeholders;
 
 namespace {
 
+/** Sample rate for --headset-dump-wav / mic decode (matches working capture path). */
 constexpr uint32_t WAV_SAMPLE_RATE = 16000;
+/** Playback target rate: 360 headset render is ~8 kHz (One is 24 kHz = 3×). */
+constexpr uint32_t PLAY_SAMPLE_RATE = 8000;
 constexpr uint16_t WAV_CHANNELS = 1;
 constexpr uint16_t WAV_BITS = 16;
 /** Samples per 32-byte G.726-32 packet (2 samples per byte). */
@@ -127,7 +130,7 @@ Headset::finalize_wav()
 }
 
 void
-Headset::load_wav_as_pcm16(const std::string& filename)
+Headset::load_wav_as_pcm(const std::string& filename)
 {
   std::ifstream in(filename.c_str(), std::ios::binary);
   if (!in)
@@ -232,14 +235,14 @@ Headset::load_wav_as_pcm16(const std::string& filename)
     }
   }
 
-  // Linear resample to 16 kHz
-  if (sample_rate == WAV_SAMPLE_RATE)
+  // Linear resample to playback rate (8 kHz)
+  if (sample_rate == PLAY_SAMPLE_RATE)
   {
     m_play_pcm = std::move(mono);
   }
   else
   {
-    const double ratio = static_cast<double>(WAV_SAMPLE_RATE) / sample_rate;
+    const double ratio = static_cast<double>(PLAY_SAMPLE_RATE) / sample_rate;
     const size_t out_frames = static_cast<size_t>(std::llround(num_frames * ratio));
     m_play_pcm.resize(out_frames);
     for (size_t i = 0; i < out_frames; ++i)
@@ -254,8 +257,8 @@ Headset::load_wav_as_pcm16(const std::string& filename)
   }
 
   m_play_pos = 0;
-  log_info("[headset] play-wav: {} frames @ {} Hz → {} frames @ 16 kHz",
-           num_frames, sample_rate, m_play_pcm.size());
+  log_info("[headset] play-wav: {} frames @ {} Hz → {} frames @ {} Hz",
+           num_frames, sample_rate, m_play_pcm.size(), PLAY_SAMPLE_RATE);
 }
 
 void
@@ -291,7 +294,7 @@ void
 Headset::play_wav(std::string const& filename)
 {
   m_fin.reset(); // not using raw file mode
-  load_wav_as_pcm16(filename);
+  load_wav_as_pcm(filename);
 
   if (m_play_pcm.size() < SAMPLES_PER_PACKET)
   {

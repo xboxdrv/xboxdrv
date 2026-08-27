@@ -250,7 +250,7 @@ CommandLineParser::init_argp(int argc, char** argv)
     .add_option(OPTION_HEADSET_PLAY,  NUL, "headset-play", "FILE",  "Play FILE on the headset")
     .add_option(OPTION_HEADSET_PCM,   NUL, "headset-pcm", "FILE",  "Write decoded 16kHz S16LE PCM from headset mic to FILE (FIFO or regular)")
     .add_option(OPTION_HEADSET_WAV,   NUL, "headset-dump-wav", "FILE",  "Decode headset mic (G.726-32 right-packed) to 16kHz mono WAV FILE")
-    .add_option(OPTION_HEADSET_PLAY_WAV, NUL, "headset-play-wav", "FILE",  "Play PCM WAV FILE on headset (resampled to 16 kHz mono, G.726-32 encoded)");
+    .add_option(OPTION_HEADSET_PLAY_WAV, NUL, "headset-play-wav", "FILE",  "Play PCM WAV FILE on headset (resampled to 8 kHz mono, G.726-32 encoded)");
 
   m_argp.add_group("Force Feedback: ")
     .add_option(OPTION_FORCE_FEEDBACK,    NUL, "force-feedback",   "",     "Enable force feedback support")
