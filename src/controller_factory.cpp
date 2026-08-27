@@ -71,6 +71,7 @@ ControllerFactory::create(XPadDevice const& dev_type, libusb_device* dev, Option
                                                  opts.headset_play_left_pack,
                                                  opts.headset_pulse,
                                                  opts.headset_pipewire,
+                                                 opts.headset_mic_gain,
                                                  opts.detach_kernel_driver));
       break;
 
@@ -169,6 +170,7 @@ ControllerFactory::create_multiple(XPadDevice const& dev_type, libusb_device* de
                                                  opts.headset_play_left_pack,
                                                         opts.headset_pulse,
                                                  opts.headset_pipewire,
+                                                 opts.headset_mic_gain,
                                                         opts.detach_kernel_driver)));
       break;
 

@@ -47,10 +47,11 @@ private:
   std::string m_pulse_spk_fifo;
   G72xEncoder m_encoder;
   G72xDecoder m_decoder;
+  float m_mic_gain;
   bool m_debug;
 
 public:
-  Headset(libusb_device_handle* handle, bool debug);
+  Headset(libusb_device_handle* handle, bool debug, float mic_gain = 1.0f);
   ~Headset();
 
   void play_file(const std::string& play_filename);

@@ -61,6 +61,7 @@ public:
                     bool headset_play_left_pack,
                     bool headset_pulse,
                     bool headset_pipewire,
+                    float headset_mic_gain,
                     bool try_detach);
   ~Xbox360Controller();
 

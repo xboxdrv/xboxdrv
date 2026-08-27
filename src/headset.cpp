@@ -67,7 +67,7 @@ uint32_t read_u32_le(const char* p)
 
 } // namespace
 
-Headset::Headset(libusb_device_handle* handle, bool debug) :
+Headset::Headset(libusb_device_handle* handle, bool debug, float mic_gain) :
   m_handle(handle),
   m_interface(new unsebu::USBInterface(m_handle, 1)),
   m_fout_raw(),
@@ -86,8 +86,13 @@ Headset::Headset(libusb_device_handle* handle, bool debug) :
   m_pulse_spk_fifo(),
   m_encoder(),
   m_decoder(),
+  m_mic_gain(mic_gain),
   m_debug(debug)
 {
+  if (m_mic_gain != 1.0f)
+  {
+    log_info("[headset] mic gain {}", m_mic_gain);
+  }
 }
 
 Headset::~Headset()
@@ -542,6 +547,16 @@ Headset::receive_data(uint8_t* data, int len)
   {
     std::vector<int16_t> samples;
     m_decoder.decode(data, len, samples);
+    if (m_mic_gain != 1.0f)
+    {
+      for (auto& s : samples)
+      {
+        int v = static_cast<int>(std::lround(static_cast<float>(s) * m_mic_gain));
+        if (v > 32767) v = 32767;
+        if (v < -32768) v = -32768;
+        s = static_cast<int16_t>(v);
+      }
+    }
     const char* bytes = reinterpret_cast<const char*>(samples.data());
     const std::streamsize nbytes = static_cast<std::streamsize>(samples.size() * sizeof(int16_t));
 

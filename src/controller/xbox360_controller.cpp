@@ -41,6 +41,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
                                      bool headset_play_left_pack,
                                      bool headset_pulse,
                                      bool headset_pipewire,
+                                     float headset_mic_gain,
                                      bool try_detach) :
   USBController(dev),
   dev_type(),
@@ -81,7 +82,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
   // create headset
   if (headset)
   {
-    m_headset.reset(new Headset(m_handle, headset_debug));
+    m_headset.reset(new Headset(m_handle, headset_debug, headset_mic_gain));
     if (!headset_play.empty())
     {
       m_headset->play_file(headset_play);

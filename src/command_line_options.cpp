@@ -25,6 +25,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <string>
 
 #include <uinpp/event.hpp>
 #include <uinpp/parse.hpp>
@@ -145,6 +146,7 @@ enum {
   OPTION_HEADSET_PLAY_LEFT_PACK,
   OPTION_HEADSET_PULSE,
   OPTION_HEADSET_PIPEWIRE,
+  OPTION_HEADSET_MIC_GAIN,
   OPTION_DETACH_KERNEL_DRIVER,
   OPTION_DAEMON_DETACH,
   OPTION_DAEMON_PID_FILE,
@@ -256,7 +258,8 @@ CommandLineParser::init_argp(int argc, char** argv)
     .add_option(OPTION_HEADSET_PLAY_WAV, NUL, "headset-play-wav", "FILE",  "Play PCM WAV FILE on headset (resampled to 8 kHz mono, G.726-32 encoded)")
     .add_option(OPTION_HEADSET_PLAY_LEFT_PACK, NUL, "headset-play-left-pack", "", "Use left (high-nibble-first) packing for play-wav instead of right")
     .add_option(OPTION_HEADSET_PULSE, NUL, "headset-pulse", "", "Expose headset via pactl module-pipe-source/sink (PulseAudio or PipeWire-pulse)")
-    .add_option(OPTION_HEADSET_PIPEWIRE, NUL, "headset-pipewire", "", "Expose headset as native PipeWire Audio/Source+Sink (libpipewire)");
+    .add_option(OPTION_HEADSET_PIPEWIRE, NUL, "headset-pipewire", "", "Expose headset as native PipeWire Audio/Source+Sink (libpipewire)")
+    .add_option(OPTION_HEADSET_MIC_GAIN, NUL, "headset-mic-gain", "FACTOR", "Linear gain after mic decode (default: 1.0; try 2–6 if quiet)");
 
   m_argp.add_group("Force Feedback: ")
     .add_option(OPTION_FORCE_FEEDBACK,    NUL, "force-feedback",   "",     "Enable force feedback support")
@@ -796,6 +799,18 @@ CommandLineParser::apply_opt(argpp::ParsedOption const& opt, Options& opts)
       case OPTION_HEADSET_PIPEWIRE:
         opts.headset = true;
         opts.headset_pipewire = true;
+        break;
+
+      case OPTION_HEADSET_MIC_GAIN:
+        opts.headset = true;
+        try {
+          opts.headset_mic_gain = std::stof(opt.argument);
+        } catch (...) {
+          throw std::runtime_error("--headset-mic-gain: expected a number, got '" + opt.argument + "'");
+        }
+        if (!(opts.headset_mic_gain >= 0.0f) || opts.headset_mic_gain > 64.0f) {
+          throw std::runtime_error("--headset-mic-gain: factor must be in [0, 64]");
+        }
         break;
 
       case OPTION_FORCE_FEEDBACK:

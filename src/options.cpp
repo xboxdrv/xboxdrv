@@ -113,6 +113,7 @@ Options::Options() :
   headset_play_left_pack(false),
   headset_pulse(false),
   headset_pipewire(false),
+  headset_mic_gain(1.0f),
   detach(false),
   dbus(kDBusAuto),
   pid_file(),

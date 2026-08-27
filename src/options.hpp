@@ -117,6 +117,8 @@ public:
   /** Auto FIFOs + pactl module-pipe-source/sink (PulseAudio / PipeWire pulse). */
   bool headset_pulse;
   bool headset_pipewire;
+  /** Linear mic gain applied after G.726 decode (1.0 = unity). */
+  float headset_mic_gain;
 
   // daemon options
   bool detach;
