@@ -14,6 +14,7 @@
 #include <memory>
 #include <string>
 #include <fstream>
+#include <vector>
 #include <libusb.h>
 
 #include <unsebu/usb_interface.hpp>
@@ -34,6 +35,10 @@ private:
   uint32_t m_wav_data_bytes;
 
   std::unique_ptr<std::ifstream> m_fin;
+  /** PCM samples for --headset-play-wav (S16LE @ 16 kHz mono, already resampled). */
+  std::vector<int16_t> m_play_pcm;
+  size_t m_play_pos;
+  G72xEncoder m_encoder;
   G72xDecoder m_decoder;
   bool m_debug;
 
@@ -42,6 +47,9 @@ public:
   ~Headset();
 
   void play_file(const std::string& play_filename);
+  /** Load a PCM WAV, resample to 16 kHz mono S16LE, encode to G.726-32
+      right-packed on the fly and stream to EP 4. */
+  void play_wav(const std::string& wav_filename);
   void record_file(const std::string& dump_filename);
   /** Raw decoded S16LE @ 16 kHz (no header), suitable for a FIFO / aplay -f S16_LE -r 16000 */
   void record_pcm(const std::string& pcm_filename);
@@ -54,6 +62,9 @@ private:
 
   void write_wav_header(std::ostream& out, uint32_t data_bytes);
   void finalize_wav();
+
+  /** Parse a minimal PCM WAV into m_play_pcm (16 kHz mono S16LE). */
+  void load_wav_as_pcm16(const std::string& filename);
 
 private:
   Headset(const Headset&);

@@ -112,6 +112,7 @@ public:
   std::string headset_play;
   std::string headset_pcm;
   std::string headset_wav;
+  std::string headset_play_wav;
 
   // daemon options
   bool detach;

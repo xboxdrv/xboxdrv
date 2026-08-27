@@ -141,6 +141,7 @@ enum {
   OPTION_HEADSET_PLAY,
   OPTION_HEADSET_PCM,
   OPTION_HEADSET_WAV,
+  OPTION_HEADSET_PLAY_WAV,
   OPTION_DETACH_KERNEL_DRIVER,
   OPTION_DAEMON_DETACH,
   OPTION_DAEMON_PID_FILE,
@@ -248,7 +249,8 @@ CommandLineParser::init_argp(int argc, char** argv)
     .add_option(OPTION_HEADSET_DUMP,  NUL, "headset-dump", "FILE",  "Dump headset data to FILE")
     .add_option(OPTION_HEADSET_PLAY,  NUL, "headset-play", "FILE",  "Play FILE on the headset")
     .add_option(OPTION_HEADSET_PCM,   NUL, "headset-pcm", "FILE",  "Write decoded 16kHz S16LE PCM from headset mic to FILE (FIFO or regular)")
-    .add_option(OPTION_HEADSET_WAV,   NUL, "headset-dump-wav", "FILE",  "Decode headset mic (G.726-32 right-packed) to 16kHz mono WAV FILE");
+    .add_option(OPTION_HEADSET_WAV,   NUL, "headset-dump-wav", "FILE",  "Decode headset mic (G.726-32 right-packed) to 16kHz mono WAV FILE")
+    .add_option(OPTION_HEADSET_PLAY_WAV, NUL, "headset-play-wav", "FILE",  "Play PCM WAV FILE on headset (resampled to 16 kHz mono, G.726-32 encoded)");
 
   m_argp.add_group("Force Feedback: ")
     .add_option(OPTION_FORCE_FEEDBACK,    NUL, "force-feedback",   "",     "Enable force feedback support")
@@ -409,6 +411,7 @@ CommandLineParser::init_ini(Options* opts)
     ("headset-play",    &opts->headset_play)
     ("headset-pcm",     &opts->headset_pcm)
     ("headset-dump-wav",&opts->headset_wav)
+    ("headset-play-wav", &opts->headset_play_wav)
     ("ui-clear",        std::bind(&Options::set_ui_clear, opts), std::function<void ()>())
     ;
 
@@ -764,6 +767,11 @@ CommandLineParser::apply_opt(argpp::ParsedOption const& opt, Options& opts)
       case OPTION_HEADSET_WAV:
         opts.headset = true;
         opts.headset_wav = opt.argument;
+        break;
+
+      case OPTION_HEADSET_PLAY_WAV:
+        opts.headset = true;
+        opts.headset_play_wav = opt.argument;
         break;
 
       case OPTION_FORCE_FEEDBACK:
