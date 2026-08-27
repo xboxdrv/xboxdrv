@@ -51,6 +51,8 @@ constexpr size_t SPK_RING = SPK_GRAPH_RATE / 2; // 500 ms @ 48 kHz
 constexpr size_t SPK_HIGH = SPK_GRAPH_RATE / 4;
 constexpr size_t SPK_TARGET = SPK_GRAPH_RATE / 10;
 constexpr size_t SPK_PREBUFFER = SPK_QUANTUM * 2;
+/** Serve mic only after a couple of USB packets so process never pads zeros. */
+constexpr size_t MIC_PREBUFFER = MIC_QUANTUM * 3; // ~12 ms @ 16 kHz
 
 class SampleRing
 {
@@ -157,7 +159,9 @@ struct HeadsetPipeWire::Impl
   std::atomic<bool> spk_streaming{false};
   uint32_t mic_stride = sizeof(int16_t);
   uint32_t spk_stride = sizeof(int16_t);
+  int16_t mic_last = 0;
   int16_t spk_last = 0;
+  bool mic_primed = false;
 
   static void on_mic_process(void* data);
   static void on_spk_process(void* data);
@@ -282,7 +286,9 @@ void HeadsetPipeWire::Impl::on_mic_process(void* data)
     return;
   }
 
-  // Fill every available capture buffer so linked clients keep receiving audio.
+  // USB is the mic clock: only emit as many samples as the ring actually holds.
+  // The previous path drained every PW buffer and zero-padded shortfalls, which
+  // showed up as periodic all-zero gaps in recordings.
   while (pw_buffer* b = pw_stream_dequeue_buffer(self->mic_stream))
   {
     if (!b->buffer || !b->buffer->datas[0].data)
@@ -305,16 +311,58 @@ void HeadsetPipeWire::Impl::on_mic_process(void* data)
       continue;
     }
 
+    const size_t avail = self->mic_ring.available();
+    if (!self->mic_primed)
+    {
+      if (avail < MIC_PREBUFFER)
+      {
+        // Still gathering USB packets — do not invent silence for clients.
+        d->chunk->offset = 0;
+        d->chunk->stride = static_cast<int32_t>(self->mic_stride);
+        d->chunk->size = 0;
+        pw_stream_queue_buffer(self->mic_stream, b);
+        break;
+      }
+      self->mic_primed = true;
+    }
+
+    if (avail == 0)
+    {
+      // No more real samples this cycle. Hold last sample for at most one
+      // buffer so the client keeps a continuous stream without zero gaps,
+      // then stop — further buffers wait for the next USB packet.
+      auto* out = static_cast<int16_t*>(d->data);
+      for (size_t i = 0; i < n_samp; ++i)
+      {
+        out[i] = self->mic_last;
+      }
+      d->chunk->offset = 0;
+      d->chunk->stride = static_cast<int32_t>(self->mic_stride);
+      d->chunk->size = static_cast<uint32_t>(n_samp * self->mic_stride);
+      pw_stream_queue_buffer(self->mic_stream, b);
+      break;
+    }
+
     auto* out = static_cast<int16_t*>(d->data);
     size_t got = self->mic_ring.read(out, n_samp);
-    if (got < n_samp)
+    if (got > 0)
     {
-      std::memset(out + got, 0, (n_samp - got) * sizeof(int16_t));
+      self->mic_last = out[got - 1];
+    }
+    for (size_t i = got; i < n_samp; ++i)
+    {
+      out[i] = self->mic_last;
     }
     d->chunk->offset = 0;
     d->chunk->stride = static_cast<int32_t>(self->mic_stride);
     d->chunk->size = static_cast<uint32_t>(n_samp * self->mic_stride);
     pw_stream_queue_buffer(self->mic_stream, b);
+
+    // Match USB packet cadence: one full period per cycle when the ring is thin.
+    if (self->mic_ring.available() < MIC_QUANTUM)
+    {
+      break;
+    }
   }
 }
 
@@ -360,13 +408,14 @@ void HeadsetPipeWire::Impl::on_drive_timer(void* data, uint64_t /*expirations*/)
   {
     return;
   }
-  // Keep both USB-clocked drivers pumping so capture clients get mic data
-  // and playback clients are drained even between individual USB packets.
+  // Mic: only drive when the ring has real USB samples (never on empty → zeros).
   if (self->mic_stream && self->mic_streaming.load(std::memory_order_acquire) &&
-      pw_stream_is_driving(self->mic_stream))
+      pw_stream_is_driving(self->mic_stream) &&
+      self->mic_ring.available() >= MIC_QUANTUM)
   {
     pw_stream_trigger_process(self->mic_stream);
   }
+  // Speaker: keep draining linked clients on a steady cadence.
   if (self->spk_stream && self->spk_streaming.load(std::memory_order_acquire) &&
       pw_stream_is_driving(self->spk_stream))
   {
@@ -391,7 +440,8 @@ int HeadsetPipeWire::Impl::invoke_triggers(struct spa_loop* /*loop*/, bool /*asy
   }
   if ((mask & 1u) && self->mic_stream &&
       self->mic_streaming.load(std::memory_order_acquire) &&
-      pw_stream_is_driving(self->mic_stream))
+      pw_stream_is_driving(self->mic_stream) &&
+      self->mic_ring.available() >= MIC_QUANTUM)
   {
     pw_stream_trigger_process(self->mic_stream);
   }
@@ -521,6 +571,8 @@ void HeadsetPipeWire::shutdown()
   m_impl->stopping.store(true, std::memory_order_release);
   m_impl->mic_streaming.store(false, std::memory_order_release);
   m_impl->spk_streaming.store(false, std::memory_order_release);
+  m_impl->mic_primed = false;
+  m_impl->mic_last = 0;
   m_running = false;
   m_impl->mic_ring.clear();
   m_impl->spk_ring.clear();
@@ -573,6 +625,8 @@ void HeadsetPipeWire::start()
   m_impl->stopping.store(false, std::memory_order_release);
   m_impl->mic_streaming.store(false, std::memory_order_release);
   m_impl->spk_streaming.store(false, std::memory_order_release);
+  m_impl->mic_primed = false;
+  m_impl->mic_last = 0;
 
   pw_init(nullptr, nullptr);
 
