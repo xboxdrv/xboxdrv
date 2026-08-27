@@ -941,10 +941,9 @@ Headset audio (interface 1, EP 3 IN / EP 4 OUT) — experimental:
   path reuses transfer->buffer for the next packet (same continuous-stream pattern
   as the IN path). Encoding at 16 kHz made speech ~half speed; 8 kHz matches the
   documented 360 render rate (Xbox One is 24 kHz = 3× render).
-  play-wav uses 16-byte OUT packets (32 samples) at 8 kHz so that a ~256 Hz
-  interrupt interval matches sample rate the same way 32-byte IN packets match
-  16 kHz mic capture. Larger 32-byte OUT packets kept speed plausible but may
-  misalign with the device's per-interval consume size (possible residual noise).
-  --headset-play-left-pack was worse; right-pack matches the mic. play-wav
-  attenuates ~1 dB and primes ~100 ms of silence for the ADPCM predictor.
+  OUT packets must be 32 bytes: 16-byte play-wav transfers were accepted by
+  libusb but produced only silence; raw --headset-play (32-byte) still works.
+  play-wav is back to 32-byte / 64-sample packets at 8 kHz. Left-pack was worse;
+  right-pack matches the mic. Residual noise on play-wav vs clean mic remains
+  open (codec match / host encode vs device decode, not packet size).
 

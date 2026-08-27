@@ -37,10 +37,10 @@ constexpr uint32_t WAV_SAMPLE_RATE = 16000;
 constexpr uint32_t PLAY_SAMPLE_RATE = 8000;
 constexpr uint16_t WAV_CHANNELS = 1;
 constexpr uint16_t WAV_BITS = 16;
-/** Mic / raw dump: 32-byte packets. Playback @ 8 kHz: 16-byte packets so that
-    ~256 Hz USB interval × 32 samples ≈ 8 kHz (same interval story as 16 kHz mic). */
-constexpr size_t PLAY_PACKET_BYTES = 16;
-constexpr size_t SAMPLES_PER_PACKET = PLAY_PACKET_BYTES * 2; // 32 samples 
+/** OUT transfers must be 32 bytes (16-byte packets produced silence; raw
+    --headset-play uses 32 and works). At 8 kHz that is 64 samples / packet. */
+constexpr size_t PLAY_PACKET_BYTES = 32;
+constexpr size_t SAMPLES_PER_PACKET = PLAY_PACKET_BYTES * 2; // 64 samples 
 
 uint16_t read_u16_le(const char* p)
 {
