@@ -25,6 +25,26 @@ namespace xboxdrv {
 
 namespace {
 
+/**
+ * PipeWire's graph is built around ~48 kHz quanta. Advertising 8 kHz / 16 kHz
+ * endpoints forces continuous non-integer-friendly conversion in the adapter
+ * and is a common source of stutter. We run both nodes at 48 kHz and convert
+ * to/from the headset rates with exact integer ratios:
+ *   mic  16 kHz → 48 kHz  (×3)
+ *   spk  48 kHz →  8 kHz  (÷6)
+ */
+constexpr uint32_t PW_RATE = 48000;
+constexpr uint32_t MIC_USB_RATE = 16000;
+constexpr uint32_t SPK_USB_RATE = 8000;
+constexpr uint32_t MIC_UPSAMPLE = PW_RATE / MIC_USB_RATE; // 3
+constexpr uint32_t SPK_DOWNSAMPLE = PW_RATE / SPK_USB_RATE; // 6
+
+constexpr size_t MIC_RING = PW_RATE / 2;  // 500 ms @ 48 kHz
+constexpr size_t SPK_RING = PW_RATE / 2;
+constexpr size_t SPK_HIGH = PW_RATE / 3;
+constexpr size_t SPK_TARGET = PW_RATE / 10;
+constexpr size_t SPK_PREBUF = PW_RATE / 20; // 50 ms
+
 class SampleRing
 {
 public:
@@ -110,14 +130,6 @@ private:
   std::atomic<size_t> m_r, m_w;
 };
 
-constexpr size_t MIC_RATE = 16000;
-constexpr size_t SPK_RATE = 8000;
-constexpr size_t MIC_RING = MIC_RATE / 2;  // 500 ms
-constexpr size_t SPK_RING = SPK_RATE / 2;
-constexpr size_t SPK_HIGH = SPK_RATE / 3;
-constexpr size_t SPK_TARGET = SPK_RATE / 10;
-constexpr size_t SPK_PREBUF = SPK_RATE / 20;
-
 } // namespace
 
 struct HeadsetPipeWire::Impl
@@ -129,11 +141,13 @@ struct HeadsetPipeWire::Impl
   pw_stream* spk_stream = nullptr;
   spa_hook mic_listener{};
   spa_hook spk_listener{};
-  SampleRing mic_ring{MIC_RING};
-  SampleRing spk_ring{SPK_RING};
+  SampleRing mic_ring{MIC_RING}; // 48 kHz samples
+  SampleRing spk_ring{SPK_RING}; // 48 kHz samples
   std::atomic<bool> stopping{false};
   uint32_t mic_stride = sizeof(int16_t);
   uint32_t spk_stride = sizeof(int16_t);
+  /** Downsample phase for 48k → 8k (0..5). */
+  uint32_t spk_phase = 0;
 
   static void on_mic_process(void* data);
   static void on_spk_process(void* data);
@@ -141,34 +155,39 @@ struct HeadsetPipeWire::Impl
   static void on_spk_state(void* data, pw_stream_state old, pw_stream_state state, const char* error);
   static void on_mic_param(void* data, uint32_t id, const spa_pod* param);
   static void on_spk_param(void* data, uint32_t id, const spa_pod* param);
+  static void finish_buffers(pw_stream* stream, uint32_t stride, uint32_t rate);
 };
 
-void HeadsetPipeWire::Impl::on_mic_state(void* data, pw_stream_state /*old*/,
+void HeadsetPipeWire::Impl::finish_buffers(pw_stream* stream, uint32_t stride, uint32_t rate)
+{
+  uint8_t buffer[1024];
+  spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
+  const spa_pod* params[1];
+  int32_t s = static_cast<int32_t>(stride);
+  int32_t size = s * static_cast<int32_t>(std::max(32u, rate / 50)); // ~20 ms
+  params[0] = static_cast<const spa_pod*>(spa_pod_builder_add_object(&b,
+      SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
+      SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(8, 2, 16),
+      SPA_PARAM_BUFFERS_blocks,  SPA_POD_Int(1),
+      SPA_PARAM_BUFFERS_size,    SPA_POD_CHOICE_RANGE_Int(size, s * 64, s * 8192),
+      SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(s)));
+  pw_stream_update_params(stream, params, 1);
+}
+
+void HeadsetPipeWire::Impl::on_mic_state(void* /*data*/, pw_stream_state /*old*/,
                                          pw_stream_state state, const char* error)
 {
-  auto* self = static_cast<Impl*>(data);
   log_info("[headset] pipewire mic state: {}{}",
            pw_stream_state_as_string(state),
            error ? std::string(" — ") + error : std::string());
-  if (state == PW_STREAM_STATE_ERROR && error)
-  {
-    log_error("[headset] pipewire mic error: {}", error);
-  }
-  (void)self;
 }
 
-void HeadsetPipeWire::Impl::on_spk_state(void* data, pw_stream_state /*old*/,
+void HeadsetPipeWire::Impl::on_spk_state(void* /*data*/, pw_stream_state /*old*/,
                                          pw_stream_state state, const char* error)
 {
-  auto* self = static_cast<Impl*>(data);
   log_info("[headset] pipewire speaker state: {}{}",
            pw_stream_state_as_string(state),
            error ? std::string(" — ") + error : std::string());
-  if (state == PW_STREAM_STATE_ERROR && error)
-  {
-    log_error("[headset] pipewire speaker error: {}", error);
-  }
-  (void)self;
 }
 
 void HeadsetPipeWire::Impl::on_mic_param(void* data, uint32_t id, const spa_pod* param)
@@ -189,27 +208,11 @@ void HeadsetPipeWire::Impl::on_mic_param(void* data, uint32_t id, const spa_pod*
     return;
   }
   spa_format_audio_raw_parse(param, &info.info.raw);
-  uint32_t channels = std::max(1u, info.info.raw.channels);
-  self->mic_stride = sizeof(int16_t) * channels;
-  log_info("[headset] pipewire mic format: rate={} channels={} (finishing buffer negotiation)",
-           info.info.raw.rate, channels);
-
-  // Docs: after Format, client must pw_stream_update_params() with buffer params
-  // or negotiation never completes cleanly (stutter / no audio).
-  uint8_t buffer[1024];
-  spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
-  const spa_pod* params[1];
-  int32_t stride = static_cast<int32_t>(self->mic_stride);
-  // ~20 ms at negotiated rate, clamped
-  int32_t rate = static_cast<int32_t>(info.info.raw.rate ? info.info.raw.rate : MIC_RATE);
-  int32_t size = stride * std::max(32, rate / 50);
-  params[0] = static_cast<const spa_pod*>(spa_pod_builder_add_object(&b,
-      SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
-      SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(8, 2, 16),
-      SPA_PARAM_BUFFERS_blocks,  SPA_POD_Int(1),
-      SPA_PARAM_BUFFERS_size,    SPA_POD_CHOICE_RANGE_Int(size, stride * 32, stride * 8192),
-      SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(stride)));
-  pw_stream_update_params(self->mic_stream, params, 1);
+  self->mic_stride = sizeof(int16_t) * std::max(1u, info.info.raw.channels);
+  log_info("[headset] pipewire mic format: rate={} channels={}",
+           info.info.raw.rate, info.info.raw.channels);
+  finish_buffers(self->mic_stream, self->mic_stride,
+                 info.info.raw.rate ? info.info.raw.rate : PW_RATE);
 }
 
 void HeadsetPipeWire::Impl::on_spk_param(void* data, uint32_t id, const spa_pod* param)
@@ -230,24 +233,11 @@ void HeadsetPipeWire::Impl::on_spk_param(void* data, uint32_t id, const spa_pod*
     return;
   }
   spa_format_audio_raw_parse(param, &info.info.raw);
-  uint32_t channels = std::max(1u, info.info.raw.channels);
-  self->spk_stride = sizeof(int16_t) * channels;
-  log_info("[headset] pipewire speaker format: rate={} channels={} (finishing buffer negotiation)",
-           info.info.raw.rate, channels);
-
-  uint8_t buffer[1024];
-  spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
-  const spa_pod* params[1];
-  int32_t stride = static_cast<int32_t>(self->spk_stride);
-  int32_t rate = static_cast<int32_t>(info.info.raw.rate ? info.info.raw.rate : SPK_RATE);
-  int32_t size = stride * std::max(32, rate / 50);
-  params[0] = static_cast<const spa_pod*>(spa_pod_builder_add_object(&b,
-      SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
-      SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(8, 2, 16),
-      SPA_PARAM_BUFFERS_blocks,  SPA_POD_Int(1),
-      SPA_PARAM_BUFFERS_size,    SPA_POD_CHOICE_RANGE_Int(size, stride * 32, stride * 8192),
-      SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(stride)));
-  pw_stream_update_params(self->spk_stream, params, 1);
+  self->spk_stride = sizeof(int16_t) * std::max(1u, info.info.raw.channels);
+  log_info("[headset] pipewire speaker format: rate={} channels={}",
+           info.info.raw.rate, info.info.raw.channels);
+  finish_buffers(self->spk_stream, self->spk_stride,
+                 info.info.raw.rate ? info.info.raw.rate : PW_RATE);
 }
 
 void HeadsetPipeWire::Impl::on_mic_process(void* data)
@@ -269,7 +259,6 @@ void HeadsetPipeWire::Impl::on_mic_process(void* data)
   }
 
   spa_data* d = &b->buffer->datas[0];
-  // Requested size from the graph; fall back to maxsize.
   uint32_t n_bytes = d->maxsize;
   if (b->requested > 0)
   {
@@ -311,7 +300,6 @@ void HeadsetPipeWire::Impl::on_spk_process(void* data)
       size_t n = d->chunk->size / self->spk_stride;
       auto* samples = reinterpret_cast<const int16_t*>(
         static_cast<uint8_t*>(d->data) + d->chunk->offset);
-      // Mono sink: take first channel sample of each frame if channels>1
       if (self->spk_stride == sizeof(int16_t))
       {
         self->spk_ring.write(samples, n);
@@ -331,21 +319,18 @@ void HeadsetPipeWire::Impl::on_spk_process(void* data)
 
 namespace {
 
-void connect_device_stream(pw_stream* stream, uint32_t rate, pw_direction direction)
+void connect_device_stream(pw_stream* stream, pw_direction direction)
 {
   uint8_t buffer[1024];
   spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
   const spa_pod* params[1];
 
-  // Only EnumFormat at connect; buffer params come from update_params after
-  // SPA_PARAM_Format (see page_streams.html "Format negotiation").
   spa_audio_info_raw info = {};
   info.format = SPA_AUDIO_FORMAT_S16;
   info.channels = 1;
-  info.rate = rate;
+  info.rate = PW_RATE;
   params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
 
-  // No AUTOCONNECT: we implement the device (docs: media.class Audio/Sink|Source).
   int res = pw_stream_connect(
     stream, direction, PW_ID_ANY,
     static_cast<pw_stream_flags>(
@@ -427,6 +412,7 @@ void HeadsetPipeWire::start()
   }
   shutdown();
   m_impl->stopping.store(false, std::memory_order_release);
+  m_impl->spk_phase = 0;
 
   pw_init(nullptr, nullptr);
 
@@ -477,7 +463,6 @@ void HeadsetPipeWire::start()
         PW_KEY_NODE_NAME, "xboxdrv-headset-mic",
         PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset microphone",
         PW_KEY_NODE_VIRTUAL, "true",
-        PW_KEY_NODE_RATE, "1/16000",
         "node.linger", "false",
         nullptr);
       m_impl->mic_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-mic", props);
@@ -487,7 +472,7 @@ void HeadsetPipeWire::start()
         throw std::runtime_error("pw_stream_new (mic) failed");
       }
       pw_stream_add_listener(m_impl->mic_stream, &m_impl->mic_listener, &mic_events, m_impl.get());
-      connect_device_stream(m_impl->mic_stream, MIC_RATE, PW_DIRECTION_OUTPUT);
+      connect_device_stream(m_impl->mic_stream, PW_DIRECTION_OUTPUT);
     }
 
     {
@@ -499,7 +484,6 @@ void HeadsetPipeWire::start()
         PW_KEY_NODE_NAME, "xboxdrv-headset-speaker",
         PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset speaker",
         PW_KEY_NODE_VIRTUAL, "true",
-        PW_KEY_NODE_RATE, "1/8000",
         "node.linger", "false",
         nullptr);
       m_impl->spk_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-speaker", props);
@@ -509,13 +493,13 @@ void HeadsetPipeWire::start()
         throw std::runtime_error("pw_stream_new (speaker) failed");
       }
       pw_stream_add_listener(m_impl->spk_stream, &m_impl->spk_listener, &spk_events, m_impl.get());
-      connect_device_stream(m_impl->spk_stream, SPK_RATE, PW_DIRECTION_INPUT);
+      connect_device_stream(m_impl->spk_stream, PW_DIRECTION_INPUT);
     }
 
     pw_thread_loop_unlock(m_impl->loop);
     m_running = true;
-    log_info("[headset] pipewire: xboxdrv-headset-mic (Audio/Source 16 kHz), "
-             "xboxdrv-headset-speaker (Audio/Sink 8 kHz)");
+    log_info("[headset] pipewire @ {} Hz graph rate (USB mic {} kHz / spk {} kHz via integer resample)",
+             PW_RATE, MIC_USB_RATE / 1000, SPK_USB_RATE / 1000);
   }
   catch (...)
   {
@@ -526,10 +510,20 @@ void HeadsetPipeWire::start()
 
 void HeadsetPipeWire::push_mic(const int16_t* samples, size_t count)
 {
-  if (m_impl && !m_impl->stopping.load(std::memory_order_acquire))
+  if (!m_impl || m_impl->stopping.load(std::memory_order_acquire))
   {
-    m_impl->mic_ring.write(samples, count);
+    return;
   }
+  // 16 kHz → 48 kHz: repeat each sample ×3
+  std::vector<int16_t> up(count * MIC_UPSAMPLE);
+  for (size_t i = 0; i < count; ++i)
+  {
+    for (uint32_t k = 0; k < MIC_UPSAMPLE; ++k)
+    {
+      up[i * MIC_UPSAMPLE + k] = samples[i];
+    }
+  }
+  m_impl->mic_ring.write(up.data(), up.size());
 }
 
 bool HeadsetPipeWire::pull_speaker(int16_t* out, size_t count)
@@ -539,6 +533,9 @@ bool HeadsetPipeWire::pull_speaker(int16_t* out, size_t count)
     std::memset(out, 0, count * sizeof(int16_t));
     return false;
   }
+
+  // Need count * 6 samples at 48 kHz to produce count samples at 8 kHz
+  size_t need_48 = count * SPK_DOWNSAMPLE;
   size_t avail = m_impl->spk_ring.available();
   if (avail < SPK_PREBUF)
   {
@@ -548,14 +545,22 @@ bool HeadsetPipeWire::pull_speaker(int16_t* out, size_t count)
   if (avail > SPK_HIGH)
   {
     m_impl->spk_ring.discard(avail - SPK_TARGET);
+    avail = m_impl->spk_ring.available();
   }
-  size_t n = m_impl->spk_ring.read(out, count);
-  if (n < count)
+
+  std::vector<int16_t> buf48(need_48);
+  size_t got = m_impl->spk_ring.read(buf48.data(), need_48);
+  if (got < need_48)
   {
-    std::memset(out + n, 0, (count - n) * sizeof(int16_t));
-    return n > 0;
+    std::memset(buf48.data() + got, 0, (need_48 - got) * sizeof(int16_t));
   }
-  return true;
+
+  // 48 kHz → 8 kHz: take every 6th sample
+  for (size_t i = 0; i < count; ++i)
+  {
+    out[i] = buf48[i * SPK_DOWNSAMPLE];
+  }
+  return got > 0;
 }
 
 } // namespace xboxdrv
