@@ -219,9 +219,11 @@ void connect_audio_stream(pw_stream* stream, uint32_t rate, spa_direction direct
   info.rate = rate;
   params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
 
+  // No AUTOCONNECT: with it, OUTPUT becomes a *player* on the default sink and
+  // INPUT a *recorder* on the default source — the opposite of exporting devices.
+  // As Audio/Source + Audio/Sink nodes, other clients connect to us instead.
   if (pw_stream_connect(stream, direction, PW_ID_ANY,
                         static_cast<pw_stream_flags>(
-                          PW_STREAM_FLAG_AUTOCONNECT |
                           PW_STREAM_FLAG_MAP_BUFFERS |
                           PW_STREAM_FLAG_RT_PROCESS),
                         params, 1) < 0)
@@ -348,11 +350,12 @@ void HeadsetPipeWire::start()
       pw_properties* props = pw_properties_new(
         PW_KEY_MEDIA_TYPE, "Audio",
         PW_KEY_MEDIA_CATEGORY, "Capture",
+        PW_KEY_MEDIA_CLASS, "Audio/Source",
         PW_KEY_MEDIA_ROLE, "Communication",
         PW_KEY_NODE_NAME, "xboxdrv-headset-mic",
         PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset microphone",
+        PW_KEY_NODE_VIRTUAL, "true",
         PW_KEY_NODE_LATENCY, "256/16000",
-        PW_KEY_NODE_WANT_DRIVER, "true",
         "node.linger", "false",
         nullptr);
       m_impl->mic_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-mic", props);
@@ -373,11 +376,12 @@ void HeadsetPipeWire::start()
       pw_properties* props = pw_properties_new(
         PW_KEY_MEDIA_TYPE, "Audio",
         PW_KEY_MEDIA_CATEGORY, "Playback",
+        PW_KEY_MEDIA_CLASS, "Audio/Sink",
         PW_KEY_MEDIA_ROLE, "Communication",
         PW_KEY_NODE_NAME, "xboxdrv-headset-speaker",
         PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset speaker",
+        PW_KEY_NODE_VIRTUAL, "true",
         PW_KEY_NODE_LATENCY, "128/8000",
-        PW_KEY_NODE_WANT_DRIVER, "true",
         "node.linger", "false",
         nullptr);
       m_impl->spk_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-speaker", props);
@@ -396,8 +400,8 @@ void HeadsetPipeWire::start()
 
     pw_thread_loop_unlock(m_impl->loop);
     m_running = true;
-    log_info("[headset] PipeWire: xboxdrv-headset-mic (16 kHz), "
-             "xboxdrv-headset-speaker (8 kHz); nodes removed on exit");
+    log_info("[headset] PipeWire devices: xboxdrv-headset-mic (Audio/Source 16 kHz), "
+             "xboxdrv-headset-speaker (Audio/Sink 8 kHz)");
   }
   catch (...)
   {
