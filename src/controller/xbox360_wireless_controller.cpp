@@ -358,8 +358,8 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
                                int(data[12]),
                                int(data[13]));
         m_battery_status = data[17];
-        log_info("Serial: {}", m_serial);
-        log_info("Battery Status: {}", m_battery_status);
+        log_info("controller serial: {}", m_serial);
+        log_info("battery status: {} (0=empty .. 3=full typical)", m_battery_status);
       }
       return false;
     }

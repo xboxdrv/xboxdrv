@@ -18,6 +18,8 @@
 
 #include "options.hpp"
 
+#include <logmich/log.hpp>
+
 #include <assert.h>
 #include <functional>
 #include <format>
@@ -109,6 +111,7 @@ Options::Options() :
   headset_wav(),
   headset_play_wav(),
   headset_play_left_pack(false),
+  headset_pulse(false),
   detach(false),
   dbus(kDBusAuto),
   pid_file(),
@@ -410,6 +413,7 @@ Options::set_quiet()
 {
   quiet  = true;
   silent = true;
+  logmich::g_logger.set_log_level(logmich::LogLevel::WARNING);
 }
 
 void

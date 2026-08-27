@@ -114,6 +114,8 @@ public:
   std::string headset_wav;
   std::string headset_play_wav;
   bool headset_play_left_pack;
+  /** Auto FIFOs + pactl module-pipe-source/sink (PulseAudio / PipeWire pulse). */
+  bool headset_pulse;
 
   // daemon options
   bool detach;

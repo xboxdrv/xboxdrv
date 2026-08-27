@@ -17,6 +17,8 @@
 */
 
 #include "xboxdrv.hpp"
+
+#include <logmich/log.hpp>
 #include "xboxdrv_version.hpp"
 
 #include <format>
@@ -366,6 +368,14 @@ Xboxdrv::main(int argc, char** argv)
 
     CommandLineParser cmd_parser;
     cmd_parser.parse_args(argc, argv, &opts);
+
+    // Status (headset, battery, connection) uses log_info. Default logmich
+    // level is WARNING which hid those unless --verbose. Raise to INFO by
+    // default; --quiet restores WARNING.
+    if (!opts.quiet)
+    {
+      logmich::g_logger.incr_log_level(logmich::LogLevel::INFO);
+    }
 
     set_scheduling(opts);
 
