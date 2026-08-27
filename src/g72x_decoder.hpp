@@ -5,8 +5,8 @@ extern "C" {
 #include <g72x.h>
 }
 
-#include <vector>
 #include <cstdint>
+#include <vector>
 
 namespace xboxdrv {
 
@@ -16,7 +16,8 @@ private:
   struct g72x_state m_state;
 
 public:
-  G72xDecoder()
+  G72xDecoder() :
+    m_state()
   {
     g72x_init_state(&m_state);
   }
@@ -25,11 +26,11 @@ public:
   void decode(const uint8_t* data, int len, std::vector<int16_t>& out)
   {
     out.clear();
-    out.reserve(len * 2);
+    out.reserve(static_cast<size_t>(len) * 2);
     for (int i = 0; i < len; ++i)
     {
       uint8_t b = data[i];
-      // high nibble first? or low? try both later; common is low first for packing
+      // Nibble order is uncertain; low nibble first is a common packing.
       int code1 = b & 0x0f;
       int code2 = (b >> 4) & 0x0f;
       int sample1 = g721_decoder(code1, AUDIO_ENCODING_LINEAR, &m_state);
@@ -43,3 +44,5 @@ public:
 } // namespace xboxdrv
 
 #endif
+
+/* EOF */
