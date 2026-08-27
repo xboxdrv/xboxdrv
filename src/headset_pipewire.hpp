@@ -11,7 +11,7 @@ namespace xboxdrv {
  * Native PipeWire virtual devices for the Xbox 360 headset.
  *
  *   xboxdrv-headset-mic     — Audio/Source, 16 kHz mono S16LE (USB mic → graph)
- *   xboxdrv-headset-speaker — Audio/Sink,    8 kHz mono S16LE (graph → USB phone)
+ *   xboxdrv-headset-speaker — Audio/Sink,   48 kHz mono S16LE (graph → USB @ 8 kHz)
  *
  * Requires HAVE_PIPEWIRE (libpipewire-0.3). Used by --headset-pipewire.
  */

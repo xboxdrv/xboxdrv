@@ -28,14 +28,13 @@ namespace xboxdrv {
 namespace {
 
 /**
- * Rates must match the USB / G.726 paths exactly:
- *   mic  IN  — G.726-32 decode → S16LE @ 16 kHz (same as --headset-pulse)
- *   spk  OUT — S16LE @ 8 kHz encode (USB phone)
+ * USB / G.726 rates (must stay in sync with headset.cpp / --headset-pulse):
+ *   mic  IN  — decode → S16LE @ 16 kHz
+ *   spk  OUT — S16LE @ 8 kHz → encode
  *
- * Speaker Sink runs at 48 kHz (graph-friendly) with exact ÷6 downsample to 8 kHz.
- * Mic Source stays native 16 kHz; PipeWire resamples for clients that need more.
- * Always upsampling mic into a 48 kHz ring while the stream can negotiate 16 kHz
- * made capture sound slow and heavily distorted.
+ * Mic Source is native 16 kHz (PipeWire resamples for clients).
+ * Speaker Sink is 48 kHz so graph quanta stay friendly; USB path downsamples
+ * with an exact integer ratio (÷6) and a 6-tap box average.
  */
 constexpr uint32_t SPK_GRAPH_RATE = 48000;
 constexpr uint32_t MIC_RATE = 16000;
@@ -45,14 +44,15 @@ constexpr uint32_t SPK_DOWNSAMPLE = SPK_GRAPH_RATE / SPK_USB_RATE; // 6
 constexpr uint32_t SPK_QUANTUM = 384;
 /** One USB mic packet: 64 samples @ 16 kHz = 4 ms. */
 constexpr uint32_t MIC_QUANTUM = 64;
+/** Max samples pulled from the 48 kHz ring for one USB packet (64 * 6). */
+constexpr size_t SPK_USB_PACKET_48 = 64 * SPK_DOWNSAMPLE;
 
 constexpr size_t MIC_RING = MIC_RATE / 2;       // 500 ms @ 16 kHz
 constexpr size_t SPK_RING = SPK_GRAPH_RATE / 2; // 500 ms @ 48 kHz
-constexpr size_t SPK_HIGH = SPK_GRAPH_RATE / 4;
-constexpr size_t SPK_TARGET = SPK_GRAPH_RATE / 10;
-constexpr size_t SPK_PREBUFFER = SPK_QUANTUM * 2;
-/** Serve mic only after a couple of USB packets so process never pads zeros. */
-constexpr size_t MIC_PREBUFFER = MIC_QUANTUM * 3; // ~12 ms @ 16 kHz
+constexpr size_t SPK_HIGH = SPK_GRAPH_RATE / 4;   // ~250 ms — start dropping lag
+constexpr size_t SPK_TARGET = SPK_GRAPH_RATE / 10; // ~100 ms after catch-up
+constexpr size_t SPK_PREBUFFER = SPK_QUANTUM * 2;  // ~16 ms before first pull
+constexpr size_t MIC_PREBUFFER = MIC_QUANTUM * 3;  // ~12 ms before first push
 
 class SampleRing
 {
@@ -286,9 +286,7 @@ void HeadsetPipeWire::Impl::on_mic_process(void* data)
     return;
   }
 
-  // USB is the mic clock: only emit as many samples as the ring actually holds.
-  // The previous path drained every PW buffer and zero-padded shortfalls, which
-  // showed up as periodic all-zero gaps in recordings.
+  // USB clocks the mic: emit only what the ring holds (no zero-pad underruns).
   while (pw_buffer* b = pw_stream_dequeue_buffer(self->mic_stream))
   {
     if (!b->buffer || !b->buffer->datas[0].data)
@@ -316,7 +314,6 @@ void HeadsetPipeWire::Impl::on_mic_process(void* data)
     {
       if (avail < MIC_PREBUFFER)
       {
-        // Still gathering USB packets — do not invent silence for clients.
         d->chunk->offset = 0;
         d->chunk->stride = static_cast<int32_t>(self->mic_stride);
         d->chunk->size = 0;
@@ -326,12 +323,10 @@ void HeadsetPipeWire::Impl::on_mic_process(void* data)
       self->mic_primed = true;
     }
 
+    auto* out = static_cast<int16_t*>(d->data);
     if (avail == 0)
     {
-      // No more real samples this cycle. Hold last sample for at most one
-      // buffer so the client keeps a continuous stream without zero gaps,
-      // then stop — further buffers wait for the next USB packet.
-      auto* out = static_cast<int16_t*>(d->data);
+      // One hold-last buffer, then wait for the next USB packet.
       for (size_t i = 0; i < n_samp; ++i)
       {
         out[i] = self->mic_last;
@@ -343,7 +338,6 @@ void HeadsetPipeWire::Impl::on_mic_process(void* data)
       break;
     }
 
-    auto* out = static_cast<int16_t*>(d->data);
     size_t got = self->mic_ring.read(out, n_samp);
     if (got > 0)
     {
@@ -358,7 +352,6 @@ void HeadsetPipeWire::Impl::on_mic_process(void* data)
     d->chunk->size = static_cast<uint32_t>(n_samp * self->mic_stride);
     pw_stream_queue_buffer(self->mic_stream, b);
 
-    // Match USB packet cadence: one full period per cycle when the ring is thin.
     if (self->mic_ring.available() < MIC_QUANTUM)
     {
       break;
@@ -374,9 +367,7 @@ void HeadsetPipeWire::Impl::on_spk_process(void* data)
     return;
   }
 
-  // USB is the speaker clock (~8 ms / packet). Only pull from clients while the
-  // ring is below target. Draining every buffer on every timer tick made the
-  // graph consume audio (and linked video) several times real-time.
+  // USB clocks the speaker (~8 ms / packet): only pull while the ring needs data.
   while (self->spk_ring.available() < SPK_TARGET)
   {
     pw_buffer* b = pw_stream_dequeue_buffer(self->spk_stream);
@@ -414,15 +405,12 @@ void HeadsetPipeWire::Impl::on_drive_timer(void* data, uint64_t /*expirations*/)
   {
     return;
   }
-  // Mic: only drive when the ring has real USB samples (never on empty → zeros).
   if (self->mic_stream && self->mic_streaming.load(std::memory_order_acquire) &&
       pw_stream_is_driving(self->mic_stream) &&
       self->mic_ring.available() >= MIC_QUANTUM)
   {
     pw_stream_trigger_process(self->mic_stream);
   }
-  // Speaker: only pull from clients when the USB side has room in the ring.
-  // Unconditional triggers drained the graph faster than real-time (video raced).
   if (self->spk_stream && self->spk_streaming.load(std::memory_order_acquire) &&
       pw_stream_is_driving(self->spk_stream) &&
       self->spk_ring.available() < SPK_TARGET)
@@ -469,8 +457,7 @@ void HeadsetPipeWire::Impl::arm_drive_timer()
   {
     return;
   }
-  // 8 ms ticks match one USB speaker packet; mic still gates on ring depth.
-  // USB is the ultimate clock — the timer only tops up when rings need it.
+  // 8 ms = one USB speaker packet; mic/spk triggers are gated on ring depth.
   drive_timer = pw_loop_add_timer(pw_thread_loop_get_loop(loop), on_drive_timer, this);
   if (drive_timer)
   {
@@ -775,19 +762,23 @@ bool HeadsetPipeWire::pull_speaker(int16_t* out, size_t count)
     return false;
   }
 
-  // Need count * 6 samples at 48 kHz to produce count samples at 8 kHz.
-  size_t need_48 = count * SPK_DOWNSAMPLE;
+  // count is SAMPLES_PER_PACKET (64) from headset.cpp — one USB OUT packet.
+  if (count == 0 || count * SPK_DOWNSAMPLE > SPK_USB_PACKET_48)
+  {
+    std::memset(out, 0, count * sizeof(int16_t));
+    return false;
+  }
+
+  const size_t need_48 = count * SPK_DOWNSAMPLE;
   size_t avail = m_impl->spk_ring.available();
 
-  // If the ring is running low, ask the PW thread to run another driver cycle.
-  // Async invoke only — never pw_thread_loop_lock from the USB callback path.
+  // Async top-up only — never lock the PW loop from the USB callback path.
   if (avail < need_48 * 2)
   {
     m_impl->request_cycles(false, true);
     avail = m_impl->spk_ring.available();
   }
 
-  // Soft start: avoid a burst of underrun hold-last before the first client data.
   if (avail < SPK_PREBUFFER)
   {
     std::memset(out, 0, count * sizeof(int16_t));
@@ -799,17 +790,24 @@ bool HeadsetPipeWire::pull_speaker(int16_t* out, size_t count)
     m_impl->spk_ring.discard(avail - SPK_TARGET);
   }
 
-  // Read what we can at 48 kHz; hold last sample on shortfall (less harsh than zero).
-  std::vector<int16_t> buf48(need_48);
-  size_t got = m_impl->spk_ring.read(buf48.data(), need_48);
+  // Stack buffer: one USB packet at 48 kHz (384 samples).
+  int16_t buf48[SPK_USB_PACKET_48];
+  size_t got = m_impl->spk_ring.read(buf48, need_48);
   for (size_t i = got; i < need_48; ++i)
   {
     buf48[i] = m_impl->spk_last;
   }
 
+  // Exact ÷6 with a 6-tap box average (better than pick-every-6th aliasing).
   for (size_t i = 0; i < count; ++i)
   {
-    out[i] = buf48[i * SPK_DOWNSAMPLE];
+    int sum = 0;
+    const size_t base = i * SPK_DOWNSAMPLE;
+    for (uint32_t k = 0; k < SPK_DOWNSAMPLE; ++k)
+    {
+      sum += buf48[base + k];
+    }
+    out[i] = static_cast<int16_t>(sum / static_cast<int>(SPK_DOWNSAMPLE));
   }
   if (count > 0)
   {
