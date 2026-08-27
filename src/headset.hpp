@@ -6,24 +6,15 @@
 **  it under the terms of the GNU General Public License as published by
 **  the Free Software Foundation, either version 3 of the License, or
 **  (at your option) any later version.
-**
-**  This program is distributed in the hope that it will be useful,
-**  but WITHOUT ANY WARRANTY; without even the implied warranty of
-**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**  GNU General Public License for more details.
-**
-**  You should have received a copy of the GNU General Public License
-**  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef HEADER_XBOXDRV_HEADSET_HPP
 #define HEADER_XBOXDRV_HEADSET_HPP
 
-#include <libusb.h>
 #include <memory>
 #include <string>
 #include <fstream>
-#include <vector>
+#include <libusb.h>
 
 #include <unsebu/usb_interface.hpp>
 
@@ -39,8 +30,10 @@ private:
 
   std::unique_ptr<std::ofstream> m_fout_raw;
   std::unique_ptr<std::ofstream> m_fout_pcm;
-  std::unique_ptr<std::ifstream> m_fin;
+  std::unique_ptr<std::fstream> m_fout_wav;
+  uint32_t m_wav_data_bytes;
 
+  std::unique_ptr<std::ifstream> m_fin;
   G72xDecoder m_decoder;
   bool m_debug;
 
@@ -50,12 +43,17 @@ public:
 
   void play_file(const std::string& play_filename);
   void record_file(const std::string& dump_filename);
-  /** Write decoded 16 kHz mono S16LE PCM to FILE (regular file or FIFO). */
+  /** Raw decoded S16LE @ 16 kHz (no header), suitable for a FIFO / aplay -f S16_LE -r 16000 */
   void record_pcm(const std::string& pcm_filename);
+  /** Same decode as record_pcm, written as a mono 16 kHz 16-bit WAV */
+  void record_wav(const std::string& wav_filename);
 
 private:
   bool send_data(libusb_transfer* transfer);
   bool receive_data(uint8_t* data, int len);
+
+  void write_wav_header(std::ostream& out, uint32_t data_bytes);
+  void finalize_wav();
 
 private:
   Headset(const Headset&);

@@ -111,6 +111,7 @@ public:
   std::string headset_dump;
   std::string headset_play;
   std::string headset_pcm;
+  std::string headset_wav;
 
   // daemon options
   bool detach;

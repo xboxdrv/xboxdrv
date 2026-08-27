@@ -56,6 +56,7 @@ public:
                     const std::string& headset_dump,
                     const std::string& headset_play,
                     const std::string& headset_pcm,
+                    const std::string& headset_wav,
                     bool try_detach);
   ~Xbox360Controller();
 

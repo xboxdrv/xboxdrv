@@ -36,6 +36,7 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
                                      std::string const& headset_dump,
                                      std::string const& headset_play,
                                      std::string const& headset_pcm,
+                                     std::string const& headset_wav,
                                      bool try_detach) :
   USBController(dev),
   dev_type(),
@@ -90,6 +91,11 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
     if (!headset_pcm.empty())
     {
       m_headset->record_pcm(headset_pcm);
+    }
+
+    if (!headset_wav.empty())
+    {
+      m_headset->record_wav(headset_wav);
     }
   }
 }

@@ -106,6 +106,7 @@ Options::Options() :
   headset_dump(),
   headset_play(),
   headset_pcm(),
+  headset_wav(),
   detach(false),
   dbus(kDBusAuto),
   pid_file(),
