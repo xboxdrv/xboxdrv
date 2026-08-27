@@ -7,7 +7,7 @@
 
 namespace xboxdrv {
 
-/** PipeWire graph nodes for --headset-pulse (no pactl, no FIFOs). */
+/** PipeWire graph nodes for --headset-pulse (client-owned; removed on shutdown). */
 class HeadsetPipeWire
 {
 public:
@@ -18,6 +18,9 @@ public:
   HeadsetPipeWire& operator=(const HeadsetPipeWire&) = delete;
 
   void start();
+  /** Idempotent: drop streams/core immediately so nodes do not linger. */
+  void shutdown();
+
   void push_mic(const int16_t* samples, size_t count);
   bool pull_speaker(int16_t* out, size_t count);
   bool running() const { return m_running; }
@@ -31,3 +34,5 @@ private:
 } // namespace xboxdrv
 
 #endif
+
+/* EOF */

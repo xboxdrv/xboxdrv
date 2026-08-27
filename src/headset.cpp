@@ -83,7 +83,13 @@ Headset::~Headset()
 {
   finalize_wav();
 #ifdef HAVE_PIPEWIRE
-  m_pw.reset();
+  // Tear down PipeWire *before* USB so process callbacks stop touching USB-side
+  // state and the client disconnect runs while the process is still healthy.
+  if (m_pw)
+  {
+    m_pw->shutdown();
+    m_pw.reset();
+  }
 #endif
   m_interface.reset();
 }

@@ -979,7 +979,12 @@ CLI
                                  node xboxdrv-headset-speaker (sink,    8 kHz S16LE)
                                Requires xboxdrv built with libpipewire-0.3
                                (HAVE_PIPEWIRE). PulseAudio clients see the nodes
-                               via pipewire-pulse.
+                               via pipewire-pulse. Nodes are client-owned
+                               (node.linger=false) and removed on shutdown by
+                               disconnecting streams and the PipeWire core.
+                               Stale module-pipe-* entries from older pactl
+                               experiments: pactl list modules short | grep pipe
+                               then pactl unload-module <id>.
 
 play-wav also applies ~1 dB attenuation and ~100 ms of encoded silence prime
 so the ADPCM predictor is not cold on the first phoneme.

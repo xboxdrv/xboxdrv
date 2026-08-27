@@ -115,6 +115,9 @@ Xbox360Controller::Xbox360Controller(libusb_device* dev,
 
 Xbox360Controller::~Xbox360Controller()
 {
+  // Drop headset (and PipeWire nodes) before other USB teardown via members.
+  m_headset.reset();
+  m_chatpad.reset();
 }
 
 void

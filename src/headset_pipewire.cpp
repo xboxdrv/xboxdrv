@@ -240,16 +240,33 @@ HeadsetPipeWire::HeadsetPipeWire() :
 
 HeadsetPipeWire::~HeadsetPipeWire()
 {
-  if (!m_impl || !m_impl->loop)
+  shutdown();
+}
+
+void
+HeadsetPipeWire::shutdown()
+{
+  if (!m_impl)
   {
     return;
   }
 
+  // Make process callbacks no-ops before we tear the graph down.
   m_impl->stopping.store(true, std::memory_order_release);
+  m_running = false;
   m_impl->mic_ring.clear();
   m_impl->spk_ring.clear();
 
+  if (!m_impl->loop)
+  {
+    return;
+  }
+
+  // Drop client objects while the loop is still running so PipeWire can
+  // process destroy events; then disconnect the core (removes any leftover
+  // client-owned nodes) and stop the thread.
   pw_thread_loop_lock(m_impl->loop);
+
   if (m_impl->mic_stream)
   {
     pw_stream_set_active(m_impl->mic_stream, false);
@@ -264,6 +281,9 @@ HeadsetPipeWire::~HeadsetPipeWire()
     pw_stream_destroy(m_impl->spk_stream);
     m_impl->spk_stream = nullptr;
   }
+
+  // Disconnecting the core is what guarantees the session drops our nodes
+  // even if a stream destroy raced; do this before stopping the thread.
   if (m_impl->core)
   {
     pw_core_disconnect(m_impl->core);
@@ -274,98 +294,117 @@ HeadsetPipeWire::~HeadsetPipeWire()
     pw_context_destroy(m_impl->context);
     m_impl->context = nullptr;
   }
+
   pw_thread_loop_unlock(m_impl->loop);
   pw_thread_loop_stop(m_impl->loop);
   pw_thread_loop_destroy(m_impl->loop);
   m_impl->loop = nullptr;
+
   pw_deinit();
-  m_running = false;
+  log_info("[headset] PipeWire nodes released");
 }
 
 void HeadsetPipeWire::start()
 {
+  if (m_running)
+  {
+    return;
+  }
+
+  // Clean up a previous partial start, if any.
+  shutdown();
+  m_impl->stopping.store(false, std::memory_order_release);
+
   pw_init(nullptr, nullptr);
 
-  m_impl->loop = pw_thread_loop_new("xboxdrv-headset", nullptr);
-  if (!m_impl->loop)
+  try
   {
-    throw std::runtime_error("pw_thread_loop_new failed");
-  }
+    m_impl->loop = pw_thread_loop_new("xboxdrv-headset", nullptr);
+    if (!m_impl->loop)
+    {
+      throw std::runtime_error("pw_thread_loop_new failed");
+    }
 
-  m_impl->context = pw_context_new(pw_thread_loop_get_loop(m_impl->loop), nullptr, 0);
-  if (!m_impl->context)
-  {
-    throw std::runtime_error("pw_context_new failed");
-  }
+    m_impl->context = pw_context_new(pw_thread_loop_get_loop(m_impl->loop), nullptr, 0);
+    if (!m_impl->context)
+    {
+      throw std::runtime_error("pw_context_new failed");
+    }
 
-  if (pw_thread_loop_start(m_impl->loop) < 0)
-  {
-    throw std::runtime_error("pw_thread_loop_start failed");
-  }
+    if (pw_thread_loop_start(m_impl->loop) < 0)
+    {
+      throw std::runtime_error("pw_thread_loop_start failed");
+    }
 
-  pw_thread_loop_lock(m_impl->loop);
-  m_impl->core = pw_context_connect(m_impl->context, nullptr, 0);
-  if (!m_impl->core)
-  {
+    pw_thread_loop_lock(m_impl->loop);
+    m_impl->core = pw_context_connect(m_impl->context, nullptr, 0);
+    if (!m_impl->core)
+    {
+      pw_thread_loop_unlock(m_impl->loop);
+      throw std::runtime_error("pw_context_connect failed (is PipeWire running?)");
+    }
+
+    {
+      pw_properties* props = pw_properties_new(
+        PW_KEY_MEDIA_TYPE, "Audio",
+        PW_KEY_MEDIA_CATEGORY, "Capture",
+        PW_KEY_MEDIA_ROLE, "Communication",
+        PW_KEY_NODE_NAME, "xboxdrv-headset-mic",
+        PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset microphone",
+        PW_KEY_NODE_LATENCY, "256/16000",
+        PW_KEY_NODE_WANT_DRIVER, "true",
+        "node.linger", "false",
+        nullptr);
+      m_impl->mic_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-mic", props);
+      if (!m_impl->mic_stream)
+      {
+        pw_thread_loop_unlock(m_impl->loop);
+        throw std::runtime_error("pw_stream_new (mic) failed");
+      }
+      static const pw_stream_events mic_events = {
+        .version = PW_VERSION_STREAM_EVENTS,
+        .process = Impl::on_mic_process,
+      };
+      pw_stream_add_listener(m_impl->mic_stream, &m_impl->mic_listener, &mic_events, m_impl.get());
+      connect_audio_stream(m_impl->mic_stream, 16000, SPA_DIRECTION_OUTPUT);
+    }
+
+    {
+      pw_properties* props = pw_properties_new(
+        PW_KEY_MEDIA_TYPE, "Audio",
+        PW_KEY_MEDIA_CATEGORY, "Playback",
+        PW_KEY_MEDIA_ROLE, "Communication",
+        PW_KEY_NODE_NAME, "xboxdrv-headset-speaker",
+        PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset speaker",
+        PW_KEY_NODE_LATENCY, "128/8000",
+        PW_KEY_NODE_WANT_DRIVER, "true",
+        "node.linger", "false",
+        nullptr);
+      m_impl->spk_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-speaker", props);
+      if (!m_impl->spk_stream)
+      {
+        pw_thread_loop_unlock(m_impl->loop);
+        throw std::runtime_error("pw_stream_new (speaker) failed");
+      }
+      static const pw_stream_events spk_events = {
+        .version = PW_VERSION_STREAM_EVENTS,
+        .process = Impl::on_spk_process,
+      };
+      pw_stream_add_listener(m_impl->spk_stream, &m_impl->spk_listener, &spk_events, m_impl.get());
+      connect_audio_stream(m_impl->spk_stream, 8000, SPA_DIRECTION_INPUT);
+    }
+
     pw_thread_loop_unlock(m_impl->loop);
-    throw std::runtime_error("pw_context_connect failed (is PipeWire running?)");
+    m_running = true;
+    log_info("[headset] PipeWire: xboxdrv-headset-mic (16 kHz), "
+             "xboxdrv-headset-speaker (8 kHz); nodes removed on exit");
   }
-
+  catch (...)
   {
-    // Latency hint: 256/16000 ≈ 16 ms
-    pw_properties* props = pw_properties_new(
-      PW_KEY_MEDIA_TYPE, "Audio",
-      PW_KEY_MEDIA_CATEGORY, "Capture",
-      PW_KEY_MEDIA_ROLE, "Communication",
-      PW_KEY_NODE_NAME, "xboxdrv-headset-mic",
-      PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset microphone",
-      PW_KEY_NODE_LATENCY, "256/16000",
-      PW_KEY_NODE_WANT_DRIVER, "true",
-      nullptr);
-    m_impl->mic_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-mic", props);
-    if (!m_impl->mic_stream)
-    {
-      pw_thread_loop_unlock(m_impl->loop);
-      throw std::runtime_error("pw_stream_new (mic) failed");
-    }
-    // Event tables live here so they may name private nested Impl::callbacks.
-    static const pw_stream_events mic_events = {
-      .version = PW_VERSION_STREAM_EVENTS,
-      .process = Impl::on_mic_process,
-    };
-    pw_stream_add_listener(m_impl->mic_stream, &m_impl->mic_listener, &mic_events, m_impl.get());
-    connect_audio_stream(m_impl->mic_stream, 16000, SPA_DIRECTION_OUTPUT);
+    // Drop any half-created client objects so we never leave orphan sinks.
+    shutdown();
+    throw;
   }
-
-  {
-    // 128/8000 ≈ 16 ms
-    pw_properties* props = pw_properties_new(
-      PW_KEY_MEDIA_TYPE, "Audio",
-      PW_KEY_MEDIA_CATEGORY, "Playback",
-      PW_KEY_MEDIA_ROLE, "Communication",
-      PW_KEY_NODE_NAME, "xboxdrv-headset-speaker",
-      PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset speaker",
-      PW_KEY_NODE_LATENCY, "128/8000",
-      PW_KEY_NODE_WANT_DRIVER, "true",
-      nullptr);
-    m_impl->spk_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-speaker", props);
-    if (!m_impl->spk_stream)
-    {
-      pw_thread_loop_unlock(m_impl->loop);
-      throw std::runtime_error("pw_stream_new (speaker) failed");
-    }
-    static const pw_stream_events spk_events = {
-      .version = PW_VERSION_STREAM_EVENTS,
-      .process = Impl::on_spk_process,
-    };
-    pw_stream_add_listener(m_impl->spk_stream, &m_impl->spk_listener, &spk_events, m_impl.get());
-    connect_audio_stream(m_impl->spk_stream, 8000, SPA_DIRECTION_INPUT);
-  }
-
-  pw_thread_loop_unlock(m_impl->loop);
-  m_running = true;
-  log_info("[headset] PipeWire: xboxdrv-headset-mic (16 kHz), "
-           "xboxdrv-headset-speaker (8 kHz), low-latency rings (~200 ms max)");
 }
 
 void HeadsetPipeWire::push_mic(const int16_t* samples, size_t count)
