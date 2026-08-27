@@ -43,7 +43,9 @@ constexpr uint32_t MIC_USB_RATE = 16000;
 constexpr uint32_t SPK_USB_RATE = 8000;
 constexpr uint32_t MIC_UPSAMPLE = PW_RATE / MIC_USB_RATE; // 3
 constexpr uint32_t SPK_DOWNSAMPLE = PW_RATE / SPK_USB_RATE; // 6
-constexpr uint32_t SPK_QUANTUM_48 = 384; // 8 ms @ 48 kHz = one USB packet
+constexpr uint32_t SPK_QUANTUM_48 = 384; // 8 ms @ 48 kHz = one USB speaker packet
+/** One USB mic packet is 64 samples @ 16 kHz = 4 ms = 192 samples @ 48 kHz. */
+constexpr uint32_t MIC_QUANTUM_48 = 192;
 
 constexpr size_t MIC_RING = PW_RATE / 2;  // 500 ms @ 48 kHz
 constexpr size_t SPK_RING = PW_RATE / 2;
@@ -148,10 +150,11 @@ struct HeadsetPipeWire::Impl
   pw_stream* spk_stream = nullptr;
   spa_hook mic_listener{};
   spa_hook spk_listener{};
-  spa_source* spk_timer = nullptr;
+  spa_source* drive_timer = nullptr;
   SampleRing mic_ring{MIC_RING}; // 48 kHz samples
   SampleRing spk_ring{SPK_RING}; // 48 kHz samples
   std::atomic<bool> stopping{false};
+  std::atomic<bool> mic_streaming{false};
   std::atomic<bool> spk_streaming{false};
   uint32_t mic_stride = sizeof(int16_t);
   uint32_t spk_stride = sizeof(int16_t);
@@ -163,25 +166,24 @@ struct HeadsetPipeWire::Impl
   static void on_spk_state(void* data, pw_stream_state old, pw_stream_state state, const char* error);
   static void on_mic_param(void* data, uint32_t id, const spa_pod* param);
   static void on_spk_param(void* data, uint32_t id, const spa_pod* param);
-  static void finish_buffers(pw_stream* stream, uint32_t stride, uint32_t rate);
-  static void on_spk_timer(void* data, uint64_t expirations);
-  static int invoke_spk_trigger(struct spa_loop* loop, bool async, uint32_t seq,
-                                const void* data, size_t size, void* user_data);
+  static void finish_buffers(pw_stream* stream, uint32_t stride, uint32_t period_samples);
+  static void on_drive_timer(void* data, uint64_t expirations);
+  static int invoke_triggers(struct spa_loop* loop, bool async, uint32_t seq,
+                             const void* data, size_t size, void* user_data);
 
-  void arm_spk_timer();
-  void disarm_spk_timer();
-  void request_spk_cycle();
+  void arm_drive_timer();
+  void disarm_drive_timer();
+  void maybe_update_timer();
+  void request_cycles(bool mic, bool spk);
 };
 
-void HeadsetPipeWire::Impl::finish_buffers(pw_stream* stream, uint32_t stride, uint32_t rate)
+void HeadsetPipeWire::Impl::finish_buffers(pw_stream* stream, uint32_t stride, uint32_t period_samples)
 {
   uint8_t buffer[1024];
   spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
   const spa_pod* params[1];
   int32_t s = static_cast<int32_t>(stride);
-  // Prefer one USB period (~8 ms) of samples per buffer when rate is 48 kHz.
-  uint32_t period = (rate == PW_RATE) ? SPK_QUANTUM_48 : std::max(32u, rate / 50);
-  int32_t size = s * static_cast<int32_t>(period);
+  int32_t size = s * static_cast<int32_t>(std::max(32u, period_samples));
   params[0] = static_cast<const spa_pod*>(spa_pod_builder_add_object(&b,
       SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
       SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(8, 2, 16),
@@ -191,12 +193,21 @@ void HeadsetPipeWire::Impl::finish_buffers(pw_stream* stream, uint32_t stride, u
   pw_stream_update_params(stream, params, 1);
 }
 
-void HeadsetPipeWire::Impl::on_mic_state(void* /*data*/, pw_stream_state /*old*/,
+void HeadsetPipeWire::Impl::on_mic_state(void* data, pw_stream_state /*old*/,
                                          pw_stream_state state, const char* error)
 {
+  auto* self = static_cast<Impl*>(data);
   log_info("[headset] pipewire mic state: {}{}",
            pw_stream_state_as_string(state),
            error ? std::string(" — ") + error : std::string());
+
+  const bool streaming = (state == PW_STREAM_STATE_STREAMING);
+  self->mic_streaming.store(streaming, std::memory_order_release);
+  self->maybe_update_timer();
+  if (streaming)
+  {
+    self->request_cycles(true, false);
+  }
 }
 
 void HeadsetPipeWire::Impl::on_spk_state(void* data, pw_stream_state /*old*/,
@@ -209,15 +220,10 @@ void HeadsetPipeWire::Impl::on_spk_state(void* data, pw_stream_state /*old*/,
 
   const bool streaming = (state == PW_STREAM_STATE_STREAMING);
   self->spk_streaming.store(streaming, std::memory_order_release);
+  self->maybe_update_timer();
   if (streaming)
   {
-    self->arm_spk_timer();
-    // Kick the first cycle so linked clients are drained immediately.
-    self->request_spk_cycle();
-  }
-  else
-  {
-    self->disarm_spk_timer();
+    self->request_cycles(false, true);
   }
 }
 
@@ -242,8 +248,7 @@ void HeadsetPipeWire::Impl::on_mic_param(void* data, uint32_t id, const spa_pod*
   self->mic_stride = sizeof(int16_t) * std::max(1u, info.info.raw.channels);
   log_info("[headset] pipewire mic format: rate={} channels={}",
            info.info.raw.rate, info.info.raw.channels);
-  finish_buffers(self->mic_stream, self->mic_stride,
-                 info.info.raw.rate ? info.info.raw.rate : PW_RATE);
+  finish_buffers(self->mic_stream, self->mic_stride, MIC_QUANTUM_48);
 }
 
 void HeadsetPipeWire::Impl::on_spk_param(void* data, uint32_t id, const spa_pod* param)
@@ -267,8 +272,7 @@ void HeadsetPipeWire::Impl::on_spk_param(void* data, uint32_t id, const spa_pod*
   self->spk_stride = sizeof(int16_t) * std::max(1u, info.info.raw.channels);
   log_info("[headset] pipewire speaker format: rate={} channels={}",
            info.info.raw.rate, info.info.raw.channels);
-  finish_buffers(self->spk_stream, self->spk_stride,
-                 info.info.raw.rate ? info.info.raw.rate : PW_RATE);
+  finish_buffers(self->spk_stream, self->spk_stride, SPK_QUANTUM_48);
 }
 
 void HeadsetPipeWire::Impl::on_mic_process(void* data)
@@ -279,40 +283,40 @@ void HeadsetPipeWire::Impl::on_mic_process(void* data)
     return;
   }
 
-  pw_buffer* b = pw_stream_dequeue_buffer(self->mic_stream);
-  if (!b || !b->buffer || !b->buffer->datas[0].data)
+  // Fill every available capture buffer so linked clients keep receiving audio.
+  while (pw_buffer* b = pw_stream_dequeue_buffer(self->mic_stream))
   {
-    if (b)
+    if (!b->buffer || !b->buffer->datas[0].data)
     {
       pw_stream_queue_buffer(self->mic_stream, b);
+      continue;
     }
-    return;
-  }
 
-  spa_data* d = &b->buffer->datas[0];
-  uint32_t n_bytes = d->maxsize;
-  if (b->requested > 0)
-  {
-    n_bytes = std::min(d->maxsize,
-                       static_cast<uint32_t>(b->requested * self->mic_stride));
-  }
-  size_t n_samp = n_bytes / self->mic_stride;
-  if (n_samp == 0)
-  {
+    spa_data* d = &b->buffer->datas[0];
+    uint32_t n_bytes = d->maxsize;
+    if (b->requested > 0)
+    {
+      n_bytes = std::min(d->maxsize,
+                         static_cast<uint32_t>(b->requested * self->mic_stride));
+    }
+    size_t n_samp = n_bytes / self->mic_stride;
+    if (n_samp == 0)
+    {
+      pw_stream_queue_buffer(self->mic_stream, b);
+      continue;
+    }
+
+    auto* out = static_cast<int16_t*>(d->data);
+    size_t got = self->mic_ring.read(out, n_samp);
+    if (got < n_samp)
+    {
+      std::memset(out + got, 0, (n_samp - got) * sizeof(int16_t));
+    }
+    d->chunk->offset = 0;
+    d->chunk->stride = static_cast<int32_t>(self->mic_stride);
+    d->chunk->size = static_cast<uint32_t>(n_samp * self->mic_stride);
     pw_stream_queue_buffer(self->mic_stream, b);
-    return;
   }
-
-  auto* out = static_cast<int16_t*>(d->data);
-  size_t got = self->mic_ring.read(out, n_samp);
-  if (got < n_samp)
-  {
-    std::memset(out + got, 0, (n_samp - got) * sizeof(int16_t));
-  }
-  d->chunk->offset = 0;
-  d->chunk->stride = static_cast<int32_t>(self->mic_stride);
-  d->chunk->size = static_cast<uint32_t>(n_samp * self->mic_stride);
-  pw_stream_queue_buffer(self->mic_stream, b);
 }
 
 void HeadsetPipeWire::Impl::on_spk_process(void* data)
@@ -350,26 +354,49 @@ void HeadsetPipeWire::Impl::on_spk_process(void* data)
   }
 }
 
-void HeadsetPipeWire::Impl::on_spk_timer(void* data, uint64_t /*expirations*/)
+void HeadsetPipeWire::Impl::on_drive_timer(void* data, uint64_t /*expirations*/)
 {
   auto* self = static_cast<Impl*>(data);
-  if (self->stopping.load(std::memory_order_acquire) || !self->spk_stream)
+  if (self->stopping.load(std::memory_order_acquire))
   {
     return;
   }
-  if (self->spk_streaming.load(std::memory_order_acquire) &&
+  // Keep both USB-clocked drivers pumping so capture clients get mic data
+  // and playback clients are drained even between individual USB packets.
+  if (self->mic_stream && self->mic_streaming.load(std::memory_order_acquire) &&
+      pw_stream_is_driving(self->mic_stream))
+  {
+    pw_stream_trigger_process(self->mic_stream);
+  }
+  if (self->spk_stream && self->spk_streaming.load(std::memory_order_acquire) &&
       pw_stream_is_driving(self->spk_stream))
   {
     pw_stream_trigger_process(self->spk_stream);
   }
 }
 
-int HeadsetPipeWire::Impl::invoke_spk_trigger(struct spa_loop* /*loop*/, bool /*async*/,
-                                              uint32_t /*seq*/, const void* /*data*/,
-                                              size_t /*size*/, void* user_data)
+int HeadsetPipeWire::Impl::invoke_triggers(struct spa_loop* /*loop*/, bool /*async*/,
+                                           uint32_t /*seq*/, const void* data,
+                                           size_t /*size*/, void* user_data)
 {
   auto* self = static_cast<Impl*>(user_data);
-  if (!self->stopping.load(std::memory_order_acquire) && self->spk_stream &&
+  // data points to a uint32_t mask: bit0 = mic, bit1 = spk
+  uint32_t mask = 3;
+  if (data)
+  {
+    mask = *static_cast<const uint32_t*>(data);
+  }
+  if (self->stopping.load(std::memory_order_acquire))
+  {
+    return 0;
+  }
+  if ((mask & 1u) && self->mic_stream &&
+      self->mic_streaming.load(std::memory_order_acquire) &&
+      pw_stream_is_driving(self->mic_stream))
+  {
+    pw_stream_trigger_process(self->mic_stream);
+  }
+  if ((mask & 2u) && self->spk_stream &&
       self->spk_streaming.load(std::memory_order_acquire) &&
       pw_stream_is_driving(self->spk_stream))
   {
@@ -378,44 +405,63 @@ int HeadsetPipeWire::Impl::invoke_spk_trigger(struct spa_loop* /*loop*/, bool /*
   return 0;
 }
 
-void HeadsetPipeWire::Impl::arm_spk_timer()
+void HeadsetPipeWire::Impl::arm_drive_timer()
 {
-  if (!loop || spk_timer)
+  if (!loop || drive_timer)
   {
     return;
   }
-  // 8 ms ticks on the PipeWire thread — USB is the ultimate clock, but the
-  // timer keeps the driver draining client buffers even between USB packets.
-  spk_timer = pw_loop_add_timer(pw_thread_loop_get_loop(loop), on_spk_timer, this);
-  if (spk_timer)
+  // 4 ms ticks (USB mic period) on the PipeWire thread. USB is the ultimate
+  // clock; the timer keeps drivers scheduled between packets.
+  drive_timer = pw_loop_add_timer(pw_thread_loop_get_loop(loop), on_drive_timer, this);
+  if (drive_timer)
   {
-    timespec value{0, 8 * 1000 * 1000};      // first fire ~8 ms
-    timespec interval{0, 8 * 1000 * 1000};   // every 8 ms
-    pw_loop_update_timer(pw_thread_loop_get_loop(loop), spk_timer, &value, &interval, false);
+    timespec value{0, 4 * 1000 * 1000};
+    timespec interval{0, 4 * 1000 * 1000};
+    pw_loop_update_timer(pw_thread_loop_get_loop(loop), drive_timer, &value, &interval, false);
   }
 }
 
-void HeadsetPipeWire::Impl::disarm_spk_timer()
+void HeadsetPipeWire::Impl::disarm_drive_timer()
 {
-  if (!loop || !spk_timer)
+  if (!loop || !drive_timer)
   {
     return;
   }
-  pw_loop_destroy_source(pw_thread_loop_get_loop(loop), spk_timer);
-  spk_timer = nullptr;
+  pw_loop_destroy_source(pw_thread_loop_get_loop(loop), drive_timer);
+  drive_timer = nullptr;
 }
 
-void HeadsetPipeWire::Impl::request_spk_cycle()
+void HeadsetPipeWire::Impl::maybe_update_timer()
 {
-  if (!loop || !spk_stream || stopping.load(std::memory_order_acquire))
+  const bool need =
+    mic_streaming.load(std::memory_order_acquire) ||
+    spk_streaming.load(std::memory_order_acquire);
+  if (need)
+  {
+    arm_drive_timer();
+  }
+  else
+  {
+    disarm_drive_timer();
+  }
+}
+
+void HeadsetPipeWire::Impl::request_cycles(bool mic, bool spk)
+{
+  if (!loop || stopping.load(std::memory_order_acquire))
   {
     return;
   }
-  // Never lock the thread loop from the USB / libusb callback path: that was
-  // the main source of systemic stutter (including video when A/V is linked).
-  // Schedule the trigger on the PW loop asynchronously instead.
-  pw_loop_invoke(pw_thread_loop_get_loop(loop), invoke_spk_trigger,
-                 0, nullptr, 0, false, this);
+  // Never lock the thread loop from the USB / libusb callback path.
+  uint32_t mask = (mic ? 1u : 0u) | (spk ? 2u : 0u);
+  if (mask == 0)
+  {
+    return;
+  }
+  // async=true: never block the USB/libusb callback on the PW loop.
+  pw_loop_invoke(pw_thread_loop_get_loop(loop), invoke_triggers,
+                 0, &mask, sizeof(mask), true, this);
 }
 
 namespace {
@@ -473,6 +519,7 @@ void HeadsetPipeWire::shutdown()
     return;
   }
   m_impl->stopping.store(true, std::memory_order_release);
+  m_impl->mic_streaming.store(false, std::memory_order_release);
   m_impl->spk_streaming.store(false, std::memory_order_release);
   m_running = false;
   m_impl->mic_ring.clear();
@@ -483,7 +530,7 @@ void HeadsetPipeWire::shutdown()
   }
 
   pw_thread_loop_lock(m_impl->loop);
-  m_impl->disarm_spk_timer();
+  m_impl->disarm_drive_timer();
   if (m_impl->mic_stream)
   {
     pw_stream_set_active(m_impl->mic_stream, false);
@@ -524,6 +571,7 @@ void HeadsetPipeWire::start()
   }
   shutdown();
   m_impl->stopping.store(false, std::memory_order_release);
+  m_impl->mic_streaming.store(false, std::memory_order_release);
   m_impl->spk_streaming.store(false, std::memory_order_release);
 
   pw_init(nullptr, nullptr);
@@ -568,9 +616,9 @@ void HeadsetPipeWire::start()
 
     {
       char latency[32];
-      std::snprintf(latency, sizeof(latency), "%u/%u", SPK_QUANTUM_48, PW_RATE);
+      std::snprintf(latency, sizeof(latency), "%u/%u", MIC_QUANTUM_48, PW_RATE);
       char quantum[16];
-      std::snprintf(quantum, sizeof(quantum), "%u", SPK_QUANTUM_48);
+      std::snprintf(quantum, sizeof(quantum), "%u", MIC_QUANTUM_48);
 
       pw_properties* props = pw_properties_new(
         PW_KEY_MEDIA_TYPE, "Audio",
@@ -583,6 +631,7 @@ void HeadsetPipeWire::start()
         PW_KEY_NODE_LATENCY, latency,
         "node.force-rate", "48000",
         "node.force-quantum", quantum,
+        "node.driver", "true",
         "node.linger", "false",
         nullptr);
       m_impl->mic_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-mic", props);
@@ -592,8 +641,9 @@ void HeadsetPipeWire::start()
         throw std::runtime_error("pw_stream_new (mic) failed");
       }
       pw_stream_add_listener(m_impl->mic_stream, &m_impl->mic_listener, &mic_events, m_impl.get());
-      // Mic is a follower Source: graph pulls when a client records.
-      connect_device_stream(m_impl->mic_stream, PW_DIRECTION_OUTPUT, false);
+      // Mic is a DRIVER Source: USB clock schedules process so capture clients
+      // receive samples when the headset produces them.
+      connect_device_stream(m_impl->mic_stream, PW_DIRECTION_OUTPUT, true);
     }
 
     {
@@ -630,8 +680,9 @@ void HeadsetPipeWire::start()
 
     pw_thread_loop_unlock(m_impl->loop);
     m_running = true;
-    log_info("[headset] pipewire @ {} Hz graph rate, quantum {} (USB mic {} kHz / spk {} kHz)",
-             PW_RATE, SPK_QUANTUM_48, MIC_USB_RATE / 1000, SPK_USB_RATE / 1000);
+    log_info("[headset] pipewire @ {} Hz (mic quantum {} / spk quantum {}; USB {}/{} kHz)",
+             PW_RATE, MIC_QUANTUM_48, SPK_QUANTUM_48,
+             MIC_USB_RATE / 1000, SPK_USB_RATE / 1000);
   }
   catch (...)
   {
@@ -656,6 +707,8 @@ void HeadsetPipeWire::push_mic(const int16_t* samples, size_t count)
     }
   }
   m_impl->mic_ring.write(up.data(), up.size());
+  // USB produced mic data: ask the driver Source to push to any capture clients.
+  m_impl->request_cycles(true, false);
 }
 
 bool HeadsetPipeWire::pull_speaker(int16_t* out, size_t count)
@@ -674,7 +727,7 @@ bool HeadsetPipeWire::pull_speaker(int16_t* out, size_t count)
   // Async invoke only — never pw_thread_loop_lock from the USB callback path.
   if (avail < need_48 * 2)
   {
-    m_impl->request_spk_cycle();
+    m_impl->request_cycles(false, true);
     avail = m_impl->spk_ring.available();
   }
 
