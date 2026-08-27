@@ -18,7 +18,6 @@
 
 #include <pipewire/pipewire.h>
 #include <spa/param/audio/format-utils.h>
-#include <spa/param/latency-utils.h>
 
 #include <logmich/log.hpp>
 
@@ -190,9 +189,27 @@ void HeadsetPipeWire::Impl::on_mic_param(void* data, uint32_t id, const spa_pod*
     return;
   }
   spa_format_audio_raw_parse(param, &info.info.raw);
-  self->mic_stride = sizeof(int16_t) * std::max(1u, info.info.raw.channels);
-  log_info("[headset] pipewire mic format: rate={} channels={}",
-           info.info.raw.rate, info.info.raw.channels);
+  uint32_t channels = std::max(1u, info.info.raw.channels);
+  self->mic_stride = sizeof(int16_t) * channels;
+  log_info("[headset] pipewire mic format: rate={} channels={} (finishing buffer negotiation)",
+           info.info.raw.rate, channels);
+
+  // Docs: after Format, client must pw_stream_update_params() with buffer params
+  // or negotiation never completes cleanly (stutter / no audio).
+  uint8_t buffer[1024];
+  spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
+  const spa_pod* params[1];
+  int32_t stride = static_cast<int32_t>(self->mic_stride);
+  // ~20 ms at negotiated rate, clamped
+  int32_t rate = static_cast<int32_t>(info.info.raw.rate ? info.info.raw.rate : MIC_RATE);
+  int32_t size = stride * std::max(32, rate / 50);
+  params[0] = static_cast<const spa_pod*>(spa_pod_builder_add_object(&b,
+      SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
+      SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(8, 2, 16),
+      SPA_PARAM_BUFFERS_blocks,  SPA_POD_Int(1),
+      SPA_PARAM_BUFFERS_size,    SPA_POD_CHOICE_RANGE_Int(size, stride * 32, stride * 8192),
+      SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(stride)));
+  pw_stream_update_params(self->mic_stream, params, 1);
 }
 
 void HeadsetPipeWire::Impl::on_spk_param(void* data, uint32_t id, const spa_pod* param)
@@ -213,9 +230,24 @@ void HeadsetPipeWire::Impl::on_spk_param(void* data, uint32_t id, const spa_pod*
     return;
   }
   spa_format_audio_raw_parse(param, &info.info.raw);
-  self->spk_stride = sizeof(int16_t) * std::max(1u, info.info.raw.channels);
-  log_info("[headset] pipewire speaker format: rate={} channels={}",
-           info.info.raw.rate, info.info.raw.channels);
+  uint32_t channels = std::max(1u, info.info.raw.channels);
+  self->spk_stride = sizeof(int16_t) * channels;
+  log_info("[headset] pipewire speaker format: rate={} channels={} (finishing buffer negotiation)",
+           info.info.raw.rate, channels);
+
+  uint8_t buffer[1024];
+  spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
+  const spa_pod* params[1];
+  int32_t stride = static_cast<int32_t>(self->spk_stride);
+  int32_t rate = static_cast<int32_t>(info.info.raw.rate ? info.info.raw.rate : SPK_RATE);
+  int32_t size = stride * std::max(32, rate / 50);
+  params[0] = static_cast<const spa_pod*>(spa_pod_builder_add_object(&b,
+      SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
+      SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(8, 2, 16),
+      SPA_PARAM_BUFFERS_blocks,  SPA_POD_Int(1),
+      SPA_PARAM_BUFFERS_size,    SPA_POD_CHOICE_RANGE_Int(size, stride * 32, stride * 8192),
+      SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(stride)));
+  pw_stream_update_params(self->spk_stream, params, 1);
 }
 
 void HeadsetPipeWire::Impl::on_mic_process(void* data)
@@ -299,36 +331,31 @@ void HeadsetPipeWire::Impl::on_spk_process(void* data)
 
 namespace {
 
-void connect_device_stream(pw_stream* stream, uint32_t rate, spa_direction direction)
+void connect_device_stream(pw_stream* stream, uint32_t rate, pw_direction direction)
 {
   uint8_t buffer[1024];
   spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
-  const spa_pod* params[2];
+  const spa_pod* params[1];
 
+  // Only EnumFormat at connect; buffer params come from update_params after
+  // SPA_PARAM_Format (see page_streams.html "Format negotiation").
   spa_audio_info_raw info = {};
   info.format = SPA_AUDIO_FORMAT_S16;
   info.channels = 1;
   info.rate = rate;
   params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
 
-  // Advertise latency so the session links us as a real endpoint.
-  spa_latency_info latency = SPA_LATENCY_INFO(
-    direction == SPA_DIRECTION_INPUT ? SPA_DIRECTION_INPUT : SPA_DIRECTION_OUTPUT);
-  latency.min_ns = latency.max_ns = 20 * SPA_NSEC_PER_MSEC;
-  params[1] = spa_latency_build(&b, SPA_PARAM_Latency, &latency);
-
-  // No AUTOCONNECT: we *are* the device; apps connect to us.
+  // No AUTOCONNECT: we implement the device (docs: media.class Audio/Sink|Source).
   int res = pw_stream_connect(
     stream, direction, PW_ID_ANY,
     static_cast<pw_stream_flags>(
       PW_STREAM_FLAG_MAP_BUFFERS |
       PW_STREAM_FLAG_RT_PROCESS),
-    params, 2);
+    params, 1);
   if (res < 0)
   {
     throw std::runtime_error("pw_stream_connect failed");
   }
-  pw_stream_set_active(stream, true);
 }
 
 } // namespace
@@ -460,7 +487,7 @@ void HeadsetPipeWire::start()
         throw std::runtime_error("pw_stream_new (mic) failed");
       }
       pw_stream_add_listener(m_impl->mic_stream, &m_impl->mic_listener, &mic_events, m_impl.get());
-      connect_device_stream(m_impl->mic_stream, MIC_RATE, SPA_DIRECTION_OUTPUT);
+      connect_device_stream(m_impl->mic_stream, MIC_RATE, PW_DIRECTION_OUTPUT);
     }
 
     {
@@ -482,7 +509,7 @@ void HeadsetPipeWire::start()
         throw std::runtime_error("pw_stream_new (speaker) failed");
       }
       pw_stream_add_listener(m_impl->spk_stream, &m_impl->spk_listener, &spk_events, m_impl.get());
-      connect_device_stream(m_impl->spk_stream, SPK_RATE, SPA_DIRECTION_INPUT);
+      connect_device_stream(m_impl->spk_stream, SPK_RATE, PW_DIRECTION_INPUT);
     }
 
     pw_thread_loop_unlock(m_impl->loop);
