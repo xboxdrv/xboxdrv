@@ -915,35 +915,77 @@ struct
 
 # EOF #
 
-Headset audio (interface 1, EP 3 IN / EP 4 OUT) — experimental:
-  32-byte interrupt packets at ~256 Hz => 8192 bytes/s (see earlier notes).
-  Codec is still uncertain. One hypothesis (from an old g72x/decode-g72x
-  pipeline that played at 16 kHz S16LE) is 4-bit G.721/G.726-style ADPCM at
-  16 kHz rather than the telephone 8 kHz rate. That may actually apply to
-  the wireless headset path, not the 2.5 mm jack on the wired controller;
-  treat the decoder as a best-effort guess until a verified capture exists.
-  --headset-pcm FILE writes the decoded stream (S16LE mono 16 kHz) so it can
-  be fed to PulseAudio/PipeWire without a custom sound server:
-    mkfifo /tmp/xbox-hs.pcm
-    pactl load-module module-pipe-source source_name=xbox-headset \
-      file=/tmp/xbox-hs.pcm format=s16le rate=16000 channels=1
-    xboxdrv --headset --headset-pcm /tmp/xbox-hs.pcm ...
-  Raw dumps remain available via --headset-dump.
+Headset audio (interface 1, EP 3 IN / EP 4 OUT) — experimental notes
+=====================================================================
 
-  Playback:
-  --headset-play FILE     streams a pre-encoded 32-byte-packet G.726 dump to EP 4.
-  --headset-play-wav FILE loads a 16-bit PCM WAV (mono/stereo), resamples to 8 kHz
-                          mono (Xbox 360 render rate; capture stays at 16 kHz), encodes
-                          with the same Sun g721 right-packed path used by the mic
-                          decoder, and streams continuous 32-byte packets. Encoder
-                          state is kept across packets (no per-packet reset).
-  IN and OUT both use 32-byte interrupt transfers on interface 1; the OUT completion
-  path reuses transfer->buffer for the next packet (same continuous-stream pattern
-  as the IN path). Encoding at 16 kHz made speech ~half speed; 8 kHz matches the
-  documented 360 render rate (Xbox One is 24 kHz = 3× render).
-  OUT packets must be 32 bytes: 16-byte play-wav transfers were accepted by
-  libusb but produced only silence; raw --headset-play (32-byte) still works.
-  play-wav is back to 32-byte / 64-sample packets at 8 kHz. Left-pack was worse;
-  right-pack matches the mic. Residual noise on play-wav vs clean mic remains
-  open (codec match / host encode vs device decode, not packet size).
+Hardware / USB
+--------------
+- Interface 1: EP 3 IN = mic, EP 4 OUT = phone (speaker), EP 5 = status/config.
+- Transfers used by xboxdrv: 32-byte interrupt IN/OUT (same size both directions).
+- 16-byte OUT transfers are accepted by libusb but produce silence on the headset;
+  do not use them. Raw --headset-play and --headset-play-wav both use 32 bytes.
+- Mic byte rate observed historically: ~8192 bytes/s (32 bytes × ~256 Hz).
+
+Codec
+-----
+- 4-bit G.721 / G.726-style ADPCM (Sun g72x reference in external/g72x/).
+- Packing: right-packed (low nibble first, then high). Matches Sun decode-g72x -R.
+  --headset-play-left-pack (high nibble first) is understandable but sounds worse;
+  default remains right-pack.
+- Continuous encoder/decoder state across USB packets (no per-packet reset).
+- Mic path decode: AUDIO_ENCODING_LINEAR → S16LE.
+
+Sample rates (asymmetric)
+-------------------------
+- Capture (mic, EP 3 IN): 16 kHz. Confirmed by decoding dumps to S16LE @ 16 kHz
+  and by Microsoft’s Xbox One comparison (One is 24 kHz capture ≈ 1.5× 360).
+- Render (phone, EP 4 OUT): 8 kHz. play-wav at 16 kHz produced speech at ~half
+  speed; 8 kHz is correct. Matches “Xbox One render is 3× 360” (24/3 = 8 kHz).
+- Same 32-byte packet size on OUT does not imply the same sample rate as IN:
+  at 8 kHz, 64 codes/packet ⇒ effective packet rate ~125 Hz if the device
+  consumes codes in real time, or the device clocks samples independently.
+
+Why a raw mic dump is the wrong speed on the headphone
+------------------------------------------------------
+Mic dumps are 16 kHz ADPCM (≈8192 bytes/s of codes when active).
+Playback is an 8 kHz path.
+
+If you take --headset-dump output and feed it unchanged to --headset-play:
+
+- You deliver the same number of ADPCM codes that represented 16 k samples/s
+  of speech.
+- The headphone path plays codes as an 8 kHz stream.
+- 16000 samples of content therefore last about 2 seconds wall time → speech
+  is ~half speed (too slow), with pitch shifted down the same way.
+
+Conversely, play-wav at 16 kHz was half speed on the headset; resampling to
+8 kHz fixed duration/pitch. So mic rate ≠ phone rate; a straight dump→play
+loop without resample/re-encode is expected to be wrong speed.
+
+It is not that the mic recording is “bad”; it is the right rate for capture
+and the wrong rate for the render path.
+
+CLI
+---
+  --headset
+  --headset-dump FILE          raw 32-byte mic packets
+  --headset-pcm FILE           decoded S16LE mono 16 kHz (FIFO-friendly)
+  --headset-dump-wav FILE      same decode as WAV
+  --headset-play FILE          stream pre-encoded 32-byte G.726 dump to EP 4
+  --headset-play-wav FILE      PCM WAV → 8 kHz mono → G.726-32 right-pack → EP 4
+  --headset-play-left-pack     alternate nibble order for play-wav (sounds worse)
+
+play-wav also applies ~1 dB attenuation and ~100 ms of encoded silence prime
+so the ADPCM predictor is not cold on the first phoneme.
+
+Open issue: residual noise on playback
+--------------------------------------
+- Mic decode sounds clean at 16 kHz.
+- play-wav at 8 kHz is correct speed; residual grain remains.
+- Ruled out / weak: left-pack (worse), 16-byte packets (silence), u-law as an
+  accidental stage in the linear g721 path.
+- Still open: encoder vs headset silicon differences, host vs device quantizer
+  details, or capture of real console EP 4 traffic for a ground-truth stream.
+- G.726-32 is lossy; some grain is normal, but mic path quality suggests
+  playback can still be improved once a reference OUT stream is compared.
 
