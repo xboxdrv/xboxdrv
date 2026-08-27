@@ -41,9 +41,8 @@ constexpr uint32_t SPK_DOWNSAMPLE = PW_RATE / SPK_USB_RATE; // 6
 
 constexpr size_t MIC_RING = PW_RATE / 2;  // 500 ms @ 48 kHz
 constexpr size_t SPK_RING = PW_RATE / 2;
-constexpr size_t SPK_HIGH = PW_RATE / 3;
-constexpr size_t SPK_TARGET = PW_RATE / 10;
-constexpr size_t SPK_PREBUF = PW_RATE / 20; // 50 ms
+constexpr size_t SPK_HIGH = PW_RATE / 2;     // only drop when ~500 ms deep
+constexpr size_t SPK_TARGET = PW_RATE / 10;  // leave ~100 ms
 
 class SampleRing
 {
@@ -146,8 +145,7 @@ struct HeadsetPipeWire::Impl
   std::atomic<bool> stopping{false};
   uint32_t mic_stride = sizeof(int16_t);
   uint32_t spk_stride = sizeof(int16_t);
-  /** Downsample phase for 48k → 8k (0..5). */
-  uint32_t spk_phase = 0;
+  int16_t spk_last = 0;
 
   static void on_mic_process(void* data);
   static void on_spk_process(void* data);
@@ -412,7 +410,6 @@ void HeadsetPipeWire::start()
   }
   shutdown();
   m_impl->stopping.store(false, std::memory_order_release);
-  m_impl->spk_phase = 0;
 
   pw_init(nullptr, nullptr);
 
@@ -534,31 +531,46 @@ bool HeadsetPipeWire::pull_speaker(int16_t* out, size_t count)
     return false;
   }
 
-  // Need count * 6 samples at 48 kHz to produce count samples at 8 kHz
+  // Need count * 6 samples at 48 kHz to produce count samples at 8 kHz.
   size_t need_48 = count * SPK_DOWNSAMPLE;
   size_t avail = m_impl->spk_ring.available();
-  if (avail < SPK_PREBUF)
+
+  // Pull-based: if the ring is low, ask the graph for another cycle (docs:
+  // non-driving streams may request a cycle via pw_stream_trigger_process).
+  if (avail < need_48 * 2 && m_impl->loop && m_impl->spk_stream)
   {
-    std::memset(out, 0, count * sizeof(int16_t));
-    return false;
-  }
-  if (avail > SPK_HIGH)
-  {
-    m_impl->spk_ring.discard(avail - SPK_TARGET);
+    pw_thread_loop_lock(m_impl->loop);
+    if (!m_impl->stopping.load(std::memory_order_acquire) && m_impl->spk_stream)
+    {
+      if (pw_stream_get_state(m_impl->spk_stream, nullptr) == PW_STREAM_STATE_STREAMING)
+      {
+        pw_stream_trigger_process(m_impl->spk_stream);
+      }
+    }
+    pw_thread_loop_unlock(m_impl->loop);
     avail = m_impl->spk_ring.available();
   }
 
-  std::vector<int16_t> buf48(need_48);
-  size_t got = m_impl->spk_ring.read(buf48.data(), need_48);
-  if (got < need_48)
+  if (avail > SPK_HIGH)
   {
-    std::memset(buf48.data() + got, 0, (need_48 - got) * sizeof(int16_t));
+    m_impl->spk_ring.discard(avail - SPK_TARGET);
   }
 
-  // 48 kHz → 8 kHz: take every 6th sample
+  // Read what we can at 48 kHz; hold last sample on shortfall (less harsh than zero).
+  std::vector<int16_t> buf48(need_48);
+  size_t got = m_impl->spk_ring.read(buf48.data(), need_48);
+  for (size_t i = got; i < need_48; ++i)
+  {
+    buf48[i] = m_impl->spk_last;
+  }
+
   for (size_t i = 0; i < count; ++i)
   {
     out[i] = buf48[i * SPK_DOWNSAMPLE];
+  }
+  if (count > 0)
+  {
+    m_impl->spk_last = out[count - 1];
   }
   return got > 0;
 }
