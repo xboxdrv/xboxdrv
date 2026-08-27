@@ -119,11 +119,12 @@ private:
   std::atomic<size_t> m_r, m_w;
 };
 
-// Keep only a few USB periods of slack (~100–200 ms), not a full second.
-constexpr size_t MIC_RING_SAMPLES = 16000 / 5;   // ~200 ms @ 16 kHz
-constexpr size_t SPK_RING_SAMPLES = 8000 / 5;    // ~200 ms @ 8 kHz
-constexpr size_t SPK_HIGH_WATER   = 8000 / 10;   // ~100 ms — start dropping lag
-constexpr size_t SPK_TARGET       = 8000 / 25;   // ~40 ms — target depth after catch-up
+// Enough slack for USB ↔ graph jitter; still bounded so lag cannot run away.
+constexpr size_t MIC_RING_SAMPLES = 16000 / 2;   // ~500 ms @ 16 kHz
+constexpr size_t SPK_RING_SAMPLES = 8000 / 2;    // ~500 ms @ 8 kHz
+constexpr size_t SPK_HIGH_WATER   = 8000 / 3;    // ~333 ms — only then drop lag
+constexpr size_t SPK_TARGET       = 8000 / 10;   // ~100 ms target after catch-up
+constexpr size_t SPK_PREBUFFER    = 8000 / 20;   // ~50 ms before pulling real audio
 
 } // namespace
 
@@ -190,20 +191,19 @@ void HeadsetPipeWire::Impl::on_spk_process(void* data)
     return;
   }
 
-  pw_buffer* b = pw_stream_dequeue_buffer(self->spk_stream);
-  if (!b)
+  // Drain every available buffer; one process cycle may queue several.
+  while (pw_buffer* b = pw_stream_dequeue_buffer(self->spk_stream))
   {
-    return;
+    spa_data* d = &b->buffer->datas[0];
+    if (d->data && d->chunk && d->chunk->size > 0)
+    {
+      size_t n = d->chunk->size / sizeof(int16_t);
+      auto* samples = reinterpret_cast<const int16_t*>(
+        static_cast<uint8_t*>(d->data) + d->chunk->offset);
+      self->spk_ring.write(samples, n);
+    }
+    pw_stream_queue_buffer(self->spk_stream, b);
   }
-  spa_data* d = &b->buffer->datas[0];
-  if (d->data && d->chunk && d->chunk->size > 0)
-  {
-    size_t n = d->chunk->size / sizeof(int16_t);
-    auto* samples = reinterpret_cast<const int16_t*>(
-      static_cast<uint8_t*>(d->data) + d->chunk->offset);
-    self->spk_ring.write(samples, n);
-  }
-  pw_stream_queue_buffer(self->spk_stream, b);
 }
 
 namespace {
@@ -223,13 +223,12 @@ void connect_audio_stream(pw_stream* stream, uint32_t rate, spa_direction direct
   // INPUT a *recorder* on the default source — the opposite of exporting devices.
   // As Audio/Source + Audio/Sink nodes, other clients connect to us instead.
   if (pw_stream_connect(stream, direction, PW_ID_ANY,
-                        static_cast<pw_stream_flags>(
-                          PW_STREAM_FLAG_MAP_BUFFERS |
-                          PW_STREAM_FLAG_RT_PROCESS),
+                        PW_STREAM_FLAG_MAP_BUFFERS,
                         params, 1) < 0)
   {
     throw std::runtime_error("pw_stream_connect failed");
   }
+  pw_stream_set_active(stream, true);
 }
 
 } // namespace
@@ -356,6 +355,8 @@ void HeadsetPipeWire::start()
         PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset microphone",
         PW_KEY_NODE_VIRTUAL, "true",
         PW_KEY_NODE_LATENCY, "256/16000",
+        "node.force-rate", "16000",
+        "node.force-quantum", "256",
         "node.linger", "false",
         nullptr);
       m_impl->mic_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-mic", props);
@@ -382,6 +383,8 @@ void HeadsetPipeWire::start()
         PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset speaker",
         PW_KEY_NODE_VIRTUAL, "true",
         PW_KEY_NODE_LATENCY, "128/8000",
+        "node.force-rate", "8000",
+        "node.force-quantum", "64",
         "node.linger", "false",
         nullptr);
       m_impl->spk_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-speaker", props);
@@ -427,9 +430,16 @@ bool HeadsetPipeWire::pull_speaker(int16_t* out, size_t count)
     return false;
   }
 
-  // If PipeWire is slightly faster than USB, lag accumulates. Drop down to a
-  // small target depth instead of playing farther and farther behind.
   size_t avail = m_impl->spk_ring.available();
+
+  // Prebuffer: avoid start-of-stream underrun stutter until we have ~50 ms.
+  if (avail < SPK_PREBUFFER)
+  {
+    std::memset(out, 0, count * sizeof(int16_t));
+    return false;
+  }
+
+  // Bound latency only when clearly stuck ahead of the USB clock.
   if (avail > SPK_HIGH_WATER)
   {
     m_impl->spk_ring.discard(avail - SPK_TARGET);
