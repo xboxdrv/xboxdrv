@@ -974,7 +974,14 @@ CLI
   --headset-play FILE          stream pre-encoded 32-byte G.726 dump to EP 4
   --headset-play-wav FILE      PCM WAV → 8 kHz mono → G.726-32 right-pack → EP 4
   --headset-play-left-pack     alternate nibble order for play-wav (sounds worse)
-  --headset-pulse              native PipeWire (libpipewire pw_stream), not pactl:
+  --headset-pulse              pactl module-pipe-source + module-pipe-sink:
+                                 source xboxdrv-headset-mic     (S16LE 16 kHz)
+                                 sink   xboxdrv-headset-speaker (S16LE  8 kHz)
+                               FIFOs under $XDG_RUNTIME_DIR/xboxdrv/. Requires
+                               pactl (PulseAudio or PipeWire-pulse). Modules
+                               unloaded on exit. (Native libpipewire device
+                               export was tried but stuttered; pipe modules
+                               remain the supported path.) (libpipewire pw_stream), not pactl:
                                  xboxdrv-headset-mic     Audio/Source 16 kHz S16LE
                                  xboxdrv-headset-speaker Audio/Sink   8 kHz S16LE
                                Visible in pavucontrol / wpctl as normal devices

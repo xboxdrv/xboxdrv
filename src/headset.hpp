@@ -35,10 +35,16 @@ private:
   uint32_t m_wav_data_bytes;
 
   std::unique_ptr<std::ifstream> m_fin;
-  /** PCM samples for --headset-play-wav (S16LE @ 8 kHz mono, already resampled). */
   std::vector<int16_t> m_play_pcm;
   size_t m_play_pos;
   bool m_play_left_pack;
+  /** Non-blocking fd for module-pipe-sink PCM (S16LE @ 8 kHz mono). */
+  int m_pulse_play_fd;
+  std::vector<int16_t> m_pulse_play_carry;
+  int m_pulse_source_module;
+  int m_pulse_sink_module;
+  std::string m_pulse_mic_fifo;
+  std::string m_pulse_spk_fifo;
   G72xEncoder m_encoder;
   G72xDecoder m_decoder;
   bool m_debug;
@@ -48,16 +54,12 @@ public:
   ~Headset();
 
   void play_file(const std::string& play_filename);
-  /** Load a PCM WAV, resample to 8 kHz mono S16LE, encode to G.726-32
-      on the fly and stream to EP 4. left_pack selects nibble order. */
   void play_wav(const std::string& wav_filename, bool left_pack = false);
   void record_file(const std::string& dump_filename);
-  /** Raw decoded S16LE @ 16 kHz (no header), suitable for a FIFO / aplay -f S16_LE -r 16000 */
   void record_pcm(const std::string& pcm_filename);
-  /** Same decode as record_pcm, written as a mono 16 kHz 16-bit WAV */
   void record_wav(const std::string& wav_filename);
 
-  /** Register PipeWire source/sink nodes (libpipewire). Requires HAVE_PIPEWIRE. */
+  /** Expose mic/speaker via pactl module-pipe-source/sink (PipeWire pulse or PulseAudio). */
   void enable_pulse_audio();
 
 private:
@@ -70,10 +72,10 @@ private:
   void load_wav_as_pcm(const std::string& filename);
   void encode_packet(const int16_t* samples, std::vector<uint8_t>& out);
 
-#ifdef HAVE_PIPEWIRE
-  std::unique_ptr<class HeadsetPipeWire> m_pw;
+  static int pactl_load_module(const std::string& args);
+  static void pactl_unload_module(int index);
   void start_pulse_playback();
-#endif
+  bool fill_play_samples_from_pulse(int16_t* out, size_t count);
 
 private:
   Headset(const Headset&);
