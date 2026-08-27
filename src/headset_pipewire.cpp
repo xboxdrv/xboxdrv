@@ -11,7 +11,9 @@
 #include "headset_pipewire.hpp"
 
 #include <atomic>
+#include <cstdio>
 #include <cstring>
+#include <ctime>
 #include <stdexcept>
 #include <vector>
 #include <algorithm>
@@ -32,17 +34,22 @@ namespace {
  * to/from the headset rates with exact integer ratios:
  *   mic  16 kHz → 48 kHz  (×3)
  *   spk  48 kHz →  8 kHz  (÷6)
+ *
+ * One USB speaker packet is 64 samples @ 8 kHz = 8 ms = 384 samples @ 48 kHz.
+ * Align the graph quantum to that so each driver cycle covers one USB period.
  */
 constexpr uint32_t PW_RATE = 48000;
 constexpr uint32_t MIC_USB_RATE = 16000;
 constexpr uint32_t SPK_USB_RATE = 8000;
 constexpr uint32_t MIC_UPSAMPLE = PW_RATE / MIC_USB_RATE; // 3
 constexpr uint32_t SPK_DOWNSAMPLE = PW_RATE / SPK_USB_RATE; // 6
+constexpr uint32_t SPK_QUANTUM_48 = 384; // 8 ms @ 48 kHz = one USB packet
 
 constexpr size_t MIC_RING = PW_RATE / 2;  // 500 ms @ 48 kHz
 constexpr size_t SPK_RING = PW_RATE / 2;
-constexpr size_t SPK_HIGH = PW_RATE / 2;     // only drop when ~500 ms deep
-constexpr size_t SPK_TARGET = PW_RATE / 10;  // leave ~100 ms
+constexpr size_t SPK_HIGH = PW_RATE / 4;     // drop only when > ~250 ms deep
+constexpr size_t SPK_TARGET = PW_RATE / 10;  // leave ~100 ms after catch-up
+constexpr size_t SPK_PREBUFFER = SPK_QUANTUM_48 * 2; // ~16 ms before real audio
 
 class SampleRing
 {
@@ -80,6 +87,7 @@ public:
       size_t free = m_cap - 1 - ((w - r + m_cap) % m_cap);
       if (free == 0)
       {
+        // Drop oldest data so the writer never blocks (USB / process must stay RT-friendly).
         discard(std::max<size_t>(1, m_cap / 8));
         continue;
       }
@@ -140,9 +148,11 @@ struct HeadsetPipeWire::Impl
   pw_stream* spk_stream = nullptr;
   spa_hook mic_listener{};
   spa_hook spk_listener{};
+  spa_source* spk_timer = nullptr;
   SampleRing mic_ring{MIC_RING}; // 48 kHz samples
   SampleRing spk_ring{SPK_RING}; // 48 kHz samples
   std::atomic<bool> stopping{false};
+  std::atomic<bool> spk_streaming{false};
   uint32_t mic_stride = sizeof(int16_t);
   uint32_t spk_stride = sizeof(int16_t);
   int16_t spk_last = 0;
@@ -154,6 +164,13 @@ struct HeadsetPipeWire::Impl
   static void on_mic_param(void* data, uint32_t id, const spa_pod* param);
   static void on_spk_param(void* data, uint32_t id, const spa_pod* param);
   static void finish_buffers(pw_stream* stream, uint32_t stride, uint32_t rate);
+  static void on_spk_timer(void* data, uint64_t expirations);
+  static int invoke_spk_trigger(struct spa_loop* loop, bool async, uint32_t seq,
+                                const void* data, size_t size, void* user_data);
+
+  void arm_spk_timer();
+  void disarm_spk_timer();
+  void request_spk_cycle();
 };
 
 void HeadsetPipeWire::Impl::finish_buffers(pw_stream* stream, uint32_t stride, uint32_t rate)
@@ -162,7 +179,9 @@ void HeadsetPipeWire::Impl::finish_buffers(pw_stream* stream, uint32_t stride, u
   spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
   const spa_pod* params[1];
   int32_t s = static_cast<int32_t>(stride);
-  int32_t size = s * static_cast<int32_t>(std::max(32u, rate / 50)); // ~20 ms
+  // Prefer one USB period (~8 ms) of samples per buffer when rate is 48 kHz.
+  uint32_t period = (rate == PW_RATE) ? SPK_QUANTUM_48 : std::max(32u, rate / 50);
+  int32_t size = s * static_cast<int32_t>(period);
   params[0] = static_cast<const spa_pod*>(spa_pod_builder_add_object(&b,
       SPA_TYPE_OBJECT_ParamBuffers, SPA_PARAM_Buffers,
       SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(8, 2, 16),
@@ -180,12 +199,26 @@ void HeadsetPipeWire::Impl::on_mic_state(void* /*data*/, pw_stream_state /*old*/
            error ? std::string(" — ") + error : std::string());
 }
 
-void HeadsetPipeWire::Impl::on_spk_state(void* /*data*/, pw_stream_state /*old*/,
+void HeadsetPipeWire::Impl::on_spk_state(void* data, pw_stream_state /*old*/,
                                          pw_stream_state state, const char* error)
 {
+  auto* self = static_cast<Impl*>(data);
   log_info("[headset] pipewire speaker state: {}{}",
            pw_stream_state_as_string(state),
            error ? std::string(" — ") + error : std::string());
+
+  const bool streaming = (state == PW_STREAM_STATE_STREAMING);
+  self->spk_streaming.store(streaming, std::memory_order_release);
+  if (streaming)
+  {
+    self->arm_spk_timer();
+    // Kick the first cycle so linked clients are drained immediately.
+    self->request_spk_cycle();
+  }
+  else
+  {
+    self->disarm_spk_timer();
+  }
 }
 
 void HeadsetPipeWire::Impl::on_mic_param(void* data, uint32_t id, const spa_pod* param)
@@ -290,6 +323,8 @@ void HeadsetPipeWire::Impl::on_spk_process(void* data)
     return;
   }
 
+  // Drain every available buffer so linked clients never block on a full queue
+  // (that path is what stalls video players when A/V is tied to the sink).
   while (pw_buffer* b = pw_stream_dequeue_buffer(self->spk_stream))
   {
     spa_data* d = &b->buffer->datas[0];
@@ -315,9 +350,77 @@ void HeadsetPipeWire::Impl::on_spk_process(void* data)
   }
 }
 
+void HeadsetPipeWire::Impl::on_spk_timer(void* data, uint64_t /*expirations*/)
+{
+  auto* self = static_cast<Impl*>(data);
+  if (self->stopping.load(std::memory_order_acquire) || !self->spk_stream)
+  {
+    return;
+  }
+  if (self->spk_streaming.load(std::memory_order_acquire) &&
+      pw_stream_is_driving(self->spk_stream))
+  {
+    pw_stream_trigger_process(self->spk_stream);
+  }
+}
+
+int HeadsetPipeWire::Impl::invoke_spk_trigger(struct spa_loop* /*loop*/, bool /*async*/,
+                                              uint32_t /*seq*/, const void* /*data*/,
+                                              size_t /*size*/, void* user_data)
+{
+  auto* self = static_cast<Impl*>(user_data);
+  if (!self->stopping.load(std::memory_order_acquire) && self->spk_stream &&
+      self->spk_streaming.load(std::memory_order_acquire) &&
+      pw_stream_is_driving(self->spk_stream))
+  {
+    pw_stream_trigger_process(self->spk_stream);
+  }
+  return 0;
+}
+
+void HeadsetPipeWire::Impl::arm_spk_timer()
+{
+  if (!loop || spk_timer)
+  {
+    return;
+  }
+  // 8 ms ticks on the PipeWire thread — USB is the ultimate clock, but the
+  // timer keeps the driver draining client buffers even between USB packets.
+  spk_timer = pw_loop_add_timer(pw_thread_loop_get_loop(loop), on_spk_timer, this);
+  if (spk_timer)
+  {
+    timespec value{0, 8 * 1000 * 1000};      // first fire ~8 ms
+    timespec interval{0, 8 * 1000 * 1000};   // every 8 ms
+    pw_loop_update_timer(pw_thread_loop_get_loop(loop), spk_timer, &value, &interval, false);
+  }
+}
+
+void HeadsetPipeWire::Impl::disarm_spk_timer()
+{
+  if (!loop || !spk_timer)
+  {
+    return;
+  }
+  pw_loop_destroy_source(pw_thread_loop_get_loop(loop), spk_timer);
+  spk_timer = nullptr;
+}
+
+void HeadsetPipeWire::Impl::request_spk_cycle()
+{
+  if (!loop || !spk_stream || stopping.load(std::memory_order_acquire))
+  {
+    return;
+  }
+  // Never lock the thread loop from the USB / libusb callback path: that was
+  // the main source of systemic stutter (including video when A/V is linked).
+  // Schedule the trigger on the PW loop asynchronously instead.
+  pw_loop_invoke(pw_thread_loop_get_loop(loop), invoke_spk_trigger,
+                 0, nullptr, 0, false, this);
+}
+
 namespace {
 
-void connect_device_stream(pw_stream* stream, pw_direction direction)
+void connect_device_stream(pw_stream* stream, pw_direction direction, bool driver)
 {
   uint8_t buffer[1024];
   spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
@@ -329,16 +432,25 @@ void connect_device_stream(pw_stream* stream, pw_direction direction)
   info.rate = PW_RATE;
   params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
 
+  int flags = PW_STREAM_FLAG_MAP_BUFFERS;
+  if (driver)
+  {
+    // USB is the clock for the speaker path: we drive graph cycles so linked
+    // clients are dequeued on our schedule (not the other way around).
+    flags |= PW_STREAM_FLAG_DRIVER;
+  }
+  // No RT_PROCESS: process only does lock-free ring I/O, but we also arm a
+  // timer and invoke from non-RT contexts; keep the callback on the loop thread.
+
   int res = pw_stream_connect(
     stream, direction, PW_ID_ANY,
-    static_cast<pw_stream_flags>(
-      PW_STREAM_FLAG_MAP_BUFFERS |
-      PW_STREAM_FLAG_RT_PROCESS),
+    static_cast<pw_stream_flags>(flags),
     params, 1);
   if (res < 0)
   {
     throw std::runtime_error("pw_stream_connect failed");
   }
+  pw_stream_set_active(stream, true);
 }
 
 } // namespace
@@ -361,6 +473,7 @@ void HeadsetPipeWire::shutdown()
     return;
   }
   m_impl->stopping.store(true, std::memory_order_release);
+  m_impl->spk_streaming.store(false, std::memory_order_release);
   m_running = false;
   m_impl->mic_ring.clear();
   m_impl->spk_ring.clear();
@@ -370,6 +483,7 @@ void HeadsetPipeWire::shutdown()
   }
 
   pw_thread_loop_lock(m_impl->loop);
+  m_impl->disarm_spk_timer();
   if (m_impl->mic_stream)
   {
     pw_stream_set_active(m_impl->mic_stream, false);
@@ -410,6 +524,7 @@ void HeadsetPipeWire::start()
   }
   shutdown();
   m_impl->stopping.store(false, std::memory_order_release);
+  m_impl->spk_streaming.store(false, std::memory_order_release);
 
   pw_init(nullptr, nullptr);
 
@@ -452,6 +567,11 @@ void HeadsetPipeWire::start()
     };
 
     {
+      char latency[32];
+      std::snprintf(latency, sizeof(latency), "%u/%u", SPK_QUANTUM_48, PW_RATE);
+      char quantum[16];
+      std::snprintf(quantum, sizeof(quantum), "%u", SPK_QUANTUM_48);
+
       pw_properties* props = pw_properties_new(
         PW_KEY_MEDIA_TYPE, "Audio",
         PW_KEY_MEDIA_CATEGORY, "Capture",
@@ -460,6 +580,9 @@ void HeadsetPipeWire::start()
         PW_KEY_NODE_NAME, "xboxdrv-headset-mic",
         PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset microphone",
         PW_KEY_NODE_VIRTUAL, "true",
+        PW_KEY_NODE_LATENCY, latency,
+        "node.force-rate", "48000",
+        "node.force-quantum", quantum,
         "node.linger", "false",
         nullptr);
       m_impl->mic_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-mic", props);
@@ -469,10 +592,16 @@ void HeadsetPipeWire::start()
         throw std::runtime_error("pw_stream_new (mic) failed");
       }
       pw_stream_add_listener(m_impl->mic_stream, &m_impl->mic_listener, &mic_events, m_impl.get());
-      connect_device_stream(m_impl->mic_stream, PW_DIRECTION_OUTPUT);
+      // Mic is a follower Source: graph pulls when a client records.
+      connect_device_stream(m_impl->mic_stream, PW_DIRECTION_OUTPUT, false);
     }
 
     {
+      char latency[32];
+      std::snprintf(latency, sizeof(latency), "%u/%u", SPK_QUANTUM_48, PW_RATE);
+      char quantum[16];
+      std::snprintf(quantum, sizeof(quantum), "%u", SPK_QUANTUM_48);
+
       pw_properties* props = pw_properties_new(
         PW_KEY_MEDIA_TYPE, "Audio",
         PW_KEY_MEDIA_CATEGORY, "Playback",
@@ -481,6 +610,10 @@ void HeadsetPipeWire::start()
         PW_KEY_NODE_NAME, "xboxdrv-headset-speaker",
         PW_KEY_NODE_DESCRIPTION, "Xbox 360 headset speaker",
         PW_KEY_NODE_VIRTUAL, "true",
+        PW_KEY_NODE_LATENCY, latency,
+        "node.force-rate", "48000",
+        "node.force-quantum", quantum,
+        "node.driver", "true",
         "node.linger", "false",
         nullptr);
       m_impl->spk_stream = pw_stream_new(m_impl->core, "xboxdrv-headset-speaker", props);
@@ -490,13 +623,15 @@ void HeadsetPipeWire::start()
         throw std::runtime_error("pw_stream_new (speaker) failed");
       }
       pw_stream_add_listener(m_impl->spk_stream, &m_impl->spk_listener, &spk_events, m_impl.get());
-      connect_device_stream(m_impl->spk_stream, PW_DIRECTION_INPUT);
+      // Speaker is a DRIVER Sink: USB clock schedules graph cycles so clients
+      // are drained on time (prevents A/V stall when video is linked here).
+      connect_device_stream(m_impl->spk_stream, PW_DIRECTION_INPUT, true);
     }
 
     pw_thread_loop_unlock(m_impl->loop);
     m_running = true;
-    log_info("[headset] pipewire @ {} Hz graph rate (USB mic {} kHz / spk {} kHz via integer resample)",
-             PW_RATE, MIC_USB_RATE / 1000, SPK_USB_RATE / 1000);
+    log_info("[headset] pipewire @ {} Hz graph rate, quantum {} (USB mic {} kHz / spk {} kHz)",
+             PW_RATE, SPK_QUANTUM_48, MIC_USB_RATE / 1000, SPK_USB_RATE / 1000);
   }
   catch (...)
   {
@@ -535,20 +670,19 @@ bool HeadsetPipeWire::pull_speaker(int16_t* out, size_t count)
   size_t need_48 = count * SPK_DOWNSAMPLE;
   size_t avail = m_impl->spk_ring.available();
 
-  // Pull-based: if the ring is low, ask the graph for another cycle (docs:
-  // non-driving streams may request a cycle via pw_stream_trigger_process).
-  if (avail < need_48 * 2 && m_impl->loop && m_impl->spk_stream)
+  // If the ring is running low, ask the PW thread to run another driver cycle.
+  // Async invoke only — never pw_thread_loop_lock from the USB callback path.
+  if (avail < need_48 * 2)
   {
-    pw_thread_loop_lock(m_impl->loop);
-    if (!m_impl->stopping.load(std::memory_order_acquire) && m_impl->spk_stream)
-    {
-      if (pw_stream_get_state(m_impl->spk_stream, nullptr) == PW_STREAM_STATE_STREAMING)
-      {
-        pw_stream_trigger_process(m_impl->spk_stream);
-      }
-    }
-    pw_thread_loop_unlock(m_impl->loop);
+    m_impl->request_spk_cycle();
     avail = m_impl->spk_ring.available();
+  }
+
+  // Soft start: avoid a burst of underrun hold-last before the first client data.
+  if (avail < SPK_PREBUFFER)
+  {
+    std::memset(out, 0, count * sizeof(int16_t));
+    return false;
   }
 
   if (avail > SPK_HIGH)
