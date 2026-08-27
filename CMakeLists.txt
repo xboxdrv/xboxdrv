@@ -190,7 +190,10 @@ add_custom_command(
   COMMAND ${DBUS_GLUE} -o ${TARGET} ${SOURCE} --dbus-prefix=xboxdrv_daemon)
 
 add_library(libxboxdrv STATIC ${XBOXDRV_SOURCES_CXX} ${G72X_SOURCES})
-set_source_files_properties(${G72X_SOURCES} PROPERTIES LANGUAGE C)
+set_source_files_properties(${G72X_SOURCES} PROPERTIES
+  LANGUAGE C
+  # Vendored Sun CCITT reference code; keep third-party sources quiet.
+  COMPILE_OPTIONS "-w")
 set_target_properties(libxboxdrv PROPERTIES OUTPUT_NAME xboxdrv)
 set_target_properties(libxboxdrv PROPERTIES
   CXX_STANDARD 23
@@ -219,7 +222,7 @@ set_source_files_properties(src/xboxdrv_version.cpp PROPERTIES
 if(HAVE_CWIID)
   target_compile_definitions(libxboxdrv PUBLIC -DHAVE_CWIID)
 endif()
-target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
+target_compile_options(libxboxdrv PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${WARNINGS_CXX_FLAGS}>)
 
 target_link_libraries(libxboxdrv PUBLIC
   argpp::argpp
@@ -241,7 +244,6 @@ set_target_properties(xboxdrv PROPERTIES
   CXX_STANDARD 23
   CXX_STANDARD_REQUIRED ON
   CXX_EXTENSIONS OFF)
-target_compile_options(libxboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
 target_link_libraries(xboxdrv libxboxdrv)
 
 if(BUILD_TESTS)
