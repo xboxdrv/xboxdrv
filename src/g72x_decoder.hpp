@@ -10,7 +10,7 @@ extern "C" {
 
 namespace xboxdrv {
 
-/** G.726-32 / G.721 4-bit ADPCM decoder for Xbox 360 wired headset mic.
+/** G.726-32 / G.721 4-bit ADPCM for Xbox 360 wired headset.
 
     Confirmed against Sun decode-g72x: -64 (or -4) -R -l, play as S16LE @ 16 kHz.
     Right-packed: low nibble first, then high nibble. Continuous state across
@@ -43,6 +43,39 @@ public:
       int sample2 = g721_decoder(code2, AUDIO_ENCODING_LINEAR, &m_state);
       out.push_back(static_cast<int16_t>(sample1));
       out.push_back(static_cast<int16_t>(sample2));
+    }
+  }
+};
+
+/** Matching encoder: S16LE samples → right-packed G.726-32 bytes.
+    Same state machine and packing as G72xDecoder so a round-trip is clean.
+ */
+class G72xEncoder
+{
+private:
+  struct g72x_state m_state;
+
+public:
+  G72xEncoder() :
+    m_state()
+  {
+    g72x_init_state(&m_state);
+  }
+
+  /** Encode even number of S16LE samples to packed bytes (2 samples → 1 byte).
+      out is cleared and filled; size = samples.size() / 2.
+      Odd trailing sample is dropped. */
+  void encode(const int16_t* samples, size_t count, std::vector<uint8_t>& out)
+  {
+    out.clear();
+    out.reserve(count / 2);
+    for (size_t i = 0; i + 1 < count; i += 2)
+    {
+      // g721_encoder expects 16-bit linear; returns 4-bit code in low nibble
+      int code1 = g721_encoder(samples[i],     AUDIO_ENCODING_LINEAR, &m_state);
+      int code2 = g721_encoder(samples[i + 1], AUDIO_ENCODING_LINEAR, &m_state);
+      // Right-packed: low nibble first
+      out.push_back(static_cast<uint8_t>((code1 & 0x0f) | ((code2 & 0x0f) << 4)));
     }
   }
 };
