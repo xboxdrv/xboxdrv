@@ -254,7 +254,7 @@ CommandLineParser::init_argp(int argc, char** argv)
     .add_option(OPTION_HEADSET_WAV,   NUL, "headset-dump-wav", "FILE",  "Decode headset mic (G.726-32 right-packed) to 16kHz mono WAV FILE")
     .add_option(OPTION_HEADSET_PLAY_WAV, NUL, "headset-play-wav", "FILE",  "Play PCM WAV FILE on headset (resampled to 8 kHz mono, G.726-32 encoded)")
     .add_option(OPTION_HEADSET_PLAY_LEFT_PACK, NUL, "headset-play-left-pack", "", "Use left (high-nibble-first) packing for play-wav instead of right")
-    .add_option(OPTION_HEADSET_PULSE, NUL, "headset-pulse", "", "Expose headset as PulseAudio/PipeWire source+sink via pactl pipe modules");
+    .add_option(OPTION_HEADSET_PULSE, NUL, "headset-pulse", "", "Expose headset as PipeWire source+sink nodes (libpipewire; works with Pulse clients)");
 
   m_argp.add_group("Force Feedback: ")
     .add_option(OPTION_FORCE_FEEDBACK,    NUL, "force-feedback",   "",     "Enable force feedback support")

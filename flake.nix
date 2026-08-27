@@ -45,6 +45,7 @@
               libusb1
               libevdev
               libx11
+              pipewire
               (pkgs.python3.withPackages (p: [
                 p.dbus-python
               ]))

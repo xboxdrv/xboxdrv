@@ -974,11 +974,12 @@ CLI
   --headset-play FILE          stream pre-encoded 32-byte G.726 dump to EP 4
   --headset-play-wav FILE      PCM WAV → 8 kHz mono → G.726-32 right-pack → EP 4
   --headset-play-left-pack     alternate nibble order for play-wav (sounds worse)
-  --headset-pulse              auto FIFOs + pactl module-pipe-source/sink:
-                                 source xboxdrv-headset-mic    (S16LE 16 kHz mono)
-                                 sink   xboxdrv-headset-speaker (S16LE 8 kHz mono)
-                               Requires pactl (PulseAudio or PipeWire pulse).
-                               Modules unloaded and FIFOs removed on exit.
+  --headset-pulse              PipeWire lib API (pw_stream), not pactl:
+                                 node xboxdrv-headset-mic     (source, 16 kHz S16LE)
+                                 node xboxdrv-headset-speaker (sink,    8 kHz S16LE)
+                               Requires xboxdrv built with libpipewire-0.3
+                               (HAVE_PIPEWIRE). PulseAudio clients see the nodes
+                               via pipewire-pulse.
 
 play-wav also applies ~1 dB attenuation and ~100 ms of encoded silence prime
 so the ADPCM predictor is not cold on the first phoneme.

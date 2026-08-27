@@ -10,6 +10,10 @@
 
 #include "headset.hpp"
 
+#ifdef HAVE_PIPEWIRE
+#include "headset_pipewire.hpp"
+#endif
+
 #include <fstream>
 #include <functional>
 #include <errno.h>
@@ -18,11 +22,6 @@
 #include <cstdint>
 #include <cmath>
 #include <algorithm>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <cstdlib>
-#include <cstdio>
 
 #include <unsebu/usb_helper.hpp>
 
@@ -74,12 +73,6 @@ Headset::Headset(libusb_device_handle* handle, bool debug) :
   m_play_pcm(),
   m_play_pos(0),
   m_play_left_pack(false),
-  m_pulse_play_fd(-1),
-  m_pulse_play_carry(),
-  m_pulse_source_module(-1),
-  m_pulse_sink_module(-1),
-  m_pulse_mic_fifo(),
-  m_pulse_spk_fifo(),
   m_encoder(),
   m_decoder(),
   m_debug(debug)
@@ -89,29 +82,9 @@ Headset::Headset(libusb_device_handle* handle, bool debug) :
 Headset::~Headset()
 {
   finalize_wav();
-  if (m_pulse_play_fd >= 0)
-  {
-    ::close(m_pulse_play_fd);
-    m_pulse_play_fd = -1;
-  }
-  if (m_pulse_sink_module >= 0)
-  {
-    pactl_unload_module(m_pulse_sink_module);
-    m_pulse_sink_module = -1;
-  }
-  if (m_pulse_source_module >= 0)
-  {
-    pactl_unload_module(m_pulse_source_module);
-    m_pulse_source_module = -1;
-  }
-  if (!m_pulse_mic_fifo.empty())
-  {
-    ::unlink(m_pulse_mic_fifo.c_str());
-  }
-  if (!m_pulse_spk_fifo.empty())
-  {
-    ::unlink(m_pulse_spk_fifo.c_str());
-  }
+#ifdef HAVE_PIPEWIRE
+  m_pw.reset();
+#endif
   m_interface.reset();
 }
 
@@ -457,11 +430,11 @@ Headset::send_data(libusb_transfer* transfer)
     return true;
   }
 
-  // Pulse/PipeWire pipe-sink PCM → encode → OUT
-  if (m_pulse_play_fd >= 0)
+#ifdef HAVE_PIPEWIRE
+  if (m_pw && m_pw->running())
   {
     int16_t samples[SAMPLES_PER_PACKET];
-    if (!fill_play_samples_from_pulse(samples, SAMPLES_PER_PACKET))
+    if (!m_pw->pull_speaker(samples, SAMPLES_PER_PACKET))
     {
       std::memset(samples, 0, sizeof(samples));
     }
@@ -475,6 +448,7 @@ Headset::send_data(libusb_transfer* transfer)
     transfer->length = static_cast<int>(PLAY_PACKET_BYTES);
     return true;
   }
+#endif
 
   // Legacy raw G.726 file path
   if (!m_fin)
@@ -515,6 +489,12 @@ Headset::receive_data(uint8_t* data, int len)
       m_fout_pcm->write(bytes, nbytes);
       m_fout_pcm->flush();
     }
+#ifdef HAVE_PIPEWIRE
+    if (m_pw && m_pw->running())
+    {
+      m_pw->push_mic(samples.data(), samples.size());
+    }
+#endif
 
     if (m_fout_wav.get())
     {
@@ -532,99 +512,27 @@ Headset::receive_data(uint8_t* data, int len)
 }
 
 
-int
-Headset::pactl_load_module(std::string const& args)
-{
-  std::string cmd = "pactl load-module " + args + " 2>/dev/null";
-  FILE* fp = ::popen(cmd.c_str(), "r");
-  if (!fp)
-  {
-    return -1;
-  }
-  char buf[64];
-  std::string out;
-  while (std::fgets(buf, sizeof(buf), fp))
-  {
-    out += buf;
-  }
-  int status = ::pclose(fp);
-  if (status != 0)
-  {
-    return -1;
-  }
-  try
-  {
-    return std::stoi(out);
-  }
-  catch (...)
-  {
-    return -1;
-  }
-}
 
 void
-Headset::pactl_unload_module(int index)
+Headset::enable_pulse_audio()
 {
-  if (index < 0)
+#ifdef HAVE_PIPEWIRE
+  m_pw = std::make_unique<HeadsetPipeWire>();
+  m_pw->start();
+  // Mic USB path: always listen so decoded samples reach PipeWire
+  if (!m_fout_pcm && !m_fout_raw && !m_fout_wav)
   {
-    return;
+    m_interface->submit_read(3, 32, std::bind(&Headset::receive_data, this, _1, _2));
   }
-  std::string cmd = "pactl unload-module " + std::to_string(index) + " 2>/dev/null";
-  int r = ::system(cmd.c_str());
-  (void)r;
+  start_pulse_playback();
+#else
+  raise_exception(std::runtime_error,
+                  "--headset-pulse requires xboxdrv built with libpipewire-0.3 "
+                  "(HAVE_PIPEWIRE). Install pipewire development packages and rebuild.");
+#endif
 }
 
-bool
-Headset::fill_play_samples_from_pulse(int16_t* out, size_t count)
-{
-  size_t filled = 0;
-  if (!m_pulse_play_carry.empty())
-  {
-    size_t n = std::min(m_pulse_play_carry.size(), count);
-    std::memcpy(out, m_pulse_play_carry.data(), n * sizeof(int16_t));
-    m_pulse_play_carry.erase(m_pulse_play_carry.begin(),
-                             m_pulse_play_carry.begin() + static_cast<std::ptrdiff_t>(n));
-    filled = n;
-  }
-  while (filled < count && m_pulse_play_fd >= 0)
-  {
-    uint8_t buf[256];
-    ssize_t n = ::read(m_pulse_play_fd, buf, sizeof(buf));
-    if (n < 0)
-    {
-      if (errno == EAGAIN || errno == EWOULDBLOCK)
-      {
-        break;
-      }
-      log_warn("[headset] pulse play read: {}", strerror(errno));
-      break;
-    }
-    if (n == 0)
-    {
-      break;
-    }
-    size_t nsamp = static_cast<size_t>(n) / sizeof(int16_t);
-    const int16_t* s = reinterpret_cast<const int16_t*>(buf);
-    for (size_t i = 0; i < nsamp; ++i)
-    {
-      if (filled < count)
-      {
-        out[filled++] = s[i];
-      }
-      else
-      {
-        m_pulse_play_carry.push_back(s[i]);
-      }
-    }
-  }
-  if (filled < count)
-  {
-    std::memset(out + filled, 0, (count - filled) * sizeof(int16_t));
-    return filled > 0;
-  }
-  return true;
-}
-
+#ifdef HAVE_PIPEWIRE
 void
 Headset::start_pulse_playback()
 {
@@ -645,71 +553,9 @@ Headset::start_pulse_playback()
   }
   m_interface->submit_write(4, packet.data(), static_cast<int>(PLAY_PACKET_BYTES),
                             std::bind(&Headset::send_data, this, _1));
-  log_info("[headset] pulse: speaker stream started (8 kHz S16LE from pipe-sink)");
+  log_info("[headset] speaker USB stream started (8 kHz from PipeWire sink)");
 }
-
-void
-Headset::enable_pulse_audio()
-{
-  const char* runtime = std::getenv("XDG_RUNTIME_DIR");
-  std::string dir = runtime ? std::string(runtime) + "/xboxdrv" : "/tmp/xboxdrv";
-  if (::mkdir(dir.c_str(), 0700) != 0 && errno != EEXIST)
-  {
-    raise_exception(std::runtime_error, "mkdir " << dir << ": " << strerror(errno));
-  }
-
-  m_pulse_mic_fifo = dir + "/mic.pcm";
-  m_pulse_spk_fifo = dir + "/speaker.pcm";
-  ::unlink(m_pulse_mic_fifo.c_str());
-  ::unlink(m_pulse_spk_fifo.c_str());
-  if (::mkfifo(m_pulse_mic_fifo.c_str(), 0600) != 0)
-  {
-    raise_exception(std::runtime_error, "mkfifo " << m_pulse_mic_fifo << ": " << strerror(errno));
-  }
-  if (::mkfifo(m_pulse_spk_fifo.c_str(), 0600) != 0)
-  {
-    raise_exception(std::runtime_error, "mkfifo " << m_pulse_spk_fifo << ": " << strerror(errno));
-  }
-
-  {
-    std::string args = "module-pipe-source source_name=xboxdrv-headset-mic "
-      "file=" + m_pulse_mic_fifo + " format=s16le rate=16000 channels=1";
-    m_pulse_source_module = pactl_load_module(args);
-    if (m_pulse_source_module < 0)
-    {
-      raise_exception(std::runtime_error,
-                      "pactl load-module module-pipe-source failed "
-                      "(is PulseAudio or PipeWire pulse installed? is pactl on PATH?)");
-    }
-    log_info("[headset] pulse source 'xboxdrv-headset-mic' (module {}) <- {}",
-             m_pulse_source_module, m_pulse_mic_fifo);
-    record_pcm(m_pulse_mic_fifo);
-  }
-
-  {
-    std::string args = "module-pipe-sink sink_name=xboxdrv-headset-speaker "
-      "file=" + m_pulse_spk_fifo + " format=s16le rate=8000 channels=1";
-    m_pulse_sink_module = pactl_load_module(args);
-    if (m_pulse_sink_module < 0)
-    {
-      log_warn("[headset] pactl load-module module-pipe-sink failed; mic source only");
-    }
-    else
-    {
-      log_info("[headset] pulse sink 'xboxdrv-headset-speaker' (module {}) -> {}",
-               m_pulse_sink_module, m_pulse_spk_fifo);
-      m_pulse_play_fd = ::open(m_pulse_spk_fifo.c_str(), O_RDWR | O_NONBLOCK);
-      if (m_pulse_play_fd < 0)
-      {
-        log_warn("[headset] open {}: {}", m_pulse_spk_fifo, strerror(errno));
-      }
-      else
-      {
-        start_pulse_playback();
-      }
-    }
-  }
-}
+#endif
 
 } // namespace xboxdrv
 
