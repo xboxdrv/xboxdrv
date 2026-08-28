@@ -1,6 +1,6 @@
 /*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2009 Ingo Ruhnke <grumbel@gmail.com>
+**  Copyright (C) 2009-2026 Ingo Ruhnke <grumbel@gmail.com>
 **  Copyright (C) 2016 James Le Cuirot <chewi@gentoo.org>
 **
 **  This program is free software: you can redistribute it and/or modify

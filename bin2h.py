@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Xbox360 USB Gamepad Userspace Driver
-# Copyright (C) 2015 Ingo Ruhnke <grumbel@gmail.com>
+# Copyright (C) 2015-2026 Ingo Ruhnke <grumbel@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

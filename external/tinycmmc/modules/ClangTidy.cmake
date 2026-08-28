@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Ingo Ruhnke <grumbel@gmail.com>
+# Copyright (C) 2020-2026 Ingo Ruhnke <grumbel@gmail.com>
 #
 # This software is provided 'as-is', without any express or implied
 # warranty.  In no event will the authors be held liable for any damages

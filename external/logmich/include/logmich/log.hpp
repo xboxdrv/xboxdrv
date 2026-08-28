@@ -1,5 +1,5 @@
 // LogMich - A Trivial Logging Library
-// Copyright (C) 2014 Ingo Ruhnke <grumbel@gmail.com>
+// Copyright (C) 2014-2026 Ingo Ruhnke <grumbel@gmail.com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages

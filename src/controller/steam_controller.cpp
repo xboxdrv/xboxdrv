@@ -1,6 +1,6 @@
 /*
 **  Xbox/Xbox360 USB Gamepad Userspace Driver
-**  Copyright (C) 2009 Ingo Ruhnke <grumbel@gmail.com>
+**  Copyright (C) 2009-2026 Ingo Ruhnke <grumbel@gmail.com>
 **  Copyright (C) 2016 James Le Cuirot <chewi@gentoo.org>
 **
 **  Experimental Steam Controller backend adapted from PR #222.

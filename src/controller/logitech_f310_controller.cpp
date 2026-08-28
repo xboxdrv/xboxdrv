@@ -1,6 +1,6 @@
 /*
 **  Logitech Gamepad F310 driver for xboxdrv
-**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmail.com>
+**  Copyright (C) 2011-2026 Ingo Ruhnke <grumbel@gmail.com>
 **  Contributed by Doug Morse <dm@dougmorse.org>
 **
 **  This program is free software: you can redistribute it and/or modify
