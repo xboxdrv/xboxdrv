@@ -262,7 +262,8 @@ CMake derives numeric `project(VERSION …)`; flake appends
       G.726; PROTOCOL mentions a continuous stream on the headset endpoint — may need
       different packetisation.
 - [ ] Wireless-only headset (no pad) / battery status from PROTOCOL still unused.
-- [ ] README manpage still understate wired capability; refresh when wireless is verified.
+- [x] README + man page headset section refreshed (wired + experimental wireless).
+- [x] Soft-fail wireless headset interface claim (pad keeps working).
 
 ## Notes for later agents
 

@@ -102,44 +102,55 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   // Headset lives on the odd interface next to this controller slot
   // (PROTOCOL: IF 1/EP 2 for slot 0, IF 3/EP 4 for slot 1, …).
   // Framing is assumed to match wired 32-byte G.726 interrupt transfers;
-  // verify with hardware — wireless may need further protocol work.
+  // verify with hardware — PROTOCOL also notes a continuous stream.
   if (headset)
   {
     const int hs_if = controller_id * 2 + 1;
     const int hs_ep = controller_id * 2 + 2;
     log_info("[headset] wireless slot {}: interface {} endpoint {}",
              controller_id, hs_if, hs_ep);
-    m_headset = std::make_unique<Headset>(
-      m_handle, headset_debug, headset_mic_gain,
-      hs_if, hs_ep, hs_ep, try_detach);
+    try
+    {
+      m_headset = std::make_unique<Headset>(
+        m_handle, headset_debug, headset_mic_gain,
+        hs_if, hs_ep, hs_ep, try_detach);
 
-    if (!headset_play.empty())
-    {
-      m_headset->play_file(headset_play);
+      if (!headset_play.empty())
+      {
+        m_headset->play_file(headset_play);
+      }
+      if (!headset_dump.empty())
+      {
+        m_headset->record_file(headset_dump);
+      }
+      if (!headset_pcm.empty())
+      {
+        m_headset->record_pcm(headset_pcm);
+      }
+      if (!headset_wav.empty())
+      {
+        m_headset->record_wav(headset_wav);
+      }
+      if (!headset_play_wav.empty())
+      {
+        m_headset->play_wav(headset_play_wav, headset_play_left_pack);
+      }
+      if (headset_pulse)
+      {
+        m_headset->enable_pulse_audio();
+      }
+      if (headset_pipewire)
+      {
+        m_headset->enable_pipewire_audio();
+      }
     }
-    if (!headset_dump.empty())
+    catch (std::exception const& err)
     {
-      m_headset->record_file(headset_dump);
-    }
-    if (!headset_pcm.empty())
-    {
-      m_headset->record_pcm(headset_pcm);
-    }
-    if (!headset_wav.empty())
-    {
-      m_headset->record_wav(headset_wav);
-    }
-    if (!headset_play_wav.empty())
-    {
-      m_headset->play_wav(headset_play_wav, headset_play_left_pack);
-    }
-    if (headset_pulse)
-    {
-      m_headset->enable_pulse_audio();
-    }
-    if (headset_pipewire)
-    {
-      m_headset->enable_pipewire_audio();
+      // Keep the pad usable if the headset interface is missing or busy.
+      log_error("[headset] wireless: could not open headset interface {}: {} "
+                "(controller input continues without headset audio)",
+                hs_if, err.what());
+      m_headset.reset();
     }
   }
 }
@@ -373,7 +384,10 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
     if (st & 0x80)
     {
       if (st & 0x40)
-        log_info("connection status: controller and headset connected");
+      {
+        log_info("connection status: controller and headset connected{}",
+                 m_headset ? " (headset audio active)" : "");
+      }
       else
         log_info("connection status: controller connected");
       // LED is also set when the daemon assigns a slot; nudge here so the
@@ -388,7 +402,8 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
     }
     else if (st & 0x40)
     {
-      log_info("connection status: headset connected");
+      log_info("connection status: headset connected{}",
+               m_headset ? " (headset audio active)" : "");
       if (len <= 2)
       {
         return false;

@@ -886,41 +886,93 @@ start=KEY_ESC
     </refsect2>
 
     <refsect2>
-      <title>Headset Options (experimental, Xbox360 USB only)</title>
+      <title>Headset Options (experimental)</title>
       <para>
-        Xboxdrv does not support the headset, the options below are
-        for developers only and will dump raw headset data, not .wav
-        files.
+        Xbox 360 headset audio on <emphasis>wired USB</emphasis> controllers
+        (interface 1) and, experimentally, on a <emphasis>wireless
+        receiver</emphasis> slot (headset interface next to the pad). Codec is
+        G.726-32; mic is 16&nbsp;kHz mono, phone is 8&nbsp;kHz mono. Wireless
+        framing still needs hardware verification.
       </para>
       <variablelist>
         <varlistentry>
           <term><option>--headset</option></term>
           <listitem>
             <para>
-              Enable headset support and dump incoming data to stdout.
+              Enable headset support (required for the options below).
             </para>
           </listitem>
-
         </varlistentry>
         <varlistentry>
           <term><option>--headset-dump</option> <replaceable class="parameter">FILE</replaceable></term>
           <listitem>
             <para>
-              Enable headset support and dump incoming data to FILE.
+              Dump raw headset USB packets to FILE.
             </para>
           </listitem>
         </varlistentry>
-
         <varlistentry>
           <term><option>--headset-play</option> <replaceable class="parameter">FILE</replaceable></term>
           <listitem>
             <para>
-              Enable headset support and send FILE to the headset for playback.
+              Send raw headset USB packets from FILE to the phone speaker.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term><option>--headset-pcm</option> <replaceable class="parameter">FILE</replaceable></term>
+          <listitem>
+            <para>
+              Write decoded 16&nbsp;kHz S16LE mono PCM from the mic to FILE
+              (regular file or FIFO).
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term><option>--headset-dump-wav</option> <replaceable class="parameter">FILE</replaceable></term>
+          <listitem>
+            <para>
+              Decode the mic to a 16&nbsp;kHz mono WAV file.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term><option>--headset-play-wav</option> <replaceable class="parameter">FILE</replaceable></term>
+          <listitem>
+            <para>
+              Play a PCM WAV on the headset phone (resampled to 8&nbsp;kHz mono,
+              G.726-32 encoded).
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term><option>--headset-pulse</option></term>
+          <listitem>
+            <para>
+              Expose mic/speaker via <command>pactl</command>
+              module-pipe-source/sink (PulseAudio or PipeWire-pulse).
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term><option>--headset-pipewire</option></term>
+          <listitem>
+            <para>
+              Expose mic/speaker as native PipeWire Audio/Source and Audio/Sink
+              nodes (requires a build with libpipewire-0.3).
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term><option>--headset-mic-gain</option> <replaceable class="parameter">FACTOR</replaceable></term>
+          <listitem>
+            <para>
+              Linear gain applied after mic decode (default 1.0; try 2–6 if quiet).
             </para>
           </listitem>
         </varlistentry>
       </variablelist>
-    </refsect2>    
+    </refsect2>
 
     <refsect2>
       <title>Force Feedback</title>
