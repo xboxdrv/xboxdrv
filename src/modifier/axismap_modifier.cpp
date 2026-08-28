@@ -182,6 +182,23 @@ AxismapModifier::add(AxisMappingPtr mapping)
   m_axismap.push_back(mapping);
 }
 
+void
+AxismapModifier::add_filter(std::string const& axis, AxisFilterPtr filter)
+{
+  for(std::vector<AxisMappingPtr>::iterator i = m_axismap.begin(); i != m_axismap.end(); ++i)
+  {
+    if ((*i)->lhs.str() == axis)
+    {
+      (*i)->filters.push_back(filter);
+      return;
+    }
+  }
+
+  AxisMappingPtr mapping = AxisMapping::from_string(axis, axis);
+  mapping->filters.push_back(filter);
+  add(mapping);
+}
+
 std::string
 AxismapModifier::str() const
 {

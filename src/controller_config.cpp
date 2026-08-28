@@ -21,14 +21,35 @@
 #include "axisfilter/deadzone_axis_filter.hpp"
 #include "controller_options.hpp"
 #include "modifier/axismap_modifier.hpp"
-#include "modifier/axismap_modifier.hpp"
 #include "modifier/buttonmap_modifier.hpp"
+#include "modifier/compat_modifier.hpp"
 #include "modifier/dpad_rotation_modifier.hpp"
 #include "modifier/four_way_restrictor_modifier.hpp"
-#include "modifier/compat_modifier.hpp"
 #include "modifier/square_axis_modifier.hpp"
 
 namespace xboxdrv {
+
+namespace {
+
+void
+add_axis_filters(std::vector<ModifierPtr>& modifiers,
+                 std::map<std::string, AxisFilterPtr> const& filters)
+{
+  if (filters.empty())
+  {
+    return;
+  }
+
+  std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
+  for(std::map<std::string, AxisFilterPtr>::const_iterator i = filters.begin();
+      i != filters.end(); ++i)
+  {
+    axismap->add_filter(i->first, i->second);
+  }
+  modifiers.push_back(axismap);
+}
+
+} // namespace
 
 ControllerConfig::ControllerConfig(uinpp::MultiDevice& uinput, int slot, bool extra_devices, ControllerOptions const& opts) :
   m_modifier(),
@@ -39,62 +60,35 @@ ControllerConfig::ControllerConfig(uinpp::MultiDevice& uinput, int slot, bool ex
   // classic Xbox dpad keys never reach the hat axes.
   m_modifier.push_back(ModifierPtr(new CompatModifier));
 
-  // create modifier
-  if (!opts.calibration_map.empty())
-  {
-    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    for(std::map<std::string, AxisFilterPtr>::const_iterator i = opts.calibration_map.begin();
-        i != opts.calibration_map.end();
-        ++i)
-    {
-      // BROKEN: axismap->add_filter(i->first, i->second);
-    }
-
-    m_modifier.push_back(axismap);
-  }
+  add_axis_filters(m_modifier, opts.calibration_map);
 
   if (opts.deadzone)
   {
-#if 0
     std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    XboxAxis axes[] = { XBOX_AXIS_X1,
-                        XBOX_AXIS_Y1,
-
-                        XBOX_AXIS_X2,
-                        XBOX_AXIS_Y2 };
-
-    for(size_t i = 0; i < sizeof(axes)/sizeof(XboxAxis); ++i)
+    char const* axes[] = { "X1", "Y1", "X2", "Y2" };
+    for(size_t i = 0; i < sizeof(axes)/sizeof(axes[0]); ++i)
     {
       axismap->add_filter(axes[i],
                           AxisFilterPtr(new DeadzoneAxisFilter(-opts.deadzone,
                                                                opts.deadzone,
                                                                true)));
     }
-
     m_modifier.push_back(axismap);
-#endif
   }
 
   if (opts.deadzone_trigger)
   {
-#if 0
     std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    XboxAxis axes[] = { XBOX_AXIS_LT,
-                        XBOX_AXIS_RT };
-
-    for(size_t i = 0; i < sizeof(axes)/sizeof(XboxAxis); ++i)
+    char const* axes[] = { "LT", "RT" };
+    for(size_t i = 0; i < sizeof(axes)/sizeof(axes[0]); ++i)
     {
+      // Triggers are half-axes (0..max); deadzone is a positive threshold from 0.
       axismap->add_filter(axes[i],
-                          AxisFilterPtr(new DeadzoneAxisFilter(-opts.deadzone_trigger,
+                          AxisFilterPtr(new DeadzoneAxisFilter(0,
                                                                opts.deadzone_trigger,
                                                                true)));
     }
-
     m_modifier.push_back(axismap);
-#endif
   }
 
   if (opts.square_axis)
@@ -103,18 +97,7 @@ ControllerConfig::ControllerConfig(uinpp::MultiDevice& uinput, int slot, bool ex
     m_modifier.push_back(ModifierPtr(new SquareAxisModifier("X2", "Y2", "X2", "Y2")));
   }
 
-  if (!opts.sensitivity_map.empty())
-  {
-    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    for(std::map<std::string, AxisFilterPtr>::const_iterator i = opts.sensitivity_map.begin();
-        i != opts.sensitivity_map.end(); ++i)
-    {
-      // BROKEN: axismap->add_filter(i->first, i->second);
-    }
-
-    m_modifier.push_back(axismap);
-  }
+  add_axis_filters(m_modifier, opts.sensitivity_map);
 
   if (opts.four_way_restrictor)
   {
@@ -122,18 +105,7 @@ ControllerConfig::ControllerConfig(uinpp::MultiDevice& uinput, int slot, bool ex
     m_modifier.push_back(ModifierPtr(new FourWayRestrictorModifier("X2", "Y2", "X2", "Y2")));
   }
 
-  if (!opts.relative_axis_map.empty())
-  {
-    std::shared_ptr<AxismapModifier> axismap(new AxismapModifier);
-
-    for(std::map<std::string, AxisFilterPtr>::const_iterator i = opts.relative_axis_map.begin();
-        i != opts.relative_axis_map.end(); ++i)
-    {
-      // BROKEN: axismap->add_filter(i->first, i->second);
-    }
-
-    m_modifier.push_back(axismap);
-  }
+  add_axis_filters(m_modifier, opts.relative_axis_map);
 
   if (opts.dpad_rotation)
   {
@@ -143,23 +115,21 @@ ControllerConfig::ControllerConfig(uinpp::MultiDevice& uinput, int slot, bool ex
   if (!opts.autofire_map.empty())
   {
     std::shared_ptr<ButtonmapModifier> buttonmap(new ButtonmapModifier);
-
     for(std::map<std::string, ButtonFilterPtr>::const_iterator i = opts.autofire_map.begin();
         i != opts.autofire_map.end(); ++i)
     {
       buttonmap->add_filter(i->first, i->second);
     }
-
     m_modifier.push_back(buttonmap);
   }
 
-  // axismap, buttonmap comes last, as otherwise they would mess up the button and axis names
-  for(std::vector<ButtonMappingOption>::const_iterator i = opts.buttonmap.begin(); i != opts.buttonmap.end(); ++i)
+  // axismap / buttonmap last so earlier modifiers still see the original names
+  if (!opts.buttonmap.empty())
   {
     m_modifier.push_back(ModifierPtr(ButtonmapModifier::from_option(opts.buttonmap)));
   }
 
-  for(std::vector<AxisMappingOption>::const_iterator i = opts.axismap.begin(); i != opts.axismap.end(); ++i)
+  if (!opts.axismap.empty())
   {
     m_modifier.push_back(ModifierPtr(AxismapModifier::from_option(opts.axismap)));
   }

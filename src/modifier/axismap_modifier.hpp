@@ -76,6 +76,9 @@ public:
 
   void add(AxisMappingPtr mapping);
 
+  /** Attach a filter to axis name, creating an identity mapping if needed. */
+  void add_filter(const std::string& axis, AxisFilterPtr filter);
+
   std::string str() const override;
 
   bool empty() const { return m_axismap.empty(); }
