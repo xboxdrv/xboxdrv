@@ -27,8 +27,12 @@
 #include <uinpp/fwd.hpp>
 
 #include "controller_ptr.hpp"
+#include "controller_slot_ptr.hpp"
 #include "fwd.hpp"
 #include "xpad_device.hpp"
+#ifdef HAVE_DBUS
+#include "dbus_subsystem.hpp"
+#endif
 
 namespace xboxdrv {
 
@@ -53,6 +57,10 @@ private:
   XPadDevice m_dev_type;
 
   ControllerPtr m_controller;
+  ControllerSlotPtr m_slot;
+#ifdef HAVE_DBUS
+  std::unique_ptr<DBusSubsystem> m_dbus;
+#endif
 
 public:
   XboxdrvMain(unsebu::USBSubsystem& usb_subsystem, const Options& opts);

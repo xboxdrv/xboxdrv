@@ -186,9 +186,7 @@ small test that important names still resolve.
 ### 2. Chatpad / virtual keyboard / D-Bus — in progress
 
 See parity section. Virtual keyboard still optional/quarantine candidate.
-D-Bus is daemon-only today (`--daemon`); single-controller mode has no bus
-export. D-Bus now uses GDBus (Gio); dbus-glib removed. See “Path to improvements”
-below for a concrete migration sketch.
+D-Bus works in daemon mode and optionally in single-controller mode (`Controller` on slot 0). D-Bus uses GDBus (Gio); dbus-glib removed. See "Path to improvements" below.
 
 ### 3. Versioning scheme
 
@@ -320,8 +318,8 @@ Improvement path:
 5. **Finish XML stubs** — [x] `ResetLeds`, `Disconnect(slot)` on Daemon;
    rumble enable/gain dropped (superseded by properties).
 6. **Policy** — [x] `data/org.seul.Xboxdrv.conf` allows own/send/receive for org.seul.Xboxdrv.
-7. **Single-controller mode** — optional light export (same `Controller` iface on
-   slot 0) so tools work without `--daemon`; low priority.
+7. **Single-controller mode** — [x] light export of `Controller` on slot 0 when
+   `--dbus` is not disabled (soft-fails if the bus name is taken).
 
 ### Headset
 

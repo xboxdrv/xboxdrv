@@ -38,9 +38,14 @@
 #include "controller/evdev_controller.hpp"
 #include "controller/wiimote_controller.hpp"
 #include "controller_factory.hpp"
+#include "controller_slot.hpp"
+#include "controller_match_rule.hpp"
 #include "controller_slot_config.hpp"
 #include "controller_thread.hpp"
 #include "options.hpp"
+#ifdef HAVE_DBUS
+#include "dbus_subsystem.hpp"
+#endif
 #include "raise_exception.hpp"
 #include "util/exec.hpp"
 #include "util/string.hpp"
@@ -391,8 +396,61 @@ XboxdrvMain::run()
     }
 
     {
-      ControllerThread thread(m_controller, config_set, m_opts);
-      log_debug("launching thread");
+      // Use a ControllerSlot so single-controller mode shares the same
+      // lifecycle as daemon slots (and can export the Controller D-Bus iface).
+      m_slot = std::make_shared<ControllerSlot>(
+        0, config_set, std::vector<ControllerMatchRulePtr>(), -1, m_opts);
+      m_slot->connect(m_controller);
+      log_debug("launched ControllerThread via ControllerSlot");
+
+#ifdef HAVE_DBUS
+      if (m_opts.dbus != Options::kDBusDisabled)
+      {
+        GBusType bus_type = G_BUS_TYPE_SESSION;
+        switch (m_opts.dbus)
+        {
+          case Options::kDBusAuto:
+            if (getuid() == 0)
+            {
+              bus_type = getenv("DISPLAY") ? G_BUS_TYPE_SESSION : G_BUS_TYPE_SYSTEM;
+            }
+            else
+            {
+              bus_type = G_BUS_TYPE_SESSION;
+            }
+            break;
+          case Options::kDBusSession:
+            bus_type = G_BUS_TYPE_SESSION;
+            break;
+          case Options::kDBusSystem:
+            bus_type = G_BUS_TYPE_SYSTEM;
+            break;
+          case Options::kDBusDisabled:
+          default:
+            assert(false && "should never happen");
+            break;
+        }
+
+        try
+        {
+          m_dbus.reset(new DBusSubsystem("org.seul.Xboxdrv", bus_type));
+          // Light export: Controller iface on slot 0 only (no Daemon object).
+          m_dbus->register_controller_slots(
+            std::vector<ControllerSlotPtr>{ m_slot });
+          log_info("D-Bus: exported Controller on /org/seul/Xboxdrv/ControllerSlots/0");
+        }
+        catch (std::exception const& err)
+        {
+          log_warn("D-Bus export failed (continuing without): {}", err.what());
+          m_dbus.reset();
+        }
+      }
+#else
+      if (m_opts.dbus != Options::kDBusDisabled)
+      {
+        log_warn("D-Bus support was disabled at build time (WITH_DBUS=OFF); ignoring --dbus");
+      }
+#endif
 
       pid_t pid = 0;
       if (!m_opts.exec.empty())
@@ -404,6 +462,14 @@ XboxdrvMain::run()
       log_debug("launching main loop");
       g_main_loop_run(m_gmain);
 
+#ifdef HAVE_DBUS
+      m_dbus.reset();
+#endif
+      if (m_slot && m_slot->is_connected())
+      {
+        m_slot->disconnect();
+      }
+      m_slot.reset();
       m_controller.reset();
     }
 

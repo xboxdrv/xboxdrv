@@ -210,8 +210,8 @@ CommandLineParser::init_argp(int argc, char** argv)
     .add_option(OPTION_DAEMON,        'D', "daemon",    "", "Run as daemon")
     .add_option(OPTION_DAEMON_DETACH,  NUL, "detach",      "", "Detach the daemon from the current shell")
     .add_option(OPTION_DAEMON_PID_FILE,NUL, "pid-file",    "FILE", "Write daemon pid to FILE")
-    .add_option(OPTION_DAEMON_NO_DBUS, NUL, "no-dbus",    "", "Disables D-Bus support in the daemon", false)
-    .add_option(OPTION_DAEMON_DBUS,    NUL, "dbus",    "MODE", "Set D-Bus mode (auto, system, session, disabled)")
+    .add_option(OPTION_DAEMON_NO_DBUS, NUL, "no-dbus",    "", "Disables D-Bus support", false)
+    .add_option(OPTION_DAEMON_DBUS,    NUL, "dbus",    "MODE", "Set D-Bus mode (auto, system, session, disabled); exports Controller on slot 0 without --daemon")
     .add_option(OPTION_DAEMON_ON_CONNECT,   NUL, "on-connect", "FILE", "Launch EXE when a new controller is connected")
     .add_option(OPTION_DAEMON_ON_DISCONNECT,NUL, "on-disconnect", "FILE", "Launch EXE when a controller is disconnected");
 
