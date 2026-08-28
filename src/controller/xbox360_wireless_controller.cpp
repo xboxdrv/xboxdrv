@@ -63,6 +63,8 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   m_quiet(quiet),
   m_pad_present(false),
   m_got_pad_report(false),
+  m_last_conn_status(0xff),
+  m_last_battery_raw(-1),
   m_guide_down_ts(),
   m_guide_held(false),
   m_guide_timeout_source(0),
@@ -354,19 +356,56 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
   };
 
   // Connection status (xpad: data[0] & 0x08). Short 2-byte form is common;
-  // accept the presence nibble on longer frames too.
+  // accept the presence nibble on longer frames too. Log *changes* only.
   if (len >= 2 && (data[0] & 0x08) != 0)
   {
-    uint8_t st = data[1];
-    if ((st & 0x80) == 0 && (st & 0x40) == 0)
+    uint8_t const st = data[1];
+    uint8_t const prev = m_last_conn_status;
+    bool const had_pad = (prev != 0xff) && (prev & 0x80) != 0;
+    bool const had_hs  = (prev != 0xff) && (prev & 0x40) != 0;
+    bool const has_pad = (st & 0x80) != 0;
+    bool const has_hs  = (st & 0x40) != 0;
+
+    if (st != prev)
+    {
+      m_last_conn_status = st;
+
+      if (has_pad && !had_pad)
+      {
+        log_info("controller connected");
+      }
+      else if (!has_pad && had_pad)
+      {
+        log_info("controller disconnected");
+      }
+
+      if (has_hs && !had_hs)
+      {
+        log_info("headset connected{}",
+                 m_headset ? " (audio path active)" : "");
+      }
+      else if (!has_hs && had_hs)
+      {
+        log_info("headset disconnected");
+      }
+
+      if (!has_pad && !has_hs && prev != 0xff)
+      {
+        // Already covered by controller/headset disconnected when bits drop;
+        // only log if neither bit was set before either (empty slot).
+        if (!had_pad && !had_hs)
+        {
+          log_info("slot empty");
+        }
+      }
+    }
+
+    if (!has_pad && !has_hs)
     {
       // Presence inquiry can elicit this status repeatedly. Only react on a
-      // real present→absent transition; never submit an empty ControllerMessage
-      // (that showed up as all-zero "msg:" lines every poll without any pad
-      // activity).
+      // real present→absent transition; never submit an empty ControllerMessage.
       if (m_pad_present)
       {
-        log_info("connection status: nothing");
         m_pad_present = false;
         m_got_pad_report = false;
         m_guide_held = false;
@@ -380,29 +419,19 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
       return false;
     }
 
-    if (st & 0x80)
+    if (has_pad)
     {
-      if (st & 0x40)
-      {
-        log_info("connection status: controller and headset connected{}",
-                 m_headset ? " (headset audio active)" : "");
-      }
-      else
-        log_info("connection status: controller connected");
       // LED is also set when the daemon assigns a slot; nudge here so the
       // pad is awake even before the idle activation callback runs.
       set_led_real(get_led());
       mark_present();
-      // Fall through: a longer frame may also carry pad data.
       if (len <= 2)
       {
         return false;
       }
     }
-    else if (st & 0x40)
+    else if (has_hs)
     {
-      log_info("connection status: headset connected{}",
-               m_headset ? " (headset audio active)" : "");
       if (len <= 2)
       {
         return false;
@@ -430,7 +459,17 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
                                int(data[13]));
         m_battery_status = data[17];
         log_info("controller serial: {}", m_serial);
-        log_info("battery status: {} (0=empty .. 3=full typical)", m_battery_status);
+        {
+          // Raw battery byte: charge level is low 2 bits (0=empty … 3=full).
+          // High bits vary (PROTOCOL 0xa2 / 0xe2 / …); meaning not fully documented.
+          int const raw = data[17];
+          int const level = raw & 0x03;
+          if (raw != m_last_battery_raw)
+          {
+            m_last_battery_raw = raw;
+            log_info("battery: {}/3 (raw 0x{:02x})", level, raw);
+          }
+        }
       }
       return false;
     }
@@ -482,7 +521,13 @@ Xbox360WirelessController::parse(uint8_t const* data, int len, ControllerMessage
     if (data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x00 && data[3] == 0x13)
     {
       m_battery_status = data[4];
-      log_info("battery status: {}", m_battery_status);
+      int const raw = data[4];
+      int const level = raw & 0x03;
+      if (raw != m_last_battery_raw)
+      {
+        m_last_battery_raw = raw;
+        log_info("battery: {}/3 (raw 0x{:02x})", level, raw);
+      }
       return false;
     }
 

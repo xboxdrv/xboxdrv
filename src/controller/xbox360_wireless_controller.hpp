@@ -42,6 +42,10 @@ private:
   bool m_quiet;
   bool m_pad_present;
   bool m_got_pad_report; // true once a data[1]==0x01 pad report was parsed
+  /** Last 0x08 status byte (bit7 pad, bit6 headset); 0xff = unknown. */
+  uint8_t m_last_conn_status;
+  /** Last raw battery byte from announce / 0x13 report; -1 = unknown. */
+  int m_last_battery_raw;
   std::chrono::steady_clock::time_point m_guide_down_ts;
   bool m_guide_held;
   guint m_guide_timeout_source;
