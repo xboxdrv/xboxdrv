@@ -220,7 +220,7 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - [ ] CAPS sticky (Orange+Shift) still unimplemented.
 - [ ] Decide: USB Chatpad on by default vs flag vs remove for the milestone.
 - [ ] Quarantine or drop virtual keyboard if not wired up.
-- [ ] Make D-Bus optional at build/runtime for non-daemon builds (see Path to improvements).
+- [x] Make D-Bus optional at build/runtime for non-daemon builds (see Path to improvements).
 
 ### Phase 3 — `std::format`
 
@@ -309,8 +309,8 @@ Current state (daemon only):
 
 Improvement path:
 
-1. **Optional dependency** — `#ifdef` / CMake `WITH_DBUS`; non-daemon builds skip
-   dbus-glib entirely (`--dbus disabled` already skips runtime export).
+1. **Optional dependency** — [x] CMake `WITH_DBUS` (default ON) + `#ifdef HAVE_DBUS`; non-daemon builds skip
+   dbus code when OFF (`--dbus disabled` already skips runtime export).
 2. **Replace dbus-glib** — [x] migrated to GDBus (Gio);
    keep the same object paths and method names for script compatibility.
 3. **Signals** — emit `ControllerConnected` / `ControllerDisconnected` (slot id)

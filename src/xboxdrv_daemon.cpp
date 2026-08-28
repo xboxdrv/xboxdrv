@@ -34,7 +34,9 @@
 #include "controller.hpp"
 #include "controller_factory.hpp"
 #include "controller_slot.hpp"
+#ifdef HAVE_DBUS
 #include "dbus_subsystem.hpp"
+#endif
 #include "raise_exception.hpp"
 #include "select.hpp"
 #include "udev_subsystem.hpp"
@@ -147,12 +149,13 @@ XboxdrvDaemon::run()
     UdevSubsystem udev_subsystem;
     udev_subsystem.set_device_callback(std::bind(&XboxdrvDaemon::process_match, this, _1));
 
+#ifdef HAVE_DBUS
     std::unique_ptr<DBusSubsystem> dbus_subsystem;
     if (m_opts.dbus != Options::kDBusDisabled)
     {
       GBusType bus_type = G_BUS_TYPE_SESSION;
 
-      switch(m_opts.dbus)
+      switch (m_opts.dbus)
       {
         case Options::kDBusAuto:
           if (getuid() == 0)
@@ -190,6 +193,12 @@ XboxdrvDaemon::run()
       dbus_subsystem->register_xboxdrv_daemon(this);
       dbus_subsystem->register_controller_slots(m_controller_slots);
     }
+#else
+    if (m_opts.dbus != Options::kDBusDisabled)
+    {
+      log_warn("D-Bus support was disabled at build time (WITH_DBUS=OFF); ignoring --dbus");
+    }
+#endif
 
     log_debug("launching into main loop");
     g_main_loop_run(m_gmain);

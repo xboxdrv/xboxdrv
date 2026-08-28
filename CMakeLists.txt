@@ -94,6 +94,16 @@ pkg_search_module(USB REQUIRED libusb-1.0 IMPORTED_TARGET)
 pkg_search_module(UDEV REQUIRED libudev IMPORTED_TARGET)
 pkg_search_module(LIBEVDEV REQUIRED libevdev IMPORTED_TARGET)
 pkg_search_module(GIO REQUIRED gio-2.0 IMPORTED_TARGET)
+
+option(WITH_DBUS "Build with D-Bus support (daemon remote control)" ON)
+if(WITH_DBUS)
+  set(HAVE_DBUS TRUE)
+  message(STATUS "D-Bus support enabled (GDBus/Gio)")
+else()
+  set(HAVE_DBUS FALSE)
+  message(STATUS "D-Bus support disabled (WITH_DBUS=OFF)")
+endif()
+
 pkg_search_module(CWIID cwiid IMPORTED_TARGET)
 pkg_search_module(BLUEZ bluez IMPORTED_TARGET)
 pkg_search_module(PIPEWIRE libpipewire-0.3 IMPORTED_TARGET)
@@ -159,6 +169,10 @@ file(GLOB XBOXDRV_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/uinput/*.cpp
   src/util/*.cpp)
 
+if(NOT HAVE_DBUS)
+  list(FILTER XBOXDRV_SOURCES_CXX EXCLUDE REGEX "src/dbus_subsystem\\.cpp$")
+endif()
+
 set(G72X_SOURCES
   external/g72x/g72x.c
   external/g72x/g721.c
@@ -222,6 +236,9 @@ if(HAVE_CWIID)
 endif()
 if(HAVE_PIPEWIRE)
   target_compile_definitions(libxboxdrv PUBLIC -DHAVE_PIPEWIRE)
+endif()
+if(HAVE_DBUS)
+  target_compile_definitions(libxboxdrv PUBLIC -DHAVE_DBUS)
 endif()
 target_compile_options(libxboxdrv PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${WARNINGS_CXX_FLAGS}>)
 
