@@ -93,7 +93,7 @@ find_package(Python REQUIRED)
 pkg_search_module(USB REQUIRED libusb-1.0 IMPORTED_TARGET)
 pkg_search_module(UDEV REQUIRED libudev IMPORTED_TARGET)
 pkg_search_module(LIBEVDEV REQUIRED libevdev IMPORTED_TARGET)
-pkg_search_module(DBUSGLIB REQUIRED dbus-glib-1 IMPORTED_TARGET)
+pkg_search_module(GIO REQUIRED gio-2.0 IMPORTED_TARGET)
 pkg_search_module(CWIID cwiid IMPORTED_TARGET)
 pkg_search_module(BLUEZ bluez IMPORTED_TARGET)
 pkg_search_module(PIPEWIRE libpipewire-0.3 IMPORTED_TARGET)
@@ -165,13 +165,10 @@ set(G72X_SOURCES
   external/g72x/g711.c)
 
 list(APPEND XBOXDRV_SOURCES_CXX
-  ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_controller_glue.hpp
-  ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_daemon_glue.hpp
   ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_vfs.hpp)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src)
 
-set(DBUS_GLUE ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dbus_glue.py)
 set(BIN2H ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/bin2h.py)
 
 set(TARGET ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_vfs.hpp)
@@ -182,20 +179,6 @@ add_custom_command(
   OUTPUT ${TARGET}
   DEPENDS ${SOURCES}
   COMMAND ${BIN2H} --output ${TARGET} --prefix ${CMAKE_CURRENT_SOURCE_DIR} --namespace=xboxdrv_vfs ${SOURCES})
-
-set(TARGET ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_controller_glue.hpp)
-set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/xboxdrv_controller.xml)
-add_custom_command(
-  OUTPUT ${TARGET}
-  DEPENDS ${SOURCE}
-  COMMAND ${DBUS_GLUE} -o ${TARGET} ${SOURCE} --dbus-prefix=xboxdrv_controller)
-
-set(TARGET ${CMAKE_CURRENT_BINARY_DIR}/src/xboxdrv_daemon_glue.hpp)
-set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/xboxdrv_daemon.xml)
-add_custom_command(
-  OUTPUT ${TARGET}
-  DEPENDS ${SOURCE}
-  COMMAND ${DBUS_GLUE} -o ${TARGET} ${SOURCE} --dbus-prefix=xboxdrv_daemon)
 
 # Vendored Sun CCITT G.72x reference: isolate so project -Werror / C++-only
 # flags never reach this ancient C code.
@@ -249,7 +232,7 @@ target_link_libraries(libxboxdrv PUBLIC
   uinpp::uinpp
   unsebu::unsebu
   yaini::yaini
-  PkgConfig::DBUSGLIB
+  PkgConfig::GIO
   PkgConfig::USB
   PkgConfig::UDEV
   PkgConfig::LIBEVDEV

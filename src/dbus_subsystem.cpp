@@ -19,33 +19,235 @@
 #include "dbus_subsystem.hpp"
 
 #include <format>
-#include <dbus/dbus-glib-lowlevel.h>
-//#include <dbus/dbus-glib-binding.h>
-#include <dbus/dbus.h>
-#include <sstream>
 #include <stdexcept>
+#include <string>
 
+#include <logmich/log.hpp>
+
+#include "controller.hpp"
+#include "controller_slot.hpp"
+#include "controller_thread.hpp"
+#include "message_processor.hpp"
 #include "raise_exception.hpp"
-#include "xboxdrv_g_controller.hpp"
-#include "xboxdrv_g_daemon.hpp"
-#include "xboxdrv_daemon_glue.hpp"
-#include "xboxdrv_controller_glue.hpp"
+#include "xboxdrv_daemon.hpp"
 
 namespace xboxdrv {
 
-DBusSubsystem::DBusSubsystem(std::string const& name, DBusBusType bus_type) :
-  m_connection()
-{
-  GError* gerror = NULL;
+namespace {
 
-  // this calls automatically sets up connection to the main loop
-  m_connection = dbus_g_bus_get(bus_type, &gerror);
+// Interface XML kept in sync with src/xboxdrv_daemon.xml /
+// src/xboxdrv_controller.xml so introspection stays accurate.
+static char const* const kDaemonXml =
+  "<node>"
+  "  <interface name=\"org.seul.Xboxdrv.Daemon\">"
+  "    <method name=\"Status\">"
+  "      <arg type=\"s\" direction=\"out\"/>"
+  "    </method>"
+  "    <method name=\"Shutdown\"/>"
+  "  </interface>"
+  "</node>";
+
+static char const* const kControllerXml =
+  "<node>"
+  "  <interface name=\"org.seul.Xboxdrv.Controller\">"
+  "    <method name=\"SetLed\">"
+  "      <arg name=\"status\" type=\"i\" direction=\"in\"/>"
+  "    </method>"
+  "    <method name=\"SetRumble\">"
+  "      <arg name=\"strong\" type=\"i\" direction=\"in\"/>"
+  "      <arg name=\"weak\" type=\"i\" direction=\"in\"/>"
+  "    </method>"
+  "    <method name=\"SetConfig\">"
+  "      <arg name=\"config\" type=\"i\" direction=\"in\"/>"
+  "    </method>"
+  "  </interface>"
+  "</node>";
+
+static void
+daemon_method_call(GDBusConnection*       /*connection*/,
+                   gchar const*           /*sender*/,
+                   gchar const*           /*object_path*/,
+                   gchar const*           /*interface_name*/,
+                   gchar const*           method_name,
+                   GVariant*              parameters,
+                   GDBusMethodInvocation* invocation,
+                   gpointer               user_data)
+{
+  auto* daemon = static_cast<XboxdrvDaemon*>(user_data);
+
+  if (g_strcmp0(method_name, "Status") == 0)
+  {
+    log_info("D-Bus: Daemon.Status()");
+    std::string const status = daemon->status();
+    g_dbus_method_invocation_return_value(invocation,
+                                          g_variant_new("(s)", status.c_str()));
+    return;
+  }
+
+  if (g_strcmp0(method_name, "Shutdown") == 0)
+  {
+    log_info("D-Bus: Daemon.Shutdown()");
+    daemon->shutdown();
+    g_dbus_method_invocation_return_value(invocation, nullptr);
+    return;
+  }
+
+  g_dbus_method_invocation_return_error(invocation,
+                                        G_DBUS_ERROR,
+                                        G_DBUS_ERROR_UNKNOWN_METHOD,
+                                        "Unknown method %s",
+                                        method_name);
+}
+
+static void
+controller_method_call(GDBusConnection*       /*connection*/,
+                       gchar const*           /*sender*/,
+                       gchar const*           /*object_path*/,
+                       gchar const*           /*interface_name*/,
+                       gchar const*           method_name,
+                       GVariant*              parameters,
+                       GDBusMethodInvocation* invocation,
+                       gpointer               user_data)
+{
+  auto* slot = static_cast<ControllerSlot*>(user_data);
+
+  if (g_strcmp0(method_name, "SetLed") == 0)
+  {
+    gint status = 0;
+    g_variant_get(parameters, "(i)", &status);
+    log_info("D-Bus: Controller.SetLed({})", status);
+
+    if (slot && slot->get_controller())
+    {
+      slot->get_controller()->set_led(static_cast<uint8_t>(status));
+      g_dbus_method_invocation_return_value(invocation, nullptr);
+    }
+    else
+    {
+      g_dbus_method_invocation_return_error(invocation,
+                                            G_DBUS_ERROR,
+                                            G_DBUS_ERROR_FAILED,
+                                            "couldn't access controller");
+    }
+    return;
+  }
+
+  if (g_strcmp0(method_name, "SetRumble") == 0)
+  {
+    gint strong = 0;
+    gint weak = 0;
+    g_variant_get(parameters, "(ii)", &strong, &weak);
+    log_info("D-Bus: Controller.SetRumble({}, {})", strong, weak);
+
+    if (slot && slot->get_controller())
+    {
+      slot->get_controller()->set_rumble(static_cast<uint8_t>(strong),
+                                         static_cast<uint8_t>(weak));
+      g_dbus_method_invocation_return_value(invocation, nullptr);
+    }
+    else
+    {
+      g_dbus_method_invocation_return_error(invocation,
+                                            G_DBUS_ERROR,
+                                            G_DBUS_ERROR_FAILED,
+                                            "couldn't access controller");
+    }
+    return;
+  }
+
+  if (g_strcmp0(method_name, "SetConfig") == 0)
+  {
+    gint config_num = 0;
+    g_variant_get(parameters, "(i)", &config_num);
+    log_info("D-Bus: Controller.SetConfig({})", config_num);
+
+    if (slot &&
+        slot->get_thread() &&
+        slot->get_thread()->get_controller())
+    {
+      try
+      {
+        MessageProcessor* msg_proc = slot->get_thread()->get_message_proc();
+        msg_proc->set_config(config_num);
+        g_dbus_method_invocation_return_value(invocation, nullptr);
+      }
+      catch (std::exception const& err)
+      {
+        g_dbus_method_invocation_return_error(invocation,
+                                              G_DBUS_ERROR,
+                                              G_DBUS_ERROR_FAILED,
+                                              "%s",
+                                              err.what());
+      }
+    }
+    else
+    {
+      g_dbus_method_invocation_return_error(invocation,
+                                            G_DBUS_ERROR,
+                                            G_DBUS_ERROR_FAILED,
+                                            "couldn't access controller");
+    }
+    return;
+  }
+
+  g_dbus_method_invocation_return_error(invocation,
+                                        G_DBUS_ERROR,
+                                        G_DBUS_ERROR_UNKNOWN_METHOD,
+                                        "Unknown method %s",
+                                        method_name);
+}
+
+static GDBusInterfaceVTable const kDaemonVTable = {
+  daemon_method_call,
+  nullptr, // get_property
+  nullptr, // set_property
+};
+
+static GDBusInterfaceVTable const kControllerVTable = {
+  controller_method_call,
+  nullptr,
+  nullptr,
+};
+
+} // namespace
+
+DBusSubsystem::DBusSubsystem(std::string const& name, GBusType bus_type) :
+  m_connection(nullptr),
+  m_daemon_registration_id(0),
+  m_controller_registration_ids(),
+  m_daemon_node_info(nullptr),
+  m_controller_node_info(nullptr)
+{
+  GError* error = nullptr;
+  m_connection = g_bus_get_sync(bus_type, nullptr, &error);
   if (!m_connection)
   {
-    std::ostringstream out;
-    out << "failed to open connection to bus: " << gerror->message;
-    g_error_free(gerror);
-    throw std::runtime_error(out.str());
+    std::string msg = std::format("failed to open connection to bus: {}",
+                                  error ? error->message : "unknown");
+    g_clear_error(&error);
+    throw std::runtime_error(msg);
+  }
+
+  // Attach the connection to the default GLib main context (same as
+  // the old dbus-glib path).
+  g_dbus_connection_set_exit_on_close(m_connection, FALSE);
+
+  m_daemon_node_info = g_dbus_node_info_new_for_xml(kDaemonXml, &error);
+  if (!m_daemon_node_info)
+  {
+    std::string msg = std::format("failed to parse daemon D-Bus XML: {}",
+                                  error ? error->message : "unknown");
+    g_clear_error(&error);
+    throw std::runtime_error(msg);
+  }
+
+  m_controller_node_info = g_dbus_node_info_new_for_xml(kControllerXml, &error);
+  if (!m_controller_node_info)
+  {
+    std::string msg = std::format("failed to parse controller D-Bus XML: {}",
+                                  error ? error->message : "unknown");
+    g_clear_error(&error);
+    throw std::runtime_error(msg);
   }
 
   request_name(name);
@@ -53,54 +255,116 @@ DBusSubsystem::DBusSubsystem(std::string const& name, DBusBusType bus_type) :
 
 DBusSubsystem::~DBusSubsystem()
 {
-  dbus_g_connection_unref(m_connection);
+  if (m_connection)
+  {
+    if (m_daemon_registration_id != 0)
+    {
+      g_dbus_connection_unregister_object(m_connection, m_daemon_registration_id);
+    }
+    for (guint id : m_controller_registration_ids)
+    {
+      g_dbus_connection_unregister_object(m_connection, id);
+    }
+    g_object_unref(m_connection);
+  }
+
+  if (m_daemon_node_info)
+  {
+    g_dbus_node_info_unref(m_daemon_node_info);
+  }
+  if (m_controller_node_info)
+  {
+    g_dbus_node_info_unref(m_controller_node_info);
+  }
 }
 
 void
 DBusSubsystem::request_name(std::string const& name)
 {
-  DBusError error;
-  dbus_error_init(&error);
+  GError* error = nullptr;
 
-  // FIXME: replace this with org_freedesktop_DBus_request_name()
-  int ret = dbus_bus_request_name(dbus_g_connection_get_connection(m_connection),
-                                  name.c_str(),
-                                  DBUS_NAME_FLAG_REPLACE_EXISTING,
-                                  &error);
+  // Blocking RequestName so we fail early with the same semantics as the
+  // previous dbus-glib implementation (must become primary owner).
+  GVariant* reply = g_dbus_connection_call_sync(
+    m_connection,
+    "org.freedesktop.DBus",
+    "/org/freedesktop/DBus",
+    "org.freedesktop.DBus",
+    "RequestName",
+    g_variant_new("(su)", name.c_str(),
+                  static_cast<guint32>(G_BUS_NAME_OWNER_FLAGS_REPLACE)),
+    G_VARIANT_TYPE("(u)"),
+    G_DBUS_CALL_FLAGS_NONE,
+    -1,
+    nullptr,
+    &error);
 
-  if (dbus_error_is_set(&error))
+  if (!reply)
   {
-    std::ostringstream out;
-    out << "failed to get unique dbus name: " <<  error.message;
-    dbus_error_free(&error);
-    throw std::runtime_error(out.str());
+    std::string msg = std::format("failed to get unique dbus name: {}",
+                                  error ? error->message : "unknown");
+    g_clear_error(&error);
+    throw std::runtime_error(msg);
   }
 
-  if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER)
+  guint32 request_result = 0;
+  g_variant_get(reply, "(u)", &request_result);
+  g_variant_unref(reply);
+
+  // 1 == primary owner (DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER)
+  if (request_result != 1)
   {
-    raise_exception(std::runtime_error, "failed to become primary owner of dbus name");
+    raise_exception(std::runtime_error,
+                    "failed to become primary owner of dbus name");
   }
 }
 
 void
-DBusSubsystem::register_xboxdrv_daemon(XboxdrvDaemon* c_daemon)
+DBusSubsystem::register_xboxdrv_daemon(XboxdrvDaemon* daemon)
 {
-  // FIXME: should unref() these somewhere
-  XboxdrvGDaemon* daemon = xboxdrv_g_daemon_new(c_daemon);
-  dbus_g_object_type_install_info(XBOXDRV_TYPE_G_DAEMON, &dbus_glib_xboxdrv_daemon_object_info);
-  dbus_g_connection_register_g_object(m_connection, "/org/seul/Xboxdrv/Daemon", G_OBJECT(daemon));
+  GError* error = nullptr;
+  m_daemon_registration_id = g_dbus_connection_register_object(
+    m_connection,
+    "/org/seul/Xboxdrv/Daemon",
+    m_daemon_node_info->interfaces[0],
+    &kDaemonVTable,
+    daemon,
+    nullptr, // user_data_free
+    &error);
+
+  if (m_daemon_registration_id == 0)
+  {
+    std::string msg = std::format("failed to register Daemon object: {}",
+                                  error ? error->message : "unknown");
+    g_clear_error(&error);
+    throw std::runtime_error(msg);
+  }
 }
 
 void
 DBusSubsystem::register_controller_slots(std::vector<ControllerSlotPtr> const& slots)
 {
-  for(std::vector<ControllerSlotPtr>::const_iterator i = slots.begin(); i != slots.end(); ++i)
+  for (size_t i = 0; i < slots.size(); ++i)
   {
-    XboxdrvGController* controller = xboxdrv_g_controller_new(i->get());
-    dbus_g_object_type_install_info(XBOXDRV_TYPE_G_CONTROLLER, &dbus_glib_xboxdrv_controller_object_info);
-    dbus_g_connection_register_g_object(m_connection,
-                                        std::format("/org/seul/Xboxdrv/ControllerSlots/{}", (i - slots.begin())).c_str(),
-                                        G_OBJECT(controller));
+    std::string path = std::format("/org/seul/Xboxdrv/ControllerSlots/{}", i);
+    GError* error = nullptr;
+    guint id = g_dbus_connection_register_object(
+      m_connection,
+      path.c_str(),
+      m_controller_node_info->interfaces[0],
+      &kControllerVTable,
+      slots[i].get(),
+      nullptr,
+      &error);
+
+    if (id == 0)
+    {
+      std::string msg = std::format("failed to register Controller object {}: {}",
+                                    path, error ? error->message : "unknown");
+      g_clear_error(&error);
+      throw std::runtime_error(msg);
+    }
+    m_controller_registration_ids.push_back(id);
   }
 }
 

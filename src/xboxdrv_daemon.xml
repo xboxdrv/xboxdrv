@@ -2,7 +2,6 @@
           "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
   <interface name="org.seul.Xboxdrv.Daemon">
-    <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="xboxdrv_g_daemon"/>
     <method name="Status">
       <arg type="s" direction="out" />
     </method>

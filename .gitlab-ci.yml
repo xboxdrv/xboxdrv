@@ -22,7 +22,6 @@ before_script:
     libudev-dev
     libevdev-dev
     libx11-dev
-    libdbus-glib-1-dev
     libglib2.0-dev
     python3
     # optional Wiimote:

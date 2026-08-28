@@ -187,7 +187,7 @@ small test that important names still resolve.
 
 See parity section. Virtual keyboard still optional/quarantine candidate.
 D-Bus is daemon-only today (`--daemon`); single-controller mode has no bus
-export. Build still links **dbus-glib** (legacy). See “Path to improvements”
+export. D-Bus now uses GDBus (Gio); dbus-glib removed. See “Path to improvements”
 below for a concrete migration sketch.
 
 ### 3. Versioning scheme
@@ -311,7 +311,7 @@ Improvement path:
 
 1. **Optional dependency** — `#ifdef` / CMake `WITH_DBUS`; non-daemon builds skip
    dbus-glib entirely (`--dbus disabled` already skips runtime export).
-2. **Replace dbus-glib** — migrate generated glue to **gdbus** (GDBus) or sd-bus;
+2. **Replace dbus-glib** — [x] migrated to GDBus (Gio);
    keep the same object paths and method names for script compatibility.
 3. **Signals** — emit `ControllerConnected` / `ControllerDisconnected` (slot id)
    instead of clients polling `Status`.

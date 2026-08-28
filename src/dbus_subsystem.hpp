@@ -19,7 +19,7 @@
 #ifndef HEADER_XBOXDRV_DBUS_SUBSYSTEM_HPP
 #define HEADER_XBOXDRV_DBUS_SUBSYSTEM_HPP
 
-#include <dbus/dbus-glib.h>
+#include <gio/gio.h>
 #include <string>
 #include <vector>
 
@@ -32,17 +32,21 @@ class XboxdrvDaemon;
 class DBusSubsystem
 {
 private:
-  DBusGConnection* m_connection;
+  GDBusConnection* m_connection;
+  guint m_daemon_registration_id;
+  std::vector<guint> m_controller_registration_ids;
+  GDBusNodeInfo* m_daemon_node_info;
+  GDBusNodeInfo* m_controller_node_info;
 
 public:
-  DBusSubsystem(const std::string& name, DBusBusType bus_type);
+  DBusSubsystem(std::string const& name, GBusType bus_type);
   ~DBusSubsystem();
 
-  void register_xboxdrv_daemon(XboxdrvDaemon* c_daemon);
-  void register_controller_slots(const std::vector<ControllerSlotPtr>& slots);
+  void register_xboxdrv_daemon(XboxdrvDaemon* daemon);
+  void register_controller_slots(std::vector<ControllerSlotPtr> const& slots);
 
 private:
-  void request_name(const std::string& name);
+  void request_name(std::string const& name);
 
 private:
   DBusSubsystem(const DBusSubsystem&);

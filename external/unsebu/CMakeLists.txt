@@ -22,7 +22,7 @@ include(mk/cmake/TinyCMMC.cmake)
 find_package(PkgConfig)
 pkg_search_module(USB REQUIRED libusb-1.0 IMPORTED_TARGET)
 pkg_search_module(UDEV REQUIRED libudev IMPORTED_TARGET)
-pkg_search_module(DBUSGLIB REQUIRED dbus-glib-1 IMPORTED_TARGET)
+pkg_search_module(GIO REQUIRED gio-2.0 IMPORTED_TARGET)
 
 tinycmmc_find_dependency(logmich)
 
@@ -47,7 +47,7 @@ target_include_directories(unsebu PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/include/unsebu)
 target_link_libraries(unsebu PUBLIC
   logmich::logmich
-  PkgConfig::DBUSGLIB
+  PkgConfig::GIO
   PkgConfig::USB
   PkgConfig::UDEV)
 

@@ -24,9 +24,6 @@
 #include <format>
 #include <memory>
 #include <fstream>
-#include <dbus/dbus-glib.h>
-#include <dbus/dbus-glib-lowlevel.h>
-#include <dbus/dbus.h>
 #include <errno.h>
 
 #include <uinpp/multi_device.hpp>
@@ -153,7 +150,7 @@ XboxdrvDaemon::run()
     std::unique_ptr<DBusSubsystem> dbus_subsystem;
     if (m_opts.dbus != Options::kDBusDisabled)
     {
-      DBusBusType dbus_bus_type = DBUS_BUS_SESSION;
+      GBusType bus_type = G_BUS_TYPE_SESSION;
 
       switch(m_opts.dbus)
       {
@@ -162,25 +159,25 @@ XboxdrvDaemon::run()
           {
             if (getenv("DISPLAY"))
             {
-              dbus_bus_type = DBUS_BUS_SESSION;
+              bus_type = G_BUS_TYPE_SESSION;
             }
             else
             {
-              dbus_bus_type = DBUS_BUS_SYSTEM;
+              bus_type = G_BUS_TYPE_SYSTEM;
             }
           }
           else
           {
-            dbus_bus_type = DBUS_BUS_SESSION;
+            bus_type = G_BUS_TYPE_SESSION;
           }
           break;
 
         case Options::kDBusSession:
-          dbus_bus_type = DBUS_BUS_SESSION;
+          bus_type = G_BUS_TYPE_SESSION;
           break;
 
         case Options::kDBusSystem:
-          dbus_bus_type = DBUS_BUS_SYSTEM;
+          bus_type = G_BUS_TYPE_SYSTEM;
           break;
 
         case Options::kDBusDisabled:
@@ -189,7 +186,7 @@ XboxdrvDaemon::run()
           break;
       }
 
-      dbus_subsystem.reset(new DBusSubsystem("org.seul.Xboxdrv", dbus_bus_type));
+      dbus_subsystem.reset(new DBusSubsystem("org.seul.Xboxdrv", bus_type));
       dbus_subsystem->register_xboxdrv_daemon(this);
       dbus_subsystem->register_controller_slots(m_controller_slots);
     }

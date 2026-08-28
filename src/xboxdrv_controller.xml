@@ -2,7 +2,6 @@
           "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
   <interface name="org.seul.Xboxdrv.Controller">
-    <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="xboxdrv_g_controller"/>
     <method name="SetLed">
       <arg name="status" type="i" direction="in" />
     </method>

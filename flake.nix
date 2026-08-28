@@ -39,7 +39,6 @@
               pkg-config
             ];
             buildInputs = with pkgs; [
-              dbus-glib
               glib
               udev
               libusb1
