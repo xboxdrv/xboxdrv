@@ -44,6 +44,12 @@ static char const* const kDaemonXml =
   "      <arg type=\"s\" direction=\"out\"/>"
   "    </method>"
   "    <method name=\"Shutdown\"/>"
+  "    <signal name=\"ControllerConnected\">"
+  "      <arg name=\"slot\" type=\"i\"/>"
+  "    </signal>"
+  "    <signal name=\"ControllerDisconnected\">"
+  "      <arg name=\"slot\" type=\"i\"/>"
+  "    </signal>"
   "  </interface>"
   "</node>";
 
@@ -365,6 +371,50 @@ DBusSubsystem::register_controller_slots(std::vector<ControllerSlotPtr> const& s
       throw std::runtime_error(msg);
     }
     m_controller_registration_ids.push_back(id);
+  }
+}
+
+
+void
+DBusSubsystem::emit_controller_connected(int slot_id)
+{
+  emit_slot_signal("ControllerConnected", slot_id);
+}
+
+void
+DBusSubsystem::emit_controller_disconnected(int slot_id)
+{
+  emit_slot_signal("ControllerDisconnected", slot_id);
+}
+
+void
+DBusSubsystem::emit_slot_signal(char const* signal_name, int slot_id)
+{
+  if (!m_connection || m_daemon_registration_id == 0)
+  {
+    return;
+  }
+
+  GError* error = nullptr;
+  gboolean ok = g_dbus_connection_emit_signal(
+    m_connection,
+    nullptr, // destination (broadcast)
+    "/org/seul/Xboxdrv/Daemon",
+    "org.seul.Xboxdrv.Daemon",
+    signal_name,
+    g_variant_new("(i)", slot_id),
+    &error);
+
+  if (!ok)
+  {
+    log_warn("D-Bus: failed to emit {}: {}",
+             signal_name,
+             error ? error->message : "unknown");
+    g_clear_error(&error);
+  }
+  else
+  {
+    log_info("D-Bus: emitted {}({})", signal_name, slot_id);
   }
 }
 

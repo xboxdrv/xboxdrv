@@ -150,7 +150,6 @@ XboxdrvDaemon::run()
     udev_subsystem.set_device_callback(std::bind(&XboxdrvDaemon::process_match, this, _1));
 
 #ifdef HAVE_DBUS
-    std::unique_ptr<DBusSubsystem> dbus_subsystem;
     if (m_opts.dbus != Options::kDBusDisabled)
     {
       GBusType bus_type = G_BUS_TYPE_SESSION;
@@ -189,9 +188,9 @@ XboxdrvDaemon::run()
           break;
       }
 
-      dbus_subsystem.reset(new DBusSubsystem("org.seul.Xboxdrv", bus_type));
-      dbus_subsystem->register_xboxdrv_daemon(this);
-      dbus_subsystem->register_controller_slots(m_controller_slots);
+      m_dbus.reset(new DBusSubsystem("org.seul.Xboxdrv", bus_type));
+      m_dbus->register_xboxdrv_daemon(this);
+      m_dbus->register_controller_slots(m_controller_slots);
     }
 #else
     if (m_opts.dbus != Options::kDBusDisabled)
@@ -203,6 +202,11 @@ XboxdrvDaemon::run()
     log_debug("launching into main loop");
     g_main_loop_run(m_gmain);
     log_debug("main loop exited");
+
+#ifdef HAVE_DBUS
+    // Drop D-Bus registrations before tearing down controller slots.
+    m_dbus.reset();
+#endif
 
     // get rid of active ControllerThreads before the subsystems shutdown
     m_inactive_controllers.clear();
@@ -476,6 +480,13 @@ XboxdrvDaemon::on_connect(ControllerSlotPtr slot)
   ControllerPtr controller = slot->get_controller();
   assert(controller);
 
+#ifdef HAVE_DBUS
+  if (m_dbus)
+  {
+    m_dbus->emit_controller_connected(slot->get_id());
+  }
+#endif
+
   if (!m_opts.on_connect.empty())
   {
     log_info("launching connect script: {}", m_opts.on_connect);
@@ -494,6 +505,13 @@ XboxdrvDaemon::on_disconnect(ControllerSlotPtr slot)
 {
   ControllerPtr controller = slot->get_controller();
   assert(controller);
+
+#ifdef HAVE_DBUS
+  if (m_dbus)
+  {
+    m_dbus->emit_controller_disconnected(slot->get_id());
+  }
+#endif
 
   log_info("controller disconnected: {} {} '{}'",
            controller->get_usbpath(),

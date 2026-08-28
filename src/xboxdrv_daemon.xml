@@ -7,6 +7,14 @@
     </method>
 
     <method name="Shutdown" />
+
+    <signal name="ControllerConnected">
+      <arg name="slot" type="i" />
+    </signal>
+
+    <signal name="ControllerDisconnected">
+      <arg name="slot" type="i" />
+    </signal>
     <!--
     reset_leds
     disconnect SLOT

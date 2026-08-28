@@ -31,6 +31,9 @@ extern "C" {
 #include "controller_slot_ptr.hpp"
 #include "controller_ptr.hpp"
 #include "fwd.hpp"
+#ifdef HAVE_DBUS
+#include "dbus_subsystem.hpp"
+#endif
 
 namespace xboxdrv {
 
@@ -52,6 +55,9 @@ private:
 
   std::unique_ptr<uinpp::MultiDevice> m_uinput;
   std::unique_ptr<uinpp::GlibMultiDevice> m_glib_uinput;
+#ifdef HAVE_DBUS
+  std::unique_ptr<DBusSubsystem> m_dbus;
+#endif
 
 private:
   static void on_sigint(int);

@@ -45,8 +45,15 @@ public:
   void register_xboxdrv_daemon(XboxdrvDaemon* daemon);
   void register_controller_slots(std::vector<ControllerSlotPtr> const& slots);
 
+  /** Emit org.seul.Xboxdrv.Daemon.ControllerConnected(slot_id). */
+  void emit_controller_connected(int slot_id);
+
+  /** Emit org.seul.Xboxdrv.Daemon.ControllerDisconnected(slot_id). */
+  void emit_controller_disconnected(int slot_id);
+
 private:
   void request_name(std::string const& name);
+  void emit_slot_signal(char const* signal_name, int slot_id);
 
 private:
   DBusSubsystem(const DBusSubsystem&);

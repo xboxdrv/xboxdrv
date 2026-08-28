@@ -302,9 +302,9 @@ Prefer small commits; keep public CLI stable or document breaks.
 
 Current state (daemon only):
 
-| Object | Interface | Methods |
-|--------|-----------|---------|
-| `/org/seul/Xboxdrv/Daemon` | `org.seul.Xboxdrv.Daemon` | `Status`, `Shutdown` |
+| Object | Interface | Methods / Signals |
+|--------|-----------|-------------------|
+| `/org/seul/Xboxdrv/Daemon` | `org.seul.Xboxdrv.Daemon` | `Status`, `Shutdown`; signals `ControllerConnected(i)`, `ControllerDisconnected(i)` |
 | `/org/seul/Xboxdrv/ControllerSlots/N` | `org.seul.Xboxdrv.Controller` | `SetLed`, `SetRumble`, `SetConfig` |
 
 Improvement path:
@@ -313,7 +313,7 @@ Improvement path:
    dbus code when OFF (`--dbus disabled` already skips runtime export).
 2. **Replace dbus-glib** — [x] migrated to GDBus (Gio);
    keep the same object paths and method names for script compatibility.
-3. **Signals** — emit `ControllerConnected` / `ControllerDisconnected` (slot id)
+3. **Signals** — [x] emit `ControllerConnected` / `ControllerDisconnected` (slot id)
    instead of clients polling `Status`.
 4. **Properties** — expose LED, rumble, config index, battery (wireless) as
    readable properties where data exists.
