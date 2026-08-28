@@ -67,9 +67,10 @@ uint32_t read_u32_le(const char* p)
 
 } // namespace
 
-Headset::Headset(libusb_device_handle* handle, bool debug, float mic_gain) :
+Headset::Headset(libusb_device_handle* handle, bool debug, float mic_gain,
+                 int usb_interface, int ep_in, int ep_out, bool try_detach) :
   m_handle(handle),
-  m_interface(new unsebu::USBInterface(m_handle, 1)),
+  m_interface(new unsebu::USBInterface(m_handle, usb_interface, try_detach)),
   m_fout_raw(),
   m_fout_pcm(),
   m_fout_wav(),
@@ -87,8 +88,11 @@ Headset::Headset(libusb_device_handle* handle, bool debug, float mic_gain) :
   m_encoder(),
   m_decoder(),
   m_mic_gain(mic_gain),
+  m_ep_in(ep_in),
+  m_ep_out(ep_out),
   m_debug(debug)
 {
+  log_info("[headset] interface {} EP IN {} OUT {}", usb_interface, m_ep_in, m_ep_out);
   if (m_mic_gain != 1.0f)
   {
     log_info("[headset] mic gain {}", m_mic_gain);
@@ -349,7 +353,7 @@ Headset::play_file(std::string const& filename)
     }
     else
     {
-      m_interface->submit_write(4, reinterpret_cast<uint8_t*>(data), len,
+      m_interface->submit_write(m_ep_out, reinterpret_cast<uint8_t*>(data), len,
                                 std::bind(&Headset::send_data, this, _1));
     }
   }
@@ -389,7 +393,7 @@ Headset::play_wav(std::string const& filename, bool left_pack)
                     "internal: expected " << PLAY_PACKET_BYTES << "-byte G.726 packet");
   }
 
-  m_interface->submit_write(4, packet.data(), static_cast<int>(PLAY_PACKET_BYTES),
+  m_interface->submit_write(m_ep_out, packet.data(), static_cast<int>(PLAY_PACKET_BYTES),
                             std::bind(&Headset::send_data, this, _1));
 }
 
@@ -404,7 +408,7 @@ Headset::record_file(std::string const& filename)
   }
   else
   {
-    m_interface->submit_read(3, 32, std::bind(&Headset::receive_data, this, _1, _2));
+    m_interface->submit_read(m_ep_in, 32, std::bind(&Headset::receive_data, this, _1, _2));
   }
 }
 
@@ -419,7 +423,7 @@ Headset::record_pcm(std::string const& filename)
   }
   else
   {
-    m_interface->submit_read(3, 32, std::bind(&Headset::receive_data, this, _1, _2));
+    m_interface->submit_read(m_ep_in, 32, std::bind(&Headset::receive_data, this, _1, _2));
   }
 }
 
@@ -437,7 +441,7 @@ Headset::record_wav(std::string const& filename)
   m_wav_data_bytes = 0;
   // Placeholder header; sizes rewritten in finalize_wav()
   write_wav_header(*m_fout_wav, 0);
-  m_interface->submit_read(3, 32, std::bind(&Headset::receive_data, this, _1, _2));
+  m_interface->submit_read(m_ep_in, 32, std::bind(&Headset::receive_data, this, _1, _2));
 }
 
 bool
@@ -707,7 +711,7 @@ Headset::start_pulse_playback()
     log_error("[headset] pulse: bad silence packet");
     return;
   }
-  m_interface->submit_write(4, packet.data(), static_cast<int>(PLAY_PACKET_BYTES),
+  m_interface->submit_write(m_ep_out, packet.data(), static_cast<int>(PLAY_PACKET_BYTES),
                             std::bind(&Headset::send_data, this, _1));
   log_info("[headset] speaker USB stream started (8 kHz from pipe-sink)");
 }
@@ -789,7 +793,7 @@ Headset::enable_pipewire_audio()
   m_pw->start();
   if (!m_fout_pcm && !m_fout_raw && !m_fout_wav)
   {
-    m_interface->submit_read(3, 32, std::bind(&Headset::receive_data, this, _1, _2));
+    m_interface->submit_read(m_ep_in, 32, std::bind(&Headset::receive_data, this, _1, _2));
   }
   start_pipewire_playback();
 #else
@@ -818,7 +822,7 @@ Headset::start_pipewire_playback()
     log_error("[headset] pipewire: bad silence packet");
     return;
   }
-  m_interface->submit_write(4, packet.data(), static_cast<int>(PLAY_PACKET_BYTES),
+  m_interface->submit_write(m_ep_out, packet.data(), static_cast<int>(PLAY_PACKET_BYTES),
                             std::bind(&Headset::send_data, this, _1));
   log_info("[headset] speaker USB stream started (8 kHz from PipeWire sink)");
 }

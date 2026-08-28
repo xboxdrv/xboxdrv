@@ -48,10 +48,19 @@ private:
   G72xEncoder m_encoder;
   G72xDecoder m_decoder;
   float m_mic_gain;
+  int m_ep_in;
+  int m_ep_out;
   bool m_debug;
 
 public:
-  Headset(libusb_device_handle* handle, bool debug, float mic_gain = 1.0f);
+  /**
+   * @param usb_interface USB interface number to claim (wired: 1; wireless slot N: 2*N+1)
+   * @param ep_in         interrupt IN endpoint number (wired: 3; wireless: 2*N+2)
+   * @param ep_out        interrupt OUT endpoint number (wired: 4; wireless: same as ep_in)
+   */
+  Headset(libusb_device_handle* handle, bool debug, float mic_gain = 1.0f,
+          int usb_interface = 1, int ep_in = 3, int ep_out = 4,
+          bool try_detach = false);
   ~Headset();
 
   void play_file(const std::string& play_filename);
