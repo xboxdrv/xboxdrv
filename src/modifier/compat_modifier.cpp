@@ -40,10 +40,10 @@ CompatModifier::CompatModifier() :
 void
 CompatModifier::init(ControllerMessageDescriptor& desc)
 {
-  log_none("CompatModifier");
-
-#if 1
-  // have a dpad, but no dpad axis
+  // Classic Xbox pads report the dpad as four keys only. Default uinput maps
+  // use gamepad.dpad_x/y → ABS_HAT0*; synthesize those axes from the keys.
+  // Xbox360DefaultNames pre-registers the abs names so maps can resolve early;
+  // we still drive the values every update when the keys exist.
   if (desc.key().has("dpad_up") &&
       desc.key().has("dpad_down") &&
       desc.key().has("dpad_left") &&
@@ -61,18 +61,19 @@ CompatModifier::init(ControllerMessageDescriptor& desc)
     m_dpad = true;
   }
 
-  // make a rudder out of both trigger
+  // Combined "trigger" / rudder axis (RT − LT) for older joystick APIs that
+  // expect a single Z/rudder channel instead of separate LT/RT.
   if (!desc.abs().has("trigger") &&
       desc.abs().has("lt") &&
       desc.abs().has("rt"))
   {
+    log_debug("CompatModifier: synthesize trigger axis from lt/rt");
     m_abs_trigger = desc.abs().put("trigger");
     m_lt = desc.abs().get("lt");
     m_rt = desc.abs().get("rt");
 
     m_trigger = true;
   }
-#endif
 }
 
 void
@@ -80,16 +81,23 @@ CompatModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessage
 {
   if (m_dpad)
   {
-    msg.set_abs(m_dpad_x, (-1 * msg.get_key(m_dpad_left)) + (+1 * msg.get_key(m_dpad_right)), -1, 1);
-    msg.set_abs(m_dpad_y, (-1 * msg.get_key(m_dpad_up))   + (+1 * msg.get_key(m_dpad_down)),  -1, 1);
+    msg.set_abs(m_dpad_x,
+                (-1 * msg.get_key(m_dpad_left)) + (+1 * msg.get_key(m_dpad_right)),
+                -1, 1);
+    msg.set_abs(m_dpad_y,
+                (-1 * msg.get_key(m_dpad_up)) + (+1 * msg.get_key(m_dpad_down)),
+                -1, 1);
   }
 
   if (m_trigger)
   {
+    // Symmetric range around 0: fully LT → negative, fully RT → positive.
+    int const max_lt = msg.get_abs_max(m_lt);
+    int const max_rt = msg.get_abs_max(m_rt);
+    int const span = (max_lt > max_rt) ? max_lt : max_rt;
     msg.set_abs(m_abs_trigger,
                 msg.get_abs(m_rt) - msg.get_abs(m_lt),
-                -msg.get_abs_max(m_lt),
-                msg.get_abs_max(m_lt));
+                -span, span);
   }
 }
 
