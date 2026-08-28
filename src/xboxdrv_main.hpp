@@ -48,8 +48,6 @@ private:
 
   std::unique_ptr<uinpp::MultiDevice> m_uinput;
 
-  int m_jsdev_number;
-  int m_evdev_number;
   bool m_use_libusb;
 
   XPadDevice m_dev_type;
@@ -71,6 +69,9 @@ private:
   void print_info(libusb_device* dev,
                   const XPadDevice& dev_type,
                   const Options& opts) const;
+
+  void print_feature_status() const;
+  void print_device_nodes() const;
 
   static void on_sigint(int);
 

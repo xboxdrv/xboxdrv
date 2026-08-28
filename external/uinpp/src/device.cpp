@@ -23,6 +23,8 @@
 #include <stdexcept>
 #include <string.h>
 #include <unistd.h>
+#include <dirent.h>
+#include <algorithm>
 
 #include <format>
 #include <logmich/log.hpp>
@@ -280,7 +282,58 @@ Device::finish()
     throw std::runtime_error(std::format("unable to create uinput device: '{}': ", m_name, strerror(errno)));
   }
 
+  // Resolve the real input device name (kernel >= 4.5); used for /dev/input paths.
+  {
+    char sysname[64] = {};
+    if (ioctl(m_fd, UI_GET_SYSNAME(sizeof(sysname)), sysname) >= 0)
+    {
+      m_sysname = sysname;
+      log_debug("uinput sysname: {}", m_sysname);
+    }
+    else
+    {
+      log_debug("UI_GET_SYSNAME unavailable: {}", strerror(errno));
+    }
+  }
+
   m_finished = true;
+}
+
+std::vector<std::string>
+Device::get_device_nodes() const
+{
+  std::vector<std::string> nodes;
+  if (m_sysname.empty())
+  {
+    return nodes;
+  }
+
+  // /sys/class/input/<sysname>/ contains eventN, jsN, mouseN symlinks
+  std::string const dir = std::string("/sys/class/input/") + m_sysname;
+  DIR* dp = opendir(dir.c_str());
+  if (!dp)
+  {
+    return nodes;
+  }
+
+  while (dirent* ent = readdir(dp))
+  {
+    std::string const name = ent->d_name;
+    if (name == "." || name == "..")
+    {
+      continue;
+    }
+    if (name.compare(0, 5, "event") == 0 ||
+        name.compare(0, 2, "js") == 0 ||
+        name.compare(0, 5, "mouse") == 0)
+    {
+      nodes.push_back("/dev/input/" + name);
+    }
+  }
+  closedir(dp);
+
+  std::sort(nodes.begin(), nodes.end());
+  return nodes;
 }
 
 void

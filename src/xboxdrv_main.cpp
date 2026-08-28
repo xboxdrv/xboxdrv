@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <glib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <libusb.h>
 #include <stdexcept>
 #include <iostream>
@@ -232,8 +233,6 @@ XboxdrvMain::XboxdrvMain(unsebu::USBSubsystem& usb_subsystem, Options const& opt
   m_gmain(),
   m_usb_gsource(),
   m_uinput(),
-  m_jsdev_number(),
-  m_evdev_number(),
   m_use_libusb(false),
   m_dev_type(),
   m_controller()
@@ -311,12 +310,11 @@ XboxdrvMain::create_controller()
 void
 XboxdrvMain::init_controller(ControllerPtr const& controller)
 {
-  m_jsdev_number = uinpp::find_jsdev_number();
-  m_evdev_number = uinpp::find_evdev_number();
-
+  // Player LED follows controller slot (same as daemon mode), not a guessed
+  // /dev/input/jsN index — that race caused wrong rings (see issue #168).
   if (m_opts.get_controller_slot().get_led_status() == -1)
   {
-    controller->set_led(static_cast<uint8_t>(2 + m_jsdev_number % 4));
+    controller->set_led(2); // slot 0 → player 1 (LED pattern 2)
   }
   else
   {
@@ -378,9 +376,8 @@ XboxdrvMain::run()
 
     if (!m_opts.quiet)
     {
-      std::cout << "\nYour Xbox/Xbox360 controller should now be available as:" << std::endl
-                << "  /dev/input/js" << m_jsdev_number << std::endl
-                << "  /dev/input/event" << m_evdev_number << std::endl;
+      print_feature_status();
+      print_device_nodes();
 
       if (m_opts.silent)
       {
@@ -445,6 +442,89 @@ XboxdrvMain::print_info(libusb_device* dev, XPadDevice const& dev_type, Options 
   std::cout << "Controller Type:   " << dev_type.type << std::endl;
 
   //std::cout << "ForceFeedback:     " << ((opts.controller.back().uinput.force_feedback) ? "enabled" : "disabled") << std::endl;
+}
+
+
+void
+XboxdrvMain::print_feature_status() const
+{
+  auto yn = [](bool v) { return v ? "on" : "off"; };
+
+  std::cout << "\nFeature status:\n";
+  std::cout << "  uinput:              " << yn(!m_opts.no_uinput) << "\n";
+  std::cout << "  force-feedback:      " << yn(m_opts.rumble)
+            << "  (--rumble-gain / game FF events)\n";
+  if (m_opts.rumble_l != -1 || m_opts.rumble_r != -1)
+  {
+    std::cout << "  startup rumble:      "
+              << (m_opts.rumble_l < 0 ? 0 : m_opts.rumble_l) << ","
+              << (m_opts.rumble_r < 0 ? 0 : m_opts.rumble_r)
+              << "  (--rumble L,R)\n";
+  }
+  std::cout << "  chatpad:             " << yn(m_opts.chatpad)
+            << (m_opts.chatpad ? "\n" : "  (--chatpad)\n");
+
+  std::string headset = "off";
+  if (m_opts.headset_pipewire)
+  {
+    headset = "pipewire  (--headset-pipewire)";
+  }
+  else if (m_opts.headset_pulse)
+  {
+    headset = "pulse/pipe FIFOs  (--headset-pulse)";
+  }
+  else if (m_opts.headset || !m_opts.headset_pcm.empty() || !m_opts.headset_wav.empty()
+           || !m_opts.headset_play_wav.empty() || !m_opts.headset_dump.empty()
+           || !m_opts.headset_play.empty())
+  {
+    headset = "raw/debug  (--headset / --headset-pcm / --headset-dump-wav / …)";
+  }
+  else
+  {
+    headset = "off  (--headset-pipewire | --headset-pulse | --headset)";
+  }
+  std::cout << "  headset:             " << headset << "\n";
+  if (m_opts.headset_mic_gain != 1.0f)
+  {
+    std::cout << "  headset mic gain:    " << m_opts.headset_mic_gain << "\n";
+  }
+  std::cout << "  detach kernel driver: " << yn(m_opts.detach_kernel_driver)
+            << "  (--detach-kernel-driver)\n";
+}
+
+void
+XboxdrvMain::print_device_nodes() const
+{
+  std::cout << "\nController input devices:\n";
+  if (m_opts.no_uinput)
+  {
+    std::cout << "  (none — uinput disabled)\n";
+    return;
+  }
+  if (!m_uinput)
+  {
+    std::cout << "  (uinput not created)\n";
+    return;
+  }
+
+  // Brief settle so joydev can create js* nodes under the new input device.
+  usleep(50 * 1000);
+
+  auto nodes = m_uinput->collect_device_nodes();
+  if (nodes.empty())
+  {
+    // Old kernels without UI_GET_SYSNAME: last-resort estimate (racy).
+    int const js = uinpp::find_jsdev_number();
+    int const ev = uinpp::find_evdev_number();
+    std::cout << "  /dev/input/js" << js << "  (estimated — could not read sysfs name)\n";
+    std::cout << "  /dev/input/event" << ev << "  (estimated — could not read sysfs name)\n";
+    return;
+  }
+
+  for (std::string const& n : nodes)
+  {
+    std::cout << "  " << n << "\n";
+  }
 }
 
 void

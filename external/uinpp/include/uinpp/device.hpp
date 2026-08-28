@@ -21,6 +21,7 @@
 #include <functional>
 #include <linux/uinput.h>
 #include <string>
+#include <vector>
 
 #include "fwd.hpp"
 
@@ -77,6 +78,12 @@ public:
   /** file handle to the underlying device */
   int get_fd() const { return m_fd; }
 
+  /** sysfs name after UI_DEV_CREATE (e.g. "input12"), empty if unknown */
+  std::string get_sysname() const { return m_sysname; }
+
+  /** /dev/input nodes created for this device (event*, js*), after finish() */
+  std::vector<std::string> get_device_nodes() const;
+
 private:
   DeviceType  m_device_type;
   input_id m_iid;
@@ -85,6 +92,7 @@ private:
   bool m_finished;
 
   int m_fd;
+  std::string m_sysname;
 
   bool m_key_bit;
   bool m_rel_bit;

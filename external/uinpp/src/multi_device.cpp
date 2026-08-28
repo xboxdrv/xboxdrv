@@ -98,6 +98,18 @@ MultiDevice::~MultiDevice()
 {
 }
 
+std::vector<std::string>
+MultiDevice::collect_device_nodes() const
+{
+  std::vector<std::string> out;
+  for (auto const& dev : get_devices())
+  {
+    auto nodes = dev->get_device_nodes();
+    out.insert(out.end(), nodes.begin(), nodes.end());
+  }
+  return out;
+}
+
 void
 MultiDevice::set_extra_events(bool extra_events)
 {

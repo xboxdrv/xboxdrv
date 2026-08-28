@@ -18,6 +18,8 @@
 #define HEADER_NPP_MULTI_DEVICE_HPP
 
 #include <map>
+#include <vector>
+#include <string>
 #include <string_view>
 
 #include "fwd.hpp"
@@ -95,6 +97,9 @@ public:
   /** @} */
 
   std::vector<Device*> get_devices() const;
+
+  /** All /dev/input nodes for devices created by this MultiDevice. */
+  std::vector<std::string> collect_device_nodes() const;
 
   void update(int msec_delta);
 
