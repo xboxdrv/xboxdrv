@@ -24,14 +24,16 @@
           else
             versionBase;
 
-        mkXboxdrv = { withDbus ? true }:
+        mkXboxdrv = { withDbus ? true, withTests ? false }:
           pkgs.stdenv.mkDerivation {
             pname = "xboxdrv";
             inherit version;
             src = lib.cleanSource ./.;
             cmakeFlags = [
               "-DPROJECT_VERSION_FULL=${version}"
-            ] ++ lib.optional (!withDbus) "-DWITH_DBUS=OFF";
+            ]
+            ++ lib.optional (!withDbus) "-DWITH_DBUS=OFF"
+            ++ lib.optional withTests "-DBUILD_TESTS=ON";
             nativeBuildInputs = with pkgs; [
               cmake
               pkg-config
@@ -52,10 +54,17 @@
               # CMake add_subdirectory (see build_dependencies()).
               # Formatting uses C++20/23 <format> (no {fmt}).
             ];
+            doCheck = withTests;
+            checkPhase = lib.optionalString withTests ''
+              runHook preCheck
+              ctest --output-on-failure --timeout 30
+              runHook postCheck
+            '';
           };
 
         xboxdrv = mkXboxdrv { };
         xboxdrv-no-dbus = mkXboxdrv { withDbus = false; };
+        xboxdrv-tests = mkXboxdrv { withTests = true; };
 
       in {
         packages = {
@@ -63,11 +72,11 @@
           inherit xboxdrv xboxdrv-no-dbus;
         };
 
-        # `nix flake check` builds these. That is the useful signal:
-        # default package, WITH_DBUS=OFF path, and a --version smoke test.
+        # `nix flake check` builds these.
         checks = {
           build = xboxdrv;
           build-no-dbus = xboxdrv-no-dbus;
+          unit-tests = xboxdrv-tests;
 
           version = pkgs.runCommand "xboxdrv-version-check" {
             nativeBuildInputs = [ xboxdrv ];

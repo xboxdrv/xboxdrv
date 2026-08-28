@@ -272,36 +272,43 @@ target_link_libraries(xboxdrv libxboxdrv)
 if(BUILD_TESTS)
   enable_testing()
 
-  # find_package(GTest REQUIRED)
-  #
-  # build automatic tests
-  # file(GLOB XBOXDRV_TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-  #   test/*_gtest.cpp)
-  # add_executable(test_xboxdrv ${XBOXDRV_TEST_SOURCES})
-  # set_target_properties(test_xboxdrv PROPERTIES
-  #   CXX_STANDARD 23
-  #   CXX_STANDARD_REQUIRED ON
-  #   CXX_EXTENSIONS OFF)
-  # target_compile_options(test_xboxdrv PRIVATE ${WARNINGS_CXX_FLAGS})
-  # target_link_libraries(test_xboxdrv GTest::GTest GTest::Main libxboxdrv)
-  #
-  # add_test(NAME test_xboxdrv
-  #   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  #   COMMAND test_xboxdrv)
-
-  # build old manual tests
-  file(GLOB TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    test/*_test.cpp)
-  foreach(SOURCE ${TEST_SOURCES})
-    get_filename_component(SOURCE_BASENAME ${SOURCE} NAME_WE)
-    add_executable(${SOURCE_BASENAME} ${SOURCE})
-    set_target_properties(${SOURCE_BASENAME} PROPERTIES
+  # Self-checking unit tests (no external framework). Registered with CTest.
+  set(XBOXDRV_UNIT_TESTS
+    path_test
+    unpack_unit_test
+    string_util_test
+  )
+  foreach(test_name ${XBOXDRV_UNIT_TESTS})
+    add_executable(${test_name} test/${test_name}.cpp)
+    set_target_properties(${test_name} PROPERTIES
       CXX_STANDARD 23
       CXX_STANDARD_REQUIRED ON
       CXX_EXTENSIONS OFF)
-    target_compile_options(${SOURCE_BASENAME} PRIVATE ${WARNINGS_CXX_FLAGS})
-    target_link_libraries(${SOURCE_BASENAME} libxboxdrv)
-  endforeach(SOURCE)
+    target_include_directories(${test_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test)
+    target_compile_options(${test_name} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${WARNINGS_CXX_FLAGS}>)
+    target_link_libraries(${test_name} libxboxdrv)
+    add_test(NAME ${test_name} COMMAND ${test_name})
+  endforeach()
+
+  # Legacy manual CLI helpers (not registered with CTest).
+  # These take argv and print diagnostics; they are not automated unit tests.
+  set(XBOXDRV_MANUAL_TEST_TOOLS
+    axisfilter_test
+    buttonfilter_test
+    dirname_test
+    process_name_value_string_test
+    unpack_test
+    usb_system_test
+  )
+  foreach(tool_name ${XBOXDRV_MANUAL_TEST_TOOLS})
+    add_executable(${tool_name} test/${tool_name}.cpp)
+    set_target_properties(${tool_name} PROPERTIES
+      CXX_STANDARD 23
+      CXX_STANDARD_REQUIRED ON
+      CXX_EXTENSIONS OFF)
+    target_compile_options(${tool_name} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${WARNINGS_CXX_FLAGS}>)
+    target_link_libraries(${tool_name} libxboxdrv)
+  endforeach()
 endif()
 
 install(TARGETS xboxdrv
