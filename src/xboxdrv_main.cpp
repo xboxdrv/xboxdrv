@@ -25,6 +25,7 @@
 #include <libusb.h>
 #include <stdexcept>
 #include <iostream>
+#include <iomanip>
 #include <format>
 #include <functional>
 
@@ -449,22 +450,32 @@ void
 XboxdrvMain::print_feature_status() const
 {
   auto yn = [](bool v) { return v ? "on" : "off"; };
+  // Label column width (including trailing spaces after the colon).
+  auto line = [](char const* label, std::string const& value) {
+    std::cout << "  " << std::left << std::setw(22) << label << value << "\n";
+  };
+
+  bool const ff = m_opts.get_controller_slot().get_force_feedback();
 
   std::cout << "\nFeature status:\n";
-  std::cout << "  uinput:              " << yn(!m_opts.no_uinput) << "\n";
-  std::cout << "  force-feedback:      " << yn(m_opts.rumble)
-            << "  (--rumble-gain / game FF events)\n";
+  line("uinput:", yn(!m_opts.no_uinput));
+  line("force-feedback:",
+       std::string(yn(ff)) + (ff ? "" : "  (--force-feedback)"));
+  if (m_opts.rumble)
+  {
+    line("test-rumble:", "on  (--test-rumble)");
+  }
   if (m_opts.rumble_l != -1 || m_opts.rumble_r != -1)
   {
-    std::cout << "  startup rumble:      "
-              << (m_opts.rumble_l < 0 ? 0 : m_opts.rumble_l) << ","
-              << (m_opts.rumble_r < 0 ? 0 : m_opts.rumble_r)
-              << "  (--rumble L,R)\n";
+    line("startup rumble:",
+         std::to_string(m_opts.rumble_l < 0 ? 0 : m_opts.rumble_l) + "," +
+         std::to_string(m_opts.rumble_r < 0 ? 0 : m_opts.rumble_r) +
+         "  (--rumble L,R)");
   }
-  std::cout << "  chatpad:             " << yn(m_opts.chatpad)
-            << (m_opts.chatpad ? "\n" : "  (--chatpad)\n");
+  line("chatpad:",
+       std::string(yn(m_opts.chatpad)) + (m_opts.chatpad ? "" : "  (--chatpad)"));
 
-  std::string headset = "off";
+  std::string headset;
   if (m_opts.headset_pipewire)
   {
     headset = "pipewire  (--headset-pipewire)";
@@ -477,19 +488,20 @@ XboxdrvMain::print_feature_status() const
            || !m_opts.headset_play_wav.empty() || !m_opts.headset_dump.empty()
            || !m_opts.headset_play.empty())
   {
-    headset = "raw/debug  (--headset / --headset-pcm / --headset-dump-wav / …)";
+    headset = "raw/debug  (--headset / --headset-pcm / …)";
   }
   else
   {
     headset = "off  (--headset-pipewire | --headset-pulse | --headset)";
   }
-  std::cout << "  headset:             " << headset << "\n";
+  line("headset:", headset);
   if (m_opts.headset_mic_gain != 1.0f)
   {
-    std::cout << "  headset mic gain:    " << m_opts.headset_mic_gain << "\n";
+    line("headset-mic-gain:", std::to_string(m_opts.headset_mic_gain));
   }
-  std::cout << "  detach kernel driver: " << yn(m_opts.detach_kernel_driver)
-            << "  (--detach-kernel-driver)\n";
+  line("detach-kernel-driver:",
+       std::string(yn(m_opts.detach_kernel_driver)) +
+       (m_opts.detach_kernel_driver ? "" : "  (--detach-kernel-driver)"));
 }
 
 void
