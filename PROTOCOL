@@ -532,13 +532,14 @@ len: 29 data: 0x00 0xf8 0x02 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0
 
 On Endpoint 2 the headphone data is coming in, a constant stream, not split into packets.
 
-xboxdrv implementation (experimental)
--------------------------------------
+xboxdrv implementation
+----------------------
 --headset* on a wireless receiver claims the headset interface for the selected
 slot (controller_id N → interface 2*N+1, endpoint 2*N+2 IN and OUT) and reuses
-the wired Headset code path (32-byte interrupt transfers, G.726-32). Verify on
-hardware: historical notes above also mention a continuous stream on the headset
-endpoint, which may require different framing if 32-byte packets are silent.
+the wired Headset code path (32-byte interrupt transfers, G.726-32). Hardware
+verified: mic and phone work; audio is often cleaner than the wired USB headset
+path. Older notes about a continuous stream on the headset endpoint still stand
+as historical capture commentary; the working path uses 32-byte packets.
 
 Pulling out the headphone without chatpat:
 

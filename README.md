@@ -14,8 +14,8 @@ experimental Steam Controller backend.
 
 Chatpad support: **wired** USB controllers (interface 2) and experimental
 **wireless** receiver multiplexing (`--chatpad`). Headset audio works on
-**wired** Xbox 360 USB; **wireless** receiver headset support is experimental
-(`--headset` / `--headset-pipewire` / `--headset-pulse` on the same slot).
+**wired** Xbox 360 USB and on a **wireless** receiver slot (`--headset` /
+`--headset-pipewire` / `--headset-pulse`); wireless often has less noise than wired.
 
 Use this driver when you need more configurability than `xpad`, or when
 `xpad` does not work for a particular device. For most games, the kernel

@@ -889,10 +889,10 @@ start=KEY_ESC
       <title>Headset Options (experimental)</title>
       <para>
         Xbox 360 headset audio on <emphasis>wired USB</emphasis> controllers
-        (interface 1) and, experimentally, on a <emphasis>wireless
-        receiver</emphasis> slot (headset interface next to the pad). Codec is
-        G.726-32; mic is 16&nbsp;kHz mono, phone is 8&nbsp;kHz mono. Wireless
-        framing still needs hardware verification.
+        (interface 1) and on a <emphasis>wireless receiver</emphasis> slot
+        (headset interface next to the pad). Codec is G.726-32; mic is
+        16&nbsp;kHz mono, phone is 8&nbsp;kHz mono. Wireless path uses the same
+        32-byte interrupt framing as wired and has been verified on hardware.
       </para>
       <variablelist>
         <varlistentry>

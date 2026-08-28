@@ -6,9 +6,9 @@ historical `NEWS` file.
 
 ## xboxdrv 0.9.0-dev (develop)
 
-* Headset: experimental wireless receiver path (`--headset*` on slot N uses
-  interface 2N+1 / endpoint 2N+2); soft-fail if the headset interface cannot
-  be claimed so pad input still works
+* Headset: wireless receiver path (`--headset*` on slot N uses interface
+  2N+1 / endpoint 2N+2); hardware-verified mic/phone; soft-fail if the headset
+  interface cannot be claimed so pad input still works
 * Headset: `--headset-mic-gain`, PipeWire/Pulse paths documented; man page
   headset section refreshed
 * Document wireless Chatpad protocol (PROTOCOL, man --chatpad; issue #209)

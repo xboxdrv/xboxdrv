@@ -101,8 +101,7 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
 
   // Headset lives on the odd interface next to this controller slot
   // (PROTOCOL: IF 1/EP 2 for slot 0, IF 3/EP 4 for slot 1, …).
-  // Framing is assumed to match wired 32-byte G.726 interrupt transfers;
-  // verify with hardware — PROTOCOL also notes a continuous stream.
+  // Same 32-byte G.726 interrupt framing as wired; hardware-verified.
   if (headset)
   {
     const int hs_if = controller_id * 2 + 1;

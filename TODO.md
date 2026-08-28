@@ -258,11 +258,10 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - [x] Wired Xbox 360 USB: G.726 mic/phone, `--headset-pulse` / `--headset-pipewire`, mic gain.
 - [x] Generalise `Headset` for configurable interface / endpoints (wired defaults unchanged).
 - [x] Wire `--headset*` into `Xbox360WirelessController` (slot N → IF 2N+1, EP 2N+2).
-- [ ] **Hardware smoke wireless headset**: confirm 32-byte interrupt framing matches wired
-      G.726; PROTOCOL mentions a continuous stream on the headset endpoint — may need
-      different packetisation.
+- [x] **Hardware smoke wireless headset**: mic + phone work with wired-style 32-byte
+      G.726 framing; user reports cleaner audio than wired USB headset path.
 - [ ] Wireless-only headset (no pad) / battery status from PROTOCOL still unused.
-- [x] README + man page headset section refreshed (wired + experimental wireless).
+- [x] README + man page headset section refreshed (wired + wireless).
 - [x] Soft-fail wireless headset interface claim (pad keeps working).
 
 ## Notes for later agents
