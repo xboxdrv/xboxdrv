@@ -305,7 +305,7 @@ Current state (daemon only):
 | Object | Interface | Methods / Signals |
 |--------|-----------|-------------------|
 | `/org/seul/Xboxdrv/Daemon` | `org.seul.Xboxdrv.Daemon` | `Status`, `Shutdown`; signals `ControllerConnected(i)`, `ControllerDisconnected(i)` |
-| `/org/seul/Xboxdrv/ControllerSlots/N` | `org.seul.Xboxdrv.Controller` | `SetLed`, `SetRumble`, `SetConfig` |
+| `/org/seul/Xboxdrv/ControllerSlots/N` | `org.seul.Xboxdrv.Controller` | `SetLed`, `SetRumble`, `SetConfig`; props `Led`, `RumbleStrong`, `RumbleWeak`, `Config`, `Battery`, `Connected` |
 
 Improvement path:
 
@@ -315,8 +315,8 @@ Improvement path:
    keep the same object paths and method names for script compatibility.
 3. **Signals** — [x] emit `ControllerConnected` / `ControllerDisconnected` (slot id)
    instead of clients polling `Status`.
-4. **Properties** — expose LED, rumble, config index, battery (wireless) as
-   readable properties where data exists.
+4. **Properties** — [x] expose LED, rumble, config index, battery (wireless),
+   Connected as properties on Controller (read/write where applicable).
 5. **Finish XML stubs** — `reset_leds`, `disconnect SLOT`, rumble enable/gain
    only if still useful after properties.
 6. **Policy** — keep `data/` system-bus policy in sync if system bus stays supported.

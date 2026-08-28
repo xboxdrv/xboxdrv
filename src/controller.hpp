@@ -59,6 +59,12 @@ public:
   uint8_t get_led() const { return m_led_status; }
   void set_led(uint8_t status);
 
+  uint8_t get_rumble_left() const { return m_rumble_left; }
+  uint8_t get_rumble_right() const { return m_rumble_right; }
+
+  /** Battery level 0–3 for wireless pads; -1 if unknown / not applicable. */
+  virtual int get_battery() const { return -1; }
+
   virtual const ControllerMessageDescriptor& get_message_descriptor() { return m_message_descriptor; }
 
   virtual void set_rumble_real(uint8_t left, uint8_t right) =0;

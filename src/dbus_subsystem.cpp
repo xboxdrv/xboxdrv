@@ -66,6 +66,12 @@ static char const* const kControllerXml =
   "    <method name=\"SetConfig\">"
   "      <arg name=\"config\" type=\"i\" direction=\"in\"/>"
   "    </method>"
+  "    <property name=\"Led\" type=\"i\" access=\"readwrite\"/>"
+  "    <property name=\"RumbleStrong\" type=\"i\" access=\"readwrite\"/>"
+  "    <property name=\"RumbleWeak\" type=\"i\" access=\"readwrite\"/>"
+  "    <property name=\"Config\" type=\"i\" access=\"readwrite\"/>"
+  "    <property name=\"Battery\" type=\"i\" access=\"read\"/>"
+  "    <property name=\"Connected\" type=\"b\" access=\"read\"/>"
   "  </interface>"
   "</node>";
 
@@ -209,10 +215,152 @@ static GDBusInterfaceVTable const kDaemonVTable = {
   nullptr, // set_property
 };
 
+
+static GVariant*
+controller_get_property(GDBusConnection* /*connection*/,
+                        gchar const*     /*sender*/,
+                        gchar const*     /*object_path*/,
+                        gchar const*     /*interface_name*/,
+                        gchar const*     property_name,
+                        GError**         error,
+                        gpointer         user_data)
+{
+  auto* slot = static_cast<ControllerSlot*>(user_data);
+  ControllerPtr controller = slot ? slot->get_controller() : ControllerPtr();
+
+  if (g_strcmp0(property_name, "Connected") == 0)
+  {
+    return g_variant_new_boolean(controller != nullptr);
+  }
+
+  if (g_strcmp0(property_name, "Config") == 0)
+  {
+    int cfg = 0;
+    if (slot && slot->get_config())
+    {
+      cfg = slot->get_config()->get_current_config();
+    }
+    return g_variant_new_int32(cfg);
+  }
+
+  if (!controller)
+  {
+    // Still allow Config/Connected above; other properties need a live pad.
+    if (g_strcmp0(property_name, "Led") == 0 ||
+        g_strcmp0(property_name, "RumbleStrong") == 0 ||
+        g_strcmp0(property_name, "RumbleWeak") == 0 ||
+        g_strcmp0(property_name, "Battery") == 0)
+    {
+      g_set_error(error, G_DBUS_ERROR, G_DBUS_ERROR_FAILED,
+                  "no controller connected in this slot");
+      return nullptr;
+    }
+  }
+
+  if (g_strcmp0(property_name, "Led") == 0)
+  {
+    return g_variant_new_int32(controller->get_led());
+  }
+  if (g_strcmp0(property_name, "RumbleStrong") == 0)
+  {
+    return g_variant_new_int32(controller->get_rumble_left());
+  }
+  if (g_strcmp0(property_name, "RumbleWeak") == 0)
+  {
+    return g_variant_new_int32(controller->get_rumble_right());
+  }
+  if (g_strcmp0(property_name, "Battery") == 0)
+  {
+    return g_variant_new_int32(controller->get_battery());
+  }
+
+  g_set_error(error, G_DBUS_ERROR, G_DBUS_ERROR_UNKNOWN_PROPERTY,
+              "Unknown property %s", property_name);
+  return nullptr;
+}
+
+static gboolean
+controller_set_property(GDBusConnection* /*connection*/,
+                        gchar const*     /*sender*/,
+                        gchar const*     /*object_path*/,
+                        gchar const*     /*interface_name*/,
+                        gchar const*     property_name,
+                        GVariant*        value,
+                        GError**         error,
+                        gpointer         user_data)
+{
+  auto* slot = static_cast<ControllerSlot*>(user_data);
+
+  if (g_strcmp0(property_name, "Led") == 0)
+  {
+    gint status = g_variant_get_int32(value);
+    if (slot && slot->get_controller())
+    {
+      slot->get_controller()->set_led(static_cast<uint8_t>(status));
+      return TRUE;
+    }
+    g_set_error(error, G_DBUS_ERROR, G_DBUS_ERROR_FAILED,
+                "couldn't access controller");
+    return FALSE;
+  }
+
+  if (g_strcmp0(property_name, "RumbleStrong") == 0 ||
+      g_strcmp0(property_name, "RumbleWeak") == 0)
+  {
+    if (!(slot && slot->get_controller()))
+    {
+      g_set_error(error, G_DBUS_ERROR, G_DBUS_ERROR_FAILED,
+                  "couldn't access controller");
+      return FALSE;
+    }
+    auto ctrl = slot->get_controller();
+    gint strong = ctrl->get_rumble_left();
+    gint weak = ctrl->get_rumble_right();
+    if (g_strcmp0(property_name, "RumbleStrong") == 0)
+    {
+      strong = g_variant_get_int32(value);
+    }
+    else
+    {
+      weak = g_variant_get_int32(value);
+    }
+    ctrl->set_rumble(static_cast<uint8_t>(strong), static_cast<uint8_t>(weak));
+    return TRUE;
+  }
+
+  if (g_strcmp0(property_name, "Config") == 0)
+  {
+    gint config_num = g_variant_get_int32(value);
+    if (slot &&
+        slot->get_thread() &&
+        slot->get_thread()->get_controller())
+    {
+      try
+      {
+        MessageProcessor* msg_proc = slot->get_thread()->get_message_proc();
+        msg_proc->set_config(config_num);
+        return TRUE;
+      }
+      catch (std::exception const& err)
+      {
+        g_set_error(error, G_DBUS_ERROR, G_DBUS_ERROR_FAILED, "%s", err.what());
+        return FALSE;
+      }
+    }
+    g_set_error(error, G_DBUS_ERROR, G_DBUS_ERROR_FAILED,
+                "couldn't access controller");
+    return FALSE;
+  }
+
+  g_set_error(error, G_DBUS_ERROR, G_DBUS_ERROR_UNKNOWN_PROPERTY,
+              "Unknown or read-only property %s", property_name);
+  return FALSE;
+}
+
 static GDBusInterfaceVTable const kControllerVTable = {
   controller_method_call,
-  nullptr,
-  nullptr,
+  controller_get_property,
+  controller_set_property,
 };
 
 } // namespace

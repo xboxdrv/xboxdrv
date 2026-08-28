@@ -78,6 +78,7 @@ public:
   void set_rumble_real(uint8_t left, uint8_t right) override;
   void set_led_real(uint8_t status) override;
   uint8_t get_battery_status() const { return static_cast<uint8_t>(m_battery_status); }
+  int get_battery() const override { return (m_last_battery_raw < 0) ? -1 : (m_last_battery_raw & 0x03); }
 
   /** Send the wireless power-off packet (same as kernel xpad). */
   void power_off();
