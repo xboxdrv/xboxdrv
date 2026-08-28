@@ -36,6 +36,13 @@ private:
     kRestrictYAxis
   };
 
+  /** Which dpad axis to drop on diagonals (four-way mode). */
+  enum Axis {
+    kAxisNone = -1,
+    kAxisX = 0,
+    kAxisY = 1
+  };
+
 public:
   static DpadRestrictorModifier* from_string(const std::vector<std::string>& args);
 
@@ -44,11 +51,12 @@ public:
 
   void init(ControllerMessageDescriptor& desc) override;
   void update(int msec_delta, ControllerMessage& msg, const ControllerMessageDescriptor& desc) override;
+
   std::string str() const override;
 
 private:
   Mode m_mode;
-  int m_last_unpressed_axis;
+  Axis m_last_unpressed_axis;
 
   KeyPortIn m_dpad_up;
   KeyPortIn m_dpad_down;

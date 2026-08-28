@@ -55,7 +55,7 @@ DpadRestrictorModifier::from_string(std::vector<std::string> const& args)
 
 DpadRestrictorModifier::DpadRestrictorModifier(Mode mode) :
   m_mode(mode),
-  m_last_unpressed_axis(-1),
+  m_last_unpressed_axis(kAxisY),
 
   m_dpad_up("dpad_up"),
   m_dpad_down("dpad_down"),
@@ -81,42 +81,57 @@ DpadRestrictorModifier::init(ControllerMessageDescriptor& desc)
   m_dpad_down_out.init(desc);
   m_dpad_left_out.init(desc);
   m_dpad_right_out.init(desc);
-
-  // BROKEN: m_last_unpressed_axis = dpad_x;
 }
 
 void
 DpadRestrictorModifier::update(int msec_delta, ControllerMessage& msg, ControllerMessageDescriptor const& desc)
 {
-#if 0
+  int up    = m_dpad_up.get(msg);
+  int down  = m_dpad_down.get(msg);
+  int left  = m_dpad_left.get(msg);
+  int right = m_dpad_right.get(msg);
+
+  bool const horiz = left || right;
+  bool const vert  = up || down;
+
   switch(m_mode)
   {
     case kRestrictFourWay:
-      if (msg.get_abs(XBOX_AXIS_DPAD_X) && msg.get_abs(XBOX_AXIS_DPAD_Y))
+      if (horiz && vert)
       {
-        // a diagonal was pressed, thus we reset the axis that wasn't
-        // pressed the last time the dpad was touched
-        msg.set_abs(m_last_unpressed_axis, 0);
+        // Diagonal: drop the axis that was idle last time a single axis was held.
+        if (m_last_unpressed_axis == kAxisX)
+        {
+          left = right = 0;
+        }
+        else
+        {
+          up = down = 0;
+        }
       }
-      else if (msg.get_abs(XBOX_AXIS_DPAD_X))
+      else if (horiz)
       {
-        m_last_unpressed_axis = XBOX_AXIS_DPAD_Y;
+        m_last_unpressed_axis = kAxisY;
       }
-      else if (msg.get_abs(XBOX_AXIS_DPAD_Y))
+      else if (vert)
       {
-        m_last_unpressed_axis = XBOX_AXIS_DPAD_X;
+        m_last_unpressed_axis = kAxisX;
       }
       break;
 
     case kRestrictXAxis:
-      msg.set_abs(XBOX_AXIS_DPAD_Y, 0);
+      up = down = 0;
       break;
 
     case kRestrictYAxis:
-      msg.set_abs(XBOX_AXIS_DPAD_X, 0);
+      left = right = 0;
       break;
   }
-#endif
+
+  m_dpad_up_out.set(msg, up);
+  m_dpad_down_out.set(msg, down);
+  m_dpad_left_out.set(msg, left);
+  m_dpad_right_out.set(msg, right);
 }
 
 std::string
