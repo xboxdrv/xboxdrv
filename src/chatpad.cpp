@@ -100,7 +100,7 @@ Chatpad::Chatpad(libusb_device_handle* handle, uint16_t bcdDevice,
   m_keymap[CHATPAD_KEY_R] = KEY_R;
   m_keymap[CHATPAD_KEY_T] = KEY_T;
   // Scancode 0x22 is physical "Y" position on US keycaps, "Z" on German QWERTZ
-  // (see docs/chatpad-layout.md). Default map follows US labels.
+  // (see doc/chatpad-layout.md). Default map follows US labels.
   m_keymap[CHATPAD_KEY_Y] = KEY_Y;
   m_keymap[CHATPAD_KEY_U] = KEY_U;
   m_keymap[CHATPAD_KEY_I] = KEY_I;

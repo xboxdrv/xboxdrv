@@ -37,7 +37,7 @@ kernel xpad + Steam Input are preferred for most users.
 | `src/axisevent/` `axisfilter/` `buttonevent/` `buttonfilter/` `modifier/` | Pipeline |
 | `src/util/` | string/math/exec helpers |
 | `examples/` | `.xboxdrv` configs + macros — still valuable |
-| `doc/` | manpage sources, plots |
+| `doc/` | manpage sources (`xboxdrv.xml`), plots, design notes (e.g. chatpad layout) |
 | `data/` | D-Bus policy, virtualkeyboard assets |
 | `external/` | vendored git subtrees (argpp, logmich, strutcpp, tinycmmc, uinpp, unsebu, yaini); see REVISIONS |
 | `PROTOCOL` | USB protocol notes — keep |
@@ -186,7 +186,9 @@ small test that important names still resolve.
 ### 2. Chatpad / virtual keyboard / D-Bus — in progress
 
 See parity section. Virtual keyboard still optional/quarantine candidate.
-D-Bus still effectively required for daemon path.
+D-Bus is daemon-only today (`--daemon`); single-controller mode has no bus
+export. Build still links **dbus-glib** (legacy). See “Path to improvements”
+below for a concrete migration sketch.
 
 ### 3. Versioning scheme
 
@@ -218,7 +220,7 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - [ ] CAPS sticky (Orange+Shift) still unimplemented.
 - [ ] Decide: USB Chatpad on by default vs flag vs remove for the milestone.
 - [ ] Quarantine or drop virtual keyboard if not wired up.
-- [ ] Make D-Bus optional if still hard dependency for non-daemon path.
+- [ ] Make D-Bus optional at build/runtime for non-daemon builds (see Path to improvements).
 
 ### Phase 3 — `std::format`
 
@@ -264,6 +266,80 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - [x] README + man page headset section refreshed (wired + wireless).
 - [x] Soft-fail wireless headset interface claim (pad keeps working).
 
+## Path to improvements
+
+Actionable follow-ups from recent work (startup UX, filters, headset, docs).
+Prefer small commits; keep public CLI stable or document breaks.
+
+### Documentation layout
+
+- [x] Unify `docs/` into `doc/` (chatpad layout note lives next to the manpage).
+- [ ] Keep manpage (`doc/xboxdrv.xml` → `doc/xboxdrv.1`) as the user-facing
+      reference; avoid a second parallel doc tree.
+- [ ] Optional: short `doc/README.md` index (manpage, PROTOCOL, chatpad layout).
+
+### Startup / UX
+
+- [x] Feature-status block (uinput, force-feedback, chatpad, headset, detach).
+- [x] Real `/dev/input` nodes via `UI_GET_SYSNAME` + sysfs (not guessed js/event indexes).
+- [x] Default LED from controller slot, not guessed `jsN` (issue #168 class of bugs).
+- [ ] Feature-status / device list in **daemon** mode (parity with single-controller).
+- [ ] Group `--help` by feature (headset / chatpad / FF) if argpp allows without noise.
+
+### Force feedback / LED / test-rumble
+
+- [x] Restore `--test-rumble` (LT/RT → motors; was `#if 0` after axis-port refactor).
+- [x] `--deadzone` / calibration / sensitivity / relative maps rewired via `AxismapModifier::add_filter`.
+- [ ] Hardware smoke: `--force-feedback` from games; `--test-rumble` on wired + wireless.
+- [ ] **EV_LED from uinput**: not wired. Kernel `EV_LED`/`LED_MISC` is on/off only —
+      **not** the Xbox 0–15 pattern byte. Options if pursued:
+  1. Keep patterns on `--led` / D-Bus only (recommended default).
+  2. Optional lossy map: `LED_MISC` on → player-1 solid, off → all off.
+  3. Private non-standard map (document as xboxdrv-only; avoid claiming Linux standard).
+- [ ] Do **not** claim `EV_LED` value carries xboxdrv `--led` codes.
+
+### D-Bus
+
+Current state (daemon only):
+
+| Object | Interface | Methods |
+|--------|-----------|---------|
+| `/org/seul/Xboxdrv/Daemon` | `org.seul.Xboxdrv.Daemon` | `Status`, `Shutdown` |
+| `/org/seul/Xboxdrv/ControllerSlots/N` | `org.seul.Xboxdrv.Controller` | `SetLed`, `SetRumble`, `SetConfig` |
+
+Improvement path:
+
+1. **Optional dependency** — `#ifdef` / CMake `WITH_DBUS`; non-daemon builds skip
+   dbus-glib entirely (`--dbus disabled` already skips runtime export).
+2. **Replace dbus-glib** — migrate generated glue to **gdbus** (GDBus) or sd-bus;
+   keep the same object paths and method names for script compatibility.
+3. **Signals** — emit `ControllerConnected` / `ControllerDisconnected` (slot id)
+   instead of clients polling `Status`.
+4. **Properties** — expose LED, rumble, config index, battery (wireless) as
+   readable properties where data exists.
+5. **Finish XML stubs** — `reset_leds`, `disconnect SLOT`, rumble enable/gain
+   only if still useful after properties.
+6. **Policy** — keep `data/` system-bus policy in sync if system bus stays supported.
+7. **Single-controller mode** — optional light export (same `Controller` iface on
+   slot 0) so tools work without `--daemon`; low priority.
+
+### Headset
+
+- [x] Wired + wireless PipeWire/Pulse paths; mic gain; soft-fail wireless claim.
+- [ ] Wireless-only headset (no pad) if hardware reports it.
+- [ ] Battery high-nibble (charging / pack type) still undocumented; keep logging
+      `raw & 0x03` as bar level until evidence improves.
+
+### Code hygiene (from recent audit)
+
+- [x] `DpadRestrictorModifier` reimplemented on key ports (was empty `#if 0`).
+- [ ] Remaining `#if 0` / debug-only blocks: IR2Axis, button_map alternate merge,
+      message_processor rumble-test is restored (done).
+- [ ] Xbox One wireless: serial / battery / button-state FIXMEs.
+- [ ] Prefer deleting dead `#if 0` once confirmed superseded.
+
+---
+
 ## Notes for later agents
 
 - Clean solution over a quick hack.
@@ -271,7 +347,8 @@ CMake derives numeric `project(VERSION …)`; flake appends
 - Public config compatibility: preserve or document the break.
 - Prefer evidence from code and `git log` over README/TODO claims.
 - Build confirmed (plain CMake with WARNINGS/WERROR path in CI).
-- Next: hardware FF/LED smoke when available; multi-controller UInput
-  threading still open; optional deeper historical TODO triage.
+- Next: hardware FF/LED/`--test-rumble` smoke; multi-controller UInput
+  threading still open; D-Bus optional/migration path above; optional deeper
+  historical TODO triage.
 - [x] Sync missing kernel xpad XTYPE_XBOX360 IDs into xpad_device
   (Xbox One/Series left out until testable).
