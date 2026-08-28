@@ -248,7 +248,7 @@ CMake derives numeric `project(VERSION …)`; flake appends
 ### Phase 5 — Later
 
 - [x] Vendor selected flake dependencies into `external/` subtrees.
-- [x] Drop ancient Travis; refresh GitLab CI (Ubuntu 24.04, no fmt/gtk).
+- [x] Drop Travis and GitLab CI; rely on local CMake / `nix flake check`.
 - [ ] Further architecture (In/Out ports, half-axis) only after the above.
 
 ---
@@ -344,7 +344,7 @@ Improvement path:
 - One logical change per commit where practical.
 - Public config compatibility: preserve or document the break.
 - Prefer evidence from code and `git log` over README/TODO claims.
-- Build confirmed (plain CMake with WARNINGS/WERROR path in CI).
+- Build confirmed (plain CMake with WARNINGS/WERROR; `nix flake check` for package builds).
 - Next: hardware FF/LED/`--test-rumble` smoke; multi-controller UInput
   threading still open; D-Bus optional/migration path above; optional deeper
   historical TODO triage.
