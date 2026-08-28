@@ -29,12 +29,24 @@
 #include "util/string.hpp"
 #include "raise_exception.hpp"
 #include "unpack.hpp"
+#include "headset.hpp"
 #include "wireless_chatpad.hpp"
 
 namespace xboxdrv {
 
 Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int controller_id,
                                                      bool chatpad, bool chatpad_no_init, bool chatpad_debug,
+                                                     bool headset,
+                                                     bool headset_debug,
+                                                     std::string const& headset_dump,
+                                                     std::string const& headset_play,
+                                                     std::string const& headset_pcm,
+                                                     std::string const& headset_wav,
+                                                     std::string const& headset_play_wav,
+                                                     bool headset_play_left_pack,
+                                                     bool headset_pulse,
+                                                     bool headset_pipewire,
+                                                     float headset_mic_gain,
                                                      bool try_detach,
                                                      bool auto_poweroff,
                                                      int guide_poweroff_timeout_sec,
@@ -45,6 +57,7 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
   m_battery_status(),
   m_serial(),
   m_chatpad(),
+  m_headset(),
   m_auto_poweroff(auto_poweroff),
   m_guide_poweroff_timeout_sec(guide_poweroff_timeout_sec),
   m_quiet(quiet),
@@ -84,6 +97,50 @@ Xbox360WirelessController::Xbox360WirelessController(libusb_device* dev, int con
       },
       chatpad_no_init,
       chatpad_debug);
+  }
+
+  // Headset lives on the odd interface next to this controller slot
+  // (PROTOCOL: IF 1/EP 2 for slot 0, IF 3/EP 4 for slot 1, …).
+  // Framing is assumed to match wired 32-byte G.726 interrupt transfers;
+  // verify with hardware — wireless may need further protocol work.
+  if (headset)
+  {
+    const int hs_if = controller_id * 2 + 1;
+    const int hs_ep = controller_id * 2 + 2;
+    log_info("[headset] wireless slot {}: interface {} endpoint {}",
+             controller_id, hs_if, hs_ep);
+    m_headset = std::make_unique<Headset>(
+      m_handle, headset_debug, headset_mic_gain,
+      hs_if, hs_ep, hs_ep, try_detach);
+
+    if (!headset_play.empty())
+    {
+      m_headset->play_file(headset_play);
+    }
+    if (!headset_dump.empty())
+    {
+      m_headset->record_file(headset_dump);
+    }
+    if (!headset_pcm.empty())
+    {
+      m_headset->record_pcm(headset_pcm);
+    }
+    if (!headset_wav.empty())
+    {
+      m_headset->record_wav(headset_wav);
+    }
+    if (!headset_play_wav.empty())
+    {
+      m_headset->play_wav(headset_play_wav, headset_play_left_pack);
+    }
+    if (headset_pulse)
+    {
+      m_headset->enable_pulse_audio();
+    }
+    if (headset_pipewire)
+    {
+      m_headset->enable_pipewire_audio();
+    }
   }
 }
 

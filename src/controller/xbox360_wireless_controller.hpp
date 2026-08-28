@@ -24,6 +24,7 @@
 namespace xboxdrv {
 
 class ControllerMessage;
+class Headset;
 class WirelessChatpad;
 
 class Xbox360WirelessController : public USBController
@@ -34,6 +35,7 @@ private:
   int  m_battery_status;
   std::string m_serial;
   std::unique_ptr<WirelessChatpad> m_chatpad;
+  std::unique_ptr<Headset> m_headset;
 
   bool m_auto_poweroff;
   int  m_guide_poweroff_timeout_sec; // 0 = disabled
@@ -50,6 +52,17 @@ private:
 public:
   Xbox360WirelessController(libusb_device* dev, int controller_id,
                             bool chatpad, bool chatpad_no_init, bool chatpad_debug,
+                            bool headset,
+                            bool headset_debug,
+                            const std::string& headset_dump,
+                            const std::string& headset_play,
+                            const std::string& headset_pcm,
+                            const std::string& headset_wav,
+                            const std::string& headset_play_wav,
+                            bool headset_play_left_pack,
+                            bool headset_pulse,
+                            bool headset_pipewire,
+                            float headset_mic_gain,
                             bool try_detach,
                             bool auto_poweroff = true,
                             int guide_poweroff_timeout_sec = 5,
