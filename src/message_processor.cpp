@@ -19,6 +19,7 @@
 #include "message_processor.hpp"
 
 #include <uinpp/multi_device.hpp>
+#include <algorithm>
 #include <logmich/log.hpp>
 
 namespace xboxdrv {
@@ -32,8 +33,27 @@ MessageProcessor::MessageProcessor(ControllerSlotConfigPtr config,
   m_config_toggle_button(-1),
   m_rumble_gain(opts.rumble_gain),
   m_rumble_test(opts.rumble),
+  m_lt_abs(-1),
+  m_rt_abs(-1),
+  m_last_test_rumble_l(0),
+  m_last_test_rumble_r(0),
   m_rumble_callback()
 {
+  if (m_rumble_test)
+  {
+    // LT → strong (left) motor, RT → weak (right); names match Xbox360DefaultNames.
+    if (desc.abs().has("lt") && desc.abs().has("rt"))
+    {
+      m_lt_abs = desc.abs().get("lt");
+      m_rt_abs = desc.abs().get("rt");
+    }
+    else
+    {
+      log_error("--test-rumble: controller has no lt/rt axes; rumble test disabled");
+      m_rumble_test = false;
+    }
+  }
+
   if (opts.config_toggle_button_is_set)
   {
     m_config_toggle_button = desc.key().get(opts.config_toggle_button);
@@ -65,15 +85,20 @@ MessageProcessor::send(ControllerMessage const& msg_in,
   {
     ControllerMessage msg = msg_in;
 
-#if 0
-    if (m_rumble_test)
+    if (m_rumble_test && m_lt_abs >= 0 && m_rt_abs >= 0)
     {
-      log_debug("rumble: " << msg.get_abs(XBOX_AXIS_LT) << " " << msg.get_abs(XBOX_AXIS_RT));
-
-      set_rumble(static_cast<uint8_t>(msg.get_abs(XBOX_AXIS_LT)),
-                 static_cast<uint8_t>(msg.get_abs(XBOX_AXIS_RT)));
+      // Triggers are 0..255 (or similar); map directly to motor strengths.
+      int const lt = msg.get_abs(m_lt_abs);
+      int const rt = msg.get_abs(m_rt_abs);
+      uint8_t const left  = static_cast<uint8_t>(std::clamp(lt, 0, 255));
+      uint8_t const right = static_cast<uint8_t>(std::clamp(rt, 0, 255));
+      if (left != m_last_test_rumble_l || right != m_last_test_rumble_r)
+      {
+        m_last_test_rumble_l = left;
+        m_last_test_rumble_r = right;
+        set_rumble(left, right);
+      }
     }
-#endif
 
     // handling switching of configurations
     if (m_config_toggle_button != -1)

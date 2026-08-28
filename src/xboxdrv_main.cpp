@@ -449,59 +449,68 @@ XboxdrvMain::print_info(libusb_device* dev, XPadDevice const& dev_type, Options 
 void
 XboxdrvMain::print_feature_status() const
 {
-  auto yn = [](bool v) { return v ? "on" : "off"; };
-  // Label column width (including trailing spaces after the colon).
-  auto line = [](char const* label, std::string const& value) {
-    std::cout << "  " << std::left << std::setw(22) << label << value << "\n";
+  // Fixed-width label and on/off so value columns line up.
+  auto line = [](char const* label, bool on, char const* hint = nullptr) {
+    std::cout << "  " << std::left << std::setw(24) << label
+              << std::left << std::setw(4) << (on ? "on" : "off");
+    if (hint && *hint)
+    {
+      std::cout << "  " << hint;
+    }
+    std::cout << "\n";
+  };
+  auto line_text = [](char const* label, std::string const& value) {
+    std::cout << "  " << std::left << std::setw(24) << label << value << "\n";
   };
 
   bool const ff = m_opts.get_controller_slot().get_force_feedback();
 
   std::cout << "\nFeature status:\n";
-  line("uinput:", yn(!m_opts.no_uinput));
-  line("force-feedback:",
-       std::string(yn(ff)) + (ff ? "" : "  (--force-feedback)"));
+  line("uinput:", !m_opts.no_uinput);
+  line("force-feedback:", ff, ff ? "" : "--force-feedback");
   if (m_opts.rumble)
   {
-    line("test-rumble:", "on  (--test-rumble)");
+    line("test-rumble:", true, "pull LT / RT to drive motors");
   }
   if (m_opts.rumble_l != -1 || m_opts.rumble_r != -1)
   {
-    line("startup rumble:",
-         std::to_string(m_opts.rumble_l < 0 ? 0 : m_opts.rumble_l) + "," +
-         std::to_string(m_opts.rumble_r < 0 ? 0 : m_opts.rumble_r) +
-         "  (--rumble L,R)");
+    line_text("startup-rumble:",
+              std::to_string(m_opts.rumble_l < 0 ? 0 : m_opts.rumble_l) + "," +
+              std::to_string(m_opts.rumble_r < 0 ? 0 : m_opts.rumble_r) +
+              "  (--rumble L,R)");
   }
-  line("chatpad:",
-       std::string(yn(m_opts.chatpad)) + (m_opts.chatpad ? "" : "  (--chatpad)"));
+  line("chatpad:", m_opts.chatpad, m_opts.chatpad ? "" : "--chatpad");
 
-  std::string headset;
   if (m_opts.headset_pipewire)
   {
-    headset = "pipewire  (--headset-pipewire)";
+    line("headset:", true, "pipewire  (--headset-pipewire)");
   }
   else if (m_opts.headset_pulse)
   {
-    headset = "pulse/pipe FIFOs  (--headset-pulse)";
+    line("headset:", true, "pulse FIFOs  (--headset-pulse)");
   }
   else if (m_opts.headset || !m_opts.headset_pcm.empty() || !m_opts.headset_wav.empty()
            || !m_opts.headset_play_wav.empty() || !m_opts.headset_dump.empty()
            || !m_opts.headset_play.empty())
   {
-    headset = "raw/debug  (--headset / --headset-pcm / …)";
+    line("headset:", true, "raw/debug  (--headset / --headset-pcm / …)");
   }
   else
   {
-    headset = "off  (--headset-pipewire | --headset-pulse | --headset)";
+    line("headset:", false, "--headset-pipewire | --headset-pulse | --headset");
   }
-  line("headset:", headset);
   if (m_opts.headset_mic_gain != 1.0f)
   {
-    line("headset-mic-gain:", std::to_string(m_opts.headset_mic_gain));
+    line_text("headset-mic-gain:", std::to_string(m_opts.headset_mic_gain));
   }
-  line("detach-kernel-driver:",
-       std::string(yn(m_opts.detach_kernel_driver)) +
-       (m_opts.detach_kernel_driver ? "" : "  (--detach-kernel-driver)"));
+  line("detach-kernel-driver:", m_opts.detach_kernel_driver,
+       m_opts.detach_kernel_driver ? "" : "--detach-kernel-driver");
+
+  if (m_opts.rumble)
+  {
+    std::cout << "\nTest rumble: hold the left trigger (LT) for the strong motor,\n"
+              << "right trigger (RT) for the weak motor. Release both to stop.\n";
+  }
 }
 
 void

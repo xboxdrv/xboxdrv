@@ -38,6 +38,10 @@ private:
 
   int m_rumble_gain;
   bool m_rumble_test;
+  int m_lt_abs;  ///< abs index for LT when --test-rumble, else -1
+  int m_rt_abs;
+  uint8_t m_last_test_rumble_l;
+  uint8_t m_last_test_rumble_r;
   std::function<void (uint8_t, uint8_t)> m_rumble_callback;
 
 public:
