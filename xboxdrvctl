@@ -56,6 +56,14 @@ group.add_option("--shutdown", action="store_true",
                   dest="shutdown",
                   help="shuts down the daemon")
 
+group.add_option("--reset-leds", action="store_true",
+                  dest="reset_leds",
+                  help="reset LEDs on all connected controllers")
+
+group.add_option("--disconnect", action="store_true",
+                  dest="disconnect",
+                  help="disconnect the controller in --slot")
+
 parser.add_option_group(group)
 
 (options, args) = parser.parse_args()
@@ -80,6 +88,15 @@ if options.status:
 elif options.shutdown:
     daemon = bus.get_object("org.seul.Xboxdrv", '/org/seul/Xboxdrv/Daemon')
     daemon.Shutdown()
+elif options.reset_leds:
+    daemon = bus.get_object("org.seul.Xboxdrv", '/org/seul/Xboxdrv/Daemon')
+    daemon.ResetLeds()
+elif options.disconnect:
+    if options.slot is None:
+        print("Error: --slot argument required for --disconnect")
+        exit(1)
+    daemon = bus.get_object("org.seul.Xboxdrv", '/org/seul/Xboxdrv/Daemon')
+    daemon.Disconnect(options.slot)
 else:
     if (options.led or options.rumble or options.config) and options.slot == None:
         print("Error: --slot argument required")

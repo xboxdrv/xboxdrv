@@ -72,6 +72,12 @@ public:
   std::string status();
   void shutdown();
 
+  /** Reset LEDs on all connected controllers to the default ring pattern. */
+  void reset_leds();
+
+  /** Disconnect the controller in the given slot (no-op if empty / OOB). */
+  void disconnect_slot(int slot_id);
+
 private:
   void create_pid_file();
   void init_uinput();

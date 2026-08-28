@@ -44,6 +44,10 @@ static char const* const kDaemonXml =
   "      <arg type=\"s\" direction=\"out\"/>"
   "    </method>"
   "    <method name=\"Shutdown\"/>"
+  "    <method name=\"ResetLeds\"/>"
+  "    <method name=\"Disconnect\">"
+  "      <arg name=\"slot\" type=\"i\" direction=\"in\"/>"
+  "    </method>"
   "    <signal name=\"ControllerConnected\">"
   "      <arg name=\"slot\" type=\"i\"/>"
   "    </signal>"
@@ -100,6 +104,24 @@ daemon_method_call(GDBusConnection*       /*connection*/,
   {
     log_info("D-Bus: Daemon.Shutdown()");
     daemon->shutdown();
+    g_dbus_method_invocation_return_value(invocation, nullptr);
+    return;
+  }
+
+  if (g_strcmp0(method_name, "ResetLeds") == 0)
+  {
+    log_info("D-Bus: Daemon.ResetLeds()");
+    daemon->reset_leds();
+    g_dbus_method_invocation_return_value(invocation, nullptr);
+    return;
+  }
+
+  if (g_strcmp0(method_name, "Disconnect") == 0)
+  {
+    gint slot = 0;
+    g_variant_get(parameters, "(i)", &slot);
+    log_info("D-Bus: Daemon.Disconnect({})", slot);
+    daemon->disconnect_slot(slot);
     g_dbus_method_invocation_return_value(invocation, nullptr);
     return;
   }

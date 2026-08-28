@@ -8,6 +8,12 @@
 
     <method name="Shutdown" />
 
+    <method name="ResetLeds" />
+
+    <method name="Disconnect">
+      <arg name="slot" type="i" direction="in" />
+    </method>
+
     <signal name="ControllerConnected">
       <arg name="slot" type="i" />
     </signal>
@@ -15,9 +21,5 @@
     <signal name="ControllerDisconnected">
       <arg name="slot" type="i" />
     </signal>
-    <!--
-    reset_leds
-    disconnect SLOT
-    -->
   </interface>
 </node>

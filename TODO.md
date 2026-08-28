@@ -304,7 +304,7 @@ Current state (daemon only):
 
 | Object | Interface | Methods / Signals |
 |--------|-----------|-------------------|
-| `/org/seul/Xboxdrv/Daemon` | `org.seul.Xboxdrv.Daemon` | `Status`, `Shutdown`; signals `ControllerConnected(i)`, `ControllerDisconnected(i)` |
+| `/org/seul/Xboxdrv/Daemon` | `org.seul.Xboxdrv.Daemon` | `Status`, `Shutdown`, `ResetLeds`, `Disconnect(i)`; signals `ControllerConnected(i)`, `ControllerDisconnected(i)` |
 | `/org/seul/Xboxdrv/ControllerSlots/N` | `org.seul.Xboxdrv.Controller` | `SetLed`, `SetRumble`, `SetConfig`; props `Led`, `RumbleStrong`, `RumbleWeak`, `Config`, `Battery`, `Connected` |
 
 Improvement path:
@@ -317,9 +317,9 @@ Improvement path:
    instead of clients polling `Status`.
 4. **Properties** — [x] expose LED, rumble, config index, battery (wireless),
    Connected as properties on Controller (read/write where applicable).
-5. **Finish XML stubs** — `reset_leds`, `disconnect SLOT`, rumble enable/gain
-   only if still useful after properties.
-6. **Policy** — keep `data/` system-bus policy in sync if system bus stays supported.
+5. **Finish XML stubs** — [x] `ResetLeds`, `Disconnect(slot)` on Daemon;
+   rumble enable/gain dropped (superseded by properties).
+6. **Policy** — [x] `data/org.seul.Xboxdrv.conf` allows own/send/receive for org.seul.Xboxdrv.
 7. **Single-controller mode** — optional light export (same `Controller` iface on
    slot 0) so tools work without `--daemon`; low priority.
 

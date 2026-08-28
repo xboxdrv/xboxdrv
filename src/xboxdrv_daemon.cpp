@@ -661,6 +661,51 @@ XboxdrvDaemon::shutdown()
   g_main_loop_quit(m_gmain);
 }
 
+
+void
+XboxdrvDaemon::reset_leds()
+{
+  for (ControllerSlots::iterator i = m_controller_slots.begin();
+       i != m_controller_slots.end(); ++i)
+  {
+    ControllerPtr controller = (*i)->get_controller();
+    if (!controller || controller->is_disconnected())
+    {
+      continue;
+    }
+    try
+    {
+      // Same default pattern as connect() when no forced LED is configured.
+      controller->set_led(static_cast<uint8_t>(2 + ((*i)->get_id() % 4)));
+    }
+    catch (std::exception const& err)
+    {
+      log_error("reset_leds: failed to set led on slot {}: {}",
+                (*i)->get_id(), err.what());
+    }
+  }
+}
+
+void
+XboxdrvDaemon::disconnect_slot(int slot_id)
+{
+  if (slot_id < 0 || static_cast<size_t>(slot_id) >= m_controller_slots.size())
+  {
+    log_warn("disconnect_slot: invalid slot {}", slot_id);
+    return;
+  }
+
+  ControllerSlotPtr slot = m_controller_slots[static_cast<size_t>(slot_id)];
+  if (!slot->get_controller())
+  {
+    log_info("disconnect_slot: slot {} is empty", slot_id);
+    return;
+  }
+
+  // Synchronous path: on_disconnect (scripts + D-Bus signal) then free slot.
+  disconnect(slot);
+}
+
 void
 XboxdrvDaemon::on_sigint(int)
 {
