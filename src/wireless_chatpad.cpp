@@ -23,6 +23,60 @@ namespace {
 // OUT payload length used by the wireless receiver for chatpad/control cmds.
 constexpr int kOutLen = 12;
 
+// Green / Orange legends of the US chatpad as US-layout keystrokes.
+// code 0: the legend is not ASCII and is not typed.
+struct LayerKey
+{
+  uint8_t scancode;
+  uint16_t green;
+  bool green_shift;
+  uint16_t orange;
+  bool orange_shift;
+};
+
+constexpr LayerKey kLayerKeys[] = {
+  { CHATPAD_KEY_Q,      KEY_1,          true,  0,              false }, // ! ¡
+  { CHATPAD_KEY_W,      KEY_2,          true,  0,              false }, // @ å
+  { CHATPAD_KEY_E,      0,              false, 0,              false }, // € é
+  { CHATPAD_KEY_R,      KEY_3,          true,  KEY_4,          true  }, // # $
+  { CHATPAD_KEY_T,      KEY_5,          true,  0,              false }, // % Þ
+  { CHATPAD_KEY_Y,      KEY_6,          true,  0,              false }, // ^ ý
+  { CHATPAD_KEY_U,      KEY_7,          true,  0,              false }, // & ú
+  { CHATPAD_KEY_I,      KEY_8,          true,  0,              false }, // * í
+  { CHATPAD_KEY_O,      KEY_9,          true,  0,              false }, // ( ó
+  { CHATPAD_KEY_P,      KEY_0,          true,  KEY_EQUAL,      false }, // ) =
+  { CHATPAD_KEY_A,      KEY_GRAVE,      true,  0,              false }, // ~ á
+  { CHATPAD_KEY_S,      0,              false, 0,              false }, // š ß
+  { CHATPAD_KEY_D,      KEY_LEFTBRACE,  true,  0,              false }, // { ð
+  { CHATPAD_KEY_F,      KEY_RIGHTBRACE, true,  0,              false }, // } £
+  { CHATPAD_KEY_G,      0,              false, 0,              false }, // ¨ ¥
+  { CHATPAD_KEY_H,      KEY_SLASH,      false, KEY_BACKSLASH,  false }, // / backslash
+  { CHATPAD_KEY_J,      KEY_APOSTROPHE, false, KEY_APOSTROPHE, true  }, // ' "
+  { CHATPAD_KEY_K,      KEY_LEFTBRACE,  false, 0,              false }, // [ ☺
+  { CHATPAD_KEY_L,      KEY_RIGHTBRACE, false, 0,              false }, // ] ø
+  { CHATPAD_KEY_COMMA,  KEY_SEMICOLON,  true,  KEY_SEMICOLON,  false }, // : ;
+  { CHATPAD_KEY_Z,      KEY_GRAVE,      false, 0,              false }, // ` æ
+  { CHATPAD_KEY_X,      0,              false, 0,              false }, // « œ
+  { CHATPAD_KEY_C,      0,              false, 0,              false }, // » ç
+  { CHATPAD_KEY_V,      KEY_MINUS,      false, KEY_MINUS,      true  }, // - _
+  { CHATPAD_KEY_B,      KEY_BACKSLASH,  true,  KEY_EQUAL,      true  }, // | +
+  { CHATPAD_KEY_N,      KEY_COMMA,      true,  0,              false }, // < ñ
+  { CHATPAD_KEY_M,      KEY_DOT,        true,  0,              false }, // > µ
+  { CHATPAD_KEY_PERIOD, KEY_SLASH,      true,  0,              false }, // ? ¿
+};
+
+LayerKey const* find_layer_key(size_t scancode)
+{
+  for (auto const& k : kLayerKeys)
+  {
+    if (k.scancode == scancode)
+    {
+      return &k;
+    }
+  }
+  return nullptr;
+}
+
 } // namespace
 
 WirelessChatpad::WirelessChatpad(WriteFn write, bool no_init, bool debug) :
@@ -95,8 +149,6 @@ WirelessChatpad::WirelessChatpad(WriteFn write, bool no_init, bool debug) :
   m_keymap[CHATPAD_KEY_SPACEBAR] = KEY_SPACE;
   m_keymap[CHATPAD_KEY_RIGHT] = KEY_RIGHT;
   m_keymap[CHATPAD_MOD_SHIFT] = KEY_LEFTSHIFT;
-  m_keymap[CHATPAD_MOD_GREEN] = KEY_LEFTALT;
-  m_keymap[CHATPAD_MOD_ORANGE] = KEY_LEFTCTRL;
   m_keymap[CHATPAD_MOD_PEOPLE] = KEY_LEFTMETA;
 
   init_uinput();
@@ -126,6 +178,11 @@ WirelessChatpad::init_uinput()
     {
       m_uinput->add_key(m_keymap[i]);
     }
+  }
+  for (auto const& k : kLayerKeys)
+  {
+    if (k.green) m_uinput->add_key(k.green);
+    if (k.orange) m_uinput->add_key(k.orange);
   }
   m_uinput->finish();
   m_glib_uinput = std::make_unique<uinpp::GlibDevice>(*m_uinput);
@@ -367,15 +424,33 @@ WirelessChatpad::process_key(KeyMsg const& msg)
     m_uinput->send(EV_KEY, m_keymap[i], down ? 1 : 0);
   };
 
+  auto emit_layer = [&](size_t i) -> bool {
+    LayerKey const* k = find_layer_key(i);
+    if (!k)
+    {
+      return false;
+    }
+    const uint16_t code = eff_green ? k->green : k->orange;
+    const bool shift = eff_green ? k->green_shift : k->orange_shift;
+    if (code == 0)
+    {
+      return true;
+    }
+    const bool shift_down = eff_shift || m_eff_shift;
+    if (shift != shift_down) { m_uinput->send(EV_KEY, KEY_LEFTSHIFT, shift); m_uinput->sync(); }
+    m_uinput->send(EV_KEY, code, 1);
+    m_uinput->sync();
+    m_uinput->send(EV_KEY, code, 0);
+    m_uinput->sync();
+    if (shift != shift_down) { m_uinput->send(EV_KEY, KEY_LEFTSHIFT, shift_down); m_uinput->sync(); }
+    return true;
+  };
+
   const bool old_eff_shift  = m_eff_shift;
-  const bool old_eff_green  = m_eff_green;
-  const bool old_eff_orange = m_eff_orange;
   const bool old_eff_people = m_eff_people;
 
   // Press order: modifiers first, then keys.
   if (eff_shift  && !old_eff_shift)  emit(CHATPAD_MOD_SHIFT,  true);
-  if (eff_green  && !old_eff_green)  emit(CHATPAD_MOD_GREEN,  true);
-  if (eff_orange && !old_eff_orange) emit(CHATPAD_MOD_ORANGE, true);
   if (eff_people && !old_eff_people) emit(CHATPAD_MOD_PEOPLE, true);
 
   for (size_t i = 0; i < m_state.size(); ++i)
@@ -384,7 +459,10 @@ WirelessChatpad::process_key(KeyMsg const& msg)
                          i == CHATPAD_MOD_ORANGE || i == CHATPAD_MOD_PEOPLE);
     if (is_mod) continue;
     if (m_state[i] && !old_phys[i])
-      emit(i, true);
+    {
+      if (!((eff_green || eff_orange) && emit_layer(i)))
+        emit(i, true);
+    }
     else if (!m_state[i] && old_phys[i])
       emit(i, false);
   }
@@ -404,8 +482,6 @@ WirelessChatpad::process_key(KeyMsg const& msg)
 
   // Release order: keys first (done), then modifiers.
   if (!post_shift  && old_eff_shift)  emit(CHATPAD_MOD_SHIFT,  false);
-  if (!post_green  && old_eff_green)  emit(CHATPAD_MOD_GREEN,  false);
-  if (!post_orange && old_eff_orange) emit(CHATPAD_MOD_ORANGE, false);
   if (!post_people && old_eff_people) emit(CHATPAD_MOD_PEOPLE, false);
 
   if (text_key_pressed)

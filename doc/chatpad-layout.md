@@ -23,6 +23,12 @@ placeholder until compose/XKB):
 - Shift → `KEY_LEFTSHIFT`
 - Green → `KEY_LEFTALT`
 - Orange → `KEY_LEFTCTRL`
+
+Wireless chatpad only: Green and Orange emit no key of their own. A key
+pressed with one of them active types its US English Green / Orange legend
+as a US-layout keystroke (e.g. Green+Q → Shift+1 → `!`), without
+auto-repeat. Non-ASCII legends type nothing; keys without a legend type
+their base key.
 - People → `KEY_LEFTMETA`
 
 **Modifier / LED policy** (aligned with the Xbox 360 console manual):
@@ -149,7 +155,9 @@ on this photo (no extra colour legends).
 - [x] One-shot sticky Shift/Green/Orange/People + LEDs (desktop modifiers).
 - [ ] Orange+Shift CAPS lock (console behaviour; intentionally not implemented).
 - [ ] QWERTZ vs QWERTY letter labels (Y/Z) selectable by layout.
-- [ ] Orange / green character layers (need compose table or XKB).
+- [x] Orange / green ASCII character layers, US keycaps (wireless only).
+- [ ] Orange / green layers for the wired chatpad, non-ASCII legends and
+      other regions (need compose table or XKB).
 - [ ] Other regional keycaps (UK, FR, …) documented the same way.
 
 Other regions ship different keycaps; capture a photo and extend this file
